@@ -33,9 +33,9 @@ jobs:
       - name: Build client
         shell: pwsh
         run: |
-          python scripts/run_check.py --name client-restore --timeout 180 -- dotnet restore src/Client.Godot/Delsk.Client.csproj --locked-mode --disable-parallel -m:1
+          python scripts/run_check.py --name client-restore --timeout 180 -- dotnet restore src/Client.Godot/Delsk.Client.csproj --locked-mode --disable-parallel '-m:1'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python scripts/run_check.py --name client-build --timeout 180 -- dotnet build src/Client.Godot/Delsk.Client.csproj --no-restore --disable-build-servers -m:1
+          python scripts/run_check.py --name client-build --timeout 180 -- dotnet build src/Client.Godot/Delsk.Client.csproj --no-restore --disable-build-servers '-m:1'
           exit $LASTEXITCODE
       - name: Import and replay shared core on Windows
         shell: pwsh
