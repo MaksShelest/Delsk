@@ -8,3 +8,5 @@ TestResults/
 *.jks
 *.user
 *.suo
+src/Client.Godot/android/
+**/__pycache__/

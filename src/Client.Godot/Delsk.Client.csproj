@@ -1,0 +1,13 @@
+<Project Sdk="Godot.NET.Sdk/4.7.2">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <AssemblyName>Delsk.Client</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Simulation.Hosting/Simulation.Hosting.csproj" />
+    <EmbeddedResource Include="../../scenarios/economic-cycle.json" LogicalName="Fixture.scenario.json" />
+    <EmbeddedResource Include="../../scenarios/platform-cycle.commands.jsonl" LogicalName="Fixture.commands.jsonl" />
+    <EmbeddedResource Include="../../scenarios/platform-cycle.checkpoints.csv" LogicalName="Fixture.checkpoints.csv" />
+  </ItemGroup>
+</Project>

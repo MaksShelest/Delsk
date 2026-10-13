@@ -54,7 +54,13 @@ dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release 
 python scripts/run_check.py --name build --timeout 180 -- dotnet build Delsk.sln -c Release --no-restore --disable-build-servers -m:1
 ```
 
-GitHub Actions workflow подготовлен; его удалённый запуск пока не подтверждён. Godot и Android не нужны для запуска этого стенда. Совместимость клиента и экспорт проверяются следующим этапом P06.
+GitHub Actions для ядра выполнен успешно. Godot и Android не нужны для запуска консольного стенда.
+
+## Платформенный стенд P06
+
+Добавлена минимальная сцена Godot 4.7.2 .NET с тем же Core/Hosting. Linux и Windows CI воспроизводят записанные команды и проверяют все 62 хеша. Созданы тестовые Windows x86_64 и подписанный Android ARM64 экспорты. APK ещё не запускался на настоящем телефоне; готовый Windows EXE тоже не проверен запуском.
+
+[Запуск сцены и экспорты](src/Client.Godot/README.md). [Отчёт P06, версии и открытые проверки](docs/IMPLEMENTATION_REPORT_P06.md). Следующая задача кода — P07: земля, бронь и атомарная стройка. Полный месячный объём остаётся в плане.
 
 ## Документация
 
@@ -63,3 +69,4 @@ GitHub Actions workflow подготовлен; его удалённый зап
 - [Решения и риски](docs/DECISIONS.md).
 - [План и фактический статус задач](docs/IMPLEMENTATION_PLAN.md).
 - [Инструкции для разработки и Cursor](AGENTS.md).
+- [Отчёт платформенного этапа P06](docs/IMPLEMENTATION_REPORT_P06.md).

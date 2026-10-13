@@ -7,6 +7,8 @@
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Deterministic>true</Deterministic>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <!-- Platform publish must not overwrite the ordinary locked restore used by core CI. -->
+    <NuGetLockFilePath Condition="'$(RuntimeIdentifier)' != ''">$(MSBuildProjectDirectory)/obj/runtime-locks/$(RuntimeIdentifier).lock.json</NuGetLockFilePath>
     <Authors>Шелестов Максим Евгеньевич</Authors>
   </PropertyGroup>
 </Project>

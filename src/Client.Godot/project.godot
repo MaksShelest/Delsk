@@ -1,0 +1,21 @@
+; Author: Шелестов Максим Евгеньевич.
+config_version=5
+
+[application]
+config/name="Delsk — проверка общего ядра"
+config/icon="res://icon.svg"
+run/main_scene="res://PlatformProbe.tscn"
+config/features=PackedStringArray("4.7", "C#", "GL Compatibility")
+
+[display]
+window/size/viewport_width=900
+window/size/viewport_height=600
+window/stretch/mode="canvas_items"
+
+[dotnet]
+project/assembly_name="Delsk.Client"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true

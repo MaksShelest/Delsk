@@ -1,0 +1,183 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "localChecks": {
+    "core-locked-restore-p06": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "restore",
+        "Delsk.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-13T21:46:50.053171+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.267,
+      "finished_at": "2026-10-13T21:46:51.320486+00:00"
+    },
+    "core-build-p06": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-13T21:46:57.766851+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 7.592,
+      "finished_at": "2026-10-13T21:47:05.358587+00:00"
+    },
+    "core-xunit-p06": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-result-trx",
+        "../verification/p06/core-tests.trx",
+        "-result-ctrf",
+        "../verification/p06/core-tests.json"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-13T21:47:41.297922+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.816,
+      "finished_at": "2026-10-13T21:47:42.114314+00:00"
+    },
+    "runner-cycle-p06": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/economic-cycle.json",
+        "--output",
+        "../verification/p06/runner-cycle"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-13T21:51:15.350725+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.315,
+      "finished_at": "2026-10-13T21:51:15.666180+00:00"
+    },
+    "runner-recovery-p06": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/zero-cash-recovery.json",
+        "--script",
+        "recovery",
+        "--output",
+        "../verification/p06/runner-recovery"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-13T21:51:16.265454+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.265,
+      "finished_at": "2026-10-13T21:51:16.530330+00:00"
+    },
+    "godot-lifecycle-smoke": {
+      "command": [
+        "../.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--",
+        "--smoke",
+        "--report",
+        "/workspace/scratch/287937448ccd/verification/p06/godot-platform-probe-final.json"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-13T21:41:21.742478+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.666,
+      "finished_at": "2026-10-13T21:41:22.408366+00:00"
+    },
+    "godot-windows-export-final": {
+      "command": [
+        "../.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--export-debug",
+        "Windows Probe",
+        "/workspace/scratch/287937448ccd/Delsk/artifacts/platform/windows/DelskProbe.exe"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-13T21:52:15.722975+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 8.143,
+      "finished_at": "2026-10-13T21:52:23.866457+00:00"
+    },
+    "godot-android-export-trusted": {
+      "command": [
+        "../.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--export-debug",
+        "Android Probe",
+        "/workspace/scratch/287937448ccd/Delsk/artifacts/platform/android/DelskProbe.apk"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-13T21:49:23.929496+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 107.421,
+      "finished_at": "2026-10-13T21:51:11.350606+00:00"
+    },
+    "apk-signature": {
+      "command": [
+        "../.tools/android-sdk/build-tools/36.1.0/apksigner",
+        "verify",
+        "--verbose",
+        "--print-certs",
+        "artifacts/platform/android/DelskProbe.apk"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-13T21:51:28.574195+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.366,
+      "finished_at": "2026-10-13T21:51:28.939906+00:00"
+    },
+    "apk-metadata": {
+      "command": [
+        "../.tools/android-sdk/build-tools/36.1.0/aapt2",
+        "dump",
+        "badging",
+        "artifacts/platform/android/DelskProbe.apk"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-13T21:51:29.565019+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.017,
+      "finished_at": "2026-10-13T21:51:29.581718+00:00"
+    }
+  },
+  "xunit": {
+    "tests": 34,
+    "passed": 34,
+    "failed": 0,
+    "pending": 0,
+    "skipped": 0,
+    "other": 0,
+    "suites": 1,
+    "start": 1791928061523,
+    "stop": 1791928062083,
+    "duration": 560
+  },
+  "windowsCi": {
+    "runId": 38473330261,
+    "sourceCommit": "2764d67207faaba56b6323c8eb4e6a047955be7e",
+    "conclusion": "success"
+  },
+  "deviceGate": "open",
+  "exportedWindowsExecutableRun": "not performed"
+}

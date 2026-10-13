@@ -1,0 +1,12 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "apkBytes": 97469534,
+  "apkSha256": "65e869ef211e715b859d2f8bac8add9e076acc0e47d90c9b6e35b87d9ebe669b",
+  "package": "com.maksshelest.delsk.probe",
+  "abi": "arm64-v8a",
+  "minSdk": 24,
+  "targetSdk": 36,
+  "signature": "v2 verified by apksigner",
+  "crcCheck": null,
+  "deviceRun": "not performed"
+}

@@ -1,0 +1,12 @@
+{
+  "Status": "passed",
+  "Failure": null,
+  "Tick": 62,
+  "StateHash": "c1264d31d3b192e8d6dccc9e49f2c301110909bdb299f416e05ef72e6d35dca6",
+  "CheckedTicks": 62,
+  "LifecycleAdapterChecked": true,
+  "Runtime": "10.0.12",
+  "Platform": "Linux",
+  "GodotVersion": "4.7.2-stable (official)",
+  "Author": "\u0428\u0435\u043B\u0435\u0441\u0442\u043E\u0432 \u041C\u0430\u043A\u0441\u0438\u043C \u0415\u0432\u0433\u0435\u043D\u044C\u0435\u0432\u0438\u0447"
+}
