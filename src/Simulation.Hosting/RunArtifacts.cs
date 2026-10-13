@@ -26,7 +26,7 @@ public static class RunArtifacts
             ConfigHash = session.Engine.ConfigHash, TimingPolicy = timingPolicy, Script = script,
             Controller = "scripted", Model = (string?)null, RuntimeVersion = Environment.Version.ToString(),
             Commit = Environment.GetEnvironmentVariable("DELSK_COMMIT"), TickSeconds = 1,
-            Stage = "P00-P05", Author = "Шелестов Максим Евгеньевич"
+            Stage = "P07-P08", Author = "Шелестов Максим Евгеньевич"
         });
         WriteJson("summary.json", new { Status = status, Failure = failure, state.Tick, StateHash = session.Engine.ComputeStateHash(),
             ElapsedMilliseconds = elapsedMilliseconds, AverageMillisecondsPerTick = state.Tick > 0 ? elapsedMilliseconds / state.Tick : (double?)null,

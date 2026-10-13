@@ -14,11 +14,12 @@ public sealed partial class SimulationEngine
             try
             {
                 bool starting = e.Batch is null;
-                long required = checked(e.Recipe.FullStaffTicks * e.Recipe.RequiredStaff);
+                int fullStaff = e.Definition.BuildingTypeId == "" ? e.Recipe.RequiredStaff : e.Definition.Capacity;
+                long required = checked(e.Recipe.FullStaffTicks * fullStaff);
                 long id = e.Batch?.Id ?? _nextId;
                 string hold = e.Batch?.Hold ?? $"batch:{id}";
                 long previousWork = e.Batch?.WorkDone ?? 0;
-                long work = Math.Min(e.Definition.Staff, e.Recipe.RequiredStaff);
+                long work = checked((long)Math.Min(e.Definition.Staff, fullStaff) * e.Definition.WorkRateMultiplier);
                 long nextWork = Math.Min(required, checked(previousWork + work));
                 long nextEnergy = checked((long)((Int128)e.Recipe.EnergyPerBatchMinor * nextWork / required));
                 long energy = checked(nextEnergy - (e.Batch?.EnergyPaid ?? 0));
@@ -162,7 +163,7 @@ public sealed partial class SimulationEngine
         foreach (var flow in _flows.Values)
         {
             long physical = _economy.Inventories.Values.Aggregate(0L, (n, inv) => checked(n + inv.Count(flow.Id)));
-            long expected = checked(flow.Initial + flow.Harvested + flow.Produced - flow.RecipeInput - flow.Exported);
+            long expected = checked(flow.Initial + flow.Harvested + flow.Produced - flow.RecipeInput - flow.Exported - flow.ConstructionInput);
             if (physical != expected || expected < 0) throw new InvalidOperationException($"I05: {flow.Id} not conserved");
         }
         foreach (var e in _enterprises.Values)
@@ -182,5 +183,6 @@ public sealed partial class SimulationEngine
                     reserved.Quantity != request.Quantity || reserved.Item != offer.Definition.ItemId)
                     throw new InvalidOperationException("Reserved sale changed before closing");
         }
+        ValidateLandInvariants();
     }
 }

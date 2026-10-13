@@ -3,7 +3,7 @@ using Simulation.Core;
 namespace Simulation.Hosting;
 
 /// <summary>Explicit test fixture scripts, not autonomous NPC intelligence.</summary>
-public static class ScriptedScenarios
+public static partial class ScriptedScenarios
 {
     public static void EconomicCycle(GameSession session, ScenarioDefinition definition)
     {

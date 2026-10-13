@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "economic-slice-1";
+    public const string RulesVersion = "land-content-2";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -64,6 +64,7 @@ public sealed partial class SimulationEngine
             _economy.Inventories.Add(output, new(output, e.OwnerId, e.Position, e.OutputCapacity));
             _enterprises.Add(e.Id, new(e, input, output, recipes[e.RecipeId]));
         }
+        InitializeLandAndBuildings();
         foreach (var o in _config.CapitalOffers.OrderBy(o => o.Id))
         {
             string hold = $"capital-offer:{o.Id}";
@@ -93,7 +94,9 @@ public sealed partial class SimulationEngine
     public CommandResult? Enqueue(ParticipantId authenticatedActor, CommandEnvelope command)
     {
         if (command is null || command.Action is null || string.IsNullOrWhiteSpace(command.CommandId) ||
-            command.CommandId.Length > 160 || command.Action.ItemId is null || command.Action.ItemId.Length > 50)
+            command.CommandId.Length > 160 || command.Action.ItemId is null || command.Action.ItemId.Length > 50 ||
+            command.Action.BuildingTypeId is null || command.Action.BuildingTypeId.Length > 50 ||
+            command.Action.RecipeId is null || command.Action.RecipeId.Length > 50)
             return new(command?.CommandId ?? "", ResultStatus.Rejected, "InvalidEnvelope", Tick);
         if (authenticatedActor != command.ActorId || !_actors.ContainsKey(authenticatedActor.Value))
             return new(command.CommandId, ResultStatus.Rejected, "NotAvailable", Tick);
@@ -130,12 +133,13 @@ public sealed partial class SimulationEngine
                     else if (c.c.ExpiresAtTick < Tick) Reject(c.c, "CommandExpired");
                     else allowed.Add(c.c);
             _phase = 1;
-            foreach (var c in allowed.Where(c => c.Action.Kind == ActionKind.SetProductionEnabled)) Execute(c);
+            foreach (var c in allowed.Where(c => IsManagement(c.Action.Kind))) Execute(c);
             _phase = 2; AdvanceMovements();
             _phase = 3;
-            foreach (var c in allowed.Where(c => c.Action.Kind != ActionKind.SetProductionEnabled)) Execute(c);
+            foreach (var c in allowed.Where(c => !IsManagement(c.Action.Kind))) Execute(c);
             _phase = 4; AdvanceHarvests(); AdvanceProduction();
             _phase = 6; CloseCapitalWindows();
+            _phase = 7; ExpirePlotReservations();
             _phase = 9; ValidateInvariants(); Emit("TickCommitted");
         }
         finally { _stepping = false; }
@@ -159,6 +163,12 @@ public sealed partial class SimulationEngine
                 case ActionKind.SetProductionEnabled: SetProduction(actor, c); break;
                 case ActionKind.SellAvailableToCapital: StartSale(actor, c); break;
                 case ActionKind.CancelCapitalSale: CancelSale(actor, c); break;
+                case ActionKind.ReservePlot: ReservePlot(actor, c); break;
+                case ActionKind.BuyPlot: BuyPlot(actor, c); break;
+                case ActionKind.CancelPlotReservation: CancelPlotReservation(actor, c); break;
+                case ActionKind.Build: Build(actor, c); break;
+                case ActionKind.UpgradeBuilding: UpgradeBuilding(actor, c); break;
+                case ActionKind.SetRecipe: SetRecipe(actor, c); break;
                 default: throw new RuleViolation("UnknownAction");
             }
             _results[c.CommandId] = new(c.CommandId, ResultStatus.Accepted, "Accepted", Tick);
@@ -258,21 +268,23 @@ public sealed partial class SimulationEngine
                 a.Job is not null || HasSale(a.Id), a.Job is { Kind: "Move" } move ? move.Path[^1] : null, a.Job?.CompletionTick)).ToArray(),
             _enterprises.Values.OrderBy(e => e.Definition.Id).Select(e => new EnterpriseView(new(e.Definition.Id), new(e.Definition.OwnerId),
                 new(e.Input), new(e.Output), e.Enabled, e.Definition.Staff, e.Reason, e.Batch?.Id ?? 0,
-                e.Batch?.WorkDone ?? 0, e.Batch?.WorkRequired ?? 0, e.Completed, e.EnergyPaid)).ToArray(),
+                e.Batch?.WorkDone ?? 0, e.Batch?.WorkRequired ?? 0, e.Completed, e.EnergyPaid,
+                e.Recipe.Id, e.Definition.Level, e.Definition.Capacity, e.Definition.WorkRateMultiplier)).ToArray(),
             _flows.Values.OrderBy(f => f.Id, StringComparer.Ordinal).Select(f => new FlowView(f.Id, f.Initial, f.Harvested,
-                f.RecipeInput, f.Produced, f.Exported)).ToArray(),
+                f.RecipeInput, f.Produced, f.Exported, f.ConstructionInput)).ToArray(),
             _offers.Values.OrderBy(o => o.Definition.Id).Select(o => new CapitalOfferView(o.Definition.Id, o.Definition.ItemId,
                 o.Remaining, o.Definition.UnitPriceMinor, o.Definition.Position, o.Cutoff,
                 o.Requests.Values.Aggregate(0L, (n, r) => checked(n + r.Quantity)))).ToArray(),
             _settlements.ToArray(), _config.Population, checked(_config.Population - _enterprises.Values.Sum(e => (long)e.Definition.Staff)),
-            _economy.InitialMoney, _economy.ExternalIn, _economy.ExternalOut);
+            _economy.InitialMoney, _economy.ExternalIn, _economy.ExternalOut, LandViews(), BuildingViews());
     }
     public ParticipantObservation Observe(ParticipantId actorId)
     {
         if (!_actors.ContainsKey(actorId.Value)) throw new ArgumentException("Participant not available");
         var view = Inspect(); var actor = view.Participants.Single(a => a.Id == actorId);
         return new(Tick, actor, view.Accounts.Single(a => a.Id == actor.AccountId),
-            view.Inventories.Where(i => i.OwnerId == actorId).ToArray(), view.Enterprises.Where(e => e.OwnerId == actorId).ToArray(), view.CapitalOffers);
+            view.Inventories.Where(i => i.OwnerId == actorId).ToArray(), view.Enterprises.Where(e => e.OwnerId == actorId).ToArray(), view.CapitalOffers,
+            view.Plots, view.Buildings.Where(b => b.OwnerId == actorId).ToArray(), CopyBuildingCatalog());
     }
     public string ComputeStateHash() => ScenarioValidation.Hash(new
     {

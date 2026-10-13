@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><IsTestProject>true</IsTestProject><IsPackable>false</IsPackable><OutputType>Exe</OutputType></PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="../../scenarios/land-and-content.json" LogicalName="Fixture.land-content.json" />
     <PackageReference Include="xunit.v3" Version="4.0.2" />
     <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" Version="2.5.1" />
     <ProjectReference Include="../../src/Simulation.Core/Simulation.Core.csproj" />

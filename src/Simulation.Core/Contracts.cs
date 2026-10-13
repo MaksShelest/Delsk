@@ -7,13 +7,17 @@ public readonly record struct ParticipantId(long Value);
 public readonly record struct AccountId(long Value);
 public readonly record struct InventoryId(long Value);
 public readonly record struct EnterpriseId(long Value);
+public readonly record struct PlotId(long Value);
+public readonly record struct BuildingId(long Value);
 public readonly record struct Cell(int X, int Z);
 
-public enum ActionKind { MoveTo, Harvest, Transfer, SetProductionEnabled, SellAvailableToCapital, CancelCapitalSale }
+public enum ActionKind { MoveTo, Harvest, Transfer, SetProductionEnabled, SellAvailableToCapital, CancelCapitalSale,
+    ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe }
 public enum ResultStatus { Accepted, Rejected }
 public record GameAction(ActionKind Kind, Cell Target = default, string ItemId = "", long Quantity = 0,
     InventoryId Source = default, InventoryId Destination = default, EnterpriseId Enterprise = default,
-    bool Enabled = false, long OfferId = 0);
+    bool Enabled = false, long OfferId = 0, PlotId Plot = default, BuildingId Building = default,
+    string BuildingTypeId = "", string RecipeId = "");
 public record CommandEnvelope(string CommandId, ParticipantId ActorId, long LocalSequence,
     long IssuedAtTick, long NotBeforeTick, long ExpiresAtTick, GameAction Action);
 public record CommandResult(string CommandId, ResultStatus Status, string ReasonCode, long AppliedTick);
@@ -28,13 +32,25 @@ public record RecipeDefinition(string Id, string InputItem, long InputQuantity, 
     long OutputQuantity, long FullStaffTicks, int RequiredStaff, int MinimumStaff, long EnergyPerBatchMinor);
 public record ParticipantDefinition(long Id, long CashMinor, Cell Position, long InventoryCapacity);
 public record EnterpriseDefinition(long Id, long OwnerId, Cell Position, string RecipeId,
-    long InputCapacity, long OutputCapacity, int Staff, int Capacity, long WageMinor, bool Enabled = false);
+    long InputCapacity, long OutputCapacity, int Staff, int Capacity, long WageMinor, bool Enabled = false,
+    string BuildingTypeId = "", int Level = 1, int WorkRateMultiplier = 1);
+public enum BuildingKind { Production, Warehouse, Shop }
+public record MaterialCost(string ItemId, long Quantity);
+public record PlotDefinition(long Id, Cell Position, long PriceMinor, bool IsCorridor = false,
+    long? OwnerId = null, long? ShopParticipantId = null);
+public record BuildingLevelDefinition(int Level, string RecipeId, long PriceMinor, MaterialCost[] Materials,
+    long InputCapacity, long OutputCapacity, int StaffCapacity, long WageMinor, int WorkRateMultiplier = 1);
+public record BuildingTypeDefinition(string Id, BuildingKind Kind, Cell[] Footprint, BuildingLevelDefinition[] Levels);
+public record BuildingDefinition(long Id, long OwnerId, Cell Position, string TypeId, int Level = 1,
+    int Staff = 0, bool Enabled = false);
 public record CapitalOfferDefinition(long Id, string ItemId, long Quantity, long UnitPriceMinor, Cell Position);
 public record ScenarioDefinition(string Id, ulong Seed, int MapWidth, int MapHeight, Cell[] BlockedCells,
     ItemDefinition[] Items, RecipeDefinition[] Recipes, ParticipantDefinition[] Participants,
     EnterpriseDefinition[] Enterprises, CapitalOfferDefinition[] CapitalOffers, ResourceNodeDefinition[] ResourceNodes,
     int HarvestTicksPerUnit = 2, int MoveTicksPerCell = 1, int TradeWindowTicks = 5,
-    int MaxCommandsPerActorTick = 8, long Population = 2, long MaxTicks = 500);
+    int MaxCommandsPerActorTick = 8, long Population = 2, long MaxTicks = 500,
+    PlotDefinition[]? Plots = null, BuildingTypeDefinition[]? BuildingTypes = null,
+    BuildingDefinition[]? Buildings = null, int LandReservationTicks = 120, int MaxActivePlotReservations = 4);
 
 public record StockView(string ItemId, long Quantity, long Reserved);
 public record InventoryView(InventoryId Id, ParticipantId OwnerId, Cell Position, long Capacity,
@@ -47,8 +63,14 @@ public record ParticipantView(ParticipantId Id, AccountId AccountId, InventoryId
     Cell Position, bool Busy, Cell? Destination, long? ArrivalTick);
 public record EnterpriseView(EnterpriseId Id, ParticipantId OwnerId, InventoryId InputId,
     InventoryId OutputId, bool Enabled, int Staff, string ReasonCode, long BatchId, long WorkDone,
-    long WorkRequired, long CompletedBatches, long EnergyPaidMinor);
-public record FlowView(string ItemId, long Initial, long Harvested, long RecipeInput, long Produced, long Exported);
+    long WorkRequired, long CompletedBatches, long EnergyPaidMinor, string RecipeId, int Level, int StaffCapacity,
+    int WorkRateMultiplier);
+public record PlotView(PlotId Id, Cell Position, long PriceMinor, bool IsCorridor, ParticipantId? OwnerId,
+    ParticipantId? ReservedBy, long? ReservationUntilTick, BuildingId? BuildingId, ParticipantId? ShopParticipantId);
+public record BuildingView(BuildingId Id, ParticipantId OwnerId, string TypeId, BuildingKind Kind,
+    int Level, Cell Position, Cell[] Footprint, InventoryId InputId, InventoryId? OutputId);
+public record FlowView(string ItemId, long Initial, long Harvested, long RecipeInput, long Produced, long Exported,
+    long ConstructionInput);
 public record CapitalOfferView(long Id, string ItemId, long RemainingQuantity, long UnitPriceMinor,
     Cell Position, long? CutoffTick, long RequestedQuantity);
 public record SettlementView(long Id, long OfferId, ParticipantId Seller, string ItemId,
@@ -57,9 +79,10 @@ public record WorldView(long Tick, long NextId, ulong AllocationRandomState, str
     AccountView[] Accounts, InventoryView[] Inventories, ParticipantView[] Participants,
     EnterpriseView[] Enterprises, FlowView[] Flows, CapitalOfferView[] CapitalOffers,
     SettlementView[] Settlements, long Population, long Unemployed, long InitialMoneyMinor,
-    long ExternalMoneyInMinor, long ExternalMoneyOutMinor);
+    long ExternalMoneyInMinor, long ExternalMoneyOutMinor, PlotView[] Plots, BuildingView[] Buildings);
 public record ParticipantObservation(long Tick, ParticipantView Participant, AccountView Account,
-    InventoryView[] OwnInventories, EnterpriseView[] OwnEnterprises, CapitalOfferView[] CapitalOffers);
+    InventoryView[] OwnInventories, EnterpriseView[] OwnEnterprises, CapitalOfferView[] CapitalOffers,
+    PlotView[] Plots, BuildingView[] OwnBuildings, BuildingTypeDefinition[] BuildingTypes);
 
 public static class SimulationJson
 {
