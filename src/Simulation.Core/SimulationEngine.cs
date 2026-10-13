@@ -1,0 +1,293 @@
+using System.Text.Json;
+
+namespace Simulation.Core;
+
+/// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
+public sealed partial class SimulationEngine
+{
+    public const string RulesVersion = "economic-slice-1";
+    private readonly ScenarioDefinition _config;
+    private readonly GridMap _map;
+    private readonly Dictionary<string, ItemDefinition> _items;
+    private readonly EconomyStore _economy;
+    private readonly Dictionary<long, ActorState> _actors = [];
+    private readonly Dictionary<long, EnterpriseState> _enterprises = [];
+    private readonly Dictionary<long, CapitalOffer> _offers = [];
+    private readonly Dictionary<string, ItemFlow> _flows;
+    private readonly List<SimulationEvent> _events = [];
+    private readonly List<SettlementView> _settlements = [];
+    private readonly List<CommandEnvelope> _pending = [];
+    private readonly Dictionary<string, CommandEnvelope> _seenCommands = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, CommandResult> _results = new(StringComparer.Ordinal);
+    private readonly HashSet<(long Actor, long Sequence)> _actorSequences = [];
+    private readonly HashSet<long> _completedPersonalJobs = [];
+    private readonly DeterministicRandom _allocationRandom;
+    private readonly DeterministicRandom _commandRandom;
+    private long _nextId = 1000;
+    private long _eventSequence;
+    private int _phase;
+    private bool _stepping;
+    private readonly long _treasury;
+    private readonly long _wages;
+    private readonly long _capital;
+    public long Tick { get; private set; }
+    public string ConfigHash { get; }
+
+    public SimulationEngine(ScenarioDefinition config)
+    {
+        ScenarioValidation.Validate(config);
+        // Caller cannot change the running rules by mutating a configuration array.
+        _config = JsonSerializer.Deserialize<ScenarioDefinition>(
+            JsonSerializer.Serialize(config, SimulationJson.Options), SimulationJson.Options)!;
+        ConfigHash = ScenarioValidation.Hash(_config);
+        _map = new(_config);
+        _items = _config.Items.ToDictionary(i => i.Id, StringComparer.Ordinal);
+        _flows = _items.Keys.ToDictionary(i => i, i => new ItemFlow(i), StringComparer.Ordinal);
+        _economy = new(_items);
+        _allocationRandom = new(unchecked(_config.Seed ^ 0xA110CA7EUL));
+        _commandRandom = new(unchecked(_config.Seed ^ 0xC011A11DUL));
+        _treasury = CreateAccount("Treasury"); _wages = CreateAccount("WagesSink");
+        _capital = CreateAccount("CapitalBudget");
+        foreach (var p in _config.Participants.OrderBy(p => p.Id))
+        {
+            long account = CreateAccount("Participant", p.CashMinor);
+            _economy.InitialMoney = checked(_economy.InitialMoney + p.CashMinor);
+            long inv = _nextId++;
+            _economy.Inventories.Add(inv, new(inv, p.Id, p.Position, p.InventoryCapacity));
+            _actors.Add(p.Id, new(p.Id, account, inv, p.Position));
+        }
+        var recipes = _config.Recipes.ToDictionary(r => r.Id, StringComparer.Ordinal);
+        foreach (var e in _config.Enterprises.OrderBy(e => e.Id))
+        {
+            long input = _nextId++, output = _nextId++;
+            _economy.Inventories.Add(input, new(input, e.OwnerId, e.Position, e.InputCapacity));
+            _economy.Inventories.Add(output, new(output, e.OwnerId, e.Position, e.OutputCapacity));
+            _enterprises.Add(e.Id, new(e, input, output, recipes[e.RecipeId]));
+        }
+        foreach (var o in _config.CapitalOffers.OrderBy(o => o.Id))
+        {
+            string hold = $"capital-offer:{o.Id}";
+            long budget = checked(o.Quantity * o.UnitPriceMinor);
+            var tx = _economy.Begin(0);
+            tx.CreditExternal(_capital, budget, "CapitalOrderBudget");
+            tx.HoldMoney(_capital, hold, budget); tx.Commit();
+            _offers.Add(o.Id, new(o, hold));
+        }
+        Emit("WorldCreated");
+        ValidateInvariants();
+    }
+    private long CreateAccount(string kind, long balance = 0)
+    {
+        long id = _nextId++;
+        _economy.Accounts.Add(id, new(id, kind, balance)); return id;
+    }
+    private void Emit(string type, long? actor = null, long entity = 0, string item = "",
+        long quantity = 0, long money = 0, string reason = "", string? command = null)
+        => _events.Add(new(++_eventSequence, Tick, _phase, type,
+            actor.HasValue ? new ParticipantId(actor.Value) : null, entity, item, quantity, money, reason, command));
+
+    public SimulationEvent[] EventsSince(long afterSequence) => _events.Where(e => e.Sequence > afterSequence).ToArray();
+    public LedgerRecord[] Ledger() => _economy.Ledger.Select(x => new LedgerRecord(x.Tick,
+        new(x.DebitAccount), new(x.CreditAccount), x.AmountMinor, x.Reason)).ToArray();
+    public CommandResult? Result(string commandId) => _results.GetValueOrDefault(commandId);
+    public CommandResult? Enqueue(ParticipantId authenticatedActor, CommandEnvelope command)
+    {
+        if (command is null || command.Action is null || string.IsNullOrWhiteSpace(command.CommandId) ||
+            command.CommandId.Length > 160 || command.Action.ItemId is null || command.Action.ItemId.Length > 50)
+            return new(command?.CommandId ?? "", ResultStatus.Rejected, "InvalidEnvelope", Tick);
+        if (authenticatedActor != command.ActorId || !_actors.ContainsKey(authenticatedActor.Value))
+            return new(command.CommandId, ResultStatus.Rejected, "NotAvailable", Tick);
+        if (_seenCommands.TryGetValue(command.CommandId, out var previous))
+            return previous == command ? _results.GetValueOrDefault(command.CommandId)
+                : new(command.CommandId, ResultStatus.Rejected, "CommandIdConflict", Tick);
+        if (command.LocalSequence <= 0 || command.IssuedAtTick < 0 || command.IssuedAtTick > Tick ||
+            command.NotBeforeTick <= command.IssuedAtTick || command.ExpiresAtTick < command.NotBeforeTick ||
+            command.NotBeforeTick > _config.MaxTicks || !Enum.IsDefined(command.Action.Kind))
+            return new(command.CommandId, ResultStatus.Rejected, "InvalidEnvelope", Tick);
+        if (!_actorSequences.Add((command.ActorId.Value, command.LocalSequence)))
+            return new(command.CommandId, ResultStatus.Rejected, "SequenceReused", Tick);
+        _seenCommands.Add(command.CommandId, command);
+        _pending.Add(command); return null;
+    }
+    public void Step()
+    {
+        if (_stepping) throw new InvalidOperationException("Step is not reentrant");
+        if (Tick >= _config.MaxTicks) throw new InvalidOperationException("Scenario tick limit reached");
+        _stepping = true;
+        try
+        {
+            ++Tick; _phase = 0;
+            var due = _pending.Where(c => c.NotBeforeTick <= Tick).ToArray();
+            foreach (var c in due) _pending.Remove(c);
+            var actors = due.Select(c => c.ActorId.Value).Distinct().Order().ToArray();
+            _commandRandom.Shuffle(actors);
+            var rank = actors.Select((id, index) => (id, index)).ToDictionary(x => x.id, x => x.index);
+            var ordered = due.OrderBy(c => rank[c.ActorId.Value]).ThenBy(c => c.LocalSequence).ToArray();
+            var allowed = new List<CommandEnvelope>();
+            foreach (var group in ordered.GroupBy(c => c.ActorId.Value))
+                foreach (var c in group.Select((c, n) => (c, n)))
+                    if (c.n >= _config.MaxCommandsPerActorTick) Reject(c.c, "CommandBudgetExceeded");
+                    else if (c.c.ExpiresAtTick < Tick) Reject(c.c, "CommandExpired");
+                    else allowed.Add(c.c);
+            _phase = 1;
+            foreach (var c in allowed.Where(c => c.Action.Kind == ActionKind.SetProductionEnabled)) Execute(c);
+            _phase = 2; AdvanceMovements();
+            _phase = 3;
+            foreach (var c in allowed.Where(c => c.Action.Kind != ActionKind.SetProductionEnabled)) Execute(c);
+            _phase = 4; AdvanceHarvests(); AdvanceProduction();
+            _phase = 6; CloseCapitalWindows();
+            _phase = 9; ValidateInvariants(); Emit("TickCommitted");
+        }
+        finally { _stepping = false; }
+    }
+    private void Reject(CommandEnvelope c, string reason)
+    {
+        _results[c.CommandId] = new(c.CommandId, ResultStatus.Rejected, reason, Tick);
+        Emit("CommandRejected", c.ActorId.Value, reason: reason, command: c.CommandId);
+    }
+    private void Execute(CommandEnvelope c)
+    {
+        try
+        {
+            if (c.Action.Quantity < 0) throw new RuleViolation("InvalidQuantity");
+            ActorState actor = _actors[c.ActorId.Value];
+            switch (c.Action.Kind)
+            {
+                case ActionKind.MoveTo: StartMove(actor, c); break;
+                case ActionKind.Harvest: StartHarvest(actor, c); break;
+                case ActionKind.Transfer: Transfer(actor, c); break;
+                case ActionKind.SetProductionEnabled: SetProduction(actor, c); break;
+                case ActionKind.SellAvailableToCapital: StartSale(actor, c); break;
+                case ActionKind.CancelCapitalSale: CancelSale(actor, c); break;
+                default: throw new RuleViolation("UnknownAction");
+            }
+            _results[c.CommandId] = new(c.CommandId, ResultStatus.Accepted, "Accepted", Tick);
+            Emit("CommandAccepted", actor.Id, command: c.CommandId);
+        }
+        catch (RuleViolation ex) { Reject(c, ex.ReasonCode); }
+        catch (OverflowException) { Reject(c, "ArithmeticOverflow"); }
+    }
+    private bool HasSale(long actor) => _offers.Values.Any(o => o.Requests.ContainsKey(actor));
+    private void RequireIdle(ActorState actor)
+    { if (actor.Job is not null || HasSale(actor.Id)) throw new RuleViolation("ParticipantBusy"); }
+    private void StartMove(ActorState actor, CommandEnvelope c)
+    {
+        RequireIdle(actor);
+        Cell[] path = _map.FindPath(actor.Position, c.Action.Target);
+        if (path.Length == 1) return;
+        long arrival = checked(Tick + checked((long)(path.Length - 1) * _config.MoveTicksPerCell));
+        actor.Job = new(_nextId++, "Move", Tick, arrival, path, "", 0, "", c.CommandId);
+        Emit("MovementStarted", actor.Id, actor.Job.Id, reason: arrival.ToString(System.Globalization.CultureInfo.InvariantCulture), command: c.CommandId);
+    }
+    private void StartHarvest(ActorState actor, CommandEnvelope c)
+    {
+        RequireIdle(actor);
+        if (c.Action.Quantity <= 0) throw new RuleViolation("InvalidQuantity");
+        if (!_config.ResourceNodes.Any(n => n.ItemId == c.Action.ItemId && n.Position == actor.Position))
+            throw new RuleViolation("NoResourceNode");
+        long end = checked(Tick + checked(c.Action.Quantity * _config.HarvestTicksPerUnit));
+        string hold = $"harvest:{c.CommandId}";
+        var tx = _economy.Begin(Tick);
+        tx.ReserveCapacity(actor.Inventory, hold, c.Action.ItemId, c.Action.Quantity); tx.Commit();
+        actor.Job = new(_nextId++, "Harvest", Tick, end, [], c.Action.ItemId, c.Action.Quantity, hold, c.CommandId);
+        Emit("HarvestStarted", actor.Id, actor.Job.Id, c.Action.ItemId, c.Action.Quantity, command: c.CommandId);
+    }
+    private void Transfer(ActorState actor, CommandEnvelope c)
+    {
+        RequireIdle(actor);
+        if (!_economy.Inventories.TryGetValue(c.Action.Source.Value, out var source) ||
+            !_economy.Inventories.TryGetValue(c.Action.Destination.Value, out var destination) ||
+            source.Owner != actor.Id || destination.Owner != actor.Id)
+            throw new RuleViolation("NotAvailable");
+        if (source.Position != actor.Position || destination.Position != actor.Position ||
+            (source.Id != actor.Inventory && destination.Id != actor.Inventory))
+            throw new RuleViolation("NotAtLocation");
+        var tx = _economy.Begin(Tick);
+        tx.MoveStock(source.Id, destination.Id, c.Action.ItemId, c.Action.Quantity); tx.Commit();
+        Emit("StockTransferred", actor.Id, destination.Id, c.Action.ItemId, c.Action.Quantity, command: c.CommandId);
+    }
+    private void SetProduction(ActorState actor, CommandEnvelope c)
+    {
+        if (!_enterprises.TryGetValue(c.Action.Enterprise.Value, out var e) || e.Definition.OwnerId != actor.Id)
+            throw new RuleViolation("NotAvailable");
+        e.Enabled = c.Action.Enabled;
+        if (!e.Enabled) e.Reason = "UserPaused";
+        Emit("ProductionSettingChanged", actor.Id, e.Definition.Id, reason: e.Enabled ? "Enabled" : "UserPaused", command: c.CommandId);
+    }
+    private void AdvanceMovements()
+    {
+        foreach (var actor in _actors.Values.OrderBy(a => a.Id))
+        {
+            if (actor.Job is not { Kind: "Move" } job || job.StartTick >= Tick) continue;
+            ++job.SegmentTicks;
+            if (job.SegmentTicks < _config.MoveTicksPerCell) continue;
+            job.SegmentTicks = 0; ++job.PathIndex; actor.Position = job.Path[job.PathIndex];
+            _economy.Inventories[actor.Inventory].Position = actor.Position;
+            if (Tick >= job.CompletionTick) CompleteMovement(actor.Id, job.Id);
+        }
+    }
+    internal bool CompleteMovement(long actorId, long jobId)
+    {
+        if (!_actors.TryGetValue(actorId, out var actor) || actor.Job is not { Kind: "Move" } job ||
+            job.Id != jobId || Tick < job.CompletionTick || !_completedPersonalJobs.Add(jobId)) return false;
+        actor.Position = job.Path[^1]; _economy.Inventories[actor.Inventory].Position = actor.Position;
+        actor.Job = null;
+        Emit("MovementArrived", actor.Id, jobId, command: job.CommandId); return true;
+    }
+    private void AdvanceHarvests()
+    {
+        foreach (var actor in _actors.Values.OrderBy(a => a.Id))
+        {
+            if (actor.Job is not { Kind: "Harvest" } job || Tick < job.CompletionTick) continue;
+            long total = checked(_flows[job.Item].Harvested + job.Quantity);
+            var tx = _economy.Begin(Tick);
+            tx.ReleaseCapacity(actor.Inventory, job.CapacityHold); tx.AddStock(actor.Inventory, job.Item, job.Quantity); tx.Commit();
+            _flows[job.Item].Harvested = total;
+            _completedPersonalJobs.Add(job.Id); actor.Job = null;
+            Emit("HarvestCompleted", actor.Id, job.Id, job.Item, job.Quantity, command: job.CommandId);
+        }
+    }
+    public WorldView Inspect()
+    {
+        return new(Tick, _nextId, _allocationRandom.State, ConfigHash,
+            _economy.Accounts.Values.OrderBy(a => a.Id).Select(a => new AccountView(new(a.Id), a.Kind, a.Balance, a.Reserved)).ToArray(),
+            _economy.Inventories.Values.OrderBy(i => i.Id).Select(i => new InventoryView(new(i.Id), new(i.Owner), i.Position,
+                i.Capacity, i.Occupied(_items), i.Incoming, i.Stock.OrderBy(x => x.Key, StringComparer.Ordinal)
+                    .Select(x => new StockView(x.Key, x.Value, i.Reserved(x.Key))).ToArray())).ToArray(),
+            _actors.Values.OrderBy(a => a.Id).Select(a => new ParticipantView(new(a.Id), new(a.Account), new(a.Inventory), a.Position,
+                a.Job is not null || HasSale(a.Id), a.Job is { Kind: "Move" } move ? move.Path[^1] : null, a.Job?.CompletionTick)).ToArray(),
+            _enterprises.Values.OrderBy(e => e.Definition.Id).Select(e => new EnterpriseView(new(e.Definition.Id), new(e.Definition.OwnerId),
+                new(e.Input), new(e.Output), e.Enabled, e.Definition.Staff, e.Reason, e.Batch?.Id ?? 0,
+                e.Batch?.WorkDone ?? 0, e.Batch?.WorkRequired ?? 0, e.Completed, e.EnergyPaid)).ToArray(),
+            _flows.Values.OrderBy(f => f.Id, StringComparer.Ordinal).Select(f => new FlowView(f.Id, f.Initial, f.Harvested,
+                f.RecipeInput, f.Produced, f.Exported)).ToArray(),
+            _offers.Values.OrderBy(o => o.Definition.Id).Select(o => new CapitalOfferView(o.Definition.Id, o.Definition.ItemId,
+                o.Remaining, o.Definition.UnitPriceMinor, o.Definition.Position, o.Cutoff,
+                o.Requests.Values.Aggregate(0L, (n, r) => checked(n + r.Quantity)))).ToArray(),
+            _settlements.ToArray(), _config.Population, checked(_config.Population - _enterprises.Values.Sum(e => (long)e.Definition.Staff)),
+            _economy.InitialMoney, _economy.ExternalIn, _economy.ExternalOut);
+    }
+    public ParticipantObservation Observe(ParticipantId actorId)
+    {
+        if (!_actors.ContainsKey(actorId.Value)) throw new ArgumentException("Participant not available");
+        var view = Inspect(); var actor = view.Participants.Single(a => a.Id == actorId);
+        return new(Tick, actor, view.Accounts.Single(a => a.Id == actor.AccountId),
+            view.Inventories.Where(i => i.OwnerId == actorId).ToArray(), view.Enterprises.Where(e => e.OwnerId == actorId).ToArray(), view.CapitalOffers);
+    }
+    public string ComputeStateHash() => ScenarioValidation.Hash(new
+    {
+        World = Inspect(), CommandRandom = _commandRandom.State,
+        MoneyHolds = _economy.Accounts.OrderBy(x => x.Key).Select(x => new { x.Key, Holds = x.Value.Holds.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray() }).ToArray(),
+        InventoryHolds = _economy.Inventories.OrderBy(x => x.Key).Select(x => new { x.Key,
+            Stock = x.Value.Reservations.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray(),
+            Capacity = x.Value.CapacityHolds.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray() }).ToArray(),
+        Jobs = _actors.OrderBy(x => x.Key).Select(x => new { x.Key, x.Value.Job }).ToArray(),
+        Batches = _enterprises.OrderBy(x => x.Key).Select(x => new { x.Key, x.Value.Batch }).ToArray(),
+        Requests = _offers.OrderBy(x => x.Key).Select(x => new { x.Key, Requests = x.Value.Requests.OrderBy(r => r.Key).ToArray() }).ToArray(),
+        CompletedJobs = _completedPersonalJobs.Order().ToArray(),
+        Commands = _seenCommands.OrderBy(x => x.Key, StringComparer.Ordinal).ToArray(),
+        Results = _results.OrderBy(x => x.Key, StringComparer.Ordinal).ToArray(),
+        Pending = _pending.OrderBy(c => c.ActorId.Value).ThenBy(c => c.LocalSequence).ToArray(),
+        Ledger = Ledger(), EventSequence = _eventSequence
+    });
+}

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "simulation.core": {
+        "type": "Project"
+      },
+      "simulation.hosting": {
+        "type": "Project",
+        "dependencies": {
+          "Simulation.Core": "[1.0.0, )"
+        }
+      }
+    }
+  }
+}
