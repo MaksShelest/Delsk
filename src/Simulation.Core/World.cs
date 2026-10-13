@@ -68,10 +68,10 @@ internal sealed class BatchState(long id, string hold, long required)
 }
 internal sealed class EnterpriseState(EnterpriseDefinition definition, long input, long output, RecipeDefinition recipe)
 {
-    public EnterpriseDefinition Definition { get; } = definition;
+    public EnterpriseDefinition Definition { get; set; } = definition;
     public long Input { get; } = input;
     public long Output { get; } = output;
-    public RecipeDefinition Recipe { get; } = recipe;
+    public RecipeDefinition Recipe { get; set; } = recipe;
     public bool Enabled { get; set; } = definition.Enabled;
     public string Reason { get; set; } = definition.Enabled ? "NoInputs" : "UserPaused";
     public BatchState? Batch { get; set; }
@@ -95,9 +95,10 @@ internal sealed class ItemFlow(string id)
     public long RecipeInput { get; set; }
     public long Produced { get; set; }
     public long Exported { get; set; }
+    public long ConstructionInput { get; set; }
 }
 
-public static class ScenarioValidation
+public static partial class ScenarioValidation
 {
     public static void Validate(ScenarioDefinition s)
     {
@@ -127,10 +128,12 @@ public static class ScenarioValidation
             throw new ArgumentException("Invalid resource nodes");
         var actors = s.Participants.Select(x => x.Id).ToHashSet();
         var recipes = s.Recipes.ToDictionary(r => r.Id, StringComparer.Ordinal);
+        ValidateLandAndContent(s, map, items, recipes, actors);
         if (s.Enterprises.Select(e => e.Id).Distinct().Count() != s.Enterprises.Length || s.Enterprises.Any(e =>
             !ValidId(e.Id) || !actors.Contains(e.OwnerId) || !map.Walkable(e.Position) || !recipes.ContainsKey(e.RecipeId) ||
             e.InputCapacity <= 0 || e.OutputCapacity <= 0 || e.Staff < 0 || e.Staff > e.Capacity ||
-            e.Capacity < recipes[e.RecipeId].RequiredStaff || e.WageMinor < 0))
+            e.Capacity < recipes[e.RecipeId].RequiredStaff || e.WageMinor < 0 || e.Level != 1 ||
+            e.WorkRateMultiplier != 1 || e.BuildingTypeId != ""))
             throw new ArgumentException("Invalid enterprises");
         if (s.CapitalOffers.Select(o => o.Id).Distinct().Count() != s.CapitalOffers.Length ||
             s.CapitalOffers.Any(o => !ValidId(o.Id) || !items.ContainsKey(o.ItemId) || o.Quantity <= 0 ||
@@ -139,6 +142,7 @@ public static class ScenarioValidation
         try
         {
             long staff = s.Enterprises.Aggregate(0L, (n, e) => checked(n + e.Staff));
+            staff = (s.Buildings ?? []).Aggregate(staff, (n, b) => checked(n + b.Staff));
             if (staff > s.Population) throw new ArgumentException("Employment exceeds population");
             long money = s.Participants.Aggregate(0L, (n, p) => checked(n + p.CashMinor));
             money = s.CapitalOffers.Aggregate(money, (n, o) => checked(n + checked(o.Quantity * o.UnitPriceMinor)));

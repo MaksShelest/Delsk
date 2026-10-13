@@ -21,7 +21,7 @@ internal sealed class Inventory(long id, long owner, Cell position, long capacit
     public long Id { get; } = id;
     public long Owner { get; } = owner;
     public Cell Position { get; set; } = position;
-    public long Capacity { get; } = capacity;
+    public long Capacity { get; set; } = capacity;
     public Dictionary<string, long> Stock { get; } = new(StringComparer.Ordinal);
     public Dictionary<string, StockReservation> Reservations { get; } = new(StringComparer.Ordinal);
     public Dictionary<string, long> CapacityHolds { get; } = new(StringComparer.Ordinal);
@@ -144,6 +144,18 @@ internal sealed class EconomyTransaction
         EnsureOpen();
         if (_store.Accounts.ContainsKey(id) || AccountChanges.ContainsKey(id)) throw new RuleViolation("DuplicateAccount");
         AccountChanges.Add(id, new MoneyAccount(id, kind, 0));
+    }
+    public void CreateInventory(long id, long owner, Cell position, long capacity)
+    {
+        EnsureOpen(); Positive(capacity);
+        if (_store.Inventories.ContainsKey(id) || InventoryChanges.ContainsKey(id)) throw new RuleViolation("DuplicateInventory");
+        InventoryChanges.Add(id, new Inventory(id, owner, position, capacity));
+    }
+    public void SetCapacity(long id, long capacity)
+    {
+        Positive(capacity); var inventory = Inventory(id);
+        if (checked(inventory.Occupied(_items) + inventory.Incoming) > capacity) throw new RuleViolation("NoCapacity");
+        inventory.Capacity = capacity;
     }
     public void CreditExternal(long id, long amount, string reason)
     {

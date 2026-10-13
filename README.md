@@ -43,7 +43,7 @@ dotnet tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll -noColor 
 На обычной машине также доступен MTP-режим .NET10:
 
 ```bash
-dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release --no-build --no-restore -- --report-trx --results-directory artifacts/test-results --minimum-expected-tests 30
+dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release --no-build --no-restore -- --report-trx --results-directory artifacts/test-results --minimum-expected-tests 60
 ```
 
 В облачном окружении второй вариант остановился на запрете named pipes; непосредственный запуск xUnit прошёл. Это не отключение/замена тестов. Фактические результаты и ограничения — в [отчёте первого этапа](docs/IMPLEMENTATION_REPORT_P00_P05.md).
@@ -60,7 +60,20 @@ GitHub Actions для ядра выполнен успешно. Godot и Android
 
 Добавлена минимальная сцена Godot 4.7.2 .NET с тем же Core/Hosting. Linux и Windows CI воспроизводят записанные команды и проверяют все 62 хеша. Созданы тестовые Windows x86_64 и подписанный Android ARM64 экспорты. APK ещё не запускался на настоящем телефоне; готовый Windows EXE тоже не проверен запуском.
 
-[Запуск сцены и экспорты](src/Client.Godot/README.md). [Отчёт P06, версии и открытые проверки](docs/IMPLEMENTATION_REPORT_P06.md). Следующая задача кода — P07: земля, бронь и атомарная стройка. Полный месячный объём остаётся в плане.
+[Запуск сцены и экспорты](src/Client.Godot/README.md). [Отчёт P06, версии и открытые проверки](docs/IMPLEMENTATION_REPORT_P06.md). P07/P08 добавлены в ядро; следующая итерация кода — P09/P10: числовая занятость и постепенные переходы. Полный месячный объём остаётся в плане.
+
+## Земля и развитие P07–P08
+
+Реализованы покупка/бронь земли, атомарная стройка целого footprint, отдельный склад, физическая лавочка, две цепочки wood→plank / grain→bread, два уровня и upgrade из встроенного склада. Новое предприятие имеет нулевой штат; наём остаётся P09–P10. Сценарий использует две заранее заданные числовые группы:
+
+```bash
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/land-and-content.json --script development --output artifacts/development
+python scripts/verify_results.py artifacts/development
+```
+
+Проверенный результат:465 тиков, обе продажи, три новых здания и upgrade. Материалы стройки отражены в ConstructionInput, все физические запасы и деньги сверены. 64 xUnit-теста прошли. [Отчёт итерации](docs/IMPLEMENTATION_REPORT_P07_P08.md).
+
+Расширение DTO изменило хеши; platform fixture обновлена по проверенному прежнему циклу. Ранее выданные бинарные сборки P06 содержат прежнее ядро; в этой итерации они не пересоздавались. Игровые экраны строительства/найма остаются P26.
 
 ## Документация
 
@@ -70,3 +83,5 @@ GitHub Actions для ядра выполнен успешно. Godot и Android
 - [План и фактический статус задач](docs/IMPLEMENTATION_PLAN.md).
 - [Инструкции для разработки и Cursor](AGENTS.md).
 - [Отчёт платформенного этапа P06](docs/IMPLEMENTATION_REPORT_P06.md).
+
+- [Отчёт P07–P08](docs/IMPLEMENTATION_REPORT_P07_P08.md).

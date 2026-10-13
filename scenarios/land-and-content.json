@@ -1,0 +1,387 @@
+{
+  "id": "land-content-v1",
+  "seed": 42,
+  "mapWidth": 16,
+  "mapHeight": 5,
+  "blockedCells": [],
+  "items": [
+    {
+      "id": "wood",
+      "unitVolume": 1,
+      "basePriceMinor": 500
+    },
+    {
+      "id": "grain",
+      "unitVolume": 1,
+      "basePriceMinor": 300
+    },
+    {
+      "id": "plank",
+      "unitVolume": 1,
+      "basePriceMinor": 1500
+    },
+    {
+      "id": "bread",
+      "unitVolume": 1,
+      "basePriceMinor": 1000
+    }
+  ],
+  "recipes": [
+    {
+      "id": "sawmill-1",
+      "inputItem": "wood",
+      "inputQuantity": 2,
+      "outputItem": "plank",
+      "outputQuantity": 1,
+      "fullStaffTicks": 4,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 50
+    },
+    {
+      "id": "sawmill-2",
+      "inputItem": "wood",
+      "inputQuantity": 2,
+      "outputItem": "plank",
+      "outputQuantity": 1,
+      "fullStaffTicks": 4,
+      "requiredStaff": 4,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 50
+    },
+    {
+      "id": "bakery-1",
+      "inputItem": "grain",
+      "inputQuantity": 2,
+      "outputItem": "bread",
+      "outputQuantity": 1,
+      "fullStaffTicks": 3,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 25
+    },
+    {
+      "id": "bakery-2",
+      "inputItem": "grain",
+      "inputQuantity": 2,
+      "outputItem": "bread",
+      "outputQuantity": 1,
+      "fullStaffTicks": 3,
+      "requiredStaff": 4,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 25
+    }
+  ],
+  "participants": [
+    {
+      "id": 1,
+      "cashMinor": 200000,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 2,
+      "cashMinor": 50000,
+      "position": {
+        "x": 2,
+        "z": 2
+      },
+      "inventoryCapacity": 20
+    }
+  ],
+  "enterprises": [],
+  "capitalOffers": [
+    {
+      "id": 1,
+      "itemId": "plank",
+      "quantity": 5,
+      "unitPriceMinor": 1500,
+      "position": {
+        "x": 15,
+        "z": 2
+      }
+    },
+    {
+      "id": 2,
+      "itemId": "bread",
+      "quantity": 5,
+      "unitPriceMinor": 1000,
+      "position": {
+        "x": 15,
+        "z": 2
+      }
+    },
+    {
+      "id": 3,
+      "itemId": "wood",
+      "quantity": 20,
+      "unitPriceMinor": 500,
+      "position": {
+        "x": 15,
+        "z": 2
+      }
+    },
+    {
+      "id": 4,
+      "itemId": "grain",
+      "quantity": 20,
+      "unitPriceMinor": 300,
+      "position": {
+        "x": 15,
+        "z": 2
+      }
+    }
+  ],
+  "resourceNodes": [
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 0
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 0,
+        "z": 4
+      }
+    }
+  ],
+  "population": 4,
+  "maxTicks": 2000,
+  "plots": [
+    {
+      "id": 1,
+      "position": {
+        "x": 4,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "ownerId": 1
+    },
+    {
+      "id": 2,
+      "position": {
+        "x": 4,
+        "z": 4
+      },
+      "priceMinor": 10000,
+      "ownerId": 1
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 8,
+        "z": 0
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 4,
+      "position": {
+        "x": 12,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "shopParticipantId": 1
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 8,
+        "z": 4
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 14,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "shopParticipantId": 2
+    },
+    {
+      "id": 7,
+      "position": {
+        "x": 4,
+        "z": 2
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    }
+  ],
+  "buildingTypes": [
+    {
+      "id": "sawmill",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "sawmill-1",
+          "priceMinor": 15000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 40,
+          "outputCapacity": 40,
+          "staffCapacity": 2,
+          "wageMinor": 25,
+          "workRateMultiplier": 1
+        },
+        {
+          "level": 2,
+          "recipeId": "sawmill-2",
+          "priceMinor": 20000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 80,
+          "outputCapacity": 80,
+          "staffCapacity": 4,
+          "wageMinor": 25,
+          "workRateMultiplier": 2
+        }
+      ]
+    },
+    {
+      "id": "bakery",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "bakery-1",
+          "priceMinor": 15000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 40,
+          "outputCapacity": 40,
+          "staffCapacity": 2,
+          "wageMinor": 25,
+          "workRateMultiplier": 1
+        },
+        {
+          "level": 2,
+          "recipeId": "bakery-2",
+          "priceMinor": 20000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 80,
+          "outputCapacity": 80,
+          "staffCapacity": 4,
+          "wageMinor": 25,
+          "workRateMultiplier": 2
+        }
+      ]
+    },
+    {
+      "id": "warehouse",
+      "kind": "Warehouse",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "",
+          "priceMinor": 10000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 200,
+          "outputCapacity": 0,
+          "staffCapacity": 0,
+          "wageMinor": 0
+        }
+      ]
+    },
+    {
+      "id": "shop",
+      "kind": "Shop",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "",
+          "priceMinor": 10000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 80,
+          "outputCapacity": 0,
+          "staffCapacity": 0,
+          "wageMinor": 0
+        }
+      ]
+    }
+  ],
+  "buildings": [
+    {
+      "id": 1,
+      "ownerId": 1,
+      "position": {
+        "x": 4,
+        "z": 0
+      },
+      "typeId": "sawmill",
+      "staff": 2
+    },
+    {
+      "id": 2,
+      "ownerId": 1,
+      "position": {
+        "x": 4,
+        "z": 4
+      },
+      "typeId": "bakery",
+      "staff": 2
+    }
+  ],
+  "landReservationTicks": 120,
+  "maxActivePlotReservations": 4
+}

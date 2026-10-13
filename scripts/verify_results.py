@@ -14,7 +14,7 @@ def verify(folder):
     state = json.loads((folder/'final-state.json').read_text(encoding='utf-8'))
     for flow in summary['flows']:
         physical = sum(stock['quantity'] for inventory in state['inventories'] for stock in inventory['stock'] if stock['itemId']==flow['itemId'])
-        assert physical == flow['initial']+flow['harvested']+flow['produced']-flow['recipeInput']-flow['exported']
+        assert physical == flow['initial']+flow['harvested']+flow['produced']-flow['recipeInput']-flow['exported']-flow.get('constructionInput',0)
     for inv in state['inventories']:
         assert inv['occupiedVolume']+inv['reservedCapacity'] <= inv['capacity']
         assert all(0 <= item['reserved'] <= item['quantity'] for item in inv['stock'])

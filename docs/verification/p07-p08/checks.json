@@ -1,0 +1,614 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "rulesVersion": "land-content-2",
+  "xunit": {
+    "tests": 64,
+    "passed": 64,
+    "failed": 0,
+    "pending": 0,
+    "skipped": 0,
+    "other": 0,
+    "suites": 1,
+    "start": 1791931212911,
+    "stop": 1791931214116,
+    "duration": 1205
+  },
+  "checks": {
+    "locked-restore": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "restore",
+        "Delsk.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-13T22:32:51.636825+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.225,
+      "finished_at": "2026-10-13T22:32:52.862003+00:00"
+    },
+    "build-tests-final": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-13T22:27:14.534103+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.123,
+      "finished_at": "2026-10-13T22:27:17.657503+00:00"
+    },
+    "xunit": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-result-trx",
+        "../verification/p07-p08/tests.trx",
+        "-result-ctrf",
+        "../verification/p07-p08/tests.json"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-13T22:27:28.143920+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.719,
+      "finished_at": "2026-10-13T22:27:29.863237+00:00"
+    },
+    "development-integration": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/land-and-content.json",
+        "--script",
+        "development",
+        "--output",
+        "../verification/p07-p08/development"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-13T22:27:16.117334+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.668,
+      "finished_at": "2026-10-13T22:27:16.785742+00:00"
+    },
+    "legacy-cycle": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/economic-cycle.json",
+        "--output",
+        "../verification/p07-p08/cycle"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-13T22:28:22.473811+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.365,
+      "finished_at": "2026-10-13T22:28:22.839299+00:00"
+    },
+    "zero-cash": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/zero-cash-recovery.json",
+        "--script",
+        "recovery",
+        "--output",
+        "../verification/p07-p08/recovery"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-13T22:28:23.475294+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.366,
+      "finished_at": "2026-10-13T22:28:23.840879+00:00"
+    },
+    "client-build": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-13T22:29:24.073985+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 7.603,
+      "finished_at": "2026-10-13T22:29:31.676733+00:00"
+    },
+    "godot-smoke": {
+      "command": [
+        "../.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--",
+        "--smoke",
+        "--report",
+        "/workspace/scratch/287937448ccd/verification/p07-p08/godot-probe.json"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-13T22:30:01.091062+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.767,
+      "finished_at": "2026-10-13T22:30:01.857722+00:00"
+    },
+    "final-build": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-13T22:39:13.429335+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.891,
+      "finished_at": "2026-10-13T22:39:18.320480+00:00"
+    },
+    "final-xunit": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-result-trx",
+        "../verification/p07-p08/final-tests.trx",
+        "-result-ctrf",
+        "../verification/p07-p08/final-tests.json"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-13T22:40:12.702495+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.468,
+      "finished_at": "2026-10-13T22:40:14.171010+00:00"
+    },
+    "final-development": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/land-and-content.json",
+        "--script",
+        "development",
+        "--output",
+        "../verification/p07-p08/development-final"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-13T22:40:14.309468+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.616,
+      "finished_at": "2026-10-13T22:40:14.925397+00:00"
+    },
+    "final-client-build": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-13T22:40:15.518851+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 2.924,
+      "finished_at": "2026-10-13T22:40:18.442985+00:00"
+    },
+    "final-godot-smoke": {
+      "command": [
+        "../.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--",
+        "--smoke",
+        "--report",
+        "/workspace/scratch/287937448ccd/verification/p07-p08/godot-probe-final.json"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-13T22:41:11.767588+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.766,
+      "finished_at": "2026-10-13T22:41:12.534002+00:00"
+    }
+  },
+  "godot": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "2028aaf8f213247af0c3fc234392d0c465a72ab1dd7e6bfb3b543e03dec9153e",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "scenarios": {
+    "development": {
+      "status": "succeeded",
+      "tick": 465,
+      "stateHash": "59ebaef70c08fc75901f0399ef7e1549da240ceb03a9dbc3c7fe180fff731aba",
+      "accounts": [
+        {
+          "id": {
+            "value": 1000
+          },
+          "kind": "Treasury",
+          "balanceMinor": 87375,
+          "reservedMinor": 0,
+          "availableMinor": 87375
+        },
+        {
+          "id": {
+            "value": 1001
+          },
+          "kind": "WagesSink",
+          "balanceMinor": 5750,
+          "reservedMinor": 0,
+          "availableMinor": 5750
+        },
+        {
+          "id": {
+            "value": 1002
+          },
+          "kind": "CapitalBudget",
+          "balanceMinor": 16000,
+          "reservedMinor": 16000,
+          "availableMinor": 0
+        },
+        {
+          "id": {
+            "value": 1003
+          },
+          "kind": "Participant",
+          "balanceMinor": 119375,
+          "reservedMinor": 0,
+          "availableMinor": 119375
+        },
+        {
+          "id": {
+            "value": 1005
+          },
+          "kind": "Participant",
+          "balanceMinor": 50000,
+          "reservedMinor": 0,
+          "availableMinor": 50000
+        },
+        {
+          "id": {
+            "value": 1058
+          },
+          "kind": "ContractEscrow",
+          "balanceMinor": 0,
+          "reservedMinor": 0,
+          "availableMinor": 0
+        },
+        {
+          "id": {
+            "value": 1069
+          },
+          "kind": "ContractEscrow",
+          "balanceMinor": 0,
+          "reservedMinor": 0,
+          "availableMinor": 0
+        }
+      ],
+      "flows": [
+        {
+          "itemId": "bread",
+          "initial": 0,
+          "harvested": 0,
+          "recipeInput": 0,
+          "produced": 5,
+          "exported": 5,
+          "constructionInput": 0
+        },
+        {
+          "itemId": "grain",
+          "initial": 0,
+          "harvested": 10,
+          "recipeInput": 10,
+          "produced": 0,
+          "exported": 0,
+          "constructionInput": 0
+        },
+        {
+          "itemId": "plank",
+          "initial": 0,
+          "harvested": 0,
+          "recipeInput": 0,
+          "produced": 25,
+          "exported": 5,
+          "constructionInput": 20
+        },
+        {
+          "itemId": "wood",
+          "initial": 0,
+          "harvested": 70,
+          "recipeInput": 50,
+          "produced": 0,
+          "exported": 0,
+          "constructionInput": 20
+        }
+      ],
+      "settlements": [
+        {
+          "id": 1057,
+          "offerId": 1,
+          "seller": {
+            "value": 1
+          },
+          "itemId": "plank",
+          "requested": 5,
+          "accepted": 5,
+          "paidMinor": 7500,
+          "tick": 328,
+          "status": "Fulfilled"
+        },
+        {
+          "id": 1068,
+          "offerId": 2,
+          "seller": {
+            "value": 1
+          },
+          "itemId": "bread",
+          "requested": 5,
+          "accepted": 5,
+          "paidMinor": 5000,
+          "tick": 410,
+          "status": "Fulfilled"
+        }
+      ]
+    },
+    "cycle": {
+      "status": "succeeded",
+      "tick": 62,
+      "stateHash": "2028aaf8f213247af0c3fc234392d0c465a72ab1dd7e6bfb3b543e03dec9153e",
+      "accounts": [
+        {
+          "id": {
+            "value": 1000
+          },
+          "kind": "Treasury",
+          "balanceMinor": 500,
+          "reservedMinor": 0,
+          "availableMinor": 500
+        },
+        {
+          "id": {
+            "value": 1001
+          },
+          "kind": "WagesSink",
+          "balanceMinor": 2000,
+          "reservedMinor": 0,
+          "availableMinor": 2000
+        },
+        {
+          "id": {
+            "value": 1002
+          },
+          "kind": "CapitalBudget",
+          "balanceMinor": 10000,
+          "reservedMinor": 10000,
+          "availableMinor": 0
+        },
+        {
+          "id": {
+            "value": 1003
+          },
+          "kind": "Participant",
+          "balanceMinor": 112500,
+          "reservedMinor": 0,
+          "availableMinor": 112500
+        },
+        {
+          "id": {
+            "value": 1005
+          },
+          "kind": "Participant",
+          "balanceMinor": 0,
+          "reservedMinor": 0,
+          "availableMinor": 0
+        },
+        {
+          "id": {
+            "value": 1007
+          },
+          "kind": "Participant",
+          "balanceMinor": 0,
+          "reservedMinor": 0,
+          "availableMinor": 0
+        },
+        {
+          "id": {
+            "value": 1009
+          },
+          "kind": "Participant",
+          "balanceMinor": 0,
+          "reservedMinor": 0,
+          "availableMinor": 0
+        },
+        {
+          "id": {
+            "value": 1022
+          },
+          "kind": "ContractEscrow",
+          "balanceMinor": 0,
+          "reservedMinor": 0,
+          "availableMinor": 0
+        }
+      ],
+      "flows": [
+        {
+          "itemId": "plank",
+          "initial": 0,
+          "harvested": 0,
+          "recipeInput": 0,
+          "produced": 5,
+          "exported": 5,
+          "constructionInput": 0
+        },
+        {
+          "itemId": "wood",
+          "initial": 0,
+          "harvested": 10,
+          "recipeInput": 10,
+          "produced": 0,
+          "exported": 0,
+          "constructionInput": 0
+        }
+      ],
+      "settlements": [
+        {
+          "id": 1021,
+          "offerId": 2,
+          "seller": {
+            "value": 1
+          },
+          "itemId": "plank",
+          "requested": 5,
+          "accepted": 5,
+          "paidMinor": 15000,
+          "tick": 62,
+          "status": "Fulfilled"
+        }
+      ]
+    },
+    "recovery": {
+      "status": "succeeded",
+      "tick": 32,
+      "stateHash": "d7aceebcac0b67248a1116fb6df86afaf514156e78e8a5dc7a9343ba3b727d25",
+      "accounts": [
+        {
+          "id": {
+            "value": 1000
+          },
+          "kind": "Treasury",
+          "balanceMinor": 0,
+          "reservedMinor": 0,
+          "availableMinor": 0
+        },
+        {
+          "id": {
+            "value": 1001
+          },
+          "kind": "WagesSink",
+          "balanceMinor": 0,
+          "reservedMinor": 0,
+          "availableMinor": 0
+        },
+        {
+          "id": {
+            "value": 1002
+          },
+          "kind": "CapitalBudget",
+          "balanceMinor": 9000,
+          "reservedMinor": 9000,
+          "availableMinor": 0
+        },
+        {
+          "id": {
+            "value": 1003
+          },
+          "kind": "Participant",
+          "balanceMinor": 1000,
+          "reservedMinor": 0,
+          "availableMinor": 1000
+        },
+        {
+          "id": {
+            "value": 1005
+          },
+          "kind": "Participant",
+          "balanceMinor": 0,
+          "reservedMinor": 0,
+          "availableMinor": 0
+        },
+        {
+          "id": {
+            "value": 1007
+          },
+          "kind": "Participant",
+          "balanceMinor": 0,
+          "reservedMinor": 0,
+          "availableMinor": 0
+        },
+        {
+          "id": {
+            "value": 1009
+          },
+          "kind": "Participant",
+          "balanceMinor": 0,
+          "reservedMinor": 0,
+          "availableMinor": 0
+        },
+        {
+          "id": {
+            "value": 1014
+          },
+          "kind": "ContractEscrow",
+          "balanceMinor": 0,
+          "reservedMinor": 0,
+          "availableMinor": 0
+        }
+      ],
+      "flows": [
+        {
+          "itemId": "plank",
+          "initial": 0,
+          "harvested": 0,
+          "recipeInput": 0,
+          "produced": 0,
+          "exported": 0,
+          "constructionInput": 0
+        },
+        {
+          "itemId": "wood",
+          "initial": 0,
+          "harvested": 2,
+          "recipeInput": 0,
+          "produced": 0,
+          "exported": 2,
+          "constructionInput": 0
+        }
+      ],
+      "settlements": [
+        {
+          "id": 1013,
+          "offerId": 1,
+          "seller": {
+            "value": 1
+          },
+          "itemId": "wood",
+          "requested": 2,
+          "accepted": 2,
+          "paidMinor": 1000,
+          "tick": 32,
+          "status": "Fulfilled"
+        }
+      ]
+    }
+  },
+  "androidDeviceGate": "open",
+  "newBinaryExports": "not performed"
+}
