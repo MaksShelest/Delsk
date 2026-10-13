@@ -1,0 +1,39 @@
+name: Core and research slice
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore locked dependencies
+        run: python scripts/run_check.py --name restore --timeout 180 -- dotnet restore Delsk.sln --locked-mode --disable-parallel -m:1
+      - name: Build
+        run: python scripts/run_check.py --name build --timeout 180 -- dotnet build Delsk.sln -c Release --no-restore --disable-build-servers -m:1
+      - name: xUnit
+        run: python scripts/run_check.py --name tests --timeout 120 -- dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release --no-build --no-restore -- --report-trx --results-directory artifacts/test-results --minimum-expected-tests 30
+      - name: Economic cycle
+        env:
+          DELSK_COMMIT: ${{ github.sha }}
+        run: python scripts/run_check.py --name cycle --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/economic-cycle.json --output artifacts/cycle
+      - name: Zero-cash recovery
+        env:
+          DELSK_COMMIT: ${{ github.sha }}
+        run: python scripts/run_check.py --name recovery --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/zero-cash-recovery.json --script recovery --output artifacts/recovery
+      - name: Check output balances
+        run: python scripts/verify_results.py artifacts/cycle artifacts/recovery
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: core-checks-and-runs
+          path: artifacts/

@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+artifacts/
+TestResults/
+.godot/
+.tools/
+*.keystore
+*.jks
+*.user
+*.suo

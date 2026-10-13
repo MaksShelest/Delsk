@@ -1,0 +1,98 @@
+{
+  "id": "zero-cash-recovery-v1",
+  "seed": 42,
+  "mapWidth": 24,
+  "mapHeight": 4,
+  "blockedCells": [],
+  "items": [
+    {
+      "id": "wood",
+      "unitVolume": 1,
+      "basePriceMinor": 500
+    },
+    {
+      "id": "plank",
+      "unitVolume": 1,
+      "basePriceMinor": 3000
+    }
+  ],
+  "recipes": [
+    {
+      "id": "sawmill",
+      "inputItem": "wood",
+      "inputQuantity": 2,
+      "outputItem": "plank",
+      "outputQuantity": 1,
+      "fullStaffTicks": 2,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 100
+    }
+  ],
+  "participants": [
+    {
+      "id": 1,
+      "cashMinor": 0,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 2,
+      "cashMinor": 0,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 3,
+      "cashMinor": 0,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 4,
+      "cashMinor": 0,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    }
+  ],
+  "enterprises": [],
+  "capitalOffers": [
+    {
+      "id": 1,
+      "itemId": "wood",
+      "quantity": 20,
+      "unitPriceMinor": 500,
+      "position": {
+        "x": 20,
+        "z": 0
+      }
+    }
+  ],
+  "resourceNodes": [
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 0
+      }
+    }
+  ],
+  "harvestTicksPerUnit": 2,
+  "moveTicksPerCell": 1,
+  "tradeWindowTicks": 5,
+  "maxCommandsPerActorTick": 8,
+  "population": 0,
+  "maxTicks": 100
+}
