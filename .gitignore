@@ -8,3 +8,4 @@ TestResults/
 *.jks
 *.user
 *.suo
+src/Client.Godot/android/

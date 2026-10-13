@@ -1,0 +1,53 @@
+name: Godot platform probe
+on:
+  push:
+    branches: ['feat/godot-platform-p06']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows-core-replay:
+    runs-on: windows-2025
+    timeout-minutes: 15
+    env:
+      DOTNET_PROCESSOR_COUNT: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download pinned .NET editor
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force .tools | Out-Null
+          python scripts/run_check.py --name godot-download --timeout 180 -- curl.exe --fail --location --silent --show-error --max-time 170 https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_win64.zip --output .tools/godot.zip
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Expand-Archive .tools/godot.zip -DestinationPath .tools/godot
+          $engine = (Get-ChildItem .tools/godot -Recurse -Filter '*_console.exe' | Select-Object -First 1).FullName
+          if (!$engine) { throw 'Missing Godot .NET console executable' }
+          "DELSK_GODOT=$engine" >> $env:GITHUB_ENV
+      - name: Build client
+        shell: pwsh
+        run: |
+          python scripts/run_check.py --name client-restore --timeout 180 -- dotnet restore src/Client.Godot/Delsk.Client.csproj --locked-mode --disable-parallel -m:1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/run_check.py --name client-build --timeout 180 -- dotnet build src/Client.Godot/Delsk.Client.csproj --no-restore --disable-build-servers -m:1
+          exit $LASTEXITCODE
+      - name: Import and replay shared core on Windows
+        shell: pwsh
+        run: |
+          python scripts/run_check.py --name godot-import --timeout 120 -- $env:DELSK_GODOT --headless --path src/Client.Godot --import
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/run_check.py --name godot-smoke --timeout 30 -- $env:DELSK_GODOT --headless --path src/Client.Godot -- --smoke --report "$env:GITHUB_WORKSPACE/artifacts/platform-probe.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/verify_platform_probe.py --report artifacts/platform-probe.json --log-prefix artifacts/checks/godot-import --log-prefix artifacts/checks/godot-smoke
+          exit $LASTEXITCODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-platform-probe
+          path: artifacts/
