@@ -46,6 +46,7 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
         if (Paused) return;
         beforeStep?.Invoke();
         SubmitPlaybackInputs();
+        SubmitControllerInputs();
         Engine.Step();
         var state = Engine.Inspect();
         var actor = state.Participants[0];
@@ -55,6 +56,7 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
             state.Flows.Sum(f => f.Harvested), state.Flows.Sum(f => f.Produced),
             state.Flows.Sum(f => f.Exported), Engine.ComputeStateHash(), state.Population, state.Unemployed));
         _laborSamples.Add(new(state.Tick, state.EmploymentGroups));
+        SampleControllers(state);
         TickCompleted?.Invoke(this);
     }
     public void SetPaused(bool paused) => Paused = paused;

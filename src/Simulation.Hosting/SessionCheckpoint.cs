@@ -6,7 +6,7 @@ namespace Simulation.Hosting;
 public record RecordedPlaybackState(RecordedCommand[] Commands, long FinalTick, int NextIndex, string Label = "recorded-inputs");
 internal record SavedSession(int SchemaVersion, string SessionId, long Epoch, bool Paused,
     string WorldJson, KeyValuePair<long, long>[] Sequences, RecordedCommand[] Tape, TickSample[] Samples,
-    LaborSample[] LaborSamples, RecordedPlaybackState? Playback);
+    LaborSample[] LaborSamples, RecordedPlaybackState? Playback, SavedControllers? Controllers = null);
 
 public sealed partial class GameSession
 {
@@ -16,7 +16,7 @@ public sealed partial class GameSession
     public void ConfigurePlayback(RecordedCommand[] tape, long finalTick, string label = "recorded-inputs")
     {
         if (string.IsNullOrWhiteSpace(label) || label.Length > 80) throw new ArgumentException("Invalid playback label");
-        if (_playback is not null) throw new InvalidOperationException("Playback already configured");
+        if (HasControllers || _playback is not null) throw new InvalidOperationException("Playback already configured");
         if (finalTick < Engine.Tick || finalTick > Engine.Configuration().MaxTicks || tape.Any(c =>
             c.SubmittedAtTick < Engine.Tick || c.SubmittedAtTick > finalTick))
             throw new ArgumentException("Invalid playback horizon");
@@ -47,9 +47,9 @@ public sealed partial class GameSession
 
     internal string CreateSessionJson()
     {
-        return JsonSerializer.Serialize(new SavedSession(1, SessionId, SessionEpoch, Paused,
+        return JsonSerializer.Serialize(new SavedSession(2, SessionId, SessionEpoch, Paused,
             Engine.CreateCheckpointJson(), _sequences.OrderBy(x => x.Key).ToArray(), CommandTape, Samples,
-            LaborSamples, _playback), SimulationJson.Options);
+            LaborSamples, _playback, SaveControllers()), SimulationJson.Options);
     }
     internal static GameSession FromSessionJson(string json, Action? beforeStep = null)
     {
@@ -57,7 +57,7 @@ public sealed partial class GameSession
         {
             var s = JsonSerializer.Deserialize<SavedSession>(json, SimulationJson.Options)
                 ?? throw new CheckpointException("EmptySessionCheckpoint");
-            if (s.SchemaVersion != 1) throw new CheckpointException("UnknownSessionSchema");
+            if (s.SchemaVersion is not (1 or 2)) throw new CheckpointException("UnknownSessionSchema");
             if (string.IsNullOrWhiteSpace(s.SessionId) || s.SessionId.Length > 80 || s.Epoch < 1 || s.Epoch == long.MaxValue)
                 throw new CheckpointException("InvalidSessionIdentity");
             var session = new GameSession(SimulationEngine.FromCheckpointJson(s.WorldJson), s.SessionId, beforeStep)
@@ -81,6 +81,8 @@ public sealed partial class GameSession
                 p.Commands.Take(p.NextIndex).Any(c => c.SubmittedAtTick > tick || !session._tape.Contains(c)) ||
                 p.Commands.Skip(p.NextIndex).Any(c => c.SubmittedAtTick < tick)))
                 throw new CheckpointException("InvalidPlaybackCursor");
+            if (s.SchemaVersion == 2 && s.Controllers is null) throw new CheckpointException("MissingSessionControllers");
+            if (s.Controllers is not null) session.LoadControllers(s.Controllers);
             return session;
         }
         catch (CheckpointException) { throw; }

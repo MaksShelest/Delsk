@@ -1,7 +1,7 @@
 # Архитектура Delsk
 
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
-Статус: проект архитектуры к спецификации 0.3. P00–P12 реализованы в границах отчётов; остальные компоненты остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
+Статус: проект архитектуры к спецификации 0.3. P00–P13 реализованы в границах отчётов; остальные компоненты остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
 
 ## 1. Основания и границы
 
@@ -457,3 +457,15 @@ Equipment.cs — покупки/уровни, личная работа, automat
 ## 15. Реализованное восстановление P12
 
 Core Checkpoint/CheckpointValidation — explicit DTO и восстановление текущего state без команды/replay/IO. Hosting SessionCheckpoint/CheckpointStore — namespace/epoch/paused/counters/recorded cursor и actual file replace/backup. Полный event prefix хранится в snapshot и экспортируется committed JSONL; внешний tail самовольно не применяется. Snapshot не является журналом всех будущих систем: P13 и каждый последующий модуль расширяют state/validation/tests. Godot проверяет actual file restore на4 опасных тиках. Технические ограничения и версии — DECISIONS §11. Следующее — P13, не крупный UI.
+
+## 16. Реализованные контроллеры P13
+
+ControllerContracts.cs в Core даёт IController и отдельный immutable ControllerObservation: ImmutableArray во всех вложенных складах/footprints/каталогах. Allowlist включает публичную статическую карту/рецепты/рынок/занятость и полное собственное хозяйство; не ScenarioDefinition, seed, research state/hash/events или чужие деньги/запасы. Старая ParticipantObservation оставлена клиенту; алгоритмический контроллер получает только новую immutable форму.
+
+Agents.Algorithmic зависит только от Core. Utility ранжирует готовые хозяйственные цели, finite PlanStep[] выдаёт по одному действию и ждёт собственный результат/окончание busy/снятие sale hold. Отказ очищает остаток плана и временно исключает его цель. Собственный SplitMix64 stream разрешает равные полезности; деньги/найм/путь/работа остаются в Core. Это начальный baseline, не полный P21.
+
+Hosting собирает все наблюдения до любого Decide/Send; feedback ограничен командами своего actor. После выбора намерения идут через Send/Enqueue и обычные правила. Общий предел Core одинаков для human/NPC; алгоритм добровольно выдаёт максимум1 действие/тик. Даже после accepted Move/Harvest executor ждёт завершения физической работы. Attach только на tick0; смена/миграция политики в середине мира не добавлена.
+
+Hosting не ссылается на Algorithmic: сохраняет конкретный ControllerCheckpoint(kind/version/actor/state JSON/pending IDs), traces и samples. Session schema2, World/Envelope остаются1; schema1 sessions без контроллеров читаются. Декодированные политики должны быть восстановлены явной фабрикой в composition root; Step без RestoreControllers запрещён. Runner знает AlgorithmicController.Restore, проверяет его состояние/канонический capture. Сохранённые ожидаемые ID связаны с собственным inbox/tape; планы, settings, trust, cursor, таймеры и PRNG восстанавливаются до следующего тика. Делегат фабрики не сериализуется.
+
+Хеш мира не менялся; отдельный controller state hash охватывает состояния политик и awaiting IDs. Exact continuation сверяет также полные decisions/agents/controller exports; command-only replay повторяет мир без исполнения политик и не выдаётся за восстановление их памяти. Полная trace доступна исследователю, не передаётся контроллерам. В будущем секретные договоры добавляются только в собственную/двустороннюю проекцию.

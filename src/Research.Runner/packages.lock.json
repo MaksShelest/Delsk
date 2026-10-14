@@ -2,6 +2,12 @@
   "version": 1,
   "dependencies": {
     "net10.0": {
+      "agents.algorithmic": {
+        "type": "Project",
+        "dependencies": {
+          "Simulation.Core": "[1.0.0, )"
+        }
+      },
       "simulation.core": {
         "type": "Project"
       },
