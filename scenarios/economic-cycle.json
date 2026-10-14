@@ -120,5 +120,13 @@
   "tradeWindowTicks": 5,
   "maxCommandsPerActorTick": 8,
   "population": 2,
-  "maxTicks": 500
+  "maxTicks": 500,
+  "labor": {
+    "stepTicks": 10000,
+    "salaryChangeDelayTicks": 20,
+    "mobilityNumerator": 1,
+    "mobilityDenominator": 10,
+    "growthPeriodTicks": 120,
+    "growthPerPeriod": 0
+  }
 }

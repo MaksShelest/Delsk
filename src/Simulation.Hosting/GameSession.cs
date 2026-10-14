@@ -4,7 +4,8 @@ namespace Simulation.Hosting;
 
 public record RecordedCommand(long SubmittedAtTick, ParticipantId AuthenticatedActor, CommandEnvelope Command);
 public record TickSample(long Tick, long ParticipantCashMinor, long WageExpenseMinor, long EnergyExpenseMinor,
-    long Harvested, long Produced, long Exported, string StateHash);
+    long Harvested, long Produced, long Exported, string StateHash, long Population, long Unemployed);
+public record LaborSample(long Tick, EmploymentView[] EmploymentGroups);
 
 /// <summary>Common adapter for console and future client. The core owns every game rule.</summary>
 public sealed class GameSession(SimulationEngine engine, string sessionId = "s1", Action? beforeStep = null)
@@ -12,10 +13,12 @@ public sealed class GameSession(SimulationEngine engine, string sessionId = "s1"
     private readonly Dictionary<long, long> _sequences = [];
     private readonly List<RecordedCommand> _tape = [];
     private readonly List<TickSample> _samples = [];
+    private readonly List<LaborSample> _laborSamples = [];
     public SimulationEngine Engine { get; } = engine;
     public bool Paused { get; private set; }
     public RecordedCommand[] CommandTape => _tape.ToArray();
     public TickSample[] Samples => _samples.ToArray();
+    public LaborSample[] LaborSamples => _laborSamples.Select(s => s with { EmploymentGroups = s.EmploymentGroups.ToArray() }).ToArray();
     public string Send(ParticipantId actor, GameAction action, long delayTicks = 1, long ttlTicks = 10)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(delayTicks);
@@ -46,7 +49,8 @@ public sealed class GameSession(SimulationEngine engine, string sessionId = "s1"
             state.Accounts.Single(a => a.Kind == "WagesSink").BalanceMinor,
             state.Accounts.Single(a => a.Kind == "Treasury").BalanceMinor,
             state.Flows.Sum(f => f.Harvested), state.Flows.Sum(f => f.Produced),
-            state.Flows.Sum(f => f.Exported), Engine.ComputeStateHash()));
+            state.Flows.Sum(f => f.Exported), Engine.ComputeStateHash(), state.Population, state.Unemployed));
+        _laborSamples.Add(new(state.Tick, state.EmploymentGroups));
     }
     public void SetPaused(bool paused) => Paused = paused;
     public static GameSession Replay(ScenarioDefinition definition, RecordedCommand[] tape, long finalTick)

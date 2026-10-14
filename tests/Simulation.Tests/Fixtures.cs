@@ -11,7 +11,7 @@ internal static class Fixtures
         [new(1, cash, new(0, 0), 20), new(2, 0, new(0, 0), 20)],
         [new(1, 1, new(10, 0), "sawmill", 40, outputCapacity, staff, 2, 100)],
         [new(1, "wood", 20, 500, new(20, 0)), new(2, "plank", 5, 3000, new(20, 0))],
-        [new("wood", new(0, 0))], Population: 2);
+        [new("wood", new(0, 0))], Population: 2, Labor: new(StepTicks: 10000, GrowthPerPeriod: 0));
     public static GameSession Session(ScenarioDefinition? definition = null) => new(new SimulationEngine(definition ?? Cycle()));
     public static string Command(GameSession session, GameAction action, long actor = 1)
     { var id = session.Send(new(actor), action); session.Step(); return id; }

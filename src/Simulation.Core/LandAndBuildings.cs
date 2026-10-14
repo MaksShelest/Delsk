@@ -30,7 +30,7 @@ public sealed partial class SimulationEngine
 
     private static bool IsManagement(ActionKind kind) => kind is ActionKind.SetProductionEnabled or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.CancelPlotReservation or ActionKind.Build or
-        ActionKind.UpgradeBuilding or ActionKind.SetRecipe;
+        ActionKind.UpgradeBuilding or ActionKind.SetRecipe or ActionKind.SetWage;
 
     private void InitializeLandAndBuildings()
     {
@@ -189,6 +189,13 @@ public sealed partial class SimulationEngine
             }
         }
         if (level.PriceMinor > 0) tx.Pay(actor.Account, _treasury, level.PriceMinor, "BuildingUpgrade");
+        if (_enterprises.TryGetValue(b.Id, out var upgrading))
+        {
+            var recipe = _config.Recipes.Single(r => r.Id == level.RecipeId);
+            _ = checked(level.StaffCapacity * upgrading.Group.Wage + recipe.EnergyPerBatchMinor);
+            if (upgrading.Group.PendingWage is { } pending)
+                _ = checked(level.StaffCapacity * pending + recipe.EnergyPerBatchMinor);
+        }
         tx.SetCapacity(b.Input, level.InputCapacity);
         if (b.Output.HasValue) tx.SetCapacity(b.Output.Value, level.OutputCapacity);
         tx.Commit();
@@ -200,6 +207,7 @@ public sealed partial class SimulationEngine
             e.Definition = e.Definition with { Level = b.Level, RecipeId = level.RecipeId,
                 InputCapacity = level.InputCapacity, OutputCapacity = level.OutputCapacity,
                 Capacity = level.StaffCapacity, WorkRateMultiplier = level.WorkRateMultiplier };
+            e.Group.Capacity = level.StaffCapacity;
         }
         Emit("BuildingUpgraded", actor.Id, b.Id, money: level.PriceMinor, reason: b.Level.ToString(System.Globalization.CultureInfo.InvariantCulture), command: c.CommandId);
         EmitMaterialConsumption(actor.Id, b.Id, level.Materials, c.CommandId);
@@ -215,6 +223,9 @@ public sealed partial class SimulationEngine
             : c.Action.RecipeId == e.Recipe.Id;
         if (!unlocked) throw new RuleViolation("RecipeLocked");
         var recipe = _config.Recipes.Single(r => r.Id == c.Action.RecipeId);
+        _ = checked(e.Group.Capacity * e.Group.Wage + recipe.EnergyPerBatchMinor);
+        if (e.Group.PendingWage is { } pending)
+            _ = checked(e.Group.Capacity * pending + recipe.EnergyPerBatchMinor);
         e.Recipe = recipe; e.Definition = e.Definition with { RecipeId = recipe.Id };
         Emit("RecipeChanged", actor.Id, e.Definition.Id, reason: recipe.Id, command: c.CommandId);
     }
@@ -248,7 +259,7 @@ public sealed partial class SimulationEngine
                 (b.Output.HasValue && (_economy.Inventories[b.Output.Value].Owner != b.Owner ||
                     _economy.Inventories[b.Output.Value].Position != b.Position ||
                     _economy.Inventories[b.Output.Value].Capacity != level.OutputCapacity ||
-                    !_enterprises.TryGetValue(b.Id, out var e) || e.Definition.Level != b.Level || e.Definition.Staff > level.StaffCapacity)))
+                    !_enterprises.TryGetValue(b.Id, out var e) || e.Definition.Level != b.Level || e.Group.Headcount > level.StaffCapacity)))
                 throw new InvalidOperationException("Invalid building inventory/level");
         }
         foreach (var p in _plots.Values.Where(p => p.Building.HasValue))

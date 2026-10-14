@@ -10,7 +10,7 @@ public sealed partial class SimulationEngine
         {
             var e = groups[(n + (int)(Tick % groups.Length)) % groups.Length];
             if (!e.Enabled) { e.Reason = "UserPaused"; continue; }
-            if (e.Definition.Staff < e.Recipe.MinimumStaff) { e.Reason = "NoStaff"; continue; }
+            if (e.Group.Headcount < e.Recipe.MinimumStaff) { e.Reason = "NoStaff"; continue; }
             try
             {
                 bool starting = e.Batch is null;
@@ -19,11 +19,11 @@ public sealed partial class SimulationEngine
                 long id = e.Batch?.Id ?? _nextId;
                 string hold = e.Batch?.Hold ?? $"batch:{id}";
                 long previousWork = e.Batch?.WorkDone ?? 0;
-                long work = checked((long)Math.Min(e.Definition.Staff, fullStaff) * e.Definition.WorkRateMultiplier);
+                long work = checked((long)Math.Min(e.Group.Headcount, fullStaff) * e.Definition.WorkRateMultiplier);
                 long nextWork = Math.Min(required, checked(previousWork + work));
                 long nextEnergy = checked((long)((Int128)e.Recipe.EnergyPerBatchMinor * nextWork / required));
                 long energy = checked(nextEnergy - (e.Batch?.EnergyPaid ?? 0));
-                long wage = checked(e.Definition.Staff * e.Definition.WageMinor);
+                long wage = checked(e.Group.Headcount * e.Group.Wage);
                 long newTotalEnergy = checked(e.EnergyPaid + energy);
                 long newConsumed = starting ? checked(_flows[e.Recipe.InputItem].RecipeInput + e.Recipe.InputQuantity)
                     : _flows[e.Recipe.InputItem].RecipeInput;
@@ -151,8 +151,7 @@ public sealed partial class SimulationEngine
     public void ValidateInvariants()
     {
         _economy.Validate();
-        long employed = _enterprises.Values.Sum(e => (long)e.Definition.Staff);
-        if (employed > _config.Population || employed < 0) throw new InvalidOperationException("I01: population invalid");
+        ValidateLaborInvariants();
         foreach (var actor in _actors.Values)
         {
             if (!_map.Walkable(actor.Position) || _economy.Inventories[actor.Inventory].Position != actor.Position)

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Independent arithmetic checks of runner exports. Author: Шелестов Максим Евгеньевич."""
+import csv
 import json
 from pathlib import Path
 import sys
@@ -12,6 +13,21 @@ def verify(folder):
     money = sum(account['balanceMinor'] for account in summary['accounts'])
     assert money == summary['initialMoneyMinor'] + summary['externalMoneyInMinor'] - summary['externalMoneyOutMinor']
     state = json.loads((folder/'final-state.json').read_text(encoding='utf-8'))
+    groups = state['employmentGroups']
+    assert state['population'] == state['unemployed'] + sum(g['headcount'] for g in groups)
+    assert all(0 <= g['headcount'] <= g['capacity'] for g in groups)
+    assert state['populationGrowth'] >= 0
+    with (folder/'metrics.csv').open(newline='', encoding='utf-8') as f:
+        samples = {int(r['tick']): r for r in csv.DictReader(f)}
+    employed = {tick: 0 for tick in samples}
+    with (folder/'labor.csv').open(newline='', encoding='utf-8') as f:
+        seen = set()
+        for row in csv.DictReader(f):
+            tick, group, n, cap = map(int, (row['tick'], row['group_id'], row['headcount'], row['capacity']))
+            assert (tick, group) not in seen and 0 <= n <= cap
+            seen.add((tick, group)); employed[tick] += n
+    for tick, sample in samples.items():
+        assert int(sample['population']) == int(sample['unemployed']) + employed[tick]
     for flow in summary['flows']:
         physical = sum(stock['quantity'] for inventory in state['inventories'] for stock in inventory['stock'] if stock['itemId']==flow['itemId'])
         assert physical == flow['initial']+flow['harvested']+flow['produced']-flow['recipeInput']-flow['exported']-flow.get('constructionInput',0)
@@ -22,7 +38,7 @@ def verify(folder):
     assert tape, 'No real commands recorded'
     ledger = [json.loads(line) for line in (folder/'ledger.jsonl').read_text(encoding='utf-8').splitlines()]
     assert sum(entry['amountMinor'] for entry in ledger if entry['reason']=='CapitalSettlement') == sum(s['paidMinor'] for s in summary['settlements'])
-    print(f'{folder}: money, item flows, capacity and settlements verified; tick={summary["tick"]}')
+    print(f'{folder}: money, item flows, capacity, population and settlements verified; tick={summary["tick"]}')
 
 if len(sys.argv) < 2:
     raise SystemExit('Usage: verify_results.py RUN_DIRECTORY [RUN_DIRECTORY]')
