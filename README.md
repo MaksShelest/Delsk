@@ -60,7 +60,7 @@ GitHub Actions для ядра выполнен успешно. Godot и Android
 
 Добавлена минимальная сцена Godot 4.7.2 .NET с тем же Core/Hosting. Linux и Windows CI воспроизводят записанные команды и проверяют все 62 хеша. Созданы тестовые Windows x86_64 и подписанный Android ARM64 экспорты. APK ещё не запускался на настоящем телефоне; готовый Windows EXE тоже не проверен запуском.
 
-[Запуск сцены и экспорты](src/Client.Godot/README.md). [Отчёт P06, версии и открытые проверки](docs/IMPLEMENTATION_REPORT_P06.md). P07–P10 добавлены в ядро; следующая итерация — P11: добывающая техника. Полный месячный объём остаётся в плане.
+[Запуск сцены и экспорты](src/Client.Godot/README.md). [Отчёт P06, версии и открытые проверки](docs/IMPLEMENTATION_REPORT_P06.md). P07–P11 добавлены в ядро; следующая итерация — P12: checkpoint/load. Полный месячный объём остаётся в плане.
 
 ## Земля и развитие P07–P08
 
@@ -71,7 +71,7 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --scenario sce
 python scripts/verify_results.py artifacts/development
 ```
 
-Проверенный результат:465 тиков, обе продажи, три новых здания и upgrade. Материалы стройки отражены в ConstructionInput, все физические запасы и деньги сверены. На этапе P07–P08 прошли64 xUnit-теста; текущий набор содержит83. [Отчёт итерации](docs/IMPLEMENTATION_REPORT_P07_P08.md).
+Проверенный результат:465 тиков, обе продажи, три новых здания и upgrade. Материалы стройки отражены в ConstructionInput, все физические запасы и деньги сверены. На этапе P07–P08 прошли64 xUnit-теста; текущий набор содержит106. [Отчёт итерации](docs/IMPLEMENTATION_REPORT_P07_P08.md).
 
 Расширение DTO изменило хеши; platform fixture обновлена по проверенному прежнему циклу. Ранее выданные бинарные сборки P06 содержат прежнее ядро; в этой итерации они не пересоздавались. Игровые экраны строительства/найма остаются P26.
 
@@ -95,3 +95,13 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --scenario sce
 ```
 
 [Windows: загрузка в Rider и Godot](docs/LOCAL_SETUP.md). [Отчёт P09–P10](docs/IMPLEMENTATION_REPORT_P09_P10.md). Godot пока проигрывает техническую fixture; новый найм проверяется в runner/labor.csv.
+
+## Добывающая техника P11
+
+Добавлены покупки и upgrade двух характеристик машин, личная и автоматическая добыча, конечный buffer у узла и числовой экипаж в общем рынке труда с производствами.106 xUnit-тестов прошли.
+
+```bash
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/equipment-cycle.json --script equipment --output artifacts/equipment
+```
+
+[Что можно тестировать сейчас и границы минимальной версии](docs/PROTOTYPE_STATUS.md). [Отчёт P11](docs/IMPLEMENTATION_REPORT_P11.md). Первая автономная экономика ожидается после P12/P13; полный игровой прототип сохраняет рынок/доставку/выборы P14–P21.

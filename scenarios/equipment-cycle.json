@@ -1,0 +1,147 @@
+{
+  "id": "equipment-cycle-v1",
+  "seed": 42,
+  "mapWidth": 12,
+  "mapHeight": 4,
+  "blockedCells": [],
+  "items": [
+    {
+      "id": "wood",
+      "unitVolume": 1,
+      "basePriceMinor": 500
+    },
+    {
+      "id": "grain",
+      "unitVolume": 1,
+      "basePriceMinor": 300
+    }
+  ],
+  "recipes": [],
+  "participants": [
+    {
+      "id": 1,
+      "cashMinor": 100000,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 2,
+      "cashMinor": 100000,
+      "position": {
+        "x": 0,
+        "z": 2
+      },
+      "inventoryCapacity": 20
+    }
+  ],
+  "enterprises": [],
+  "capitalOffers": [
+    {
+      "id": 1,
+      "itemId": "wood",
+      "quantity": 20,
+      "unitPriceMinor": 500,
+      "position": {
+        "x": 10,
+        "z": 0
+      }
+    },
+    {
+      "id": 2,
+      "itemId": "grain",
+      "quantity": 20,
+      "unitPriceMinor": 300,
+      "position": {
+        "x": 10,
+        "z": 0
+      }
+    }
+  ],
+  "resourceNodes": [
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 0
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 0,
+        "z": 2
+      }
+    }
+  ],
+  "harvestTicksPerUnit": 2,
+  "moveTicksPerCell": 1,
+  "tradeWindowTicks": 5,
+  "maxCommandsPerActorTick": 8,
+  "population": 7,
+  "maxTicks": 1000,
+  "labor": {
+    "stepTicks": 10,
+    "salaryChangeDelayTicks": 20,
+    "mobilityNumerator": 1,
+    "mobilityDenominator": 10,
+    "growthPeriodTicks": 120,
+    "growthPerPeriod": 0
+  },
+  "equipmentTypes": [
+    {
+      "id": "wood-extractor",
+      "itemId": "wood",
+      "levels": [
+        {
+          "level": 1,
+          "priceMinor": 15000,
+          "cycleQuantity": 2,
+          "cycleTicks": 2,
+          "storageCapacity": 20,
+          "minimumCrew": 2,
+          "crewCapacity": 2,
+          "wageMinor": 25
+        },
+        {
+          "level": 2,
+          "priceMinor": 60000,
+          "cycleQuantity": 6,
+          "cycleTicks": 2,
+          "storageCapacity": 40,
+          "minimumCrew": 5,
+          "crewCapacity": 5,
+          "wageMinor": 25
+        }
+      ]
+    },
+    {
+      "id": "grain-extractor",
+      "itemId": "grain",
+      "levels": [
+        {
+          "level": 1,
+          "priceMinor": 15000,
+          "cycleQuantity": 2,
+          "cycleTicks": 2,
+          "storageCapacity": 20,
+          "minimumCrew": 2,
+          "crewCapacity": 2,
+          "wageMinor": 25
+        },
+        {
+          "level": 2,
+          "priceMinor": 60000,
+          "cycleQuantity": 6,
+          "cycleTicks": 2,
+          "storageCapacity": 40,
+          "minimumCrew": 5,
+          "crewCapacity": 5,
+          "wageMinor": 25
+        }
+      ]
+    }
+  ]
+}

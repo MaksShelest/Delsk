@@ -9,16 +9,18 @@ public readonly record struct InventoryId(long Value);
 public readonly record struct EnterpriseId(long Value);
 public readonly record struct PlotId(long Value);
 public readonly record struct BuildingId(long Value);
+public readonly record struct EquipmentId(long Value);
 public readonly record struct EmploymentGroupId(long Value);
 public readonly record struct Cell(int X, int Z);
 
 public enum ActionKind { MoveTo, Harvest, Transfer, SetProductionEnabled, SellAvailableToCapital, CancelCapitalSale,
-    ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe, SetWage }
+    ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe, SetWage, BuyEquipment, UpgradeEquipment, SetEquipmentMode }
 public enum ResultStatus { Accepted, Rejected }
 public record GameAction(ActionKind Kind, Cell Target = default, string ItemId = "", long Quantity = 0,
     InventoryId Source = default, InventoryId Destination = default, EnterpriseId Enterprise = default,
     bool Enabled = false, long OfferId = 0, PlotId Plot = default, BuildingId Building = default,
-    string BuildingTypeId = "", string RecipeId = "", EmploymentGroupId Group = default, long WageMinor = 0);
+    string BuildingTypeId = "", string RecipeId = "", EmploymentGroupId Group = default, long WageMinor = 0, EquipmentId Equipment = default,
+    string EquipmentTypeId = "", int EquipmentLevel = 1, EquipmentMode Mode = EquipmentMode.Personal);
 public record CommandEnvelope(string CommandId, ParticipantId ActorId, long LocalSequence,
     long IssuedAtTick, long NotBeforeTick, long ExpiresAtTick, GameAction Action);
 public record CommandResult(string CommandId, ResultStatus Status, string ReasonCode, long AppliedTick);
@@ -44,6 +46,10 @@ public record BuildingLevelDefinition(int Level, string RecipeId, long PriceMino
 public record BuildingTypeDefinition(string Id, BuildingKind Kind, Cell[] Footprint, BuildingLevelDefinition[] Levels);
 public record BuildingDefinition(long Id, long OwnerId, Cell Position, string TypeId, int Level = 1,
     int Staff = 0, bool Enabled = false);
+public enum EquipmentMode { Off, Personal, Automatic }
+public record EquipmentLevelDefinition(int Level, long PriceMinor, long CycleQuantity, long CycleTicks,
+    long StorageCapacity, int MinimumCrew, int CrewCapacity, long WageMinor);
+public record EquipmentTypeDefinition(string Id, string ItemId, EquipmentLevelDefinition[] Levels);
 public record CapitalOfferDefinition(long Id, string ItemId, long Quantity, long UnitPriceMinor, Cell Position);
 public record LaborSettings(int StepTicks = 10, int SalaryChangeDelayTicks = 20,
     int MobilityNumerator = 1, int MobilityDenominator = 10,
@@ -56,7 +62,7 @@ public record ScenarioDefinition(string Id, ulong Seed, int MapWidth, int MapHei
     int MaxCommandsPerActorTick = 8, long Population = 2, long MaxTicks = 500,
     PlotDefinition[]? Plots = null, BuildingTypeDefinition[]? BuildingTypes = null,
     BuildingDefinition[]? Buildings = null, int LandReservationTicks = 120, int MaxActivePlotReservations = 4,
-    LaborSettings? Labor = null);
+    LaborSettings? Labor = null, EquipmentTypeDefinition[]? EquipmentTypes = null);
 
 public record StockView(string ItemId, long Quantity, long Reserved);
 public record InventoryView(InventoryId Id, ParticipantId OwnerId, Cell Position, long Capacity,
@@ -87,16 +93,19 @@ public record EmploymentView(EmploymentGroupId Id, ParticipantId OwnerId, Employ
     long MobilityCredit, int TargetHeadcount, bool Ready, string ReadinessReason, long AssessedAtTick);
 public record PublicEmploymentView(EmploymentGroupId Id, ParticipantId OwnerId, EmploymentRole Role,
     int Headcount, int Capacity, long WageMinor);
+public record EquipmentView(EquipmentId Id, ParticipantId OwnerId, string TypeId, int Level,
+    Cell Position, InventoryId StorageId, EmploymentGroupId GroupId, EquipmentMode Mode,
+    string ReasonCode, long CycleId, long WorkDone, long WorkRequired, long CompletedCycles, long PersonalJobId);
 public record WorldView(long Tick, long NextId, ulong AllocationRandomState, string ConfigHash,
     AccountView[] Accounts, InventoryView[] Inventories, ParticipantView[] Participants,
     EnterpriseView[] Enterprises, FlowView[] Flows, CapitalOfferView[] CapitalOffers,
     SettlementView[] Settlements, long Population, long Unemployed, long InitialMoneyMinor,
     long ExternalMoneyInMinor, long ExternalMoneyOutMinor, PlotView[] Plots, BuildingView[] Buildings,
-    EmploymentView[] EmploymentGroups, long PopulationGrowth, long LastGrowthPeriod);
+    EmploymentView[] EmploymentGroups, long PopulationGrowth, long LastGrowthPeriod, EquipmentView[] Equipment);
 public record ParticipantObservation(long Tick, ParticipantView Participant, AccountView Account,
     InventoryView[] OwnInventories, EnterpriseView[] OwnEnterprises, CapitalOfferView[] CapitalOffers,
     PlotView[] Plots, BuildingView[] OwnBuildings, BuildingTypeDefinition[] BuildingTypes,
-    EmploymentView[] OwnEmploymentGroups, PublicEmploymentView[] LaborMarket, long Population, long Unemployed);
+    EmploymentView[] OwnEmploymentGroups, PublicEmploymentView[] LaborMarket, long Population, long Unemployed, EquipmentView[] OwnEquipment, EquipmentTypeDefinition[] EquipmentTypes);
 
 public static class SimulationJson
 {

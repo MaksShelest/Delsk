@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "labor-1";
+    public const string RulesVersion = "equipment-1";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -76,7 +76,7 @@ public sealed partial class SimulationEngine
             tx.HoldMoney(_capital, hold, budget); tx.Commit();
             _offers.Add(o.Id, new(o, hold));
         }
-        _unemployed = checked(_population - _enterprises.Values.Sum(e => (long)e.Group.Headcount));
+        _unemployed = checked(_population - EmploymentGroups().Sum(g => (long)g.Headcount));
         Emit("WorldCreated");
         ValidateInvariants();
     }
@@ -99,7 +99,8 @@ public sealed partial class SimulationEngine
         if (command is null || command.Action is null || string.IsNullOrWhiteSpace(command.CommandId) ||
             command.CommandId.Length > 160 || command.Action.ItemId is null || command.Action.ItemId.Length > 50 ||
             command.Action.BuildingTypeId is null || command.Action.BuildingTypeId.Length > 50 ||
-            command.Action.RecipeId is null || command.Action.RecipeId.Length > 50)
+            command.Action.RecipeId is null || command.Action.RecipeId.Length > 50 ||
+            command.Action.EquipmentTypeId is null || command.Action.EquipmentTypeId.Length > 50)
             return new(command?.CommandId ?? "", ResultStatus.Rejected, "InvalidEnvelope", Tick);
         if (authenticatedActor != command.ActorId || !_actors.ContainsKey(authenticatedActor.Value))
             return new(command.CommandId, ResultStatus.Rejected, "NotAvailable", Tick);
@@ -140,7 +141,7 @@ public sealed partial class SimulationEngine
             _phase = 2; AdvanceMovements();
             _phase = 3;
             foreach (var c in allowed.Where(c => !IsManagement(c.Action.Kind))) Execute(c);
-            _phase = 4; AdvanceHarvests(); AdvanceProduction();
+            _phase = 4; AdvanceHarvests(); AdvanceWork();
             _phase = 5; AdvanceLabor();
             _phase = 6; CloseCapitalWindows();
             _phase = 7; ExpirePlotReservations();
@@ -174,6 +175,9 @@ public sealed partial class SimulationEngine
                 case ActionKind.UpgradeBuilding: UpgradeBuilding(actor, c); break;
                 case ActionKind.SetRecipe: SetRecipe(actor, c); break;
                 case ActionKind.SetWage: SetWage(actor, c); break;
+                case ActionKind.BuyEquipment: BuyEquipment(actor, c); break;
+                case ActionKind.UpgradeEquipment: UpgradeEquipment(actor, c); break;
+                case ActionKind.SetEquipmentMode: SetEquipmentMode(actor, c); break;
                 default: throw new RuleViolation("UnknownAction");
             }
             _results[c.CommandId] = new(c.CommandId, ResultStatus.Accepted, "Accepted", Tick);
@@ -198,6 +202,7 @@ public sealed partial class SimulationEngine
     {
         RequireIdle(actor);
         if (c.Action.Quantity <= 0) throw new RuleViolation("InvalidQuantity");
+        if (c.Action.Equipment.Value != 0) { StartEquipmentHarvest(actor, c); return; }
         if (!_config.ResourceNodes.Any(n => n.ItemId == c.Action.ItemId && n.Position == actor.Position))
             throw new RuleViolation("NoResourceNode");
         long end = checked(Tick + checked(c.Action.Quantity * _config.HarvestTicksPerUnit));
@@ -253,10 +258,15 @@ public sealed partial class SimulationEngine
     {
         foreach (var actor in _actors.Values.OrderBy(a => a.Id))
         {
-            if (actor.Job is not { Kind: "Harvest" } job || Tick < job.CompletionTick) continue;
+            if (actor.Job is not { } job || job.Kind is not ("Harvest" or "EquipmentHarvest") || Tick < job.CompletionTick) continue;
             long total = checked(_flows[job.Item].Harvested + job.Quantity);
             var tx = _economy.Begin(Tick);
             tx.ReleaseCapacity(actor.Inventory, job.CapacityHold); tx.AddStock(actor.Inventory, job.Item, job.Quantity); tx.Commit();
+            if (job.EquipmentId != 0)
+            {
+                _equipment[job.EquipmentId].PersonalJobId = 0;
+                Emit("PersonalEquipmentHarvestCompleted", actor.Id, job.EquipmentId, job.Item, job.Quantity, command: job.CommandId);
+            }
             _flows[job.Item].Harvested = total;
             _completedPersonalJobs.Add(job.Id); actor.Job = null;
             Emit("HarvestCompleted", actor.Id, job.Id, job.Item, job.Quantity, command: job.CommandId);
@@ -282,8 +292,8 @@ public sealed partial class SimulationEngine
                 o.Requests.Values.Aggregate(0L, (n, r) => checked(n + r.Quantity)))).ToArray(),
             _settlements.ToArray(), _population, _unemployed,
             _economy.InitialMoney, _economy.ExternalIn, _economy.ExternalOut, LandViews(), BuildingViews(),
-            _enterprises.Values.OrderBy(e => e.Group.Id).Select(e => e.Group.View()).ToArray(),
-            checked(_population - _config.Population), _lastGrowthPeriod);
+            EmploymentGroups().OrderBy(g => g.Id).Select(g => g.View()).ToArray(),
+            checked(_population - _config.Population), _lastGrowthPeriod, EquipmentViews());
     }
     public ParticipantObservation Observe(ParticipantId actorId)
     {
@@ -294,7 +304,7 @@ public sealed partial class SimulationEngine
             view.Plots, view.Buildings.Where(b => b.OwnerId == actorId).ToArray(), CopyBuildingCatalog(),
             view.EmploymentGroups.Where(g => g.OwnerId == actorId).ToArray(),
             view.EmploymentGroups.Select(g => new PublicEmploymentView(g.Id, g.OwnerId, g.Role, g.Headcount, g.Capacity, g.PendingWageMinor ?? g.WageMinor)).ToArray(),
-            view.Population, view.Unemployed);
+            view.Population, view.Unemployed, view.Equipment.Where(e => e.OwnerId == actorId).ToArray(), CopyEquipmentCatalog());
     }
     public string ComputeStateHash() => ScenarioValidation.Hash(new
     {
@@ -305,6 +315,7 @@ public sealed partial class SimulationEngine
             Capacity = x.Value.CapacityHolds.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray() }).ToArray(),
         Jobs = _actors.OrderBy(x => x.Key).Select(x => new { x.Key, x.Value.Job }).ToArray(),
         Batches = _enterprises.OrderBy(x => x.Key).Select(x => new { x.Key, x.Value.Batch }).ToArray(),
+        ExtractionBatches = _equipment.OrderBy(x => x.Key).Select(x => new { x.Key, x.Value.Batch }).ToArray(),
         Requests = _offers.OrderBy(x => x.Key).Select(x => new { x.Key, Requests = x.Value.Requests.OrderBy(r => r.Key).ToArray() }).ToArray(),
         CompletedJobs = _completedPersonalJobs.Order().ToArray(),
         Commands = _seenCommands.OrderBy(x => x.Key, StringComparer.Ordinal).ToArray(),
