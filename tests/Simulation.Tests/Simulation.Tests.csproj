@@ -15,4 +15,5 @@
   </ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/market-window.json" LogicalName="Fixture.market-window.json" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/pickup-lifecycle.json" LogicalName="Fixture.pickup-lifecycle.json" /></ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/delivery-lifecycle.json" LogicalName="Fixture.delivery-lifecycle.json" /></ItemGroup>
 </Project>

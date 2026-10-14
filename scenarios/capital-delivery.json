@@ -1,0 +1,148 @@
+{
+  "id": "capital-delivery-v1",
+  "seed": 42,
+  "mapWidth": 6,
+  "mapHeight": 3,
+  "blockedCells": [],
+  "items": [
+    {
+      "id": "wood",
+      "unitVolume": 1,
+      "basePriceMinor": 500
+    }
+  ],
+  "recipes": [],
+  "participants": [
+    {
+      "id": 1,
+      "cashMinor": 10000,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 3
+    },
+    {
+      "id": 2,
+      "cashMinor": 0,
+      "position": {
+        "x": 5,
+        "z": 0
+      },
+      "inventoryCapacity": 3
+    }
+  ],
+  "enterprises": [],
+  "capitalOffers": [
+    {
+      "id": 1,
+      "itemId": "wood",
+      "quantity": 10,
+      "unitPriceMinor": 500,
+      "position": {
+        "x": 5,
+        "z": 1
+      }
+    }
+  ],
+  "resourceNodes": [
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 0
+      }
+    }
+  ],
+  "harvestTicksPerUnit": 2,
+  "moveTicksPerCell": 1,
+  "tradeWindowTicks": 5,
+  "maxCommandsPerActorTick": 8,
+  "population": 0,
+  "maxTicks": 500,
+  "plots": [
+    {
+      "id": 1,
+      "position": {
+        "x": 2,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "ownerId": 1,
+      "shopParticipantId": 1
+    },
+    {
+      "id": 2,
+      "position": {
+        "x": 5,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "ownerId": 2,
+      "shopParticipantId": 2
+    }
+  ],
+  "buildingTypes": [
+    {
+      "id": "shop",
+      "kind": "Shop",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "",
+          "priceMinor": 10000,
+          "materials": [],
+          "inputCapacity": 80,
+          "outputCapacity": 0,
+          "staffCapacity": 0,
+          "wageMinor": 0
+        }
+      ]
+    }
+  ],
+  "buildings": [
+    {
+      "id": 1,
+      "ownerId": 1,
+      "position": {
+        "x": 2,
+        "z": 0
+      },
+      "typeId": "shop",
+      "level": 1,
+      "staff": 0,
+      "enabled": false
+    },
+    {
+      "id": 2,
+      "ownerId": 2,
+      "position": {
+        "x": 5,
+        "z": 0
+      },
+      "typeId": "shop",
+      "level": 1,
+      "staff": 0,
+      "enabled": false
+    }
+  ],
+  "labor": {
+    "stepTicks": 10,
+    "salaryChangeDelayTicks": 20,
+    "mobilityNumerator": 1,
+    "mobilityDenominator": 10,
+    "growthPeriodTicks": 120,
+    "growthPerPeriod": 0
+  },
+  "delivery": {
+    "contractTtlTicks": 40,
+    "fineBasisPoints": 500,
+    "offerTtlTicks": 180
+  }
+}

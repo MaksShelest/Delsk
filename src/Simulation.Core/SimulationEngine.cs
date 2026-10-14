@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "pickup-1";
+    public const string RulesVersion = "delivery-1";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -144,8 +144,8 @@ public sealed partial class SimulationEngine
             foreach (var c in allowed.Where(c => !IsManagement(c.Action.Kind))) Execute(c);
             _phase = 4; AdvanceHarvests(); AdvanceWork();
             _phase = 5; AdvanceLabor();
-            _phase = 6; CloseCapitalWindows(); AdvanceMarketWindows();
-            _phase = 7; ExpirePlotReservations(); ExpirePurchases();
+            _phase = 6; CloseCapitalWindows(); AdvanceMarketWindows(); CloseBuyWindows();
+            _phase = 7; ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery();
             _phase = 9; ValidateInvariants(); Emit("TickCommitted");
         }
         finally { _stepping = false; }
@@ -184,6 +184,11 @@ public sealed partial class SimulationEngine
                 case ActionKind.RaiseBid: RaiseBid(actor, c); break;
                 case ActionKind.WithdrawBid: WithdrawBid(actor, c); break;
                 case ActionKind.CollectPurchase: CollectPurchase(actor, c); break;
+                case ActionKind.CreateBuyOffer: CreateBuyOffer(actor, c); break;
+                case ActionKind.AcceptDeliveryQuantity: AcceptDeliveryQuantity(actor, c); break;
+                case ActionKind.WithdrawSupplyRequest: WithdrawSupplyRequest(actor, c); break;
+                case ActionKind.CancelBuyOffer: CancelBuyOffer(actor, c); break;
+                case ActionKind.DeliverContract: DeliverContract(actor, c); break;
                 default: throw new RuleViolation("UnknownAction");
             }
             _results[c.CommandId] = new(c.CommandId, ResultStatus.Accepted, "Accepted", Tick);
@@ -295,11 +300,12 @@ public sealed partial class SimulationEngine
                 f.RecipeInput, f.Produced, f.Exported, f.ConstructionInput)).ToArray(),
             _offers.Values.OrderBy(o => o.Definition.Id).Select(o => new CapitalOfferView(o.Definition.Id, o.Definition.ItemId,
                 o.Remaining, o.Definition.UnitPriceMinor, o.Definition.Position, o.Cutoff,
-                o.Requests.Values.Aggregate(0L, (n, r) => checked(n + r.Quantity)))).ToArray(),
+                (long)Int128.Min(long.MaxValue, o.Requests.Values.Aggregate((Int128)0, (n, r) => n + r.Quantity) +
+                    o.SupplyRequests.Values.Aggregate((Int128)0, (n, r) => n + r.Quantity)), o.Window)).ToArray(),
             _settlements.ToArray(), _population, _unemployed,
             _economy.InitialMoney, _economy.ExternalIn, _economy.ExternalOut, LandViews(), BuildingViews(),
             EmploymentGroups().OrderBy(g => g.Id).Select(g => g.View()).ToArray(),
-            checked(_population - _config.Population), _lastGrowthPeriod, EquipmentViews(), MarketOfferViews(), MarketBidViews(), _marketAllocations.ToArray());
+            checked(_population - _config.Population), _lastGrowthPeriod, EquipmentViews(), MarketOfferViews(), MarketBidViews(), _marketAllocations.ToArray(), BuyOfferViews(), SupplyRequestViews(), _deliveryContracts.ToArray());
     }
     public ParticipantObservation Observe(ParticipantId actorId)
     {
@@ -312,7 +318,9 @@ public sealed partial class SimulationEngine
             view.EmploymentGroups.Select(g => new PublicEmploymentView(g.Id, g.OwnerId, g.Role, g.Headcount, g.Capacity, g.PendingWageMinor ?? g.WageMinor)).ToArray(),
             view.Population, view.Unemployed, view.Equipment.Where(e => e.OwnerId == actorId).ToArray(), CopyEquipmentCatalog(), view.MarketOffers.Where(o => o.Status != MarketOfferStatus.Closed || o.Seller == actorId).ToArray(),
             view.MarketBids.Where(b => b.Buyer == actorId).ToArray(),
-            view.MarketAllocations.Where(a => a.Buyer == actorId || a.Seller == actorId).ToArray(), Market);
+            view.MarketAllocations.Where(a => a.Buyer == actorId || a.Seller == actorId).ToArray(), Market, view.BuyOffers.Where(o => o.Status == "Open" || o.Buyer == actorId).ToArray(),
+            view.SupplyRequests.Where(r => r.Supplier == actorId).ToArray(),
+            view.DeliveryContracts.Where(d => d.Supplier == actorId || d.Buyer == actorId).ToArray(), Delivery);
     }
     public string ComputeStateHash() => ScenarioValidation.Hash(new
     {

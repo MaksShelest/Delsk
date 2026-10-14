@@ -20,7 +20,7 @@ internal record SavedEnterprise(EnterpriseDefinition Definition, long Input, lon
 internal record SavedEquipment(long Id, long Owner, Cell Position, long Storage, string TypeId, int Level,
     EquipmentMode Mode, string Reason, SavedBatch? Batch, long Completed, long PersonalJobId, EmploymentView Group);
 internal record SavedSale(long ActorId, long InventoryId, long Quantity, string Reservation, string CommandId);
-internal record SavedOffer(long Id, long Remaining, long? Cutoff, SavedSale[] Requests);
+internal record SavedOffer(long Id, long Remaining, long? Cutoff, SavedSale[] Requests, SupplyRequest[] SupplyRequests, int Window);
 internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, ScenarioDefinition Config, string ConfigHash,
     string StateHash, long Tick, long NextId, long EventSequence, ulong AllocationRandom, ulong CommandRandom,
     ulong LaborRandom, long Population, long Unemployed, long LastGrowthPeriod,
@@ -29,11 +29,11 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
     BuildingView[] Buildings, SavedOffer[] Offers, FlowView[] Flows, SettlementView[] Settlements,
     long[] CompletedJobs, CommandEnvelope[] Commands, CommandResult[] Results, string[] Pending,
     LedgerRecord[] Ledger, SimulationEvent[] Events, ulong MarketRandom,
-    SavedMarketOffer[] MarketOffers, MarketAllocationView[] MarketAllocations);
+    SavedMarketOffer[] MarketOffers, MarketAllocationView[] MarketAllocations, SavedBuyOffer[] BuyOffers, DeliveryContractView[] DeliveryContracts, long CapitalCompensation);
 
 public sealed partial class SimulationEngine
 {
-    public const int CheckpointSchemaVersion = 3;
+    public const int CheckpointSchemaVersion = 4;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
@@ -63,10 +63,10 @@ public sealed partial class SimulationEngine
             world.Plots, world.Buildings,
             _offers.Values.OrderBy(o => o.Definition.Id).Select(o => new SavedOffer(o.Definition.Id, o.Remaining, o.Cutoff,
                 o.Requests.Values.OrderBy(r => r.ActorId).Select(r => new SavedSale(r.ActorId, r.InventoryId, r.Quantity,
-                    r.Reservation, r.CommandId)).ToArray())).ToArray(), world.Flows, world.Settlements,
+                    r.Reservation, r.CommandId)).ToArray(), o.SupplyRequests.Values.OrderBy(r => r.Supplier.Value).ToArray(), o.Window)).ToArray(), world.Flows, world.Settlements,
             _completedPersonalJobs.Order().ToArray(), _seenCommands.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(),
             _results.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(), _pending.Select(c => c.CommandId).ToArray(),
-            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray());
+            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation);
         return JsonSerializer.Serialize(saved, SimulationJson.Options);
     }
     private static KeyValuePair<string, long>[] Ordered(Dictionary<string, long> values)
@@ -179,7 +179,8 @@ public sealed partial class SimulationEngine
         foreach (var v in s.Offers)
         {
             if (!seenOffers.Add(v.Id)) throw new CheckpointException("DuplicateOffer");
-            var o = _offers[v.Id]; o.Remaining = v.Remaining; o.Cutoff = v.Cutoff; o.Requests.Clear();
+            var o = _offers[v.Id]; o.Remaining = v.Remaining; o.Cutoff = v.Cutoff; o.Window = v.Window; o.Requests.Clear(); o.SupplyRequests.Clear();
+            foreach (var r in v.SupplyRequests) o.SupplyRequests.Add(r.Supplier.Value, r);
             foreach (var r in v.Requests) o.Requests.Add(r.ActorId, new(r.ActorId, r.InventoryId, r.Quantity, r.Reservation, r.CommandId));
         }
         _flows.Clear();
@@ -198,6 +199,7 @@ public sealed partial class SimulationEngine
         foreach (string id in s.Pending) _pending.Add(_seenCommands[id]);
         _events.Clear(); _events.AddRange(s.Events);
         RestoreMarket(s.MarketOffers, s.MarketAllocations, s.MarketRandom);
+        RestoreDelivery(s.BuyOffers, s.DeliveryContracts, s.CapitalCompensation);
         _phase = Tick == 0 ? 0 : 9;
     }
 }

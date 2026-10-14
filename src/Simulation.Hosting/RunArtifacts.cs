@@ -27,7 +27,7 @@ public static class RunArtifacts
             Controller = session.HasControllers ? "algorithmic" : session.PlaybackFinalTick.HasValue ? "recorded-inputs" : "scripted",
             Controllers = session.ControllerStates, ControllerStateHash = session.ComputeControllerStateHash(), Model = (string?)null, RuntimeVersion = Environment.Version.ToString(),
             Commit = Environment.GetEnvironmentVariable("DELSK_COMMIT"), TickSeconds = 1,
-            Stage = "P15", Author = "Шелестов Максим Евгеньевич"
+            Stage = "P16", Author = "Шелестов Максим Евгеньевич"
         });
         WriteJson("summary.json", new { Status = status, Failure = failure, state.Tick, StateHash = session.Engine.ComputeStateHash(),
             ControllerStateHash = session.ComputeControllerStateHash(),
@@ -35,8 +35,9 @@ public static class RunArtifacts
             ControllerRejections = session.ControllerTurns.Sum(t => t.Feedback.Count(r => r.Status == ResultStatus.Rejected)),
             ElapsedMilliseconds = elapsedMilliseconds, AverageMillisecondsPerTick = state.Tick > 0 ? elapsedMilliseconds / state.Tick : (double?)null,
             state.InitialMoneyMinor, state.ExternalMoneyInMinor, state.ExternalMoneyOutMinor, state.Accounts, state.Flows,
-            state.Settlements, state.MarketOffers, state.MarketBids, state.MarketAllocations, state.Population, state.Unemployed, state.EmploymentGroups, state.PopulationGrowth, RamBytes = (long?)null, RamMeasurementReason = "not measured" });
+            state.Settlements, state.MarketOffers, state.MarketBids, state.MarketAllocations, state.BuyOffers, state.SupplyRequests, state.DeliveryContracts, state.Population, state.Unemployed, state.EmploymentGroups, state.PopulationGrowth, RamBytes = (long?)null, RamMeasurementReason = "not measured" });
         WriteJson("scenario.json", definition);
+        WriteJson("delivery.json", new { state.BuyOffers, state.SupplyRequests, Contracts = state.DeliveryContracts });
         WriteJson("market.json", new { Offers = state.MarketOffers, Bids = state.MarketBids, Allocations = state.MarketAllocations });
         WriteJson("final-state.json", state); // Inspection export; this is not a loadable checkpoint (P12).
         WriteLines("events.jsonl", session.Engine.EventsSince(0));

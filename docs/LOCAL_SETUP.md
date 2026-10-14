@@ -1,13 +1,13 @@
 # Локальная проверка: Windows, Rider и Godot
 
-Автор: Шелестов Максим Евгеньевич. Итерация P15, 14.10.2026.
+Автор: Шелестов Максим Евгеньевич. Итерация P16, 14.10.2026.
 
 ## Получить исходники
 
 Ниже команды **PowerShell**, из выбранного рабочего каталога. Нужен Git. Новая копия:
 
 ```powershell
-git clone --branch feat/pickup-p15 https://github.com/MaksShelest/Delsk.git Delsk
+git clone --branch feat/delivery-p16 https://github.com/MaksShelest/Delsk.git Delsk
 cd Delsk
 ```
 
@@ -15,10 +15,10 @@ cd Delsk
 
 ```powershell
 git fetch origin
-git switch --track origin/feat/pickup-p15
+git switch --track origin/feat/delivery-p16
 ```
 
-Если эта локальная ветка уже существует, вместо последней строки выполнить `git switch feat/pickup-p15`, затем `git pull --ff-only`. При ошибке о локальных изменениях остановить переключение и сохранить свою работу. После объединения PR можно перейти на актуальную основную ветку; сейчас default branch репозитория называется `feat/economic-cycle-p00-p05`, а не `main`.
+Если эта локальная ветка уже существует, вместо последней строки выполнить `git switch feat/delivery-p16`, затем `git pull --ff-only`. При ошибке о локальных изменениях остановить переключение и сохранить свою работу. После объединения PR можно перейти на актуальную основную ветку; сейчас default branch репозитория называется `feat/economic-cycle-p00-p05`, а не `main`.
 
 ## Проверить окружение и собрать ядро
 
@@ -79,17 +79,17 @@ dotnet build src/Client.Godot/Delsk.Client.csproj --no-restore --disable-build-s
 dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/equipment-cycle.json --script equipment --output artifacts/equipment
 ```
 
-Ожидается200 тиков: личная добыча малой/большой машиной, наём automatic экипажа, один цикл, неоплачиваемая остановка и постепенный уход, физический вывоз/продажа двух видов сырья. Подробные числовые ожидания — PROTOTYPE_STATUS.md. Текущий набор132 тестов. Godot по-прежнему технический стенд; интерфейса управления техникой пока нет.
+Ожидается200 тиков: личная добыча малой/большой машиной, наём automatic экипажа, один цикл, неоплачиваемая остановка и постепенный уход, физический вывоз/продажа двух видов сырья. Подробные числовые ожидания — PROTOTYPE_STATUS.md. Текущий набор249 тестов. Godot по-прежнему технический стенд; интерфейса управления техникой пока нет.
 
 ## Сохранения и общая проверка P12
 
-[HEADLESS_TESTING.md](HEADLESS_TESTING.md) объясняет ядро/runner и даёт алгоритм проверки без графики. С Python: `python scripts/check_headless.py --output artifacts/headless`. Это все готовые fixtures + две save/load пары, не ещё отсутствующие NPC/рынок/выборы.
+[HEADLESS_TESTING.md](HEADLESS_TESTING.md) объясняет ядро/runner и даёт алгоритм проверки без графики. С Python: `python scripts/check_headless.py --output artifacts/headless-p16`. Это10 сценариев/7 save-load пар, включая самостоятельных NPC и рынок; полная игра с выборами ещё не готова.
 
-Godot-стенд имеет кнопки Сохранить/Загрузить/Восстановить из backup и user://platform-checkpoint.json. При сворачивании/фокусе сохраняет committed tick, при возврате elapsed сбрасывается; autosave30 и обычный выход. На реальном телефоне поведение ещё не проверено. Новые standalone APK/EXE в P12 не экспортировались.
+Godot-стенд имеет кнопки Сохранить/Загрузить/Восстановить из backup и user://platform-checkpoint-delivery-1.json. При сворачивании/фокусе сохраняет committed tick, при возврате elapsed сбрасывается; autosave30 и обычный выход. На реальном телефоне поведение ещё не проверено. Новые standalone APK/EXE в P12 не экспортировались.
 
 ## Автономная экономика P13
 
-Обновить исходники до feat/pickup-p15, открыть корневой Delsk.sln, restore/build как выше. Запуск из Rider Terminal без Python/Godot:
+Обновить исходники до feat/delivery-p16, открыть корневой Delsk.sln, restore/build как выше. Запуск из Rider Terminal без Python/Godot:
 
 ```powershell
 dotnet run --project src/Research.Runner -c Release --no-build -- --script autonomous --ticks 1000 --seed 42 --output artifacts/run-42
@@ -109,16 +109,34 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --scenario sce
 
 ## Выдача P15: локальная проверка
 
-Обновить ветку `feat/pickup-p15`, открыть Delsk.sln в Rider и выполнить restore/build из инструкции выше. Игровая экономика работает в C#, Python для этого запуска не требуется:
+Обновить ветку `feat/delivery-p16`, открыть Delsk.sln в Rider и выполнить restore/build из инструкции выше. Игровая экономика работает в C#, Python для этого запуска не требуется:
 
 ```powershell
 dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/pickup-lifecycle.json --script pickup --output artifacts/pickup
-dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/pickup-lifecycle.json --script pickup --checkpoint artifacts/pickup-p15.save.json --checkpoint-at 47 --output artifacts/pickup-saved
-dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/pickup-p15.save.json --output artifacts/pickup-loaded
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/pickup-lifecycle.json --script pickup --checkpoint artifacts/pickup-p16.save.json --checkpoint-at 47 --output artifacts/pickup-saved
+dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/pickup-p16.save.json --output artifacts/pickup-loaded
 ```
 
-Ожидается succeeded,52 ticks; market.json: Collected6/Released4/Remaining0, Paid3000/Fine100/Refund1900 minor. В ledger.jsonl видны две PickupPayment по1500, PickupFine100, PickupRefund1900. Товар покупателя6, продавца4; общие деньги20000. Это две реальные поездки carrier3, expiry48 во второй обратной поездке; при загрузке tick47 путь/груз продолжаются. Для локальной полной регрессии — `python scripts/check_headless.py` (необязательный orchestration,205 тестов/8 сценариев/5 load pairs).
+Ожидается succeeded,52 ticks; market.json: Collected6/Released4/Remaining0, Paid3000/Fine100/Refund1900 minor. В ledger.jsonl видны две PickupPayment по1500, PickupFine100, PickupRefund1900. Товар покупателя6, продавца4; общие деньги20000. Это две реальные поездки carrier3, expiry48 во второй обратной поездке; при загрузке tick47 путь/груз продолжаются. Для локальной полной регрессии — `python scripts/check_headless.py` (необязательный orchestration,249 тестов/8 сценариев/5 load pairs).
 
 Godot: импортировать src/Client.Godot/project.godot .NET-редактором4.7.2, собрать Delsk.Client.sln в Rider. Он ссылается на те же Core/Hosting: копировать код пофайлово не нужно. Сцена пока technical62-tick probe; human market UI — P26.
 
-Текущие World3/Rules pickup-1 несовместимы с World1/2. **Не перезаписывать старый save**: новый файл для новой партии. Прежние партии открывать прежней веткой (World2: feat/market-p14; World1: feat/autonomous-p13) в отдельной копии. Автоматического преобразования нет. Новый Godot путь user://platform-checkpoint-pickup-1.json не заменяет прежний.
+Исторические saves P15 World3/Rules pickup-1 несовместимы с World1/2. **Не перезаписывать старый save**: новый файл для новой партии. Прежние партии открывать прежней веткой (World2: feat/market-p14; World1: feat/autonomous-p13) в отдельной копии. Автоматического преобразования нет. Godot путь итерации P15 user://platform-checkpoint-pickup-1.json не заменяет прежний.
+
+
+## Поставочные договоры P16: локальная проверка
+
+Текущая ветка `feat/delivery-p16`. После `git fetch origin` переключить её через Rider или `git switch --track origin/feat/delivery-p16`; если уже существует, `git switch feat/delivery-p16` и `git pull --ff-only`. При локальных изменениях сохранить их перед переключением. Открыть Delsk.sln, restore/build как выше; Python для самого C# прогона не требуется.
+
+```powershell
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/delivery-lifecycle.json --script delivery --output artifacts/delivery
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/delivery-lifecycle.json --script delivery --checkpoint artifacts/delivery-p16.save.json --checkpoint-at 37 --output artifacts/delivery-saved
+dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/delivery-p16.save.json --output artifacts/delivery-loaded
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/capital-delivery.json --script capital-delivery --output artifacts/capital-delivery
+```
+
+Первый результат succeeded/48 ticks. В delivery.json contract Expired, Delivered6/Unfulfilled4, Paid3000/Refund2000/Fine100/BondReturned150 minor. Supplier12900/buyer7100. В ledger две оплаты1500, возврат2000, штраф100, возврат залога150; stock buyer6, общие деньги20000. Save37 восстанавливает второй outbound путь. Capital demo47 ticks: тот же финансовый расчёт, Exported6, бюджет столицы2000 и compensation100, supplier12900; начальная внешняя эмиссия только5000.
+
+Полный набор `python scripts/check_headless.py`:249 tests,10 scenarios,7 save/load pairs. Core .NET SDK10.0.401/TFMnet10.0 и Godot4.7.2 .NET не изменились. Для клиента открыть src/Client.Godot/project.godot и собрать Delsk.Client.sln в Rider; UI всё ещё technical probe.
+
+Current saves **World4/Rules delivery-1, Session2/Envelope1**. World1–3 не мигрируются; старые файлы открыть прежним кодом в отдельных копиях (P15: feat/pickup-p15; P14: feat/market-p14; P13: feat/autonomous-p13). Новая партия — новый файл; Godot user://platform-checkpoint-delivery-1.json. Код не нужно вручную переносить пофайлово, Core/Hosting уже связаны ProjectReference.

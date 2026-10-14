@@ -239,6 +239,15 @@ internal sealed class EconomyTransaction
     }
     public void ReleaseCapacity(long id, string hold)
     { if (!Inventory(id).CapacityHolds.Remove(hold)) throw new RuleViolation("MissingReservation"); }
+    public void ReceiveReservedCapacity(long id, string hold, string item, long quantity)
+    {
+        long volume = Volume(item, quantity); var inventory = Inventory(id);
+        if (!inventory.CapacityHolds.TryGetValue(hold, out long reserved) || reserved < volume)
+            throw new RuleViolation("NoCapacityReserved");
+        if (reserved == volume) inventory.CapacityHolds.Remove(hold);
+        else inventory.CapacityHolds[hold] = checked(reserved - volume);
+        AddStock(id, item, quantity);
+    }
     public void Commit()
     {
         if (_committed) throw new InvalidOperationException("Transaction already committed");

@@ -82,6 +82,59 @@ def verify(folder):
     assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'MarketEscrow') == sum(a['quantity'] * a['unitPriceMinor'] for a in allocations)
     for offer in state.get('marketOffers', []):
         assert sum(a['quantity'] for a in allocations if a['offerId'] == offer['id']) == offer['allocatedQuantity'] <= offer['quantity']
+    config = json.loads((folder/'scenario.json').read_text(encoding='utf-8'))
+    delivery_rules = config.get('delivery') or {}
+    rate = delivery_rules.get('fineBasisPoints', 500)
+    contracts = state.get('deliveryContracts', [])
+    people = {p['id']['value']: p['accountId']['value'] for p in state['participants']}
+    items = {i['id']: i['unitVolume'] for i in config['items']}
+    assert len({d['id'] for d in contracts}) == len(contracts)
+    financial_ids = [a['escrowAccount']['value'] for a in allocations] + [d[k]['value'] for d in contracts for k in ['escrowAccount','bondAccount']]
+    assert len(set(financial_ids)) == len(financial_ids)
+    for d in contracts:
+        q, delivered, remaining, unfulfilled = (d[k] for k in ['quantity','deliveredQuantity','remainingQuantity','unfulfilledQuantity'])
+        price = d['unitPriceMinor']; active = d['closedTick'] is None
+        assert min(delivered, remaining, unfulfilled) >= 0 and q > 0 and q == delivered + remaining + unfulfilled
+        assert d['preparedQuantity'] == d['inTransitQuantity'] == 0 and d['unprovidedQuantity'] == remaining
+        assert d['paidMinor'] == delivered * price and d['refundedMinor'] == unfulfilled * price
+        assert d['bondMinor'] == q * price * rate // 10000 and d['fineMinor'] == unfulfilled * price * rate // 10000
+        assert d['bondReturnedMinor'] == (0 if active else d['bondMinor'] - d['fineMinor'])
+        assert d['deadlineTick'] == d['createdTick'] + delivery_rules.get('contractTtlTicks', 180)
+        if active:
+            assert remaining > 0 and unfulfilled == 0 and d['deadlineTick'] > state['tick']
+            assert d['status'] == ('Active' if delivered == 0 else 'PartiallyDelivered')
+        else:
+            assert remaining == 0 and d['createdTick'] < d['closedTick'] <= min(state['tick'], d['deadlineTick'])
+            assert d['status'] == ('Expired' if unfulfilled else 'Fulfilled')
+            if unfulfilled: assert d['closedTick'] == d['deadlineTick']
+        escrow, bond = accounts[d['escrowAccount']['value']], accounts[d['bondAccount']['value']]
+        assert escrow['kind'] == 'ContractEscrow' and escrow['balanceMinor'] == remaining * price
+        assert bond['kind'] == 'SupplierBond' and bond['balanceMinor'] == (d['bondMinor'] if active else 0)
+        assert d['paidMinor'] + d['refundedMinor'] + escrow['balanceMinor'] == q * price
+        assert d['fineMinor'] + d['bondReturnedMinor'] + bond['balanceMinor'] == d['bondMinor']
+        if d['buyer'] is not None:
+            assert d['buyer'] != d['supplier'] and d['buyerAccount']['value'] == people[d['buyer']['value']]
+            destination = inventories[d['destinationInventory']['value']]
+            assert destination['ownerId'] == d['buyer'] and destination['position'] == d['position']
+            assert destination['reservedCapacity'] >= remaining * items[d['itemId']]
+        else:
+            assert d['destinationInventory'] is None and accounts[d['buyerAccount']['value']]['kind'] == 'CapitalBudget'
+        for account, fields in [(d['escrowAccount']['value'], [('DeliveryPayment','paidMinor'),('DeliveryRefund','refundedMinor')]),
+                                (d['bondAccount']['value'], [('DeliveryFine','fineMinor'),('DeliveryBondReturn','bondReturnedMinor')])]:
+            entries = [l for l in ledger if l['debitAccount']['value'] == account]
+            assert {l['reason'] for l in entries} <= {reason for reason, _ in fields}
+            for reason, field in fields: assert sum(l['amountMinor'] for l in entries if l['reason'] == reason) == d[field]
+    for inventory in state['inventories']:
+        claims = sum(d['remainingQuantity'] * items[d['itemId']] for d in contracts if d['destinationInventory'] == inventory['id'])
+        assert claims <= inventory['reservedCapacity']
+    for offer in state.get('buyOffers', []):
+        assert offer['quantity'] == offer['allocatedQuantity'] + offer['remainingQuantity'] + offer['releasedQuantity']
+        assert offer['allocatedQuantity'] == sum(d['quantity'] for d in contracts if d['buyOfferId'] == offer['id'])
+    capital_orders = {o['id']: o for o in config['capitalOffers']}
+    for offer in state['capitalOffers']:
+        assert capital_orders[offer['id']]['quantity'] == offer['remainingQuantity'] + sum(s['accepted'] for s in state['settlements'] if s['offerId'] == offer['id']) + sum(d['quantity'] for d in contracts if d['capitalOfferId'] == offer['id'])
+    assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'DeliveryFunding') == sum(d['quantity'] * d['unitPriceMinor'] for d in contracts)
+    assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'DeliveryBond') == sum(d['bondMinor'] for d in contracts)
     print(f'{folder}: money, item flows, capacity, population and settlements verified; tick={summary["tick"]}')
 
 if len(sys.argv) < 2:

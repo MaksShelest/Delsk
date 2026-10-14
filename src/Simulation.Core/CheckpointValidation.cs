@@ -121,7 +121,7 @@ public sealed partial class SimulationEngine
         foreach (var o in _offers.Values)
         {
             if (o.Remaining < 0 || o.Remaining > o.Definition.Quantity || o.Cutoff <= Tick ||
-                (o.Requests.Count > 0 && o.Cutoff is null)) throw new CheckpointException("InvalidTradeWindow");
+                ((o.Requests.Count + o.SupplyRequests.Count) > 0 && o.Cutoff is null)) throw new CheckpointException("InvalidTradeWindow");
             long budget = checked(o.Remaining * o.Definition.UnitPriceMinor);
             if (budget > 0) expectedMoney.Add((_capital, o.BudgetHold), budget);
             foreach (var r in o.Requests.Values)
@@ -132,6 +132,7 @@ public sealed partial class SimulationEngine
             }
         }
         AddExpectedMarketHolds(expectedStock, expectedMoney);
+        AddExpectedDeliveryHolds(expectedCapacity, expectedMoney);
         foreach (var inv in _economy.Inventories.Values)
         {
             foreach (var h in inv.CapacityHolds)
@@ -147,7 +148,7 @@ public sealed partial class SimulationEngine
                     throw new CheckpointException("OrphanMoneyReservation");
         if (expectedCapacity.Count + expectedStock.Count + expectedMoney.Count != 0) throw new CheckpointException("MissingReservation");
         long maximum = _economy.Accounts.Keys.Concat(_economy.Inventories.Keys).Concat(_enterprises.Keys).Concat(_equipment.Keys)
-            .Concat(_buildings.Keys).Concat(_marketOffers.Keys).Concat(_marketAllocations.Select(a => a.Id)).Concat(_completedPersonalJobs).Concat(_events.Select(e => e.EntityId))
+            .Concat(_buildings.Keys).Concat(_buyOffers.Keys).Concat(_deliveryContracts.Select(d => d.Id)).Concat(_marketOffers.Keys).Concat(_marketAllocations.Select(a => a.Id)).Concat(_completedPersonalJobs).Concat(_events.Select(e => e.EntityId))
             .Concat(_actors.Values.Where(a => a.Job != null).Select(a => a.Job!.Id)).DefaultIfEmpty(0).Max();
         if (_nextId <= maximum) throw new CheckpointException("NextIdWouldDuplicateEntity");
     }
