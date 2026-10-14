@@ -73,7 +73,8 @@ public static partial class ScenarioValidation
                     long materialVolume = level.Materials.Aggregate(0L, (n, m) => checked(n + checked(m.Quantity * items[m.ItemId].UnitVolume)));
                     if (previous is not null && materialVolume > previous.InputCapacity)
                         throw new ArgumentException("Upgrade materials cannot fit the built-in input");
-                    _ = checked(level.StaffCapacity * level.WageMinor);
+                    _ = checked(level.StaffCapacity * level.WageMinor +
+                        (type.Kind == BuildingKind.Production ? recipes[level.RecipeId].EnergyPerBatchMinor : 0));
                     previous = level;
                 }
             }

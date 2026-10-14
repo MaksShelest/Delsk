@@ -69,6 +69,7 @@ internal sealed class BatchState(long id, string hold, long required)
 internal sealed class EnterpriseState(EnterpriseDefinition definition, long input, long output, RecipeDefinition recipe)
 {
     public EnterpriseDefinition Definition { get; set; } = definition;
+    public EmploymentGroup Group { get; } = new(definition.Id, definition.OwnerId, definition.Staff, definition.Capacity, definition.WageMinor);
     public long Input { get; } = input;
     public long Output { get; } = output;
     public RecipeDefinition Recipe { get; set; } = recipe;
@@ -110,6 +111,7 @@ public static partial class ScenarioValidation
             s.Participants is null || s.Enterprises is null || s.CapitalOffers is null || s.ResourceNodes is null ||
             s.Participants.Length is < 1 or > 64)
             throw new ArgumentException("Invalid scenario settings");
+        ValidateLaborSettings(s);
         var map = new GridMap(s);
         bool ValidId(long id) => id is > 0 and < 1000;
         if (s.Items.Length == 0 || s.Items.Select(i => i.Id).Distinct().Count() != s.Items.Length ||
@@ -153,7 +155,7 @@ public static partial class ScenarioValidation
                 _ = checked(r.InputQuantity * items[r.InputItem].UnitVolume);
                 _ = checked(r.OutputQuantity * items[r.OutputItem].UnitVolume);
             }
-            foreach (var e in s.Enterprises) _ = checked(e.Staff * e.WageMinor);
+            foreach (var e in s.Enterprises) _ = checked(e.Capacity * e.WageMinor + recipes[e.RecipeId].EnergyPerBatchMinor);
         }
         catch (OverflowException ex) { throw new ArgumentException("Scenario arithmetic overflow", ex); }
     }

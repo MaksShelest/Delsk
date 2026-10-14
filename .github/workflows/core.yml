@@ -21,7 +21,7 @@ jobs:
       - name: Build
         run: python scripts/run_check.py --name build --timeout 180 -- dotnet build Delsk.sln -c Release --no-restore --disable-build-servers -m:1
       - name: xUnit
-        run: python scripts/run_check.py --name tests --timeout 120 -- dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release --no-build --no-restore -- --report-trx --results-directory artifacts/test-results --minimum-expected-tests 60
+        run: python scripts/run_check.py --name tests --timeout 120 -- dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release --no-build --no-restore -- --report-trx --results-directory artifacts/test-results --minimum-expected-tests 80
       - name: Economic cycle
         env:
           DELSK_COMMIT: ${{ github.sha }}
@@ -34,8 +34,12 @@ jobs:
         env:
           DELSK_COMMIT: ${{ github.sha }}
         run: python scripts/run_check.py --name development --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/land-and-content.json --script development --output artifacts/development
+      - name: Labor delay, idle and rehiring
+        env:
+          DELSK_COMMIT: ${{ github.sha }}
+        run: python scripts/run_check.py --name labor --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/labor-dynamics.json --script labor --output artifacts/labor
       - name: Check output balances
-        run: python scripts/verify_results.py artifacts/cycle artifacts/recovery artifacts/development
+        run: python scripts/verify_results.py artifacts/cycle artifacts/recovery artifacts/development artifacts/labor
       - uses: actions/upload-artifact@v4
         if: always()
         with:

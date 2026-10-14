@@ -26,22 +26,27 @@ public static class RunArtifacts
             ConfigHash = session.Engine.ConfigHash, TimingPolicy = timingPolicy, Script = script,
             Controller = "scripted", Model = (string?)null, RuntimeVersion = Environment.Version.ToString(),
             Commit = Environment.GetEnvironmentVariable("DELSK_COMMIT"), TickSeconds = 1,
-            Stage = "P07-P08", Author = "Шелестов Максим Евгеньевич"
+            Stage = "P09-P10", Author = "Шелестов Максим Евгеньевич"
         });
         WriteJson("summary.json", new { Status = status, Failure = failure, state.Tick, StateHash = session.Engine.ComputeStateHash(),
             ElapsedMilliseconds = elapsedMilliseconds, AverageMillisecondsPerTick = state.Tick > 0 ? elapsedMilliseconds / state.Tick : (double?)null,
             state.InitialMoneyMinor, state.ExternalMoneyInMinor, state.ExternalMoneyOutMinor, state.Accounts, state.Flows,
-            state.Settlements, RamBytes = (long?)null, RamMeasurementReason = "not measured" });
+            state.Settlements, state.Population, state.Unemployed, state.EmploymentGroups, state.PopulationGrowth, RamBytes = (long?)null, RamMeasurementReason = "not measured" });
         WriteJson("final-state.json", state); // Inspection export; this is not a loadable checkpoint (P12).
         WriteLines("events.jsonl", session.Engine.EventsSince(0));
         WriteLines("commands.jsonl", session.CommandTape);
         WriteLines("ledger.jsonl", session.Engine.Ledger());
         using var csv = new StreamWriter(Path.Combine(directory, "metrics.csv"), false, new UTF8Encoding(false));
-        csv.WriteLine("tick,participant_cash_minor,wages_minor,energy_minor,harvested,produced,exported,state_hash");
+        csv.WriteLine("tick,participant_cash_minor,wages_minor,energy_minor,harvested,produced,exported,state_hash,population,unemployed");
         foreach (var sample in session.Samples)
             csv.WriteLine(string.Join(',', new[] { sample.Tick, sample.ParticipantCashMinor, sample.WageExpenseMinor,
                 sample.EnergyExpenseMinor, sample.Harvested, sample.Produced, sample.Exported }.Select(x => x.ToString(CultureInfo.InvariantCulture)))
-                + "," + sample.StateHash);
+                + "," + sample.StateHash + "," + sample.Population.ToString(CultureInfo.InvariantCulture) + "," + sample.Unemployed.ToString(CultureInfo.InvariantCulture));
+        using var labor = new StreamWriter(Path.Combine(directory, "labor.csv"), false, new UTF8Encoding(false));
+        labor.WriteLine("tick,group_id,owner_id,headcount,capacity,wage_minor,attraction_wage_minor,target,ready,reason,credit");
+        foreach (var sample in session.LaborSamples)
+            foreach (var group in sample.EmploymentGroups)
+                labor.WriteLine(FormattableString.Invariant($"{sample.Tick},{group.Id.Value},{group.OwnerId.Value},{group.Headcount},{group.Capacity},{group.WageMinor},{group.AttractionWageMinor},{group.TargetHeadcount},{group.Ready},{group.ReadinessReason},{group.MobilityCredit}"));
         void WriteJson(string name, object value) => File.WriteAllText(Path.Combine(directory, name), JsonSerializer.Serialize(value, json), new UTF8Encoding(false));
         void WriteLines<T>(string name, IEnumerable<T> values)
         {

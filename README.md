@@ -85,3 +85,13 @@ python scripts/verify_results.py artifacts/development
 - [Отчёт платформенного этапа P06](docs/IMPLEMENTATION_REPORT_P06.md).
 
 - [Отчёт P07–P08](docs/IMPLEMENTATION_REPORT_P07_P08.md).
+
+## Числовая занятость P09–P10
+
+Реализованы агрегированные группы, зарплата³ с caps, прирост, задержка ставки, постепенные переходы и неоплачиваемый простой. 83 xUnit-теста проверены; автономные NPC остаются P13/P21. Новый прогон:
+
+```bash
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/labor-dynamics.json --script labor --output artifacts/labor
+```
+
+[Windows: загрузка в Rider и Godot](docs/LOCAL_SETUP.md). [Отчёт P09–P10](docs/IMPLEMENTATION_REPORT_P09_P10.md). Godot пока проигрывает техническую fixture; новый найм проверяется в runner/labor.csv.

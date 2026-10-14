@@ -9,15 +9,16 @@ public readonly record struct InventoryId(long Value);
 public readonly record struct EnterpriseId(long Value);
 public readonly record struct PlotId(long Value);
 public readonly record struct BuildingId(long Value);
+public readonly record struct EmploymentGroupId(long Value);
 public readonly record struct Cell(int X, int Z);
 
 public enum ActionKind { MoveTo, Harvest, Transfer, SetProductionEnabled, SellAvailableToCapital, CancelCapitalSale,
-    ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe }
+    ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe, SetWage }
 public enum ResultStatus { Accepted, Rejected }
 public record GameAction(ActionKind Kind, Cell Target = default, string ItemId = "", long Quantity = 0,
     InventoryId Source = default, InventoryId Destination = default, EnterpriseId Enterprise = default,
     bool Enabled = false, long OfferId = 0, PlotId Plot = default, BuildingId Building = default,
-    string BuildingTypeId = "", string RecipeId = "");
+    string BuildingTypeId = "", string RecipeId = "", EmploymentGroupId Group = default, long WageMinor = 0);
 public record CommandEnvelope(string CommandId, ParticipantId ActorId, long LocalSequence,
     long IssuedAtTick, long NotBeforeTick, long ExpiresAtTick, GameAction Action);
 public record CommandResult(string CommandId, ResultStatus Status, string ReasonCode, long AppliedTick);
@@ -44,13 +45,18 @@ public record BuildingTypeDefinition(string Id, BuildingKind Kind, Cell[] Footpr
 public record BuildingDefinition(long Id, long OwnerId, Cell Position, string TypeId, int Level = 1,
     int Staff = 0, bool Enabled = false);
 public record CapitalOfferDefinition(long Id, string ItemId, long Quantity, long UnitPriceMinor, Cell Position);
+public record LaborSettings(int StepTicks = 10, int SalaryChangeDelayTicks = 20,
+    int MobilityNumerator = 1, int MobilityDenominator = 10,
+    int GrowthPeriodTicks = 120, long GrowthPerPeriod = 1);
+public enum EmploymentRole { Production, Logistics, Extraction }
 public record ScenarioDefinition(string Id, ulong Seed, int MapWidth, int MapHeight, Cell[] BlockedCells,
     ItemDefinition[] Items, RecipeDefinition[] Recipes, ParticipantDefinition[] Participants,
     EnterpriseDefinition[] Enterprises, CapitalOfferDefinition[] CapitalOffers, ResourceNodeDefinition[] ResourceNodes,
     int HarvestTicksPerUnit = 2, int MoveTicksPerCell = 1, int TradeWindowTicks = 5,
     int MaxCommandsPerActorTick = 8, long Population = 2, long MaxTicks = 500,
     PlotDefinition[]? Plots = null, BuildingTypeDefinition[]? BuildingTypes = null,
-    BuildingDefinition[]? Buildings = null, int LandReservationTicks = 120, int MaxActivePlotReservations = 4);
+    BuildingDefinition[]? Buildings = null, int LandReservationTicks = 120, int MaxActivePlotReservations = 4,
+    LaborSettings? Labor = null);
 
 public record StockView(string ItemId, long Quantity, long Reserved);
 public record InventoryView(InventoryId Id, ParticipantId OwnerId, Cell Position, long Capacity,
@@ -75,14 +81,22 @@ public record CapitalOfferView(long Id, string ItemId, long RemainingQuantity, l
     Cell Position, long? CutoffTick, long RequestedQuantity);
 public record SettlementView(long Id, long OfferId, ParticipantId Seller, string ItemId,
     long Requested, long Accepted, long PaidMinor, long Tick, string Status);
+public record EmploymentView(EmploymentGroupId Id, ParticipantId OwnerId, EmploymentRole Role,
+    int Headcount, int Capacity, long WageMinor, long AttractionWageMinor, long? PendingWageMinor,
+    long? PayEffectiveTick, long? PendingAttractionWageMinor, long? AttractionEffectiveTick,
+    long MobilityCredit, int TargetHeadcount, bool Ready, string ReadinessReason, long AssessedAtTick);
+public record PublicEmploymentView(EmploymentGroupId Id, ParticipantId OwnerId, EmploymentRole Role,
+    int Headcount, int Capacity, long WageMinor);
 public record WorldView(long Tick, long NextId, ulong AllocationRandomState, string ConfigHash,
     AccountView[] Accounts, InventoryView[] Inventories, ParticipantView[] Participants,
     EnterpriseView[] Enterprises, FlowView[] Flows, CapitalOfferView[] CapitalOffers,
     SettlementView[] Settlements, long Population, long Unemployed, long InitialMoneyMinor,
-    long ExternalMoneyInMinor, long ExternalMoneyOutMinor, PlotView[] Plots, BuildingView[] Buildings);
+    long ExternalMoneyInMinor, long ExternalMoneyOutMinor, PlotView[] Plots, BuildingView[] Buildings,
+    EmploymentView[] EmploymentGroups, long PopulationGrowth, long LastGrowthPeriod);
 public record ParticipantObservation(long Tick, ParticipantView Participant, AccountView Account,
     InventoryView[] OwnInventories, EnterpriseView[] OwnEnterprises, CapitalOfferView[] CapitalOffers,
-    PlotView[] Plots, BuildingView[] OwnBuildings, BuildingTypeDefinition[] BuildingTypes);
+    PlotView[] Plots, BuildingView[] OwnBuildings, BuildingTypeDefinition[] BuildingTypes,
+    EmploymentView[] OwnEmploymentGroups, PublicEmploymentView[] LaborMarket, long Population, long Unemployed);
 
 public static class SimulationJson
 {

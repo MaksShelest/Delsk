@@ -383,5 +383,13 @@
     }
   ],
   "landReservationTicks": 120,
-  "maxActivePlotReservations": 4
+  "maxActivePlotReservations": 4,
+  "labor": {
+    "stepTicks": 10000,
+    "salaryChangeDelayTicks": 20,
+    "mobilityNumerator": 1,
+    "mobilityDenominator": 10,
+    "growthPeriodTicks": 120,
+    "growthPerPeriod": 0
+  }
 }
