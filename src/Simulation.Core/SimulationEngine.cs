@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "delivery-1";
+    public const string RulesVersion = "logistics-1";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -139,8 +139,8 @@ public sealed partial class SimulationEngine
                     else allowed.Add(c.c);
             _phase = 1;
             foreach (var c in allowed.Where(c => IsManagement(c.Action.Kind))) Execute(c);
-            _phase = 2; AdvanceMovements();
-            _phase = 3;
+            _phase = 2; AdvanceMovements(); AdvanceLogisticsMovements();
+            _phase = 3; AcceptLogisticsArrivals();
             foreach (var c in allowed.Where(c => !IsManagement(c.Action.Kind))) Execute(c);
             _phase = 4; AdvanceHarvests(); AdvanceWork();
             _phase = 5; AdvanceLabor();
@@ -189,6 +189,8 @@ public sealed partial class SimulationEngine
                 case ActionKind.WithdrawSupplyRequest: WithdrawSupplyRequest(actor, c); break;
                 case ActionKind.CancelBuyOffer: CancelBuyOffer(actor, c); break;
                 case ActionKind.DeliverContract: DeliverContract(actor, c); break;
+                case ActionKind.BuyLogistics: BuyLogistics(actor, c); break;
+                case ActionKind.SetLogisticsContract: SetLogisticsContract(actor, c); break;
                 default: throw new RuleViolation("UnknownAction");
             }
             _results[c.CommandId] = new(c.CommandId, ResultStatus.Accepted, "Accepted", Tick);
@@ -230,6 +232,8 @@ public sealed partial class SimulationEngine
             !_economy.Inventories.TryGetValue(c.Action.Destination.Value, out var destination) ||
             source.Owner != actor.Id || destination.Owner != actor.Id)
             throw new RuleViolation("NotAvailable");
+        if (_logistics.Values.Any(l => l.Cargo == source.Id || l.Cargo == destination.Id))
+            throw new RuleViolation("ManagedCargo");
         if (source.Position != actor.Position || destination.Position != actor.Position ||
             (source.Id != actor.Inventory && destination.Id != actor.Inventory))
             throw new RuleViolation("NotAtLocation");
@@ -305,7 +309,7 @@ public sealed partial class SimulationEngine
             _settlements.ToArray(), _population, _unemployed,
             _economy.InitialMoney, _economy.ExternalIn, _economy.ExternalOut, LandViews(), BuildingViews(),
             EmploymentGroups().OrderBy(g => g.Id).Select(g => g.View()).ToArray(),
-            checked(_population - _config.Population), _lastGrowthPeriod, EquipmentViews(), MarketOfferViews(), MarketBidViews(), _marketAllocations.ToArray(), BuyOfferViews(), SupplyRequestViews(), _deliveryContracts.ToArray());
+            checked(_population - _config.Population), _lastGrowthPeriod, EquipmentViews(), MarketOfferViews(), MarketBidViews(), _marketAllocations.ToArray(), BuyOfferViews(), SupplyRequestViews(), _deliveryContracts.ToArray(), LogisticsViews());
     }
     public ParticipantObservation Observe(ParticipantId actorId)
     {
@@ -320,7 +324,7 @@ public sealed partial class SimulationEngine
             view.MarketBids.Where(b => b.Buyer == actorId).ToArray(),
             view.MarketAllocations.Where(a => a.Buyer == actorId || a.Seller == actorId).ToArray(), Market, view.BuyOffers.Where(o => o.Status == "Open" || o.Buyer == actorId).ToArray(),
             view.SupplyRequests.Where(r => r.Supplier == actorId).ToArray(),
-            view.DeliveryContracts.Where(d => d.Supplier == actorId || d.Buyer == actorId).ToArray(), Delivery);
+            view.DeliveryContracts.Where(d => d.Supplier == actorId || d.Buyer == actorId).ToArray(), Delivery, view.Logistics.Where(l => l.OwnerId == actorId).ToArray(), Logistics);
     }
     public string ComputeStateHash() => ScenarioValidation.Hash(new
     {

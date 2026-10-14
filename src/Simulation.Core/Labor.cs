@@ -79,11 +79,13 @@ public sealed partial class SimulationEngine
     private LaborSettings Labor => _config.Labor ?? new();
 
     private IEnumerable<EmploymentGroup> EmploymentGroups() => _enterprises.Values.Select(e => e.Group)
-        .Concat(_equipment.Values.Select(e => e.Group));
+        .Concat(_equipment.Values.Select(e => e.Group)).Concat(_logistics.Values.Select(e => e.Group));
     private LaborWorkplace[] LaborWorkplaces() => _enterprises.Values
         .Select(e => new LaborWorkplace(e.Group, e.Recipe.MinimumStaff, VacancyReason(e), n => NextWorkCost(e, n)))
         .Concat(_equipment.Values.Select(e => new LaborWorkplace(e.Group, e.Characteristics.MinimumCrew,
             EquipmentVacancyReason(e), n => NextEquipmentCost(e, n))))
+        .Concat(_logistics.Values.Select(e => new LaborWorkplace(e.Group, Logistics.MinimumCrew,
+            LogisticsVacancyReason(e), n => NextLogisticsCost(e))))
         .OrderBy(e => e.Group.Id).ToArray();
 
     private void SetWage(ActorState actor, CommandEnvelope c)
@@ -93,8 +95,12 @@ public sealed partial class SimulationEngine
         if (c.Action.WageMinor < 0) throw new RuleViolation("InvalidWage");
         long energy = g.Role == EmploymentRole.Production ? _enterprises[g.Id].Recipe.EnergyPerBatchMinor : 0;
         _ = checked(g.Capacity * c.Action.WageMinor + energy);
+        if (g.Role == EmploymentRole.Logistics)
+            _ = checked(g.Capacity * c.Action.WageMinor * Math.Max(2L, 2L * (_config.MapWidth * _config.MapHeight - 1) * Logistics.MoveTicksPerCell));
         long payTick = checked(Tick + 1);
-        long attractionTick = checked(Tick + Math.Max(1, Labor.SalaryChangeDelayTicks));
+        if (g.Role == EmploymentRole.Logistics && _logistics[g.Id].Trip is { } trip)
+            payTick = checked(trip.EndTick + 1);
+        long attractionTick = Math.Max(payTick, checked(Tick + Math.Max(1, Labor.SalaryChangeDelayTicks)));
         g.PendingWage = c.Action.WageMinor; g.PayEffectiveTick = payTick;
         g.PendingAttractionWage = c.Action.WageMinor; g.AttractionEffectiveTick = attractionTick;
         Emit("WageChangeScheduled", actor.Id, g.Id, money: c.Action.WageMinor, command: c.CommandId);

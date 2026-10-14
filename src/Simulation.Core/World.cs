@@ -121,6 +121,15 @@ public static partial class ScenarioValidation
         if (s.Delivery is { } delivery && (delivery.ContractTtlTicks is < 1 or > 1000000 ||
             delivery.OfferTtlTicks is < 1 or > 1000000 || delivery.FineBasisPoints is < 0 or > 10000))
             throw new ArgumentException("Invalid delivery settings");
+        if (s.Logistics is { } logistics && (logistics.PurchasePriceMinor <= 0 || logistics.CargoCapacity <= 0 ||
+            logistics.MoveTicksPerCell is < 1 or > 1000 || logistics.MinimumCrew < 1 ||
+            logistics.CrewCapacity < logistics.MinimumCrew || logistics.CrewCapacity > 1000 || logistics.WageMinor < 0))
+            throw new ArgumentException("Invalid logistics settings");
+        if (s.Logistics is { } payroll)
+        {
+            try { _ = checked(payroll.CrewCapacity * payroll.WageMinor * Math.Max(2L, 2L * (s.MapWidth * s.MapHeight - 1) * payroll.MoveTicksPerCell)); }
+            catch (OverflowException ex) { throw new ArgumentException("Logistics payroll overflow", ex); }
+        }
         ValidateLaborSettings(s);
         ValidateEquipmentCatalog(s);
         var map = new GridMap(s);

@@ -186,5 +186,6 @@ public sealed partial class SimulationEngine
         ValidateEquipmentInvariants();
         ValidateMarketInvariants();
         ValidateDeliveryInvariants();
+        ValidateLogisticsInvariants();
     }
 }

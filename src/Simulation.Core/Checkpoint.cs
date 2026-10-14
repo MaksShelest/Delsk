@@ -29,11 +29,11 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
     BuildingView[] Buildings, SavedOffer[] Offers, FlowView[] Flows, SettlementView[] Settlements,
     long[] CompletedJobs, CommandEnvelope[] Commands, CommandResult[] Results, string[] Pending,
     LedgerRecord[] Ledger, SimulationEvent[] Events, ulong MarketRandom,
-    SavedMarketOffer[] MarketOffers, MarketAllocationView[] MarketAllocations, SavedBuyOffer[] BuyOffers, DeliveryContractView[] DeliveryContracts, long CapitalCompensation);
+    SavedMarketOffer[] MarketOffers, MarketAllocationView[] MarketAllocations, SavedBuyOffer[] BuyOffers, DeliveryContractView[] DeliveryContracts, long CapitalCompensation, SavedLogistics[] Logistics);
 
 public sealed partial class SimulationEngine
 {
-    public const int CheckpointSchemaVersion = 4;
+    public const int CheckpointSchemaVersion = 5;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
@@ -66,7 +66,7 @@ public sealed partial class SimulationEngine
                     r.Reservation, r.CommandId)).ToArray(), o.SupplyRequests.Values.OrderBy(r => r.Supplier.Value).ToArray(), o.Window)).ToArray(), world.Flows, world.Settlements,
             _completedPersonalJobs.Order().ToArray(), _seenCommands.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(),
             _results.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(), _pending.Select(c => c.CommandId).ToArray(),
-            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation);
+            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics());
         return JsonSerializer.Serialize(saved, SimulationJson.Options);
     }
     private static KeyValuePair<string, long>[] Ordered(Dictionary<string, long> values)
@@ -200,6 +200,7 @@ public sealed partial class SimulationEngine
         _events.Clear(); _events.AddRange(s.Events);
         RestoreMarket(s.MarketOffers, s.MarketAllocations, s.MarketRandom);
         RestoreDelivery(s.BuyOffers, s.DeliveryContracts, s.CapitalCompensation);
+        RestoreLogistics(s.Logistics);
         _phase = Tick == 0 ? 0 : 9;
     }
 }

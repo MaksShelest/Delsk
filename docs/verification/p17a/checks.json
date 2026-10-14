@@ -1,0 +1,252 @@
+{
+  "stage": "P17a",
+  "author": "Шелестов Максим Евгеньевич",
+  "rules": "logistics-1",
+  "world_schema": 5,
+  "session_schema": 2,
+  "envelope_format": 1,
+  "tests": {
+    "total": 281,
+    "failed": 0,
+    "skipped": 0,
+    "elapsed_seconds": 19.403
+  },
+  "headless": {
+    "status": "succeeded",
+    "scenarios": [
+      "cycle",
+      "recovery",
+      "development",
+      "labor",
+      "equipment",
+      "autonomous",
+      "market",
+      "pickup",
+      "delivery",
+      "capital-delivery",
+      "logistics"
+    ],
+    "checkpoint_cases": {
+      "cycle": 55,
+      "equipment": 101,
+      "autonomous": 350,
+      "market": 44,
+      "pickup": 47,
+      "delivery": 37,
+      "capital-delivery": 3,
+      "logistics": 69
+    },
+    "comparison": "every exported tick hash, state, ledger, event, command and labor row",
+    "scope": "P00-P17a: ten scripted fixtures including a full transport round trip plus three autonomous NPC; logistics queues/upgrades/politics remain future tasks",
+    "author": "Шелестов Максим Евгеньевич"
+  },
+  "platform": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "0bef029702cc667580d7b3a202ca2137e7f4bb0aeb3aa4f70ac1c39113ff5070",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "checks": {
+    "fetch": {
+      "exit_code": 0,
+      "elapsed_seconds": 5.182,
+      "timeout_seconds": 60,
+      "started_at": "2026-10-14T12:05:46.585936+00:00",
+      "finished_at": "2026-10-14T12:05:51.768271+00:00"
+    },
+    "build-corrected": {
+      "exit_code": 0,
+      "elapsed_seconds": 12.843,
+      "timeout_seconds": 180,
+      "started_at": "2026-10-14T12:18:36.160451+00:00",
+      "finished_at": "2026-10-14T12:18:49.003695+00:00"
+    },
+    "build-scenario": {
+      "exit_code": 0,
+      "elapsed_seconds": 4.328,
+      "timeout_seconds": 180,
+      "started_at": "2026-10-14T12:20:05.141186+00:00",
+      "finished_at": "2026-10-14T12:20:09.468842+00:00"
+    },
+    "baseline-current": {
+      "exit_code": 0,
+      "elapsed_seconds": 18.076,
+      "timeout_seconds": 120,
+      "started_at": "2026-10-14T12:20:49.601369+00:00",
+      "finished_at": "2026-10-14T12:21:07.677152+00:00"
+    },
+    "headless-final-2": {
+      "exit_code": 0,
+      "elapsed_seconds": 52.869,
+      "timeout_seconds": 600,
+      "started_at": "2026-10-14T12:33:31.636578+00:00",
+      "finished_at": "2026-10-14T12:34:24.505781+00:00"
+    },
+    "platform-fixture": {
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "timeout_seconds": 15,
+      "started_at": "2026-10-14T12:38:21.436936+00:00",
+      "finished_at": "2026-10-14T12:38:21.469394+00:00"
+    },
+    "godot-build": {
+      "exit_code": 0,
+      "elapsed_seconds": 8.848,
+      "timeout_seconds": 180,
+      "started_at": "2026-10-14T12:38:21.507025+00:00",
+      "finished_at": "2026-10-14T12:38:30.354843+00:00"
+    },
+    "godot-import": {
+      "exit_code": 0,
+      "elapsed_seconds": 3.475,
+      "timeout_seconds": 120,
+      "started_at": "2026-10-14T12:40:12.981622+00:00",
+      "finished_at": "2026-10-14T12:40:16.457170+00:00"
+    },
+    "godot-smoke": {
+      "exit_code": 0,
+      "elapsed_seconds": 1.117,
+      "timeout_seconds": 30,
+      "started_at": "2026-10-14T12:42:55.320289+00:00",
+      "finished_at": "2026-10-14T12:42:56.437782+00:00"
+    },
+    "godot-verify": {
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "timeout_seconds": 15,
+      "started_at": "2026-10-14T12:44:15.997369+00:00",
+      "finished_at": "2026-10-14T12:44:16.062641+00:00"
+    }
+  },
+  "scenarios": {
+    "cycle": {
+      "status": "succeeded",
+      "tick": 62,
+      "stateHash": "0bef029702cc667580d7b3a202ca2137e7f4bb0aeb3aa4f70ac1c39113ff5070",
+      "initialMoneyMinor": 100000,
+      "externalMoneyInMinor": 25000,
+      "externalMoneyOutMinor": 0
+    },
+    "recovery": {
+      "status": "succeeded",
+      "tick": 32,
+      "stateHash": "38c21440920f69478d5da58f7d4dc9c709b8f57143a00b374297270a883f1cd5",
+      "initialMoneyMinor": 0,
+      "externalMoneyInMinor": 10000,
+      "externalMoneyOutMinor": 0
+    },
+    "development": {
+      "status": "succeeded",
+      "tick": 465,
+      "stateHash": "c62ab9490f806e51e27995107e12457cf8dc428f90d8cbd1386f010f690e4109",
+      "initialMoneyMinor": 250000,
+      "externalMoneyInMinor": 28500,
+      "externalMoneyOutMinor": 0
+    },
+    "labor": {
+      "status": "succeeded",
+      "tick": 291,
+      "stateHash": "9406831309b7664d7d48602d6b1e48a8987a8134fda760f90dbbfeab2043b581",
+      "initialMoneyMinor": 2000000,
+      "externalMoneyInMinor": 0,
+      "externalMoneyOutMinor": 0
+    },
+    "equipment": {
+      "status": "succeeded",
+      "tick": 200,
+      "stateHash": "04f11d76b3c9329ccd18bcdfb67eb95b5123728c6749c5411335e0b5d4937e37",
+      "initialMoneyMinor": 200000,
+      "externalMoneyInMinor": 16000,
+      "externalMoneyOutMinor": 0
+    },
+    "autonomous": {
+      "status": "succeeded",
+      "tick": 1000,
+      "stateHash": "7bfbe71a7ed057a236c33f9e7603395ba695a41b35ba19fe0ac4f6b631fa9bfe",
+      "initialMoneyMinor": 80000,
+      "externalMoneyInMinor": 6600000,
+      "externalMoneyOutMinor": 0
+    },
+    "market": {
+      "status": "succeeded",
+      "tick": 51,
+      "stateHash": "be9698ebe86fd816564f8a007a01ffb9e659f1bebff227566ec6cc855bf18ec1",
+      "initialMoneyMinor": 40000,
+      "externalMoneyInMinor": 0,
+      "externalMoneyOutMinor": 0
+    },
+    "pickup": {
+      "status": "succeeded",
+      "tick": 52,
+      "stateHash": "857212642a2e5077efa5d9ed9b8f6272233d33f06915c3216e4e3bb955753c8f",
+      "initialMoneyMinor": 20000,
+      "externalMoneyInMinor": 0,
+      "externalMoneyOutMinor": 0
+    },
+    "delivery": {
+      "status": "succeeded",
+      "tick": 48,
+      "stateHash": "98af3aa4ba0de5a0315b2217b26b3a1fb3fc01633cfe09692aedab1b2603c74d",
+      "initialMoneyMinor": 20000,
+      "externalMoneyInMinor": 0,
+      "externalMoneyOutMinor": 0
+    },
+    "capital-delivery": {
+      "status": "succeeded",
+      "tick": 47,
+      "stateHash": "ae85fbdec187d1e5c5430ae8ecc78bfe8a606be34a05b8d32ef636ec4f38f552",
+      "initialMoneyMinor": 10000,
+      "externalMoneyInMinor": 5000,
+      "externalMoneyOutMinor": 0
+    },
+    "logistics": {
+      "status": "succeeded",
+      "tick": 75,
+      "stateHash": "8ec7ac9b5e1a97ff16349ea99ea059ee0693abee9152294292f0f2370a934eed",
+      "initialMoneyMinor": 200000,
+      "externalMoneyInMinor": 0,
+      "externalMoneyOutMinor": 0
+    }
+  },
+  "logistics_snapshot_bytes": 240902,
+  "old_p16_load": {
+    "expected_exit": 1,
+    "actual": {
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "../verification/p16/headless/delivery.save.json",
+        "--output",
+        "../verification/p17a/old-load"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-14T12:44:16.098416+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 0.317,
+      "finished_at": "2026-10-14T12:44:16.415019+00:00"
+    },
+    "reason": "UnknownWorldSchema"
+  },
+  "initial_failure": "CS0136 duplicate local/pattern name fixed; baseline-tests ran old assemblies after initial failed build, excluded from current evidence. baseline-current after successful new build and final281 full regression passed.",
+  "not_run": [
+    "new APK/EXE exports",
+    "Android device",
+    "controlled delayed cargo return and crew perturbation series (P17b)",
+    "real LLM experiment",
+    "dissertation statistical study"
+  ]
+}

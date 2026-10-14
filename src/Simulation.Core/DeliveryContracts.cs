@@ -11,13 +11,10 @@ public record DeliveryContractView(long Id, long BuyOfferId, long CapitalOfferId
     long Quantity, long UnitPriceMinor, AccountId BuyerAccount, AccountId EscrowAccount, AccountId BondAccount,
     long BondMinor, string CapacityHold, long CreatedTick, long DeadlineTick,
     long DeliveredQuantity = 0, long UnfulfilledQuantity = 0, long PaidMinor = 0, long RefundedMinor = 0,
-    long FineMinor = 0, long BondReturnedMinor = 0, string Status = "Active", long? ClosedTick = null)
+    long FineMinor = 0, long BondReturnedMinor = 0, string Status = "Active", long? ClosedTick = null, long PreparedQuantity = 0, long InTransitQuantity = 0)
 {
     public long RemainingQuantity => ClosedTick is null ? checked(Quantity - DeliveredQuantity) : 0;
-    // P16 personal carrier stock is unassigned until physical receipt. P17 adds exclusive trip quotas.
-    public long PreparedQuantity => 0;
-    public long InTransitQuantity => 0;
-    public long UnprovidedQuantity => RemainingQuantity;
+    public long UnprovidedQuantity => checked(RemainingQuantity - PreparedQuantity - InTransitQuantity);
 }
 internal record SavedBuyOffer(BuyOfferView View, SupplyRequest[] Requests);
 internal sealed class BuyOfferState(BuyOfferView view)

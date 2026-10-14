@@ -95,7 +95,8 @@ def verify(folder):
         q, delivered, remaining, unfulfilled = (d[k] for k in ['quantity','deliveredQuantity','remainingQuantity','unfulfilledQuantity'])
         price = d['unitPriceMinor']; active = d['closedTick'] is None
         assert min(delivered, remaining, unfulfilled) >= 0 and q > 0 and q == delivered + remaining + unfulfilled
-        assert d['preparedQuantity'] == d['inTransitQuantity'] == 0 and d['unprovidedQuantity'] == remaining
+        assert min(d['preparedQuantity'],d['inTransitQuantity'],d['unprovidedQuantity']) >= 0
+        assert remaining == d['preparedQuantity'] + d['inTransitQuantity'] + d['unprovidedQuantity']
         assert d['paidMinor'] == delivered * price and d['refundedMinor'] == unfulfilled * price
         assert d['bondMinor'] == q * price * rate // 10000 and d['fineMinor'] == unfulfilled * price * rate // 10000
         assert d['bondReturnedMinor'] == (0 if active else d['bondMinor'] - d['fineMinor'])
@@ -135,6 +136,26 @@ def verify(folder):
         assert capital_orders[offer['id']]['quantity'] == offer['remainingQuantity'] + sum(s['accepted'] for s in state['settlements'] if s['offerId'] == offer['id']) + sum(d['quantity'] for d in contracts if d['capitalOfferId'] == offer['id'])
     assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'DeliveryFunding') == sum(d['quantity'] * d['unitPriceMinor'] for d in contracts)
     assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'DeliveryBond') == sum(d['bondMinor'] for d in contracts)
+    systems = state.get('logistics', [])
+    assert len({l['enterpriseId']['value'] for l in systems}) == len(systems)
+    for system in systems:
+        cargo = inventories[system['cargoInventory']['value']]
+        assert cargo['ownerId'] == system['ownerId']
+        if system['trip'] is None: assert not cargo['stock']
+        else:
+            trip = system['trip']; assert trip['position'] == cargo['position']
+            q = trip['quantity'] if trip['state'] in ['Outbound','ReturningCargo'] else 0
+            assert sum(s['quantity'] for s in cargo['stock']) == q
+            assert sum(s['reserved'] for s in cargo['stock']) == q
+            owner = accounts[people[system['ownerId']['value']]]
+            assert owner['reservedMinor'] >= trip['wageBudgetMinor'] - trip['wagesPaidMinor'] >= 0
+    events = [json.loads(line) for line in (folder/'events.jsonl').read_text(encoding='utf-8').splitlines()]
+    assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'LogisticsWages') == sum(e['amountMinor'] for e in events if e['type'] == 'LogisticsWagesPaid')
+    for d in contracts:
+        active_trips = [l['trip'] for l in systems if l['trip'] and l['trip']['contractId'] == d['id']]
+        if d['closedTick'] is None:
+            assert d['preparedQuantity'] == sum(t['quantity'] for t in active_trips if t['state'] == 'Loading')
+            assert d['inTransitQuantity'] == sum(t['quantity'] for t in active_trips if t['state'] == 'Outbound')
     print(f'{folder}: money, item flows, capacity, population and settlements verified; tick={summary["tick"]}')
 
 if len(sys.argv) < 2:
