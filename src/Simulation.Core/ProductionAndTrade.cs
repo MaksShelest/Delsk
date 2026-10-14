@@ -2,73 +2,67 @@ namespace Simulation.Core;
 
 public sealed partial class SimulationEngine
 {
-    private void AdvanceProduction()
+    private void AdvanceProduction(EnterpriseState e)
     {
-        var groups = _enterprises.Values.OrderBy(e => e.Definition.Id).ToArray();
-        // Rotate equal-priority facilities sharing a wallet; a fixed first ID never owns the budget.
-        for (int n = 0; n < groups.Length; n++)
+        if (!e.Enabled) { e.Reason = "UserPaused"; return; }
+        if (e.Group.Headcount < e.Recipe.MinimumStaff) { e.Reason = "NoStaff"; return; }
+        try
         {
-            var e = groups[(n + (int)(Tick % groups.Length)) % groups.Length];
-            if (!e.Enabled) { e.Reason = "UserPaused"; continue; }
-            if (e.Group.Headcount < e.Recipe.MinimumStaff) { e.Reason = "NoStaff"; continue; }
-            try
+            bool starting = e.Batch is null;
+            int fullStaff = e.Definition.BuildingTypeId == "" ? e.Recipe.RequiredStaff : e.Definition.Capacity;
+            long required = checked(e.Recipe.FullStaffTicks * fullStaff);
+            long id = e.Batch?.Id ?? _nextId;
+            string hold = e.Batch?.Hold ?? $"batch:{id}";
+            long previousWork = e.Batch?.WorkDone ?? 0;
+            long work = checked((long)Math.Min(e.Group.Headcount, fullStaff) * e.Definition.WorkRateMultiplier);
+            long nextWork = Math.Min(required, checked(previousWork + work));
+            long nextEnergy = checked((long)((Int128)e.Recipe.EnergyPerBatchMinor * nextWork / required));
+            long energy = checked(nextEnergy - (e.Batch?.EnergyPaid ?? 0));
+            long wage = checked(e.Group.Headcount * e.Group.Wage);
+            long newTotalEnergy = checked(e.EnergyPaid + energy);
+            long newConsumed = starting ? checked(_flows[e.Recipe.InputItem].RecipeInput + e.Recipe.InputQuantity)
+                : _flows[e.Recipe.InputItem].RecipeInput;
+            bool complete = nextWork == required;
+            long newProduced = complete ? checked(_flows[e.Recipe.OutputItem].Produced + e.Recipe.OutputQuantity)
+                : _flows[e.Recipe.OutputItem].Produced;
+            long newCompleted = complete ? checked(e.Completed + 1) : e.Completed;
+            var tx = _economy.Begin(Tick);
+            if (starting)
             {
-                bool starting = e.Batch is null;
-                int fullStaff = e.Definition.BuildingTypeId == "" ? e.Recipe.RequiredStaff : e.Definition.Capacity;
-                long required = checked(e.Recipe.FullStaffTicks * fullStaff);
-                long id = e.Batch?.Id ?? _nextId;
-                string hold = e.Batch?.Hold ?? $"batch:{id}";
-                long previousWork = e.Batch?.WorkDone ?? 0;
-                long work = checked((long)Math.Min(e.Group.Headcount, fullStaff) * e.Definition.WorkRateMultiplier);
-                long nextWork = Math.Min(required, checked(previousWork + work));
-                long nextEnergy = checked((long)((Int128)e.Recipe.EnergyPerBatchMinor * nextWork / required));
-                long energy = checked(nextEnergy - (e.Batch?.EnergyPaid ?? 0));
-                long wage = checked(e.Group.Headcount * e.Group.Wage);
-                long newTotalEnergy = checked(e.EnergyPaid + energy);
-                long newConsumed = starting ? checked(_flows[e.Recipe.InputItem].RecipeInput + e.Recipe.InputQuantity)
-                    : _flows[e.Recipe.InputItem].RecipeInput;
-                bool complete = nextWork == required;
-                long newProduced = complete ? checked(_flows[e.Recipe.OutputItem].Produced + e.Recipe.OutputQuantity)
-                    : _flows[e.Recipe.OutputItem].Produced;
-                long newCompleted = complete ? checked(e.Completed + 1) : e.Completed;
-                var tx = _economy.Begin(Tick);
-                if (starting)
-                {
-                    tx.RemoveFreeStock(e.Input, e.Recipe.InputItem, e.Recipe.InputQuantity);
-                    tx.ReserveCapacity(e.Output, hold, e.Recipe.OutputItem, e.Recipe.OutputQuantity);
-                }
-                var actor = _actors[e.Definition.OwnerId];
-                if (wage > 0) tx.Pay(actor.Account, _wages, wage, "Wages");
-                if (energy > 0) tx.Pay(actor.Account, _treasury, energy, "Energy");
-                if (complete)
-                {
-                    tx.ReleaseCapacity(e.Output, hold);
-                    tx.AddStock(e.Output, e.Recipe.OutputItem, e.Recipe.OutputQuantity);
-                }
-                tx.Commit();
-                if (starting)
-                {
-                    ++_nextId; e.Batch = new(id, hold, required);
-                    _flows[e.Recipe.InputItem].RecipeInput = newConsumed;
-                    Emit("ProductionBatchStarted", actor.Id, id, e.Recipe.InputItem, e.Recipe.InputQuantity);
-                }
-                e.Batch!.WorkDone = nextWork; e.Batch.EnergyPaid = nextEnergy;
-                e.EnergyPaid = newTotalEnergy; e.Reason = "Working";
-                if (wage > 0) Emit("WagesPaid", actor.Id, e.Definition.Id, money: wage);
-                if (energy > 0) Emit("EnergyPaid", actor.Id, e.Definition.Id, money: energy);
-                if (complete)
-                {
-                    _flows[e.Recipe.OutputItem].Produced = newProduced; e.Completed = newCompleted;
-                    e.Batch = null;
-                    Emit("ProductionCompleted", actor.Id, id, e.Recipe.OutputItem, e.Recipe.OutputQuantity);
-                }
+                tx.RemoveFreeStock(e.Input, e.Recipe.InputItem, e.Recipe.InputQuantity);
+                tx.ReserveCapacity(e.Output, hold, e.Recipe.OutputItem, e.Recipe.OutputQuantity);
             }
-            catch (RuleViolation ex)
+            var actor = _actors[e.Definition.OwnerId];
+            if (wage > 0) tx.Pay(actor.Account, _wages, wage, "Wages");
+            if (energy > 0) tx.Pay(actor.Account, _treasury, energy, "Energy");
+            if (complete)
             {
-                e.Reason = ex.ReasonCode switch { "NoStock" => "NoInputs", "NoCapacity" => "NoOutputSpace", _ => ex.ReasonCode };
+                tx.ReleaseCapacity(e.Output, hold);
+                tx.AddStock(e.Output, e.Recipe.OutputItem, e.Recipe.OutputQuantity);
             }
-            // A rules/config overflow in autonomous work is a failed simulation, not silent waiting.
+            tx.Commit();
+            if (starting)
+            {
+                ++_nextId; e.Batch = new(id, hold, required);
+                _flows[e.Recipe.InputItem].RecipeInput = newConsumed;
+                Emit("ProductionBatchStarted", actor.Id, id, e.Recipe.InputItem, e.Recipe.InputQuantity);
+            }
+            e.Batch!.WorkDone = nextWork; e.Batch.EnergyPaid = nextEnergy;
+            e.EnergyPaid = newTotalEnergy; e.Reason = "Working";
+            if (wage > 0) Emit("WagesPaid", actor.Id, e.Definition.Id, money: wage);
+            if (energy > 0) Emit("EnergyPaid", actor.Id, e.Definition.Id, money: energy);
+            if (complete)
+            {
+                _flows[e.Recipe.OutputItem].Produced = newProduced; e.Completed = newCompleted;
+                e.Batch = null;
+                Emit("ProductionCompleted", actor.Id, id, e.Recipe.OutputItem, e.Recipe.OutputQuantity);
+            }
         }
+        catch (RuleViolation ex)
+        {
+            e.Reason = ex.ReasonCode switch { "NoStock" => "NoInputs", "NoCapacity" => "NoOutputSpace", _ => ex.ReasonCode };
+        }
+        // A rules/config overflow in autonomous work is a failed simulation, not silent waiting.
     }
     private void StartSale(ActorState actor, CommandEnvelope c)
     {
@@ -183,5 +177,6 @@ public sealed partial class SimulationEngine
                     throw new InvalidOperationException("Reserved sale changed before closing");
         }
         ValidateLandInvariants();
+        ValidateEquipmentInvariants();
     }
 }

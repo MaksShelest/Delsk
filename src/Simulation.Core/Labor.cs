@@ -3,9 +3,11 @@ using System.Numerics;
 namespace Simulation.Core;
 
 // One aggregate per facility/role. There are no individual employee objects.
-internal sealed class EmploymentGroup(long id, long owner, int headcount, int capacity, long wage)
+internal sealed class EmploymentGroup(long id, long owner, int headcount, int capacity, long wage,
+    EmploymentRole role = EmploymentRole.Production)
 {
     public long Id { get; } = id;
+    public EmploymentRole Role { get; } = role;
     public long Owner { get; } = owner;
     public int Headcount { get; set; } = headcount;
     public int Capacity { get; set; } = capacity;
@@ -21,10 +23,12 @@ internal sealed class EmploymentGroup(long id, long owner, int headcount, int ca
     public bool Ready { get; set; }
     public string ReadinessReason { get; set; } = "NotAssessed";
     public long AssessedAtTick { get; set; }
-    public EmploymentView View() => new(new(Id), new(Owner), EmploymentRole.Production, Headcount,
+    public EmploymentView View() => new(new(Id), new(Owner), Role, Headcount,
         Capacity, Wage, AttractionWage, PendingWage, PayEffectiveTick, PendingAttractionWage,
         AttractionEffectiveTick, MobilityCredit, Target, Ready, ReadinessReason, AssessedAtTick);
 }
+
+internal record LaborWorkplace(EmploymentGroup Group, int MinimumStaff, string VacancyReason, Func<int, long> Cost);
 
 internal record LaborCandidate(long Id, int Capacity, long Wage);
 internal record WeightedPlace(long Id, int Capacity, BigInteger Weight);
@@ -74,24 +78,32 @@ public sealed partial class SimulationEngine
     private long _lastGrowthPeriod;
     private LaborSettings Labor => _config.Labor ?? new();
 
+    private IEnumerable<EmploymentGroup> EmploymentGroups() => _enterprises.Values.Select(e => e.Group)
+        .Concat(_equipment.Values.Select(e => e.Group));
+    private LaborWorkplace[] LaborWorkplaces() => _enterprises.Values
+        .Select(e => new LaborWorkplace(e.Group, e.Recipe.MinimumStaff, VacancyReason(e), n => NextWorkCost(e, n)))
+        .Concat(_equipment.Values.Select(e => new LaborWorkplace(e.Group, e.Characteristics.MinimumCrew,
+            EquipmentVacancyReason(e), n => NextEquipmentCost(e, n))))
+        .OrderBy(e => e.Group.Id).ToArray();
+
     private void SetWage(ActorState actor, CommandEnvelope c)
     {
-        if (!_enterprises.TryGetValue(c.Action.Group.Value, out var e) || e.Group.Owner != actor.Id)
-            throw new RuleViolation("NotAvailable");
+        var g = EmploymentGroups().FirstOrDefault(g => g.Id == c.Action.Group.Value && g.Owner == actor.Id)
+            ?? throw new RuleViolation("NotAvailable");
         if (c.Action.WageMinor < 0) throw new RuleViolation("InvalidWage");
-        _ = checked(e.Group.Capacity * c.Action.WageMinor + e.Recipe.EnergyPerBatchMinor);
+        long energy = g.Role == EmploymentRole.Production ? _enterprises[g.Id].Recipe.EnergyPerBatchMinor : 0;
+        _ = checked(g.Capacity * c.Action.WageMinor + energy);
         long payTick = checked(Tick + 1);
         long attractionTick = checked(Tick + Math.Max(1, Labor.SalaryChangeDelayTicks));
-        e.Group.PendingWage = c.Action.WageMinor; e.Group.PayEffectiveTick = payTick;
-        e.Group.PendingAttractionWage = c.Action.WageMinor; e.Group.AttractionEffectiveTick = attractionTick;
-        Emit("WageChangeScheduled", actor.Id, e.Group.Id, money: c.Action.WageMinor, command: c.CommandId);
+        g.PendingWage = c.Action.WageMinor; g.PayEffectiveTick = payTick;
+        g.PendingAttractionWage = c.Action.WageMinor; g.AttractionEffectiveTick = attractionTick;
+        Emit("WageChangeScheduled", actor.Id, g.Id, money: c.Action.WageMinor, command: c.CommandId);
     }
 
     private void ApplyWages()
     {
-        foreach (var e in _enterprises.Values.OrderBy(e => e.Group.Id))
+        foreach (var g in EmploymentGroups().OrderBy(g => g.Id))
         {
-            var g = e.Group;
             if (g.PayEffectiveTick is { } pay && pay <= Tick)
             {
                 g.Wage = g.PendingWage!.Value; g.PendingWage = null; g.PayEffectiveTick = null;
@@ -135,7 +147,7 @@ public sealed partial class SimulationEngine
         long growth = checked((period - _lastGrowthPeriod) * Labor.GrowthPerPeriod);
         long population = checked(_population + growth);
         long pool = checked(_unemployed + growth);
-        var groups = _enterprises.Values.OrderBy(e => e.Group.Id).ToArray();
+        var groups = LaborWorkplaces();
         // Same owner wallet: reserve each admitted group's first interval once, in rotating order.
         var budget = _actors.Values.ToDictionary(a => a.Id, a => _economy.Accounts[a.Account].Available);
         var ready = new Dictionary<long, bool>();
@@ -144,10 +156,10 @@ public sealed partial class SimulationEngine
             .Concat(groups.Take((int)(Tick / Labor.StepTicks % groups.Length))).ToArray();
         foreach (var e in priority)
         {
-            string reason = VacancyReason(e);
+            string reason = e.VacancyReason;
             if (reason == "Ready")
             {
-                long cost = NextWorkCost(e, Math.Max(e.Group.Headcount, e.Recipe.MinimumStaff));
+                long cost = e.Cost(Math.Max(e.Group.Headcount, e.MinimumStaff));
                 if (budget[e.Group.Owner] < cost) reason = "NoMoney";
                 else budget[e.Group.Owner] -= cost;
             }
@@ -176,22 +188,22 @@ public sealed partial class SimulationEngine
         // Recompute the budget after all departures, before admitting simultaneous hires.
         budget = _actors.Values.ToDictionary(a => a.Id, a => _economy.Accounts[a.Account].Available);
         foreach (var e in priority.Where(e => ready[e.Group.Id]))
-            budget[e.Group.Owner] -= NextWorkCost(e, Math.Max(next[e.Group.Id], e.Recipe.MinimumStaff));
+            budget[e.Group.Owner] -= e.Cost(Math.Max(next[e.Group.Id], e.MinimumStaff));
         foreach (var e in priority)
         {
             var g = e.Group;
             int requested = hires.GetValueOrDefault(g.Id);
             if (requested == 0) continue;
-            int baseline = Math.Max(next[g.Id], e.Recipe.MinimumStaff);
-            long baselineCost = NextWorkCost(e, baseline);
+            int baseline = Math.Max(next[g.Id], e.MinimumStaff);
+            long baselineCost = e.Cost(baseline);
             int low = 0, high = requested;
             while (low < high)
             {
                 int mid = low + (high - low + 1) / 2;
-                long extra = NextWorkCost(e, Math.Max(next[g.Id] + mid, e.Recipe.MinimumStaff)) - baselineCost;
+                long extra = e.Cost(Math.Max(next[g.Id] + mid, e.MinimumStaff)) - baselineCost;
                 if (extra <= budget[g.Owner]) low = mid; else high = mid - 1;
             }
-            budget[g.Owner] -= NextWorkCost(e, Math.Max(next[g.Id] + low, e.Recipe.MinimumStaff)) - baselineCost;
+            budget[g.Owner] -= e.Cost(Math.Max(next[g.Id] + low, e.MinimumStaff)) - baselineCost;
             next[g.Id] += low; pool -= low; credits[g.Id] -= checked((long)low * Labor.MobilityDenominator);
         }
         if (pool < 0 || checked(pool + next.Values.Sum(n => (long)n)) != population || budget.Values.Any(n => n < 0))
@@ -212,19 +224,20 @@ public sealed partial class SimulationEngine
 
     private void ValidateLaborInvariants()
     {
-        long employed = _enterprises.Values.Sum(e => (long)e.Group.Headcount);
+        long employed = EmploymentGroups().Sum(g => (long)g.Headcount);
         if (_population < _config.Population || _unemployed < 0 || checked(employed + _unemployed) != _population)
             throw new InvalidOperationException("I01: population not conserved");
-        foreach (var e in _enterprises.Values)
+        foreach (var g in EmploymentGroups())
         {
-            var g = e.Group;
             long limit = Math.Max(Labor.MobilityDenominator, checked((long)g.Capacity * Labor.MobilityNumerator));
-            if (g.Headcount < 0 || g.Headcount > g.Capacity || g.Capacity != e.Definition.Capacity ||
+            if (g.Headcount < 0 || g.Headcount > g.Capacity || g.Capacity < 1 ||
                 g.Target < 0 || g.Target > g.Capacity || g.Wage < 0 || g.AttractionWage < 0 ||
                 g.MobilityCredit < 0 || g.MobilityCredit > limit ||
                 g.PendingWage.HasValue != g.PayEffectiveTick.HasValue ||
                 g.PendingAttractionWage.HasValue != g.AttractionEffectiveTick.HasValue)
                 throw new InvalidOperationException("I01: invalid employment group");
         }
+        if (_enterprises.Values.Any(e => e.Group.Capacity != e.Definition.Capacity || e.Group.Role != EmploymentRole.Production))
+            throw new InvalidOperationException("Invalid production employment group");
     }
 }

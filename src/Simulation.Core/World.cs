@@ -44,7 +44,7 @@ internal sealed class ActorState(long id, long account, long inventory, Cell pos
     public PersonalJob? Job { get; set; }
 }
 internal sealed class PersonalJob(long id, string kind, long startTick, long completionTick,
-    Cell[] path, string item, long quantity, string capacityHold, string commandId)
+    Cell[] path, string item, long quantity, string capacityHold, string commandId, long equipmentId = 0)
 {
     public long Id { get; } = id;
     public string Kind { get; } = kind;
@@ -57,6 +57,7 @@ internal sealed class PersonalJob(long id, string kind, long startTick, long com
     public long Quantity { get; } = quantity;
     public string CapacityHold { get; } = capacityHold;
     public string CommandId { get; } = commandId;
+    public long EquipmentId { get; } = equipmentId;
 }
 internal sealed class BatchState(long id, string hold, long required)
 {
@@ -112,6 +113,7 @@ public static partial class ScenarioValidation
             s.Participants.Length is < 1 or > 64)
             throw new ArgumentException("Invalid scenario settings");
         ValidateLaborSettings(s);
+        ValidateEquipmentCatalog(s);
         var map = new GridMap(s);
         bool ValidId(long id) => id is > 0 and < 1000;
         if (s.Items.Length == 0 || s.Items.Select(i => i.Id).Distinct().Count() != s.Items.Length ||

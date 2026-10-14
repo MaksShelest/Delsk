@@ -9,7 +9,7 @@ try
     for (int i = 0; i < args.Length; i += 2)
     {
         if (i + 1 >= args.Length || args[i] is not ("--scenario" or "--output" or "--script" or "--mode" or "--seed" or "--replay" or "--ticks"))
-            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--script cycle|recovery|development|labor] [--mode headless|paced] [--seed N] [--replay COMMANDS --ticks N]");
+            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--script cycle|recovery|development|labor|equipment] [--mode headless|paced] [--seed N] [--replay COMMANDS --ticks N]");
         if (!options.TryAdd(args[i], args[i + 1])) throw new ArgumentException("Duplicate argument");
     }
     var definition = RunArtifacts.LoadScenario(options.GetValueOrDefault("--scenario", "scenarios/economic-cycle.json"));
@@ -17,7 +17,7 @@ try
     string directory = options.GetValueOrDefault("--output", "artifacts/cycle");
     string script = options.GetValueOrDefault("--script", "cycle");
     string mode = options.GetValueOrDefault("--mode", "headless");
-    if (script is not ("cycle" or "recovery" or "development" or "labor") || mode is not ("headless" or "paced")) throw new ArgumentException("Invalid script or mode");
+    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment") || mode is not ("headless" or "paced")) throw new ArgumentException("Invalid script or mode");
     var watch = Stopwatch.StartNew();
     GameSession session;
     if (options.TryGetValue("--replay", out string? replayPath))
@@ -43,7 +43,8 @@ try
             if (script == "cycle") ScriptedScenarios.EconomicCycle(session, definition);
             else if (script == "recovery") ScriptedScenarios.ZeroCashRecovery(session, definition);
             else if (script == "development") ScriptedScenarios.Development(session, definition);
-            else ScriptedScenarios.LaborDynamics(session, definition);
+            else if (script == "labor") ScriptedScenarios.LaborDynamics(session, definition);
+            else ScriptedScenarios.EquipmentCycle(session, definition);
         }
         catch (Exception ex)
         {

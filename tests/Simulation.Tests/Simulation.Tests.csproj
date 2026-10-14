@@ -7,4 +7,5 @@
     <ProjectReference Include="../../src/Simulation.Core/Simulation.Core.csproj" />
     <ProjectReference Include="../../src/Simulation.Hosting/Simulation.Hosting.csproj" />
   </ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/equipment-cycle.json" LogicalName="Fixture.equipment-cycle.json" /></ItemGroup>
 </Project>
