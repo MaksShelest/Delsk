@@ -1,12 +1,12 @@
 # Что уже можно тестировать и когда появится минимальная версия
 
-Автор: Шелестов Максим Евгеньевич. Статус после P14, 14.10.2026.
+Автор: Шелестов Максим Евгеньевич. Статус после P15, 14.10.2026.
 
 | Уровень проверки | Готовность | Что получит тестировщик |
 | --- | --- | --- |
-| Экономическое ядро в коде | **Доступно сейчас**, P00–P14 | Rider/.NET,172 xUnit-тестов, общий C# runner; добыча, производство, земля, запасы, числовой найм/зарплата, техника и сохранения |
+| Экономическое ядро в коде | **Доступно сейчас**, P00–P15 | Rider/.NET,205 xUnit-тестов, общий C# runner; добыча, производство, земля, запасы, числовой найм/зарплата, техника и сохранения |
 | Экономическая симуляция с3 самостоятельными NPC | **Доступна сейчас**, P13 | Две цепочки, самостоятельные покупка/стройка/найм/добыча/сбыт, цели/планы и точное продолжение из checkpoint;1 бездействующий слот человека |
-| Полный игровой цикл утверждённого прототипа без модели | После **P15–P21 / Gate C** | P14 рынок/аукционы уже есть; получение/контракты/partial/expiry, физическая автодоставка, выборы/скрытые договоры и алгоритмы для них |
+| Полный игровой цикл утверждённого прототипа без модели | После **P16–P21 / Gate C** | P14 рынок/аукционы и P15 получение/partial/expiry уже есть; поставочные контракты, физическая автодоставка, выборы/скрытые договоры и алгоритмы для них |
 | Минимальная ручная игра в Godot | **P26**, зависит от P12/P21 | Ввод человека, карта/карточки, те же правила и сохранения. Текущая сцена — отдельный технический playback62 тиков |
 | Полный исследовательский объём первого месяца | **Gate D / P22–P27** | Локальная модель/fallback, серии сравнений/анализ; аппаратные/телефонные проверки отдельно |
 
@@ -14,7 +14,7 @@
 
 ## Проверка сейчас
 
-Получить `feat/market-p14`, открыть Delsk.sln в Rider; [локальная настройка](LOCAL_SETUP.md). После restore/build:
+Получить `feat/pickup-p15`, открыть Delsk.sln в Rider; [локальная настройка](LOCAL_SETUP.md). После restore/build:
 
 ```powershell
 dotnet tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll -noColor -noLogo -parallelMode none
@@ -25,8 +25,13 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --script auton
 
 Смотреть summary.json → agents.csv/labor.csv → decisions.jsonl/ledger.jsonl; файлы лежат в `artifacts/run-42`. [Подробно: почему Python, параметры, проверки и продолжение](HEADLESS_TESTING.md). Старые fixtures остаются быстрыми регрессиями; они не заменяют автономную партию.
 
-[Отчёт P13](IMPLEMENTATION_REPORT_P13.md). P14 предложения/аукционы проверены отдельным scripted сценарием, NPC bidding ещё P21. Следующая ограниченная задача — **P15**, физическая выдача частями/сроки/возврат/штраф. P16 — поставочные обязательства; эти системы не объявляются уже реализованными.
+[Отчёт P13](IMPLEMENTATION_REPORT_P13.md). P14 предложения/аукционы проверены отдельным scripted сценарием, NPC bidding ещё P21. P15 физическая выдача частями/сроки/возврат/штраф реализованы. Следующая ограниченная задача — **P16**, поставочные обязательства; они ещё не реализованы.
 
 ## Проверка рынка P14
 
-Ветка feat/market-p14; после сборки `--scenario scenarios/market-window.json --script market --output artifacts/market`. Ожидается succeeded/51 ticks, allocations4/8/3 при price500/600/700 minor, escrow8900. Source shop всё ещё содержит15 reserved wood, buyer inventories пусты, seller cash10000. Это allocation, **не выдача**. market.json/summary/events/ledger показывают реальные резервы/денежные потоки. P14 World2/Rules market-1 не загружает P13 World1; прежние saves доступны с прежним кодом, migration нет. [Отчёт P14](IMPLEMENTATION_REPORT_P14.md).
+Ветка feat/pickup-p15; после сборки `--scenario scenarios/market-window.json --script market --output artifacts/market`. Ожидается succeeded/51 ticks, allocations4/8/3 при price500/600/700 minor, escrow8900. Source shop всё ещё содержит15 reserved wood, buyer inventories пусты, seller cash10000. Это allocation, **не выдача**. market.json/summary/events/ledger показывают реальные резервы/денежные потоки. P14 World2/Rules market-1 не загружает P13 World1; прежние saves доступны с прежним кодом, migration нет. [Отчёт P14](IMPLEMENTATION_REPORT_P14.md).
+
+
+## Выдача P15
+
+Ветка feat/pickup-p15, запуск `--scenario scenarios/pickup-lifecycle.json --script pickup --output artifacts/pickup`. Проверено52 ticks:6 из10 получены двумя поездками,4 освобождены при expiry; seller3100 дохода (3000+100 штраф), buyer1900 возврата. Общий C# набор205 tests,8 scenarios/5 save-load pairs. NPC bidding/pickup goals всё ещё P21; ручной ввод человека P26. World3/Rules pickup-1 отклоняет World1/2 без миграции, прежние файлы оставить для прежнего кода. [Отчёт P15](IMPLEMENTATION_REPORT_P15.md).

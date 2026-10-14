@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "market-1";
+    public const string RulesVersion = "pickup-1";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -145,7 +145,7 @@ public sealed partial class SimulationEngine
             _phase = 4; AdvanceHarvests(); AdvanceWork();
             _phase = 5; AdvanceLabor();
             _phase = 6; CloseCapitalWindows(); AdvanceMarketWindows();
-            _phase = 7; ExpirePlotReservations();
+            _phase = 7; ExpirePlotReservations(); ExpirePurchases();
             _phase = 9; ValidateInvariants(); Emit("TickCommitted");
         }
         finally { _stepping = false; }
@@ -183,6 +183,7 @@ public sealed partial class SimulationEngine
                 case ActionKind.SubmitBuyRequest: SubmitBuyRequest(actor, c); break;
                 case ActionKind.RaiseBid: RaiseBid(actor, c); break;
                 case ActionKind.WithdrawBid: WithdrawBid(actor, c); break;
+                case ActionKind.CollectPurchase: CollectPurchase(actor, c); break;
                 default: throw new RuleViolation("UnknownAction");
             }
             _results[c.CommandId] = new(c.CommandId, ResultStatus.Accepted, "Accepted", Tick);

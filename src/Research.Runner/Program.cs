@@ -12,13 +12,13 @@ try
     {
         if (i + 1 >= args.Length || args[i] is not ("--scenario" or "--output" or "--script" or "--mode" or "--seed" or
             "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers"))
-            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--script cycle|recovery|development|labor|equipment|autonomous|market] [--mode headless|paced] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
+            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup] [--mode headless|paced] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
         if (!options.TryAdd(args[i], args[i + 1])) throw new ArgumentException("Duplicate argument");
     }
     string directory = options.GetValueOrDefault("--output", "artifacts/cycle");
     string script = options.GetValueOrDefault("--script", "cycle");
     string mode = options.GetValueOrDefault("--mode", "headless");
-    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market") || mode is not ("headless" or "paced"))
+    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market" or "pickup") || mode is not ("headless" or "paced"))
         throw new ArgumentException("Invalid script or mode");
     if (options.ContainsKey("--controllers") && (script != "autonomous" || options.ContainsKey("--load") || options.ContainsKey("--replay")))
         throw new ArgumentException("--controllers applies only to a new autonomous run");
@@ -113,6 +113,7 @@ try
         else if (script == "recovery") ScriptedScenarios.ZeroCashRecovery(s, d);
         else if (script == "development") ScriptedScenarios.Development(s, d);
         else if (script == "labor") ScriptedScenarios.LaborDynamics(s, d);
+        else if (script == "pickup") ScriptedScenarios.PickupLifecycle(s, d);
         else if (script == "market") ScriptedScenarios.MarketWindow(s, d);
         else ScriptedScenarios.EquipmentCycle(s, d);
     }
