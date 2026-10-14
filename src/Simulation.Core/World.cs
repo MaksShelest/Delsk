@@ -86,6 +86,8 @@ internal sealed class CapitalOffer(CapitalOfferDefinition definition, string bud
     public string BudgetHold { get; } = budgetHold;
     public long Remaining { get; set; } = definition.Quantity;
     public long? Cutoff { get; set; }
+    public int Window { get; set; } = 1;
+    public Dictionary<long, SupplyRequest> SupplyRequests { get; } = [];
     public Dictionary<long, SaleRequest> Requests { get; } = [];
 }
 internal record SaleRequest(long ActorId, long InventoryId, long Quantity, string Reservation, string CommandId);
@@ -116,6 +118,9 @@ public static partial class ScenarioValidation
             market.AuctionRounds is < 1 or > 10 || market.MinimumRaiseMinor is < 1 or > 10000 ||
             market.PickupTtlTicks is < 1 or > 1000000 || market.PickupFineBasisPoints is < 0 or > 10000))
             throw new ArgumentException("Invalid market settings");
+        if (s.Delivery is { } delivery && (delivery.ContractTtlTicks is < 1 or > 1000000 ||
+            delivery.OfferTtlTicks is < 1 or > 1000000 || delivery.FineBasisPoints is < 0 or > 10000))
+            throw new ArgumentException("Invalid delivery settings");
         ValidateLaborSettings(s);
         ValidateEquipmentCatalog(s);
         var map = new GridMap(s);

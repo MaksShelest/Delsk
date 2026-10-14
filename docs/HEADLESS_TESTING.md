@@ -1,6 +1,6 @@
 # Как запускать и проверять экономику без графики
 
-Автор: Шелестов Максим Евгеньевич. Состояние после P15, 14.10.2026.
+Автор: Шелестов Максим Евгеньевич. Состояние после P16, 14.10.2026.
 
 ## Что выполняет прогон и зачем Python
 
@@ -14,7 +14,7 @@ Python сейчас лишь удобно запускает .NET-сборку/�
 
 ## Быстрый запуск в Rider или терминале Windows
 
-Получить ветку `feat/pickup-p15` (после её merge — текущую базовую ветку); безопасное обновление — [LOCAL_SETUP.md](LOCAL_SETUP.md). Открыть `Delsk.sln`. В терминале **корня репозитория**:
+Получить ветку `feat/delivery-p16` (после её merge — текущую базовую ветку); безопасное обновление — [LOCAL_SETUP.md](LOCAL_SETUP.md). Открыть `Delsk.sln`. В терминале **корня репозитория**:
 
 ```powershell
 dotnet restore Delsk.sln --locked-mode --disable-parallel '-m:1'
@@ -25,7 +25,7 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --script auton
 
 Здесь Python и Godot не используются. SDK10.0.401 закреплён в global.json; рабочее окружение не нужно переустанавливать. Rider можно использовать для отладки C# runner. Встроенная консоль напечатает `succeeded`, конечный тик, хеш мира и **абсолютный путь результата**. Указанные команды удобны для ручной проверки; облачные проверки запускают их через `run_check.py` с hard timeout. При `failed` смотреть причину и код завершения; наличие каталога само по себе не означает успех.
 
-Исторический пилот P13:1000 тиков, seed42,3.375 секунды на этой среде до экспорта. Это измерение одного небольшого мира, не обещание скорости на другом компьютере или длинной партии. Полный месячный рынок/политика ещё не готовы; этот запуск проверяет P00–P15.
+Исторический пилот P13:1000 тиков, seed42,3.375 секунды на этой среде до экспорта. Это измерение одного небольшого мира, не обещание скорости на другом компьютере или длинной партии. Полный месячный рынок/политика ещё не готовы; этот запуск проверяет P00–P16.
 
 ## Параметры прогона
 
@@ -80,7 +80,7 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --load artifac
 
 Первая команда сохраняет на350 **живой** мир и планы, затем продолжает до1000. Вторая непосредственно восстанавливает их и выполняет351…1000, не проигрывая первые350 тиков. Для автономного load конечный тик задаётся явно; seed/scenario/settings берутся из сохранения и не заменяются. `--checkpoint FILE` без checkpoint-at записывает состояние на конце прогона.
 
-Для старых synchronous fixtures checkpoint-at сначала записывает их полную командную ленту и сохраняет recorded cursor; такие saves знают финальный тик сами. Это не способ сохранения живых NPC. Session schema2 включает контроллеры. P15 World schema3/Rules pickup-1: старые World1/2 файлы не загружаются, автоматической миграции нет; оставить их для прежней версии кода. Декодированный сеанс с политиками требует `RestoreControllers` в composition root до Step; runner выполняет это сам. Неизвестная политика/версия отклоняется, контроллеры не исчезают молча.
+Для старых synchronous fixtures checkpoint-at сначала записывает их полную командную ленту и сохраняет recorded cursor; такие saves знают финальный тик сами. Это не способ сохранения живых NPC. Session schema2 включает контроллеры. P16 World schema4/Rules delivery-1: старые World1–3 файлы не загружаются, автоматической миграции нет; оставить их для прежней версии кода. Декодированный сеанс с политиками требует `RestoreControllers` в composition root до Step; runner выполняет это сам. Неизвестная политика/версия отклоняется, контроллеры не исчезают молча.
 
 `commands.jsonl` можно проиграть через `--replay PATH --scenario ... --ticks FINAL_TICK`: это повтор **мира** без повторного вызова NPC. Планы контроллеров проверять через checkpoint/load, не через command-only replay. Время отсутствия не продвигает мир. Исправный предыдущий файл — `.bak`; явный выбор backup: `--recover-backup true`. После corrupt main восстановиться и сохранить в новый путь; не вращать повреждённый main поверх backup.
 
@@ -89,12 +89,12 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --load artifac
 Если Python установлен:
 
 ```powershell
-python scripts/check_headless.py --output artifacts/headless
+python scripts/check_headless.py --output artifacts/headless-p16
 ```
 
-Она выполняет bounded restore/build,205 xUnit-тестов,5 прежних fixtures, market/pickup и автономный прогон,5 пар save/load. Сверяет побайтно final-state/ledger/events/commands/metrics/labor/**controllers/decisions/agents**, затем независимо проверяет деньги, товар, вместимости и население. `artifacts/headless/checks` содержит stdout/stderr/exit/timeout, `headless-check.json` — успешный итог. Сбой не маскируется и возвращает ненулевой код.
+Она выполняет bounded restore/build,249 xUnit-тестов,5 прежних fixtures, market/pickup/delivery/capital-delivery и автономный прогон,7 пар save/load. Сверяет побайтно final-state/ledger/events/commands/metrics/labor/**controllers/decisions/agents**, затем независимо проверяет деньги, товар, вместимости и население. `artifacts/headless-p16/checks` содержит stdout/stderr/exit/timeout, `headless-check.json` — успешный итог. Сбой не маскируется и возвращает ненулевой код.
 
-Что это подтверждает: отсутствие отрицательных/повторных списаний, дублирования товара, потери численности, сохранение физической длительности и воспроизводимое продолжение. Что оценивать по данным отдельно: простаивание, накопление товара, окупаемость вложений, конкуренцию зарплат, повторение неудачных целей. Участнические аукционы P14 проверены; выдача P15 проверена; поставочные контракты/выборы ещё не реализованы. Их нельзя считать проверенными по успеху набора.
+Что это подтверждает: отсутствие отрицательных/повторных списаний, дублирования товара, потери численности, сохранение физической длительности и воспроизводимое продолжение. Что оценивать по данным отдельно: простаивание, накопление товара, окупаемость вложений, конкуренцию зарплат, повторение неудачных целей. Участнические аукционы P14 проверены; выдача P15 и поставочные договоры P16 проверены; авто-логистика/выборы ещё не реализованы. Их нельзя считать проверенными по успеху набора.
 
 Полную экономику после P21 проверять **тем же C# runner без визуального оформления**: полноценный сценарий → ограниченный горизонт/результат → проверки → несколько одинаково настроенных seeds → сравнение выпуск/исполнение/безработица/победы/ошибки. Автоматизация серий и статистика — P24/P25; графики ещё не создаются. [Фактическая граница](PROTOTYPE_STATUS.md).
 
@@ -102,8 +102,8 @@ python scripts/check_headless.py --output artifacts/headless
 
 ```powershell
 dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/market-window.json --script market --output artifacts/market
-dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/market-window.json --script market --checkpoint artifacts/market-p14.save.json --checkpoint-at 44 --output artifacts/market-saved
-dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/market-p14.save.json --output artifacts/market-loaded
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/market-window.json --script market --checkpoint artifacts/market-p16.save.json --checkpoint-at 44 --output artifacts/market-saved
+dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/market-p16.save.json --output artifacts/market-loaded
 ```
 
 Ожидается51 ticks. Seller физически добыл и привёз15 wood, publish36/cutoff41, shortage17, rounds41–46/46–51. Buyer2/3/4 requests6/8/3, final prices5/6/7 денег; allocations4/8/3, escrow89. Товар остаётся15 reserved в seller shop, у buyer пока0, seller cash100. На этом финальном тике выдача ещё не начата; её lifecycle проверяет отдельный P15 сценарий ниже. Market demo scripted; P13 NPC пока принимают наличные заказы столицы, новые bidding goals — P21.
@@ -122,3 +122,18 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --load artifac
 `market.pickupTtlTicks` — от allocation (default120), `market.pickupFineBasisPoints` — штраф на остаток (default500=5%). В fixture TTL17/carrier3 специально проверяют просрочку. В собственной копии JSON можно менять баланс; script pickup имеет fixed контрольные числа и будет отклонять иной результат. Для новых сценариев нужен собственный command tape/fixture, а не изменение ожидаемой бухгалтерии ради зелёного результата. `--replay commands.jsonl --ticks FINAL_TICK` воспроизводит команды с теми же настройками; controller decisions при этом повторно не вычисляются.
 
 Пятая save/load пара tick47 проверяет уже оплаченный груз в пути до expiry48. Unit tests дополнительно сравнивают каждый последующий tick после cut31/35/36/40/46/47/48/50, включая pending receipt и deadline. `scenario.json` тоже входит в побайтное сравнение; independent verifier сверяет Q/C/R/X, escrow/receipts/refund/fine и ledger по счёту договора со ставкой из JSON. Это анализ C# результатов, Python не перемещает товар и не запускает отдельную модель экономики.
+
+
+## Поставочные договоры P16
+
+`--scenario scenarios/delivery-lifecycle.json --script delivery --output artifacts/delivery` проверяет funded будущую поставку участнику; `--scenario scenarios/capital-delivery.json --script capital-delivery --output artifacts/capital-delivery` — тот же lifecycle столице. Это scripted fixtures, не новые самостоятельные NPC goals. Supplier carrier3 делает два рейса с добычей3+3 после заключения договора. Participant allocation7/deadline47/final48; Capital allocation6/deadline46/final47. Q10/Delivered6/Unfulfilled4; Paid3000/Refund2000/Fine100/BondReturn150 minor. Fine платит supplier покупателю (у pickup наоборот).
+
+Настройки `delivery.contractTtlTicks` default180, `fineBasisPoints` default500, `offerTtlTicks` default180. В fixture TTL40 специально создаёт partial expiry. Bond финансируется по тому же проценту полной стоимости, default250 при10×500; первоначальный hold supplier на всю request, после proportional allocation излишек освобождается. Participant buyer заранее hold budget, при подписании — full destination capacity. Если не хватает места, ни один contract окна не подписывается, supplier holds освобождаются, незаключённый бюджет остаётся до expiry/cancel. Initial cash/carrier/map/window задаются в scenario.json; изменение balance может менять результат, fixed fixture assertions нельзя менять ради скрытия ошибки.
+
+Одна supplier request на window/offer. AcceptDeliveryQuantity принимает BuyOfferId для участника **или** OfferId для столицы, Quantity и опубликованный OfferWindow; stale window отклоняется. CreateBuyOffer требует Destination own building input/item/Q/price. DeliverContract принимает ContractId/Q, не самодельный счёт/цену/destination. Все движения/приёмка/штрафы на C#; Python только запуск/анализ экспортов.
+
+`delivery.json` содержит buy offers/requests/contracts, summary/final-state — их конечные состояния, ledger.jsonl — DeliveryFunding/Bond/Payment/Refund/Fine/BondReturn, events — SupplyQuantityRequested/DeliveryContractCreated/DeliveryReceived/DeliveryExpired. Own projections contracts доступны сторонам, research full dump не использовать как controller prompt. В P16 active Remaining=Unprovided, Prepared/InTransit0: personal stock ещё не прикреплён к договору, automatic quota/cargo будет P17.
+
+Набор после P16:249 tests,10 scenarios/7 save/load pairs,24 проверенных выгрузки. Сравниваются12 файлов (добавлен delivery.json). Cut delivery37 — physical outbound, capital-delivery3 — window/bond holds; unit tests дополнительно cuts1/3/7/14/17/21/34/37/41/46/47 с каждым последующим tick. Capital spot/future общее окно проверено отдельным xUnit и share ровно один budget, без второй эмиссии. Default bootstrap cash0 recovery всё ещё отдельная доступная spot sale.
+
+Current World4/Rules delivery-1; старые World1–3 files оставить для прежних веток, автоматической migration нет. Godot probe updated hashes после independent money/item checks; новый user save path по RulesVersion. Реальная ручная UI игра/авторейсы/модель/политика ещё не проверены и не готовы.

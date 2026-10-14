@@ -32,7 +32,7 @@ public sealed partial class SimulationEngine
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.CancelPlotReservation or ActionKind.Build or
         ActionKind.UpgradeBuilding or ActionKind.SetRecipe or ActionKind.SetWage or ActionKind.BuyEquipment or
         ActionKind.UpgradeEquipment or ActionKind.SetEquipmentMode or ActionKind.CreateSellOffer or
-        ActionKind.SubmitBuyRequest or ActionKind.RaiseBid or ActionKind.WithdrawBid;
+        ActionKind.SubmitBuyRequest or ActionKind.RaiseBid or ActionKind.CreateBuyOffer or ActionKind.AcceptDeliveryQuantity or ActionKind.WithdrawSupplyRequest or ActionKind.CancelBuyOffer or ActionKind.WithdrawBid;
 
     private void InitializeLandAndBuildings()
     {

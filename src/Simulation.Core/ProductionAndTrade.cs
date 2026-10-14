@@ -67,6 +67,8 @@ public sealed partial class SimulationEngine
     private void StartSale(ActorState actor, CommandEnvelope c)
     {
         RequireIdle(actor);
+        if (_offers.TryGetValue(c.Action.OfferId, out var pending) && pending.SupplyRequests.ContainsKey(actor.Id))
+            throw new RuleViolation("ExistingDeliveryRequest");
         if (!_offers.TryGetValue(c.Action.OfferId, out var offer) || offer.Remaining <= 0)
             throw new RuleViolation("NotAvailable");
         if (actor.Position != offer.Definition.Position) throw new RuleViolation("NotAtLocation");
@@ -96,24 +98,15 @@ public sealed partial class SimulationEngine
         {
             if (offer.Cutoff is null || Tick < offer.Cutoff) continue;
             var requests = offer.Requests.Values.OrderBy(r => r.ActorId).ToArray();
-            long total = requests.Aggregate(0L, (n, r) => checked(n + r.Quantity));
-            long volume = Math.Min(total, offer.Remaining);
-            var allocated = requests.ToDictionary(r => r.ActorId, r => total <= offer.Remaining ? r.Quantity
-                : checked((long)((Int128)r.Quantity * volume / total)));
-            long remainder = checked(volume - allocated.Values.Sum());
-            if (remainder > 0)
-            {
-                var tiedOrder = requests.Select(r => r.ActorId).ToArray();
-                _allocationRandom.Shuffle(tiedOrder);
-                var tieRank = tiedOrder.Select((id, rank) => (id, rank)).ToDictionary(x => x.id, x => x.rank);
-                foreach (var r in requests.OrderByDescending(r => (Int128)r.Quantity * volume % total)
-                    .ThenBy(r => tieRank[r.ActorId]).Take((int)remainder)) ++allocated[r.ActorId];
-            }
+            var future = offer.SupplyRequests.Values.OrderBy(r => r.Supplier.Value).ToArray();
+            var allocated = AllocateFixedVolume(requests.Select(r => (r.ActorId, r.Quantity))
+                .Concat(future.Select(r => (r.Supplier.Value, r.Quantity))).OrderBy(r => r.Item1).ToArray(), offer.Remaining);
+            long volume = allocated.Values.Sum();
             // Stage the complete closing batch. Nothing is paid to an early processed request.
             var tx = _economy.Begin(Tick);
             long nextId = _nextId;
             var settlements = new List<SettlementView>();
-            long exported = checked(_flows[offer.Definition.ItemId].Exported + volume);
+            long exported = checked(_flows[offer.Definition.ItemId].Exported + requests.Sum(r => allocated[r.ActorId]));
             long remaining = checked(offer.Remaining - volume);
             foreach (var request in requests)
             {
@@ -132,9 +125,22 @@ public sealed partial class SimulationEngine
                 settlements.Add(new(contractId, offer.Definition.Id, new(request.ActorId), offer.Definition.ItemId,
                     request.Quantity, q, payment, Tick, q > 0 ? "Fulfilled" : "NotAllocated"));
             }
-            tx.Commit();
+            var contracts = new List<DeliveryContractView>(); long compensation = _capitalCompensation;
+            foreach (var r in future)
+            {
+                long quantity = allocated[r.Supplier.Value];
+                if (quantity > 0)
+                {
+                    if (compensation == 0) { compensation = nextId++; tx.CreateAccount(compensation, "CapitalCompensation"); }
+                    contracts.Add(StageDelivery(tx, ref nextId, r, quantity, offer.Definition.ItemId,
+                        offer.Definition.UnitPriceMinor, null, null, offer.Definition.Position, _capital, offer.BudgetHold));
+                }
+                else if (r.BondMinor > 0) tx.ReleaseMoney(_actors[r.Supplier.Value].Account, r.BondHold);
+            }
+            tx.Commit(); _capitalCompensation = compensation; _deliveryContracts.AddRange(contracts);
+            foreach (var d in contracts) EmitDeliveryCreated(d);
             _nextId = nextId; _flows[offer.Definition.ItemId].Exported = exported;
-            offer.Remaining = remaining; offer.Requests.Clear(); offer.Cutoff = null;
+            offer.Remaining = remaining; offer.Requests.Clear(); offer.SupplyRequests.Clear(); offer.Cutoff = null; ++offer.Window;
             _settlements.AddRange(settlements);
             foreach (var settlement in settlements)
                 Emit("CapitalSaleSettled", settlement.Seller.Value, settlement.Id, settlement.ItemId,
@@ -179,5 +185,6 @@ public sealed partial class SimulationEngine
         ValidateLandInvariants();
         ValidateEquipmentInvariants();
         ValidateMarketInvariants();
+        ValidateDeliveryInvariants();
     }
 }
