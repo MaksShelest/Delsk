@@ -113,7 +113,8 @@ public static partial class ScenarioValidation
             s.Participants.Length is < 1 or > 64)
             throw new ArgumentException("Invalid scenario settings");
         if (s.Market is { } market && (market.AuctionRoundTicks is < 1 or > 1000 ||
-            market.AuctionRounds is < 1 or > 10 || market.MinimumRaiseMinor is < 1 or > 10000))
+            market.AuctionRounds is < 1 or > 10 || market.MinimumRaiseMinor is < 1 or > 10000 ||
+            market.PickupTtlTicks is < 1 or > 1000000 || market.PickupFineBasisPoints is < 0 or > 10000))
             throw new ArgumentException("Invalid market settings");
         ValidateLaborSettings(s);
         ValidateEquipmentCatalog(s);

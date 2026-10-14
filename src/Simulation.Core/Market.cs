@@ -110,7 +110,7 @@ public sealed partial class SimulationEngine
                 tx.Pay(_actors[bid.Buyer.Value].Account, account, checked(quantity * bid.CurrentPriceMinor), "MarketEscrow", bid.MoneyHold);
                 tx.ReserveStock(o.Inventory, stockHold, o.Item, quantity);
                 allocations.Add(new(id, o.Id, new(o.Seller), bid.Buyer, new(o.Inventory), o.Item,
-                    quantity, bid.CurrentPriceMinor, new(account), stockHold, Tick));
+                    quantity, bid.CurrentPriceMinor, new(account), stockHold, Tick, DeadlineTick: checked(Tick + Market.PickupTtlTicks)));
             }
             if (quantity < bid.Quantity) tx.ReleaseMoney(_actors[bid.Buyer.Value].Account, bid.MoneyHold);
         }

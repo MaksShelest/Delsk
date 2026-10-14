@@ -44,19 +44,39 @@ def verify(folder):
     allocations = state.get('marketAllocations', [])
     assert len({a['id'] for a in allocations}) == len(allocations)
     assert len({a['escrowAccount']['value'] for a in allocations}) == len(allocations)
+    market_rules = json.loads((folder/'scenario.json').read_text(encoding='utf-8')).get('market') or {}
+    fine_rate = market_rules.get('pickupFineBasisPoints', 500)
     for allocation in allocations:
-        assert allocation['status'] == 'AwaitingPickup'
+        q, c, r, x = (allocation[k] for k in ('quantity', 'collectedQuantity', 'remainingQuantity', 'releasedQuantity'))
+        price = allocation['unitPriceMinor']
+        assert q == c + r + x and min(c, r, x) >= 0
+        assert allocation['paidMinor'] == c * price
+        assert allocation['fineMinor'] == x * price * fine_rate // 10000
+        assert allocation['refundedMinor'] == x * price - allocation['fineMinor']
+        assert allocation['paidMinor'] + allocation['fineMinor'] + allocation['refundedMinor'] + r * price == q * price
+        if allocation['closedTick'] is None:
+            assert x == 0 and r > 0 and allocation['deadlineTick'] > state['tick']
+            assert allocation['status'] == ('AwaitingPickup' if c == 0 else 'PartiallyCollected')
+        else:
+            assert r == 0
+            assert allocation['status'] == ('Fulfilled' if x == 0 else 'Expired')
+            assert allocation['createdTick'] < allocation['closedTick'] <= min(allocation['deadlineTick'], state['tick'])
+            if x: assert allocation['closedTick'] == allocation['deadlineTick']
         assert allocation['seller'] != allocation['buyer'] and allocation['quantity'] > 0
         escrow = accounts[allocation['escrowAccount']['value']]
         assert escrow['kind'] == 'ContractEscrow'
-        assert escrow['balanceMinor'] == allocation['quantity'] * allocation['unitPriceMinor']
+        assert escrow['balanceMinor'] == r * price
         source = inventories[allocation['sourceInventory']['value']]
         assert source['ownerId'] == allocation['seller']
-        assert sum(s['reserved'] for s in source['stock'] if s['itemId'] == allocation['itemId']) >= allocation['quantity']
+        assert sum(s['reserved'] for s in source['stock'] if s['itemId'] == allocation['itemId']) >= r
+        entries = [l for l in ledger if l['debitAccount']['value'] == allocation['escrowAccount']['value']]
+        for reason, field in [('PickupPayment', 'paidMinor'), ('PickupFine', 'fineMinor'), ('PickupRefund', 'refundedMinor')]:
+            assert sum(l['amountMinor'] for l in entries if l['reason'] == reason) == allocation[field]
+        assert sum(l['amountMinor'] for l in entries) == allocation['paidMinor'] + allocation['fineMinor'] + allocation['refundedMinor']
     shops = {b['id']['value']: b['inputId']['value'] for b in state['buildings']}
     for inv in state['inventories']:
         for stock in inv['stock']:
-            claims = sum(a['quantity'] for a in allocations if a['sourceInventory']['value'] == inv['id']['value'] and a['itemId'] == stock['itemId'])
+            claims = sum(a['remainingQuantity'] for a in allocations if a['sourceInventory']['value'] == inv['id']['value'] and a['itemId'] == stock['itemId'])
             lots = sum(o['quantity'] for o in state.get('marketOffers', []) if o['status'] != 'Closed' and shops[o['shop']['value']] == inv['id']['value'] and o['itemId'] == stock['itemId'])
             assert claims + lots <= stock['reserved'] <= stock['quantity']
     assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'MarketEscrow') == sum(a['quantity'] * a['unitPriceMinor'] for a in allocations)

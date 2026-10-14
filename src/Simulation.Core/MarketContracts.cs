@@ -2,7 +2,8 @@ using System.Collections.Immutable;
 
 namespace Simulation.Core;
 
-public record MarketSettings(int AuctionRoundTicks = 5, int AuctionRounds = 2, long MinimumRaiseMinor = 1);
+public record MarketSettings(int AuctionRoundTicks = 5, int AuctionRounds = 2, long MinimumRaiseMinor = 1,
+    int PickupTtlTicks = 120, int PickupFineBasisPoints = 500);
 public enum MarketOfferStatus { Collecting, Auction, Closed }
 public record PublicMarketBid(ParticipantId Buyer, long Quantity, long CurrentPriceMinor);
 public record MarketOfferView(long Id, ParticipantId Seller, BuildingId Shop, Cell Position, string ItemId,
@@ -10,10 +11,15 @@ public record MarketOfferView(long Id, ParticipantId Seller, BuildingId Shop, Ce
     MarketOfferStatus Status, long AllocatedQuantity, long? ClosedTick, ImmutableArray<PublicMarketBid> Bids);
 public record MarketBidView(long OfferId, ParticipantId Buyer, long Quantity, long CurrentPriceMinor,
     long MaximumPriceMinor, string MoneyHold);
-// P14 allocates a conditional pickup claim. Physical collection/deadline/refund arrive in P15.
+// Original quantity remains historical; the same claim owns only its uncollected remainder.
 public record MarketAllocationView(long Id, long OfferId, ParticipantId Seller, ParticipantId Buyer,
     InventoryId SourceInventory, string ItemId, long Quantity, long UnitPriceMinor,
-    AccountId EscrowAccount, string StockHold, long CreatedTick, string Status = "AwaitingPickup");
+    AccountId EscrowAccount, string StockHold, long CreatedTick, string Status = "AwaitingPickup",
+    long DeadlineTick = 0, long CollectedQuantity = 0, long ReleasedQuantity = 0,
+    long PaidMinor = 0, long FineMinor = 0, long RefundedMinor = 0, long? ClosedTick = null)
+{
+    public long RemainingQuantity => checked(Quantity - CollectedQuantity - ReleasedQuantity);
+}
 internal record SavedMarketOffer(long Id, long Seller, long Shop, long Inventory, string Item, long Quantity,
     long BasePrice, long CreatedTick, long Cutoff, int Round, MarketOfferStatus Status,
     long Allocated, long? ClosedTick, string StockHold, MarketBidView[] Bids);

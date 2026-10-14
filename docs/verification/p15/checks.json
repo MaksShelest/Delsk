@@ -1,0 +1,184 @@
+{
+  "stage": "P15",
+  "author": "Шелестов Максим Евгеньевич",
+  "rules": "pickup-1",
+  "world_schema": 3,
+  "session_schema": 2,
+  "envelope_format": 1,
+  "tests": {
+    "total": 205,
+    "failed": 0,
+    "skipped": 0,
+    "elapsed_seconds": 16.418
+  },
+  "headless": {
+    "status": "succeeded",
+    "scenarios": [
+      "cycle",
+      "recovery",
+      "development",
+      "labor",
+      "equipment",
+      "autonomous",
+      "market",
+      "pickup"
+    ],
+    "checkpoint_cases": {
+      "cycle": 55,
+      "equipment": 101,
+      "autonomous": 350,
+      "market": 44,
+      "pickup": 47
+    },
+    "comparison": "every exported tick hash, state, ledger, event, command and labor row",
+    "scope": "P00-P15: seven scripted fixtures including auction and physical partial pickup plus three autonomous NPC; delivery/politics remain future tasks",
+    "author": "Шелестов Максим Евгеньевич"
+  },
+  "platform": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "09b178043488d1e9e7acf9ad8c138c2ba602d5f4f4de3761c6fa3abf2d30f2d6",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "checks": {
+    "fetch": {
+      "exit_code": 0,
+      "timeout_seconds": 60,
+      "elapsed_seconds": 8.247,
+      "started_at": "2026-10-14T10:48:44.602288+00:00",
+      "finished_at": "2026-10-14T10:48:52.849424+00:00"
+    },
+    "headless-final-3": {
+      "exit_code": 0,
+      "timeout_seconds": 600,
+      "elapsed_seconds": 42.269,
+      "started_at": "2026-10-14T10:57:02.461419+00:00",
+      "finished_at": "2026-10-14T10:57:44.730393+00:00"
+    },
+    "platform-fixture": {
+      "exit_code": 0,
+      "timeout_seconds": 15,
+      "elapsed_seconds": 0.032,
+      "started_at": "2026-10-14T10:58:36.386809+00:00",
+      "finished_at": "2026-10-14T10:58:36.419059+00:00"
+    },
+    "godot-build": {
+      "exit_code": 0,
+      "timeout_seconds": 180,
+      "elapsed_seconds": 7.758,
+      "started_at": "2026-10-14T10:58:37.043781+00:00",
+      "finished_at": "2026-10-14T10:58:44.801804+00:00"
+    },
+    "godot-import": {
+      "exit_code": 0,
+      "timeout_seconds": 120,
+      "elapsed_seconds": 3.986,
+      "started_at": "2026-10-14T10:59:42.929883+00:00",
+      "finished_at": "2026-10-14T10:59:46.915645+00:00"
+    },
+    "godot-smoke": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.018,
+      "started_at": "2026-10-14T11:00:19.557943+00:00",
+      "finished_at": "2026-10-14T11:00:20.575594+00:00"
+    },
+    "godot-verify": {
+      "exit_code": 0,
+      "timeout_seconds": 15,
+      "elapsed_seconds": 0.032,
+      "started_at": "2026-10-14T11:00:35.999406+00:00",
+      "finished_at": "2026-10-14T11:00:36.031617+00:00"
+    }
+  },
+  "scenarios": {
+    "cycle": {
+      "status": "succeeded",
+      "tick": 62,
+      "stateHash": "09b178043488d1e9e7acf9ad8c138c2ba602d5f4f4de3761c6fa3abf2d30f2d6",
+      "initialMoneyMinor": 100000,
+      "externalMoneyInMinor": 25000,
+      "externalMoneyOutMinor": 0
+    },
+    "recovery": {
+      "status": "succeeded",
+      "tick": 32,
+      "stateHash": "4f31d8bee95a4d3b25dd3fac8f3d37b050d7c1f063fc5f0409c4780709def41e",
+      "initialMoneyMinor": 0,
+      "externalMoneyInMinor": 10000,
+      "externalMoneyOutMinor": 0
+    },
+    "development": {
+      "status": "succeeded",
+      "tick": 465,
+      "stateHash": "ba21165d5120d7644ec7f1b0b415f13a709534ac4e93bc1c485a508b9bc4131b",
+      "initialMoneyMinor": 250000,
+      "externalMoneyInMinor": 28500,
+      "externalMoneyOutMinor": 0
+    },
+    "labor": {
+      "status": "succeeded",
+      "tick": 291,
+      "stateHash": "9a69ffbc174cb63a1c58733f828568edb42a473297d4832dfa7ab35cec88041c",
+      "initialMoneyMinor": 2000000,
+      "externalMoneyInMinor": 0,
+      "externalMoneyOutMinor": 0
+    },
+    "equipment": {
+      "status": "succeeded",
+      "tick": 200,
+      "stateHash": "56ad0e8935d9b7e6919f1f97f967db1c245ce50ff34fc8d8882d9e2f0a6df816",
+      "initialMoneyMinor": 200000,
+      "externalMoneyInMinor": 16000,
+      "externalMoneyOutMinor": 0
+    },
+    "autonomous": {
+      "status": "succeeded",
+      "tick": 1000,
+      "stateHash": "57a0cb2dc3bd989c99b1454d71076fe185ba6f7d677a83ca525e65bdd20c2b7a",
+      "initialMoneyMinor": 80000,
+      "externalMoneyInMinor": 6600000,
+      "externalMoneyOutMinor": 0
+    },
+    "market": {
+      "status": "succeeded",
+      "tick": 51,
+      "stateHash": "e537129674c450a24240a842ddb84af168b7916224e770ccb37ea8ae55ced85b",
+      "initialMoneyMinor": 40000,
+      "externalMoneyInMinor": 0,
+      "externalMoneyOutMinor": 0
+    },
+    "pickup": {
+      "status": "succeeded",
+      "tick": 52,
+      "stateHash": "c3813a288358b4de2d222e4329f7c03057cfed210de8a65cec5f44dfa505f18c",
+      "initialMoneyMinor": 20000,
+      "externalMoneyInMinor": 0,
+      "externalMoneyOutMinor": 0
+    }
+  },
+  "pickup_snapshot_bytes": 103641,
+  "prior_failures": [
+    "xUnit2031 analyzer rejected new Assert.Single(Where(...)); fixed overload",
+    "Two corrupt-counter tests expected generic error but reverse hold validation correctly rejected OrphanStockReservation; assertions now require a structural error instead of hash-only refusal"
+  ],
+  "not_run": [
+    "new Android/Windows exports",
+    "real Android device",
+    "interactive human market UI",
+    "real model experiment"
+  ]
+}
