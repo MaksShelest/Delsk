@@ -1,6 +1,6 @@
 # Как запускать и проверять экономику без графики
 
-Автор: Шелестов Максим Евгеньевич. Состояние после P13, 14.10.2026.
+Автор: Шелестов Максим Евгеньевич. Состояние после P14, 14.10.2026.
 
 ## Что выполняет прогон и зачем Python
 
@@ -14,7 +14,7 @@ Python сейчас лишь удобно запускает .NET-сборку/�
 
 ## Быстрый запуск в Rider или терминале Windows
 
-Получить ветку `feat/autonomous-p13` (после её merge — текущую базовую ветку); безопасное обновление — [LOCAL_SETUP.md](LOCAL_SETUP.md). Открыть `Delsk.sln`. В терминале **корня репозитория**:
+Получить ветку `feat/market-p14` (после её merge — текущую базовую ветку); безопасное обновление — [LOCAL_SETUP.md](LOCAL_SETUP.md). Открыть `Delsk.sln`. В терминале **корня репозитория**:
 
 ```powershell
 dotnet restore Delsk.sln --locked-mode --disable-parallel '-m:1'
@@ -25,7 +25,7 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --script auton
 
 Здесь Python и Godot не используются. SDK10.0.401 закреплён в global.json; рабочее окружение не нужно переустанавливать. Rider можно использовать для отладки C# runner. Встроенная консоль напечатает `succeeded`, конечный тик, хеш мира и **абсолютный путь результата**. Указанные команды удобны для ручной проверки; облачные проверки запускают их через `run_check.py` с hard timeout. При `failed` смотреть причину и код завершения; наличие каталога само по себе не означает успех.
 
-Пилот этой итерации:1000 тиков, seed42,3.375 секунды на этой среде до экспорта. Это измерение одного небольшого мира, не обещание скорости на другом компьютере или длинной партии. Полный месячный рынок/политика ещё не готовы; этот запуск проверяет P00–P13.
+Пилот этой итерации:1000 тиков, seed42,3.375 секунды на этой среде до экспорта. Это измерение одного небольшого мира, не обещание скорости на другом компьютере или длинной партии. Полный месячный рынок/политика ещё не готовы; этот запуск проверяет P00–P14.
 
 ## Параметры прогона
 
@@ -80,7 +80,7 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --load artifac
 
 Первая команда сохраняет на350 **живой** мир и планы, затем продолжает до1000. Вторая непосредственно восстанавливает их и выполняет351…1000, не проигрывая первые350 тиков. Для автономного load конечный тик задаётся явно; seed/scenario/settings берутся из сохранения и не заменяются. `--checkpoint FILE` без checkpoint-at записывает состояние на конце прогона.
 
-Для старых synchronous fixtures checkpoint-at сначала записывает их полную командную ленту и сохраняет recorded cursor; такие saves знают финальный тик сами. Это не способ сохранения живых NPC. Session schema2 включает контроллеры; старые schema1 без них читаются. Декодированный сеанс с политиками требует `RestoreControllers` в composition root до Step; runner выполняет это сам. Неизвестная политика/версия отклоняется, контроллеры не исчезают молча.
+Для старых synchronous fixtures checkpoint-at сначала записывает их полную командную ленту и сохраняет recorded cursor; такие saves знают финальный тик сами. Это не способ сохранения живых NPC. Session schema2 включает контроллеры. P14 World schema2/Rules market-1: старые World1 файлы не загружаются, автоматической миграции нет; оставить их для прежней версии кода. Декодированный сеанс с политиками требует `RestoreControllers` в composition root до Step; runner выполняет это сам. Неизвестная политика/версия отклоняется, контроллеры не исчезают молча.
 
 `commands.jsonl` можно проиграть через `--replay PATH --scenario ... --ticks FINAL_TICK`: это повтор **мира** без повторного вызова NPC. Планы контроллеров проверять через checkpoint/load, не через command-only replay. Время отсутствия не продвигает мир. Исправный предыдущий файл — `.bak`; явный выбор backup: `--recover-backup true`. После corrupt main восстановиться и сохранить в новый путь; не вращать повреждённый main поверх backup.
 
@@ -92,8 +92,24 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --load artifac
 python scripts/check_headless.py --output artifacts/headless
 ```
 
-Она выполняет bounded restore/build,148 xUnit-тестов,5 прежних fixtures и автономный прогон,3 пары save/load. Сверяет побайтно final-state/ledger/events/commands/metrics/labor/**controllers/decisions/agents**, затем независимо проверяет деньги, товар, вместимости и население. `artifacts/headless/checks` содержит stdout/stderr/exit/timeout, `headless-check.json` — успешный итог. Сбой не маскируется и возвращает ненулевой код.
+Она выполняет bounded restore/build,172 xUnit-тестов,5 прежних fixtures, новый market и автономный прогон,4 пары save/load. Сверяет побайтно final-state/ledger/events/commands/metrics/labor/**controllers/decisions/agents**, затем независимо проверяет деньги, товар, вместимости и население. `artifacts/headless/checks` содержит stdout/stderr/exit/timeout, `headless-check.json` — успешный итог. Сбой не маскируется и возвращает ненулевой код.
 
-Что это подтверждает: отсутствие отрицательных/повторных списаний, дублирования товара, потери численности, сохранение физической длительности и воспроизводимое продолжение. Что оценивать по данным отдельно: простаивание, накопление товара, окупаемость вложений, конкуренцию зарплат, повторение неудачных целей. Игра ещё не содержит участнических аукционов/контрактов/выборов; их нельзя считать проверенными по успеху этого набора.
+Что это подтверждает: отсутствие отрицательных/повторных списаний, дублирования товара, потери численности, сохранение физической длительности и воспроизводимое продолжение. Что оценивать по данным отдельно: простаивание, накопление товара, окупаемость вложений, конкуренцию зарплат, повторение неудачных целей. Участнические аукционы P14 проверены; выдача/поставочные контракты/выборы ещё не реализованы. Их нельзя считать проверенными по успеху набора.
 
 Полную экономику после P21 проверять **тем же C# runner без визуального оформления**: полноценный сценарий → ограниченный горизонт/результат → проверки → несколько одинаково настроенных seeds → сравнение выпуск/исполнение/безработица/победы/ошибки. Автоматизация серий и статистика — P24/P25; графики ещё не создаются. [Фактическая граница](PROTOTYPE_STATUS.md).
+
+## Новый рыночный сценарий P14
+
+```powershell
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/market-window.json --script market --output artifacts/market
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/market-window.json --script market --checkpoint artifacts/market-p14.save.json --checkpoint-at 44 --output artifacts/market-saved
+dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/market-p14.save.json --output artifacts/market-loaded
+```
+
+Ожидается51 ticks. Seller физически добыл и привёз15 wood, publish36/cutoff41, shortage17, rounds41–46/46–51. Buyer2/3/4 requests6/8/3, final prices5/6/7 денег; allocations4/8/3, escrow89. Товар остаётся15 reserved в seller shop, у buyer пока0, seller cash100. **Выдача/TTL/refund/fine ещё P15.** Market demo scripted; P13 NPC пока принимают наличные заказы столицы, новые bidding goals — P21.
+
+Новый market.json содержит предложения/активные bids/allocations, summary также показывает их; ledger — MarketEscrow, events — MarketOfferPublished/MarketAuctionStarted/MarketBidRaised/MarketRoundStarted/MarketPurchaseAllocated/MarketWindowClosed. Research exports могут содержать private bid maximum; participant/ControllerObservation видит только свой maximum и двусторонние allocations.
+
+`market.auctionRoundTicks`/`auctionRounds`/`minimumRaiseMinor` в scenario управляют раундами, TradeWindowTicks — сбором заявок. Requests/raises в API требуют MarketOfferId, при raise/withdraw — текущий MarketRound. Публикация требует own shop stock. Денежный hold основан на current price, maximum — потолок, не мгновенное списание. Failed raise/edit оставляет старый hold/bid. После закрытия выделенные деньги в escrow, surplus money/unsold units свободны.
+
+Четвёртая checkpoint пара сохраняет44 внутри auction; market.json также сравнивается побайтно. Новый набор содержит172 tests,7 scenarios,4 save/load pairs. Godot остаётся технической62-tick fixture. World2/Rules market-1 изменяет canonical hashes даже пустого рынка; исторические P13 numbers сохранены, старые hashes/saves не выдаются за текущие. P13 saves открыть предыдущим кодом в отдельной копии, новые писать в новый файл; автоматического преобразования нет.

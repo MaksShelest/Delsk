@@ -131,6 +131,7 @@ public sealed partial class SimulationEngine
                 expectedStock.Add((r.InventoryId, r.Reservation), new(o.Definition.ItemId, r.Quantity));
             }
         }
+        AddExpectedMarketHolds(expectedStock, expectedMoney);
         foreach (var inv in _economy.Inventories.Values)
         {
             foreach (var h in inv.CapacityHolds)
@@ -146,7 +147,7 @@ public sealed partial class SimulationEngine
                     throw new CheckpointException("OrphanMoneyReservation");
         if (expectedCapacity.Count + expectedStock.Count + expectedMoney.Count != 0) throw new CheckpointException("MissingReservation");
         long maximum = _economy.Accounts.Keys.Concat(_economy.Inventories.Keys).Concat(_enterprises.Keys).Concat(_equipment.Keys)
-            .Concat(_buildings.Keys).Concat(_completedPersonalJobs).Concat(_events.Select(e => e.EntityId))
+            .Concat(_buildings.Keys).Concat(_marketOffers.Keys).Concat(_marketAllocations.Select(a => a.Id)).Concat(_completedPersonalJobs).Concat(_events.Select(e => e.EntityId))
             .Concat(_actors.Values.Where(a => a.Job != null).Select(a => a.Job!.Id)).DefaultIfEmpty(0).Max();
         if (_nextId <= maximum) throw new CheckpointException("NextIdWouldDuplicateEntity");
     }

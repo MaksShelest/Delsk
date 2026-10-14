@@ -178,5 +178,6 @@ public sealed partial class SimulationEngine
         }
         ValidateLandInvariants();
         ValidateEquipmentInvariants();
+        ValidateMarketInvariants();
     }
 }

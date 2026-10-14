@@ -25,7 +25,7 @@ public partial class PlatformProbe : Control
     private bool _skipNextFrame;
     private bool _lifecycleChecked;
     private readonly List<long> _restoredTicks = [];
-    private string SavePath => ProjectSettings.GlobalizePath("user://platform-checkpoint.json");
+    private string SavePath => ProjectSettings.GlobalizePath($"user://platform-checkpoint-{SimulationEngine.RulesVersion}.json");
     private string _reportPath = DefaultReportPath;
 
     public override void _Ready()
