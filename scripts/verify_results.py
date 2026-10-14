@@ -38,6 +38,30 @@ def verify(folder):
     assert tape, 'No real commands recorded'
     ledger = [json.loads(line) for line in (folder/'ledger.jsonl').read_text(encoding='utf-8').splitlines()]
     assert sum(entry['amountMinor'] for entry in ledger if entry['reason']=='CapitalSettlement') == sum(s['paidMinor'] for s in summary['settlements'])
+    assert all(0 <= a['reservedMinor'] <= a['balanceMinor'] for a in state['accounts'])
+    accounts = {a['id']['value']: a for a in state['accounts']}
+    inventories = {i['id']['value']: i for i in state['inventories']}
+    allocations = state.get('marketAllocations', [])
+    assert len({a['id'] for a in allocations}) == len(allocations)
+    assert len({a['escrowAccount']['value'] for a in allocations}) == len(allocations)
+    for allocation in allocations:
+        assert allocation['status'] == 'AwaitingPickup'
+        assert allocation['seller'] != allocation['buyer'] and allocation['quantity'] > 0
+        escrow = accounts[allocation['escrowAccount']['value']]
+        assert escrow['kind'] == 'ContractEscrow'
+        assert escrow['balanceMinor'] == allocation['quantity'] * allocation['unitPriceMinor']
+        source = inventories[allocation['sourceInventory']['value']]
+        assert source['ownerId'] == allocation['seller']
+        assert sum(s['reserved'] for s in source['stock'] if s['itemId'] == allocation['itemId']) >= allocation['quantity']
+    shops = {b['id']['value']: b['inputId']['value'] for b in state['buildings']}
+    for inv in state['inventories']:
+        for stock in inv['stock']:
+            claims = sum(a['quantity'] for a in allocations if a['sourceInventory']['value'] == inv['id']['value'] and a['itemId'] == stock['itemId'])
+            lots = sum(o['quantity'] for o in state.get('marketOffers', []) if o['status'] != 'Closed' and shops[o['shop']['value']] == inv['id']['value'] and o['itemId'] == stock['itemId'])
+            assert claims + lots <= stock['reserved'] <= stock['quantity']
+    assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'MarketEscrow') == sum(a['quantity'] * a['unitPriceMinor'] for a in allocations)
+    for offer in state.get('marketOffers', []):
+        assert sum(a['quantity'] for a in allocations if a['offerId'] == offer['id']) == offer['allocatedQuantity'] <= offer['quantity']
     print(f'{folder}: money, item flows, capacity, population and settlements verified; tick={summary["tick"]}')
 
 if len(sys.argv) < 2:

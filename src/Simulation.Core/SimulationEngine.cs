@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "equipment-1";
+    public const string RulesVersion = "market-1";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -47,6 +47,7 @@ public sealed partial class SimulationEngine
         _allocationRandom = new(unchecked(_config.Seed ^ 0xA110CA7EUL));
         _commandRandom = new(unchecked(_config.Seed ^ 0xC011A11DUL));
         _laborRandom = new(unchecked(_config.Seed ^ 0x1AB012UL));
+        _marketRandom = new(unchecked(_config.Seed ^ 0xA0C710UL));
         _population = _config.Population;
         _treasury = CreateAccount("Treasury"); _wages = CreateAccount("WagesSink");
         _capital = CreateAccount("CapitalBudget");
@@ -143,7 +144,7 @@ public sealed partial class SimulationEngine
             foreach (var c in allowed.Where(c => !IsManagement(c.Action.Kind))) Execute(c);
             _phase = 4; AdvanceHarvests(); AdvanceWork();
             _phase = 5; AdvanceLabor();
-            _phase = 6; CloseCapitalWindows();
+            _phase = 6; CloseCapitalWindows(); AdvanceMarketWindows();
             _phase = 7; ExpirePlotReservations();
             _phase = 9; ValidateInvariants(); Emit("TickCommitted");
         }
@@ -178,6 +179,10 @@ public sealed partial class SimulationEngine
                 case ActionKind.BuyEquipment: BuyEquipment(actor, c); break;
                 case ActionKind.UpgradeEquipment: UpgradeEquipment(actor, c); break;
                 case ActionKind.SetEquipmentMode: SetEquipmentMode(actor, c); break;
+                case ActionKind.CreateSellOffer: CreateSellOffer(actor, c); break;
+                case ActionKind.SubmitBuyRequest: SubmitBuyRequest(actor, c); break;
+                case ActionKind.RaiseBid: RaiseBid(actor, c); break;
+                case ActionKind.WithdrawBid: WithdrawBid(actor, c); break;
                 default: throw new RuleViolation("UnknownAction");
             }
             _results[c.CommandId] = new(c.CommandId, ResultStatus.Accepted, "Accepted", Tick);
@@ -293,7 +298,7 @@ public sealed partial class SimulationEngine
             _settlements.ToArray(), _population, _unemployed,
             _economy.InitialMoney, _economy.ExternalIn, _economy.ExternalOut, LandViews(), BuildingViews(),
             EmploymentGroups().OrderBy(g => g.Id).Select(g => g.View()).ToArray(),
-            checked(_population - _config.Population), _lastGrowthPeriod, EquipmentViews());
+            checked(_population - _config.Population), _lastGrowthPeriod, EquipmentViews(), MarketOfferViews(), MarketBidViews(), _marketAllocations.ToArray());
     }
     public ParticipantObservation Observe(ParticipantId actorId)
     {
@@ -304,11 +309,13 @@ public sealed partial class SimulationEngine
             view.Plots, view.Buildings.Where(b => b.OwnerId == actorId).ToArray(), CopyBuildingCatalog(),
             view.EmploymentGroups.Where(g => g.OwnerId == actorId).ToArray(),
             view.EmploymentGroups.Select(g => new PublicEmploymentView(g.Id, g.OwnerId, g.Role, g.Headcount, g.Capacity, g.PendingWageMinor ?? g.WageMinor)).ToArray(),
-            view.Population, view.Unemployed, view.Equipment.Where(e => e.OwnerId == actorId).ToArray(), CopyEquipmentCatalog());
+            view.Population, view.Unemployed, view.Equipment.Where(e => e.OwnerId == actorId).ToArray(), CopyEquipmentCatalog(), view.MarketOffers.Where(o => o.Status != MarketOfferStatus.Closed || o.Seller == actorId).ToArray(),
+            view.MarketBids.Where(b => b.Buyer == actorId).ToArray(),
+            view.MarketAllocations.Where(a => a.Buyer == actorId || a.Seller == actorId).ToArray(), Market);
     }
     public string ComputeStateHash() => ScenarioValidation.Hash(new
     {
-        World = Inspect(), CommandRandom = _commandRandom.State, LaborRandom = _laborRandom.State,
+        World = Inspect(), CommandRandom = _commandRandom.State, LaborRandom = _laborRandom.State, MarketRandom = _marketRandom.State,
         MoneyHolds = _economy.Accounts.OrderBy(x => x.Key).Select(x => new { x.Key, Holds = x.Value.Holds.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray() }).ToArray(),
         InventoryHolds = _economy.Inventories.OrderBy(x => x.Key).Select(x => new { x.Key,
             Stock = x.Value.Reservations.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray(),

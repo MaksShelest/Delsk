@@ -1,7 +1,7 @@
 # Архитектура Delsk
 
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
-Статус: проект архитектуры к спецификации 0.3. P00–P13 реализованы в границах отчётов; остальные компоненты остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
+Статус: проект архитектуры к спецификации 0.3. P00–P14 реализованы в границах отчётов; остальные компоненты остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
 
 ## 1. Основания и границы
 
@@ -469,3 +469,13 @@ Hosting собирает все наблюдения до любого Decide/Se
 Hosting не ссылается на Algorithmic: сохраняет конкретный ControllerCheckpoint(kind/version/actor/state JSON/pending IDs), traces и samples. Session schema2, World/Envelope остаются1; schema1 sessions без контроллеров читаются. Декодированные политики должны быть восстановлены явной фабрикой в composition root; Step без RestoreControllers запрещён. Runner знает AlgorithmicController.Restore, проверяет его состояние/канонический capture. Сохранённые ожидаемые ID связаны с собственным inbox/tape; планы, settings, trust, cursor, таймеры и PRNG восстанавливаются до следующего тика. Делегат фабрики не сериализуется.
 
 Хеш мира не менялся; отдельный controller state hash охватывает состояния политик и awaiting IDs. Exact continuation сверяет также полные decisions/agents/controller exports; command-only replay повторяет мир без исполнения политик и не выдаётся за восстановление их памяти. Полная trace доступна исследователю, не передаётся контроллерам. В будущем секретные договоры добавляются только в собственную/двустороннюю проекцию.
+
+## 17. Реализованные предложения и аукционы P14
+
+MarketContracts хранит offer/current bids/conditional allocations, Market исполняет команды и phase6, MarketValidation проверяет состояние и ownership holds. Не отдельные проекты/интерфейсы. Лот публикуется только из own Shop.Input; публикация резервирует реальный запас. Все покупки одного окна собираются до cutoff; достаток закрывает по base price, shortage переводит всех в fixed auction rounds. Перестановка equal-price bidders канонически seeded; MaximumPrice и cash hold видит свой buyer, current price/quantity публичны.
+
+При закрытии одной EconomyTransaction снимается исходный stock hold, создаются отдельные stock claims и ContractEscrow; unused cash и unsold units свободны. В buyer inventory ничего не создаётся, seller не получает оплату. MarketAllocationView — P14 подготовка PickupContract, status AwaitingPickup. Collection/counters/TTL/refund/fine ещё P15. Численности/производство/перевозка не менялись; trade actions remote phase1, auctions phase6.
+
+World schema2/Rules market-1 содержит saved offers/bids/allocations и dedicated auction tie PRNG; reverse hold validation связывает каждый active lot, bid money и claim stock с целью. Session2/Envelope1 сохранены. World1 отказ UnknownWorldSchema, migration не реализована; old files/branch сохраняются. Смена DTO/config/action fields изменяет hashes даже пустого рынка; platform expectations обновлены после проверки old fixture finances/flows. Godot save filename содержит RulesVersion.
+
+Новая immutable projection включает public offers/current bids/MarketRules, own private bids и bilateral allocations. Max price не попадает в чужой snapshot. Полная research state/market.json не является participant observation. P13 utility не получил новую торговую стратегию; интеграция в baseline P21 остаётся задачей плана.

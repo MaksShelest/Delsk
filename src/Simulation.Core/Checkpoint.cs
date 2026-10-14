@@ -28,11 +28,12 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
     SavedActor[] Actors, SavedEnterprise[] Enterprises, SavedEquipment[] Equipment, PlotView[] Plots,
     BuildingView[] Buildings, SavedOffer[] Offers, FlowView[] Flows, SettlementView[] Settlements,
     long[] CompletedJobs, CommandEnvelope[] Commands, CommandResult[] Results, string[] Pending,
-    LedgerRecord[] Ledger, SimulationEvent[] Events);
+    LedgerRecord[] Ledger, SimulationEvent[] Events, ulong MarketRandom,
+    SavedMarketOffer[] MarketOffers, MarketAllocationView[] MarketAllocations);
 
 public sealed partial class SimulationEngine
 {
-    public const int CheckpointSchemaVersion = 1;
+    public const int CheckpointSchemaVersion = 2;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
@@ -65,7 +66,7 @@ public sealed partial class SimulationEngine
                     r.Reservation, r.CommandId)).ToArray())).ToArray(), world.Flows, world.Settlements,
             _completedPersonalJobs.Order().ToArray(), _seenCommands.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(),
             _results.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(), _pending.Select(c => c.CommandId).ToArray(),
-            Ledger(), _events.ToArray());
+            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray());
         return JsonSerializer.Serialize(saved, SimulationJson.Options);
     }
     private static KeyValuePair<string, long>[] Ordered(Dictionary<string, long> values)
@@ -196,6 +197,7 @@ public sealed partial class SimulationEngine
         foreach (var r in s.Results) _results.Add(r.CommandId, r);
         foreach (string id in s.Pending) _pending.Add(_seenCommands[id]);
         _events.Clear(); _events.AddRange(s.Events);
+        RestoreMarket(s.MarketOffers, s.MarketAllocations, s.MarketRandom);
         _phase = Tick == 0 ? 0 : 9;
     }
 }

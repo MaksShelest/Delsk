@@ -3,7 +3,7 @@
 Исследовательская экономическая игра с автономными NPC.
 Автор: Шелестов Максим Евгеньевич.
 
-В C# реализованы P00–P13: тики/команды, деньги и конечные запасы, личное движение/добыча, две производственные цепочки, земля/стройка/уровни, числовой найм по зарплата³ с постепенными переходами, зарплата/энергия/неоплачиваемый простой, техника и direct checkpoint/load. Три алгоритмических NPC сами развивают хозяйства без модели. Слот человека в автономном консольном стенде бездействует; свободный игровой ввод/интерфейс ещё не готов.
+В C# реализованы P00–P14: тики/команды, деньги и конечные запасы, личное движение/добыча, две производственные цепочки, земля/стройка/уровни, числовой найм по зарплата³ с постепенными переходами, зарплата/энергия/неоплачиваемый простой, техника и direct checkpoint/load. Три алгоритмических NPC сами развивают хозяйства без модели. Слот человека в автономном консольном стенде бездействует; свободный игровой ввод/интерфейс ещё не готов.
 
 ## Быстрый запуск без Python и Godot
 
@@ -16,7 +16,7 @@ dotnet tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll -noColor 
 dotnet run --project src/Research.Runner -c Release --no-build -- --script autonomous --ticks 1000 --seed 42 --output artifacts/run-42
 ```
 
-148 xUnit-тестов проверены локально. Результат runner — статус/тик/хеш/путь в консоли и JSON/JSONL/CSV в `artifacts/run-42`: summary, деньги/товар/численности, agents/labor, decisions/commands/events/ledger, manifest и inspection final-state. Все игровые расчёты и политики на C#; Python только запускает проверки и читает результаты. [Параметры, значение прогона и файлы](docs/HEADLESS_TESTING.md).
+172 xUnit-тестов проверены локально. Результат runner — статус/тик/хеш/путь в консоли и JSON/JSONL/CSV в `artifacts/run-42`: summary, деньги/товар/численности, agents/labor, decisions/commands/events/ledger, manifest и inspection final-state. Все игровые расчёты и политики на C#; Python только запускает проверки и читает результаты. [Параметры, значение прогона и файлы](docs/HEADLESS_TESTING.md).
 
 `--mode headless` по умолчанию выполняет те же тики без ожидания реальных секунд; перевозка остаётся физической. `--mode paced` ждёт1 секунду/тик. Мир задаётся `--scenario`, политики — `--controllers`; начальные настройки лежат в scenarios/autonomous-*.json.
 
@@ -29,7 +29,7 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --load artifac
 
 Checkpoint сохраняет текущий мир и план каждого NPC; load продолжает без повторения первых350 тиков и без offline catch-up. final-state.json — только inspection, не save. Командную ленту можно повторить `--replay PATH --scenario PATH --ticks FINAL_TICK` без вызова контроллеров; это проверка мира, не восстановление их планов.
 
-Если установлен Python, одна команда с hard timeouts выполняет restore/build/tests,5 scripted fixtures+автономный мир,3 пары checkpoint/load и независимые проверки выгрузок:
+Если установлен Python, одна команда с hard timeouts выполняет restore/build/tests,6 scripted fixtures+автономный мир,4 пары checkpoint/load и независимые проверки выгрузок:
 
 ```powershell
 python scripts/check_headless.py --output artifacts/headless
@@ -39,14 +39,24 @@ python scripts/check_headless.py --output artifacts/headless
 
 ## Границы готовности
 
-Рынок участников/аукционы, частичные сделки/поставки, автоматическая доставка, спрос/волны, выборы и скрытые договоры — P14–P21. Локальный адаптер, серии и анализ — P22–P25. Первая автономная тестовая экономика уже запускается; полный месячный прототип ещё разрабатывается.
+P14 добавил предложения продажи, окна/дефицитные аукционы и резервы покупки. Физическое получение/возвраты, поставки, автоматическая доставка, спрос/волны, выборы и скрытые договоры — P15–P21. Локальный адаптер, серии и анализ — P22–P25. Первая автономная тестовая экономика уже запускается; полный месячный прототип ещё разрабатывается.
 
-Godot .NET4.7.2 подключает общий Core/Hosting и пока проверяет62-тактовую fixture/save/load. Платформенный этап P06 создал тестовые Windows/Android экспорты; APK не проверен на реальном телефоне, device gate открыт. P13 не создаёт новый игровой UI/APK/EXE. [Локальная работа в Rider/Godot](docs/LOCAL_SETUP.md), [клиентский стенд](src/Client.Godot/README.md).
+Godot .NET4.7.2 подключает общий Core/Hosting и пока проверяет62-тактовую fixture/save/load. Платформенный этап P06 создал тестовые Windows/Android экспорты; APK не проверен на реальном телефоне, device gate открыт. P14 не создаёт новый игровой UI/APK/EXE. [Локальная работа в Rider/Godot](docs/LOCAL_SETUP.md), [клиентский стенд](src/Client.Godot/README.md).
 
 ## Документация
 
 - [Неизменённая спецификация0.3](docs/requirements/game_specification.md).
 - [Архитектура](docs/ARCHITECTURE.md), [решения/риски](docs/DECISIONS.md), [план/статус](docs/IMPLEMENTATION_PLAN.md).
 - [Готовность минимальной версии](docs/PROTOTYPE_STATUS.md), [запуск без графики](docs/HEADLESS_TESTING.md).
-- [Отчёт текущего P13](docs/IMPLEMENTATION_REPORT_P13.md), [инструкции разработки/Cursor](AGENTS.md).
+- [Отчёт текущего P14](docs/IMPLEMENTATION_REPORT_P14.md), [инструкции разработки/Cursor](AGENTS.md).
 - Исторические отчёты: [P00–P05](docs/IMPLEMENTATION_REPORT_P00_P05.md), [P06](docs/IMPLEMENTATION_REPORT_P06.md), [P07–P08](docs/IMPLEMENTATION_REPORT_P07_P08.md), [P09–P10](docs/IMPLEMENTATION_REPORT_P09_P10.md), [P11](docs/IMPLEMENTATION_REPORT_P11.md), [P12](docs/IMPLEMENTATION_REPORT_P12.md).
+
+## Рынок P14
+
+```powershell
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/market-window.json --script market --output artifacts/market
+```
+
+Scripted S2:51 ticks, лот15 wood, заявки6/8/3, ставки5/6/7 денег → allocations4/8/3 и escrow89. Товар физически остаётся в лавочке, продавец не получил выручку; получение/TTL/возврат/штраф — следующий P15. Смотреть market.json/summary/events/ledger. Это проверка торгового ядра; автономные P13 NPC пока используют столицу, расширение их рыночных решений — P21.
+
+World schema2/Rules market-1: прежние World1 saves отклоняются, автоматической миграции нет. Старые файлы сохраняются и открываются прежней версией из feat/autonomous-p13. Новые проверки/save/load используют P14-файлы и отдельный Godot save path. [Отчёт и ограничения](docs/IMPLEMENTATION_REPORT_P14.md).

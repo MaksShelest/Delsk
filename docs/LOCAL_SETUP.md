@@ -1,13 +1,13 @@
 # Локальная проверка: Windows, Rider и Godot
 
-Автор: Шелестов Максим Евгеньевич. Итерация P13, 14.10.2026.
+Автор: Шелестов Максим Евгеньевич. Итерация P14, 14.10.2026.
 
 ## Получить исходники
 
 Ниже команды **PowerShell**, из выбранного рабочего каталога. Нужен Git. Новая копия:
 
 ```powershell
-git clone --branch feat/autonomous-p13 https://github.com/MaksShelest/Delsk.git Delsk
+git clone --branch feat/market-p14 https://github.com/MaksShelest/Delsk.git Delsk
 cd Delsk
 ```
 
@@ -15,10 +15,10 @@ cd Delsk
 
 ```powershell
 git fetch origin
-git switch --track origin/feat/autonomous-p13
+git switch --track origin/feat/market-p14
 ```
 
-Если эта локальная ветка уже существует, вместо последней строки выполнить `git switch feat/autonomous-p13`, затем `git pull --ff-only`. При ошибке о локальных изменениях остановить переключение и сохранить свою работу. После объединения PR можно перейти на актуальную основную ветку; сейчас default branch репозитория называется `feat/economic-cycle-p00-p05`, а не `main`.
+Если эта локальная ветка уже существует, вместо последней строки выполнить `git switch feat/market-p14`, затем `git pull --ff-only`. При ошибке о локальных изменениях остановить переключение и сохранить свою работу. После объединения PR можно перейти на актуальную основную ветку; сейчас default branch репозитория называется `feat/economic-cycle-p00-p05`, а не `main`.
 
 ## Проверить окружение и собрать ядро
 
@@ -89,7 +89,7 @@ Godot-стенд имеет кнопки Сохранить/Загрузить/�
 
 ## Автономная экономика P13
 
-Обновить исходники до feat/autonomous-p13, открыть корневой Delsk.sln, restore/build как выше. Запуск из Rider Terminal без Python/Godot:
+Обновить исходники до feat/market-p14, открыть корневой Delsk.sln, restore/build как выше. Запуск из Rider Terminal без Python/Godot:
 
 ```powershell
 dotnet run --project src/Research.Runner -c Release --no-build -- --script autonomous --ticks 1000 --seed 42 --output artifacts/run-42
@@ -98,3 +98,11 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --script auton
 Это три самостоятельных NPC и бездействующий human slot. CSV/JSON лежат в указанной папке проекта, абсолютный путь печатается в консоли. Настройки мира/политик и точное продолжение — [HEADLESS_TESTING.md](HEADLESS_TESTING.md). Для отладки создать .NET run configuration Research.Runner, Working directory — корень Delsk, Program arguments — те же флаги после `--` (сам разделитель в поле аргументов приложения не нужен).
 
 В Godot ничего переносить пофайлово не требуется: обновить тот же репозиторий и собрать клиентское решение. Текущая сцена остаётся технической fixture, она ещё не отображает автономную партию. Для ручной игры нужен будущий P26; сейчас результаты NPC смотреть через runner. Python — только необязательная оркестрация/анализ.
+
+## Рынок P14 и сохранения
+
+```powershell
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/market-window.json --script market --output artifacts/market
+```
+
+Это scripted auction,51 ticks; market.json показывает allocations/escrow, физическая выдача ещё P15. Автономный сценарий P13 остаётся доступен с --script autonomous, новый UI не добавлен. Текущие World2/Rules market-1 saves несовместимы с World1/P13; migration не реализована. **Не перезаписывать старый save**: создать новый путь. Если нужно открыть старую партию, использовать предыдущую ветку feat/autonomous-p13 в отдельной копии; её исходники и старые файлы сохранены. Godot сохраняет в отдельный user://platform-checkpoint-market-1.json.

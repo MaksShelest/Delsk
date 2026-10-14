@@ -112,6 +112,9 @@ public static partial class ScenarioValidation
             s.Participants is null || s.Enterprises is null || s.CapitalOffers is null || s.ResourceNodes is null ||
             s.Participants.Length is < 1 or > 64)
             throw new ArgumentException("Invalid scenario settings");
+        if (s.Market is { } market && (market.AuctionRoundTicks is < 1 or > 1000 ||
+            market.AuctionRounds is < 1 or > 10 || market.MinimumRaiseMinor is < 1 or > 10000))
+            throw new ArgumentException("Invalid market settings");
         ValidateLaborSettings(s);
         ValidateEquipmentCatalog(s);
         var map = new GridMap(s);

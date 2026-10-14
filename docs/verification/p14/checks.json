@@ -1,0 +1,174 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "2026-10-14",
+  "baseCommit": "00c2b1417d00cd5c587571d043e526427a613845",
+  "scope": "P14 offers/windows/auction and conditional pickup allocations; no physical collection P15",
+  "versions": {
+    "rules": "market-1",
+    "worldSchema": 2,
+    "sessionSchema": 2,
+    "envelopeFormat": 1,
+    "dotnetSdk": "10.0.401",
+    "godot": "4.7.2"
+  },
+  "sourceSha256": "b86447e9311ab676538e1edbf7fd217c5a09896c3fc0d5edda7569ae088e9376",
+  "tests": {
+    "passed": 172,
+    "failed": 0,
+    "skipped": 0
+  },
+  "suite": {
+    "command": [
+      "python",
+      "scripts/check_headless.py",
+      "--dotnet",
+      "../.tools/dotnet/dotnet",
+      "--output",
+      "../verification/p14/verified-headless"
+    ],
+    "timeout_seconds": 300,
+    "started_at": "2026-10-14T10:02:58.582606+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 38.064,
+    "finished_at": "2026-10-14T10:03:36.646635+00:00"
+  },
+  "headless": {
+    "status": "succeeded",
+    "scenarios": [
+      "cycle",
+      "recovery",
+      "development",
+      "labor",
+      "equipment",
+      "autonomous",
+      "market"
+    ],
+    "checkpoint_cases": {
+      "cycle": 55,
+      "equipment": 101,
+      "autonomous": 350,
+      "market": 44
+    },
+    "comparison": "every exported tick hash, state, ledger, event, command and labor row",
+    "scope": "P00-P14: six scripted fixtures including market auction and three autonomous NPC; pickup/delivery/politics remain future tasks",
+    "author": "Шелестов Максим Евгеньевич"
+  },
+  "market": {
+    "tick": 51,
+    "elapsedMillisecondsBeforeExport": 377.4626,
+    "stateHash": "3eddb2be0a40f8ae86dcf9ff60e50fef7953603b942a97334ade85307fea56a4",
+    "allocations": [
+      {
+        "id": 1015,
+        "offerId": 1014,
+        "seller": {
+          "value": 1
+        },
+        "buyer": {
+          "value": 4
+        },
+        "sourceInventory": {
+          "value": 1011
+        },
+        "itemId": "wood",
+        "quantity": 3,
+        "unitPriceMinor": 700,
+        "escrowAccount": {
+          "value": 1016
+        },
+        "stockHold": "market-pickup:1015",
+        "createdTick": 51,
+        "status": "AwaitingPickup"
+      },
+      {
+        "id": 1017,
+        "offerId": 1014,
+        "seller": {
+          "value": 1
+        },
+        "buyer": {
+          "value": 3
+        },
+        "sourceInventory": {
+          "value": 1011
+        },
+        "itemId": "wood",
+        "quantity": 8,
+        "unitPriceMinor": 600,
+        "escrowAccount": {
+          "value": 1018
+        },
+        "stockHold": "market-pickup:1017",
+        "createdTick": 51,
+        "status": "AwaitingPickup"
+      },
+      {
+        "id": 1019,
+        "offerId": 1014,
+        "seller": {
+          "value": 1
+        },
+        "buyer": {
+          "value": 2
+        },
+        "sourceInventory": {
+          "value": 1011
+        },
+        "itemId": "wood",
+        "quantity": 4,
+        "unitPriceMinor": 500,
+        "escrowAccount": {
+          "value": 1020
+        },
+        "stockHold": "market-pickup:1019",
+        "createdTick": 51,
+        "status": "AwaitingPickup"
+      }
+    ],
+    "sellerCashMinor": 10000,
+    "buyerCashMinor": [
+      8000,
+      5200,
+      7900
+    ],
+    "escrowMinor": 8900,
+    "sourceQuantity": 15,
+    "sourceReserved": 15,
+    "checkpointTick": 44,
+    "checkpointBytes": 83602
+  },
+  "godotLinux": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "207b582725541ea3f1a9ea28ebe77a32e28c129d852dade7b5ffab30bff83a06",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "legacyWorld1": {
+    "expectedExitCode": 1,
+    "reason": "UnknownWorldSchema",
+    "migration": "not implemented; files preserved"
+  },
+  "intermediateFailure": "Python verifier treated numeric allocation ID as typed object; corrected and complete suite repeated",
+  "notChecked": [
+    "Android real device",
+    "new APK/EXE export",
+    "physical pickup/expiry/refund",
+    "autonomous NPC auction policy",
+    "gameplay UI",
+    "full market/delivery/politics",
+    "real LLM"
+  ]
+}

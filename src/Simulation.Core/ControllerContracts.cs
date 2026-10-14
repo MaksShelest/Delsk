@@ -22,7 +22,9 @@ public record ControllerObservation(long Tick, ParticipantView Participant, Acco
     ImmutableArray<ControllerBuilding> Buildings, ImmutableArray<ControllerBuildingType> BuildingTypes,
     ImmutableArray<EmploymentView> EmploymentGroups, ImmutableArray<PublicEmploymentView> LaborMarket,
     long Population, long Unemployed, ImmutableArray<EquipmentView> Equipment,
-    ImmutableArray<ControllerEquipmentType> EquipmentTypes, ControllerMap Map);
+    ImmutableArray<ControllerEquipmentType> EquipmentTypes, ControllerMap Map,
+    ImmutableArray<MarketOfferView> MarketOffers, ImmutableArray<MarketBidView> OwnMarketBids,
+    ImmutableArray<MarketAllocationView> OwnMarketAllocations, MarketSettings MarketRules);
 public record ControllerDecision(string Goal, string Reason, ImmutableArray<GameAction> Actions, bool Record = true);
 public record ControllerCheckpoint(string Kind, int Version, ParticipantId Actor, string StateJson, ImmutableArray<string> PendingCommandIds);
 
@@ -54,6 +56,6 @@ public sealed partial class SimulationEngine
             o.EquipmentTypes.Select(t => new ControllerEquipmentType(t.Id, t.ItemId, [.. t.Levels])).ToImmutableArray(),
             new(_config.MapWidth, _config.MapHeight, [.. _config.BlockedCells], [.. _config.ResourceNodes],
                 [.. _config.Items], [.. _config.Recipes], _config.MoveTicksPerCell,
-                _config.HarvestTicksPerUnit, _config.TradeWindowTicks));
+                _config.HarvestTicksPerUnit, _config.TradeWindowTicks), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules);
     }
 }

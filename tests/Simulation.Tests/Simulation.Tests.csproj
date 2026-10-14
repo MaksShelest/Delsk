@@ -13,4 +13,5 @@
     <EmbeddedResource Include="../../scenarios/autonomous-economy.json" LogicalName="Fixture.autonomous-economy.json" />
     <EmbeddedResource Include="../../scenarios/autonomous-controllers.json" LogicalName="Fixture.autonomous-controllers.json" />
   </ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/market-window.json" LogicalName="Fixture.market-window.json" /></ItemGroup>
 </Project>
