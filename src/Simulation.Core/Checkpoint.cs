@@ -1,0 +1,201 @@
+using System.Text.Json;
+
+namespace Simulation.Core;
+
+public sealed class CheckpointException(string reason, Exception? inner = null) : Exception(reason, inner)
+{
+    public string ReasonCode { get; } = reason;
+}
+
+internal record SavedAccount(long Id, string Kind, long Balance, KeyValuePair<string, long>[] Holds);
+internal record SavedStockHold(string Id, string Item, long Quantity);
+internal record SavedInventory(long Id, long Owner, Cell Position, long Capacity,
+    KeyValuePair<string, long>[] Stock, SavedStockHold[] Reservations, KeyValuePair<string, long>[] CapacityHolds);
+internal record SavedJob(long Id, string Kind, long StartTick, long CompletionTick, Cell[] Path, int PathIndex,
+    int SegmentTicks, string Item, long Quantity, string CapacityHold, string CommandId, long EquipmentId);
+internal record SavedActor(long Id, long Account, long Inventory, Cell Position, SavedJob? Job);
+internal record SavedBatch(long Id, string Hold, long WorkRequired, long WorkDone, long EnergyPaid);
+internal record SavedEnterprise(EnterpriseDefinition Definition, long Input, long Output, string RecipeId,
+    bool Enabled, string Reason, SavedBatch? Batch, long Completed, long EnergyPaid, EmploymentView Group);
+internal record SavedEquipment(long Id, long Owner, Cell Position, long Storage, string TypeId, int Level,
+    EquipmentMode Mode, string Reason, SavedBatch? Batch, long Completed, long PersonalJobId, EmploymentView Group);
+internal record SavedSale(long ActorId, long InventoryId, long Quantity, string Reservation, string CommandId);
+internal record SavedOffer(long Id, long Remaining, long? Cutoff, SavedSale[] Requests);
+internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, ScenarioDefinition Config, string ConfigHash,
+    string StateHash, long Tick, long NextId, long EventSequence, ulong AllocationRandom, ulong CommandRandom,
+    ulong LaborRandom, long Population, long Unemployed, long LastGrowthPeriod,
+    long InitialMoney, long ExternalIn, long ExternalOut, SavedAccount[] Accounts, SavedInventory[] Inventories,
+    SavedActor[] Actors, SavedEnterprise[] Enterprises, SavedEquipment[] Equipment, PlotView[] Plots,
+    BuildingView[] Buildings, SavedOffer[] Offers, FlowView[] Flows, SettlementView[] Settlements,
+    long[] CompletedJobs, CommandEnvelope[] Commands, CommandResult[] Results, string[] Pending,
+    LedgerRecord[] Ledger, SimulationEvent[] Events);
+
+public sealed partial class SimulationEngine
+{
+    public const int CheckpointSchemaVersion = 1;
+    public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
+        JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
+
+    public long MaximumAcceptedSequence(ParticipantId actor) => _seenCommands.Values
+        .Where(c => c.ActorId == actor).Select(c => c.LocalSequence).DefaultIfEmpty(0).Max();
+
+    public string CreateCheckpointJson()
+    {
+        if (_stepping || (Tick > 0 && (_events.Count == 0 || _events[^1].Type != "TickCommitted" || _events[^1].Tick != Tick)))
+            throw new CheckpointException("NotCommittedTick");
+        ValidateInvariants();
+        var world = Inspect();
+        var saved = new WorldCheckpoint(CheckpointSchemaVersion, RulesVersion, Configuration(), ConfigHash,
+            ComputeStateHash(), Tick, _nextId, _eventSequence, _allocationRandom.State, _commandRandom.State,
+            _laborRandom.State, _population, _unemployed, _lastGrowthPeriod,
+            _economy.InitialMoney, _economy.ExternalIn, _economy.ExternalOut,
+            _economy.Accounts.Values.OrderBy(a => a.Id).Select(a => new SavedAccount(a.Id, a.Kind, a.Balance,
+                Ordered(a.Holds))).ToArray(),
+            _economy.Inventories.Values.OrderBy(i => i.Id).Select(i => new SavedInventory(i.Id, i.Owner, i.Position,
+                i.Capacity, Ordered(i.Stock), i.Reservations.OrderBy(x => x.Key, StringComparer.Ordinal)
+                    .Select(x => new SavedStockHold(x.Key, x.Value.Item, x.Value.Quantity)).ToArray(), Ordered(i.CapacityHolds))).ToArray(),
+            _actors.Values.OrderBy(a => a.Id).Select(a => new SavedActor(a.Id, a.Account, a.Inventory, a.Position, SaveJob(a.Job))).ToArray(),
+            _enterprises.Values.OrderBy(e => e.Definition.Id).Select(e => new SavedEnterprise(e.Definition, e.Input,
+                e.Output, e.Recipe.Id, e.Enabled, e.Reason, SaveBatch(e.Batch), e.Completed, e.EnergyPaid, e.Group.View())).ToArray(),
+            _equipment.Values.OrderBy(e => e.Id).Select(e => new SavedEquipment(e.Id, e.Owner, e.Position, e.Storage,
+                e.Type.Id, e.Level, e.Mode, e.Reason, SaveBatch(e.Batch), e.Completed, e.PersonalJobId, e.Group.View())).ToArray(),
+            world.Plots, world.Buildings,
+            _offers.Values.OrderBy(o => o.Definition.Id).Select(o => new SavedOffer(o.Definition.Id, o.Remaining, o.Cutoff,
+                o.Requests.Values.OrderBy(r => r.ActorId).Select(r => new SavedSale(r.ActorId, r.InventoryId, r.Quantity,
+                    r.Reservation, r.CommandId)).ToArray())).ToArray(), world.Flows, world.Settlements,
+            _completedPersonalJobs.Order().ToArray(), _seenCommands.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(),
+            _results.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(), _pending.Select(c => c.CommandId).ToArray(),
+            Ledger(), _events.ToArray());
+        return JsonSerializer.Serialize(saved, SimulationJson.Options);
+    }
+    private static KeyValuePair<string, long>[] Ordered(Dictionary<string, long> values)
+        => values.OrderBy(x => x.Key, StringComparer.Ordinal).ToArray();
+    private static SavedJob? SaveJob(PersonalJob? j) => j is null ? null : new(j.Id, j.Kind, j.StartTick,
+        j.CompletionTick, j.Path.ToArray(), j.PathIndex, j.SegmentTicks, j.Item, j.Quantity, j.CapacityHold, j.CommandId, j.EquipmentId);
+    private static SavedBatch? SaveBatch(BatchState? b) => b is null ? null : new(b.Id, b.Hold, b.WorkRequired, b.WorkDone, b.EnergyPaid);
+    private static BatchState? LoadBatch(SavedBatch? b) => b is null ? null : new(b.Id, b.Hold, b.WorkRequired)
+        { WorkDone = b.WorkDone, EnergyPaid = b.EnergyPaid };
+    private static void LoadGroup(EmploymentGroup g, EmploymentView v)
+    {
+        if (g.Id != v.Id.Value || g.Owner != v.OwnerId.Value || g.Role != v.Role || g.Capacity != v.Capacity)
+            throw new CheckpointException("InvalidEmploymentReference");
+        g.Headcount = v.Headcount; g.Wage = v.WageMinor; g.AttractionWage = v.AttractionWageMinor;
+        g.PendingWage = v.PendingWageMinor; g.PayEffectiveTick = v.PayEffectiveTick;
+        g.PendingAttractionWage = v.PendingAttractionWageMinor; g.AttractionEffectiveTick = v.AttractionEffectiveTick;
+        g.MobilityCredit = v.MobilityCredit; g.Target = v.TargetHeadcount; g.Ready = v.Ready;
+        g.ReadinessReason = v.ReadinessReason; g.AssessedAtTick = v.AssessedAtTick;
+    }
+
+    public static SimulationEngine FromCheckpointJson(string json)
+    {
+        if (json is null || json.Length > 64 * 1024 * 1024) throw new CheckpointException("CheckpointTooLarge");
+        try
+        {
+            var s = JsonSerializer.Deserialize<WorldCheckpoint>(json, SimulationJson.Options)
+                ?? throw new CheckpointException("EmptyCheckpoint");
+            if (s.SchemaVersion != CheckpointSchemaVersion) throw new CheckpointException("UnknownWorldSchema");
+            if (s.RulesVersion != RulesVersion) throw new CheckpointException("UnknownRulesVersion");
+            var e = new SimulationEngine(s.Config); // Only validates/configures a fresh, unpublished instance.
+            if (e.ConfigHash != s.ConfigHash) throw new CheckpointException("ConfigurationHashMismatch");
+            e.RestoreWorld(s);
+            e.ValidateCheckpointState(); e.ValidateInvariants();
+            if (e.ComputeStateHash() != s.StateHash) throw new CheckpointException("StateHashMismatch");
+            return e;
+        }
+        catch (CheckpointException) { throw; }
+        catch (Exception ex) when (ex is JsonException or ArgumentException or InvalidOperationException or
+            KeyNotFoundException or OverflowException or NullReferenceException or IndexOutOfRangeException)
+        { throw new CheckpointException("InvalidWorldCheckpoint", ex); }
+    }
+
+    private void RestoreWorld(WorldCheckpoint s)
+    {
+        Tick = s.Tick; _nextId = s.NextId; _eventSequence = s.EventSequence;
+        _allocationRandom.RestoreState(s.AllocationRandom); _commandRandom.RestoreState(s.CommandRandom);
+        _laborRandom.RestoreState(s.LaborRandom); _population = s.Population; _unemployed = s.Unemployed;
+        _lastGrowthPeriod = s.LastGrowthPeriod;
+        _economy.Accounts.Clear(); _economy.Inventories.Clear(); _economy.Ledger.Clear();
+        _economy.RestoreTotals(s.InitialMoney, s.ExternalIn, s.ExternalOut);
+        foreach (var a in s.Accounts)
+        {
+            var value = new MoneyAccount(a.Id, a.Kind, a.Balance);
+            foreach (var h in a.Holds) value.Holds.Add(h.Key, h.Value);
+            _economy.Accounts.Add(a.Id, value);
+        }
+        foreach (var i in s.Inventories)
+        {
+            var value = new Inventory(i.Id, i.Owner, i.Position, i.Capacity);
+            foreach (var stock in i.Stock) value.Stock.Add(stock.Key, stock.Value);
+            foreach (var h in i.CapacityHolds) value.CapacityHolds.Add(h.Key, h.Value);
+            foreach (var h in i.Reservations) value.Reservations.Add(h.Id, new(h.Item, h.Quantity));
+            _economy.Inventories.Add(i.Id, value);
+        }
+        _economy.Ledger.AddRange(s.Ledger.Select(l => new LedgerEntry(l.Tick, l.DebitAccount.Value, l.CreditAccount.Value, l.AmountMinor, l.Reason)));
+        _actors.Clear();
+        foreach (var a in s.Actors)
+        {
+            var value = new ActorState(a.Id, a.Account, a.Inventory, a.Position);
+            if (a.Job is { } j) value.Job = new(j.Id, j.Kind, j.StartTick, j.CompletionTick, j.Path.ToArray(), j.Item,
+                j.Quantity, j.CapacityHold, j.CommandId, j.EquipmentId) { PathIndex = j.PathIndex, SegmentTicks = j.SegmentTicks };
+            _actors.Add(a.Id, value);
+        }
+        var recipes = _config.Recipes.ToDictionary(r => r.Id, StringComparer.Ordinal);
+        _enterprises.Clear();
+        foreach (var v in s.Enterprises)
+        {
+            var value = new EnterpriseState(v.Definition, v.Input, v.Output, recipes[v.RecipeId])
+                { Enabled = v.Enabled, Reason = v.Reason, Batch = LoadBatch(v.Batch), Completed = v.Completed, EnergyPaid = v.EnergyPaid };
+            LoadGroup(value.Group, v.Group); _enterprises.Add(v.Definition.Id, value);
+        }
+        _equipment.Clear();
+        foreach (var v in s.Equipment)
+        {
+            var type = (_config.EquipmentTypes ?? []).Single(t => t.Id == v.TypeId);
+            var value = new EquipmentState(v.Id, v.Owner, v.Position, v.Storage, type, v.Level)
+                { Mode = v.Mode, Reason = v.Reason, Batch = LoadBatch(v.Batch), Completed = v.Completed, PersonalJobId = v.PersonalJobId };
+            LoadGroup(value.Group, v.Group); _equipment.Add(v.Id, value);
+        }
+        if (s.Plots.Length != _plots.Count) throw new CheckpointException("InvalidPlotCount");
+        var seenPlots = new HashSet<long>();
+        foreach (var v in s.Plots)
+        {
+            if (!seenPlots.Add(v.Id.Value)) throw new CheckpointException("DuplicatePlot");
+            var p = _plots[v.Id.Value];
+            if (p.Definition.Position != v.Position || p.Definition.PriceMinor != v.PriceMinor || p.Definition.IsCorridor != v.IsCorridor ||
+                p.Definition.ShopParticipantId != v.ShopParticipantId?.Value) throw new CheckpointException("InvalidPlotDefinition");
+            p.Owner = v.OwnerId?.Value; p.ReservedBy = v.ReservedBy?.Value; p.Until = v.ReservationUntilTick; p.Building = v.BuildingId?.Value;
+        }
+        _buildings.Clear();
+        foreach (var v in s.Buildings)
+        {
+            var type = _buildingTypes[v.TypeId];
+            if (v.Kind != type.Kind) throw new CheckpointException("InvalidBuildingType");
+            _buildings.Add(v.Id.Value, new(v.Id.Value, v.OwnerId.Value, v.Position, type, v.Level,
+                v.InputId.Value, v.OutputId?.Value, v.Footprint.ToArray()));
+        }
+        if (s.Offers.Length != _offers.Count) throw new CheckpointException("InvalidOfferCount");
+        var seenOffers = new HashSet<long>();
+        foreach (var v in s.Offers)
+        {
+            if (!seenOffers.Add(v.Id)) throw new CheckpointException("DuplicateOffer");
+            var o = _offers[v.Id]; o.Remaining = v.Remaining; o.Cutoff = v.Cutoff; o.Requests.Clear();
+            foreach (var r in v.Requests) o.Requests.Add(r.ActorId, new(r.ActorId, r.InventoryId, r.Quantity, r.Reservation, r.CommandId));
+        }
+        _flows.Clear();
+        foreach (var f in s.Flows) _flows.Add(f.ItemId, new(f.ItemId) { Initial = f.Initial, Harvested = f.Harvested,
+            RecipeInput = f.RecipeInput, Produced = f.Produced, Exported = f.Exported, ConstructionInput = f.ConstructionInput });
+        _settlements.Clear(); _settlements.AddRange(s.Settlements);
+        _completedPersonalJobs.Clear(); foreach (long id in s.CompletedJobs)
+            if (!_completedPersonalJobs.Add(id)) throw new CheckpointException("DuplicateCompletedJob");
+        _seenCommands.Clear(); _actorSequences.Clear(); _pending.Clear(); _results.Clear();
+        foreach (var c in s.Commands)
+        {
+            _seenCommands.Add(c.CommandId, c);
+            if (!_actorSequences.Add((c.ActorId.Value, c.LocalSequence))) throw new CheckpointException("DuplicateCommandSequence");
+        }
+        foreach (var r in s.Results) _results.Add(r.CommandId, r);
+        foreach (string id in s.Pending) _pending.Add(_seenCommands[id]);
+        _events.Clear(); _events.AddRange(s.Events);
+        _phase = Tick == 0 ? 0 : 9;
+    }
+}

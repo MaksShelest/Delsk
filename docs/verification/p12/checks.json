@@ -1,0 +1,317 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "baseCommit": "91b1d9da2334a4c27443281b9f044053753bf9c6",
+  "rulesVersion": "equipment-1",
+  "worldSchema": 1,
+  "sessionSchema": 1,
+  "envelopeFormat": 1,
+  "tests": {
+    "tests": 132,
+    "passed": 132,
+    "failed": 0,
+    "pending": 0,
+    "skipped": 0,
+    "other": 0,
+    "suites": 1,
+    "start": 1791966200393,
+    "stop": 1791966205058,
+    "duration": 4665
+  },
+  "runs": {
+    "cycle": {
+      "status": "succeeded",
+      "tick": 62,
+      "stateHash": "f92dd078e6d4afeccd6716f4c9aa7fbc8f61801f59f0c67fd8d479886a4de723",
+      "population": 2,
+      "unemployed": 0
+    },
+    "recovery": {
+      "status": "succeeded",
+      "tick": 32,
+      "stateHash": "005fc20596daf4c94a1b2a2352155faec13f85bb3949070511fb298c8203e2dd",
+      "population": 0,
+      "unemployed": 0
+    },
+    "development": {
+      "status": "succeeded",
+      "tick": 465,
+      "stateHash": "84123228f7c71138fff07c4b954fa2a5814306eb0ddd6d7bf31b08f9766cc471",
+      "population": 4,
+      "unemployed": 0
+    },
+    "labor": {
+      "status": "succeeded",
+      "tick": 291,
+      "stateHash": "1d2ddf5502468b72c4b2b76bc86862d65a565c135b1a4881a8d5dbc924e08ea0",
+      "population": 9,
+      "unemployed": 0
+    },
+    "equipment": {
+      "status": "succeeded",
+      "tick": 200,
+      "stateHash": "28bd7a7004a3baf4cb5c348952d4a112996757df8a77343828f5329985f889fc",
+      "population": 7,
+      "unemployed": 7
+    },
+    "cycle-saved": {
+      "status": "succeeded",
+      "tick": 62,
+      "stateHash": "f92dd078e6d4afeccd6716f4c9aa7fbc8f61801f59f0c67fd8d479886a4de723",
+      "population": 2,
+      "unemployed": 0
+    },
+    "cycle-loaded": {
+      "status": "succeeded",
+      "tick": 62,
+      "stateHash": "f92dd078e6d4afeccd6716f4c9aa7fbc8f61801f59f0c67fd8d479886a4de723",
+      "population": 2,
+      "unemployed": 0
+    },
+    "equipment-saved": {
+      "status": "succeeded",
+      "tick": 200,
+      "stateHash": "28bd7a7004a3baf4cb5c348952d4a112996757df8a77343828f5329985f889fc",
+      "population": 7,
+      "unemployed": 7
+    },
+    "equipment-loaded": {
+      "status": "succeeded",
+      "tick": 200,
+      "stateHash": "28bd7a7004a3baf4cb5c348952d4a112996757df8a77343828f5329985f889fc",
+      "population": 7,
+      "unemployed": 7
+    }
+  },
+  "checks": [
+    {
+      "name": "start-fetch",
+      "command": [
+        "git",
+        "fetch",
+        "origin"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-14T07:49:48.324131+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.086,
+      "finished_at": "2026-10-14T07:49:54.409854+00:00"
+    },
+    {
+      "name": "restore",
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "restore",
+        "Delsk.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-14T08:02:08.389041+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.418,
+      "finished_at": "2026-10-14T08:02:09.807409+00:00"
+    },
+    {
+      "name": "final-build",
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-14T08:23:16.866171+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.281,
+      "finished_at": "2026-10-14T08:23:20.147250+00:00"
+    },
+    {
+      "name": "final-tests",
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-result-trx",
+        "../verification/p12/final-tests.trx",
+        "-result-ctrf",
+        "../verification/p12/final-tests.ctrf.json"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-14T08:23:20.181550+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.93,
+      "finished_at": "2026-10-14T08:23:25.111347+00:00"
+    },
+    {
+      "name": "client-restore",
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "restore",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-14T08:14:28.718338+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.119,
+      "finished_at": "2026-10-14T08:14:29.837048+00:00"
+    },
+    {
+      "name": "final-client-build",
+      "command": [
+        "../.tools/dotnet/dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-14T08:23:18.441560+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.097,
+      "finished_at": "2026-10-14T08:23:23.539095+00:00"
+    },
+    {
+      "name": "godot-import",
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/scratch/287937448ccd/.tools/dotnet",
+        "PATH=/workspace/scratch/287937448ccd/.tools/dotnet:/usr/local/bin:/usr/bin:/bin",
+        "XDG_CONFIG_HOME=/workspace/scratch/287937448ccd/.tools/godot-config",
+        "XDG_DATA_HOME=/workspace/scratch/287937448ccd/.tools/godot-data",
+        "../.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-14T08:20:02.965078+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.975,
+      "finished_at": "2026-10-14T08:20:06.940599+00:00"
+    },
+    {
+      "name": "godot-smoke",
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/scratch/287937448ccd/.tools/dotnet",
+        "PATH=/workspace/scratch/287937448ccd/.tools/dotnet:/usr/local/bin:/usr/bin:/bin",
+        "XDG_CONFIG_HOME=/workspace/scratch/287937448ccd/.tools/godot-config",
+        "XDG_DATA_HOME=/workspace/scratch/287937448ccd/.tools/godot-data",
+        "../.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--",
+        "--smoke",
+        "--report",
+        "/workspace/scratch/287937448ccd/verification/p12/platform-probe.json"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-14T08:23:23.576951+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.017,
+      "finished_at": "2026-10-14T08:23:24.594208+00:00"
+    },
+    {
+      "name": "platform-verify",
+      "command": [
+        "python",
+        "scripts/verify_platform_probe.py",
+        "--report",
+        "../verification/p12/platform-probe.json",
+        "--log-prefix",
+        "../verification/p12/godot-import",
+        "--log-prefix",
+        "../verification/p12/godot-smoke"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-14T08:23:24.638172+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.066,
+      "finished_at": "2026-10-14T08:23:24.704705+00:00"
+    },
+    {
+      "name": "final-headless-suite",
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--dotnet",
+        "/workspace/scratch/287937448ccd/.tools/dotnet/dotnet",
+        "--output",
+        "../verification/p12/headless"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-14T08:28:48.590963+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 12.613,
+      "finished_at": "2026-10-14T08:29:01.203731+00:00"
+    },
+    {
+      "name": "spec-sha",
+      "command": [
+        "sha256sum",
+        "docs/requirements/game_specification.md"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-14T08:29:01.238462+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.004,
+      "finished_at": "2026-10-14T08:29:01.242488+00:00"
+    },
+    {
+      "name": "diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-14T08:29:01.278261+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.008,
+      "finished_at": "2026-10-14T08:29:01.286270+00:00"
+    }
+  ],
+  "probe": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "f92dd078e6d4afeccd6716f4c9aa7fbc8f61801f59f0c67fd8d479886a4de723",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "checkpointBytes": {
+    "cycle.save.json": 125435,
+    "equipment.save.json": 185708
+  },
+  "openChecks": [
+    "Android physical device save/pause/kill/resume",
+    "standalone Windows EXE",
+    "autonomous NPC P13",
+    "complete market/logistics/politics P14-P21"
+  ]
+}

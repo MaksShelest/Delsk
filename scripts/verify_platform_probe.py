@@ -37,7 +37,9 @@ if args.report:
         raise SystemExit(f'Probe did not complete the expected replay: {report}')
     if report.get('LifecycleAdapterChecked') is not True:
         raise SystemExit('Pause/resume adapter check was not executed')
-    print(f"{report['Platform']}: {report['CheckedTicks']} checkpoints match runner")
+    if report.get("CheckpointRestoreChecked") is not True or report.get("RestoredTicks") != [12, 34, 55, 60]:
+        raise SystemExit("Full checkpoint/load check was not executed")
+    print(f"{report['Platform']}: {report['CheckedTicks']} checkpoints match runner; save/load at12/34/55/60 verified")
 if args.windows_directory:
     folder = args.windows_directory
     executable = (folder / 'DelskProbe.exe').read_bytes()

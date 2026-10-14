@@ -1,13 +1,13 @@
 # Локальная проверка: Windows, Rider и Godot
 
-Автор: Шелестов Максим Евгеньевич. Итерация P11, 14.10.2026.
+Автор: Шелестов Максим Евгеньевич. Итерация P12, 14.10.2026.
 
 ## Получить исходники
 
 Ниже команды **PowerShell**, из выбранного рабочего каталога. Нужен Git. Новая копия:
 
 ```powershell
-git clone --branch feat/extraction-equipment-p11 https://github.com/MaksShelest/Delsk.git Delsk
+git clone --branch feat/checkpoint-p12 https://github.com/MaksShelest/Delsk.git Delsk
 cd Delsk
 ```
 
@@ -15,10 +15,10 @@ cd Delsk
 
 ```powershell
 git fetch origin
-git switch --track origin/feat/extraction-equipment-p11
+git switch --track origin/feat/checkpoint-p12
 ```
 
-Если эта локальная ветка уже существует, вместо последней строки выполнить `git switch feat/extraction-equipment-p11`, затем `git pull --ff-only`. При ошибке о локальных изменениях остановить переключение и сохранить свою работу. После объединения PR можно перейти на актуальную основную ветку; сейчас default branch репозитория называется `feat/economic-cycle-p00-p05`, а не `main`.
+Если эта локальная ветка уже существует, вместо последней строки выполнить `git switch feat/checkpoint-p12`, затем `git pull --ff-only`. При ошибке о локальных изменениях остановить переключение и сохранить свою работу. После объединения PR можно перейти на актуальную основную ветку; сейчас default branch репозитория называется `feat/economic-cycle-p00-p05`, а не `main`.
 
 ## Проверить окружение и собрать ядро
 
@@ -79,4 +79,10 @@ dotnet build src/Client.Godot/Delsk.Client.csproj --no-restore --disable-build-s
 dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/equipment-cycle.json --script equipment --output artifacts/equipment
 ```
 
-Ожидается200 тиков: личная добыча малой/большой машиной, наём automatic экипажа, один цикл, неоплачиваемая остановка и постепенный уход, физический вывоз/продажа двух видов сырья. Подробные числовые ожидания — PROTOTYPE_STATUS.md. Текущий набор106 тестов. Godot по-прежнему технический стенд; интерфейса управления техникой пока нет.
+Ожидается200 тиков: личная добыча малой/большой машиной, наём automatic экипажа, один цикл, неоплачиваемая остановка и постепенный уход, физический вывоз/продажа двух видов сырья. Подробные числовые ожидания — PROTOTYPE_STATUS.md. Текущий набор132 тестов. Godot по-прежнему технический стенд; интерфейса управления техникой пока нет.
+
+## Сохранения и общая проверка P12
+
+[HEADLESS_TESTING.md](HEADLESS_TESTING.md) объясняет ядро/runner и даёт алгоритм проверки без графики. С Python: `python scripts/check_headless.py --output artifacts/headless`. Это все готовые fixtures + две save/load пары, не ещё отсутствующие NPC/рынок/выборы.
+
+Godot-стенд имеет кнопки Сохранить/Загрузить/Восстановить из backup и user://platform-checkpoint.json. При сворачивании/фокусе сохраняет committed tick, при возврате elapsed сбрасывается; autosave30 и обычный выход. На реальном телефоне поведение ещё не проверено. Новые standalone APK/EXE в P12 не экспортировались.

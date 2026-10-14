@@ -132,6 +132,7 @@ internal sealed class DeterministicRandom(ulong seed)
             return z ^ (z >> 31);
         }
     }
+    internal void RestoreState(ulong state) => State = state;
     public int Index(int exclusiveMax)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(exclusiveMax);
