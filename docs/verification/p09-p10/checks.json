@@ -394,5 +394,17 @@
     "Windows exported executable",
     "checkpoint load P12",
     "interactive labor UI P26"
-  ]
+  ],
+  "remoteCI": {
+    "sourceCommit": "4ee334ee50316cfee2853f75101d08cf4762ccaf",
+    "core": {
+      "runId": 38514190624,
+      "conclusion": "success"
+    },
+    "windows": {
+      "runId": 38514190643,
+      "conclusion": "success",
+      "matchedCheckpoints": 62
+    }
+  }
 }
