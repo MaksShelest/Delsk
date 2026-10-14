@@ -1,7 +1,7 @@
 # Архитектура Delsk
 
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
-Статус: проект архитектуры к спецификации 0.3. P00–P11 реализованы в границах отчётов; остальные компоненты остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
+Статус: проект архитектуры к спецификации 0.3. P00–P12 реализованы в границах отчётов; остальные компоненты остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
 
 ## 1. Основания и границы
 
@@ -453,3 +453,7 @@ Labor.cs содержит агрегированное состояние, то�
 ## 14. Реализованная добывающая техника P11
 
 Equipment.cs — покупки/уровни, личная работа, automatic WIP и конечный buffer у узла; EquipmentValidation.cs — каталог/overflow. Производство и добыча вызываются общим ротируемым AdvanceWork в фазе4, найм обеих ролей — единой фазой5. Состояние личной операции ссылается на EquipmentId, machine хранит PersonalJobId; automatic цикл отдельно держит output capacity. Готовность экипажа проверяется без тупика N=0. Допущения покупки/upgrade/режимов — DECISIONS §10. Следующая граница P12 сохраняет обе пары ссылок/holds и кадровые остатки; текущий replay ещё не load.
+
+## 15. Реализованное восстановление P12
+
+Core Checkpoint/CheckpointValidation — explicit DTO и восстановление текущего state без команды/replay/IO. Hosting SessionCheckpoint/CheckpointStore — namespace/epoch/paused/counters/recorded cursor и actual file replace/backup. Полный event prefix хранится в snapshot и экспортируется committed JSONL; внешний tail самовольно не применяется. Snapshot не является журналом всех будущих систем: P13 и каждый последующий модуль расширяют state/validation/tests. Godot проверяет actual file restore на4 опасных тиках. Технические ограничения и версии — DECISIONS §11. Следующее — P13, не крупный UI.

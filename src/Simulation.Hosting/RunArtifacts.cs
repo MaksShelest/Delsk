@@ -24,9 +24,9 @@ public static class RunArtifacts
         {
             ScenarioId = definition.Id, definition.Seed, SimulationEngine.RulesVersion,
             ConfigHash = session.Engine.ConfigHash, TimingPolicy = timingPolicy, Script = script,
-            Controller = "scripted", Model = (string?)null, RuntimeVersion = Environment.Version.ToString(),
+            Controller = session.PlaybackFinalTick.HasValue ? "recorded-inputs" : "scripted", Model = (string?)null, RuntimeVersion = Environment.Version.ToString(),
             Commit = Environment.GetEnvironmentVariable("DELSK_COMMIT"), TickSeconds = 1,
-            Stage = "P11", Author = "Шелестов Максим Евгеньевич"
+            Stage = "P12", Author = "Шелестов Максим Евгеньевич"
         });
         WriteJson("summary.json", new { Status = status, Failure = failure, state.Tick, StateHash = session.Engine.ComputeStateHash(),
             ElapsedMilliseconds = elapsedMilliseconds, AverageMillisecondsPerTick = state.Tick > 0 ? elapsedMilliseconds / state.Tick : (double?)null,

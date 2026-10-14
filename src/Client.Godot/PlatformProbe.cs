@@ -24,6 +24,8 @@ public partial class PlatformProbe : Control
     private bool _failed;
     private bool _skipNextFrame;
     private bool _lifecycleChecked;
+    private readonly List<long> _restoredTicks = [];
+    private string SavePath => ProjectSettings.GlobalizePath("user://platform-checkpoint.json");
     private string _reportPath = DefaultReportPath;
 
     public override void _Ready()
@@ -83,12 +85,22 @@ public partial class PlatformProbe : Control
         else if (what == NotificationApplicationFocusIn) { _unfocused = false; _skipNextFrame = true; }
         else return;
         ApplyPause();
+        if (what == NotificationApplicationPaused || what == NotificationApplicationFocusOut)
+        { try { CheckpointStore.Save(_session, SavePath); } catch (Exception failure) { Fail(failure); } }
+    }
+
+    public override void _ExitTree()
+    {
+        if (_session is null || _failed) return;
+        try { CheckpointStore.Save(_session, SavePath); }
+        catch (Exception failure) { GD.PushError($"Checkpoint on exit failed: {failure.Message}"); }
     }
 
     private void Restart()
     {
         _finished = false;
-        _session = new GameSession(new SimulationEngine(_scenario), beforeStep: SubmitDue);
+        _session = new GameSession(new SimulationEngine(_scenario));
+        _session.ConfigurePlayback(_commands.Values.SelectMany(x => x).OrderBy(c => c.SubmittedAtTick).ToArray(), _checkpoints.Keys.Max());
         _scheduler = new TickScheduler(_session);
         _manualPause = !_smoke;
         ApplyPause();
@@ -127,10 +139,13 @@ public partial class PlatformProbe : Control
         }
     }
 
-    private void SubmitDue()
+    private void LoadSaved(bool recoverBackup = false)
     {
-        if (_commands.TryGetValue(_session.Engine.Tick, out var due))
-            foreach (var input in due) _session.Submit(input.AuthenticatedActor, input.Command);
+        var loaded = CheckpointStore.Load(SavePath, recoverBackup);
+        _session = loaded.Session; _scheduler = new TickScheduler(_session);
+        _finished = _session.Engine.Tick >= _checkpoints.Keys.Max(); _failed = false;
+        _manualPause = _session.Paused; _skipNextFrame = true;
+        ApplyPause(); ShowState();
     }
 
     private void StepOne()
@@ -147,6 +162,15 @@ public partial class PlatformProbe : Control
         long tick = _session.Engine.Tick;
         if (!_checkpoints.TryGetValue(tick, out var expected) || _session.Engine.ComputeStateHash() != expected)
             throw new InvalidOperationException($"State hash differs from runner at tick {tick}");
+        if (_smoke && tick is 12 or 34 or 55 or 60)
+        {
+            string hash = _session.Engine.ComputeStateHash();
+            CheckpointStore.Save(_session, SavePath); LoadSaved();
+            if (_session.Engine.Tick != tick || _session.Engine.ComputeStateHash() != hash)
+                throw new InvalidOperationException("Checkpoint load changed the committed world");
+            _restoredTicks.Add(tick);
+        }
+        if (!_smoke && tick % 30 == 0) CheckpointStore.Save(_session, SavePath);
         if (tick == _checkpoints.Keys.Max())
         {
             _finished = true;
@@ -185,6 +209,9 @@ public partial class PlatformProbe : Control
         AddButton("Один тик", StepOne);
         AddButton("Пуск / пауза", () => { _manualPause = !_manualPause; ApplyPause(); ShowState(); });
         AddButton("Повтор сначала", Restart);
+        AddButton("Сохранить", () => CheckpointStore.Save(_session, SavePath));
+        AddButton("Загрузить", () => LoadSaved());
+        AddButton("Восстановить из backup", () => LoadSaved(recoverBackup: true));
         void AddButton(string text, Action action)
         {
             var button = new Button { Text = text };
@@ -203,6 +230,8 @@ public partial class PlatformProbe : Control
             Status = status, Failure = failure, Tick = _session?.Engine.Tick,
             StateHash = _session?.Engine.ComputeStateHash(), CheckedTicks = _session?.Samples.Length,
             LifecycleAdapterChecked = _lifecycleChecked,
+            CheckpointRestoreChecked = _restoredTicks.SequenceEqual(new long[] { 12, 34, 55, 60 }),
+            RestoredTicks = _restoredTicks.ToArray(),
             Runtime = System.Environment.Version.ToString(), Platform = OS.GetName(),
             GodotVersion = Engine.GetVersionInfo()["string"].AsString(),
             Author = "Шелестов Максим Евгеньевич"

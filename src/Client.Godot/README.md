@@ -34,3 +34,7 @@ adb exec-out run-as com.maksshelest.delsk.probe cat 'files/platform-probe.json' 
 ```
 
 Путь `user://` зависит от платформы; если указанный относительный Android-путь не найден, сначала определить его внутри `run-as`, не объявлять проверку пройденной. Для автоматического smoke на Android запускать activity с аргументами `--smoke`, только после подтверждения корректного механизма передачи аргументов этой версии Godot; такой запуск здесь не проверялся. При ручном повторении сравнить Tick/StateHash и отдельно выполнить сворачивание. [Фактические результаты и незакрытые проверки](../../docs/IMPLEMENTATION_REPORT_P06.md).
+
+## Checkpoint P12
+
+Smoke проверяет actual save/load на12/34/55/60, сохраняя все62 hashes. Обычный стенд имеет manual Сохранить/Загрузить/явный backup; путь user://platform-checkpoint.json. Autosave30, focus/pause и корректный выход используют общий CheckpointStore; elapsed после load/resume сбрасывается. Не путать с экспортом final-state и не заявлять device pass по desktop smoke. [Детали P12](../../docs/IMPLEMENTATION_REPORT_P12.md).

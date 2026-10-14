@@ -8,13 +8,16 @@ public record TickSample(long Tick, long ParticipantCashMinor, long WageExpenseM
 public record LaborSample(long Tick, EmploymentView[] EmploymentGroups);
 
 /// <summary>Common adapter for console and future client. The core owns every game rule.</summary>
-public sealed class GameSession(SimulationEngine engine, string sessionId = "s1", Action? beforeStep = null)
+public sealed partial class GameSession(SimulationEngine engine, string sessionId = "s1", Action? beforeStep = null)
 {
     private readonly Dictionary<long, long> _sequences = [];
     private readonly List<RecordedCommand> _tape = [];
     private readonly List<TickSample> _samples = [];
     private readonly List<LaborSample> _laborSamples = [];
     public SimulationEngine Engine { get; } = engine;
+    public string SessionId { get; } = sessionId;
+    public long SessionEpoch { get; private set; } = 1;
+    public event Action<GameSession>? TickCompleted;
     public bool Paused { get; private set; }
     public RecordedCommand[] CommandTape => _tape.ToArray();
     public TickSample[] Samples => _samples.ToArray();
@@ -25,7 +28,7 @@ public sealed class GameSession(SimulationEngine engine, string sessionId = "s1"
         ArgumentOutOfRangeException.ThrowIfNegative(ttlTicks);
         long sequence = checked(_sequences.GetValueOrDefault(actor.Value) + 1);
         long notBefore = checked(Engine.Tick + delayTicks);
-        var envelope = new CommandEnvelope($"{sessionId}:{actor.Value}:{sequence}", actor, sequence,
+        var envelope = new CommandEnvelope($"{SessionId}:{actor.Value}:{sequence}", actor, sequence,
             Engine.Tick, notBefore, checked(notBefore + ttlTicks), action);
         var immediate = Submit(actor, envelope);
         if (immediate is { Status: ResultStatus.Rejected })
@@ -42,6 +45,7 @@ public sealed class GameSession(SimulationEngine engine, string sessionId = "s1"
     {
         if (Paused) return;
         beforeStep?.Invoke();
+        SubmitPlaybackInputs();
         Engine.Step();
         var state = Engine.Inspect();
         var actor = state.Participants[0];
@@ -51,6 +55,7 @@ public sealed class GameSession(SimulationEngine engine, string sessionId = "s1"
             state.Flows.Sum(f => f.Harvested), state.Flows.Sum(f => f.Produced),
             state.Flows.Sum(f => f.Exported), Engine.ComputeStateHash(), state.Population, state.Unemployed));
         _laborSamples.Add(new(state.Tick, state.EmploymentGroups));
+        TickCompleted?.Invoke(this);
     }
     public void SetPaused(bool paused) => Paused = paused;
     public static GameSession Replay(ScenarioDefinition definition, RecordedCommand[] tape, long finalTick)
@@ -58,14 +63,9 @@ public sealed class GameSession(SimulationEngine engine, string sessionId = "s1"
         if (finalTick < 0 || finalTick > definition.MaxTicks || tape.Any(x => x.SubmittedAtTick < 0 || x.SubmittedAtTick > finalTick))
             throw new ArgumentException("Invalid replay horizon");
         var session = new GameSession(new SimulationEngine(definition), "replay");
-        var groups = tape.GroupBy(x => x.SubmittedAtTick).ToDictionary(g => g.Key, g => g.ToArray());
-        while (true)
-        {
-            if (groups.TryGetValue(session.Engine.Tick, out var inputs))
-                foreach (var input in inputs) session.Submit(input.AuthenticatedActor, input.Command);
-            if (session.Engine.Tick == finalTick) break;
-            session.Step();
-        }
+        session.ConfigurePlayback(tape, finalTick);
+        while (session.Engine.Tick < finalTick) session.Step();
+        session.SubmitPlaybackInputs(); // Preserve inputs submitted at the final published barrier.
         return session;
     }
 }

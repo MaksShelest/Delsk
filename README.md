@@ -60,7 +60,7 @@ GitHub Actions для ядра выполнен успешно. Godot и Android
 
 Добавлена минимальная сцена Godot 4.7.2 .NET с тем же Core/Hosting. Linux и Windows CI воспроизводят записанные команды и проверяют все 62 хеша. Созданы тестовые Windows x86_64 и подписанный Android ARM64 экспорты. APK ещё не запускался на настоящем телефоне; готовый Windows EXE тоже не проверен запуском.
 
-[Запуск сцены и экспорты](src/Client.Godot/README.md). [Отчёт P06, версии и открытые проверки](docs/IMPLEMENTATION_REPORT_P06.md). P07–P11 добавлены в ядро; следующая итерация — P12: checkpoint/load. Полный месячный объём остаётся в плане.
+[Запуск сцены и экспорты](src/Client.Godot/README.md). [Отчёт P06, версии и открытые проверки](docs/IMPLEMENTATION_REPORT_P06.md). P07–P11 добавлены в ядро; следующая итерация — P13: самостоятельные NPC. Полный месячный объём остаётся в плане.
 
 ## Земля и развитие P07–P08
 
@@ -71,7 +71,7 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --scenario sce
 python scripts/verify_results.py artifacts/development
 ```
 
-Проверенный результат:465 тиков, обе продажи, три новых здания и upgrade. Материалы стройки отражены в ConstructionInput, все физические запасы и деньги сверены. На этапе P07–P08 прошли64 xUnit-теста; текущий набор содержит106. [Отчёт итерации](docs/IMPLEMENTATION_REPORT_P07_P08.md).
+Проверенный результат:465 тиков, обе продажи, три новых здания и upgrade. Материалы стройки отражены в ConstructionInput, все физические запасы и деньги сверены. На этапе P07–P08 прошли64 xUnit-теста; текущий набор содержит132. [Отчёт итерации](docs/IMPLEMENTATION_REPORT_P07_P08.md).
 
 Расширение DTO изменило хеши; platform fixture обновлена по проверенному прежнему циклу. Ранее выданные бинарные сборки P06 содержат прежнее ядро; в этой итерации они не пересоздавались. Игровые экраны строительства/найма остаются P26.
 
@@ -105,3 +105,13 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --scenario sce
 ```
 
 [Что можно тестировать сейчас и границы минимальной версии](docs/PROTOTYPE_STATUS.md). [Отчёт P11](docs/IMPLEMENTATION_REPORT_P11.md). Первая автономная экономика ожидается после P12/P13; полный игровой прототип сохраняет рынок/доставку/выборы P14–P21.
+
+## Сохранение и проверка без графики P12
+
+Реализованы actual world/session checkpoint, проверка целостности, file backup и продолжение recorded сценария.132 xUnit-теста прошли; standalone scene/runtime device ограничения сохранены.
+
+```bash
+python scripts/check_headless.py --output artifacts/headless
+```
+
+[Что значит тестировать ядро локально и как быстро прогнать экономику](docs/HEADLESS_TESTING.md). [Отчёт P12](docs/IMPLEMENTATION_REPORT_P12.md). Для Core/runner Godot не требуется. Автономный сценарий появится в P13; полный рынок/доставка/политика остаются P14–P21.

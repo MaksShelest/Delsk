@@ -21,7 +21,7 @@ jobs:
       - name: Build
         run: python scripts/run_check.py --name build --timeout 180 -- dotnet build Delsk.sln -c Release --no-restore --disable-build-servers -m:1
       - name: xUnit
-        run: python scripts/run_check.py --name tests --timeout 120 -- dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release --no-build --no-restore -- --report-trx --results-directory artifacts/test-results --minimum-expected-tests 100
+        run: python scripts/run_check.py --name tests --timeout 120 -- dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release --no-build --no-restore -- --report-trx --results-directory artifacts/test-results --minimum-expected-tests 130
       - name: Economic cycle
         env:
           DELSK_COMMIT: ${{ github.sha }}
@@ -42,8 +42,18 @@ jobs:
         env:
           DELSK_COMMIT: ${{ github.sha }}
         run: python scripts/run_check.py --name equipment --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/equipment-cycle.json --script equipment --output artifacts/equipment
+      - name: Save and continue physical cargo
+        run: |
+          python scripts/run_check.py --name cycle-save --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/economic-cycle.json --checkpoint artifacts/cycle.save.json --checkpoint-at 55 --output artifacts/cycle-saved
+          python scripts/run_check.py --name cycle-load --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/cycle.save.json --output artifacts/cycle-loaded
+      - name: Save and continue extraction WIP
+        run: |
+          python scripts/run_check.py --name equipment-save --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/equipment-cycle.json --script equipment --checkpoint artifacts/equipment.save.json --checkpoint-at 101 --output artifacts/equipment-saved
+          python scripts/run_check.py --name equipment-load --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/equipment.save.json --output artifacts/equipment-loaded
+      - name: Compare restored exports
+        run: python scripts/verify_checkpoint_exports.py artifacts/cycle artifacts/cycle-loaded artifacts/equipment artifacts/equipment-loaded
       - name: Check output balances
-        run: python scripts/verify_results.py artifacts/cycle artifacts/recovery artifacts/development artifacts/labor artifacts/equipment
+        run: python scripts/verify_results.py artifacts/cycle artifacts/recovery artifacts/development artifacts/labor artifacts/equipment artifacts/cycle-loaded artifacts/equipment-loaded
       - uses: actions/upload-artifact@v4
         if: always()
         with:

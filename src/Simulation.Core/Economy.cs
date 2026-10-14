@@ -52,6 +52,8 @@ internal sealed class EconomyStore(IReadOnlyDictionary<string, ItemDefinition> i
     public long InitialMoney { get; set; }
     public long ExternalIn { get; private set; }
     public long ExternalOut { get; private set; }
+    internal void RestoreTotals(long initial, long externalIn, long externalOut)
+    { InitialMoney = initial; ExternalIn = externalIn; ExternalOut = externalOut; }
     public EconomyTransaction Begin(long tick) => new(this, items, tick);
 
     public void Validate()
