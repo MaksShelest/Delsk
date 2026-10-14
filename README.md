@@ -3,115 +3,50 @@
 Исследовательская экономическая игра с автономными NPC.
 Автор: Шелестов Максим Евгеньевич.
 
-Реализован первый консольный экономический стенд P00–P05: ручная добыча, движение по сетке, конечные запасы, производственная партия, числовой штат, зарплата, энергия и продажа столице из физически доставленного наличия. Управление сейчас задаётся проверяемым сценарием; автономные контроллеры добавляются в P13/P21.
+В C# реализованы P00–P13: тики/команды, деньги и конечные запасы, личное движение/добыча, две производственные цепочки, земля/стройка/уровни, числовой найм по зарплата³ с постепенными переходами, зарплата/энергия/неоплачиваемый простой, техника и direct checkpoint/load. Три алгоритмических NPC сами развивают хозяйства без модели. Слот человека в автономном консольном стенде бездействует; свободный игровой ввод/интерфейс ещё не готов.
 
-## Запуск
+## Быстрый запуск без Python и Godot
 
-Нужен .NET SDK **10.0.401** (x64). SDK закреплён в global.json. Из корня репозитория:
+Нужен .NET SDK **10.0.401 x64**, закреплённый в global.json. Из корня репозитория (PowerShell):
 
-```bash
-dotnet restore Delsk.sln --locked-mode --disable-parallel -m:1
-dotnet build Delsk.sln -c Release --no-restore --disable-build-servers -m:1
-dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/economic-cycle.json --output artifacts/cycle
-dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/zero-cash-recovery.json --script recovery --output artifacts/recovery
+```powershell
+dotnet restore Delsk.sln --locked-mode --disable-parallel '-m:1'
+dotnet build Delsk.sln -c Release --no-restore --disable-build-servers '-m:1'
+dotnet tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll -noColor -noLogo -parallelMode none
+dotnet run --project src/Research.Runner -c Release --no-build -- --script autonomous --ticks 1000 --seed 42 --output artifacts/run-42
 ```
 
-Первый сценарий добывает10 брёвен, переносит их к лесопилке, производит5 досок, переносит доски в терминал и получает оплату после окна5 тиков. Рецепт/зарплата/цены взяты из числовой фикстуры S1 с заменой контрагента на внешнего покупателя P05. Это подготовленное хозяйство для проверки, а не бесплатный старт обычной партии.
+148 xUnit-тестов проверены локально. Результат runner — статус/тик/хеш/путь в консоли и JSON/JSONL/CSV в `artifacts/run-42`: summary, деньги/товар/численности, agents/labor, decisions/commands/events/ledger, manifest и inspection final-state. Все игровые расчёты и политики на C#; Python только запускает проверки и читает результаты. [Параметры, значение прогона и файлы](docs/HEADLESS_TESTING.md).
 
-Результаты: `manifest.json`, `commands.jsonl`, `events.jsonl`, `ledger.jsonl`, `metrics.csv`, `summary.json`, `final-state.json`. Последний файл — выгрузка для осмотра; загрузка игрового сохранения относится к P12.
+`--mode headless` по умолчанию выполняет те же тики без ожидания реальных секунд; перевозка остаётся физической. `--mode paced` ждёт1 секунду/тик. Мир задаётся `--scenario`, политики — `--controllers`; начальные настройки лежат в scenarios/autonomous-*.json.
 
-```bash
-python scripts/verify_results.py artifacts/cycle artifacts/recovery
+## Сохранение и регрессии
+
+```powershell
+dotnet run --project src/Research.Runner -c Release --no-build -- --script autonomous --ticks 1000 --checkpoint artifacts/npc.save.json --checkpoint-at 350 --output artifacts/npc-continuous
+dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/npc.save.json --ticks 1000 --output artifacts/npc-loaded
 ```
 
-Флаг `--mode paced` выполняет тот же сценарий примерно с одним тиком в секунду; headless не ждёт реальные секунды, но сохраняет пути/длительности. `--seed N` задаёт seed. Повтор записанных команд:
+Checkpoint сохраняет текущий мир и план каждого NPC; load продолжает без повторения первых350 тиков и без offline catch-up. final-state.json — только inspection, не save. Командную ленту можно повторить `--replay PATH --scenario PATH --ticks FINAL_TICK` без вызова контроллеров; это проверка мира, не восстановление их планов.
 
-```bash
-dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/economic-cycle.json --replay artifacts/cycle/commands.jsonl --ticks 62 --output artifacts/replay
-```
+Если установлен Python, одна команда с hard timeouts выполняет restore/build/tests,5 scripted fixtures+автономный мир,3 пары checkpoint/load и независимые проверки выгрузок:
 
-62 — проверенная длительность этой конкретной фикстуры. Для изменённого сценария используйте tick из его summary, а не это число.
-
-## Проверки
-
-Встроенный xUnit-исполнитель запускает тот же набор без IPC оболочки dotnet test:
-
-```bash
-dotnet tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll -noColor -parallelMode none -result-trx artifacts/tests.trx
-```
-
-На обычной машине также доступен MTP-режим .NET10:
-
-```bash
-dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release --no-build --no-restore -- --report-trx --results-directory artifacts/test-results --minimum-expected-tests 60
-```
-
-В облачном окружении второй вариант остановился на запрете named pipes; непосредственный запуск xUnit прошёл. Это не отключение/замена тестов. Фактические результаты и ограничения — в [отчёте первого этапа](docs/IMPLEMENTATION_REPORT_P00_P05.md).
-
-Для любой внешней проверки есть ограничение времени и отдельные логи:
-
-```bash
-python scripts/run_check.py --name build --timeout 180 -- dotnet build Delsk.sln -c Release --no-restore --disable-build-servers -m:1
-```
-
-GitHub Actions для ядра выполнен успешно. Godot и Android не нужны для запуска консольного стенда.
-
-## Платформенный стенд P06
-
-Добавлена минимальная сцена Godot 4.7.2 .NET с тем же Core/Hosting. Linux и Windows CI воспроизводят записанные команды и проверяют все 62 хеша. Созданы тестовые Windows x86_64 и подписанный Android ARM64 экспорты. APK ещё не запускался на настоящем телефоне; готовый Windows EXE тоже не проверен запуском.
-
-[Запуск сцены и экспорты](src/Client.Godot/README.md). [Отчёт P06, версии и открытые проверки](docs/IMPLEMENTATION_REPORT_P06.md). P07–P11 добавлены в ядро; следующая итерация — P13: самостоятельные NPC. Полный месячный объём остаётся в плане.
-
-## Земля и развитие P07–P08
-
-Реализованы покупка/бронь земли, атомарная стройка целого footprint, отдельный склад, физическая лавочка, две цепочки wood→plank / grain→bread, два уровня и upgrade из встроенного склада. Новое предприятие имеет нулевой штат и нанимает через кадровую систему P09–P10. Исторический regression-сценарий фиксирует две заранее заданные числовые группы длинным трудовым шагом:
-
-```bash
-dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/land-and-content.json --script development --output artifacts/development
-python scripts/verify_results.py artifacts/development
-```
-
-Проверенный результат:465 тиков, обе продажи, три новых здания и upgrade. Материалы стройки отражены в ConstructionInput, все физические запасы и деньги сверены. На этапе P07–P08 прошли64 xUnit-теста; текущий набор содержит132. [Отчёт итерации](docs/IMPLEMENTATION_REPORT_P07_P08.md).
-
-Расширение DTO изменило хеши; platform fixture обновлена по проверенному прежнему циклу. Ранее выданные бинарные сборки P06 содержат прежнее ядро; в этой итерации они не пересоздавались. Игровые экраны строительства/найма остаются P26.
-
-## Документация
-
-- [Источник требований — спецификация0.3](docs/requirements/game_specification.md), сохранён без изменений.
-- [Архитектура](docs/ARCHITECTURE.md).
-- [Решения и риски](docs/DECISIONS.md).
-- [План и фактический статус задач](docs/IMPLEMENTATION_PLAN.md).
-- [Инструкции для разработки и Cursor](AGENTS.md).
-- [Отчёт платформенного этапа P06](docs/IMPLEMENTATION_REPORT_P06.md).
-
-- [Отчёт P07–P08](docs/IMPLEMENTATION_REPORT_P07_P08.md).
-
-## Числовая занятость P09–P10
-
-Реализованы агрегированные группы, зарплата³ с caps, прирост, задержка ставки, постепенные переходы и неоплачиваемый простой. 83 xUnit-теста проверены; автономные NPC остаются P13/P21. Новый прогон:
-
-```bash
-dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/labor-dynamics.json --script labor --output artifacts/labor
-```
-
-[Windows: загрузка в Rider и Godot](docs/LOCAL_SETUP.md). [Отчёт P09–P10](docs/IMPLEMENTATION_REPORT_P09_P10.md). Godot пока проигрывает техническую fixture; новый найм проверяется в runner/labor.csv.
-
-## Добывающая техника P11
-
-Добавлены покупки и upgrade двух характеристик машин, личная и автоматическая добыча, конечный buffer у узла и числовой экипаж в общем рынке труда с производствами.106 xUnit-тестов прошли.
-
-```bash
-dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/equipment-cycle.json --script equipment --output artifacts/equipment
-```
-
-[Что можно тестировать сейчас и границы минимальной версии](docs/PROTOTYPE_STATUS.md). [Отчёт P11](docs/IMPLEMENTATION_REPORT_P11.md). Первая автономная экономика ожидается после P12/P13; полный игровой прототип сохраняет рынок/доставку/выборы P14–P21.
-
-## Сохранение и проверка без графики P12
-
-Реализованы actual world/session checkpoint, проверка целостности, file backup и продолжение recorded сценария.132 xUnit-теста прошли; standalone scene/runtime device ограничения сохранены.
-
-```bash
+```powershell
 python scripts/check_headless.py --output artifacts/headless
 ```
 
-[Что значит тестировать ядро локально и как быстро прогнать экономику](docs/HEADLESS_TESTING.md). [Отчёт P12](docs/IMPLEMENTATION_REPORT_P12.md). Для Core/runner Godot не требуется. Автономный сценарий появится в P13; полный рынок/доставка/политика остаются P14–P21.
+Старые scripts: cycle/economic-cycle.json, recovery/zero-cash-recovery.json, development/land-and-content.json, labor/labor-dynamics.json, equipment/equipment-cycle.json. Они сохранились как регрессии. На обычной машине доступен также MTP `dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release --no-build --no-restore`; в этой облачной среде использован встроенный xUnit runner из-за ограничения IPC.
+
+## Границы готовности
+
+Рынок участников/аукционы, частичные сделки/поставки, автоматическая доставка, спрос/волны, выборы и скрытые договоры — P14–P21. Локальный адаптер, серии и анализ — P22–P25. Первая автономная тестовая экономика уже запускается; полный месячный прототип ещё разрабатывается.
+
+Godot .NET4.7.2 подключает общий Core/Hosting и пока проверяет62-тактовую fixture/save/load. Платформенный этап P06 создал тестовые Windows/Android экспорты; APK не проверен на реальном телефоне, device gate открыт. P13 не создаёт новый игровой UI/APK/EXE. [Локальная работа в Rider/Godot](docs/LOCAL_SETUP.md), [клиентский стенд](src/Client.Godot/README.md).
+
+## Документация
+
+- [Неизменённая спецификация0.3](docs/requirements/game_specification.md).
+- [Архитектура](docs/ARCHITECTURE.md), [решения/риски](docs/DECISIONS.md), [план/статус](docs/IMPLEMENTATION_PLAN.md).
+- [Готовность минимальной версии](docs/PROTOTYPE_STATUS.md), [запуск без графики](docs/HEADLESS_TESTING.md).
+- [Отчёт текущего P13](docs/IMPLEMENTATION_REPORT_P13.md), [инструкции разработки/Cursor](AGENTS.md).
+- Исторические отчёты: [P00–P05](docs/IMPLEMENTATION_REPORT_P00_P05.md), [P06](docs/IMPLEMENTATION_REPORT_P06.md), [P07–P08](docs/IMPLEMENTATION_REPORT_P07_P08.md), [P09–P10](docs/IMPLEMENTATION_REPORT_P09_P10.md), [P11](docs/IMPLEMENTATION_REPORT_P11.md), [P12](docs/IMPLEMENTATION_REPORT_P12.md).

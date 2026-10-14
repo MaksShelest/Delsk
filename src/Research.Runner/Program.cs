@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 using Simulation.Core;
+using Agents.Algorithmic;
 using Simulation.Hosting;
 
 try
@@ -10,15 +11,17 @@ try
     for (int i = 0; i < args.Length; i += 2)
     {
         if (i + 1 >= args.Length || args[i] is not ("--scenario" or "--output" or "--script" or "--mode" or "--seed" or
-            "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup"))
-            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--script cycle|recovery|development|labor|equipment] [--mode headless|paced] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
+            "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers"))
+            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--script cycle|recovery|development|labor|equipment|autonomous] [--mode headless|paced] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
         if (!options.TryAdd(args[i], args[i + 1])) throw new ArgumentException("Duplicate argument");
     }
     string directory = options.GetValueOrDefault("--output", "artifacts/cycle");
     string script = options.GetValueOrDefault("--script", "cycle");
     string mode = options.GetValueOrDefault("--mode", "headless");
-    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment") || mode is not ("headless" or "paced"))
+    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous") || mode is not ("headless" or "paced"))
         throw new ArgumentException("Invalid script or mode");
+    if (options.ContainsKey("--controllers") && (script != "autonomous" || options.ContainsKey("--load") || options.ContainsKey("--replay")))
+        throw new ArgumentException("--controllers applies only to a new autonomous run");
     if (options.ContainsKey("--checkpoint-at") && !options.ContainsKey("--checkpoint"))
         throw new ArgumentException("--checkpoint-at requires --checkpoint");
     long? saveTick = options.TryGetValue("--checkpoint-at", out string? saveAt) ? long.Parse(saveAt, CultureInfo.InvariantCulture) : null;
@@ -45,6 +48,7 @@ try
         bool recover = options.TryGetValue("--recover-backup", out string? recovery) && bool.Parse(recovery);
         var loaded = CheckpointStore.Load(loadPath, recover, mode == "paced" ? Pace : null);
         session = loaded.Session; definition = session.Engine.Configuration();
+        session.RestoreControllers(AlgorithmicController.Restore);
         if (loaded.UsedBackup) Console.WriteLine($"Recovered backup: {loaded.LoadedPath}; tick={session.Engine.Tick}");
         target ??= session.PlaybackFinalTick ?? throw new ArgumentException("Load without a recorded plan requires --ticks FINAL_TICK");
         if (tape is not null)
@@ -53,17 +57,22 @@ try
             var submitted = session.CommandTape.ToHashSet();
             session.ConfigurePlayback(tape.Where(c => c.SubmittedAtTick >= session.Engine.Tick && !submitted.Contains(c)).ToArray(), target.Value);
         }
-        script = session.PlaybackLabel ?? "loaded-state";
+        script = session.HasControllers ? "autonomous" : session.PlaybackLabel ?? "loaded-state";
         session.SetPaused(false); mode = "loaded-" + mode;
     }
     else
     {
-        definition = RunArtifacts.LoadScenario(options.GetValueOrDefault("--scenario", "scenarios/economic-cycle.json"));
+        definition = RunArtifacts.LoadScenario(options.GetValueOrDefault("--scenario", script == "autonomous" ? "scenarios/autonomous-economy.json" : "scenarios/economic-cycle.json"));
         if (options.TryGetValue("--seed", out string? seed)) definition = definition with { Seed = ulong.Parse(seed, CultureInfo.InvariantCulture) };
-        if (target.HasValue && tape is null && !saveTick.HasValue)
+        if (target.HasValue && tape is null && !saveTick.HasValue && script != "autonomous")
             throw new ArgumentException("--ticks requires --load, --replay or checkpointed fixture playback");
         session = new(new SimulationEngine(definition), beforeStep: mode == "paced" ? Pace : null);
-        if (tape is not null || saveTick.HasValue)
+        if (script == "autonomous" && tape is null)
+        {
+            long horizon = AutonomousRun.Configure(session, definition, options.GetValueOrDefault("--controllers", "scenarios/autonomous-controllers.json"));
+            target ??= horizon;
+        }
+        else if (tape is not null || saveTick.HasValue)
         {
             if (tape is null)
             {

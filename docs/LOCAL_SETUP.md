@@ -1,13 +1,13 @@
 # Локальная проверка: Windows, Rider и Godot
 
-Автор: Шелестов Максим Евгеньевич. Итерация P12, 14.10.2026.
+Автор: Шелестов Максим Евгеньевич. Итерация P13, 14.10.2026.
 
 ## Получить исходники
 
 Ниже команды **PowerShell**, из выбранного рабочего каталога. Нужен Git. Новая копия:
 
 ```powershell
-git clone --branch feat/checkpoint-p12 https://github.com/MaksShelest/Delsk.git Delsk
+git clone --branch feat/autonomous-p13 https://github.com/MaksShelest/Delsk.git Delsk
 cd Delsk
 ```
 
@@ -15,10 +15,10 @@ cd Delsk
 
 ```powershell
 git fetch origin
-git switch --track origin/feat/checkpoint-p12
+git switch --track origin/feat/autonomous-p13
 ```
 
-Если эта локальная ветка уже существует, вместо последней строки выполнить `git switch feat/checkpoint-p12`, затем `git pull --ff-only`. При ошибке о локальных изменениях остановить переключение и сохранить свою работу. После объединения PR можно перейти на актуальную основную ветку; сейчас default branch репозитория называется `feat/economic-cycle-p00-p05`, а не `main`.
+Если эта локальная ветка уже существует, вместо последней строки выполнить `git switch feat/autonomous-p13`, затем `git pull --ff-only`. При ошибке о локальных изменениях остановить переключение и сохранить свою работу. После объединения PR можно перейти на актуальную основную ветку; сейчас default branch репозитория называется `feat/economic-cycle-p00-p05`, а не `main`.
 
 ## Проверить окружение и собрать ядро
 
@@ -67,7 +67,7 @@ dotnet build src/Client.Godot/Delsk.Client.csproj --no-restore --disable-build-s
 
 В Godot: **Editor → Editor Settings → Dotnet → Editor → External Editor → JetBrains Rider**. В Rider проверить путь к установленному Godot .NET в настройках Godot Engine. Настройка интеграции подтверждена [официальной документацией Rider](https://www.jetbrains.com/help/rider/Godot.html); [Godot C# basics](https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/c_sharp_basics.html) описывает .NET-редактор и SDK. Версии проекта закреплены файлами global.json и Delsk.Client.csproj.
 
-Нажать **F5**. Сейчас это технический стенд воспроизведения старого62-тактового цикла: он открывается на паузе, кнопки **One tick / Run / Restart** управляют проигрыванием записанных команд. Он вызывает обновлённое общее ядро и проверяет хеши. В нём пока нет карточки зарплат, свободного управления строительством или новой интерактивной labor-сцены. **Проверять P09/P10 следует через runner и labor.csv**. Полноценный UI — P26.
+Нажать **F5**. Сейчас это технический стенд воспроизведения старого62-тактового цикла: он открывается на паузе, кнопки **One tick / Run / Restart** управляют проигрыванием записанных команд. Он вызывает обновлённое общее ядро и проверяет хеши. В нём пока нет карточки зарплат, свободного управления строительством или новой интерактивной labor-сцены. **Проверять P09/P10 через runner/labor.csv, автономных NPC P13 — через runner/agents.csv/decisions.jsonl**. Полноценный UI — P26.
 
 Ошибку ручной проверки записать вместе с `git rev-parse HEAD`, версиями SDK/Godot, сценарием и журналом; не менять SDK/TFM или ожидаемые хеши для маскировки ошибки. Android и готовый Windows EXE в этой итерации заново не экспортировались; телефонный gate остаётся открытым.
 
@@ -86,3 +86,15 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --scenario sce
 [HEADLESS_TESTING.md](HEADLESS_TESTING.md) объясняет ядро/runner и даёт алгоритм проверки без графики. С Python: `python scripts/check_headless.py --output artifacts/headless`. Это все готовые fixtures + две save/load пары, не ещё отсутствующие NPC/рынок/выборы.
 
 Godot-стенд имеет кнопки Сохранить/Загрузить/Восстановить из backup и user://platform-checkpoint.json. При сворачивании/фокусе сохраняет committed tick, при возврате elapsed сбрасывается; autosave30 и обычный выход. На реальном телефоне поведение ещё не проверено. Новые standalone APK/EXE в P12 не экспортировались.
+
+## Автономная экономика P13
+
+Обновить исходники до feat/autonomous-p13, открыть корневой Delsk.sln, restore/build как выше. Запуск из Rider Terminal без Python/Godot:
+
+```powershell
+dotnet run --project src/Research.Runner -c Release --no-build -- --script autonomous --ticks 1000 --seed 42 --output artifacts/run-42
+```
+
+Это три самостоятельных NPC и бездействующий human slot. CSV/JSON лежат в указанной папке проекта, абсолютный путь печатается в консоли. Настройки мира/политик и точное продолжение — [HEADLESS_TESTING.md](HEADLESS_TESTING.md). Для отладки создать .NET run configuration Research.Runner, Working directory — корень Delsk, Program arguments — те же флаги после `--` (сам разделитель в поле аргументов приложения не нужен).
+
+В Godot ничего переносить пофайлово не требуется: обновить тот же репозиторий и собрать клиентское решение. Текущая сцена остаётся технической fixture, она ещё не отображает автономную партию. Для ручной игры нужен будущий P26; сейчас результаты NPC смотреть через runner. Python — только необязательная оркестрация/анализ.

@@ -1,0 +1,88 @@
+using System.Collections.Immutable;
+using Simulation.Core;
+
+namespace Agents.Algorithmic;
+
+public record ControllerSettings(long ActorId, string PreferredInput, int DecisionIntervalTicks = 5,
+    long CashReserveMinor = 3000, int BatchQuantity = 20, long BaseWageMinor = 25,
+    long MaximumWageMinor = 50, int WageReviewTicks = 60, int BlockedRetryTicks = 30,
+    int ExpansionWeight = 100, int CashWeight = 100, int ProductionWeight = 100,
+    int OwnVictoryWeight = 100, int HumanDefeatWeight = 0,
+    int HarvestCoefficient = 1, int ProductionCoefficient = 1);
+public record AutonomousConfiguration(int Version, long HumanActorId, long FinalTick, ControllerSettings[] Npcs);
+public record TrustEntry(long ParticipantId, int Value);
+public record PlanStep(GameAction Action);
+public record AlgorithmState(ControllerSettings Settings, ulong RandomState, string Goal, string Reason,
+    PlanStep[] Plan, int NextStep, string? PendingCommandId, long NextDecisionTick, long NextWageTick,
+    long BlockedUntilTick, string BlockedGoal, long Decisions, long Rejections, TrustEntry[] Trust);
+
+public sealed partial class AlgorithmicController : IController
+{
+    public const string PolicyKind = "utility-economy-v1";
+    private AlgorithmState _state;
+    public ParticipantId Actor => new(_state.Settings.ActorId);
+    public AlgorithmicController(ControllerSettings settings, ulong seed, IEnumerable<long> participants)
+    {
+        ValidateSettings(settings);
+        _state = new(settings, seed, "Idle", "Initial", [], 0, null, 0, 0, 0, "", 0, 0,
+            participants.Where(p => p != settings.ActorId).Distinct().Order().Select(p => new TrustEntry(p, 0)).ToArray());
+    }
+    public ControllerCheckpoint Capture() => new(PolicyKind, 1, Actor,
+        System.Text.Json.JsonSerializer.Serialize(_state, SimulationJson.Options),
+        _state.PendingCommandId is { } id ? [id] : []);
+    public static AlgorithmicController Restore(ControllerCheckpoint saved)
+    {
+        if (saved.Kind != PolicyKind || saved.Version != 1) throw new CheckpointException("UnknownControllerVersion");
+        try
+        {
+            var s = System.Text.Json.JsonSerializer.Deserialize<AlgorithmState>(saved.StateJson, SimulationJson.Options)
+                ?? throw new CheckpointException("EmptyControllerState");
+            ValidateSettings(s.Settings);
+            if (s.Settings.ActorId != saved.Actor.Value || s.NextStep < 0 || s.NextStep > s.Plan.Length ||
+                s.NextDecisionTick < 0 || s.NextWageTick < 0 || s.BlockedUntilTick < 0 || s.Decisions < 0 ||
+                s.Rejections < 0 || s.Rejections > s.Decisions || s.Plan.Length > 100 ||
+                string.IsNullOrWhiteSpace(s.Goal) || s.Goal.Length > 80 || s.Reason is null || s.Reason.Length > 256 ||
+                s.BlockedGoal is null || s.BlockedGoal.Length > 80 || saved.PendingCommandIds.IsDefault ||
+                !saved.PendingCommandIds.SequenceEqual(s.PendingCommandId is { } pendingId ? new[] { pendingId } : []) ||
+                s.Plan.Any(p => p is null || !Enum.IsDefined(p.Action.Kind)) ||
+                s.Trust.Any(t => t.ParticipantId <= 0 || t.ParticipantId == saved.Actor.Value || t.Value is < -100 or > 100) ||
+                s.Trust.Select(t => t.ParticipantId).Distinct().Count() != s.Trust.Length ||
+                (s.PendingCommandId is not null && s.NextStep >= s.Plan.Length))
+                throw new CheckpointException("InvalidControllerState");
+            var controller = new AlgorithmicController(s.Settings, s.RandomState, []); controller._state = s; return controller;
+        }
+        catch (CheckpointException) { throw; }
+        catch (Exception ex) when (ex is System.Text.Json.JsonException or ArgumentException or NullReferenceException)
+        { throw new CheckpointException("InvalidControllerState", ex); }
+    }
+    private static void ValidateSettings(ControllerSettings s)
+    {
+        if (s.ActorId <= 0 || string.IsNullOrWhiteSpace(s.PreferredInput) || s.PreferredInput.Length > 80 ||
+            s.DecisionIntervalTicks is < 1 or > 100 || s.BatchQuantity is < 1 or > 1000 ||
+            s.CashReserveMinor is < 0 or > 1_000_000_000 || s.BaseWageMinor is < 1 or > 10000 ||
+            s.MaximumWageMinor < s.BaseWageMinor || s.MaximumWageMinor > 10000 ||
+            s.WageReviewTicks < 20 || s.BlockedRetryTicks < 1 ||
+            new[] { s.ExpansionWeight, s.CashWeight, s.ProductionWeight, s.OwnVictoryWeight, s.HumanDefeatWeight }.Any(x => x is < 0 or > 1000) ||
+            s.HarvestCoefficient != 1 || s.ProductionCoefficient != 1)
+            throw new ArgumentException("Invalid policy settings; economic coefficients currently support only x1");
+    }
+    // PRNG belongs to this policy, never consumes the world's fairness stream.
+    private ulong RandomTie()
+    {
+        unchecked
+        {
+            ulong state = _state.RandomState + 0x9E3779B97F4A7C15UL;
+            ulong z = state; z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9UL;
+            z = (z ^ (z >> 27)) * 0x94D049BB133111EBUL;
+            _state = _state with { RandomState = state }; return z ^ (z >> 31);
+        }
+    }
+    public void CommandSubmitted(string commandId)
+    {
+        if (_state.PendingCommandId is not null || _state.NextStep >= _state.Plan.Length)
+            throw new InvalidOperationException("No plan action awaiting submission");
+        _state = _state with { PendingCommandId = commandId,
+            NextWageTick = _state.Goal == "AdjustWage" ? checked(_state.NextDecisionTick -
+                _state.Settings.DecisionIntervalTicks + _state.Settings.WageReviewTicks) : _state.NextWageTick };
+    }
+}

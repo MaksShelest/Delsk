@@ -21,7 +21,7 @@ jobs:
       - name: Build
         run: python scripts/run_check.py --name build --timeout 180 -- dotnet build Delsk.sln -c Release --no-restore --disable-build-servers -m:1
       - name: xUnit
-        run: python scripts/run_check.py --name tests --timeout 120 -- dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release --no-build --no-restore -- --report-trx --results-directory artifacts/test-results --minimum-expected-tests 130
+        run: python scripts/run_check.py --name tests --timeout 120 -- dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release --no-build --no-restore -- --report-trx --results-directory artifacts/test-results --minimum-expected-tests 148
       - name: Economic cycle
         env:
           DELSK_COMMIT: ${{ github.sha }}
@@ -50,10 +50,17 @@ jobs:
         run: |
           python scripts/run_check.py --name equipment-save --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/equipment-cycle.json --script equipment --checkpoint artifacts/equipment.save.json --checkpoint-at 101 --output artifacts/equipment-saved
           python scripts/run_check.py --name equipment-load --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/equipment.save.json --output artifacts/equipment-loaded
+      - name: Autonomous NPC economy and checkpoint
+        env:
+          DELSK_COMMIT: ${{ github.sha }}
+        run: |
+          python scripts/run_check.py --name autonomous --timeout 300 -- dotnet run --project src/Research.Runner -c Release --no-build -- --script autonomous --output artifacts/autonomous
+          python scripts/run_check.py --name autonomous-save --timeout 300 -- dotnet run --project src/Research.Runner -c Release --no-build -- --script autonomous --checkpoint artifacts/autonomous.save.json --checkpoint-at 350 --output artifacts/autonomous-saved
+          python scripts/run_check.py --name autonomous-load --timeout 300 -- dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/autonomous.save.json --ticks 1000 --output artifacts/autonomous-loaded
       - name: Compare restored exports
-        run: python scripts/verify_checkpoint_exports.py artifacts/cycle artifacts/cycle-loaded artifacts/equipment artifacts/equipment-loaded
+        run: python scripts/verify_checkpoint_exports.py artifacts/cycle artifacts/cycle-loaded artifacts/equipment artifacts/equipment-loaded artifacts/autonomous artifacts/autonomous-loaded
       - name: Check output balances
-        run: python scripts/verify_results.py artifacts/cycle artifacts/recovery artifacts/development artifacts/labor artifacts/equipment artifacts/cycle-loaded artifacts/equipment-loaded
+        run: python scripts/verify_results.py artifacts/cycle artifacts/recovery artifacts/development artifacts/labor artifacts/equipment artifacts/cycle-loaded artifacts/equipment-loaded artifacts/autonomous artifacts/autonomous-loaded
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -1,0 +1,136 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "2026-10-14",
+  "scope": "P13 autonomous algorithmic controllers; no full market/politics/UI/device claim",
+  "baseCommit": "c1b07e8ae015ddbfb45c8d85ebe3f4e8d32b2a1b",
+  "sourceSha256": "b86447e9311ab676538e1edbf7fd217c5a09896c3fc0d5edda7569ae088e9376",
+  "toolchain": {
+    "dotnetSdk": "10.0.401",
+    "dotnetRuntime": "10.0.12",
+    "godotDotnet": "4.7.2"
+  },
+  "tests": {
+    "passed": 148,
+    "failed": 0,
+    "skipped": 0
+  },
+  "suite": {
+    "command": [
+      "python",
+      "scripts/check_headless.py",
+      "--dotnet",
+      "../.tools/dotnet/dotnet",
+      "--output",
+      "../verification/p13/full-headless"
+    ],
+    "timeout_seconds": 300,
+    "started_at": "2026-10-14T09:17:38.980324+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 43.556,
+    "finished_at": "2026-10-14T09:18:22.536014+00:00"
+  },
+  "regression": {
+    "status": "succeeded",
+    "scenarios": [
+      "cycle",
+      "recovery",
+      "development",
+      "labor",
+      "equipment",
+      "autonomous"
+    ],
+    "checkpoint_cases": {
+      "cycle": 55,
+      "equipment": 101,
+      "autonomous": 350
+    },
+    "comparison": "every exported tick hash, state, ledger, event, command and labor row",
+    "scope": "P00-P13: five scripted fixtures and three autonomous NPC; full market/politics remain future tasks",
+    "author": "Шелестов Максим Евгеньевич"
+  },
+  "pilot": {
+    "seed": 42,
+    "ticks": 1000,
+    "elapsedMillisecondsBeforeExport": 3374.9885,
+    "worldHash": "77c972a5d35ed75220354f00d4185fc0ad52f2fbf27f9a68f5db714c5464012f",
+    "controllerHash": "b9ba6205dec96eb021cb68484d2edde509353b356698a60ae8559d341d1b6488",
+    "enterprises": 3,
+    "equipment": 3,
+    "population": 28,
+    "unemployed": 21,
+    "flows": [
+      {
+        "itemId": "bread",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 50,
+        "exported": 37,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "grain",
+        "initial": 0,
+        "harvested": 100,
+        "recipeInput": 100,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "plank",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 81,
+        "exported": 80,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "wood",
+        "initial": 0,
+        "harvested": 680,
+        "recipeInput": 164,
+        "produced": 0,
+        "exported": 410,
+        "constructionInput": 30
+      }
+    ],
+    "decisionTurns": 426,
+    "rejections": 3,
+    "checkpointTick": 350,
+    "checkpointBytes": 2688136
+  },
+  "legacyP12FileLoad": "passed; world/ledger/events/commands/labor/tick hashes identical; CSV energy_minor renamed treasury_minor",
+  "godotLinuxProbe": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "f92dd078e6d4afeccd6716f4c9aa7fbc8f61801f59f0c67fd8d479886a4de723",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "extraSeeds": {
+    "7": "3 productions/3 machines; balances passed",
+    "99": "3 productions/3 machines; balances passed"
+  },
+  "notChecked": [
+    "Android real device",
+    "new APK/EXE export",
+    "autonomous Godot UI",
+    "long full game",
+    "real LLM",
+    "full P14-P21 economy"
+  ]
+}

@@ -24,11 +24,15 @@ public static class RunArtifacts
         {
             ScenarioId = definition.Id, definition.Seed, SimulationEngine.RulesVersion,
             ConfigHash = session.Engine.ConfigHash, TimingPolicy = timingPolicy, Script = script,
-            Controller = session.PlaybackFinalTick.HasValue ? "recorded-inputs" : "scripted", Model = (string?)null, RuntimeVersion = Environment.Version.ToString(),
+            Controller = session.HasControllers ? "algorithmic" : session.PlaybackFinalTick.HasValue ? "recorded-inputs" : "scripted",
+            Controllers = session.ControllerStates, ControllerStateHash = session.ComputeControllerStateHash(), Model = (string?)null, RuntimeVersion = Environment.Version.ToString(),
             Commit = Environment.GetEnvironmentVariable("DELSK_COMMIT"), TickSeconds = 1,
-            Stage = "P12", Author = "Шелестов Максим Евгеньевич"
+            Stage = "P13", Author = "Шелестов Максим Евгеньевич"
         });
         WriteJson("summary.json", new { Status = status, Failure = failure, state.Tick, StateHash = session.Engine.ComputeStateHash(),
+            ControllerStateHash = session.ComputeControllerStateHash(),
+            ControllerDecisionTurns = session.ControllerTurns.Length,
+            ControllerRejections = session.ControllerTurns.Sum(t => t.Feedback.Count(r => r.Status == ResultStatus.Rejected)),
             ElapsedMilliseconds = elapsedMilliseconds, AverageMillisecondsPerTick = state.Tick > 0 ? elapsedMilliseconds / state.Tick : (double?)null,
             state.InitialMoneyMinor, state.ExternalMoneyInMinor, state.ExternalMoneyOutMinor, state.Accounts, state.Flows,
             state.Settlements, state.Population, state.Unemployed, state.EmploymentGroups, state.PopulationGrowth, RamBytes = (long?)null, RamMeasurementReason = "not measured" });
@@ -36,8 +40,14 @@ public static class RunArtifacts
         WriteLines("events.jsonl", session.Engine.EventsSince(0));
         WriteLines("commands.jsonl", session.CommandTape);
         WriteLines("ledger.jsonl", session.Engine.Ledger());
+        WriteJson("controllers.json", session.ControllerStates);
+        WriteLines("decisions.jsonl", session.ControllerTurns);
+        using var agents = new StreamWriter(Path.Combine(directory, "agents.csv"), false, new UTF8Encoding(false));
+        agents.WriteLine("tick,actor_id,cash_minor,stock_base_value_minor,stock_units,headcount,enterprises,equipment,busy,goal,reason");
+        foreach (var row in session.ControllerSamples)
+            agents.WriteLine(FormattableString.Invariant($"{row.Tick},{row.ActorId},{row.CashMinor},{row.StockBaseValueMinor},{row.StockUnits},{row.Headcount},{row.Enterprises},{row.Equipment},{row.Busy},{CsvText(row.Goal)},{CsvText(row.Reason)}"));
         using var csv = new StreamWriter(Path.Combine(directory, "metrics.csv"), false, new UTF8Encoding(false));
-        csv.WriteLine("tick,participant_cash_minor,wages_minor,energy_minor,harvested,produced,exported,state_hash,population,unemployed");
+        csv.WriteLine("tick,participant_cash_minor,wages_minor,treasury_minor,harvested,produced,exported,state_hash,population,unemployed");
         foreach (var sample in session.Samples)
             csv.WriteLine(string.Join(',', new[] { sample.Tick, sample.ParticipantCashMinor, sample.WageExpenseMinor,
                 sample.EnergyExpenseMinor, sample.Harvested, sample.Produced, sample.Exported }.Select(x => x.ToString(CultureInfo.InvariantCulture)))
@@ -47,6 +57,7 @@ public static class RunArtifacts
         foreach (var sample in session.LaborSamples)
             foreach (var group in sample.EmploymentGroups)
                 labor.WriteLine(FormattableString.Invariant($"{sample.Tick},{group.Id.Value},{group.OwnerId.Value},{group.Headcount},{group.Capacity},{group.WageMinor},{group.AttractionWageMinor},{group.TargetHeadcount},{group.Ready},{group.ReadinessReason},{group.MobilityCredit}"));
+        static string CsvText(string value) => "\"" + value.Replace("\"", "\"\"", StringComparison.Ordinal) + "\"";
         void WriteJson(string name, object value) => File.WriteAllText(Path.Combine(directory, name), JsonSerializer.Serialize(value, json), new UTF8Encoding(false));
         void WriteLines<T>(string name, IEnumerable<T> values)
         {
