@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "logistics-6";
+    public const string RulesVersion = "logistics-7";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -195,6 +195,8 @@ public sealed partial class SimulationEngine
                 case ActionKind.SetLogisticsStorage: SetLogisticsStorage(actor, c); break;
                 case ActionKind.SetLogisticsProduction: SetLogisticsOwnDestination(actor, c, production: true); break;
                 case ActionKind.SetLogisticsInbound: SetLogisticsInbound(actor, c); break;
+                case ActionKind.QueueLogisticsJob: QueueLogisticsJob(actor, c); break;
+                case ActionKind.SetLogisticsEnabled: SetLogisticsEnabled(actor, c); break;
                 default: throw new RuleViolation("UnknownAction");
             }
             _results[c.CommandId] = new(c.CommandId, ResultStatus.Accepted, "Accepted", Tick);

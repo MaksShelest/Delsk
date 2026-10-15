@@ -28,6 +28,7 @@ public sealed partial class SimulationEngine
         if (!_deliveryContracts.Any(d => d.Id == c.Action.ContractId && d.Supplier.Value == actor.Id && (!c.Action.Enabled || d.ClosedTick is null)))
             throw new RuleViolation("NotAvailable");
         if (l.Trip is { InboundSource.Value: 0 } && (l.Contract != c.Action.ContractId || l.Destination != 0)) throw new RuleViolation("LogisticsBusy");
+        ReplacePrimaryOutput(l, c.Action.ContractId, 0, c.Action.Enabled);
         l.Contract = c.Action.ContractId; l.Destination = 0; l.Enabled = c.Action.Enabled;
         l.Reason = l.Enabled ? "Waiting" : "UserPaused";
         Emit("LogisticsContractSet", actor.Id, l.Id, reason: l.Reason, command: c.CommandId);
@@ -82,22 +83,22 @@ public sealed partial class SimulationEngine
             throw new RuleViolation("LogisticsBusy");
         if (production && c.Action.Enabled && destination!.Recipe.InputItem != _enterprises[l.Enterprise].Recipe.OutputItem)
             throw new RuleViolation("IncompatibleRecipe");
+        ReplacePrimaryOutput(l, 0, c.Action.Destination.Value, c.Action.Enabled);
         l.Contract = 0; l.Destination = c.Action.Destination.Value; l.Enabled = c.Action.Enabled;
         l.Reason = l.Enabled ? "Waiting" : "UserPaused";
         Emit(production ? "LogisticsProductionSet" : "LogisticsStorageSet", actor.Id, l.Id, reason: l.Reason, command: c.CommandId);
     }
     private record LogisticsPlanData(int Index, string ItemId, Cell[] Path, long Quantity, long LegTicks,
-        long InboundSource = 0, long OwnDestination = 0, long GoodsSource = 0);
-    private LogisticsPlanData OutputLogisticsPlan(LogisticsState l)
+        long InboundSource = 0, long OwnDestination = 0, long GoodsSource = 0, string JobKey = "");
+    private LogisticsPlanData OutputLogisticsPlan(LogisticsState l, long contract, long target)
     {
-        if (!l.Enabled) throw new RuleViolation("UserPaused");
         var source = _economy.Inventories[l.Source];
-        if (l.Destination != 0)
+        if (target != 0)
         {
-            var destination = _economy.Inventories[l.Destination];
+            var destination = _economy.Inventories[target];
             string item = _enterprises[l.Enterprise].Recipe.OutputItem;
             // Recipe edits affect future trips; a prepared trip keeps its item and capacity hold.
-            if (OwnProductionDestination(l, l.Destination) is { } production && production.Recipe.InputItem != item)
+            if (OwnProductionDestination(l, target) is { } production && production.Recipe.InputItem != item)
                 throw new RuleViolation("IncompatibleRecipe");
             long volume = _items[item].UnitVolume;
             if (l.CargoCapacity < volume) throw new RuleViolation("NoCargoSpace");
@@ -108,7 +109,7 @@ public sealed partial class SimulationEngine
             var ownPath = _map.FindPath(source.Position, destination.Position);
             return new(-1, item, ownPath, q, Math.Max(1, checked((ownPath.Length - 1L) * Logistics.MoveTicksPerCell)));
         }
-        int index = _deliveryContracts.FindIndex(d => d.Id == l.Contract && d.Supplier.Value == l.Owner && d.ClosedTick is null);
+        int index = _deliveryContracts.FindIndex(d => d.Id == contract && d.Supplier.Value == l.Owner && d.ClosedTick is null);
         if (index < 0) throw new RuleViolation("NoActiveContract");
         var d = _deliveryContracts[index];
         long quantity = Math.Min(source.Free(d.ItemId), Math.Min(d.UnprovidedQuantity, l.CargoCapacity / _items[d.ItemId].UnitVolume));
@@ -162,7 +163,7 @@ public sealed partial class SimulationEngine
             long? deferredAttraction = deferredPay.HasValue ? Math.Max(l.Group.AttractionEffectiveTick!.Value, deferredPay.Value) : null;
             var preparedTrip = new LogisticsTripView(id, d?.Id ?? 0, plan.ItemId, plan.Quantity, "Loading", Tick, load, arrival, end,
                 plan.Path[0], [.. plan.Path], 0, 0, l.Group.Wage, budget, 0,
-                $"logistics-stock:{id}", $"logistics-return:{id}", $"logistics-wage:{id}", new(plan.OwnDestination), new(plan.InboundSource));
+                $"logistics-stock:{id}", $"logistics-return:{id}", $"logistics-wage:{id}", new(plan.OwnDestination), new(plan.InboundSource), plan.JobKey);
             var updated = d is null ? null : d with { PreparedQuantity = checked(d.PreparedQuantity + plan.Quantity) };
             var tx = _economy.Begin(Tick); tx.ReserveStock(plan.GoodsSource, preparedTrip.StockHold, plan.ItemId, plan.Quantity);
             if (plan.OwnDestination != 0) tx.ReserveCapacity(plan.OwnDestination, preparedTrip.DestinationHold, plan.ItemId, plan.Quantity);
@@ -176,7 +177,11 @@ public sealed partial class SimulationEngine
                 l.Group.AttractionEffectiveTick = deferredAttraction;
                 Emit("LogisticsWageDeferred", l.Owner, l.Id, money: l.Group.PendingWage!.Value);
             }
+            l.DispatchCount = checked(l.DispatchCount + 1);
+            int jobIndex = l.Queue.FindIndex(j => j.Key == plan.JobKey);
+            l.Queue[jobIndex] = l.Queue[jobIndex] with { LastServed = l.DispatchCount };
             l.Trip = preparedTrip; l.Reason = "Loading";
+            Emit("LogisticsJobDispatched", l.Owner, id, reason: plan.JobKey);
             Emit("LogisticsTripPrepared", l.Owner, id, plan.ItemId, plan.Quantity, budget);
         }
         catch (RuleViolation ex) { l.Reason = ex.ReasonCode; }
@@ -272,7 +277,8 @@ public sealed partial class SimulationEngine
                 v.SourceInventory.Value, v.CargoInventory.Value, Logistics, v.Level)
                 { Enabled = v.Enabled, Contract = v.ContractId, Destination = v.OwnDestination.Value,
                     InboundSource = v.InboundSource.Value, InboundEnabled = v.InboundEnabled,
-                    Reason = v.ReasonCode, Completed = v.CompletedTrips, Trip = v.Trip };
+                    Reason = v.ReasonCode, Completed = v.CompletedTrips, Trip = v.Trip, DispatchCount = v.DispatchCount };
+            l.Queue.AddRange(v.Queue);
             LoadGroup(l.Group, s.Group); _logistics.Add(l.Id, l);
         }
     }

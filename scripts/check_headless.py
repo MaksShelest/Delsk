@@ -27,10 +27,10 @@ check('tests', 120, [args.dotnet, 'tests/Simulation.Tests/bin/Release/net10.0/Si
     '-noColor', '-noLogo', '-parallelMode', 'none', '-result-trx', out/'tests.trx'])
 runner = [args.dotnet, 'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll']
 scenarios = {'cycle':'economic-cycle', 'recovery':'zero-cash-recovery', 'development':'land-and-content',
-             'labor':'labor-dynamics', 'equipment':'equipment-cycle', 'autonomous':'autonomous-economy', 'market':'market-window', 'pickup':'pickup-lifecycle', 'delivery':'delivery-lifecycle', 'capital-delivery':'capital-delivery', 'logistics':'logistics-cycle', 'logistics-upgrade':'logistics-upgrade', 'own-storage':'own-storage-cycle', 'inbound':'inbound-cycle', 'own-production':'own-production-cycle'}
+             'labor':'labor-dynamics', 'equipment':'equipment-cycle', 'autonomous':'autonomous-economy', 'market':'market-window', 'pickup':'pickup-lifecycle', 'delivery':'delivery-lifecycle', 'capital-delivery':'capital-delivery', 'logistics':'logistics-cycle', 'logistics-upgrade':'logistics-upgrade', 'own-storage':'own-storage-cycle', 'inbound':'inbound-cycle', 'own-production':'own-production-cycle', 'logistics-queue':'logistics-queue'}
 for script, scenario in scenarios.items():
     check(script, 300 if script == 'autonomous' else 30, [*runner, '--scenario', f'scenarios/{scenario}.json', '--script', script, '--output', out/script])
-for script, tick in [('cycle', 55), ('equipment', 101), ('autonomous', 350), ('market', 44), ('pickup', 47), ('delivery', 37), ('capital-delivery', 3), ('logistics', 69), ('logistics-upgrade', 170), ('own-storage', 170), ('inbound', 78), ('own-production', 170)]:
+for script, tick in [('cycle', 55), ('equipment', 101), ('autonomous', 350), ('market', 44), ('pickup', 47), ('delivery', 37), ('capital-delivery', 3), ('logistics', 69), ('logistics-upgrade', 170), ('own-storage', 170), ('inbound', 78), ('own-production', 170), ('logistics-queue', 185)]:
     checkpoint = out/f'{script}.save.json'
     check(f'{script}-save', 300 if script == 'autonomous' else 30, [*runner, '--scenario', f'scenarios/{scenarios[script]}.json', '--script', script,
         '--output', out/f'{script}-saved', '--checkpoint', checkpoint, '--checkpoint-at', tick])
@@ -41,10 +41,10 @@ for script, tick in [('cycle', 55), ('equipment', 101), ('autonomous', 350), ('m
             raise SystemExit(f'{script}: checkpoint continuation differs in {name}')
 check('late-return-load', 30, [*runner, '--load', out/'late-return.save.json', '--output', out/'late-return-loaded'])
 check('late-return-compare', 15, [sys.executable, 'scripts/verify_checkpoint_exports.py', out/'late-return', out/'late-return-loaded'])
-folders = [out/s for s in scenarios] + [out/f'{s}-{mode}' for s in ['cycle','equipment','autonomous','market','pickup','delivery','capital-delivery','logistics','logistics-upgrade','own-storage','inbound','own-production'] for mode in ['saved','loaded']]
+folders = [out/s for s in scenarios] + [out/f'{s}-{mode}' for s in ['cycle','equipment','autonomous','market','pickup','delivery','capital-delivery','logistics','logistics-upgrade','own-storage','inbound','own-production','logistics-queue'] for mode in ['saved','loaded']]
 folders += [out/'late-return-at-expiry', out/'late-return', out/'late-return-loaded']
 check('balances', 15, [sys.executable, 'scripts/verify_results.py', *folders])
-manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases':{'cycle':55,'equipment':101,'autonomous':350,'market':44,'pickup':47,'delivery':37,'capital-delivery':3,'logistics':69,'logistics-upgrade':170,'own-storage':170,'inbound':78,'own-production':170},
+manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases':{'cycle':55,'equipment':101,'autonomous':350,'market':44,'pickup':47,'delivery':37,'capital-delivery':3,'logistics':69,'logistics-upgrade':170,'own-storage':170,'inbound':78,'own-production':170,'logistics-queue':185},
             'comparison':'every exported tick hash, state, ledger, event, command and labor row',
             'controlled_fixture':{'name':'late-return','origin':'test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged','checkpoint_tick':72,'final_tick':80},
             'scope':'P00-P17 including own production destination, controlled late-return and crew/wage boundaries; general queues/fairness/remaining contract quota scenarios/politics remain future tasks',

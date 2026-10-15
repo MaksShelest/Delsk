@@ -139,6 +139,10 @@ def verify(folder):
     systems = state.get('logistics', [])
     assert len({l['enterpriseId']['value'] for l in systems}) == len(systems)
     for system in systems:
+        queue = system['queue']
+        assert len(queue) <= 64 and len({j['key'] for j in queue}) == len(queue)
+        assert 0 <= system['completedTrips'] <= system['dispatchCount'] <= state['tick']
+        assert all(0 <= j['lastServed'] <= system['dispatchCount'] for j in queue)
         cargo = inventories[system['cargoInventory']['value']]
         assert cargo['ownerId'] == system['ownerId']
         rules = config.get('logistics') or {'cargoCapacity':10, 'crewCapacity':2}
@@ -156,16 +160,18 @@ def verify(folder):
         if system['trip'] is None: assert not cargo['stock']
         else:
             trip = system['trip']; assert trip['position'] == cargo['position']
+            job = next(j for j in queue if j['key'] == trip['jobKey'])
+            assert job['contractId'] == trip['contractId'] and job['lastServed'] == system['dispatchCount']
             incoming = trip['inboundSource']['value']
             if incoming:
-                assert incoming == system['inboundSource']['value'] and trip['contractId'] == 0
+                assert incoming == job['inboundSource']['value'] and trip['contractId'] == 0
                 factory = next(e for e in state['enterprises'] if e['id'] == system['enterpriseId'])
                 assert trip['ownDestination'] == factory['inputId']
                 assert trip['state'] in ['Loading', 'FetchingEmpty', 'ReturningInput']
                 assert inventories[trip['ownDestination']['value']]['reservedCapacity'] >= trip['quantity'] * items[trip['itemId']]
             else:
-                assert trip['ownDestination']['value'] == own
-                assert trip['contractId'] == system['contractId']
+                assert trip['ownDestination']['value'] == job['ownDestination']['value']
+                own = trip['ownDestination']['value']
             if own and not incoming:
                 assert trip['state'] != 'ReturningCargo'
                 if trip['state'] in ['Loading', 'Outbound']:

@@ -12,13 +12,13 @@ try
     {
         if (i + 1 >= args.Length || args[i] is not ("--scenario" or "--output" or "--script" or "--mode" or "--seed" or
             "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers"))
-            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production] [--mode headless|paced] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
+            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue] [--mode headless|paced] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
         if (!options.TryAdd(args[i], args[i + 1])) throw new ArgumentException("Duplicate argument");
     }
     string directory = options.GetValueOrDefault("--output", "artifacts/cycle");
     string script = options.GetValueOrDefault("--script", "cycle");
     string mode = options.GetValueOrDefault("--mode", "headless");
-    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market" or "pickup" or "delivery" or "capital-delivery" or "logistics" or "logistics-upgrade" or "own-storage" or "inbound" or "own-production") || mode is not ("headless" or "paced"))
+    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market" or "pickup" or "delivery" or "capital-delivery" or "logistics" or "logistics-upgrade" or "own-storage" or "inbound" or "own-production" or "logistics-queue") || mode is not ("headless" or "paced"))
         throw new ArgumentException("Invalid script or mode");
     if (options.ContainsKey("--controllers") && (script != "autonomous" || options.ContainsKey("--load") || options.ContainsKey("--replay")))
         throw new ArgumentException("--controllers applies only to a new autonomous run");
@@ -116,6 +116,7 @@ try
         else if (script == "logistics") ScriptedScenarios.LogisticsCycle(s, d);
         else if (script == "own-storage") ScriptedScenarios.OwnStorageCycle(s, d);
         else if (script == "own-production") ScriptedScenarios.OwnProductionCycle(s, d);
+        else if (script == "logistics-queue") ScriptedScenarios.LogisticsQueueCycle(s, d);
         else if (script == "inbound") ScriptedScenarios.InboundCycle(s, d);
         else if (script == "logistics-upgrade") ScriptedScenarios.LogisticsUpgradeCycle(s, d);
         else if (script is "delivery" or "capital-delivery" or "logistics") ScriptedScenarios.DeliveryLifecycle(s, d, script == "capital-delivery");

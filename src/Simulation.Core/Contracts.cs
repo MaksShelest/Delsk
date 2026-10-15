@@ -14,13 +14,13 @@ public readonly record struct EmploymentGroupId(long Value);
 public readonly record struct Cell(int X, int Z);
 
 public enum ActionKind { MoveTo, Harvest, Transfer, SetProductionEnabled, SellAvailableToCapital, CancelCapitalSale,
-    ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe, SetWage, BuyEquipment, UpgradeEquipment, SetEquipmentMode, CreateSellOffer, SubmitBuyRequest, RaiseBid, WithdrawBid, CollectPurchase, CreateBuyOffer, AcceptDeliveryQuantity, WithdrawSupplyRequest, CancelBuyOffer, DeliverContract, BuyLogistics, SetLogisticsContract, UpgradeLogistics, SetLogisticsStorage, SetLogisticsInbound, SetLogisticsProduction }
+    ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe, SetWage, BuyEquipment, UpgradeEquipment, SetEquipmentMode, CreateSellOffer, SubmitBuyRequest, RaiseBid, WithdrawBid, CollectPurchase, CreateBuyOffer, AcceptDeliveryQuantity, WithdrawSupplyRequest, CancelBuyOffer, DeliverContract, BuyLogistics, SetLogisticsContract, UpgradeLogistics, SetLogisticsStorage, SetLogisticsInbound, SetLogisticsProduction, QueueLogisticsJob, SetLogisticsEnabled }
 public enum ResultStatus { Accepted, Rejected }
 public record GameAction(ActionKind Kind, Cell Target = default, string ItemId = "", long Quantity = 0,
     InventoryId Source = default, InventoryId Destination = default, EnterpriseId Enterprise = default,
     bool Enabled = false, long OfferId = 0, PlotId Plot = default, BuildingId Building = default,
     string BuildingTypeId = "", string RecipeId = "", EmploymentGroupId Group = default, long WageMinor = 0, EquipmentId Equipment = default,
-    string EquipmentTypeId = "", int EquipmentLevel = 1, EquipmentMode Mode = EquipmentMode.Personal, long MarketOfferId = 0, long UnitPriceMinor = 0, long MaximumPriceMinor = 0, int MarketRound = 0, long PurchaseId = 0, long BuyOfferId = 0, int OfferWindow = 1, long ContractId = 0, LogisticsId Logistics = default);
+    string EquipmentTypeId = "", int EquipmentLevel = 1, EquipmentMode Mode = EquipmentMode.Personal, long MarketOfferId = 0, long UnitPriceMinor = 0, long MaximumPriceMinor = 0, int MarketRound = 0, long PurchaseId = 0, long BuyOfferId = 0, int OfferWindow = 1, long ContractId = 0, LogisticsId Logistics = default, LogisticsDirection Direction = LogisticsDirection.Output);
 public record CommandEnvelope(string CommandId, ParticipantId ActorId, long LocalSequence,
     long IssuedAtTick, long NotBeforeTick, long ExpiresAtTick, GameAction Action);
 public record CommandResult(string CommandId, ResultStatus Status, string ReasonCode, long AppliedTick);

@@ -35,13 +35,14 @@ public sealed partial class SimulationEngine
         var facilities = new HashSet<long>(); var cargoIds = new HashSet<long>(); var tripIds = new HashSet<long>();
         foreach (var l in _logistics.Values)
         {
+            ValidateLogisticsQueue(l);
             if (l.Id < 1000 || !facilities.Add(l.Enterprise) || !cargoIds.Add(l.Cargo) ||
                 !_enterprises.TryGetValue(l.Enterprise, out var enterprise) || l.Owner != enterprise.Definition.OwnerId ||
                 l.Source != enterprise.Output || l.Group.Id != l.Id || l.Group.Owner != l.Owner ||
                 l.Group.Role != EmploymentRole.Logistics || l.Group.Capacity != l.CrewCapacity ||
                 !_economy.Inventories.TryGetValue(l.Cargo, out var cargo) || cargo.Owner != l.Owner ||
                 cargo.Capacity != l.CargoCapacity || l.Completed < 0 || l.Contract < 0 || l.Destination < 0 || l.InboundSource < 0 ||
-                (l.Contract != 0 && l.Destination != 0) || (l.InboundEnabled && l.InboundSource == 0) ||
+                (l.Contract != 0 && l.Destination != 0) ||
                 (l.InboundSource != 0 && !IsOwnLogisticsStorage(l.Owner, l.InboundSource)) ||
                 (l.Destination != 0 && !IsOwnLogisticsDestination(l, l.Destination)) ||
                 (l.Contract != 0 && !_deliveryContracts.Any(d => d.Id == l.Contract && d.Supplier.Value == l.Owner)))
@@ -58,7 +59,7 @@ public sealed partial class SimulationEngine
             Cell middle;
             if (input)
             {
-                if (t.InboundSource.Value != l.InboundSource || !IsOwnLogisticsStorage(l.Owner, t.InboundSource.Value) ||
+                if (!IsOwnLogisticsStorage(l.Owner, t.InboundSource.Value) ||
                     t.ContractId != 0 || t.OwnDestination.Value != enterprise.Input ||
                     t.State is not ("Loading" or "FetchingEmpty" or "ReturningInput"))
                     throw new InvalidOperationException("Invalid inbound logistics destination");
@@ -67,9 +68,9 @@ public sealed partial class SimulationEngine
             else
             {
                 var d = _deliveryContracts.SingleOrDefault(d => d.Id == t.ContractId);
-                if (own ? t.ContractId != 0 || l.Contract != 0 || t.OwnDestination.Value != l.Destination ||
+                if (own ? t.ContractId != 0 ||
                         !IsOwnLogisticsDestination(l, t.OwnDestination.Value) || t.State == "ReturningCargo" :
-                    d is null || l.Destination != 0 || d.Supplier.Value != l.Owner || t.ContractId != l.Contract ||
+                    d is null || d.Supplier.Value != l.Owner ||
                         t.ItemId != d.ItemId || t.Quantity > d.Quantity || t.PreparedTick < d.CreatedTick)
                     throw new InvalidOperationException("Invalid logistics destination");
                 if (t.State is not ("Loading" or "Outbound" or "ReturningEmpty" or "ReturningCargo"))
