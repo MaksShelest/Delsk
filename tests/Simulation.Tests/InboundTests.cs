@@ -88,13 +88,13 @@ public class InboundTests
         Assert.Equal(10,Fixtures.Count(s,Factory(s).InputId,"wood"));Assert.Equal(300,Wages(s));Assert.Equal(0,Factory(s).CompletedBatches);
     }
     [Fact]
-    public void InputShortagePrecedesOwnOutputThenOutputRunsBeforeOptionalRefill()
+    public void PausedProductionRefillFollowsOwnOutput()
     {
         var s=Prefix(OutputCommandTick);Assert.Equal(7,Fixtures.Count(s,Factory(s).OutputId,"plank"));
         Assert.Equal("Accepted",Input(s));
         Assert.Equal("Accepted",LandContentFixtures.Reason(s,new(ActionKind.SetLogisticsStorage,Logistics:System(s).Id,Destination:Storage(s),Enabled:true)));
-        var first=System(s).Trip!;Assert.NotEqual(0,first.InboundSource.Value);Assert.Equal("wood",first.ItemId);WaitTrips(s,3);
-        s.Step();Assert.Equal(0,System(s).Trip!.InboundSource.Value);Assert.Equal("plank",System(s).Trip!.ItemId);
+        var first=System(s).Trip!;Assert.Equal(0,first.InboundSource.Value);Assert.Equal("plank",first.ItemId);WaitTrips(s,3);
+        s.Step();Assert.NotEqual(0,System(s).Trip!.InboundSource.Value);Assert.Equal("wood",System(s).Trip!.ItemId);
         WaitTrips(s,4);Assert.Equal(7,Fixtures.Count(s,Storage(s),"plank"));Assert.Single(s.Engine.Inspect().Logistics);
     }
     [Fact]

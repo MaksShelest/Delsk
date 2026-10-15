@@ -13,13 +13,15 @@ public sealed partial class SimulationEngine
             throw new RuleViolation("ItemFromProduction");
         if (l.Trip is { } t && t.InboundSource.Value != 0 && t.InboundSource.Value != c.Action.Source.Value)
             throw new RuleViolation("LogisticsBusy");
+        if (l.InboundSource != 0 && l.InboundSource != c.Action.Source.Value)
+            l.Queue.RemoveAll(j => j.Key == JobKey(0, 0, l.InboundSource));
+        UpsertLogisticsJob(l, 0, 0, c.Action.Source.Value, c.Action.Enabled);
         l.InboundSource = c.Action.Source.Value; l.InboundEnabled = c.Action.Enabled;
         Emit("LogisticsInboundSet", actor.Id, l.Id, reason: c.Action.Enabled ? "Waiting" : "UserPaused", command: c.CommandId);
     }
-    private LogisticsPlanData InboundLogisticsPlan(LogisticsState l)
+    private LogisticsPlanData InboundLogisticsPlan(LogisticsState l, long origin)
     {
-        if (!l.InboundEnabled) throw new RuleViolation("UserPaused");
-        var e = _enterprises[l.Enterprise]; var source = _economy.Inventories[l.InboundSource];
+        var e = _enterprises[l.Enterprise]; var source = _economy.Inventories[origin];
         var destination = _economy.Inventories[e.Input]; string item = e.Recipe.InputItem;
         long volume = _items[item].UnitVolume;
         if (l.CargoCapacity < volume) throw new RuleViolation("NoCargoSpace");
@@ -29,25 +31,7 @@ public sealed partial class SimulationEngine
         if (quantity <= 0) throw new RuleViolation("NoStock");
         var path = _map.FindPath(_economy.Inventories[l.Source].Position, source.Position);
         long leg = Math.Max(1, checked((path.Length - 1L) * Logistics.MoveTicksPerCell));
-        return new(-1, item, path, quantity, leg, l.InboundSource, e.Input, l.InboundSource);
-    }
-    private LogisticsPlanData LogisticsPlan(LogisticsState l)
-    {
-        LogisticsPlanData? output = null, input = null;
-        string outputReason = "UserPaused", inputReason = "UserPaused";
-        try { output = OutputLogisticsPlan(l) with { OwnDestination = l.Destination, GoodsSource = l.Source }; }
-        catch (RuleViolation ex) { outputReason = ex.ReasonCode; }
-        try { input = InboundLogisticsPlan(l); }
-        catch (RuleViolation ex) { inputReason = ex.ReasonCode; }
-        // One configured input and output share one slot: contractual deadline, input shortage, output, spare input.
-        // General multi-job queues and tie fairness remain the next part of P17.
-        if (output is { Index: >= 0 }) return output;
-        var e = _enterprises[l.Enterprise];
-        bool shortage = _economy.Inventories[e.Input].Free(e.Recipe.InputItem) < e.Recipe.InputQuantity;
-        if (input is not null && (output is null || shortage)) return input;
-        if (output is not null) return output;
-        if (input is not null) return input;
-        throw new RuleViolation(l.InboundEnabled ? inputReason : outputReason);
+        return new(-1, item, path, quantity, leg, origin, e.Input, origin);
     }
     private void AcceptInboundArrival(LogisticsState l, LogisticsTripView t)
     {

@@ -69,13 +69,13 @@ public sealed partial class SimulationEngine
         RequireIdle(actor);
         if (_offers.TryGetValue(c.Action.OfferId, out var pending) && pending.SupplyRequests.ContainsKey(actor.Id))
             throw new RuleViolation("ExistingDeliveryRequest");
-        if (!_offers.TryGetValue(c.Action.OfferId, out var offer) || offer.Remaining <= 0)
+        if (!_offers.TryGetValue(c.Action.OfferId, out var offer) || offer.Remaining <= 0 || offer.CreatedTick >= Tick || offer.ExpiresAtTick < Tick)
             throw new RuleViolation("NotAvailable");
         if (actor.Position != offer.Definition.Position) throw new RuleViolation("NotAtLocation");
         if (c.Action.Quantity <= 0) throw new RuleViolation("InvalidQuantity");
         if (c.Action.ItemId != offer.Definition.ItemId) throw new RuleViolation("WrongItem");
         // A per-actor request may exceed the remaining order: allocation happens only at closing.
-        long cutoff = offer.Cutoff ?? checked(Tick + _config.TradeWindowTicks);
+        long cutoff = offer.Cutoff ?? Math.Min(offer.ExpiresAtTick ?? long.MaxValue, checked(Tick + _config.TradeWindowTicks));
         string hold = $"capital-sale:{c.CommandId}";
         var tx = _economy.Begin(Tick);
         tx.ReserveStock(actor.Inventory, hold, c.Action.ItemId, c.Action.Quantity); tx.Commit();
@@ -187,5 +187,6 @@ public sealed partial class SimulationEngine
         ValidateMarketInvariants();
         ValidateDeliveryInvariants();
         ValidateLogisticsInvariants();
+        ValidateCapitalDemandInvariants();
     }
 }

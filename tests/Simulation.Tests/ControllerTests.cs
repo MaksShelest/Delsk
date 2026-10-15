@@ -9,6 +9,21 @@ namespace Simulation.Tests;
 
 public class ControllerTests
 {
+    [Fact]
+    public void ExistingNpcsUsePeriodicCapitalOrdersAndRestoreTheirPlansDuringDemandPeriod()
+    {
+        var d = JsonSerializer.Deserialize<ScenarioDefinition>(ReadResource("autonomous-demand.json"), SimulationJson.Options)!;
+        var s = Session(d); s.AdvanceTo(350);
+        var loaded = CheckpointStore.Decode(CheckpointStore.Encode(s)); loaded.RestoreControllers(AlgorithmicController.Restore);
+        s.AdvanceTo(700); loaded.AdvanceTo(700);
+        Assert.Equal(s.Engine.ComputeStateHash(), loaded.Engine.ComputeStateHash());
+        Assert.Equal(s.ComputeControllerStateHash(), loaded.ComputeControllerStateHash());
+        Assert.Equal(s.CommandTape, loaded.CommandTape);
+        Assert.Equal(JsonSerializer.Serialize(s.ControllerTurns, SimulationJson.Options), JsonSerializer.Serialize(loaded.ControllerTurns, SimulationJson.Options));
+        Assert.True(s.Engine.Inspect().CapitalDemand!.Periods.Length > 10);
+        foreach (long actor in new long[] { 2, 3, 4 })
+            Assert.Contains(s.Engine.Inspect().Settlements, sale => sale.Seller.Value == actor && sale.PaidMinor > 0);
+    }
     private static ScenarioDefinition Scenario() => JsonSerializer.Deserialize<ScenarioDefinition>(
         ReadResource("autonomous-economy.json"), SimulationJson.Options)!;
     private static string ReadResource(string name)

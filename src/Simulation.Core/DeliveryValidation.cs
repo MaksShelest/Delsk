@@ -32,7 +32,7 @@ public sealed partial class SimulationEngine
         foreach (var o in _offers.Values)
         {
             if (o.Window < 1 || (o.SupplyRequests.Count > 0 && o.Cutoff is null) ||
-                o.Definition.Quantity != checked(o.Remaining + _settlements.Where(s => s.OfferId == o.Definition.Id).Sum(s => s.Accepted) +
+                o.Definition.Quantity != checked(o.Remaining + o.ReleasedQuantity + _settlements.Where(s => s.OfferId == o.Definition.Id).Sum(s => s.Accepted) +
                     _deliveryContracts.Where(d => d.CapitalOfferId == o.Definition.Id).Sum(d => d.Quantity)))
                 throw new InvalidOperationException("Capital delivery quota mismatch");
             foreach (var pair in o.SupplyRequests)

@@ -29,11 +29,11 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
     BuildingView[] Buildings, SavedOffer[] Offers, FlowView[] Flows, SettlementView[] Settlements,
     long[] CompletedJobs, CommandEnvelope[] Commands, CommandResult[] Results, string[] Pending,
     LedgerRecord[] Ledger, SimulationEvent[] Events, ulong MarketRandom,
-    SavedMarketOffer[] MarketOffers, MarketAllocationView[] MarketAllocations, SavedBuyOffer[] BuyOffers, DeliveryContractView[] DeliveryContracts, long CapitalCompensation, SavedLogistics[] Logistics);
+    SavedMarketOffer[] MarketOffers, MarketAllocationView[] MarketAllocations, SavedBuyOffer[] BuyOffers, DeliveryContractView[] DeliveryContracts, long CapitalCompensation, SavedLogistics[] Logistics, CapitalDemandView? CapitalDemand);
 
 public sealed partial class SimulationEngine
 {
-    public const int CheckpointSchemaVersion = 8;
+    public const int CheckpointSchemaVersion = 10;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
@@ -66,7 +66,7 @@ public sealed partial class SimulationEngine
                     r.Reservation, r.CommandId)).ToArray(), o.SupplyRequests.Values.OrderBy(r => r.Supplier.Value).ToArray(), o.Window)).ToArray(), world.Flows, world.Settlements,
             _completedPersonalJobs.Order().ToArray(), _seenCommands.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(),
             _results.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(), _pending.Select(c => c.CommandId).ToArray(),
-            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics());
+            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState());
         return JsonSerializer.Serialize(saved, SimulationJson.Options);
     }
     private static KeyValuePair<string, long>[] Ordered(Dictionary<string, long> values)
@@ -174,6 +174,7 @@ public sealed partial class SimulationEngine
             _buildings.Add(v.Id.Value, new(v.Id.Value, v.OwnerId.Value, v.Position, type, v.Level,
                 v.InputId.Value, v.OutputId?.Value, v.Footprint.ToArray()));
         }
+        RestoreCapitalDemand(s.CapitalDemand);
         if (s.Offers.Length != _offers.Count) throw new CheckpointException("InvalidOfferCount");
         var seenOffers = new HashSet<long>();
         foreach (var v in s.Offers)

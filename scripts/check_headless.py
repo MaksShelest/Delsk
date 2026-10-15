@@ -9,7 +9,7 @@ import sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dotnet', default='dotnet', help='SDK executable or absolute path')
-parser.add_argument('--output', type=Path, default=Path('artifacts/headless-own-production'))
+parser.add_argument('--output', type=Path, default=Path('artifacts/headless-p17-p18'))
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
 out = args.output.resolve()
@@ -27,27 +27,33 @@ check('tests', 120, [args.dotnet, 'tests/Simulation.Tests/bin/Release/net10.0/Si
     '-noColor', '-noLogo', '-parallelMode', 'none', '-result-trx', out/'tests.trx'])
 runner = [args.dotnet, 'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll']
 scenarios = {'cycle':'economic-cycle', 'recovery':'zero-cash-recovery', 'development':'land-and-content',
-             'labor':'labor-dynamics', 'equipment':'equipment-cycle', 'autonomous':'autonomous-economy', 'market':'market-window', 'pickup':'pickup-lifecycle', 'delivery':'delivery-lifecycle', 'capital-delivery':'capital-delivery', 'logistics':'logistics-cycle', 'logistics-upgrade':'logistics-upgrade', 'own-storage':'own-storage-cycle', 'inbound':'inbound-cycle', 'own-production':'own-production-cycle'}
+             'labor':'labor-dynamics', 'equipment':'equipment-cycle', 'autonomous':'autonomous-economy', 'market':'market-window', 'pickup':'pickup-lifecycle', 'delivery':'delivery-lifecycle', 'capital-delivery':'capital-delivery', 'logistics':'logistics-cycle', 'logistics-upgrade':'logistics-upgrade', 'own-storage':'own-storage-cycle', 'inbound':'inbound-cycle', 'own-production':'own-production-cycle', 'logistics-queue':'logistics-queue', 'capital-demand':'capital-demand-cycle', 'autonomous-demand':'autonomous-demand'}
 for script, scenario in scenarios.items():
-    check(script, 300 if script == 'autonomous' else 30, [*runner, '--scenario', f'scenarios/{scenario}.json', '--script', script, '--output', out/script])
-for script, tick in [('cycle', 55), ('equipment', 101), ('autonomous', 350), ('market', 44), ('pickup', 47), ('delivery', 37), ('capital-delivery', 3), ('logistics', 69), ('logistics-upgrade', 170), ('own-storage', 170), ('inbound', 78), ('own-production', 170)]:
+    check(script, 300 if script.startswith('autonomous') else 30, [*runner, '--scenario', f'scenarios/{scenario}.json', '--script', 'autonomous' if script == 'autonomous-demand' else script, '--output', out/script])
+for script, tick in [('cycle', 55), ('equipment', 101), ('autonomous', 350), ('market', 44), ('pickup', 47), ('delivery', 37), ('capital-delivery', 3), ('logistics', 69), ('logistics-upgrade', 170), ('own-storage', 170), ('inbound', 78), ('own-production', 170), ('logistics-queue', 185), ('capital-demand', 85), ('autonomous-demand', 350)]:
     checkpoint = out/f'{script}.save.json'
-    check(f'{script}-save', 300 if script == 'autonomous' else 30, [*runner, '--scenario', f'scenarios/{scenarios[script]}.json', '--script', script,
+    check(f'{script}-save', 300 if script.startswith('autonomous') else 30, [*runner, '--scenario', f'scenarios/{scenarios[script]}.json', '--script', 'autonomous' if script == 'autonomous-demand' else script,
         '--output', out/f'{script}-saved', '--checkpoint', checkpoint, '--checkpoint-at', tick])
-    check(f'{script}-load', 300 if script == 'autonomous' else 30, [*runner, '--load', checkpoint, '--output', out/f'{script}-loaded', *(['--ticks', '1000'] if script == 'autonomous' else [])])
-    for name in ['final-state.json', 'ledger.jsonl', 'events.jsonl', 'commands.jsonl', 'metrics.csv', 'labor.csv', 'controllers.json', 'decisions.jsonl', 'agents.csv', 'market.json', 'scenario.json', 'delivery.json', 'logistics.json']:
+    check(f'{script}-load', 300 if script.startswith('autonomous') else 30, [*runner, '--load', checkpoint, '--output', out/f'{script}-loaded', *(['--ticks', '1000'] if script.startswith('autonomous') else [])])
+    for name in ['final-state.json', 'ledger.jsonl', 'events.jsonl', 'commands.jsonl', 'metrics.csv', 'labor.csv', 'controllers.json', 'decisions.jsonl', 'agents.csv', 'market.json', 'scenario.json', 'delivery.json', 'logistics.json', 'capital-demand.json']:
         expected = (out/script/name).read_bytes()
         if any((out/f'{script}-{mode}'/name).read_bytes() != expected for mode in ['saved','loaded']):
             raise SystemExit(f'{script}: checkpoint continuation differs in {name}')
+for script in ['logistics-queue', 'capital-demand']:
+    final_tick = json.loads((out/script/'summary.json').read_text())['tick']
+    check(f'{script}-replay', 30, [*runner, '--scenario', f'scenarios/{scenarios[script]}.json', '--script', script,
+        '--replay', out/script/'commands.jsonl', '--ticks', final_tick, '--output', out/f'{script}-replayed'])
+    check(f'{script}-replay-compare', 15, [sys.executable, 'scripts/verify_checkpoint_exports.py', out/script, out/f'{script}-replayed'])
 check('late-return-load', 30, [*runner, '--load', out/'late-return.save.json', '--output', out/'late-return-loaded'])
 check('late-return-compare', 15, [sys.executable, 'scripts/verify_checkpoint_exports.py', out/'late-return', out/'late-return-loaded'])
-folders = [out/s for s in scenarios] + [out/f'{s}-{mode}' for s in ['cycle','equipment','autonomous','market','pickup','delivery','capital-delivery','logistics','logistics-upgrade','own-storage','inbound','own-production'] for mode in ['saved','loaded']]
+folders = [out/s for s in scenarios] + [out/f'{s}-{mode}' for s in ['cycle','equipment','autonomous','market','pickup','delivery','capital-delivery','logistics','logistics-upgrade','own-storage','inbound','own-production','logistics-queue','capital-demand','autonomous-demand'] for mode in ['saved','loaded']]
 folders += [out/'late-return-at-expiry', out/'late-return', out/'late-return-loaded']
+folders += [out/'logistics-queue-replayed', out/'capital-demand-replayed']
 check('balances', 15, [sys.executable, 'scripts/verify_results.py', *folders])
-manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases':{'cycle':55,'equipment':101,'autonomous':350,'market':44,'pickup':47,'delivery':37,'capital-delivery':3,'logistics':69,'logistics-upgrade':170,'own-storage':170,'inbound':78,'own-production':170},
+manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases':{'cycle':55,'equipment':101,'autonomous':350,'market':44,'pickup':47,'delivery':37,'capital-delivery':3,'logistics':69,'logistics-upgrade':170,'own-storage':170,'inbound':78,'own-production':170,'logistics-queue':185,'capital-demand':85,'autonomous-demand':350},
             'comparison':'every exported tick hash, state, ledger, event, command and labor row',
             'controlled_fixture':{'name':'late-return','origin':'test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged','checkpoint_tick':72,'final_tick':80},
-            'scope':'P00-P17 including own production destination, controlled late-return and crew/wage boundaries; general queues/fairness/remaining contract quota scenarios/politics remain future tasks',
+            'scope':'P00-P18: completed logistics queues/quota, periodic city output/demand, market waves and bootstrap recovery; P19 politics/model/UI remain future tasks',
             'author':'Шелестов Максим Евгеньевич'}
 (out/'headless-check.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
 print(f'Headless regression succeeded; results={out}')
