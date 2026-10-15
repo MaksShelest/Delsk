@@ -19,7 +19,7 @@ public class LogisticsReturnTests
     private static GameSession At(long tick, ScenarioDefinition? definition = null)
     {
         var s = new GameSession(new SimulationEngine(definition ?? Baseline.Value.Definition));
-        s.ConfigurePlayback(Baseline.Value.Tape, 85, "logistics-return-baseline"); s.AdvanceTo(tick); return s;
+        s.ConfigurePlayback(Baseline.Value.Tape, 100, "logistics-return-baseline"); s.AdvanceTo(tick); return s;
     }
     private static LogisticsView Truck(GameSession s) => s.Engine.Inspect().Logistics.Single();
     private static LogisticsTripView Trip(GameSession s) => Truck(s).Trip!;
@@ -37,7 +37,7 @@ public class LogisticsReturnTests
         var d = Baseline.Value.Definition with { Population = 2, Logistics = new(CrewCapacity: 3) };
         if (smallOutput) d = d with
         {
-            ResourceNodes = [.. d.ResourceNodes, new("wood", new(2, 0))],
+            Logistics = d.Logistics! with { MoveTicksPerCell = 4 },
             BuildingTypes = d.BuildingTypes!.Select(t => t.Kind != BuildingKind.Production ? t :
                 t with { Levels = t.Levels.Select(l => l with { OutputCapacity = 10 }).ToArray() }).ToArray()
         };
@@ -124,12 +124,15 @@ public class LogisticsReturnTests
     public void ReturnCapacityCannotBeSpentWhileCargoIsAwayEvenAfterContractExpiry()
     {
         var s = Fault(smallOutput: true);
+        long end = Trip(s).EndTick;
+        LandContentFixtures.Move(s, new(0, 0));
         Assert.Equal("Accepted", Send(s, new(ActionKind.Harvest, ItemId: "wood", Quantity: 1)));
-        s.AdvanceTo(71); var avatar = s.Engine.Observe(new(1)).Participant.InventoryId;
+        Fixtures.UntilIdle(s); LandContentFixtures.Move(s, new(2, 0));
+        var avatar = s.Engine.Observe(new(1)).Participant.InventoryId;
         Assert.Equal("NoCapacity", Send(s, new(ActionKind.Transfer, Source: avatar,
             Destination: Truck(s).SourceInventory, ItemId: "wood", Quantity: 1)));
         Assert.Equal(1, Fixtures.Count(s, avatar, "wood")); Assert.Equal(10, Inventory(s, Truck(s).SourceInventory).ReservedCapacity);
-        s.AdvanceTo(74); Assert.Equal(10, Fixtures.Count(s, Truck(s).SourceInventory, "plank")); AssertBalances(s);
+        s.AdvanceTo(end); Assert.Equal(10, Fixtures.Count(s, Truck(s).SourceInventory, "plank")); AssertBalances(s);
     }
     [Theory]
     [InlineData("returnPlace")] [InlineData("cargoHold")] [InlineData("receiptEvent")] [InlineData("state")]
@@ -143,7 +146,9 @@ public class LogisticsReturnTests
         else if (field == "receiptEvent")
             json["events"]!.AsArray().Single(e => e!["type"]!.GetValue<string>() == "LogisticsDeliveryRejected")!["type"] = "LogisticsDeliveryAccepted";
         else json["logistics"]![0]!["view"]!["trip"]!["state"] = "ReturningEmpty";
-        Assert.Equal("InvalidWorldCheckpoint", Assert.Throws<CheckpointException>(() => SimulationEngine.FromCheckpointJson(json.ToJsonString(SimulationJson.Options))).ReasonCode);
+        string expected = field switch { "returnPlace" or "cargoHold" => "MissingReservation",
+            "state" => "OrphanCapacityReservation", _ => "InvalidWorldCheckpoint" };
+        Assert.Equal(expected, Assert.Throws<CheckpointException>(() => SimulationEngine.FromCheckpointJson(json.ToJsonString(SimulationJson.Options))).ReasonCode);
     }
     [Fact]
     public void WageScheduledInPreparationTickIsDeferredBeforeTripCanStart()
@@ -191,19 +196,20 @@ public class LogisticsReturnTests
     [Fact]
     public void CompetitionCanRemoveCrewBelowMinimumWithoutDeletingOrDelayingCommittedCargo()
     {
-        var d = Baseline.Value.Definition with { Population = 2, Logistics = new(CrewCapacity: 3, MoveTicksPerCell: 2),
-            ResourceNodes = [.. Baseline.Value.Definition.ResourceNodes, new("wood", new(2, 0))] };
+        var d = Baseline.Value.Definition with { Population = 2, Logistics = new(CrewCapacity: 3, MoveTicksPerCell: 4) };
         var s = At(68, d); long end = Trip(s).EndTick, arrival = Trip(s).ArrivalTick;
+        LandContentFixtures.Move(s, new(0, 0));
         Assert.Equal("Accepted", Send(s, new(ActionKind.Harvest, ItemId: "wood", Quantity: 2)));
-        s.AdvanceTo(73); var o = s.Engine.Observe(new(1)); var factory = o.OwnEnterprises.Single();
+        Fixtures.UntilIdle(s); LandContentFixtures.Move(s, new(2, 0));
+        var o = s.Engine.Observe(new(1)); var factory = o.OwnEnterprises.Single();
         s.Send(new(1), new(ActionKind.SetWage, Group: new(factory.Id.Value), WageMinor: 1000));
         s.Send(new(1), new(ActionKind.SetProductionEnabled, Enterprise: factory.Id, Enabled: true));
         s.Send(new(1), new(ActionKind.Transfer, Source: o.Participant.InventoryId, Destination: factory.InputId, ItemId: "wood", Quantity: 2));
         s.Step(); s.Step(); Assert.True(Crew(s).Headcount < d.Logistics.MinimumCrew);
         Assert.Equal(arrival, Trip(s).ArrivalTick); Assert.Equal(end, Trip(s).EndTick);
-        var loaded = CheckpointStore.Decode(CheckpointStore.Encode(s)); s.AdvanceTo(81); loaded.AdvanceTo(81);
+        var loaded = CheckpointStore.Decode(CheckpointStore.Encode(s)); s.AdvanceTo(end + 1); loaded.AdvanceTo(end + 1);
         Assert.Equal(s.Engine.ComputeStateHash(), loaded.Engine.ComputeStateHash()); Assert.Equal("Fulfilled", Contract(s).Status);
-        Assert.Equal(1, Truck(s).CompletedTrips); Assert.InRange(Wages(s), 1, 599);
+        Assert.Equal(1, Truck(s).CompletedTrips); Assert.InRange(Wages(s), 1, 1199);
         Assert.Equal(0, s.Engine.Observe(new(1)).Account.ReservedMinor);
         var samples = s.LaborSamples.ToDictionary(x => x.Tick);
         foreach (var e in s.Engine.EventsSince(0).Where(e => e.Type == "LogisticsWagesPaid"))
