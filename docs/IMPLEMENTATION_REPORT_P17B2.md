@@ -17,11 +17,15 @@ Destination сохранён на системе и отдельно в immutabl
 
 ## Проверки
 
-Статус на момент подготовки: CI ожидается. В Work по-прежнему нет локального SDK/Godot, предыдущая ограниченная проверка загрузки SDK завершилась proxy timeout; установку не повторяли. Не заявляется локальный build/test/device pass. Локально Python syntax/git diff --check.
+**Исходный код bb0fb452 проверен успешно:** [Core CI](https://github.com/MaksShelest/Delsk/actions/runs/38739459686), [Godot/Windows CI](https://github.com/MaksShelest/Delsk/actions/runs/38739459762). Locked restore/Release build прошли, TRX339/339passed,0failed/timeout/skipped. Все13scenarios/10checkpoint pairs прошли. Actual Windows log:62 checkpoints/load12/34/55/60. Platform golden hashes не изменились, перегенерация не требовалась.
 
-Новый fixture own-storage-cycle:60wood→30plank; два real trips10+5 в собственный склад15, source остаётся15, idle wages0. Заранее рассчитанные ожидания: supplier74900/другой участник100000/Treasury23000/WagesSink2100=200000, transport payroll600/production payroll1500; никаких trade receipts или внешних потоков.
+Скачанные artifacts независимо проверены локально:33 exports money/items/capacity/population/settlements,20continuous-vs-saved/loaded сравнений13 файлов. Новый цикл реально180ticks:prepare160/168,load161/169,receipt164/172,return167/175,final180. Ровно10+5plank в recipient15, output15, ни одного trade contract/эмиссии, все holds0. Компактные exit codes/timings/results — [checks.json](verification/p17b2/checks.json); полные outputs/logs — Core CI artifacts. Следующий коммит меняет только документы/evidence, исходники остаются проверенными.
 
-Добавлен31 test case: full cycle/stock/money/population, reserved destination vs manual fill, partial cargo/volume, stock restart, stop/in-flight/paused save, own warehouse/shop permissions, retarget/duplicate, payroll boundary cash299/300, NoPath, corruption/reverse holds, privacy и old schema rejection. CI/headless расширены до13 scenarios/10checkpoint pairs. Фактические результаты будут записаны после выполнения.
+ В Work по-прежнему нет локального SDK/Godot, предыдущая ограниченная проверка загрузки SDK завершилась proxy timeout; установку не повторяли. Не заявляется локальный build/test/device pass. Локально Python syntax/git diff --check.
+
+Новый fixture own-storage-cycle:60wood→30plank; два real trips10+5 в собственный склад15, source остаётся15, idle wages0. Заранее рассчитанные и подтверждённые фактическим запуском суммы: supplier74900/другой участник100000/Treasury23000/WagesSink2100=200000, transport payroll600/production payroll1500; никаких trade receipts или внешних потоков.
+
+Добавлен31 test case: full cycle/stock/money/population, reserved destination vs manual fill, partial cargo/volume, stock restart, stop/in-flight/paused save, own warehouse/shop permissions, retarget/duplicate, payroll boundary cash299/300, NoPath, corruption/reverse holds, privacy и old schema rejection. CI/headless расширены до13scenarios/10checkpoint pairs и выполнены успешно. Первые сборка/тесты/сценарии нового кода прошли без исправлений; непроверенные device/model gates остаются открытыми.
 
 ## Запуск
 

@@ -3,7 +3,7 @@
 Исследовательская экономическая игра с автономными NPC.
 Автор: Шелестов Максим Евгеньевич.
 
-В C# реализованы P00–P16, P17a и P17b1: тики/команды, деньги и конечные запасы, личное движение/добыча, две производственные цепочки, земля/стройка/уровни, числовой найм по зарплата³ с постепенными переходами, зарплата/энергия/неоплачиваемый простой, техника и direct checkpoint/load. Три алгоритмических NPC сами развивают хозяйства без модели. Слот человека в автономном консольном стенде бездействует; свободный игровой ввод/интерфейс ещё не готов.
+В C# реализованы P00–P16, P17a и P17b1–P17b2: тики/команды, деньги и конечные запасы, личное движение/добыча, две производственные цепочки, земля/стройка/уровни, числовой найм по зарплата³ с постепенными переходами, зарплата/энергия/неоплачиваемый простой, техника и direct checkpoint/load. Три алгоритмических NPC сами развивают хозяйства без модели. Слот человека в автономном консольном стенде бездействует; свободный игровой ввод/интерфейс ещё не готов.
 
 ## Быстрый запуск без Python и Godot
 
@@ -102,4 +102,13 @@ P17b1 — улучшение транспорта: [PR](https://github.com/MaksS
 dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/logistics-upgrade.json --script logistics-upgrade --output artifacts/logistics-upgrade
 ```
 
-Проверено176 ticks:60wood→30plank,10 на upgrade за30000minor,20 доставлено одним реальным рейсом. Вместимость10→20, экипаж min/capacity2→3, численность через обычный найм.308/308 tests,12scenarios/9load pairs, Windows62hashes. [Отчёт](docs/IMPLEMENTATION_REPORT_P17B1.md). Current World6/Rules logistics-2, Session2/Envelope1; World1–5 не мигрируются. Новые APK/EXE/device tests не проводились. Следующий ограниченный шаг P17b2 — own output destination до заполнения; остальная логистика/политика/model/UI по плану, full P17 ещё не готов.
+Проверено176 ticks:60wood→30plank,10 на upgrade за30000minor,20 доставлено одним реальным рейсом. Вместимость10→20, экипаж min/capacity2→3, численность через обычный найм.308/308 tests,12scenarios/9load pairs, Windows62hashes. [Отчёт](docs/IMPLEMENTATION_REPORT_P17B1.md). Исторический P17b1: World6/Rules logistics-2, Session2/Envelope1; World1–5 не мигрируются. Новые APK/EXE/device tests не проводились. P17b2 own output destination до заполнения реализован отдельно; остальная логистика/политика/model/UI по плану, full P17 ещё не готов.
+
+
+P17b2 — собственный склад/лавочка UntilFull: [PR](https://github.com/MaksShelest/Delsk/pull/13), ветка `feat/logistics-own-output-p17b2`.
+
+```powershell
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/own-storage-cycle.json --script own-storage --output artifacts/own-storage
+```
+
+Проверено339/339tests/13scenarios/10load pairs и Windows62hashes. Fixture180ticks:60wood→30plank, trips10+5 в собственный склад15, output15. Own receipt не создаёт выручку/контракт; transport payroll600minor. Настройка берёт продукт из рецепта, объём из свободного места. Full destination ждёт без зарплаты и сам возобновляется после освобождения места, начатый trip заканчивается после stop. [Фактический отчёт](docs/IMPLEMENTATION_REPORT_P17B2.md). Current World7/Rules logistics-3, Session2/Envelope1; World1–6 не мигрируются. Следующий P17b3 — входящие поставки из своего склада, весь P17/Android device gate остаются открытыми.
