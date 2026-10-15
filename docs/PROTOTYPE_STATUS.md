@@ -1,10 +1,10 @@
 # Что уже можно тестировать и когда появится минимальная версия
 
-Автор: Шелестов Максим Евгеньевич. Статус после P17a, 14.10.2026.
+Автор: Шелестов Максим Евгеньевич. Статус после P17b1, 15.10.2026.
 
 | Уровень проверки | Готовность | Что получит тестировщик |
 | --- | --- | --- |
-| Экономическое ядро в коде | **Доступно сейчас**, P00–P16/P17a | Rider/.NET,281 xUnit-тестов, общий C# runner; добыча, производство, земля, запасы, числовой найм/зарплата, техника и сохранения |
+| Экономическое ядро в коде | **Доступно сейчас**, P00–P17b1 | Rider/.NET,308 xUnit-тестов, общий C# runner; добыча, производство, земля, запасы, числовой найм/зарплата, техника и сохранения |
 | Экономическая симуляция с3 самостоятельными NPC | **Доступна сейчас**, P13 | Две цепочки, самостоятельные покупка/стройка/найм/добыча/сбыт, цели/планы и точное продолжение из checkpoint;1 бездействующий слот человека |
 | Полный игровой цикл утверждённого прототипа без модели | После **P17b–P21 / Gate C** | P14 рынок/аукционы, P15 выдача и P16 поставочные договоры уже есть; физическая автодоставка, выборы/скрытые договоры и алгоритмы для них |
 | Минимальная ручная игра в Godot | **P26**, зависит от P12/P21 | Ввод человека, карта/карточки, те же правила и сохранения. Текущая сцена — отдельный технический playback62 тиков |
@@ -14,7 +14,7 @@
 
 ## Проверка сейчас
 
-Получить `feat/logistics-p17a`, открыть Delsk.sln в Rider; [локальная настройка](LOCAL_SETUP.md). После restore/build:
+Получить `feat/logistics-upgrade-p17b1`, открыть Delsk.sln в Rider; [локальная настройка](LOCAL_SETUP.md). После restore/build:
 
 ```powershell
 dotnet tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll -noColor -noLogo -parallelMode none
@@ -25,7 +25,7 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --script auton
 
 Смотреть summary.json → agents.csv/labor.csv → decisions.jsonl/ledger.jsonl; файлы лежат в `artifacts/run-42`. [Подробно: почему Python, параметры, проверки и продолжение](HEADLESS_TESTING.md). Старые fixtures остаются быстрыми регрессиями; они не заменяют автономную партию.
 
-[Отчёт P13](IMPLEMENTATION_REPORT_P13.md). P14 предложения/аукционы проверены отдельным scripted сценарием, NPC bidding ещё P21. P15 физическая выдача частями/сроки/возврат/штраф реализованы. P16 поставочные обязательства уже реализованы. P17a уже реализован; следующая ограниченная задача — **P17b**, полный P17 ещё не готов.
+[Отчёт P13](IMPLEMENTATION_REPORT_P13.md). P14 предложения/аукционы проверены отдельным scripted сценарием, NPC bidding ещё P21. P15 физическая выдача частями/сроки/возврат/штраф реализованы. P16 поставочные обязательства уже реализованы. P17a уже реализован; следующая ограниченная задача — **P17b2**, полный P17 ещё не готов.
 
 ## Проверка рынка P14
 
@@ -48,4 +48,9 @@ Personal carrier физически возит товар с ручной при
 
 Первый full physical transport cycle доступен: logistics-cycle.json/script logistics,75 ticks. Numeric crew/stock+quota/cargo+return-place/payroll/return/save/load проверены;281 tests/11 scenarios/8 load pairs. Full P17b и autonomous transport goals P21 ещё не готовы. [Отчёт P17a](IMPLEMENTATION_REPORT_P17A.md).
 
-Инженерный ориентир MVP~60% (не measured code/time progress); методика оценки/предложенные темы — [RESEARCH_READINESS.md](RESEARCH_READINESS.md). Complete algorithmic headless experiments после P21; real LLM pilots P22/P23, основные series/statistics P24/P25. Godot human UI P26 не нужен для вычислительных экспериментов. Реальная модель/научные результаты и Android device test ещё не проведены. Current saves World5/Rules logistics-1, old World1–4 files остаются прежнему коду.
+Инженерный ориентир MVP~60% (не measured code/time progress); методика оценки/предложенные темы — [RESEARCH_READINESS.md](RESEARCH_READINESS.md). Complete algorithmic headless experiments после P21; real LLM pilots P22/P23, основные series/statistics P24/P25. Godot human UI P26 не нужен для вычислительных экспериментов. Реальная модель/научные результаты и Android device test ещё не проведены. Исторические saves P17a:World5/Rules logistics-1, old World1–4 files остаются прежнему коду.
+
+
+## P17b1
+
+Upgrade транспорта выполнен и проверен: Level1→2, cargo10→20, min/capacity crew2→3, цена30000minor+10plank из встроенного склада, ID/численность/зарплата сохраняются. Новый logistics-upgrade fixture176ticks/20delivered,308tests/12scenarios/9load pairs. [Отчёт](IMPLEMENTATION_REPORT_P17B1.md). Следующий ограниченный шаг P17b2 — отправка в свой склад/лавочку до заполнения, затем остальные обязательные части P17b. Full P17/Gate C ещё открыт. Current World6/Rules logistics-2; старые World1–5 не мигрируются. Android device gate остаётся открытым.

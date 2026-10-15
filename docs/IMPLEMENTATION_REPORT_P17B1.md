@@ -18,11 +18,15 @@
 
 ## Проверки
 
-Статус CI на момент подготовки: ожидается. В этом новом Work-окружении dotnet/Godot отсутствуют. Закреплённый SDK10.0.401 не скачался с двух официальных адресов: proxy CONNECT timeout10/15s. Повторные установки/смена toolchain не выполнялись. Публикация использует GitHub connector: обычный git push dry-run не авторизован. Не заявляется локальный build/test/Godot pass.
+**CI исходного кода 0fdd7e05 завершён успешно:** [Core](https://github.com/MaksShelest/Delsk/actions/runs/38736700071), [Godot/Windows](https://github.com/MaksShelest/Delsk/actions/runs/38736700069). Locked restore/Release build прошли; TRX: **308 executed/passed,0 failed,0 skipped**,27 новых случаев. Все12 сценариев и9 save/load пар прошли; после скачивания artifacts локально независимо проверены30 exports и18 continuous-vs-saved/loaded сравнений13 файлов. Windows actual log подтверждает62 checkpoints и load12/34/55/60. Старые platform hashes сохранились: basic fixture не содержит LogisticsSettings и систем, поэтому новые поля не изменили этот hash. Перегенерация не потребовалась.
+
+Полный новый цикл реально занял176 ticks: upgrade166, prepare168, load169, receipt172, empty return175, final176. Cargo20 и minCrew3 использованы настоящим roundtrip; одновременные выплаты не дублируются. Компактные результаты и exit codes — [checks.json](verification/p17b1/checks.json). Полные журналы/выгрузки — artifacts Core CI. Следующий коммит меняет только документы/evidence, не исходники.
+
+В этом новом Work-окружении dotnet/Godot отсутствуют. Закреплённый SDK10.0.401 не скачался с двух официальных адресов: proxy CONNECT timeout10/15s. Повторные установки/смена toolchain не выполнялись. Публикация использует GitHub connector: обычный git push dry-run не авторизован. Не заявляется локальный build/test/Godot pass.
 
 Локально выполнены Python syntax check и git diff --check. Добавлены meaningful xUnit для financial/item/population conservation, upgrade source/rollback, access/location/max/dedup, unsafe state, minimum crew, overflow, unknown/inconsistent level и exact load на границах upgrade/outbound/return. Новый CLI scenario включён в CI и headless regression.
 
-Ожидания нового полного цикла (до сверки с фактическим запуском):60wood→30plank,10plank на upgrade,20 доставлено одним рейсом. Supplier105050/buyer40000/Treasury53000/WagesSink1950=200000minor; logistics payroll450, production payroll1500. Это независимые числовые ожидания, не выданные за результат запуска.
+Подтверждённые независимым расчётом и фактическим запуском итоги нового полного цикла:60wood→30plank,10plank на upgrade,20 доставлено одним рейсом. Supplier105050/buyer40000/Treasury53000/WagesSink1950=200000minor; logistics payroll450, production payroll1500. Все итоговые суммы совпали с заранее заданными независимыми числовыми ожиданиями.
 
 ## Локальный запуск после проверки CI
 
@@ -34,4 +38,4 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --scenario sce
 
 Выгрузки summary.json/scenario.json/logistics.json/labor.csv/ledger.jsonl показывают уровень, штат, расходы, товар и состояние рейса. Для автоматической полной регрессии: `python scripts/check_headless.py --output artifacts/headless-p17b1`.
 
-Android device gate остаётся открыт. Новые APK/EXE, реальный телефон, реальные модели/научные серии не проверялись. Следующий ограниченный шаг — следующая часть P17b; весь месячный план сохраняется.
+Android device gate остаётся открыт. Новые APK/EXE, реальный телефон, реальные модели/научные серии не проверялись. Следующий ограниченный шаг — P17b2: исходящая доставка в собственный неподвижный склад/лавочку до конечного заполнения, с реальными reserve/путём/возвратом/save-load; весь месячный план сохраняется.
