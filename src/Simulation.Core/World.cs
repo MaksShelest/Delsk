@@ -87,6 +87,9 @@ internal sealed class CapitalOffer(CapitalOfferDefinition definition, string bud
     public long Remaining { get; set; } = definition.Quantity;
     public long? Cutoff { get; set; }
     public int Window { get; set; } = 1;
+    public long CreatedTick { get; set; }
+    public long? ExpiresAtTick { get; set; }
+    public long ReleasedQuantity { get; set; }
     public Dictionary<long, SupplyRequest> SupplyRequests { get; } = [];
     public Dictionary<long, SaleRequest> Requests { get; } = [];
 }
@@ -162,6 +165,7 @@ public static partial class ScenarioValidation
             s.CapitalOffers.Any(o => !ValidId(o.Id) || !items.ContainsKey(o.ItemId) || o.Quantity <= 0 ||
                 o.UnitPriceMinor <= 0 || !map.Walkable(o.Position)))
             throw new ArgumentException("Invalid capital offers");
+        ValidateCapitalDemand(s, map);
         try
         {
             long staff = s.Enterprises.Aggregate(0L, (n, e) => checked(n + e.Staff));

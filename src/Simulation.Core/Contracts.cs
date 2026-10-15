@@ -62,7 +62,7 @@ public record ScenarioDefinition(string Id, ulong Seed, int MapWidth, int MapHei
     int MaxCommandsPerActorTick = 8, long Population = 2, long MaxTicks = 500,
     PlotDefinition[]? Plots = null, BuildingTypeDefinition[]? BuildingTypes = null,
     BuildingDefinition[]? Buildings = null, int LandReservationTicks = 120, int MaxActivePlotReservations = 4,
-    LaborSettings? Labor = null, EquipmentTypeDefinition[]? EquipmentTypes = null, MarketSettings? Market = null, DeliverySettings? Delivery = null, LogisticsSettings? Logistics = null);
+    LaborSettings? Labor = null, EquipmentTypeDefinition[]? EquipmentTypes = null, MarketSettings? Market = null, DeliverySettings? Delivery = null, LogisticsSettings? Logistics = null, CapitalDemandSettings? CapitalDemand = null);
 
 public record StockView(string ItemId, long Quantity, long Reserved);
 public record InventoryView(InventoryId Id, ParticipantId OwnerId, Cell Position, long Capacity,
@@ -84,7 +84,8 @@ public record BuildingView(BuildingId Id, ParticipantId OwnerId, string TypeId, 
 public record FlowView(string ItemId, long Initial, long Harvested, long RecipeInput, long Produced, long Exported,
     long ConstructionInput);
 public record CapitalOfferView(long Id, string ItemId, long RemainingQuantity, long UnitPriceMinor,
-    Cell Position, long? CutoffTick, long RequestedQuantity, int Window = 1);
+    Cell Position, long? CutoffTick, long RequestedQuantity, int Window = 1,
+    long OriginalQuantity = 0, long CreatedTick = 0, long? ExpiresAtTick = null, long ReleasedQuantity = 0);
 public record SettlementView(long Id, long OfferId, ParticipantId Seller, string ItemId,
     long Requested, long Accepted, long PaidMinor, long Tick, string Status);
 public record EmploymentView(EmploymentGroupId Id, ParticipantId OwnerId, EmploymentRole Role,
@@ -101,11 +102,11 @@ public record WorldView(long Tick, long NextId, ulong AllocationRandomState, str
     EnterpriseView[] Enterprises, FlowView[] Flows, CapitalOfferView[] CapitalOffers,
     SettlementView[] Settlements, long Population, long Unemployed, long InitialMoneyMinor,
     long ExternalMoneyInMinor, long ExternalMoneyOutMinor, PlotView[] Plots, BuildingView[] Buildings,
-    EmploymentView[] EmploymentGroups, long PopulationGrowth, long LastGrowthPeriod, EquipmentView[] Equipment, MarketOfferView[] MarketOffers, MarketBidView[] MarketBids, MarketAllocationView[] MarketAllocations, BuyOfferView[] BuyOffers, SupplyRequest[] SupplyRequests, DeliveryContractView[] DeliveryContracts, LogisticsView[] Logistics);
+    EmploymentView[] EmploymentGroups, long PopulationGrowth, long LastGrowthPeriod, EquipmentView[] Equipment, MarketOfferView[] MarketOffers, MarketBidView[] MarketBids, MarketAllocationView[] MarketAllocations, BuyOfferView[] BuyOffers, SupplyRequest[] SupplyRequests, DeliveryContractView[] DeliveryContracts, LogisticsView[] Logistics, CapitalDemandView? CapitalDemand);
 public record ParticipantObservation(long Tick, ParticipantView Participant, AccountView Account,
     InventoryView[] OwnInventories, EnterpriseView[] OwnEnterprises, CapitalOfferView[] CapitalOffers,
     PlotView[] Plots, BuildingView[] OwnBuildings, BuildingTypeDefinition[] BuildingTypes,
-    EmploymentView[] OwnEmploymentGroups, PublicEmploymentView[] LaborMarket, long Population, long Unemployed, EquipmentView[] OwnEquipment, EquipmentTypeDefinition[] EquipmentTypes, MarketOfferView[] MarketOffers, MarketBidView[] OwnMarketBids, MarketAllocationView[] OwnMarketAllocations, MarketSettings MarketRules, BuyOfferView[] BuyOffers, SupplyRequest[] OwnSupplyRequests, DeliveryContractView[] OwnDeliveryContracts, DeliverySettings DeliveryRules, LogisticsView[] OwnLogistics, LogisticsSettings LogisticsRules);
+    EmploymentView[] OwnEmploymentGroups, PublicEmploymentView[] LaborMarket, long Population, long Unemployed, EquipmentView[] OwnEquipment, EquipmentTypeDefinition[] EquipmentTypes, MarketOfferView[] MarketOffers, MarketBidView[] OwnMarketBids, MarketAllocationView[] OwnMarketAllocations, MarketSettings MarketRules, BuyOfferView[] BuyOffers, SupplyRequest[] OwnSupplyRequests, DeliveryContractView[] OwnDeliveryContracts, DeliverySettings DeliveryRules, LogisticsView[] OwnLogistics, LogisticsSettings LogisticsRules, System.Collections.Immutable.ImmutableArray<MarketPricePoint> CapitalPrices, System.Collections.Immutable.ImmutableArray<MarketPricePoint> CapitalPriceHistory);
 
 public static class SimulationJson
 {

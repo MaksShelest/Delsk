@@ -1,0 +1,137 @@
+{
+  "id": "capital-demand-cycle-v1",
+  "seed": 42,
+  "mapWidth": 24,
+  "mapHeight": 4,
+  "blockedCells": [],
+  "items": [
+    {
+      "id": "wood",
+      "unitVolume": 1,
+      "basePriceMinor": 500
+    },
+    {
+      "id": "plank",
+      "unitVolume": 1,
+      "basePriceMinor": 3000
+    },
+    {
+      "id": "grain",
+      "unitVolume": 1,
+      "basePriceMinor": 300
+    },
+    {
+      "id": "bread",
+      "unitVolume": 1,
+      "basePriceMinor": 1000
+    }
+  ],
+  "recipes": [
+    {
+      "id": "sawmill",
+      "inputItem": "wood",
+      "inputQuantity": 2,
+      "outputItem": "plank",
+      "outputQuantity": 1,
+      "fullStaffTicks": 2,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 100
+    },
+    {
+      "id": "bakery",
+      "inputItem": "grain",
+      "inputQuantity": 2,
+      "outputItem": "bread",
+      "outputQuantity": 1,
+      "fullStaffTicks": 3,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 25
+    }
+  ],
+  "participants": [
+    {
+      "id": 1,
+      "cashMinor": 0,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 2,
+      "cashMinor": 0,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 3,
+      "cashMinor": 0,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 4,
+      "cashMinor": 0,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    }
+  ],
+  "enterprises": [],
+  "capitalOffers": [],
+  "resourceNodes": [
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 0
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 1,
+        "z": 0
+      }
+    }
+  ],
+  "harvestTicksPerUnit": 2,
+  "moveTicksPerCell": 1,
+  "tradeWindowTicks": 5,
+  "maxCommandsPerActorTick": 8,
+  "population": 0,
+  "maxTicks": 240,
+  "labor": {
+    "stepTicks": 10000,
+    "salaryChangeDelayTicks": 20,
+    "mobilityNumerator": 1,
+    "mobilityDenominator": 10,
+    "growthPeriodTicks": 120,
+    "growthPerPeriod": 0
+  },
+  "capitalDemand": {
+    "terminal": {
+      "x": 20,
+      "z": 0
+    },
+    "periodTicks": 60,
+    "bootstrapBaseBudgetMinor": 20000,
+    "demandNumerator": 11,
+    "demandDenominator": 10,
+    "commonWaveTicks": 600,
+    "itemWaveTicks": 240,
+    "orderTtlTicks": 120,
+    "priceScaleBasisPoints": 10000
+  }
+}

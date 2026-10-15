@@ -1,7 +1,7 @@
 # Архитектура Delsk
 
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
-Статус: проект архитектуры к спецификации 0.3. P00–P14 реализованы в границах отчётов; остальные компоненты остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
+Статус: архитектурная основа к спецификации0.3. P00–P18 реализованы и проверены в границах отчётов; P19 и далее остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
 
 ## 1. Основания и границы
 
@@ -575,3 +575,18 @@ SetWage phase1 и успешный prepare phase4 одного тика тепе
 SetLogisticsProduction конфигурирует прежний OwnDestination как input другого собственного Enterprise, проверяет совместимость текущих recipe output/input items при включении. Output planner перепроверяет совместимость перед новым prepare; finite capacity/UnitVolume/stock/return/payroll, физический roundtrip и общая числовая группа переиспользуются. Receipt внутренний, без settlement/emission; отдельные события LogisticsProductionSet/Received. Warehouse/Shop остаются на прежней команде, inbound sources не расширены.
 
 Immutable Trip хранит прежний item/quantity/place при смене рецепта, а несовместимая будущая работа ждёт. Structural refs/ownership/holds/path валидируются при restore; текущая несовместимость сама по себе допустима. Форма snapshot World8/Session2/Envelope1 прежняя, Rules logistics-6, без миграции старых правил. [Проверки и границы](IMPLEMENTATION_REPORT_OWN_PRODUCTION.md). Общая queue/fairness/nearest deadline и оставшиеся contract quota cases ещё P17; устройство P06 не проверено.
+
+
+## 26. Завершённая очередь P17
+
+LogisticsQueue хранит immutable job views: canonical key, ContractId/own destination/inbound source, Enabled и LastServed; LogisticsView сохраняет Queue/DispatchCount, Trip — JobKey. QueueLogisticsJob добавляет/заменяет intent, SetLogisticsEnabled отдельно управляет направлением. Primary Set-команды сохраняют прежнюю семантику настройки. Единственный слот/числовая группа и stock/place/return/payroll accounting переиспользуются.
+
+Планирование без мутаций выбирает выполнимый nearest-deadline contract, затем вход при enabled production/input shortage, затем own output, затем optional refill. Equal rank/deadline — oldest LastServed с seed offset для начальных равенств. Только successful prepare обновляет историю; readiness и стоимость не меняют порядок. Queue не резервирует второй stock/quota. Snapshot/validator связывает активный рейс с dispatched job, settings и полным набором holds. Проверки и gate — IMPLEMENTATION_REPORT_P17_P18.md.
+
+## 27. Городской выпуск и периодический спрос P18
+
+CapitalDemand — Core-only, включается CapitalDemandSettings; null оставляет прежние фиксированные regression orders. Первые bootstrap orders публикуются при tick0, последующие — phase6 на границе периода после work и закрытия старых окон. Generated order имеет immutable item/Q/price/terminal/created/expiry и отдельный Remaining/Released. Phase7 освобождает только незаключённый остаток; уже заключённый future contract живёт до собственного deadline. Cutoff ограничен inclusive offer expiry; freshly published IDs доступны со следующего барьера.
+
+Period metrics снимают delta harvested/produced/recipe+construction consumption/export/physical inventory. G=Σ(harvested+produced)×base price; smoothing1/2 с остатком, target=max(bootstrap,floor(smoothed×11/10)). Каждый raw item гарантирует минимум1 в пределах bootstrap; остальные q распределяются нормализованными товарными весами с целочисленным остатком, base-value error меньше минимальной base price. Monetary budget=Σq×actual price отдельно. Только нехватка free CapitalBudget финансируется внешней проводкой; refunds используются повторно, expired unused budget выводится DebitExternal. Spot/future делят прежний order budget/volume.
+
+Private demand stream отделён от auction/allocation/labor. Seed-derived common/item phases, triangle waves и bounded noise формируют только опубликованную цену, подписанные цены не меняются. Controller/participant DTO получает текущие цены всех items (даже q0) и до16 опубликованных периодов истории. Private phases/PRNG/demand internals не входят в Observation. Research CapitalDemandView включает baseline, periods, definitions/lifecycle и RNG; World10/Rules capital-demand-1 сохраняет всё для strict direct restore и hash. Schema9 предыдущего queue-only commit и более старые версии без migration. Следующее P19; аппаратный gate открыт.

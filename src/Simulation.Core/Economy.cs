@@ -167,6 +167,14 @@ internal sealed class EconomyTransaction
         ExternalInAfter = checked(ExternalInAfter + amount);
         LedgerChanges.Add(new(_tick, 0, id, amount, reason));
     }
+    public void DebitExternal(long id, long amount, string reason)
+    {
+        Positive(amount); var a = Account(id);
+        if (a.Available < amount) throw new RuleViolation("NoMoney");
+        a.Balance = checked(a.Balance - amount);
+        ExternalOutAfter = checked(ExternalOutAfter + amount);
+        LedgerChanges.Add(new(_tick, id, 0, amount, reason));
+    }
     public void HoldMoney(long id, string hold, long amount)
     {
         Positive(amount);

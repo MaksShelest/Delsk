@@ -1,6 +1,6 @@
 # Как запускать и проверять экономику без графики
 
-Автор: Шелестов Максим Евгеньевич. Состояние после доставки в следующее своё производство, 15.10.2026.
+Автор: Шелестов Максим Евгеньевич. Состояние после P17/P18, 15.10.2026.
 
 ## Что выполняет прогон и зачем Python
 
@@ -14,7 +14,7 @@ Python сейчас лишь удобно запускает .NET-сборку/�
 
 ## Быстрый запуск в Rider или терминале Windows
 
-Получить ветку `feat/logistics-own-production` (после её merge — текущую базовую ветку); безопасное обновление — [LOCAL_SETUP.md](LOCAL_SETUP.md). Открыть `Delsk.sln`. В терминале **корня репозитория**:
+Получить ветку `feat/logistics-queue-capital-demand` (после её merge — текущую базовую ветку); безопасное обновление — [LOCAL_SETUP.md](LOCAL_SETUP.md). Открыть `Delsk.sln`. В терминале **корня репозитория**:
 
 ```powershell
 dotnet restore Delsk.sln --locked-mode --disable-parallel '-m:1'
@@ -89,10 +89,10 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --load artifac
 Если Python установлен:
 
 ```powershell
-python scripts/check_headless.py --output artifacts/headless-own-production
+python scripts/check_headless.py --output artifacts/headless-p17-p18
 ```
 
-Она выполняет bounded restore/build,420 xUnit-тестов,15 обычных сценариев,12 обычных пар save/load и дополнительную controlled late-return пару. Сверяет побайтно13 файлов каждой пары и независимо проверяет деньги, товары, вместимости и население. `checks` содержит stdout/stderr/exit/timeout, `headless-check.json` — успешный итог; сбой возвращает ненулевой код.
+Она выполняет bounded restore/build,476 xUnit-тестов,18 обычных сценариев,15 обычных save/load пар и отдельную controlled late-return пару. Дополнительно сравниваются queue/demand command replays. Сравнение14 файлов включает capital-demand.json;53 выгрузки проходят независимые money/item/capacity/population/settlement/demand checks. Полные stdout/stderr и exit codes лежат в checks; ошибки возвращают ненулевой код.
 
 Что это подтверждает: отсутствие отрицательных/повторных списаний, дублирования товара, потери численности, сохранение физической длительности и воспроизводимое продолжение. Что оценивать по данным отдельно: простаивание, накопление товара, окупаемость вложений, конкуренцию зарплат, повторение неудачных целей. Участнические аукционы P14 проверены; выдача P15 и поставочные договоры P16 проверены; первый рейс P17a реализован; оставшиеся P17b/выборы ещё не реализованы. Их нельзя считать проверенными по успеху набора.
 
@@ -157,3 +157,18 @@ Current набор281 tests/11 scenarios/8 save-load pairs,27 проверенн
 `--scenario scenarios/own-production-cycle.json --script own-production --output artifacts/own-production`: настоящий наём из N0, источник производит30plank из60wood; рейсы10+5 заполняют input15, output stop позволяет downstream переработать14plank→7crate, resume доставляет10+4. Финал212ticks, logistics wages1200minor, cash73600, total200000, нет активных holds. Продукция приходит после физического пути; stop не отменяет начатую работу. Дополнительный рецепт — только тестовый контент.
 
 Save cut170 — второй outbound с грузом5. Использовать обычные `--checkpoint FILE --checkpoint-at 170` и `--load FILE`;13 export files равны continuous. Current World8/Session2/Envelope1/Rules logistics-6, старые Rules без migration; исторические номера выше относятся к прежним итерациям. [Отчёт](IMPLEMENTATION_REPORT_OWN_PRODUCTION.md). Очередь/priorities/fairness/оставшиеся quota scenarios остаются P17; Android device gate открыт.
+
+
+## Текущая очередь и городской спрос P17/P18
+
+```sh
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/logistics-queue.json --script logistics-queue --output artifacts/queue
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/capital-demand-cycle.json --script capital-demand --checkpoint artifacts/demand.save.json --checkpoint-at 85 --output artifacts/demand
+dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/demand.save.json --output artifacts/demand-loaded
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/autonomous-demand.json --script autonomous --ticks 1000 --output artifacts/npc-demand
+python scripts/check_headless.py --output artifacts/headless-p17-p18
+```
+
+Queue cycle226ticks:13+7 по ближайшему сроку рейсами10+3+7, затем own output10; зарплата1800minor. Save185 сохраняет активный рейс и ожидающие задания. Demand cycle185ticks:cash0→harvest2wood→physical spot sale,4 периодических бюджета и retirement старых остатков; save85 внутри периода. NPC demand350→1000 восстанавливает реальные планы/очереди/рыночные фазы, не проигрывает первые350 ticks.
+
+capital-demand.json — researcher periods/G/base consumed/stock delta/smoothing/target/orderedBase/monetary budget/external funding и private state; не controller prompt. Observation содержит CapitalPrices и16 периодов опубликованной истории, private cycles/RNG исключены. Current World10/Rules capital-demand-1, Session2/Envelope1. Null CapitalDemandSettings оставляет исторический fixed-order fixture; новые настройки не применяются скрыто к старому балансу. Следующее P19; device gate открыт.

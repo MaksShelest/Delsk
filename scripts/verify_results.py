@@ -133,7 +133,37 @@ def verify(folder):
         assert offer['allocatedQuantity'] == sum(d['quantity'] for d in contracts if d['buyOfferId'] == offer['id'])
     capital_orders = {o['id']: o for o in config['capitalOffers']}
     for offer in state['capitalOffers']:
-        assert capital_orders[offer['id']]['quantity'] == offer['remainingQuantity'] + sum(s['accepted'] for s in state['settlements'] if s['offerId'] == offer['id']) + sum(d['quantity'] for d in contracts if d['capitalOfferId'] == offer['id'])
+        original = capital_orders.get(offer['id'], {}).get('quantity', offer['originalQuantity'])
+        assert original == offer['remainingQuantity'] + offer['releasedQuantity'] + sum(s['accepted'] for s in state['settlements'] if s['offerId'] == offer['id']) + sum(d['quantity'] for d in contracts if d['capitalOfferId'] == offer['id'])
+    demand = state.get('capitalDemand')
+    assert json.loads((folder/'capital-demand.json').read_text(encoding='utf-8')) == demand
+    if demand is not None:
+        rules = config['capitalDemand']; periods = demand['periods']; bases = {i['id']: i['basePriceMinor'] for i in config['items']}
+        assert len(periods) == state['tick'] // rules['periodTicks'] + 1
+        smooth = carry = 0
+        raw = {n['itemId'] for n in config['resourceNodes']}
+        for number, period in enumerate(periods):
+            assert period['period'] == number and period['tick'] == number * rules['periodTicks']
+            goods = period['goods']
+            gross = sum((g['harvested'] + g['produced']) * bases[g['itemId']] for g in goods)
+            consumed = sum(g['consumed'] * bases[g['itemId']] for g in goods)
+            stock_delta = sum(g['stockChange'] * bases[g['itemId']] for g in goods)
+            assert gross == period['grossOutputBaseMinor'] and consumed == period['internalConsumptionBaseMinor'] and stock_delta == period['stockChangeBaseMinor']
+            assert all(g['stockChange'] == g['harvested'] + g['produced'] - g['consumed'] - g['exported'] for g in goods)
+            smooth, carry = divmod(smooth + gross + carry, 2)
+            assert smooth == period['smoothedOutputBaseMinor'] and carry == period['smoothingRemainder']
+            assert period['targetBaseMinor'] == max(rules['bootstrapBaseBudgetMinor'], smooth * rules['demandNumerator'] // rules['demandDenominator'])
+            ordered = sum(g['demandQuantity'] * bases[g['itemId']] for g in goods)
+            assert ordered == period['orderedBaseMinor'] and 0 <= period['targetBaseMinor'] - ordered < min(bases.values())
+            assert all(g['demandQuantity'] >= 1 for g in goods if g['itemId'] in raw)
+            monetary = sum(g['demandQuantity'] * g['unitPriceMinor'] for g in goods)
+            assert monetary == period['monetaryBudgetMinor'] and 0 <= period['externalFundingMinor'] <= monetary
+            emissions = [l for l in ledger if l['reason'] == 'CapitalDemandBudget' and l['tick'] == period['tick']]
+            assert len(emissions) <= 1 and sum(l['amountMinor'] for l in emissions) == period['externalFundingMinor']
+            assert sum(o['originalQuantity'] * o['unitPriceMinor'] for o in state['capitalOffers'] if o['createdTick'] == period['tick']) == monetary
+        assert sum(p['externalFundingMinor'] for p in periods) == state['externalMoneyInMinor']
+        assert all(l['tick'] % rules['periodTicks'] == 0 for l in ledger if l['reason'] == 'CapitalDemandBudget')
+        assert sum(o['releasedQuantity'] * o['unitPriceMinor'] for o in state['capitalOffers']) == state['externalMoneyOutMinor']
     assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'DeliveryFunding') == sum(d['quantity'] * d['unitPriceMinor'] for d in contracts)
     assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'DeliveryBond') == sum(d['bondMinor'] for d in contracts)
     systems = state.get('logistics', [])

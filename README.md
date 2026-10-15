@@ -134,3 +134,11 @@ P17 — продукт в следующее своё производство: 
 dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/own-production-cycle.json --script own-production --output artifacts/own-production
 python scripts/check_headless.py --output artifacts/headless-own-production
 ```
+
+
+P17 и P18: сохраняемая очередь логистики с deadline/urgency/ротацией и общей квотой завершена; добавлены городской выпуск по базовым ценам, потребление/запасы, сглаживание, периодический спрос1.1/bootstrap, товарные волны и отдельный приватный PRNG. [Отчёт](docs/IMPLEMENTATION_REPORT_P17_P18.md). Ветка `feat/logistics-queue-capital-demand`, World10/Rules capital-demand-1 без migration; следующий пункт P19. Android device gate P06 открыт.
+
+```sh
+python scripts/check_headless.py --output artifacts/headless-p17-p18
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/autonomous-demand.json --script autonomous --output artifacts/npc-demand
+```

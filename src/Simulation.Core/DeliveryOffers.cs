@@ -34,7 +34,7 @@ public sealed partial class SimulationEngine
             if (action.OfferWindow != b.View.Window) throw new RuleViolation("StaleOfferWindow");
             return (b.View.UnitPriceMinor, b.Requests);
         }
-        if (!_offers.TryGetValue(action.OfferId, out var o) || o.Remaining <= 0) throw new RuleViolation("NotAvailable");
+        if (!_offers.TryGetValue(action.OfferId, out var o) || o.Remaining <= 0 || o.CreatedTick >= Tick || o.ExpiresAtTick < Tick) throw new RuleViolation("NotAvailable");
         if (action.OfferWindow != o.Window) throw new RuleViolation("StaleOfferWindow");
         return (o.Definition.UnitPriceMinor, o.SupplyRequests);
     }
@@ -57,7 +57,7 @@ public sealed partial class SimulationEngine
             var offer = _buyOffers[c.Action.BuyOfferId];
             offer.View = offer.View with { CutoffTick = offer.View.CutoffTick ?? Math.Min(offer.View.ExpiresAtTick, checked(Tick + _config.TradeWindowTicks)) };
         }
-        else _offers[c.Action.OfferId].Cutoff ??= checked(Tick + _config.TradeWindowTicks);
+        else { var offer = _offers[c.Action.OfferId]; offer.Cutoff ??= Math.Min(offer.ExpiresAtTick ?? long.MaxValue, checked(Tick + _config.TradeWindowTicks)); }
         Emit("SupplyQuantityRequested", actor.Id, c.Action.BuyOfferId > 0 ? c.Action.BuyOfferId : c.Action.OfferId,
             quantity: request.Quantity, money: bond, command: c.CommandId);
     }

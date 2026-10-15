@@ -25,7 +25,8 @@ public record ControllerObservation(long Tick, ParticipantView Participant, Acco
     ImmutableArray<ControllerEquipmentType> EquipmentTypes, ControllerMap Map,
     ImmutableArray<MarketOfferView> MarketOffers, ImmutableArray<MarketBidView> OwnMarketBids,
     ImmutableArray<MarketAllocationView> OwnMarketAllocations, MarketSettings MarketRules, ImmutableArray<BuyOfferView> BuyOffers, ImmutableArray<SupplyRequest> OwnSupplyRequests,
-    ImmutableArray<DeliveryContractView> OwnDeliveryContracts, DeliverySettings DeliveryRules, ImmutableArray<LogisticsView> OwnLogistics, LogisticsSettings LogisticsRules);
+    ImmutableArray<DeliveryContractView> OwnDeliveryContracts, DeliverySettings DeliveryRules, ImmutableArray<LogisticsView> OwnLogistics, LogisticsSettings LogisticsRules,
+    ImmutableArray<MarketPricePoint> CapitalPrices, ImmutableArray<MarketPricePoint> CapitalPriceHistory);
 public record ControllerDecision(string Goal, string Reason, ImmutableArray<GameAction> Actions, bool Record = true);
 public record ControllerCheckpoint(string Kind, int Version, ParticipantId Actor, string StateJson, ImmutableArray<string> PendingCommandIds);
 
@@ -57,6 +58,6 @@ public sealed partial class SimulationEngine
             o.EquipmentTypes.Select(t => new ControllerEquipmentType(t.Id, t.ItemId, [.. t.Levels])).ToImmutableArray(),
             new(_config.MapWidth, _config.MapHeight, [.. _config.BlockedCells], [.. _config.ResourceNodes],
                 [.. _config.Items], [.. _config.Recipes], _config.MoveTicksPerCell,
-                _config.HarvestTicksPerUnit, _config.TradeWindowTicks), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules);
+                _config.HarvestTicksPerUnit, _config.TradeWindowTicks), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules, o.CapitalPrices, o.CapitalPriceHistory);
     }
 }

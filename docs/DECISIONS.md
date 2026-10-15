@@ -344,3 +344,17 @@
 - Техническое решение для смены рецепта: уже подготовленный товар доставляется во вход по сохранённому trip/capacity hold; следующий несовместимый рейс не готовится. Причина IncompatibleRecipe, stop разрешён. Это сохраняет неизменность начатого рейса и не запрещает штатную смену рецепта безопасно остановленного производства.
 - Тестовый plank→crate добавлен только в отдельный scripted scenario. Ускоренные labor step1/mobility1/population6 явно заданы fixture; штат0 нанимается реально. Прежние сценарии и баланс не менялись.
 - Rules logistics-6, World8/Session2/Envelope1; старые Rules без migration, Godot save path отдельный. Реальные результаты — [отчёт](IMPLEMENTATION_REPORT_OWN_PRODUCTION.md). Следующий P17 — общая очередь/priorities/fairness, затем оставшиеся quota cases. Gate C/P21/Android device/model не закрыты.
+
+
+## 22. Завершение P17 и периодический спрос P18 (15.10.2026)
+
+Автор: Шелестов Максим Евгеньевич.
+
+- Текущее указание пользователя разрешило P18 в той же ветке только после зелёного P17; старые запреты смешивать итерации не блокируют это явное задание. Отдельный intermediate commit сохраняет проверенный P17 gate.
+- Queue до64 intents/enterprise, один slot/group; new generic upsert и direction switches, primary setters совместимы. Equal priorities oldest-first/seed offset, persistent LastServed/DispatchCount. Вход paused production является optional refill и следует за output; новая urgency fixture проверяет enabled production отдельно. Резервы только у активного рейса.
+- DemandSettings optional для сохранения исторических regression scenarios; новый autonomous-demand — полноценные прежние NPC с периодическим спросом, отдельный capital-demand-cycle — cash0 scripted recovery. Initial CapitalOffers и генератор одновременно запрещены, чтобы не вводить два bootstrap бюджета.
+- Default period60, bootstrap base20000minor, coefficient11/10, сглаживание1/2 с остатком; order TTL180. Common wave9000..11000bps/600ticks, item8000..12000/240, noise9800..10200; отдельные seed phases. PriceScaleBasisPoints10000 — default и явно меняемый исследовательский коэффициент цены; он не меняет G/base values.
+- Quantity floor пропорционален нормализованным weight5000..15000; до распределения обеспечивается1 каждого raw item. Округление до минимальной base price: residual rank и заполнение самым дешёвым товаром. Это техническое дискретное правило, не исторически согласованный оптимальный баланс. OrderedBase<=target и ошибка<minBase; денежный бюджет считается отдельно по order price.
+- Дефицит финансирования=max(0,new monetary budget−free CapitalBudget); existing order holds/escrow не считаются free. Refunds closed contracts переиспользуются, expiry незаключённого остатка даёт explicit external retirement. Нет повторной эмиссии при spot/future settlement и нового полного бюджета на каждом tick.
+- Цены всех товаров публикуются отдельно от q и городских метрик, история ограничена16 опубликованными периодами; immutable arrays, без private phases/PRNG/future values. Истёкшие/подписанные orders сохраняют историческую цену.
+- World10/Session2/Envelope1, Rules capital-demand-1. Старые World/Rules без migration и без перезаписи прежних saves. Фактические проверки/ошибки запуска/ограничения — IMPLEMENTATION_REPORT_P17_P18.md и verification/p17-p18. Следующее P19, Android device gate остаётся открытым.
