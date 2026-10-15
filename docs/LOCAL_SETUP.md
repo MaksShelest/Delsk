@@ -1,13 +1,13 @@
 # Локальная проверка: Windows, Rider и Godot
 
-Автор: Шелестов Максим Евгеньевич. Входящие поставки (P17), 15.10.2026.
+Автор: Шелестов Максим Евгеньевич. Просрочка и возврат груза (P17), 15.10.2026.
 
 ## Получить исходники
 
 Ниже команды **PowerShell**, из выбранного рабочего каталога. Нужен Git. Новая копия:
 
 ```powershell
-git clone --branch feat/logistics-inbound-p17b3 https://github.com/MaksShelest/Delsk.git Delsk
+git clone --branch feat/logistics-late-return https://github.com/MaksShelest/Delsk.git Delsk
 cd Delsk
 ```
 
@@ -15,10 +15,10 @@ cd Delsk
 
 ```powershell
 git fetch origin
-git switch --track origin/feat/logistics-inbound-p17b3
+git switch --track origin/feat/logistics-late-return
 ```
 
-Если эта локальная ветка уже существует, вместо последней строки выполнить `git switch feat/logistics-inbound-p17b3`, затем `git pull --ff-only`. При ошибке о локальных изменениях остановить переключение и сохранить свою работу. После объединения PR можно перейти на актуальную основную ветку; сейчас default branch репозитория называется `feat/economic-cycle-p00-p05`, а не `main`.
+Если эта локальная ветка уже существует, вместо последней строки выполнить `git switch feat/logistics-late-return`, затем `git pull --ff-only`. При ошибке о локальных изменениях остановить переключение и сохранить свою работу. После объединения PR можно перейти на актуальную основную ветку; сейчас default branch репозитория называется `feat/economic-cycle-p00-p05`, а не `main`.
 
 ## Проверить окружение и собрать ядро
 
@@ -79,17 +79,17 @@ dotnet build src/Client.Godot/Delsk.Client.csproj --no-restore --disable-build-s
 dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/equipment-cycle.json --script equipment --output artifacts/equipment
 ```
 
-Ожидается200 тиков: личная добыча малой/большой машиной, наём automatic экипажа, один цикл, неоплачиваемая остановка и постепенный уход, физический вывоз/продажа двух видов сырья. Подробные числовые ожидания — PROTOTYPE_STATUS.md. Текущий набор369 тестов. Godot по-прежнему технический стенд; интерфейса управления техникой пока нет.
+Ожидается200 тиков: личная добыча малой/большой машиной, наём automatic экипажа, один цикл, неоплачиваемая остановка и постепенный уход, физический вывоз/продажа двух видов сырья. Подробные числовые ожидания — PROTOTYPE_STATUS.md. Текущий набор393 теста. Godot по-прежнему технический стенд; интерфейса управления техникой пока нет.
 
 ## Сохранения и общая проверка P12
 
 [HEADLESS_TESTING.md](HEADLESS_TESTING.md) объясняет ядро/runner и даёт алгоритм проверки без графики. С Python: `python scripts/check_headless.py --output artifacts/headless-p17a`. Это10 сценариев/7 save-load пар, включая самостоятельных NPC и рынок; полная игра с выборами ещё не готова.
 
-Godot-стенд имеет кнопки Сохранить/Загрузить/Восстановить из backup и user://platform-checkpoint-logistics-4.json. При сворачивании/фокусе сохраняет committed tick, при возврате elapsed сбрасывается; autosave30 и обычный выход. На реальном телефоне поведение ещё не проверено. Новые standalone APK/EXE в P12 не экспортировались.
+Godot-стенд имеет кнопки Сохранить/Загрузить/Восстановить из backup и user://platform-checkpoint-logistics-5.json. При сворачивании/фокусе сохраняет committed tick, при возврате elapsed сбрасывается; autosave30 и обычный выход. На реальном телефоне поведение ещё не проверено. Новые standalone APK/EXE в P12 не экспортировались.
 
 ## Автономная экономика P13
 
-Обновить исходники до feat/logistics-inbound-p17b3, открыть корневой Delsk.sln, restore/build как выше. Запуск из Rider Terminal без Python/Godot:
+Обновить исходники до feat/logistics-late-return, открыть корневой Delsk.sln, restore/build как выше. Запуск из Rider Terminal без Python/Godot:
 
 ```powershell
 dotnet run --project src/Research.Runner -c Release --no-build -- --script autonomous --ticks 1000 --seed 42 --output artifacts/run-42
@@ -109,7 +109,7 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --scenario sce
 
 ## Выдача P15: локальная проверка
 
-Обновить ветку `feat/logistics-inbound-p17b3`, открыть Delsk.sln в Rider и выполнить restore/build из инструкции выше. Игровая экономика работает в C#, Python для этого запуска не требуется:
+Обновить ветку `feat/logistics-late-return`, открыть Delsk.sln в Rider и выполнить restore/build из инструкции выше. Игровая экономика работает в C#, Python для этого запуска не требуется:
 
 ```powershell
 dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/pickup-lifecycle.json --script pickup --output artifacts/pickup
@@ -126,7 +126,7 @@ Godot: импортировать src/Client.Godot/project.godot .NET-редак
 
 ## Поставочные договоры P16: локальная проверка
 
-Текущая ветка `feat/logistics-inbound-p17b3`. После `git fetch origin` переключить её через Rider или `git switch --track origin/feat/logistics-inbound-p17b3`; если уже существует, `git switch feat/logistics-inbound-p17b3` и `git pull --ff-only`. При локальных изменениях сохранить их перед переключением. Открыть Delsk.sln, restore/build как выше; Python для самого C# прогона не требуется.
+Текущая ветка `feat/logistics-late-return`. После `git fetch origin` переключить её через Rider или `git switch --track origin/feat/logistics-late-return`; если уже существует, `git switch feat/logistics-late-return` и `git pull --ff-only`. При локальных изменениях сохранить их перед переключением. Открыть Delsk.sln, restore/build как выше; Python для самого C# прогона не требуется.
 
 ```powershell
 dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/delivery-lifecycle.json --script delivery --output artifacts/delivery
@@ -139,12 +139,12 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --scenario sce
 
 Полный набор `python scripts/check_headless.py`:249 tests,10 scenarios,7 save/load pairs. Core .NET SDK10.0.401/TFMnet10.0 и Godot4.7.2 .NET не изменились. Для клиента открыть src/Client.Godot/project.godot и собрать Delsk.Client.sln в Rider; UI всё ещё technical probe.
 
-Исторические P16 saves **World4/Rules delivery-1, Session2/Envelope1**. World1–3 не мигрируются; старые файлы открыть прежним кодом в отдельных копиях (P15: feat/pickup-p15; P14: feat/market-p14; P13: feat/autonomous-p13). Новая партия — новый файл; Godot user://platform-checkpoint-logistics-4.json. Код не нужно вручную переносить пофайлово, Core/Hosting уже связаны ProjectReference.
+Исторические P16 saves **World4/Rules delivery-1, Session2/Envelope1**. World1–3 не мигрируются; старые файлы открыть прежним кодом в отдельных копиях (P15: feat/pickup-p15; P14: feat/market-p14; P13: feat/autonomous-p13). Новая партия — новый файл; Godot user://platform-checkpoint-logistics-5.json. Код не нужно вручную переносить пофайлово, Core/Hosting уже связаны ProjectReference.
 
 
 ## Автологистика P17a: локальная проверка
 
-Получить ветку feat/logistics-inbound-p17b3; открыть Delsk.sln в Rider, выполнить locked restore/Release build по инструкции выше. Версии .NET/Godot прежние. Запуск C# не требует Python:
+Получить ветку feat/logistics-late-return; открыть Delsk.sln в Rider, выполнить locked restore/Release build по инструкции выше. Версии .NET/Godot прежние. Запуск C# не требует Python:
 
 ```powershell
 dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/logistics-cycle.json --script logistics --output artifacts/logistics
@@ -182,3 +182,15 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --scenario sce
 ```
 
 Сырьё сначала физически складируется человеком, затем машина едет пустой к складу и с грузом возвращается на предприятие. Input/output switches отдельны, один slot/numeric crew. После inbound10+5 production потребляет14wood и выпускает7plank; исходящий рейс возвращает продукт в склад. Проверенный цикл110ticks: supplier78050minor/общая сумма200000, input1wood/storage15wood+7plank. Actual результаты — [отчёт](IMPLEMENTATION_REPORT_INBOUND.md). Current World8/Rules logistics-4, старые World1–7 без migration; SDK/Godot не менялись, телефонный gate открыт. Полная bounded regression: `python scripts/check_headless.py --output artifacts/headless-inbound`.
+
+
+## P17: контролируемая просрочка и возврат
+
+Ветка `feat/logistics-late-return` основана на PR №14; PR №15 содержит эту итерацию. Полный запуск с тестовым аварийным снимком:
+
+```powershell
+python scripts/check_headless.py --output artifacts/headless-late-return
+dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/headless-late-return/late-return.save.json --output artifacts/late-return-restored
+```
+
+Нужны .NET и Python только для полного orchestration/проверки экспорта. Игровые правила и восстановление выполняет C#. Фикстура создаётся в xUnit при заданном DELSK_RETURN_ARTIFACTS; bare test run без переменной её не экспортирует. Папки late-return-at-expiry/late-return/late-return-loaded и late-return-fault.json отделяют намеренную аварийную ветку от обычных сценариев. [Фактические результаты](IMPLEMENTATION_REPORT_LOGISTICS_RETURN.md). World8/Rules logistics-5, старые Rules не мигрируются; сохранять старые файлы. Телефонный gate открыт.
