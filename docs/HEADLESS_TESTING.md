@@ -1,6 +1,6 @@
 # Как запускать и проверять экономику без графики
 
-Автор: Шелестов Максим Евгеньевич. Состояние после P17a, 14.10.2026.
+Автор: Шелестов Максим Евгеньевич. Состояние после доставки в следующее своё производство, 15.10.2026.
 
 ## Что выполняет прогон и зачем Python
 
@@ -14,7 +14,7 @@ Python сейчас лишь удобно запускает .NET-сборку/�
 
 ## Быстрый запуск в Rider или терминале Windows
 
-Получить ветку `feat/logistics-p17a` (после её merge — текущую базовую ветку); безопасное обновление — [LOCAL_SETUP.md](LOCAL_SETUP.md). Открыть `Delsk.sln`. В терминале **корня репозитория**:
+Получить ветку `feat/logistics-own-production` (после её merge — текущую базовую ветку); безопасное обновление — [LOCAL_SETUP.md](LOCAL_SETUP.md). Открыть `Delsk.sln`. В терминале **корня репозитория**:
 
 ```powershell
 dotnet restore Delsk.sln --locked-mode --disable-parallel '-m:1'
@@ -89,10 +89,10 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --load artifac
 Если Python установлен:
 
 ```powershell
-python scripts/check_headless.py --output artifacts/headless-p17a
+python scripts/check_headless.py --output artifacts/headless-own-production
 ```
 
-Она выполняет bounded restore/build,281 xUnit-тестов,5 прежних fixtures, market/pickup/delivery/capital-delivery/logistics и автономный прогон,8 пар save/load. Сверяет побайтно final-state/ledger/events/commands/metrics/labor/**controllers/decisions/agents**, затем независимо проверяет деньги, товар, вместимости и население. `artifacts/headless-p17a/checks` содержит stdout/stderr/exit/timeout, `headless-check.json` — успешный итог. Сбой не маскируется и возвращает ненулевой код.
+Она выполняет bounded restore/build,420 xUnit-тестов,15 обычных сценариев,12 обычных пар save/load и дополнительную controlled late-return пару. Сверяет побайтно13 файлов каждой пары и независимо проверяет деньги, товары, вместимости и население. `checks` содержит stdout/stderr/exit/timeout, `headless-check.json` — успешный итог; сбой возвращает ненулевой код.
 
 Что это подтверждает: отсутствие отрицательных/повторных списаний, дублирования товара, потери численности, сохранение физической длительности и воспроизводимое продолжение. Что оценивать по данным отдельно: простаивание, накопление товара, окупаемость вложений, конкуренцию зарплат, повторение неудачных целей. Участнические аукционы P14 проверены; выдача P15 и поставочные договоры P16 проверены; первый рейс P17a реализован; оставшиеся P17b/выборы ещё не реализованы. Их нельзя считать проверенными по успеху набора.
 
@@ -150,3 +150,10 @@ Current World4/Rules delivery-1; старые World1–3 files оставить 
 Current набор281 tests/11 scenarios/8 save-load pairs,27 проверенных выгрузок,13 побайтных файлов каждой пары (добавлен logistics.json). Cut69 — outbound; unit cuts45/66/67/68/69/70/71/72/73/74 плюс зарплата и unused reserve cases. Headless сохраняет длительность перевозки, ускоряется только calculation. World5/Rules logistics-1 не мигрирует World1–4; сохранять предыдущие файлы/ветки. По умолчанию check_headless пишет artifacts/headless-p17a.
 
 [Исследовательская готовность и темы](RESEARCH_READINESS.md) описывает будущие пилоты/серии. Текущий regression подтверждает correctness этой реализации; эффект модели/новизну гипотез из него не выводить.
+
+
+## Продукт в следующее собственное производство (текущая итерация P17)
+
+`--scenario scenarios/own-production-cycle.json --script own-production --output artifacts/own-production`: настоящий наём из N0, источник производит30plank из60wood; рейсы10+5 заполняют input15, output stop позволяет downstream переработать14plank→7crate, resume доставляет10+4. Финал212ticks, logistics wages1200minor, cash73600, total200000, нет активных holds. Продукция приходит после физического пути; stop не отменяет начатую работу. Дополнительный рецепт — только тестовый контент.
+
+Save cut170 — второй outbound с грузом5. Использовать обычные `--checkpoint FILE --checkpoint-at 170` и `--load FILE`;13 export files равны continuous. Current World8/Session2/Envelope1/Rules logistics-6, старые Rules без migration; исторические номера выше относятся к прежним итерациям. [Отчёт](IMPLEMENTATION_REPORT_OWN_PRODUCTION.md). Очередь/priorities/fairness/оставшиеся quota scenarios остаются P17; Android device gate открыт.

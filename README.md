@@ -126,3 +126,11 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --scenario sce
 P17 — просрочка и физический возврат груза: [PR №15](https://github.com/MaksShelest/Delsk/pull/15), [отчёт](docs/IMPLEMENTATION_REPORT_LOGISTICS_RETURN.md). Исправлены сохранение позднего груза и ставка, назначенная в тик подготовки рейса. Проверки включают реальную трудовую конкуренцию, возвратное место и расчёты после expiry. Аварийный сценарий — явно помеченная test-only checkpoint fork, обычный scheduler не отправляет заведомо поздние рейсы. World8/Rules logistics-5, старые Rules без миграции. Полная проверка: `python scripts/check_headless.py --output artifacts/headless-late-return`. Следующее — собственное следующее производство как исходящее назначение; общая очередь/fairness ещё остаются в P17.
 
 Фактическая проверка текущего возврата:393/393теста,14обычных сценариев и отдельный аварийный сценарий,12пар сохранения суммарно; Godot/Windows прошёл. Подробные результаты и ограничения приведены в отчёте.
+
+
+P17 — продукт в следующее своё производство: `SetLogisticsProduction` разрешает input другого собственного Enterprise с совместимым рецептом; прежние physical UntilFull/stock/place/return/payroll и независимые stops. [Отчёт и проверки](docs/IMPLEMENTATION_REPORT_OWN_PRODUCTION.md). Ветка `feat/logistics-own-production`, World8/Rules logistics-6 без миграции старых Rules. Следующее — общая очередь/nearest deadline/fairness и pause/load; P17/Gate C и Android device gate ещё открыты.
+
+```sh
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/own-production-cycle.json --script own-production --output artifacts/own-production
+python scripts/check_headless.py --output artifacts/headless-own-production
+```

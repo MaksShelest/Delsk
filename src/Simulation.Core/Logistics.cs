@@ -64,17 +64,27 @@ public sealed partial class SimulationEngine
     }
     private bool IsOwnLogisticsStorage(long owner, long inventory) => _buildings.Values.Any(b =>
         b.Owner == owner && b.Input == inventory && b.Type.Kind is BuildingKind.Warehouse or BuildingKind.Shop);
-    private void SetLogisticsStorage(ActorState actor, CommandEnvelope c)
+    private EnterpriseState? OwnProductionDestination(LogisticsState l, long inventory) => _enterprises.Values.SingleOrDefault(e =>
+        e.Definition.OwnerId == l.Owner && e.Definition.Id != l.Enterprise && e.Input == inventory);
+    private bool IsOwnLogisticsDestination(LogisticsState l, long inventory) =>
+        IsOwnLogisticsStorage(l.Owner, inventory) || OwnProductionDestination(l, inventory) is not null;
+    private void SetLogisticsStorage(ActorState actor, CommandEnvelope c) => SetLogisticsOwnDestination(actor, c, production: false);
+    private void SetLogisticsOwnDestination(ActorState actor, CommandEnvelope c, bool production)
     {
-        if (!_logistics.TryGetValue(c.Action.Logistics.Value, out var l) || l.Owner != actor.Id ||
-            !IsOwnLogisticsStorage(actor.Id, c.Action.Destination.Value)) throw new RuleViolation("NotAvailable");
+        if (!_logistics.TryGetValue(c.Action.Logistics.Value, out var l) || l.Owner != actor.Id)
+            throw new RuleViolation("NotAvailable");
+        var destination = OwnProductionDestination(l, c.Action.Destination.Value);
+        if (production ? destination is null : !IsOwnLogisticsStorage(actor.Id, c.Action.Destination.Value))
+            throw new RuleViolation("NotAvailable");
         if (c.Action.Quantity != 0) throw new RuleViolation("QuantityFromCapacity");
         if (c.Action.ItemId != "" || c.Action.ContractId != 0) throw new RuleViolation("ItemFromProduction");
         if (l.Trip is { InboundSource.Value: 0 } && (l.Contract != 0 || l.Destination != c.Action.Destination.Value))
             throw new RuleViolation("LogisticsBusy");
+        if (production && c.Action.Enabled && destination!.Recipe.InputItem != _enterprises[l.Enterprise].Recipe.OutputItem)
+            throw new RuleViolation("IncompatibleRecipe");
         l.Contract = 0; l.Destination = c.Action.Destination.Value; l.Enabled = c.Action.Enabled;
         l.Reason = l.Enabled ? "Waiting" : "UserPaused";
-        Emit("LogisticsStorageSet", actor.Id, l.Id, reason: l.Reason, command: c.CommandId);
+        Emit(production ? "LogisticsProductionSet" : "LogisticsStorageSet", actor.Id, l.Id, reason: l.Reason, command: c.CommandId);
     }
     private record LogisticsPlanData(int Index, string ItemId, Cell[] Path, long Quantity, long LegTicks,
         long InboundSource = 0, long OwnDestination = 0, long GoodsSource = 0);
@@ -86,6 +96,9 @@ public sealed partial class SimulationEngine
         {
             var destination = _economy.Inventories[l.Destination];
             string item = _enterprises[l.Enterprise].Recipe.OutputItem;
+            // Recipe edits affect future trips; a prepared trip keeps its item and capacity hold.
+            if (OwnProductionDestination(l, l.Destination) is { } production && production.Recipe.InputItem != item)
+                throw new RuleViolation("IncompatibleRecipe");
             long volume = _items[item].UnitVolume;
             if (l.CargoCapacity < volume) throw new RuleViolation("NoCargoSpace");
             long free = checked(destination.Capacity - destination.Occupied(_items) - destination.Incoming);
@@ -217,7 +230,8 @@ public sealed partial class SimulationEngine
                     var tx = _economy.Begin(Tick); tx.ConsumeReserved(l.Cargo, t.CargoHold, t.Quantity);
                     tx.ReceiveReservedCapacity(t.OwnDestination.Value, t.DestinationHold, t.ItemId, t.Quantity);
                     tx.ReleaseCapacity(l.Source, t.ReturnHold); tx.Commit(); accepted = true;
-                    Emit("LogisticsStorageReceived", l.Owner, t.Id, t.ItemId, t.Quantity);
+                    Emit(OwnProductionDestination(l, t.OwnDestination.Value) is not null ? "LogisticsProductionReceived" : "LogisticsStorageReceived",
+                        l.Owner, t.Id, t.ItemId, t.Quantity);
                 }
                 else
                 {
