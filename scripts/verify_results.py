@@ -172,6 +172,20 @@ def verify(folder):
             q = trip['quantity'] if trip['state'] in ['Outbound','ReturningCargo','ReturningInput'] else 0
             assert sum(s['quantity'] for s in cargo['stock']) == q
             assert sum(s['reserved'] for s in cargo['stock']) == q
+            source = inventories[incoming or system['sourceInventory']['value']]
+            if q:
+                assert source['reservedCapacity'] >= q * items[trip['itemId']]
+            if not incoming and not own:
+                contract = next(d for d in contracts if d['id'] == trip['contractId'])
+                if trip['state'] == 'Loading':
+                    assert contract['closedTick'] is None and trip['arrivalTick'] <= contract['deadlineTick']
+                elif trip['state'] == 'ReturningCargo':
+                    assert contract['status'] == 'Expired' and contract['deadlineTick'] < trip['arrivalTick']
+                elif trip['state'] == 'ReturningEmpty':
+                    assert trip['arrivalTick'] <= contract['deadlineTick'] and contract['deliveredQuantity'] >= trip['quantity']
+            assert group['wageMinor'] == trip['committedWageMinor']
+            if group['payEffectiveTick'] is not None:
+                assert group['payEffectiveTick'] == trip['endTick'] + 1
             owner = accounts[people[system['ownerId']['value']]]
             assert owner['reservedMinor'] >= trip['wageBudgetMinor'] - trip['wagesPaidMinor'] >= 0
     events = [json.loads(line) for line in (folder/'events.jsonl').read_text(encoding='utf-8').splitlines()]
