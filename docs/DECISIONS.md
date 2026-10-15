@@ -302,3 +302,13 @@
 - World6/Rules logistics-2 добавляют уровень в saved LogisticsView, structural cross-check с group/cargo. World1–5 без миграции, старые saves/ветки сохранять. Session2/Envelope1 неизменны.
 - Текущая среда без .NET/Godot; скачивание SDK блокируется proxy timeout. Фактические проверки и ограничения — IMPLEMENTATION_REPORT_P17B1.md; статус CI не заменять предполагаемым успехом.
 - Очереди/общие destinations/полный independent stop/controlled late return/crew perturbations остаются P17b, P18 и далее не добавлялись.
+
+
+## 18. P17b2 — своё исходящее назначение (15.10.2026)
+
+Автор: Шелестов Максим Евгеньевич.
+
+- Один warehouse/shop output destination UntilFull, один прежний slot/group. SetLogisticsStorage — remote configuration, только own Warehouse/Shop.Input. Item из текущего рецепта, quantity из свободного источника/конечного приёмника/cargo с учётом UnitVolume. Следующее предприятие и входящие источники — следующие части P17b.
+- Source stock/destination place/full payroll резервируются вместе до загрузки. Return place в source появляется атомарно с load. Собственная приёмка перемещает товар без выручки; не создавать фиктивный delivery contract/escrow/emission. Начатый trip нельзя переназначить; pause блокирует новые, не текущий. Full destination ждёт свободного места без оплаты простоя, затем автоматически возобновляется через общий найм.
+- Destination on system/trip сохраняется отдельно от ContractId, два режима взаимоисключающие. Reverse holds/path/ownership проверяются при load. World7/Rules logistics-3, Session2/Envelope1; старые World1–6 не мигрируются.
+- CI и фактические ограничения — IMPLEMENTATION_REPORT_P17B2.md; ожидаемый сценарий не выдавать за результат запуска. Full P17 не завершён.
