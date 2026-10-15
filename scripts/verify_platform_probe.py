@@ -39,7 +39,14 @@ if args.report:
         raise SystemExit('Pause/resume adapter check was not executed')
     if report.get("CheckpointRestoreChecked") is not True or report.get("RestoredTicks") != [12, 34, 55, 60]:
         raise SystemExit("Full checkpoint/load check was not executed")
+    with (root/'scenarios/platform-elections.checkpoints.csv').open(newline='') as source:
+        elections = list(csv.DictReader(source))
+    if (report.get('ElectionCheckedTicks') != len(elections) or
+            report.get('ElectionStateHash') != elections[-1]['state_hash'] or
+            report.get('ElectionRestoredTicks') != [9,19,20,21]):
+        raise SystemExit('Election replay/checkpoint probe was not completed')
     print(f"{report['Platform']}: {report['CheckedTicks']} checkpoints match runner; save/load at12/34/55/60 verified")
+    print(f"Election probe: {len(elections)} checkpoints match runner; save/load at9/19/20/21 verified")
 if args.windows_directory:
     folder = args.windows_directory
     executable = (folder / 'DelskProbe.exe').read_bytes()

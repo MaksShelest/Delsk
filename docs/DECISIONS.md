@@ -358,3 +358,15 @@
 - Дефицит финансирования=max(0,new monetary budget−free CapitalBudget); existing order holds/escrow не считаются free. Refunds closed contracts переиспользуются, expiry незаключённого остатка даёт explicit external retirement. Нет повторной эмиссии при spot/future settlement и нового полного бюджета на каждом tick.
 - Цены всех товаров публикуются отдельно от q и городских метрик, история ограничена16 опубликованными периодами; immutable arrays, без private phases/PRNG/future values. Истёкшие/подписанные orders сохраняют историческую цену.
 - World10/Session2/Envelope1, Rules capital-demand-1. Старые World/Rules без migration и без перезаписи прежних saves. Фактические проверки/ошибки запуска/ограничения — IMPLEMENTATION_REPORT_P17_P18.md и verification/p17-p18. Следующее P19, Android device gate остаётся открытым.
+
+## 23. Выборы P19 (15.10.2026)
+
+Автор: Шелестов Максим Евгеньевич.
+
+- Прежние допущения применены в конфиге: null ElectionSettings включает BaseVote1/PeriodTicks1200. Укороченный elections.json явно задаёт10. Все участники могут быть кандидатами. ElectionId — последовательность1,2,... отдельно от хозяйственного NextId; не переиспользуется.
+- SetVoteChoice(Election,Candidate) меняет только собственную декларацию текущих выборов, включая phase1 voting tick. Последняя localSequence побеждает среди команд своего actor. После фазы8 декларации очищаются; следующий election default self, без переноса прошлого выбора. P20 contracts отсутствуют.
+- Текущие production/extraction/logistics N считаются один раз после кадрового шага; idle N остаётся до численного ухода. Один ballot напрямую кандидату, веса не пересылаются рекурсивно. Comparison Int1282×weight>total, общий long weight проверен конфигом с максимальным приростом за горизонт.
+- Первый победитель закрывает scheduler, Mode=Victory доступен хосту для завершения/паузы через существующий GameSession. Core продолжает обслуживать явные Step; новых выборов нет. Только первый победитель может ContinueAfterVictory и получить Mode=Sandbox; повтор с тем же commandId dedup, другой повтор AlreadySandbox. Новые полномочия мэра и UI не добавлены.
+- Pending choices приватны владельцу; публичны итоговые ballot voter/candidate/weight и историческая численная занятость. ElectionStateView — research/checkpoint, ElectionObservation — отдельная immutable allowlist. Не публиковать в ней будущие support terms.
+- World11/Rules elections-1, Session2/Envelope1. Старые World1–10 без migration, прежние saves не перезаписываются. Сохраняются schedule/id/choices/results/workforce/first winner/sandbox tick и обычные pending commands/dedup. Checkpoint validator сверяет историю с journal, а не доверяет одному hash.
+- Реальные проверки:512/512tests (36 новых),19сценариев,16обычных save/load пар+controlled pair,3command replay,57выгрузок/36побайтных сравнений15файлов. Linux Godot62экономических+40выборных hashes и8actual file restores. Подробности/ограничения — IMPLEMENTATION_REPORT_P19.md, verification/p19. Следующее P20; Android device gate остаётся открыт.

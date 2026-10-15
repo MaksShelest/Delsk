@@ -9,5 +9,8 @@
     <EmbeddedResource Include="../../scenarios/economic-cycle.json" LogicalName="Fixture.scenario.json" />
     <EmbeddedResource Include="../../scenarios/platform-cycle.commands.jsonl" LogicalName="Fixture.commands.jsonl" />
     <EmbeddedResource Include="../../scenarios/platform-cycle.checkpoints.csv" LogicalName="Fixture.checkpoints.csv" />
+    <EmbeddedResource Include="../../scenarios/elections.json" LogicalName="Fixture.elections.json" />
+    <EmbeddedResource Include="../../scenarios/platform-elections.commands.jsonl" LogicalName="Fixture.elections.commands.jsonl" />
+    <EmbeddedResource Include="../../scenarios/platform-elections.checkpoints.csv" LogicalName="Fixture.elections.checkpoints.csv" />
   </ItemGroup>
 </Project>

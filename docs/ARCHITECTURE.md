@@ -1,7 +1,7 @@
 # Архитектура Delsk
 
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
-Статус: архитектурная основа к спецификации0.3. P00–P18 реализованы и проверены в границах отчётов; P19 и далее остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
+Статус: архитектурная основа к спецификации0.3. P00–P19 реализованы и проверены в границах отчётов; P20 и далее остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
 
 ## 1. Основания и границы
 
@@ -590,3 +590,13 @@ CapitalDemand — Core-only, включается CapitalDemandSettings; null о
 Period metrics снимают delta harvested/produced/recipe+construction consumption/export/physical inventory. G=Σ(harvested+produced)×base price; smoothing1/2 с остатком, target=max(bootstrap,floor(smoothed×11/10)). Каждый raw item гарантирует минимум1 в пределах bootstrap; остальные q распределяются нормализованными товарными весами с целочисленным остатком, base-value error меньше минимальной base price. Monetary budget=Σq×actual price отдельно. Только нехватка free CapitalBudget финансируется внешней проводкой; refunds используются повторно, expired unused budget выводится DebitExternal. Spot/future делят прежний order budget/volume.
 
 Private demand stream отделён от auction/allocation/labor. Seed-derived common/item phases, triangle waves и bounded noise формируют только опубликованную цену, подписанные цены не меняются. Controller/participant DTO получает текущие цены всех items (даже q0) и до16 опубликованных периодов истории. Private phases/PRNG/demand internals не входят в Observation. Research CapitalDemandView включает baseline, periods, definitions/lifecycle и RNG; World10/Rules capital-demand-1 сохраняет всё для strict direct restore и hash. Schema9 предыдущего queue-only commit и более старые версии без migration. Следующее P19; аппаратный gate открыт.
+
+## 26. Реализованные выборы P19
+
+Elections/ElectionContracts/ElectionValidation — отдельный модуль Core, без новых проектов или объектов жителей. ElectionId — собственный монотонный номер с1; первый voting tick=PeriodTicks, следующие ровно через период при отсутствии победителя. Phase1 SetVoteChoice принимает только текущий electionId/существующего candidate; одна текущая декларация собственного блока. На voting tick она ещё действует, затем очищается. Человек/NPC используют общий envelope/validator; будущие политические договоры остаются P20.
+
+Phase8 использует один EmploymentGroups источник после фазы5. В immutable ElectionResult фиксируются population/unemployed, группы с N, один direct ballot каждого участника, tally/total/winner. WorkerWeight — сумма текущих N владельца, BaseWeight — настройка, unemployed0. Не прибавлять Enterprise.Staff второй раз или группу логистики по каждому направлению. Int128 comparison2×candidateWeight>total не переполняется,50% оставляет победителя пустым.
+
+Первый результат фиксирует ElectionVictory и Mode=Victory, закрывает scheduler. Победитель через ContinueAfterVictory phase1 переводит в Sandbox с датой; первый итог не меняется. Victory — опубликованный результат для хоста; управление паузой/завершением сессии сохраняет существующий GameSession.SetPaused, Core не вводит wall-clock или UI. В Sandbox экономика и действующие обязательства продолжают обычные фазы, повторных выборов нет.
+
+Полная ElectionStateView входит в World11/checkpoint/hash/research export. Public ElectionObservation immutable: rules/candidate IDs/schedule, собственный pending choice, прошлые ballots/workforce/result; без чужих текущих выборов или причины выбора. Полный journal содержит private declaration events для replay/invariant validation и не передаётся контроллеру. Строгий restore сверяет исторические группы с initial N и committed employment/creation/growth events, totals/tally/majority и journal. Проверки I01/I10–I14/I16 и S5 без договора, плюс S6 перед выборами — IMPLEMENTATION_REPORT_P19.md. Политическая часть I10 и полный S5 с компенсацией остаются P20.

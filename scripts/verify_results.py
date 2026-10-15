@@ -22,10 +22,12 @@ def verify(folder):
     employed = {tick: 0 for tick in samples}
     with (folder/'labor.csv').open(newline='', encoding='utf-8') as f:
         seen = set()
+        labor_by_tick = {}
         for row in csv.DictReader(f):
             tick, group, n, cap = map(int, (row['tick'], row['group_id'], row['headcount'], row['capacity']))
             assert (tick, group) not in seen and 0 <= n <= cap
             seen.add((tick, group)); employed[tick] += n
+            labor_by_tick.setdefault(tick, {})[group] = (int(row["owner_id"]), n)
     for tick, sample in samples.items():
         assert int(sample['population']) == int(sample['unemployed']) + employed[tick]
     for flow in summary['flows']:
@@ -232,7 +234,49 @@ def verify(folder):
         if d['closedTick'] is None:
             assert d['preparedQuantity'] == sum(t['quantity'] for t in active_trips if t['state'] == 'Loading')
             assert d['inTransitQuantity'] == sum(t['quantity'] for t in active_trips if t['state'] == 'Outbound')
-    print(f'{folder}: money, item flows, capacity, population and settlements verified; tick={summary["tick"]}')
+    election_rules = config.get('elections') or {}
+    period, base = election_rules.get('periodTicks', 1200), election_rules.get('baseVote', 1)
+    elections = state['elections']
+    assert elections == json.loads((folder/'elections.json').read_text(encoding='utf-8'))
+    actor_ids = sorted(people)
+    winners = []
+    for index, result in enumerate(elections['results'], 1):
+        tick = result['votingTick']
+        assert result['id']['value'] == index and tick == index * period <= state['tick']
+        expected_groups = labor_by_tick[tick]
+        assert len({g['group']['value'] for g in result['employment']}) == len(result['employment'])
+        assert {g['group']['value']: (g['owner']['value'], g['headcount']) for g in result['employment']} == expected_groups
+        assert result['population'] == int(samples[tick]['population'])
+        assert result['unemployed'] == int(samples[tick]['unemployed'])
+        assert [b['voter']['value'] for b in result['ballots']] == actor_ids
+        tally = {}
+        for ballot in result['ballots']:
+            voter, candidate = ballot['voter']['value'], ballot['candidate']['value']
+            assert candidate in people and ballot['baseWeight'] == base
+            assert ballot['workerWeight'] == sum(n for owner, n in expected_groups.values() if owner == voter)
+            assert ballot['weight'] == base + ballot['workerWeight']
+            tally[candidate] = tally.get(candidate, 0) + ballot['weight']
+        assert result['totalWeight'] == sum(tally.values()) == len(people)*base + result['population'] - result['unemployed']
+        assert {t['candidate']['value']: t['weight'] for t in result['tally']} == tally
+        winner = next((candidate for candidate, weight in tally.items() if 2 * weight > result['totalWeight']), None)
+        assert (result['winner']['value'] if result['winner'] else None) == winner
+        ballots = [e for e in events if e['type'] == 'ElectionBallot' and e['entityId'] == index]
+        assert len(ballots) == len(people) and all(e['tick'] == tick and e['phase'] == 8 for e in ballots)
+        assert [(e['actorId']['value'], int(e['reasonCode']), e['quantity']) for e in ballots] == [(b['voter']['value'], b['candidate']['value'], b['weight']) for b in result['ballots']]
+        if winner is not None: winners.append((index, winner, tick))
+    if winners:
+        assert len(winners) == 1 and winners[0][0] == len(elections['results'])
+        ident, winner, tick = winners[0]
+        assert elections['firstVictory'] == {'election': {'value': ident}, 'winner': {'value': winner}, 'tick': tick}
+        assert elections['nextElectionId'] is None and elections['nextVotingTick'] is None and not elections['choices']
+        assert elections['mode'] in ('Victory', 'Sandbox')
+        assert (elections['mode'] == 'Sandbox') == (elections['sandboxStartedAtTick'] is not None)
+    else:
+        assert elections['firstVictory'] is None and elections['mode'] == 'Competitive'
+        assert len(elections['results']) == state['tick'] // period
+        assert elections['nextElectionId']['value'] == len(elections['results']) + 1
+        assert elections['nextVotingTick'] == (len(elections['results']) + 1) * period
+    print(f'{folder}: money, item flows, capacity, population, settlements and elections verified; tick={summary["tick"]}')
 
 if len(sys.argv) < 2:
     raise SystemExit('Usage: verify_results.py RUN_DIRECTORY [RUN_DIRECTORY]')

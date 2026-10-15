@@ -1,0 +1,1450 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "base": "157216c",
+  "scope": "P19 only",
+  "status": "succeeded",
+  "tests": {
+    "total": "512",
+    "executed": "512",
+    "passed": "512",
+    "failed": "0",
+    "error": "0",
+    "timeout": "0",
+    "aborted": "0",
+    "inconclusive": "0",
+    "passedButRunAborted": "0",
+    "notRunnable": "0",
+    "notExecuted": "0",
+    "disconnected": "0",
+    "warning": "0",
+    "completed": "0",
+    "inProgress": "0",
+    "pending": "0"
+  },
+  "headless": {
+    "status": "succeeded",
+    "scenarios": [
+      "cycle",
+      "recovery",
+      "development",
+      "labor",
+      "equipment",
+      "autonomous",
+      "market",
+      "pickup",
+      "delivery",
+      "capital-delivery",
+      "logistics",
+      "logistics-upgrade",
+      "own-storage",
+      "inbound",
+      "own-production",
+      "logistics-queue",
+      "capital-demand",
+      "autonomous-demand",
+      "elections"
+    ],
+    "checkpoint_cases": {
+      "cycle": 55,
+      "equipment": 101,
+      "autonomous": 350,
+      "market": 44,
+      "pickup": 47,
+      "delivery": 37,
+      "capital-delivery": 3,
+      "logistics": 69,
+      "logistics-upgrade": 170,
+      "own-storage": 170,
+      "inbound": 78,
+      "own-production": 170,
+      "logistics-queue": 185,
+      "capital-demand": 85,
+      "autonomous-demand": 350,
+      "elections": 9
+    },
+    "comparison": "every exported tick hash, state, ledger, event, command and labor row",
+    "controlled_fixture": {
+      "name": "late-return",
+      "origin": "test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged",
+      "checkpoint_tick": 72,
+      "final_tick": 80
+    },
+    "scope": "P00-P19: elections, current numeric workforce ballots, strict majority, first victory and sandbox; P20 contracts/model/UI remain future tasks",
+    "author": "Шелестов Максим Евгеньевич"
+  },
+  "ordinary_scenarios": 19,
+  "ordinary_save_load_pairs": 16,
+  "controlled_pairs": 1,
+  "command_replays": 3,
+  "verified_exports": 57,
+  "byte_comparison_pairs": 36,
+  "files_per_comparison": 15,
+  "platform": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "6acae59139baccacee583239b3adc01bd0bbcb57f6da65dde0375365310599cb",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "ElectionCheckedTicks": 40,
+    "ElectionStateHash": "9f8905676f3d705e38a14a4a030bc2003c37b0f75fa07559a7879093ca505985",
+    "ElectionRestoredTicks": [
+      9,
+      19,
+      20,
+      21
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "checks": {
+    "headless": {
+      "autonomous-demand-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/autonomous-demand.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/autonomous-demand-loaded",
+          "--ticks",
+          "1000"
+        ],
+        "timeout_seconds": 300,
+        "started_at": "2026-10-15T19:37:53.895948+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 3.927,
+        "stdout.log_sha256": "d4670341e192f2b9f9657c130c2b4dc32f74feacacb7e1771387846b0da7b855",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "autonomous-demand-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/autonomous-demand.json",
+          "--script",
+          "autonomous",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/autonomous-demand-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/autonomous-demand.save.json",
+          "--checkpoint-at",
+          "350"
+        ],
+        "timeout_seconds": 300,
+        "started_at": "2026-10-15T19:37:49.130393+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 4.736,
+        "stdout.log_sha256": "03058158b4341005955df1cbf73331025f06b697ec659327b5e54cd6ddd706db",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "autonomous-demand": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/autonomous-demand.json",
+          "--script",
+          "autonomous",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/autonomous-demand"
+        ],
+        "timeout_seconds": 300,
+        "started_at": "2026-10-15T19:37:15.003914+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 4.392,
+        "stdout.log_sha256": "c9a863c618490779afe404b377eab053babfdf3c5c3b6e13b8399f74f64f5702",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "autonomous-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/autonomous.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/autonomous-loaded",
+          "--ticks",
+          "1000"
+        ],
+        "timeout_seconds": 300,
+        "started_at": "2026-10-15T19:37:27.145019+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 3.779,
+        "stdout.log_sha256": "186526ad14bb8c4e8efb5bb6bb379f919f74eb9ed7b9d0ff5b12f850950400ef",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "autonomous-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/autonomous-economy.json",
+          "--script",
+          "autonomous",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/autonomous-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/autonomous.save.json",
+          "--checkpoint-at",
+          "350"
+        ],
+        "timeout_seconds": 300,
+        "started_at": "2026-10-15T19:37:23.170494+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 3.941,
+        "stdout.log_sha256": "dc05df048f28d02cb1d14903eae390b7e589017f124cc69356f63ae59b3077d2",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "autonomous": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/autonomous-economy.json",
+          "--script",
+          "autonomous",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/autonomous"
+        ],
+        "timeout_seconds": 300,
+        "started_at": "2026-10-15T19:37:02.237477+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 4.542,
+        "stdout.log_sha256": "d44dc334a765b4a9d369356da7a0d24fdd8efaecff50ae8f951fb9f3e5532080",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "balances": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "scripts/verify_results.py",
+          "/workspace/work/delsk-p19/final-gate/cycle",
+          "/workspace/work/delsk-p19/final-gate/recovery",
+          "/workspace/work/delsk-p19/final-gate/development",
+          "/workspace/work/delsk-p19/final-gate/labor",
+          "/workspace/work/delsk-p19/final-gate/equipment",
+          "/workspace/work/delsk-p19/final-gate/autonomous",
+          "/workspace/work/delsk-p19/final-gate/market",
+          "/workspace/work/delsk-p19/final-gate/pickup",
+          "/workspace/work/delsk-p19/final-gate/delivery",
+          "/workspace/work/delsk-p19/final-gate/capital-delivery",
+          "/workspace/work/delsk-p19/final-gate/logistics",
+          "/workspace/work/delsk-p19/final-gate/logistics-upgrade",
+          "/workspace/work/delsk-p19/final-gate/own-storage",
+          "/workspace/work/delsk-p19/final-gate/inbound",
+          "/workspace/work/delsk-p19/final-gate/own-production",
+          "/workspace/work/delsk-p19/final-gate/logistics-queue",
+          "/workspace/work/delsk-p19/final-gate/capital-demand",
+          "/workspace/work/delsk-p19/final-gate/autonomous-demand",
+          "/workspace/work/delsk-p19/final-gate/elections",
+          "/workspace/work/delsk-p19/final-gate/cycle-saved",
+          "/workspace/work/delsk-p19/final-gate/cycle-loaded",
+          "/workspace/work/delsk-p19/final-gate/equipment-saved",
+          "/workspace/work/delsk-p19/final-gate/equipment-loaded",
+          "/workspace/work/delsk-p19/final-gate/autonomous-saved",
+          "/workspace/work/delsk-p19/final-gate/autonomous-loaded",
+          "/workspace/work/delsk-p19/final-gate/market-saved",
+          "/workspace/work/delsk-p19/final-gate/market-loaded",
+          "/workspace/work/delsk-p19/final-gate/pickup-saved",
+          "/workspace/work/delsk-p19/final-gate/pickup-loaded",
+          "/workspace/work/delsk-p19/final-gate/delivery-saved",
+          "/workspace/work/delsk-p19/final-gate/delivery-loaded",
+          "/workspace/work/delsk-p19/final-gate/capital-delivery-saved",
+          "/workspace/work/delsk-p19/final-gate/capital-delivery-loaded",
+          "/workspace/work/delsk-p19/final-gate/logistics-saved",
+          "/workspace/work/delsk-p19/final-gate/logistics-loaded",
+          "/workspace/work/delsk-p19/final-gate/logistics-upgrade-saved",
+          "/workspace/work/delsk-p19/final-gate/logistics-upgrade-loaded",
+          "/workspace/work/delsk-p19/final-gate/own-storage-saved",
+          "/workspace/work/delsk-p19/final-gate/own-storage-loaded",
+          "/workspace/work/delsk-p19/final-gate/inbound-saved",
+          "/workspace/work/delsk-p19/final-gate/inbound-loaded",
+          "/workspace/work/delsk-p19/final-gate/own-production-saved",
+          "/workspace/work/delsk-p19/final-gate/own-production-loaded",
+          "/workspace/work/delsk-p19/final-gate/logistics-queue-saved",
+          "/workspace/work/delsk-p19/final-gate/logistics-queue-loaded",
+          "/workspace/work/delsk-p19/final-gate/capital-demand-saved",
+          "/workspace/work/delsk-p19/final-gate/capital-demand-loaded",
+          "/workspace/work/delsk-p19/final-gate/autonomous-demand-saved",
+          "/workspace/work/delsk-p19/final-gate/autonomous-demand-loaded",
+          "/workspace/work/delsk-p19/final-gate/elections-saved",
+          "/workspace/work/delsk-p19/final-gate/elections-loaded",
+          "/workspace/work/delsk-p19/final-gate/late-return-at-expiry",
+          "/workspace/work/delsk-p19/final-gate/late-return",
+          "/workspace/work/delsk-p19/final-gate/late-return-loaded",
+          "/workspace/work/delsk-p19/final-gate/logistics-queue-replayed",
+          "/workspace/work/delsk-p19/final-gate/capital-demand-replayed",
+          "/workspace/work/delsk-p19/final-gate/elections-replayed"
+        ],
+        "timeout_seconds": 15,
+        "started_at": "2026-10-15T19:38:02.065020+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.415,
+        "stdout.log_sha256": "7c096f488343b47b1db1bc68713697b9d5621be186af58c949d32bbe7fc6057a",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "build": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "build",
+          "Delsk.sln",
+          "-c",
+          "Release",
+          "--no-restore",
+          "--disable-build-servers",
+          "-m:1"
+        ],
+        "timeout_seconds": 180,
+        "started_at": "2026-10-15T19:36:13.493886+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 10.202,
+        "stdout.log_sha256": "a0a6e90d7a4b6ee1dda7a11a7b5818d43bbc4ef5e51e981f7f14dbe376d7a812",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital-delivery-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/capital-delivery.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/capital-delivery-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:36.349148+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.767,
+        "stdout.log_sha256": "958ec89d0153ab0564ad9ee95c956cd6e3672f3bd095d552f44237aa91326056",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital-delivery-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/capital-delivery.json",
+          "--script",
+          "capital-delivery",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/capital-delivery-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/capital-delivery.save.json",
+          "--checkpoint-at",
+          "3"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:35.547479+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.767,
+        "stdout.log_sha256": "be5f8ca18fc850b3e8bfeb0f3997d528b1d9e9e91cfbfa4f5aea9e6ba3fb3f3d",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital-delivery": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/capital-delivery.json",
+          "--script",
+          "capital-delivery",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/capital-delivery"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:08.879928+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.616,
+        "stdout.log_sha256": "2bcea44093dfcc9162fcffee807cf5423a7da5c79a6a7153d6cad8759f19c057",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital-demand-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/capital-demand.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/capital-demand-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:48.429521+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.666,
+        "stdout.log_sha256": "a4f9104a8b4ce512b1e1aba17403ba5bab993532e54fb3ba6f2c4d502e0abc3d",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital-demand-replay-compare": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "scripts/verify_checkpoint_exports.py",
+          "/workspace/work/delsk-p19/final-gate/capital-demand",
+          "/workspace/work/delsk-p19/final-gate/capital-demand-replayed"
+        ],
+        "timeout_seconds": 15,
+        "started_at": "2026-10-15T19:38:00.619390+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.032,
+        "stdout.log_sha256": "935da52a8f8a4a46ffb03d5d70fdf8fc05198f0806106f9c18859e5e82b8e3d0",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital-demand-replay": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/capital-demand-cycle.json",
+          "--script",
+          "capital-demand",
+          "--replay",
+          "/workspace/work/delsk-p19/final-gate/capital-demand/commands.jsonl",
+          "--ticks",
+          "185",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/capital-demand-replayed"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:38:00.023747+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.566,
+        "stdout.log_sha256": "a625ee7ec7bb66a4b1abc84e72a40a652277a9e867cc08251897507b4737ae10",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital-demand-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/capital-demand-cycle.json",
+          "--script",
+          "capital-demand",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/capital-demand-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/capital-demand.save.json",
+          "--checkpoint-at",
+          "85"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:47.525643+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.867,
+        "stdout.log_sha256": "a124a2ce9d201edeb97c60b7252c23c022330352db5035c1bd7ffad2cb43e150",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital-demand": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/capital-demand-cycle.json",
+          "--script",
+          "capital-demand",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/capital-demand"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:14.352153+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.616,
+        "stdout.log_sha256": "8da1cbc91a635b8dcba84b0e75fec4f57bf4b437f2d80fac6be3c716602f1c22",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "cycle-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/cycle.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/cycle-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:20.878849+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.616,
+        "stdout.log_sha256": "549ccb4594f62088c1a9884c97ea97eae9bf98acb9d07721ee08e3cecfd1734a",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "cycle-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/economic-cycle.json",
+          "--script",
+          "cycle",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/cycle-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/cycle.save.json",
+          "--checkpoint-at",
+          "55"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:20.074258+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.766,
+        "stdout.log_sha256": "e6985c0eb66dfc726528bfed15bdda1c990246065cadfae798ecc2e15412e699",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "cycle": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/economic-cycle.json",
+          "--script",
+          "cycle",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/cycle"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:36:58.068533+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.566,
+        "stdout.log_sha256": "e71f3d47ebe094c81ed646884f7da47db1874dc48ad9f1e92680fc91cf7151d9",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "delivery-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/delivery.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/delivery-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:34.786789+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.717,
+        "stdout.log_sha256": "4d595e0eda6c109bd0a17148d24f7aa5705ec591872220865594d51eb4b9a0c6",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "delivery-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/delivery-lifecycle.json",
+          "--script",
+          "delivery",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/delivery-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/delivery.save.json",
+          "--checkpoint-at",
+          "37"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:33.936862+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.817,
+        "stdout.log_sha256": "7b6d0faa5a7d8a07ef2433e06535e649683440be6762ad6ded7efc8b25d756a6",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "delivery": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/delivery-lifecycle.json",
+          "--script",
+          "delivery",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/delivery"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:08.173554+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.667,
+        "stdout.log_sha256": "04644b37a8291910ea831bd7374f1d11665ea8e112cbccb9829e4edfe2219f86",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "development": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/land-and-content.json",
+          "--script",
+          "development",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/development"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:36:59.272804+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 1.068,
+        "stdout.log_sha256": "194be8684e77e0b5875b427985de41499e704ee942034edc4a85bd1ac640dd80",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "elections-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/elections.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/elections-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:58.667120+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.616,
+        "stdout.log_sha256": "fe1fa4e8ec33e1fd8103f9a3c84da89ddc27e96f52c779f62ceb80145a5f0e21",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "elections-replay-compare": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "scripts/verify_checkpoint_exports.py",
+          "/workspace/work/delsk-p19/final-gate/elections",
+          "/workspace/work/delsk-p19/final-gate/elections-replayed"
+        ],
+        "timeout_seconds": 15,
+        "started_at": "2026-10-15T19:38:01.286669+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.032,
+        "stdout.log_sha256": "749a5652e322e54f028d53db2790eeaa4b1aaef94d4aaf15cf71bd5fab0716ee",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "elections-replay": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/elections.json",
+          "--script",
+          "elections",
+          "--replay",
+          "/workspace/work/delsk-p19/final-gate/elections/commands.jsonl",
+          "--ticks",
+          "40",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/elections-replayed"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:38:00.689908+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.566,
+        "stdout.log_sha256": "c6e0d666855b9d57e6fb15d0c08aadae7b428efe2cd3e76157e33213a3ae26c2",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "elections-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/elections.json",
+          "--script",
+          "elections",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/elections-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/elections.save.json",
+          "--checkpoint-at",
+          "9"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:57.867151+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.766,
+        "stdout.log_sha256": "a5fa1dd7d1dbfaede0290f9d13ca19c809e34ece1292a5c25a429fa2f200fe25",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "elections": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/elections.json",
+          "--script",
+          "elections",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/elections"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:19.427164+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.616,
+        "stdout.log_sha256": "3796721d89c47f0f8fdc73684bf1944d09b4542fc897365be7bbfe2b1502fb34",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "equipment-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/equipment.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/equipment-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:22.473356+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.666,
+        "stdout.log_sha256": "9b8c095f4410d96437ad731c64576516e3a071e65c7eeba841eda89091df4ba0",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "equipment-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/equipment-cycle.json",
+          "--script",
+          "equipment",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/equipment-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/equipment.save.json",
+          "--checkpoint-at",
+          "101"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:21.524939+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.917,
+        "stdout.log_sha256": "5a6c0184e02b704596562bb13135f369e35c9dc602e5e0ee070fe01b3a7b5863",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "equipment": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/equipment-cycle.json",
+          "--script",
+          "equipment",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/equipment"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:01.381172+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.817,
+        "stdout.log_sha256": "ea91101b6a3750b8f51fd8549b73cab0b50544ebcf5fa2114ccee8ebde97b12b",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "inbound-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/inbound.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/inbound-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:43.418705+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.766,
+        "stdout.log_sha256": "1a6c3d6881bed649dfcbd8e68c422a25870bb3d190fa7a2e285dbc4e3b53ee69",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "inbound-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/inbound-cycle.json",
+          "--script",
+          "inbound",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/inbound-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/inbound.save.json",
+          "--checkpoint-at",
+          "78"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:42.152489+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 1.223,
+        "stdout.log_sha256": "aef72b2339574dcfeeddb0be217613b85a7f65de417c7523f5f236868e5b50b0",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "inbound": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/inbound-cycle.json",
+          "--script",
+          "inbound",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/inbound"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:11.800893+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.766,
+        "stdout.log_sha256": "ca91106c5d81256189b7eb14eee40f3bca492b49154e744dde6931d8a1299b4a",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "labor": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/labor-dynamics.json",
+          "--script",
+          "labor",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/labor"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:00.372610+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.971,
+        "stdout.log_sha256": "015f258cc1d8938dcf20473b99264465ae26703bd8f1701226d5b79e7a195da4",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "late-return-compare": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "scripts/verify_checkpoint_exports.py",
+          "/workspace/work/delsk-p19/final-gate/late-return",
+          "/workspace/work/delsk-p19/final-gate/late-return-loaded"
+        ],
+        "timeout_seconds": 15,
+        "started_at": "2026-10-15T19:38:01.996105+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.033,
+        "stdout.log_sha256": "51fe449dadc80fa84d32cef734a8d198eb372a263de9412cd4a70aa87dcaf0d4",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "late-return-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/late-return.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/late-return-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:38:01.348948+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.616,
+        "stdout.log_sha256": "f597f9ac342b333accf5a7a0c90d88876ea396857771840ee4a63a328a1c6bfc",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "logistics-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/logistics.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/logistics-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:38.209172+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.666,
+        "stdout.log_sha256": "2ff90df5f2889bca7db29c63d06391fa0bfa149d0491ed9e95e95cae9409a1d1",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "logistics-queue-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/logistics-queue.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/logistics-queue-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:46.772426+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.716,
+        "stdout.log_sha256": "b5924dc8bc9150079abf4edc3cecc6f9a7e97adf0721f446aa9c7f889267c1bd",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "logistics-queue-replay-compare": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "scripts/verify_checkpoint_exports.py",
+          "/workspace/work/delsk-p19/final-gate/logistics-queue",
+          "/workspace/work/delsk-p19/final-gate/logistics-queue-replayed"
+        ],
+        "timeout_seconds": 15,
+        "started_at": "2026-10-15T19:37:59.959414+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.032,
+        "stdout.log_sha256": "067fced57a94fc1db8d0d61c23c36e9c09346baee5f8aa25dab79f1d721bb473",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "logistics-queue-replay": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/logistics-queue.json",
+          "--script",
+          "logistics-queue",
+          "--replay",
+          "/workspace/work/delsk-p19/final-gate/logistics-queue/commands.jsonl",
+          "--ticks",
+          "226",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/logistics-queue-replayed"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:59.314778+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.615,
+        "stdout.log_sha256": "bd021eb99d82446c5df9b1230c7b56d8a0bc5e439037b5e05f4c5872a4f9681c",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "logistics-queue-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/logistics-queue.json",
+          "--script",
+          "logistics-queue",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/logistics-queue-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/logistics-queue.save.json",
+          "--checkpoint-at",
+          "185"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:45.813356+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.917,
+        "stdout.log_sha256": "baf0e9df24b79de678d8d78e58f67b3b9ddfcd9a921123848864cf1ddd57d23c",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "logistics-queue": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/logistics-queue.json",
+          "--script",
+          "logistics-queue",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/logistics-queue"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:13.546994+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.766,
+        "stdout.log_sha256": "ed22b06031f13319b3e5eb4bc361952779f584c24dca47285c470b2f3fa780cf",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "logistics-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/logistics-cycle.json",
+          "--script",
+          "logistics",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/logistics-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/logistics.save.json",
+          "--checkpoint-at",
+          "69"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:37.156674+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 1.017,
+        "stdout.log_sha256": "afb9d941e84f9841ba52087d41e68b82a39876bd8c7dc4d87b2fb4a62f6e01ed",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "logistics-upgrade-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/logistics-upgrade.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/logistics-upgrade-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:39.857572+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.666,
+        "stdout.log_sha256": "5f22f11ccf3160b1eb09d7e8f0633a0dc51806db3556c83ff866455638dd31da",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "logistics-upgrade-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/logistics-upgrade.json",
+          "--script",
+          "logistics-upgrade",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/logistics-upgrade-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/logistics-upgrade.save.json",
+          "--checkpoint-at",
+          "170"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:38.909161+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.916,
+        "stdout.log_sha256": "2eef360a4d5ff406584f2ae20927505c9c67dffed237d2dc28d63b72f2502271",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "logistics-upgrade": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/logistics-upgrade.json",
+          "--script",
+          "logistics-upgrade",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/logistics-upgrade"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:10.244703+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.717,
+        "stdout.log_sha256": "9c5ff23c1d7ade7968fd269c5c1f3bddfcfd02a56f6a7d1202786efd61b04a82",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "logistics": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/logistics-cycle.json",
+          "--script",
+          "logistics",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/logistics"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:09.533840+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.667,
+        "stdout.log_sha256": "cacf2c603276a818ef59a6e02252f0ad80074ee3ea1b5f9da62e39ea59994b8b",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "market-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/market.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/market-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:31.722827+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.669,
+        "stdout.log_sha256": "510df21783735c1762759d32f9c2f4839acad05c2f0bd817f7532d4119f40978",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "market-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/market-window.json",
+          "--script",
+          "market",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/market-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/market.save.json",
+          "--checkpoint-at",
+          "44"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:30.971202+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.716,
+        "stdout.log_sha256": "68ef9cd08691fb12fd7f82d9e979ff969f4cd09b5613911267144baf3ee86a07",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "market": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/market-window.json",
+          "--script",
+          "market",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/market"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:06.815271+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.666,
+        "stdout.log_sha256": "e5488da97fd84f4f9b2614d0b544c0d2c42263a972be51a017608a48d6086886",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "own-production-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/own-production.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/own-production-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:45.115141+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.666,
+        "stdout.log_sha256": "7d24e03988c8aebf3f4c9257311d8b3d97597b20343127b9c72b90f9a6b5e870",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "own-production-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/own-production-cycle.json",
+          "--script",
+          "own-production",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/own-production-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/own-production.save.json",
+          "--checkpoint-at",
+          "170"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:44.219762+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.867,
+        "stdout.log_sha256": "0b3f4d6a0140b5fa1d2e8b064ee57395bce9d221ac91dad36c908fe31e9c1bef",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "own-production": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/own-production-cycle.json",
+          "--script",
+          "own-production",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/own-production"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:12.644716+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.868,
+        "stdout.log_sha256": "3286bcf3c6d1aa54c0c0d0d16e4cb93279dbce475c5cfabcc61edd1d97ff680d",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "own-storage-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/own-storage.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/own-storage-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:41.456451+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.666,
+        "stdout.log_sha256": "1f1a2d1e857cc1588f7c51a9990df81f45266973d42df93d3c6ec0e49fb5f59f",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "own-storage-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/own-storage-cycle.json",
+          "--script",
+          "own-storage",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/own-storage-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/own-storage.save.json",
+          "--checkpoint-at",
+          "170"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:40.557773+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.866,
+        "stdout.log_sha256": "53410a620aa96c6d1518763e60bd216fcbe898a2699fe3f4d0f6c80b27ef318a",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "own-storage": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/own-storage-cycle.json",
+          "--script",
+          "own-storage",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/own-storage"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:11.000339+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.766,
+        "stdout.log_sha256": "daebbf5468405d3fdee27bfb0b3ac5af84b37583a325a6cc994c6581347e8a5c",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pickup-load": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/delsk-p19/final-gate/pickup.save.json",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/pickup-loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:33.228745+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.666,
+        "stdout.log_sha256": "a89ae87e0c65d630e1fbef804e5a1b06bcfcdc55c570848c636a04036676ede0",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pickup-save": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/pickup-lifecycle.json",
+          "--script",
+          "pickup",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/pickup-saved",
+          "--checkpoint",
+          "/workspace/work/delsk-p19/final-gate/pickup.save.json",
+          "--checkpoint-at",
+          "47"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:32.425624+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.766,
+        "stdout.log_sha256": "355354063fe239f502140d75d6a8103dbff518f2a3e1b2940f269415dc2d711c",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pickup": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/pickup-lifecycle.json",
+          "--script",
+          "pickup",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/pickup"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:37:07.519284+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.616,
+        "stdout.log_sha256": "bcb82fa1ad91a059dc7452ed01443591bd5d567cbce157daf21c40ea767a282d",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "recovery": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "scenarios/zero-cash-recovery.json",
+          "--script",
+          "recovery",
+          "--output",
+          "/workspace/work/delsk-p19/final-gate/recovery"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:36:58.667836+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.566,
+        "stdout.log_sha256": "f9c2b4f1703d4a1f3a1c9aedb330aa9898ee31195c76eac19fe44136d5f8b943",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "restore": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "restore",
+          "Delsk.sln",
+          "--locked-mode",
+          "--disable-parallel",
+          "-m:1"
+        ],
+        "timeout_seconds": 180,
+        "started_at": "2026-10-15T19:36:12.238673+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 1.221,
+        "stdout.log_sha256": "40d104602671164ab3958225da3e1c8cabd55f0251d6df6bc911d9d5a24f44ce",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "tests": {
+        "command": [
+          "/workspace/.tools/dotnet/dotnet",
+          "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+          "-noColor",
+          "-noLogo",
+          "-parallelMode",
+          "none",
+          "-result-trx",
+          "/workspace/work/delsk-p19/final-gate/tests.trx"
+        ],
+        "timeout_seconds": 120,
+        "started_at": "2026-10-15T19:36:23.730832+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 34.303,
+        "stdout.log_sha256": "4aab7ae4c09c54cc9c5aeafcd1acaac79439a18dec144d2ff8bf99ad31288f90",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "platform": {
+      "client-build": {
+        "command": [
+          "dotnet",
+          "build",
+          "src/Client.Godot/Delsk.Client.csproj",
+          "--no-restore",
+          "--disable-build-servers",
+          "-m:1"
+        ],
+        "timeout_seconds": 180,
+        "started_at": "2026-10-15T19:38:13.612752+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 9.36,
+        "stdout.log_sha256": "1e59614eeafabdcc3bc5e6d7d05c1f728b220db1b9743c7bf6e8f43361b1795b",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "client-restore": {
+        "command": [
+          "dotnet",
+          "restore",
+          "src/Client.Godot/Delsk.Client.csproj",
+          "--locked-mode",
+          "--disable-parallel",
+          "-m:1"
+        ],
+        "timeout_seconds": 180,
+        "started_at": "2026-10-15T19:38:12.511546+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 1.068,
+        "stdout.log_sha256": "40d104602671164ab3958225da3e1c8cabd55f0251d6df6bc911d9d5a24f44ce",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "godot-import": {
+        "command": [
+          "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+          "--headless",
+          "--path",
+          "src/Client.Godot",
+          "--import"
+        ],
+        "timeout_seconds": 120,
+        "started_at": "2026-10-15T19:38:23.003640+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 3.639,
+        "stdout.log_sha256": "14044a8f27ddb93735362b4c781d9945481a8fa6943f45f2453449324f2db4dd",
+        "stderr.log_sha256": "475b41267bfea105ff533775b3f74f8b2597396bb6d24e5edabbf14cf92e03a3"
+      },
+      "godot-smoke": {
+        "command": [
+          "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+          "--headless",
+          "--path",
+          "src/Client.Godot",
+          "--",
+          "--smoke",
+          "--report",
+          "/workspace/work/delsk-p19/platform.json"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-15T19:38:26.677448+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 1.418,
+        "stdout.log_sha256": "1ba3c2a34ba910b604445ca5cc50179e71ba2dc4b4188057a5f1ef22df69df7d",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "godot-verify": {
+        "command": [
+          "python3",
+          "scripts/verify_platform_probe.py",
+          "--report",
+          "/workspace/work/delsk-p19/platform.json",
+          "--log-prefix",
+          "/workspace/work/delsk-p19/checks/godot-import",
+          "--log-prefix",
+          "/workspace/work/delsk-p19/checks/godot-smoke"
+        ],
+        "timeout_seconds": 15,
+        "started_at": "2026-10-15T19:38:28.130813+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.065,
+        "stdout.log_sha256": "26ee257675a01f7497da1c9d1a40456b6175b1a94beb702b11bb6abac5f83ffe",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "platform-fixture": {
+        "command": [
+          "python3",
+          "scripts/update_platform_fixture.py",
+          "/workspace/work/delsk-p19/final-gate/cycle",
+          "--elections-directory",
+          "/workspace/work/delsk-p19/final-gate/elections"
+        ],
+        "timeout_seconds": 15,
+        "started_at": "2026-10-15T19:38:12.402901+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.064,
+        "stdout.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr.log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "checkpoint_sizes_bytes": {
+    "cycle.save": 135205,
+    "equipment.save": 198194,
+    "delivery.save": 85452,
+    "market.save": 91823,
+    "own-production.save": 655895,
+    "capital-delivery.save": 27369,
+    "pickup.save": 113642,
+    "late-return.save": 167330,
+    "logistics-queue.save": 585438,
+    "autonomous.save": 3028019,
+    "autonomous-demand.save": 4083256,
+    "elections.save": 54932,
+    "own-storage.save": 493408,
+    "logistics-upgrade.save": 507703,
+    "logistics.save": 245919,
+    "inbound.save": 215057,
+    "capital-demand.save": 98056
+  },
+  "unverified": [
+    "Android physical device lifecycle/kill",
+    "Windows EXE hardware execution locally"
+  ],
+  "specification_sha256": "b86447e9311ab676538e1edbf7fd217c5a09896c3fc0d5edda7569ae088e9376"
+}

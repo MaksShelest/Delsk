@@ -25,6 +25,9 @@ public partial class PlatformProbe : Control
     private bool _skipNextFrame;
     private bool _lifecycleChecked;
     private readonly List<long> _restoredTicks = [];
+    private int _electionCheckedTicks;
+    private string? _electionHash;
+    private readonly List<long> _electionRestoredTicks = [];
     private string SavePath => ProjectSettings.GlobalizePath($"user://platform-checkpoint-{SimulationEngine.RulesVersion}.json");
     private string _reportPath = DefaultReportPath;
 
@@ -63,6 +66,7 @@ public partial class PlatformProbe : Control
             if (_smoke)
             {
                 CheckLifecycle();
+                CheckElections();
                 // No wall-clock sleep; the same 62 ticks and physical paths remain intact.
                 while (!_finished) StepOne();
                 GetTree().Quit(0);
@@ -146,6 +150,39 @@ public partial class PlatformProbe : Control
         _finished = _session.Engine.Tick >= _checkpoints.Keys.Max(); _failed = false;
         _manualPause = _session.Paused; _skipNextFrame = true;
         ApplyPause(); ShowState();
+    }
+
+    private void CheckElections()
+    {
+        var definition = JsonSerializer.Deserialize<ScenarioDefinition>(ResourceText("Fixture.elections.json"), SimulationJson.Options)!;
+        var tape = ResourceText("Fixture.elections.commands.jsonl").Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => JsonSerializer.Deserialize<RecordedCommand>(line, SimulationJson.Options)!).ToArray();
+        var checkpoints = ResourceText("Fixture.elections.checkpoints.csv").Split('\n', StringSplitOptions.RemoveEmptyEntries).Skip(1)
+            .Select(line => line.Trim().Split(','))
+            .ToDictionary(row => long.Parse(row[0], CultureInfo.InvariantCulture), row => row[1]);
+        var session = new GameSession(new SimulationEngine(definition));
+        session.ConfigurePlayback(tape, checkpoints.Keys.Max(), "elections");
+        string path = ProjectSettings.GlobalizePath($"user://election-checkpoint-{SimulationEngine.RulesVersion}.json");
+        while (session.Engine.Tick < checkpoints.Keys.Max())
+        {
+            session.Step(); long tick = session.Engine.Tick;
+            string hash = session.Engine.ComputeStateHash();
+            if (hash != checkpoints[tick]) throw new InvalidOperationException($"Election hash differs from runner at tick {tick}");
+            if (tick is 9 or 19 or 20 or 21)
+            {
+                CheckpointStore.Save(session, path); session = CheckpointStore.Load(path).Session;
+                if (session.Engine.Tick != tick || session.Engine.ComputeStateHash() != hash)
+                    throw new InvalidOperationException("Election checkpoint changed the committed world");
+                _electionRestoredTicks.Add(tick);
+            }
+            _electionCheckedTicks++;
+        }
+        var result = session.Engine.Inspect().Elections;
+        if (result.Results.Length != 2 || result.Results[0].Winner.HasValue ||
+            result.FirstVictory != new ElectionVictory(new(2), new(1), 20) || result.Mode != ElectionMode.Sandbox)
+            throw new InvalidOperationException("Election probe did not reach the expected first victory and sandbox");
+        _electionHash = session.Engine.ComputeStateHash();
+        GD.Print($"DELSK_ELECTION_PASS ticks={_electionCheckedTicks} hash={_electionHash}");
     }
 
     private void StepOne()
@@ -232,6 +269,8 @@ public partial class PlatformProbe : Control
             LifecycleAdapterChecked = _lifecycleChecked,
             CheckpointRestoreChecked = _restoredTicks.SequenceEqual(new long[] { 12, 34, 55, 60 }),
             RestoredTicks = _restoredTicks.ToArray(),
+            ElectionCheckedTicks = _electionCheckedTicks, ElectionStateHash = _electionHash,
+            ElectionRestoredTicks = _electionRestoredTicks.ToArray(),
             Runtime = System.Environment.Version.ToString(), Platform = OS.GetName(),
             GodotVersion = Engine.GetVersionInfo()["string"].AsString(),
             Author = "Шелестов Максим Евгеньевич"

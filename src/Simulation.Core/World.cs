@@ -134,6 +134,7 @@ public static partial class ScenarioValidation
             catch (OverflowException ex) { throw new ArgumentException("Logistics payroll overflow", ex); }
         }
         ValidateLaborSettings(s);
+        ValidateElectionSettings(s);
         ValidateEquipmentCatalog(s);
         var map = new GridMap(s);
         bool ValidId(long id) => id is > 0 and < 1000;

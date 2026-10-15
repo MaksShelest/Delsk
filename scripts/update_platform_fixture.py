@@ -9,6 +9,7 @@ from pathlib import Path
 
 parser = argparse.ArgumentParser()
 parser.add_argument('run_directory', type=Path)
+parser.add_argument('--elections-directory', type=Path, help='Verified 40-tick P19 runner output')
 args = parser.parse_args()
 summary = json.loads((args.run_directory / 'summary.json').read_text())
 if summary['status'] != 'succeeded' or summary['tick'] != 62:
@@ -24,3 +25,20 @@ with (root / 'scenarios/platform-cycle.checkpoints.csv').open('w', newline='') a
     writer = csv.writer(target, lineterminator='\n')
     writer.writerow(['tick', 'state_hash'])
     writer.writerows((r['tick'], r['state_hash']) for r in rows)
+if args.elections_directory:
+    directory = args.elections_directory
+    summary = json.loads((directory/'summary.json').read_text())
+    state = json.loads((directory/'elections.json').read_text())
+    if (summary['status'] != 'succeeded' or summary['tick'] != 40 or len(state['results']) != 2 or
+            state['results'][0]['winner'] is not None or state['mode'] != 'Sandbox' or
+            state['firstVictory'] != {'election': {'value': 2}, 'winner': {'value': 1}, 'tick': 20}):
+        parser.error('Expected the verified election/majority/sandbox fixture')
+    with (directory/'metrics.csv').open(newline='') as source:
+        rows = list(csv.DictReader(source))
+    if [int(r['tick']) for r in rows] != list(range(1,41)) or rows[-1]['state_hash'] != summary['stateHash']:
+        parser.error('Missing election checkpoint hashes')
+    (root/'scenarios/platform-elections.commands.jsonl').write_bytes((directory/'commands.jsonl').read_bytes())
+    with (root/'scenarios/platform-elections.checkpoints.csv').open('w', newline='') as target:
+        writer = csv.writer(target, lineterminator='\n')
+        writer.writerow(['tick','state_hash'])
+        writer.writerows((r['tick'], r['state_hash']) for r in rows)

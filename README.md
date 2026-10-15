@@ -142,3 +142,5 @@ P17 и P18: сохраняемая очередь логистики с deadline
 python scripts/check_headless.py --output artifacts/headless-p17-p18
 dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/autonomous-demand.json --script autonomous --output artifacts/npc-demand
 ```
+
+P19 — периодические выборы: ElectionId/current numeric worker blocks, строгий порог>50%, SetVoteChoice/default self, первый победитель и ContinueAfterVictory→Sandbox. [Отчёт и реальные проверки](docs/IMPLEMENTATION_REPORT_P19.md):512tests,19scenarios,16обычныхsave/load пар+controlled,3replays; Linux Godot62экономических+40выборных hashes. Ветка `feat/elections-p19`, World11/Rules elections-1. Следующее P20; политические договоры/LLM/UI не добавлены.
