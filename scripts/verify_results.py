@@ -149,7 +149,8 @@ def verify(folder):
         if own:
             assert system['contractId'] == 0
             building = next(b for b in state['buildings'] if b['inputId']['value'] == own)
-            assert building['ownerId'] == system['ownerId'] and building['kind'] in ['Warehouse', 'Shop']
+            assert building['ownerId'] == system['ownerId'] and building['kind'] in ['Warehouse', 'Shop', 'Production']
+            assert building['id'] != system['enterpriseId']
         group = next(g for g in state['employmentGroups'] if g['id'] == system['groupId'])
         assert group['capacity'] == characteristics['crewCapacity']
         if system['trip'] is None: assert not cargo['stock']

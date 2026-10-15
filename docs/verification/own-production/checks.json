@@ -1,0 +1,1457 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "base_commit": "170654bb24c8195cdaf0289db6e232a5fa60793a",
+  "branch": "feat/logistics-own-production",
+  "environment": {
+    "os": "Linux Debian13",
+    "sdk": "10.0.401",
+    "runtime": "10.0.12",
+    "godot": "4.7.2"
+  },
+  "results": {
+    "baseline_tests": 393,
+    "tests": 420,
+    "new_tests": 27,
+    "failed": 0,
+    "skipped": 0,
+    "ordinary_scenarios": 15,
+    "ordinary_checkpoint_pairs": 12,
+    "controlled_checkpoint_pairs": 1,
+    "verified_exports": 42,
+    "byte_comparisons": 25,
+    "files_per_comparison": 13
+  },
+  "headless_manifest": {
+    "status": "succeeded",
+    "scenarios": [
+      "cycle",
+      "recovery",
+      "development",
+      "labor",
+      "equipment",
+      "autonomous",
+      "market",
+      "pickup",
+      "delivery",
+      "capital-delivery",
+      "logistics",
+      "logistics-upgrade",
+      "own-storage",
+      "inbound",
+      "own-production"
+    ],
+    "checkpoint_cases": {
+      "cycle": 55,
+      "equipment": 101,
+      "autonomous": 350,
+      "market": 44,
+      "pickup": 47,
+      "delivery": 37,
+      "capital-delivery": 3,
+      "logistics": 69,
+      "logistics-upgrade": 170,
+      "own-storage": 170,
+      "inbound": 78,
+      "own-production": 170
+    },
+    "comparison": "every exported tick hash, state, ledger, event, command and labor row",
+    "controlled_fixture": {
+      "name": "late-return",
+      "origin": "test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged",
+      "checkpoint_tick": 72,
+      "final_tick": 80
+    },
+    "scope": "P00-P17 including own production destination, controlled late-return and crew/wage boundaries; general queues/fairness/remaining contract quota scenarios/politics remain future tasks",
+    "author": "Шелестов Максим Евгеньевич"
+  },
+  "godot_probe": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "0bef029702cc667580d7b3a202ca2137e7f4bb0aeb3aa4f70ac1c39113ff5070",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "own_production_summary": {
+    "status": "succeeded",
+    "tick": 212,
+    "stateHash": "cef9410a5b68b1a28a4cd7e972f9cf2abc470867bf07eeb2fb1d72ec23368d7e",
+    "externalMoneyInMinor": 0,
+    "externalMoneyOutMinor": 0,
+    "accounts": [
+      {
+        "id": {
+          "value": 1000
+        },
+        "kind": "Treasury",
+        "balanceMinor": 23350,
+        "reservedMinor": 0,
+        "availableMinor": 23350
+      },
+      {
+        "id": {
+          "value": 1001
+        },
+        "kind": "WagesSink",
+        "balanceMinor": 3050,
+        "reservedMinor": 0,
+        "availableMinor": 3050
+      },
+      {
+        "id": {
+          "value": 1002
+        },
+        "kind": "CapitalBudget",
+        "balanceMinor": 0,
+        "reservedMinor": 0,
+        "availableMinor": 0
+      },
+      {
+        "id": {
+          "value": 1003
+        },
+        "kind": "Participant",
+        "balanceMinor": 73600,
+        "reservedMinor": 0,
+        "availableMinor": 73600
+      },
+      {
+        "id": {
+          "value": 1005
+        },
+        "kind": "Participant",
+        "balanceMinor": 100000,
+        "reservedMinor": 0,
+        "availableMinor": 100000
+      }
+    ],
+    "flows": [
+      {
+        "itemId": "crate",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 7,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "plank",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 14,
+        "produced": 30,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "wood",
+        "initial": 0,
+        "harvested": 60,
+        "recipeInput": 60,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      }
+    ]
+  },
+  "notes": [
+    "Initial unconfigured dotnet restore/build failed on read-only /home/agent/.dotnet; rerun with installed CLI home/cache succeeded.",
+    "Initial networkless git/gh queries failed; network-enabled git read succeeded, gh API forbidden; GitHub connector is available.",
+    "Initial Godot processes returned0 but strict verification rejected denied socket errors; rerun with socket access passed.",
+    "No current Windows/device/model execution claimed. Unchanged platform fixture did not require new hashes."
+  ],
+  "checks": {
+    "local/baseline-build-configured": {
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_CLI_HOME=/workspace/.tools/dotnet-home",
+        "NUGET_PACKAGES=/workspace/.tools/nuget",
+        "DOTNET_PROCESSOR_COUNT=2",
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-15T18:23:52.351168+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.167,
+      "finished_at": "2026-10-15T18:23:53.518690+00:00"
+    },
+    "local/baseline-build": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-15T18:23:27.217337+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 10.398,
+      "finished_at": "2026-10-15T18:23:37.615563+00:00"
+    },
+    "local/baseline-restore-configured": {
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_CLI_HOME=/workspace/.tools/dotnet-home",
+        "NUGET_PACKAGES=/workspace/.tools/nuget",
+        "DOTNET_PROCESSOR_COUNT=2",
+        "/workspace/.tools/dotnet/dotnet",
+        "restore",
+        "Delsk.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-15T18:23:39.115948+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.275,
+      "finished_at": "2026-10-15T18:23:40.391321+00:00"
+    },
+    "local/baseline-restore": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "restore",
+        "Delsk.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-15T18:23:15.571936+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 10.397,
+      "finished_at": "2026-10-15T18:23:25.969202+00:00"
+    },
+    "local/baseline-tests": {
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_CLI_HOME=/workspace/.tools/dotnet-home",
+        "NUGET_PACKAGES=/workspace/.tools/nuget",
+        "DOTNET_PROCESSOR_COUNT=2",
+        "/workspace/.tools/dotnet/dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-result-trx",
+        "/workspace/work/delsk-production/baseline.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-15T18:24:02.300742+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 23.821,
+      "finished_at": "2026-10-15T18:24:26.121971+00:00"
+    },
+    "local/client-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-15T18:29:44.492564+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 9.993,
+      "finished_at": "2026-10-15T18:29:54.485185+00:00"
+    },
+    "local/client-restore": {
+      "command": [
+        "dotnet",
+        "restore",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-15T18:29:43.265621+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.183,
+      "finished_at": "2026-10-15T18:29:44.448878+00:00"
+    },
+    "local/create-branch": {
+      "command": [
+        "git",
+        "switch",
+        "-c",
+        "feat/logistics-own-production"
+      ],
+      "timeout_seconds": 10,
+      "started_at": "2026-10-15T18:24:02.262062+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.008,
+      "finished_at": "2026-10-15T18:24:02.270011+00:00"
+    },
+    "local/github-access-network": {
+      "command": [
+        "gh",
+        "repo",
+        "view",
+        "MaksShelest/Delsk",
+        "--json",
+        "defaultBranchRef,viewerPermission"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-15T18:23:44.743198+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 0.064,
+      "finished_at": "2026-10-15T18:23:44.807365+00:00"
+    },
+    "local/github-access": {
+      "command": [
+        "gh",
+        "repo",
+        "view",
+        "MaksShelest/Delsk",
+        "--json",
+        "defaultBranchRef,viewerPermission"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-15T18:23:26.922683+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 0.265,
+      "finished_at": "2026-10-15T18:23:27.187697+00:00"
+    },
+    "local/godot-import-sockets": {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-15T18:31:28.276922+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.273,
+      "finished_at": "2026-10-15T18:31:31.549593+00:00"
+    },
+    "local/godot-import": {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-15T18:29:54.515277+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.73,
+      "finished_at": "2026-10-15T18:29:58.244890+00:00"
+    },
+    "local/godot-smoke-sockets": {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--",
+        "--smoke",
+        "--report",
+        "/workspace/work/delsk-production/platform-probe-sockets.json"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:31:31.578891+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.916,
+      "finished_at": "2026-10-15T18:31:32.495347+00:00"
+    },
+    "local/godot-smoke": {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--",
+        "--smoke",
+        "--report",
+        "/workspace/work/delsk-production/platform-probe.json"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:58.276658+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.117,
+      "finished_at": "2026-10-15T18:29:59.394076+00:00"
+    },
+    "local/godot-verify-sockets": {
+      "command": [
+        "python3",
+        "scripts/verify_platform_probe.py",
+        "--report",
+        "/workspace/work/delsk-production/platform-probe-sockets.json",
+        "--log-prefix",
+        "/workspace/work/delsk-production/checks/godot-import-sockets",
+        "--log-prefix",
+        "/workspace/work/delsk-production/checks/godot-smoke-sockets"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-15T18:31:32.537502+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-15T18:31:32.569537+00:00"
+    },
+    "local/godot-verify": {
+      "command": [
+        "python3",
+        "scripts/verify_platform_probe.py",
+        "--report",
+        "/workspace/work/delsk-production/platform-probe.json",
+        "--log-prefix",
+        "/workspace/work/delsk-production/checks/godot-import",
+        "--log-prefix",
+        "/workspace/work/delsk-production/checks/godot-smoke"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-15T18:29:59.428944+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-15T18:29:59.461028+00:00"
+    },
+    "local/headless": {
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_CLI_HOME=/workspace/.tools/dotnet-home",
+        "NUGET_PACKAGES=/workspace/.tools/nuget",
+        "DOTNET_PROCESSOR_COUNT=2",
+        "python3",
+        "scripts/check_headless.py",
+        "--dotnet",
+        "/workspace/.tools/dotnet/dotnet",
+        "--output",
+        "/workspace/work/delsk-production/headless"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-15T18:28:44.417935+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 65.693,
+      "finished_at": "2026-10-15T18:29:50.111003+00:00"
+    },
+    "local/own-production-tests-final": {
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_CLI_HOME=/workspace/.tools/dotnet-home",
+        "NUGET_PACKAGES=/workspace/.tools/nuget",
+        "DOTNET_PROCESSOR_COUNT=2",
+        "/workspace/.tools/dotnet/dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.OwnProductionTests",
+        "-result-trx",
+        "/workspace/work/delsk-production/production-final.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-15T18:28:14.588441+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.731,
+      "finished_at": "2026-10-15T18:28:18.319787+00:00"
+    },
+    "local/own-production-tests": {
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_CLI_HOME=/workspace/.tools/dotnet-home",
+        "NUGET_PACKAGES=/workspace/.tools/nuget",
+        "DOTNET_PROCESSOR_COUNT=2",
+        "/workspace/.tools/dotnet/dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.OwnProductionTests",
+        "-result-trx",
+        "/workspace/work/delsk-production/production.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-15T18:27:16.703693+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.579,
+      "finished_at": "2026-10-15T18:27:20.282899+00:00"
+    },
+    "local/platform-fixture": {
+      "command": [
+        "python3",
+        "scripts/update_platform_fixture.py",
+        "/workspace/work/delsk-production/headless/cycle"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-15T18:29:30.275017+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-15T18:29:30.339658+00:00"
+    },
+    "local/production-build": {
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_CLI_HOME=/workspace/.tools/dotnet-home",
+        "NUGET_PACKAGES=/workspace/.tools/nuget",
+        "DOTNET_PROCESSOR_COUNT=2",
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-15T18:25:47.635043+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 15.46,
+      "finished_at": "2026-10-15T18:26:03.095242+00:00"
+    },
+    "local/production-runner": {
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_PROCESSOR_COUNT=2",
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/own-production-cycle.json",
+        "--script",
+        "own-production",
+        "--output",
+        "/workspace/work/delsk-production/production-probe"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:27:12.617823+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.668,
+      "finished_at": "2026-10-15T18:27:13.285874+00:00"
+    },
+    "local/production-tests-build-final": {
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_CLI_HOME=/workspace/.tools/dotnet-home",
+        "NUGET_PACKAGES=/workspace/.tools/nuget",
+        "DOTNET_PROCESSOR_COUNT=2",
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-15T18:28:09.601954+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.951,
+      "finished_at": "2026-10-15T18:28:14.553370+00:00"
+    },
+    "local/production-tests-build": {
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_CLI_HOME=/workspace/.tools/dotnet-home",
+        "NUGET_PACKAGES=/workspace/.tools/nuget",
+        "DOTNET_PROCESSOR_COUNT=2",
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-15T18:27:06.773093+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.791,
+      "finished_at": "2026-10-15T18:27:12.564484+00:00"
+    },
+    "local/remote-refs-network": {
+      "command": [
+        "git",
+        "ls-remote",
+        "--symref",
+        "origin",
+        "HEAD",
+        "refs/heads/feat/economic-cycle-p00-p05"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:23:44.346079+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.365,
+      "finished_at": "2026-10-15T18:23:44.711346+00:00"
+    },
+    "local/remote-refs": {
+      "command": [
+        "git",
+        "ls-remote",
+        "--symref",
+        "origin",
+        "HEAD",
+        "refs/heads/feat/economic-cycle-p00-p05"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:23:26.874873+00:00",
+      "exit_code": 128,
+      "elapsed_seconds": 0.016,
+      "finished_at": "2026-10-15T18:23:26.890886+00:00"
+    },
+    "headless/autonomous-load": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/delsk-production/headless/autonomous.save.json",
+        "--output",
+        "/workspace/work/delsk-production/headless/autonomous-loaded",
+        "--ticks",
+        "1000"
+      ],
+      "timeout_seconds": 300,
+      "started_at": "2026-10-15T18:29:32.262991+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.328,
+      "finished_at": "2026-10-15T18:29:35.590547+00:00"
+    },
+    "headless/autonomous-save": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/autonomous-economy.json",
+        "--script",
+        "autonomous",
+        "--output",
+        "/workspace/work/delsk-production/headless/autonomous-saved",
+        "--checkpoint",
+        "/workspace/work/delsk-production/headless/autonomous.save.json",
+        "--checkpoint-at",
+        "350"
+      ],
+      "timeout_seconds": 300,
+      "started_at": "2026-10-15T18:29:28.345030+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.888,
+      "finished_at": "2026-10-15T18:29:32.233215+00:00"
+    },
+    "headless/autonomous": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/autonomous-economy.json",
+        "--script",
+        "autonomous",
+        "--output",
+        "/workspace/work/delsk-production/headless/autonomous"
+      ],
+      "timeout_seconds": 300,
+      "started_at": "2026-10-15T18:29:16.231604+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.721,
+      "finished_at": "2026-10-15T18:29:19.952785+00:00"
+    },
+    "headless/balances": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "scripts/verify_results.py",
+        "/workspace/work/delsk-production/headless/cycle",
+        "/workspace/work/delsk-production/headless/recovery",
+        "/workspace/work/delsk-production/headless/development",
+        "/workspace/work/delsk-production/headless/labor",
+        "/workspace/work/delsk-production/headless/equipment",
+        "/workspace/work/delsk-production/headless/autonomous",
+        "/workspace/work/delsk-production/headless/market",
+        "/workspace/work/delsk-production/headless/pickup",
+        "/workspace/work/delsk-production/headless/delivery",
+        "/workspace/work/delsk-production/headless/capital-delivery",
+        "/workspace/work/delsk-production/headless/logistics",
+        "/workspace/work/delsk-production/headless/logistics-upgrade",
+        "/workspace/work/delsk-production/headless/own-storage",
+        "/workspace/work/delsk-production/headless/inbound",
+        "/workspace/work/delsk-production/headless/own-production",
+        "/workspace/work/delsk-production/headless/cycle-saved",
+        "/workspace/work/delsk-production/headless/cycle-loaded",
+        "/workspace/work/delsk-production/headless/equipment-saved",
+        "/workspace/work/delsk-production/headless/equipment-loaded",
+        "/workspace/work/delsk-production/headless/autonomous-saved",
+        "/workspace/work/delsk-production/headless/autonomous-loaded",
+        "/workspace/work/delsk-production/headless/market-saved",
+        "/workspace/work/delsk-production/headless/market-loaded",
+        "/workspace/work/delsk-production/headless/pickup-saved",
+        "/workspace/work/delsk-production/headless/pickup-loaded",
+        "/workspace/work/delsk-production/headless/delivery-saved",
+        "/workspace/work/delsk-production/headless/delivery-loaded",
+        "/workspace/work/delsk-production/headless/capital-delivery-saved",
+        "/workspace/work/delsk-production/headless/capital-delivery-loaded",
+        "/workspace/work/delsk-production/headless/logistics-saved",
+        "/workspace/work/delsk-production/headless/logistics-loaded",
+        "/workspace/work/delsk-production/headless/logistics-upgrade-saved",
+        "/workspace/work/delsk-production/headless/logistics-upgrade-loaded",
+        "/workspace/work/delsk-production/headless/own-storage-saved",
+        "/workspace/work/delsk-production/headless/own-storage-loaded",
+        "/workspace/work/delsk-production/headless/inbound-saved",
+        "/workspace/work/delsk-production/headless/inbound-loaded",
+        "/workspace/work/delsk-production/headless/own-production-saved",
+        "/workspace/work/delsk-production/headless/own-production-loaded",
+        "/workspace/work/delsk-production/headless/late-return-at-expiry",
+        "/workspace/work/delsk-production/headless/late-return",
+        "/workspace/work/delsk-production/headless/late-return-loaded"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-15T18:29:49.820633+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.268,
+      "finished_at": "2026-10-15T18:29:50.089070+00:00"
+    },
+    "headless/build": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-15T18:28:45.574594+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.268,
+      "finished_at": "2026-10-15T18:28:46.843028+00:00"
+    },
+    "headless/capital-delivery-load": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/delsk-production/headless/capital-delivery.save.json",
+        "--output",
+        "/workspace/work/delsk-production/headless/capital-delivery-loaded"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:40.013330+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.616,
+      "finished_at": "2026-10-15T18:29:40.629294+00:00"
+    },
+    "headless/capital-delivery-save": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/capital-delivery.json",
+        "--script",
+        "capital-delivery",
+        "--output",
+        "/workspace/work/delsk-production/headless/capital-delivery-saved",
+        "--checkpoint",
+        "/workspace/work/delsk-production/headless/capital-delivery.save.json",
+        "--checkpoint-at",
+        "3"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:39.417306+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.565,
+      "finished_at": "2026-10-15T18:29:39.982777+00:00"
+    },
+    "headless/capital-delivery": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/capital-delivery.json",
+        "--script",
+        "capital-delivery",
+        "--output",
+        "/workspace/work/delsk-production/headless/capital-delivery"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:21.693324+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.515,
+      "finished_at": "2026-10-15T18:29:22.208836+00:00"
+    },
+    "headless/cycle-load": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/delsk-production/headless/cycle.save.json",
+        "--output",
+        "/workspace/work/delsk-production/headless/cycle-loaded"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:26.040428+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.566,
+      "finished_at": "2026-10-15T18:29:26.606520+00:00"
+    },
+    "headless/cycle-save": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/economic-cycle.json",
+        "--script",
+        "cycle",
+        "--output",
+        "/workspace/work/delsk-production/headless/cycle-saved",
+        "--checkpoint",
+        "/workspace/work/delsk-production/headless/cycle.save.json",
+        "--checkpoint-at",
+        "55"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:25.340919+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.666,
+      "finished_at": "2026-10-15T18:29:26.006938+00:00"
+    },
+    "headless/cycle": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/economic-cycle.json",
+        "--script",
+        "cycle",
+        "--output",
+        "/workspace/work/delsk-production/headless/cycle"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:13.045688+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.465,
+      "finished_at": "2026-10-15T18:29:13.511136+00:00"
+    },
+    "headless/delivery-load": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/delsk-production/headless/delivery.save.json",
+        "--output",
+        "/workspace/work/delsk-production/headless/delivery-loaded"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:38.820967+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.566,
+      "finished_at": "2026-10-15T18:29:39.386797+00:00"
+    },
+    "headless/delivery-save": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/delivery-lifecycle.json",
+        "--script",
+        "delivery",
+        "--output",
+        "/workspace/work/delsk-production/headless/delivery-saved",
+        "--checkpoint",
+        "/workspace/work/delsk-production/headless/delivery.save.json",
+        "--checkpoint-at",
+        "37"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:38.174886+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.616,
+      "finished_at": "2026-10-15T18:29:38.790789+00:00"
+    },
+    "headless/delivery": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/delivery-lifecycle.json",
+        "--script",
+        "delivery",
+        "--output",
+        "/workspace/work/delsk-production/headless/delivery"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:21.143842+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.516,
+      "finished_at": "2026-10-15T18:29:21.659494+00:00"
+    },
+    "headless/development": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/land-and-content.json",
+        "--script",
+        "development",
+        "--output",
+        "/workspace/work/delsk-production/headless/development"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:13.992346+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.867,
+      "finished_at": "2026-10-15T18:29:14.859331+00:00"
+    },
+    "headless/equipment-load": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/delsk-production/headless/equipment.save.json",
+        "--output",
+        "/workspace/work/delsk-production/headless/equipment-loaded"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:27.645458+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.666,
+      "finished_at": "2026-10-15T18:29:28.311172+00:00"
+    },
+    "headless/equipment-save": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/equipment-cycle.json",
+        "--script",
+        "equipment",
+        "--output",
+        "/workspace/work/delsk-production/headless/equipment-saved",
+        "--checkpoint",
+        "/workspace/work/delsk-production/headless/equipment.save.json",
+        "--checkpoint-at",
+        "101"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:26.641931+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.967,
+      "finished_at": "2026-10-15T18:29:27.608860+00:00"
+    },
+    "headless/equipment": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/equipment-cycle.json",
+        "--script",
+        "equipment",
+        "--output",
+        "/workspace/work/delsk-production/headless/equipment"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:15.633850+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.565,
+      "finished_at": "2026-10-15T18:29:16.199374+00:00"
+    },
+    "headless/inbound-load": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/delsk-production/headless/inbound.save.json",
+        "--output",
+        "/workspace/work/delsk-production/headless/inbound-loaded"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:46.593315+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.8,
+      "finished_at": "2026-10-15T18:29:47.393343+00:00"
+    },
+    "headless/inbound-save": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/inbound-cycle.json",
+        "--script",
+        "inbound",
+        "--output",
+        "/workspace/work/delsk-production/headless/inbound-saved",
+        "--checkpoint",
+        "/workspace/work/delsk-production/headless/inbound.save.json",
+        "--checkpoint-at",
+        "78"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:45.641368+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.917,
+      "finished_at": "2026-10-15T18:29:46.558208+00:00"
+    },
+    "headless/inbound": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/inbound-cycle.json",
+        "--script",
+        "inbound",
+        "--output",
+        "/workspace/work/delsk-production/headless/inbound"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:24.096780+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.515,
+      "finished_at": "2026-10-15T18:29:24.612129+00:00"
+    },
+    "headless/labor": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/labor-dynamics.json",
+        "--script",
+        "labor",
+        "--output",
+        "/workspace/work/delsk-production/headless/labor"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:14.888833+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.716,
+      "finished_at": "2026-10-15T18:29:15.604515+00:00"
+    },
+    "headless/late-return-compare": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "scripts/verify_checkpoint_exports.py",
+        "/workspace/work/delsk-production/headless/late-return",
+        "/workspace/work/delsk-production/headless/late-return-loaded"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-15T18:29:49.758826+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-15T18:29:49.790835+00:00"
+    },
+    "headless/late-return-load": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/delsk-production/headless/late-return.save.json",
+        "--output",
+        "/workspace/work/delsk-production/headless/late-return-loaded"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:49.032098+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.674,
+      "finished_at": "2026-10-15T18:29:49.705969+00:00"
+    },
+    "headless/logistics-load": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/delsk-production/headless/logistics.save.json",
+        "--output",
+        "/workspace/work/delsk-production/headless/logistics-loaded"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:41.644659+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.617,
+      "finished_at": "2026-10-15T18:29:42.261247+00:00"
+    },
+    "headless/logistics-save": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/logistics-cycle.json",
+        "--script",
+        "logistics",
+        "--output",
+        "/workspace/work/delsk-production/headless/logistics-saved",
+        "--checkpoint",
+        "/workspace/work/delsk-production/headless/logistics.save.json",
+        "--checkpoint-at",
+        "69"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:40.667715+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.92,
+      "finished_at": "2026-10-15T18:29:41.588262+00:00"
+    },
+    "headless/logistics-upgrade-load": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/delsk-production/headless/logistics-upgrade.save.json",
+        "--output",
+        "/workspace/work/delsk-production/headless/logistics-upgrade-loaded"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:43.308589+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.72,
+      "finished_at": "2026-10-15T18:29:44.028609+00:00"
+    },
+    "headless/logistics-upgrade-save": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/logistics-upgrade.json",
+        "--script",
+        "logistics-upgrade",
+        "--output",
+        "/workspace/work/delsk-production/headless/logistics-upgrade-saved",
+        "--checkpoint",
+        "/workspace/work/delsk-production/headless/logistics-upgrade.save.json",
+        "--checkpoint-at",
+        "170"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:42.303603+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.968,
+      "finished_at": "2026-10-15T18:29:43.271844+00:00"
+    },
+    "headless/logistics-upgrade": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/logistics-upgrade.json",
+        "--script",
+        "logistics-upgrade",
+        "--output",
+        "/workspace/work/delsk-production/headless/logistics-upgrade"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:22.898047+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.567,
+      "finished_at": "2026-10-15T18:29:23.465152+00:00"
+    },
+    "headless/logistics": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/logistics-cycle.json",
+        "--script",
+        "logistics",
+        "--output",
+        "/workspace/work/delsk-production/headless/logistics"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:22.242825+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.616,
+      "finished_at": "2026-10-15T18:29:22.859405+00:00"
+    },
+    "headless/market-load": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/delsk-production/headless/market.save.json",
+        "--output",
+        "/workspace/work/delsk-production/headless/market-loaded"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:36.329640+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.566,
+      "finished_at": "2026-10-15T18:29:36.895393+00:00"
+    },
+    "headless/market-save": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/market-window.json",
+        "--script",
+        "market",
+        "--output",
+        "/workspace/work/delsk-production/headless/market-saved",
+        "--checkpoint",
+        "/workspace/work/delsk-production/headless/market.save.json",
+        "--checkpoint-at",
+        "44"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:35.628604+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.667,
+      "finished_at": "2026-10-15T18:29:36.295411+00:00"
+    },
+    "headless/market": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/market-window.json",
+        "--script",
+        "market",
+        "--output",
+        "/workspace/work/delsk-production/headless/market"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:19.989894+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.516,
+      "finished_at": "2026-10-15T18:29:20.505603+00:00"
+    },
+    "headless/own-production-load": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/delsk-production/headless/own-production.save.json",
+        "--output",
+        "/workspace/work/delsk-production/headless/own-production-loaded"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:48.336981+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.666,
+      "finished_at": "2026-10-15T18:29:49.002873+00:00"
+    },
+    "headless/own-production-save": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/own-production-cycle.json",
+        "--script",
+        "own-production",
+        "--output",
+        "/workspace/work/delsk-production/headless/own-production-saved",
+        "--checkpoint",
+        "/workspace/work/delsk-production/headless/own-production.save.json",
+        "--checkpoint-at",
+        "170"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:47.432453+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.869,
+      "finished_at": "2026-10-15T18:29:48.301704+00:00"
+    },
+    "headless/own-production": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/own-production-cycle.json",
+        "--script",
+        "own-production",
+        "--output",
+        "/workspace/work/delsk-production/headless/own-production"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:24.645672+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.666,
+      "finished_at": "2026-10-15T18:29:25.311633+00:00"
+    },
+    "headless/own-storage-load": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/delsk-production/headless/own-storage.save.json",
+        "--output",
+        "/workspace/work/delsk-production/headless/own-storage-loaded"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:44.985075+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.619,
+      "finished_at": "2026-10-15T18:29:45.604186+00:00"
+    },
+    "headless/own-storage-save": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/own-storage-cycle.json",
+        "--script",
+        "own-storage",
+        "--output",
+        "/workspace/work/delsk-production/headless/own-storage-saved",
+        "--checkpoint",
+        "/workspace/work/delsk-production/headless/own-storage.save.json",
+        "--checkpoint-at",
+        "170"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:44.076633+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.872,
+      "finished_at": "2026-10-15T18:29:44.948676+00:00"
+    },
+    "headless/own-storage": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/own-storage-cycle.json",
+        "--script",
+        "own-storage",
+        "--output",
+        "/workspace/work/delsk-production/headless/own-storage"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:23.498132+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.566,
+      "finished_at": "2026-10-15T18:29:24.064597+00:00"
+    },
+    "headless/pickup-load": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/delsk-production/headless/pickup.save.json",
+        "--output",
+        "/workspace/work/delsk-production/headless/pickup-loaded"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:37.575873+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.566,
+      "finished_at": "2026-10-15T18:29:38.141601+00:00"
+    },
+    "headless/pickup-save": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/pickup-lifecycle.json",
+        "--script",
+        "pickup",
+        "--output",
+        "/workspace/work/delsk-production/headless/pickup-saved",
+        "--checkpoint",
+        "/workspace/work/delsk-production/headless/pickup.save.json",
+        "--checkpoint-at",
+        "47"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:36.929944+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.616,
+      "finished_at": "2026-10-15T18:29:37.545894+00:00"
+    },
+    "headless/pickup": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/pickup-lifecycle.json",
+        "--script",
+        "pickup",
+        "--output",
+        "/workspace/work/delsk-production/headless/pickup"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:20.534205+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.566,
+      "finished_at": "2026-10-15T18:29:21.099758+00:00"
+    },
+    "headless/recovery": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/zero-cash-recovery.json",
+        "--script",
+        "recovery",
+        "--output",
+        "/workspace/work/delsk-production/headless/recovery"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-15T18:29:13.545588+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.415,
+      "finished_at": "2026-10-15T18:29:13.960626+00:00"
+    },
+    "headless/restore": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "restore",
+        "Delsk.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-15T18:28:44.474000+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.068,
+      "finished_at": "2026-10-15T18:28:45.541865+00:00"
+    },
+    "headless/tests": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-result-trx",
+        "/workspace/work/delsk-production/headless/tests.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-15T18:28:46.874269+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 26.141,
+      "finished_at": "2026-10-15T18:29:13.015594+00:00"
+    }
+  }
+}

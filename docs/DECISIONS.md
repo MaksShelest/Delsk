@@ -334,3 +334,13 @@
 - Обнаружен пограничный случай phase1 SetWage → phase4 prepare в одном тике: pending wage могла вступить на следующем тике в уже начатом рейсе. При успешном prepare pay/attraction откладываются не раньше end+1; committed wage и funded upper budget прежние. При неуспешной подготовке перенос не выполняется. Изменение численности в пути влияет на фактический payroll, не на параметры начатого пути; следующий рейс снова проверяет minimum crew.
 - Форма DTO не менялась: World8/Session2/Envelope1. RulesVersion=logistics-5 из-за исправленного поведения зарплаты; logistics-4 saves не мигрируются и не перезаписываются новым Godot path. Исходная спецификация0.3 сохранена. Результаты — IMPLEMENTATION_REPORT_LOGISTICS_RETURN.md; до CI статус проверок не считать успешным.
 - Следующий ограниченный P17: исходящее назначение в собственное следующее производство; затем общая очередь/priorities/fairness и оставшиеся сценарии квот. Полный P17/P21/телефон/модель этим изменением не закрываются.
+
+
+## 21. P17: продукт в следующее своё производство (15.10.2026)
+
+Автор: Шелестов Максим Евгеньевич.
+
+- Отдельная SetLogisticsProduction сохраняет прежнюю Warehouse/Shop команду и единственный OwnDestination/slot/group. Только input другого own Enterprise, совместимость текущих recipe items. Количество min(free output,cargo/volume,free input/volume); без ручной квоты или фиктивного delivery contract.
+- Техническое решение для смены рецепта: уже подготовленный товар доставляется во вход по сохранённому trip/capacity hold; следующий несовместимый рейс не готовится. Причина IncompatibleRecipe, stop разрешён. Это сохраняет неизменность начатого рейса и не запрещает штатную смену рецепта безопасно остановленного производства.
+- Тестовый plank→crate добавлен только в отдельный scripted scenario. Ускоренные labor step1/mobility1/population6 явно заданы fixture; штат0 нанимается реально. Прежние сценарии и баланс не менялись.
+- Rules logistics-6, World8/Session2/Envelope1; старые Rules без migration, Godot save path отдельный. Реальные результаты — [отчёт](IMPLEMENTATION_REPORT_OWN_PRODUCTION.md). Следующий P17 — общая очередь/priorities/fairness, затем оставшиеся quota cases. Gate C/P21/Android device/model не закрыты.

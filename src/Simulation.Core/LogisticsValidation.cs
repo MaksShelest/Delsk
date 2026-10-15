@@ -43,7 +43,7 @@ public sealed partial class SimulationEngine
                 cargo.Capacity != l.CargoCapacity || l.Completed < 0 || l.Contract < 0 || l.Destination < 0 || l.InboundSource < 0 ||
                 (l.Contract != 0 && l.Destination != 0) || (l.InboundEnabled && l.InboundSource == 0) ||
                 (l.InboundSource != 0 && !IsOwnLogisticsStorage(l.Owner, l.InboundSource)) ||
-                (l.Destination != 0 && !IsOwnLogisticsStorage(l.Owner, l.Destination)) ||
+                (l.Destination != 0 && !IsOwnLogisticsDestination(l, l.Destination)) ||
                 (l.Contract != 0 && !_deliveryContracts.Any(d => d.Id == l.Contract && d.Supplier.Value == l.Owner)))
                 throw new InvalidOperationException("Invalid logistics system");
             var home = _economy.Inventories[l.Source];
@@ -68,7 +68,7 @@ public sealed partial class SimulationEngine
             {
                 var d = _deliveryContracts.SingleOrDefault(d => d.Id == t.ContractId);
                 if (own ? t.ContractId != 0 || l.Contract != 0 || t.OwnDestination.Value != l.Destination ||
-                        !IsOwnLogisticsStorage(l.Owner, t.OwnDestination.Value) || t.State == "ReturningCargo" :
+                        !IsOwnLogisticsDestination(l, t.OwnDestination.Value) || t.State == "ReturningCargo" :
                     d is null || l.Destination != 0 || d.Supplier.Value != l.Owner || t.ContractId != l.Contract ||
                         t.ItemId != d.ItemId || t.Quantity > d.Quantity || t.PreparedTick < d.CreatedTick)
                     throw new InvalidOperationException("Invalid logistics destination");

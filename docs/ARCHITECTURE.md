@@ -568,3 +568,10 @@ Trip.InboundSource фиксирует goods source отдельно от home ou
 Проверка ETA≤deadline относится к допуску нового Loading. Для уже загруженного Outbound финансовый Expired не удаляет груз/путь/return capacity/payroll. ReturningCargo требует истечения до ArrivalTick и одного rejection event в момент физического прибытия; ReturningEmpty — своевременной приёмки и accepted event. Остальные структурные проверки грузов/места/геометрии/времени/обратного владения резервами сохранены.
 
 SetWage phase1 и успешный prepare phase4 одного тика теперь откладывают pending pay/attraction за EndTick, не меняя committed wage и верхний резерв. Неуспешный prepare не переносит ставку. Payroll зависит от фактической численности, параметры пути начатого рейса прежние. World8/Rules logistics-5, Session2/Envelope1; DTO прежние, несовместимость Rules явная, без миграции. Fault injection только в тестовом assembly; production load не имеет обхода checksum/hash/validation. Подробное происхождение аварийного снимка — в отчёте LOGISTICS_RETURN; это не игровой маршрут с динамическими задержками.
+
+
+## 25. P17: исходящий продукт в следующее собственное производство
+
+SetLogisticsProduction конфигурирует прежний OwnDestination как input другого собственного Enterprise, проверяет совместимость текущих recipe output/input items при включении. Output planner перепроверяет совместимость перед новым prepare; finite capacity/UnitVolume/stock/return/payroll, физический roundtrip и общая числовая группа переиспользуются. Receipt внутренний, без settlement/emission; отдельные события LogisticsProductionSet/Received. Warehouse/Shop остаются на прежней команде, inbound sources не расширены.
+
+Immutable Trip хранит прежний item/quantity/place при смене рецепта, а несовместимая будущая работа ждёт. Structural refs/ownership/holds/path валидируются при restore; текущая несовместимость сама по себе допустима. Форма snapshot World8/Session2/Envelope1 прежняя, Rules logistics-6, без миграции старых правил. [Проверки и границы](IMPLEMENTATION_REPORT_OWN_PRODUCTION.md). Общая queue/fairness/nearest deadline и оставшиеся contract quota cases ещё P17; устройство P06 не проверено.

@@ -1,0 +1,53 @@
+{
+  "id": "own-production-cycle-v1",
+  "seed": 42,
+  "mapWidth": 6,
+  "mapHeight": 3,
+  "blockedCells": [],
+  "items": [
+    { "id": "wood", "unitVolume": 1, "basePriceMinor": 500 },
+    { "id": "plank", "unitVolume": 1, "basePriceMinor": 3000 },
+    { "id": "crate", "unitVolume": 1, "basePriceMinor": 7000 }
+  ],
+  "recipes": [
+    { "id": "sawmill", "inputItem": "wood", "inputQuantity": 2, "outputItem": "plank", "outputQuantity": 1,
+      "fullStaffTicks": 1, "requiredStaff": 2, "minimumStaff": 2, "energyPerBatchMinor": 100 },
+    { "id": "workshop", "inputItem": "plank", "inputQuantity": 2, "outputItem": "crate", "outputQuantity": 1,
+      "fullStaffTicks": 1, "requiredStaff": 2, "minimumStaff": 2, "energyPerBatchMinor": 50 }
+  ],
+  "participants": [
+    { "id": 1, "cashMinor": 100000, "position": { "x": 0, "z": 0 }, "inventoryCapacity": 60 },
+    { "id": 2, "cashMinor": 100000, "position": { "x": 5, "z": 0 }, "inventoryCapacity": 3 }
+  ],
+  "enterprises": [],
+  "capitalOffers": [],
+  "resourceNodes": [ { "itemId": "wood", "position": { "x": 0, "z": 0 } } ],
+  "harvestTicksPerUnit": 2,
+  "moveTicksPerCell": 1,
+  "tradeWindowTicks": 5,
+  "maxCommandsPerActorTick": 8,
+  "population": 6,
+  "maxTicks": 1000,
+  "plots": [
+    { "id": 1, "position": { "x": 2, "z": 0 }, "priceMinor": 10000, "ownerId": 1 },
+    { "id": 2, "position": { "x": 5, "z": 0 }, "priceMinor": 10000, "ownerId": 1 }
+  ],
+  "buildingTypes": [
+    { "id": "sawmill", "kind": "Production", "footprint": [ { "x": 0, "z": 0 } ], "levels": [
+      { "level": 1, "recipeId": "sawmill", "priceMinor": 10000, "materials": [],
+        "inputCapacity": 80, "outputCapacity": 40, "staffCapacity": 2, "wageMinor": 25 }
+    ] },
+    { "id": "workshop", "kind": "Production", "footprint": [ { "x": 0, "z": 0 } ], "levels": [
+      { "level": 1, "recipeId": "workshop", "priceMinor": 10000, "materials": [],
+        "inputCapacity": 15, "outputCapacity": 40, "staffCapacity": 2, "wageMinor": 25 }
+    ] }
+  ],
+  "buildings": [
+    { "id": 1, "ownerId": 1, "position": { "x": 2, "z": 0 }, "typeId": "sawmill", "level": 1, "staff": 0, "enabled": false },
+    { "id": 2, "ownerId": 1, "position": { "x": 5, "z": 0 }, "typeId": "workshop", "level": 1, "staff": 0, "enabled": false }
+  ],
+  "labor": { "stepTicks": 1, "salaryChangeDelayTicks": 1, "mobilityNumerator": 1,
+    "mobilityDenominator": 1, "growthPeriodTicks": 120, "growthPerPeriod": 0 },
+  "logistics": { "purchasePriceMinor": 20000, "cargoCapacity": 10, "moveTicksPerCell": 1,
+    "minimumCrew": 2, "crewCapacity": 2, "wageMinor": 25 }
+}
