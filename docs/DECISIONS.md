@@ -312,3 +312,14 @@
 - Source stock/destination place/full payroll резервируются вместе до загрузки. Return place в source появляется атомарно с load. Собственная приёмка перемещает товар без выручки; не создавать фиктивный delivery contract/escrow/emission. Начатый trip нельзя переназначить; pause блокирует новые, не текущий. Full destination ждёт свободного места без оплаты простоя, затем автоматически возобновляется через общий найм.
 - Destination on system/trip сохраняется отдельно от ContractId, два режима взаимоисключающие. Reverse holds/path/ownership проверяются при load. World7/Rules logistics-3, Session2/Envelope1; старые World1–6 не мигрируются.
 - CI и фактические ограничения — IMPLEMENTATION_REPORT_P17B2.md; ожидаемый сценарий не выдавать за результат запуска. Full P17 не завершён.
+
+
+## 19. Входящие поставки, часть P17 (15.10.2026)
+
+Автор: Шелестов Максим Евгеньевич.
+
+- P17b3 — технический ID ограниченной итерации внутри исходного P17. Расшифровка в IMPLEMENTATION_PLAN; b не этап B. В отчётах использовать понятное имя функции.
+- Один source own Warehouse/Shop.Input, item из recipe input, один shared slot/group на вход/выход. Inbound switch отдельно от output/production; начатый рейс завершает путь и оплату.
+- Stock+input capacity+payroll резервируются в prepare, физический первый путь пустой. В середине маршрута stock→cargo и source return capacity; на обратном прибытии cargo→enterprise input, holds release, последний payroll. Legacy LoadTick для входа — барьер отправления пустой машины, реальная загрузка при ArrivalTick в источнике.
+- Selector двух настроек: готовый contractual output, input shortage на одну партию, собственный output, дополнительный input. Произвольная очередь/справедливость нескольких задач ещё остаются P17; не объявлять их готовыми по двум настройкам.
+- World8/Rules logistics-4, Session2/Envelope1, World1–7 без migration. Stock/return source отдельно от домашней позиции машины, все refs/holds/state/time сохраняются. Source specification0.3 неизменна. Actual checks — IMPLEMENTATION_REPORT_INBOUND.md; device/model gates открыты.

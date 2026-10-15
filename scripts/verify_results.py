@@ -155,13 +155,21 @@ def verify(folder):
         if system['trip'] is None: assert not cargo['stock']
         else:
             trip = system['trip']; assert trip['position'] == cargo['position']
-            assert trip['ownDestination']['value'] == own
-            assert trip['contractId'] == system['contractId']
-            if own:
+            incoming = trip['inboundSource']['value']
+            if incoming:
+                assert incoming == system['inboundSource']['value'] and trip['contractId'] == 0
+                factory = next(e for e in state['enterprises'] if e['id'] == system['enterpriseId'])
+                assert trip['ownDestination'] == factory['inputId']
+                assert trip['state'] in ['Loading', 'FetchingEmpty', 'ReturningInput']
+                assert inventories[trip['ownDestination']['value']]['reservedCapacity'] >= trip['quantity'] * items[trip['itemId']]
+            else:
+                assert trip['ownDestination']['value'] == own
+                assert trip['contractId'] == system['contractId']
+            if own and not incoming:
                 assert trip['state'] != 'ReturningCargo'
                 if trip['state'] in ['Loading', 'Outbound']:
                     assert inventories[own]['reservedCapacity'] >= trip['quantity'] * items[trip['itemId']]
-            q = trip['quantity'] if trip['state'] in ['Outbound','ReturningCargo'] else 0
+            q = trip['quantity'] if trip['state'] in ['Outbound','ReturningCargo','ReturningInput'] else 0
             assert sum(s['quantity'] for s in cargo['stock']) == q
             assert sum(s['reserved'] for s in cargo['stock']) == q
             owner = accounts[people[system['ownerId']['value']]]

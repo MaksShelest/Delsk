@@ -33,7 +33,7 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
 
 public sealed partial class SimulationEngine
 {
-    public const int CheckpointSchemaVersion = 7;
+    public const int CheckpointSchemaVersion = 8;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
