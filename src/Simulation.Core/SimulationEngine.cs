@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "capital-demand-1";
+    public const string RulesVersion = "elections-1";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -79,6 +79,7 @@ public sealed partial class SimulationEngine
         }
         _unemployed = checked(_population - EmploymentGroups().Sum(g => (long)g.Headcount));
         InitializeCapitalDemand();
+        InitializeElections();
         Emit("WorldCreated");
         ValidateInvariants();
     }
@@ -147,6 +148,7 @@ public sealed partial class SimulationEngine
             _phase = 5; AdvanceLabor();
             _phase = 6; CloseCapitalWindows(); AdvanceMarketWindows(); CloseBuyWindows(); AdvanceCapitalDemand();
             _phase = 7; ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders();
+            _phase = 8; AdvanceElections();
             _phase = 9; ValidateInvariants(); Emit("TickCommitted");
         }
         finally { _stepping = false; }
@@ -198,6 +200,8 @@ public sealed partial class SimulationEngine
                 case ActionKind.SetLogisticsInbound: SetLogisticsInbound(actor, c); break;
                 case ActionKind.QueueLogisticsJob: QueueLogisticsJob(actor, c); break;
                 case ActionKind.SetLogisticsEnabled: SetLogisticsEnabled(actor, c); break;
+                case ActionKind.SetVoteChoice: SetVoteChoice(actor, c); break;
+                case ActionKind.ContinueAfterVictory: ContinueAfterVictory(actor, c); break;
                 default: throw new RuleViolation("UnknownAction");
             }
             _results[c.CommandId] = new(c.CommandId, ResultStatus.Accepted, "Accepted", Tick);
@@ -317,7 +321,7 @@ public sealed partial class SimulationEngine
             _settlements.ToArray(), _population, _unemployed,
             _economy.InitialMoney, _economy.ExternalIn, _economy.ExternalOut, LandViews(), BuildingViews(),
             EmploymentGroups().OrderBy(g => g.Id).Select(g => g.View()).ToArray(),
-            checked(_population - _config.Population), _lastGrowthPeriod, EquipmentViews(), MarketOfferViews(), MarketBidViews(), _marketAllocations.ToArray(), BuyOfferViews(), SupplyRequestViews(), _deliveryContracts.ToArray(), LogisticsViews(), CapitalDemandState());
+            checked(_population - _config.Population), _lastGrowthPeriod, EquipmentViews(), MarketOfferViews(), MarketBidViews(), _marketAllocations.ToArray(), BuyOfferViews(), SupplyRequestViews(), _deliveryContracts.ToArray(), LogisticsViews(), CapitalDemandState(), ElectionState());
     }
     public ParticipantObservation Observe(ParticipantId actorId)
     {
@@ -332,7 +336,7 @@ public sealed partial class SimulationEngine
             view.MarketBids.Where(b => b.Buyer == actorId).ToArray(),
             view.MarketAllocations.Where(a => a.Buyer == actorId || a.Seller == actorId).ToArray(), Market, view.BuyOffers.Where(o => o.Status == "Open" || o.Buyer == actorId).ToArray(),
             view.SupplyRequests.Where(r => r.Supplier == actorId).ToArray(),
-            view.DeliveryContracts.Where(d => d.Supplier == actorId || d.Buyer == actorId).ToArray(), Delivery, view.Logistics.Where(l => l.OwnerId == actorId).ToArray(), Logistics, PublicCapitalPrices(false), PublicCapitalPrices(true));
+            view.DeliveryContracts.Where(d => d.Supplier == actorId || d.Buyer == actorId).ToArray(), Delivery, view.Logistics.Where(l => l.OwnerId == actorId).ToArray(), Logistics, PublicCapitalPrices(false), PublicCapitalPrices(true), ObserveElections(actorId));
     }
     public string ComputeStateHash() => ScenarioValidation.Hash(new
     {

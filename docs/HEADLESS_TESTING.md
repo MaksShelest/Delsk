@@ -1,6 +1,6 @@
 # Как запускать и проверять экономику без графики
 
-Автор: Шелестов Максим Евгеньевич. Состояние после P17/P18, 15.10.2026.
+Автор: Шелестов Максим Евгеньевич. Состояние после P19, 15.10.2026.
 
 ## Что выполняет прогон и зачем Python
 
@@ -14,7 +14,7 @@ Python сейчас лишь удобно запускает .NET-сборку/�
 
 ## Быстрый запуск в Rider или терминале Windows
 
-Получить ветку `feat/logistics-queue-capital-demand` (после её merge — текущую базовую ветку); безопасное обновление — [LOCAL_SETUP.md](LOCAL_SETUP.md). Открыть `Delsk.sln`. В терминале **корня репозитория**:
+Получить ветку `feat/elections-p19` (после её merge — текущую базовую ветку); безопасное обновление — [LOCAL_SETUP.md](LOCAL_SETUP.md). Открыть `Delsk.sln`. В терминале **корня репозитория**:
 
 ```powershell
 dotnet restore Delsk.sln --locked-mode --disable-parallel '-m:1'
@@ -92,7 +92,7 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --load artifac
 python scripts/check_headless.py --output artifacts/headless-p17-p18
 ```
 
-Она выполняет bounded restore/build,476 xUnit-тестов,18 обычных сценариев,15 обычных save/load пар и отдельную controlled late-return пару. Дополнительно сравниваются queue/demand command replays. Сравнение14 файлов включает capital-demand.json;53 выгрузки проходят независимые money/item/capacity/population/settlement/demand checks. Полные stdout/stderr и exit codes лежат в checks; ошибки возвращают ненулевой код.
+Она выполняет bounded restore/build,512 xUnit-тестов,19 обычных сценариев,16 обычных save/load пар и отдельную controlled late-return пару. Дополнительно сравниваются queue/demand/elections command replays. Сравнение15 файлов включает capital-demand.json/elections.json;57 выгрузок проходят независимые money/item/capacity/population/settlement/demand/election checks. Полные stdout/stderr и exit codes лежат в checks; ошибки возвращают ненулевой код.
 
 Что это подтверждает: отсутствие отрицательных/повторных списаний, дублирования товара, потери численности, сохранение физической длительности и воспроизводимое продолжение. Что оценивать по данным отдельно: простаивание, накопление товара, окупаемость вложений, конкуренцию зарплат, повторение неудачных целей. Участнические аукционы P14 проверены; выдача P15 и поставочные договоры P16 проверены; первый рейс P17a реализован; оставшиеся P17b/выборы ещё не реализованы. Их нельзя считать проверенными по успеху набора.
 
@@ -172,3 +172,17 @@ python scripts/check_headless.py --output artifacts/headless-p17-p18
 Queue cycle226ticks:13+7 по ближайшему сроку рейсами10+3+7, затем own output10; зарплата1800minor. Save185 сохраняет активный рейс и ожидающие задания. Demand cycle185ticks:cash0→harvest2wood→physical spot sale,4 периодических бюджета и retirement старых остатков; save85 внутри периода. NPC demand350→1000 восстанавливает реальные планы/очереди/рыночные фазы, не проигрывает первые350 ticks.
 
 capital-demand.json — researcher periods/G/base consumed/stock delta/smoothing/target/orderedBase/monetary budget/external funding и private state; не controller prompt. Observation содержит CapitalPrices и16 периодов опубликованной истории, private cycles/RNG исключены. Current World10/Rules capital-demand-1, Session2/Envelope1. Null CapitalDemandSettings оставляет исторический fixed-order fixture; новые настройки не применяются скрыто к старому балансу. Следующее P19; device gate открыт.
+
+## Выборы P19
+
+```bash
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/elections.json --script elections --output artifacts/elections
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/elections.json --script elections --checkpoint artifacts/elections.save.json --checkpoint-at 9 --output artifacts/elections-saved
+dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/elections.save.json --output artifacts/elections-loaded
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/elections.json --script elections --replay artifacts/elections/commands.jsonl --ticks 40 --output artifacts/elections-replayed
+python scripts/verify_checkpoint_exports.py artifacts/elections artifacts/elections-loaded artifacts/elections artifacts/elections-replayed
+```
+
+Fixture: numerical employment30/20/10/0, population100, period10/base1. В первом голосовании A получает32/64 и не побеждает. Во втором прямые B→A/C→B дают A52/B11/D1; tick20 first winnerA. Tick21 ContinueAfterVictory, затем настоящая ручная добыча в песочнице. elections.json содержит snapshot результатов и полный research state, а не loadable save. ControllerObservation.Elections показывает только собственный pending choice и публичные результаты.
+
+В обычном мире Elections=null включает period1200/base1, а не выключает выборы. World11/Rules elections-1 несовместимы со старыми saves; сохранения разных правил держать отдельно. Explicit regeneration после проверенного gate: `python scripts/update_platform_fixture.py artifacts/cycle --elections-directory artifacts/elections`. Godot smoke проверяет62экономических и40выборных hashes, включая file restores9/19/20/21 перед выборами/победой/песочницей. [Отчёт P19](IMPLEMENTATION_REPORT_P19.md). Следующий этап P20, не реализован.
