@@ -554,3 +554,10 @@ LogisticsState сохраняет либо ContractId, либо OwnDestination W
 Prepare резервирует destination capacity вместе с source stock/full wage budget; load превращает source stock в cargo и обещает обратное место в source. Приёмка в собственный склад атомарно превращает destination hold в stock, освобождает return place, не создаёт escrow/payment/emission. ReturningEmpty/payroll/end tick прежние. Stop запрещает новые trips, а текущий завершается. Full inventory ждёт без оплаты, освобождение места восстанавливает readiness/числовой найм.
 
 World7/Rules logistics-3, Session2/Envelope1. Сохранение/валидатор расширены own references/hold ownership/path endpoints, private destination виден только owner/researcher. World1–6 явно отклоняются без migration, прежние файлы сохраняются. Остальные P17b части и полный Gate C/P21 не закрыты.
+
+
+## 23. P17: входящие поставки с независимым управлением
+
+InboundLogistics — конкретный Core module, без нового проекта/потоков. System.InboundSource/InboundEnabled независимы от исходящего ContractId/OwnDestination/Enabled и production. Один slot/group выбирает ready contract output, input shortage, own output, optional input refill; общая произвольная queue/fairness ещё не реализована. Item/quantity всегда из authoritatively validated recipe/stock/volume.
+
+Trip.InboundSource фиксирует goods source отдельно от home output inventory. Prepare stock/input capacity/full payroll; first leg FetchingEmpty/home→warehouse, ArrivalTick реально грузит cargo и source return capacity; ReturningInput/warehouse→home, EndTick принимает input и освобождает holds, последний payroll учитывается. Старый Trip.LoadTick для inbound — departure barrier пустой машины. Private references и reverse ownership/holds/time/state расширены в World8/Rules logistics-4, Session2/Envelope1, старые World1–7 без migration. Отчёт IMPLEMENTATION_REPORT_INBOUND.md; полный P17 ещё не закрыт.
