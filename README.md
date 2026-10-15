@@ -3,7 +3,7 @@
 Исследовательская экономическая игра с автономными NPC.
 Автор: Шелестов Максим Евгеньевич.
 
-В C# реализованы P00–P16 и P17a: тики/команды, деньги и конечные запасы, личное движение/добыча, две производственные цепочки, земля/стройка/уровни, числовой найм по зарплата³ с постепенными переходами, зарплата/энергия/неоплачиваемый простой, техника и direct checkpoint/load. Три алгоритмических NPC сами развивают хозяйства без модели. Слот человека в автономном консольном стенде бездействует; свободный игровой ввод/интерфейс ещё не готов.
+В C# реализованы P00–P16, P17a и P17b1: тики/команды, деньги и конечные запасы, личное движение/добыча, две производственные цепочки, земля/стройка/уровни, числовой найм по зарплата³ с постепенными переходами, зарплата/энергия/неоплачиваемый простой, техника и direct checkpoint/load. Три алгоритмических NPC сами развивают хозяйства без модели. Слот человека в автономном консольном стенде бездействует; свободный игровой ввод/интерфейс ещё не готов.
 
 ## Быстрый запуск без Python и Godot
 
@@ -93,4 +93,13 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --scenario sce
 
 75 ticks: wood20→plank10, автопоставка10, возврат машины; logistics wages300minor, all wages800, supplier108200/buyer70000, total200000. Purchase creates N0, группа нанимается из population4. Source/cargo/return place/full wage holds настоящие; груз не телепортируется. [Отчёт P17a](docs/IMPLEMENTATION_REPORT_P17A.md), [местная проверка](docs/LOCAL_SETUP.md). Full P17 ещё не завершён, NPC пока не выбирают новые маршруты (P21).
 
-Current World5/Rules logistics-1, Session2/Envelope1; World1–4 не мигрируются. Новые paths сохраняют прежние files/branches. [Готовность MVP~60% и предложение исследований](docs/RESEARCH_READINESS.md): complete algorithmic headless P21, real model pilots P22/P23, series/analysis P24/P25. Это оценки/gates, не проведённые научные эксперименты.
+Исторический P17a: World5/Rules logistics-1, Session2/Envelope1; World1–4 не мигрируются. Новые paths сохраняют прежние files/branches. [Готовность MVP~60% и предложение исследований](docs/RESEARCH_READINESS.md): complete algorithmic headless P21, real model pilots P22/P23, series/analysis P24/P25. Это оценки/gates, не проведённые научные эксперименты.
+
+
+P17b1 — улучшение транспорта: [PR](https://github.com/MaksShelest/Delsk/pull/12), ветка `feat/logistics-upgrade-p17b1`.
+
+```powershell
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/logistics-upgrade.json --script logistics-upgrade --output artifacts/logistics-upgrade
+```
+
+Проверено176 ticks:60wood→30plank,10 на upgrade за30000minor,20 доставлено одним реальным рейсом. Вместимость10→20, экипаж min/capacity2→3, численность через обычный найм.308/308 tests,12scenarios/9load pairs, Windows62hashes. [Отчёт](docs/IMPLEMENTATION_REPORT_P17B1.md). Current World6/Rules logistics-2, Session2/Envelope1; World1–5 не мигрируются. Новые APK/EXE/device tests не проводились. Следующий ограниченный шаг P17b2 — own output destination до заполнения; остальная логистика/политика/model/UI по плану, full P17 ещё не готов.

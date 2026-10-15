@@ -538,3 +538,10 @@ Phase3 внутренние arrivals перед local actions использую
 Snapshot5 сохраняет LogisticsView/EmploymentGroup/Trip immutable path/progress, route, cargo/source references, committed wage/budget/paid, stock/cargo/return/salary hold IDs. Reverse validators и NextId включают все новые records/holds; trip counters/time/path/cargo/ledger wage-events/role refs проверяются. OwnLogistics только владельцу, full Inspect/logistics.json исследователю. Производство Source/Output и новые Cargo inventories входят в общий I05 один раз.
 
 Rules logistics-1, World5/Session2/Envelope1. World1–4 не мигрируются, прежние files/branches сохранены; новый Godot path по RulesVersion. Platform fixture shape/hash обновлять только после unchanged economic number checks. Наука/оценка готовности и предложенные темы отдельно в RESEARCH_READINESS.md, не как новые игровые правила.
+
+
+## 21. Улучшение логистики P17b1
+
+UpgradeLogistics сохраняет один system/slot/group и его ID/численность, оплачивает казне цену и расходует свободные материалы из встроенных Input→Output предприятия в одной EconomyTransaction. Покупатель idle/у предприятия, система выключена и без Trip. Уровень2 увеличивает cargo capacity и места/minCrew по nullable LogisticsSettings.Upgrade (immutable MaterialCost array); NextLogisticsCost/planning/labor minimum/restore используют характеристики конкретного уровня. Ставка сохраняется, current/pending payroll проверяются на overflow до commit; новых работников upgrade не создаёт. Производство и транспорт остаются разными ролями.
+
+World6/Rules logistics-2 сохраняет Level в LogisticsView/SavedLogistics; reverse validation сверяет group/cargo с каталогом уровня. World1–5 без миграции, Session2/Envelope1 прежние. Core308 tests/12scenarios/9load pairs и Windows probe подтверждены в отчёте P17B1; исходный game_specification.md неизменён. Очереди/свои направления/полная late-return система ещё не реализованы; P17 целиком остаётся открыт.

@@ -84,7 +84,7 @@ public sealed partial class SimulationEngine
         .Select(e => new LaborWorkplace(e.Group, e.Recipe.MinimumStaff, VacancyReason(e), n => NextWorkCost(e, n)))
         .Concat(_equipment.Values.Select(e => new LaborWorkplace(e.Group, e.Characteristics.MinimumCrew,
             EquipmentVacancyReason(e), n => NextEquipmentCost(e, n))))
-        .Concat(_logistics.Values.Select(e => new LaborWorkplace(e.Group, Logistics.MinimumCrew,
+        .Concat(_logistics.Values.Select(e => new LaborWorkplace(e.Group, e.MinimumCrew,
             LogisticsVacancyReason(e), n => NextLogisticsCost(e))))
         .OrderBy(e => e.Group.Id).ToArray();
 

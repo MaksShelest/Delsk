@@ -1,5 +1,28 @@
 namespace Simulation.Core;
 
+public static partial class ScenarioValidation
+{
+    private static void ValidateLogisticsUpgrade(ScenarioDefinition s)
+    {
+        if (s.Logistics?.Upgrade is not { } upgrade) return;
+        var settings = s.Logistics!;
+        if (upgrade.PriceMinor <= 0 || upgrade.CargoCapacity < settings.CargoCapacity ||
+            upgrade.MinimumCrew < settings.MinimumCrew || upgrade.CrewCapacity < settings.CrewCapacity ||
+            upgrade.CrewCapacity < upgrade.MinimumCrew || upgrade.CrewCapacity > 1000 ||
+            upgrade.Materials.IsDefault || upgrade.Materials.Length > s.Items.Length ||
+            upgrade.Materials.Any(m => m is null || m.Quantity <= 0 || !s.Items.Any(i => i.Id == m.ItemId)) ||
+            upgrade.Materials.Select(m => m.ItemId).Distinct(StringComparer.Ordinal).Count() != upgrade.Materials.Length)
+            throw new ArgumentException("Invalid logistics upgrade");
+        try
+        {
+            _ = checked(upgrade.CrewCapacity * settings.WageMinor *
+                Math.Max(2L, 2L * (s.MapWidth * s.MapHeight - 1) * settings.MoveTicksPerCell));
+            foreach (var m in upgrade.Materials) _ = checked(m.Quantity * s.Items.Single(i => i.Id == m.ItemId).UnitVolume);
+        }
+        catch (OverflowException ex) { throw new ArgumentException("Logistics upgrade arithmetic overflow", ex); }
+    }
+}
+
 public sealed partial class SimulationEngine
 {
     private void ValidateLogisticsInvariants()
@@ -10,9 +33,9 @@ public sealed partial class SimulationEngine
             if (l.Id < 1000 || !facilities.Add(l.Enterprise) || !cargoIds.Add(l.Cargo) ||
                 !_enterprises.TryGetValue(l.Enterprise, out var enterprise) || l.Owner != enterprise.Definition.OwnerId ||
                 l.Source != enterprise.Output || l.Group.Id != l.Id || l.Group.Owner != l.Owner ||
-                l.Group.Role != EmploymentRole.Logistics || l.Group.Capacity != Logistics.CrewCapacity ||
+                l.Group.Role != EmploymentRole.Logistics || l.Group.Capacity != l.CrewCapacity ||
                 !_economy.Inventories.TryGetValue(l.Cargo, out var cargo) || cargo.Owner != l.Owner ||
-                cargo.Capacity != Logistics.CargoCapacity || l.Completed < 0 ||
+                cargo.Capacity != l.CargoCapacity || l.Completed < 0 ||
                 (l.Contract != 0 && !_deliveryContracts.Any(d => d.Id == l.Contract && d.Supplier.Value == l.Owner)))
                 throw new InvalidOperationException("Invalid logistics system");
             var source = _economy.Inventories[l.Source];

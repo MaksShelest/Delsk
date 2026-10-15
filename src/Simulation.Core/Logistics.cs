@@ -32,13 +32,43 @@ public sealed partial class SimulationEngine
         l.Reason = l.Enabled ? "Waiting" : "UserPaused";
         Emit("LogisticsContractSet", actor.Id, l.Id, reason: l.Reason, command: c.CommandId);
     }
+    private void UpgradeLogistics(ActorState actor, CommandEnvelope c)
+    {
+        if (!_logistics.TryGetValue(c.Action.Logistics.Value, out var l) || l.Owner != actor.Id)
+            throw new RuleViolation("NotAvailable");
+        RequireIdle(actor);
+        var enterprise = _enterprises[l.Enterprise];
+        if (actor.Position != enterprise.Definition.Position) throw new RuleViolation("NotAtLocation");
+        if (l.Enabled || l.Trip is not null) throw new RuleViolation("LogisticsNotSafe");
+        var upgrade = Logistics.Upgrade;
+        if (l.Level != 1 || upgrade is null) throw new RuleViolation("MaxLogisticsLevel");
+        long maximumTicks = Math.Max(2L, 2L * (_config.MapWidth * _config.MapHeight - 1) * Logistics.MoveTicksPerCell);
+        _ = checked(upgrade.CrewCapacity * l.Group.Wage * maximumTicks);
+        if (l.Group.PendingWage is { } pending) _ = checked(upgrade.CrewCapacity * pending * maximumTicks);
+        var materials = upgrade.Materials.ToArray();
+        var consumed = PrepareMaterialFlows(materials);
+        var tx = _economy.Begin(Tick);
+        foreach (var material in materials)
+        {
+            long fromInput = Math.Min(material.Quantity, _economy.Inventories[enterprise.Input].Free(material.ItemId));
+            if (fromInput > 0) tx.RemoveFreeStock(enterprise.Input, material.ItemId, fromInput);
+            long remainder = checked(material.Quantity - fromInput);
+            if (remainder > 0) tx.RemoveFreeStock(enterprise.Output, material.ItemId, remainder);
+        }
+        tx.Pay(actor.Account, _treasury, upgrade.PriceMinor, "LogisticsUpgrade");
+        tx.SetCapacity(l.Cargo, upgrade.CargoCapacity); tx.Commit();
+        l.Level = 2; l.Group.Capacity = upgrade.CrewCapacity;
+        foreach (var pair in consumed) _flows[pair.Key].ConstructionInput = pair.Value;
+        Emit("LogisticsUpgraded", actor.Id, l.Id, money: upgrade.PriceMinor, command: c.CommandId);
+        EmitMaterialConsumption(actor.Id, l.Id, materials, c.CommandId);
+    }
     private (int Index, Cell[] Path, long Quantity, long LegTicks) LogisticsPlan(LogisticsState l)
     {
         if (!l.Enabled) throw new RuleViolation("UserPaused");
         int index = _deliveryContracts.FindIndex(d => d.Id == l.Contract && d.Supplier.Value == l.Owner && d.ClosedTick is null);
         if (index < 0) throw new RuleViolation("NoActiveContract");
         var d = _deliveryContracts[index]; var source = _economy.Inventories[l.Source];
-        long quantity = Math.Min(source.Free(d.ItemId), Math.Min(d.UnprovidedQuantity, Logistics.CargoCapacity / _items[d.ItemId].UnitVolume));
+        long quantity = Math.Min(source.Free(d.ItemId), Math.Min(d.UnprovidedQuantity, l.CargoCapacity / _items[d.ItemId].UnitVolume));
         if (quantity <= 0) throw new RuleViolation(d.UnprovidedQuantity == 0 ? "NoUnassignedQuota" : "NoStock");
         Cell[] path = _map.FindPath(source.Position, d.Position);
         long leg = Math.Max(1, checked((path.Length - 1L) * Logistics.MoveTicksPerCell));
@@ -78,7 +108,7 @@ public sealed partial class SimulationEngine
         }
         string reason = LogisticsVacancyReason(l);
         if (reason != "Ready") { l.Reason = reason; return; }
-        if (l.Group.Headcount < Logistics.MinimumCrew) { l.Reason = "NoStaff"; return; }
+        if (l.Group.Headcount < l.MinimumCrew) { l.Reason = "NoStaff"; return; }
         try
         {
             var plan = LogisticsPlan(l); var d = _deliveryContracts[plan.Index]; long id = _nextId, next = checked(id + 1);
@@ -158,7 +188,7 @@ public sealed partial class SimulationEngine
         foreach (var s in saved)
         {
             var v = s.View; var l = new LogisticsState(v.Id.Value, v.OwnerId.Value, v.EnterpriseId.Value,
-                v.SourceInventory.Value, v.CargoInventory.Value, Logistics)
+                v.SourceInventory.Value, v.CargoInventory.Value, Logistics, v.Level)
                 { Enabled = v.Enabled, Contract = v.ContractId, Reason = v.ReasonCode, Completed = v.CompletedTrips, Trip = v.Trip };
             LoadGroup(l.Group, s.Group); _logistics.Add(l.Id, l);
         }
