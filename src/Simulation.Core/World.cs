@@ -137,6 +137,7 @@ public static partial class ScenarioValidation
         if (s.Items.Length == 0 || s.Items.Select(i => i.Id).Distinct().Count() != s.Items.Length ||
             s.Items.Any(i => string.IsNullOrWhiteSpace(i.Id) || i.Id.Length > 50 || i.UnitVolume <= 0 || i.BasePriceMinor <= 0))
             throw new ArgumentException("Invalid item catalog");
+        ValidateLogisticsUpgrade(s);
         var items = s.Items.ToDictionary(i => i.Id, StringComparer.Ordinal);
         if (s.Recipes.Select(r => r.Id).Distinct().Count() != s.Recipes.Length || s.Recipes.Any(r =>
             string.IsNullOrWhiteSpace(r.Id) || !items.ContainsKey(r.InputItem) || !items.ContainsKey(r.OutputItem) ||

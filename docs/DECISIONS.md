@@ -290,3 +290,15 @@
 - World5/Rules logistics-1, Session2/Envelope1. World1–4 отклоняются без migration. Старые saves не удалять/не overwite; новая Godot/проверочная output path версии. Новый logistics.json входит в byte continuation; исследования читают фактические выгрузки C#.
 - Первая build не прошла CS0136 (pattern variable/new local одинаковое имя), исправлено. Один ранний baseline command был запущен со старыми assemblies после failed build и исключён из evidence текущего кода; заново построенная версия и baseline249 проверены. Итоговый headless281/11 scenarios/8 load pairs реально прошёл. Эти факты отражены в отчёте, не подменяются count предыдущей сборки.
 - Готовность согласованного MVP оценена приблизительно~60% (субъективные веса, не percent time/code). Полная algorithmic headless система после P21; real-model pilots P22/P23, основные series/analysis P24/P25, UI P26 не нужен вычислительному эксперименту. Подробные предложения и первичные источники — RESEARCH_READINESS.md. Тема/результаты диссертации этим документом окончательно не утверждены; реальный model experiment ещё не проведён.
+
+
+## 17. P17b1: улучшение логистики (15.10.2026)
+
+Автор: Шелестов Максим Евгеньевич.
+
+- Отдельная вертикальная часть P17b: Level1→2 без дополнительных машин/групп. Nullable Upgrade в настройках включается явным контентом; sample30000minor/10plank/cargo20/minimum+capacity crew3, скорость прежняя. Это прежние допущения §3, не новый игровой баланс.
+- Для upgrade владелец физически у предприятия, idle, система выключена, Trip=null. Атомарный расход из Input→Output предприятия, деньги в казну; ConstructionInput. Производство не требуется останавливать, если оно не использует нужные свободные материалы: отдельные роли остаются независимыми.
+- ID/численность/ставки/контракт сохраняются; новые места не означают новый штат. Текущая/pending ставка проверяются на overflow для новой верхней payroll capacity до transaction.
+- World6/Rules logistics-2 добавляют уровень в saved LogisticsView, structural cross-check с group/cargo. World1–5 без миграции, старые saves/ветки сохранять. Session2/Envelope1 неизменны.
+- Текущая среда без .NET/Godot; скачивание SDK блокируется proxy timeout. Фактические проверки и ограничения — IMPLEMENTATION_REPORT_P17B1.md; статус CI не заменять предполагаемым успехом.
+- Очереди/общие destinations/полный independent stop/controlled late return/crew perturbations остаются P17b, P18 и далее не добавлялись.

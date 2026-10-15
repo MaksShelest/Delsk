@@ -141,6 +141,12 @@ def verify(folder):
     for system in systems:
         cargo = inventories[system['cargoInventory']['value']]
         assert cargo['ownerId'] == system['ownerId']
+        rules = config.get('logistics') or {'cargoCapacity':10, 'crewCapacity':2}
+        level = system['level']; assert level in [1, 2]
+        characteristics = rules if level == 1 else rules['upgrade']
+        assert cargo['capacity'] == characteristics['cargoCapacity']
+        group = next(g for g in state['employmentGroups'] if g['id'] == system['groupId'])
+        assert group['capacity'] == characteristics['crewCapacity']
         if system['trip'] is None: assert not cargo['stock']
         else:
             trip = system['trip']; assert trip['position'] == cargo['position']

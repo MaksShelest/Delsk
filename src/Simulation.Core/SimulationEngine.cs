@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "logistics-1";
+    public const string RulesVersion = "logistics-2";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -190,6 +190,7 @@ public sealed partial class SimulationEngine
                 case ActionKind.CancelBuyOffer: CancelBuyOffer(actor, c); break;
                 case ActionKind.DeliverContract: DeliverContract(actor, c); break;
                 case ActionKind.BuyLogistics: BuyLogistics(actor, c); break;
+                case ActionKind.UpgradeLogistics: UpgradeLogistics(actor, c); break;
                 case ActionKind.SetLogisticsContract: SetLogisticsContract(actor, c); break;
                 default: throw new RuleViolation("UnknownAction");
             }

@@ -3,8 +3,11 @@ using System.Collections.Immutable;
 namespace Simulation.Core;
 
 public readonly record struct LogisticsId(long Value);
+public record LogisticsUpgradeDefinition(long PriceMinor, ImmutableArray<MaterialCost> Materials,
+    long CargoCapacity, int MinimumCrew, int CrewCapacity);
 public record LogisticsSettings(long PurchasePriceMinor = 20000, long CargoCapacity = 10,
-    int MoveTicksPerCell = 1, int MinimumCrew = 2, int CrewCapacity = 2, long WageMinor = 25);
+    int MoveTicksPerCell = 1, int MinimumCrew = 2, int CrewCapacity = 2, long WageMinor = 25,
+    LogisticsUpgradeDefinition? Upgrade = null);
 public record LogisticsTripView(long Id, long ContractId, string ItemId, long Quantity, string State,
     long PreparedTick, long LoadTick, long ArrivalTick, long EndTick, Cell Position,
     ImmutableArray<Cell> Path, int PathIndex, int SegmentTicks, long CommittedWageMinor,
@@ -14,21 +17,34 @@ public record LogisticsTripView(long Id, long ContractId, string ItemId, long Qu
 }
 public record LogisticsView(LogisticsId Id, ParticipantId OwnerId, EnterpriseId EnterpriseId,
     InventoryId SourceInventory, InventoryId CargoInventory, EmploymentGroupId GroupId,
-    bool Enabled, long ContractId, string ReasonCode, long CompletedTrips, LogisticsTripView? Trip);
+    bool Enabled, long ContractId, string ReasonCode, long CompletedTrips, LogisticsTripView? Trip, int Level);
 internal record SavedLogistics(LogisticsView View, EmploymentView Group);
-internal sealed class LogisticsState(long id, long owner, long enterprise, long source, long cargo, LogisticsSettings settings)
+internal sealed class LogisticsState(long id, long owner, long enterprise, long source, long cargo,
+    LogisticsSettings settings, int level = 1)
 {
     public long Id { get; } = id;
     public long Owner { get; } = owner;
     public long Enterprise { get; } = enterprise;
     public long Source { get; } = source;
     public long Cargo { get; } = cargo;
-    public EmploymentGroup Group { get; } = new(id, owner, 0, settings.CrewCapacity, settings.WageMinor, EmploymentRole.Logistics);
+    public int Level { get; set; } = level;
+    public long CargoCapacity => Level switch { 1 => settings.CargoCapacity,
+        2 when settings.Upgrade is { } upgrade => upgrade.CargoCapacity,
+        _ => throw new InvalidOperationException("Invalid logistics level") };
+    public int MinimumCrew => Level switch { 1 => settings.MinimumCrew,
+        2 when settings.Upgrade is { } upgrade => upgrade.MinimumCrew,
+        _ => throw new InvalidOperationException("Invalid logistics level") };
+    public int CrewCapacity => Level switch { 1 => settings.CrewCapacity,
+        2 when settings.Upgrade is { } upgrade => upgrade.CrewCapacity,
+        _ => throw new InvalidOperationException("Invalid logistics level") };
+    public EmploymentGroup Group { get; } = new(id, owner, 0,
+        level == 2 && settings.Upgrade is { } upgrade ? upgrade.CrewCapacity : settings.CrewCapacity,
+        settings.WageMinor, EmploymentRole.Logistics);
     public bool Enabled { get; set; }
     public long Contract { get; set; }
     public string Reason { get; set; } = "NoDestination";
     public long Completed { get; set; }
     public LogisticsTripView? Trip { get; set; }
     public LogisticsView View() => new(new(Id), new(Owner), new(Enterprise), new(Source), new(Cargo), new(Id),
-        Enabled, Contract, Reason, Completed, Trip);
+        Enabled, Contract, Reason, Completed, Trip, Level);
 }
