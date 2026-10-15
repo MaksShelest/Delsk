@@ -35,7 +35,9 @@ public sealed partial class SimulationEngine
                 l.Source != enterprise.Output || l.Group.Id != l.Id || l.Group.Owner != l.Owner ||
                 l.Group.Role != EmploymentRole.Logistics || l.Group.Capacity != l.CrewCapacity ||
                 !_economy.Inventories.TryGetValue(l.Cargo, out var cargo) || cargo.Owner != l.Owner ||
-                cargo.Capacity != l.CargoCapacity || l.Completed < 0 ||
+                cargo.Capacity != l.CargoCapacity || l.Completed < 0 || l.Contract < 0 || l.Destination < 0 ||
+                (l.Contract != 0 && l.Destination != 0) ||
+                (l.Destination != 0 && !IsOwnLogisticsStorage(l.Owner, l.Destination)) ||
                 (l.Contract != 0 && !_deliveryContracts.Any(d => d.Id == l.Contract && d.Supplier.Value == l.Owner)))
                 throw new InvalidOperationException("Invalid logistics system");
             var source = _economy.Inventories[l.Source];
@@ -46,14 +48,21 @@ public sealed partial class SimulationEngine
                 continue;
             }
             var d = _deliveryContracts.SingleOrDefault(d => d.Id == t.ContractId);
-            if (d is null || d.Supplier.Value != l.Owner || t.ContractId != l.Contract || !tripIds.Add(t.Id) ||
-                t.Id < 1000 || t.Quantity <= 0 || t.ItemId != d.ItemId || t.Quantity > d.Quantity ||
+            bool own = t.OwnDestination.Value != 0;
+            if (own ? t.ContractId != 0 || l.Contract != 0 || t.OwnDestination.Value != l.Destination ||
+                    !IsOwnLogisticsStorage(l.Owner, t.OwnDestination.Value) || t.State == "ReturningCargo" :
+                d is null || l.Destination != 0 || d.Supplier.Value != l.Owner || t.ContractId != l.Contract ||
+                    t.ItemId != d.ItemId || t.Quantity > d.Quantity || t.ArrivalTick > d.DeadlineTick)
+                throw new InvalidOperationException("Invalid logistics destination");
+            Cell destination = own ? _economy.Inventories[t.OwnDestination.Value].Position : d!.Position;
+            if (!tripIds.Add(t.Id) || t.Id < 1000 || t.Quantity <= 0 || !_items.ContainsKey(t.ItemId) ||
+                t.Quantity > l.CargoCapacity / _items[t.ItemId].UnitVolume ||
                 t.PreparedTick < 1 || t.PreparedTick > Tick || t.LoadTick != t.PreparedTick + 1 ||
                 t.Path.IsDefaultOrEmpty || t.Path.Any(p => !_map.Walkable(p)) ||
                 t.Path.Zip(t.Path.Skip(1)).Any(p => Math.Abs(p.First.X - p.Second.X) + Math.Abs(p.First.Z - p.Second.Z) != 1) ||
                 t.CommittedWageMinor <= 0 || t.WageBudgetMinor != checked(l.Group.Capacity * t.CommittedWageMinor * (t.EndTick - t.LoadTick)) ||
                 t.ArrivalTick != checked(t.LoadTick + Math.Max(1L, (t.Path.Length - 1L) * Logistics.MoveTicksPerCell)) ||
-                t.EndTick != checked(t.ArrivalTick + t.ArrivalTick - t.LoadTick) || t.ArrivalTick > d.DeadlineTick ||
+                t.EndTick != checked(t.ArrivalTick + t.ArrivalTick - t.LoadTick) ||
                 t.WagesPaidMinor < 0 || t.WagesPaidMinor > t.WageBudgetMinor ||
                 t.StockHold != $"logistics-stock:{t.Id}" || t.ReturnHold != $"logistics-return:{t.Id}" || t.WageHold != $"logistics-wage:{t.Id}" ||
                 cargo.Position != t.Position || t.PathIndex < 0 || t.PathIndex >= t.Path.Length ||
@@ -61,7 +70,7 @@ public sealed partial class SimulationEngine
                 t.State is not ("Loading" or "Outbound" or "ReturningEmpty" or "ReturningCargo"))
                 throw new InvalidOperationException("Invalid logistics trip");
             bool outbound = t.State is "Loading" or "Outbound";
-            if (t.Path[0] != (outbound ? source.Position : d.Position) || t.Path[^1] != (outbound ? d.Position : source.Position) ||
+            if (t.Path[0] != (outbound ? source.Position : destination) || t.Path[^1] != (outbound ? destination : source.Position) ||
                 (t.State == "Loading" ? Tick != t.PreparedTick || t.PathIndex != 0 || t.SegmentTicks != 0 || t.WagesPaidMinor != 0 :
                  outbound ? Tick < t.LoadTick || Tick >= t.ArrivalTick : Tick < t.ArrivalTick || Tick >= t.EndTick))
                 throw new InvalidOperationException("Logistics path/time mismatch");
@@ -80,6 +89,9 @@ public sealed partial class SimulationEngine
             long expectedReturn = quantity > 0 ? checked(t.Quantity * _items[t.ItemId].UnitVolume) : 0;
             if (source.CapacityHolds.GetValueOrDefault(t.ReturnHold) != expectedReturn)
                 throw new InvalidOperationException("Logistics return capacity mismatch");
+            if (own && _economy.Inventories[t.OwnDestination.Value].CapacityHolds.GetValueOrDefault(t.DestinationHold) !=
+                (outbound ? checked(t.Quantity * _items[t.ItemId].UnitVolume) : 0))
+                throw new InvalidOperationException("Logistics destination capacity mismatch");
         }
     }
     private void AddExpectedLogisticsHolds(Dictionary<(long Inventory, string Hold), long> capacity,
@@ -88,6 +100,8 @@ public sealed partial class SimulationEngine
         foreach (var l in _logistics.Values.Where(l => l.Trip is not null))
         {
             var t = l.Trip!;
+            if (t.OwnDestination.Value != 0 && t.State is "Loading" or "Outbound")
+                capacity.Add((t.OwnDestination.Value, t.DestinationHold), checked(t.Quantity * _items[t.ItemId].UnitVolume));
             if (t.State == "Loading") stock.Add((l.Source, t.StockHold), new(t.ItemId, t.Quantity));
             if (t.State is "Outbound" or "ReturningCargo")
             {

@@ -145,11 +145,22 @@ def verify(folder):
         level = system['level']; assert level in [1, 2]
         characteristics = rules if level == 1 else rules['upgrade']
         assert cargo['capacity'] == characteristics['cargoCapacity']
+        own = system['ownDestination']['value']
+        if own:
+            assert system['contractId'] == 0
+            building = next(b for b in state['buildings'] if b['inputId']['value'] == own)
+            assert building['ownerId'] == system['ownerId'] and building['kind'] in ['Warehouse', 'Shop']
         group = next(g for g in state['employmentGroups'] if g['id'] == system['groupId'])
         assert group['capacity'] == characteristics['crewCapacity']
         if system['trip'] is None: assert not cargo['stock']
         else:
             trip = system['trip']; assert trip['position'] == cargo['position']
+            assert trip['ownDestination']['value'] == own
+            assert trip['contractId'] == system['contractId']
+            if own:
+                assert trip['state'] != 'ReturningCargo'
+                if trip['state'] in ['Loading', 'Outbound']:
+                    assert inventories[own]['reservedCapacity'] >= trip['quantity'] * items[trip['itemId']]
             q = trip['quantity'] if trip['state'] in ['Outbound','ReturningCargo'] else 0
             assert sum(s['quantity'] for s in cargo['stock']) == q
             assert sum(s['reserved'] for s in cargo['stock']) == q

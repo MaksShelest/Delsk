@@ -545,3 +545,12 @@ Rules logistics-1, World5/Session2/Envelope1. World1–4 не мигрируют
 UpgradeLogistics сохраняет один system/slot/group и его ID/численность, оплачивает казне цену и расходует свободные материалы из встроенных Input→Output предприятия в одной EconomyTransaction. Покупатель idle/у предприятия, система выключена и без Trip. Уровень2 увеличивает cargo capacity и места/minCrew по nullable LogisticsSettings.Upgrade (immutable MaterialCost array); NextLogisticsCost/planning/labor minimum/restore используют характеристики конкретного уровня. Ставка сохраняется, current/pending payroll проверяются на overflow до commit; новых работников upgrade не создаёт. Производство и транспорт остаются разными ролями.
 
 World6/Rules logistics-2 сохраняет Level в LogisticsView/SavedLogistics; reverse validation сверяет group/cargo с каталогом уровня. World1–5 без миграции, Session2/Envelope1 прежние. Core308 tests/12scenarios/9load pairs и Windows probe подтверждены в отчёте P17B1; исходный game_specification.md неизменён. Очереди/свои направления/полная late-return система ещё не реализованы; P17 целиком остаётся открыт.
+
+
+## 22. Собственное исходящее назначение P17b2
+
+LogisticsState сохраняет либо ContractId, либо OwnDestination Warehouse/Shop.Input. SetLogisticsStorage — remote management/own access, item из текущего recipe output, quantity из свободного output/cargo/destination volume. Planning общий для contract/own; immutable Trip хранит фиксированные item/quantity/own recipient и path. Один прежний slot/group, без лишнего транспорта/работников.
+
+Prepare резервирует destination capacity вместе с source stock/full wage budget; load превращает source stock в cargo и обещает обратное место в source. Приёмка в собственный склад атомарно превращает destination hold в stock, освобождает return place, не создаёт escrow/payment/emission. ReturningEmpty/payroll/end tick прежние. Stop запрещает новые trips, а текущий завершается. Full inventory ждёт без оплаты, освобождение места восстанавливает readiness/числовой найм.
+
+World7/Rules logistics-3, Session2/Envelope1. Сохранение/валидатор расширены own references/hold ownership/path endpoints, private destination виден только owner/researcher. World1–6 явно отклоняются без migration, прежние файлы сохраняются. Остальные P17b части и полный Gate C/P21 не закрыты.

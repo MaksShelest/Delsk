@@ -11,13 +11,16 @@ public record LogisticsSettings(long PurchasePriceMinor = 20000, long CargoCapac
 public record LogisticsTripView(long Id, long ContractId, string ItemId, long Quantity, string State,
     long PreparedTick, long LoadTick, long ArrivalTick, long EndTick, Cell Position,
     ImmutableArray<Cell> Path, int PathIndex, int SegmentTicks, long CommittedWageMinor,
-    long WageBudgetMinor, long WagesPaidMinor, string StockHold, string ReturnHold, string WageHold)
+    long WageBudgetMinor, long WagesPaidMinor, string StockHold, string ReturnHold, string WageHold,
+    InventoryId OwnDestination = default)
 {
     public string CargoHold => $"logistics-cargo:{Id}";
+    public string DestinationHold => $"logistics-destination:{Id}";
 }
 public record LogisticsView(LogisticsId Id, ParticipantId OwnerId, EnterpriseId EnterpriseId,
     InventoryId SourceInventory, InventoryId CargoInventory, EmploymentGroupId GroupId,
-    bool Enabled, long ContractId, string ReasonCode, long CompletedTrips, LogisticsTripView? Trip, int Level);
+    bool Enabled, long ContractId, string ReasonCode, long CompletedTrips, LogisticsTripView? Trip, int Level,
+    InventoryId OwnDestination);
 internal record SavedLogistics(LogisticsView View, EmploymentView Group);
 internal sealed class LogisticsState(long id, long owner, long enterprise, long source, long cargo,
     LogisticsSettings settings, int level = 1)
@@ -42,9 +45,10 @@ internal sealed class LogisticsState(long id, long owner, long enterprise, long 
         settings.WageMinor, EmploymentRole.Logistics);
     public bool Enabled { get; set; }
     public long Contract { get; set; }
+    public long Destination { get; set; }
     public string Reason { get; set; } = "NoDestination";
     public long Completed { get; set; }
     public LogisticsTripView? Trip { get; set; }
     public LogisticsView View() => new(new(Id), new(Owner), new(Enterprise), new(Source), new(Cargo), new(Id),
-        Enabled, Contract, Reason, Completed, Trip, Level);
+        Enabled, Contract, Reason, Completed, Trip, Level, new(Destination));
 }
