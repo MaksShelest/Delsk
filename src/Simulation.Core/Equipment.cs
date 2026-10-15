@@ -136,7 +136,8 @@ public sealed partial class SimulationEngine
         {
             var g = groups[(n + (int)(Tick % groups.Length)) % groups.Length];
             if (g.Role == EmploymentRole.Production) AdvanceProduction(_enterprises[g.Id]);
-            else AdvanceEquipment(_equipment[g.Id]);
+            else if (g.Role == EmploymentRole.Extraction) AdvanceEquipment(_equipment[g.Id]);
+            else AdvanceLogisticsWork(_logistics[g.Id]);
         }
     }
     private long NextEquipmentCost(EquipmentState e, int staff) => checked(staff * (e.Group.PendingWage ?? e.Group.Wage));

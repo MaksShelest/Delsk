@@ -49,6 +49,7 @@ public sealed partial class SimulationEngine
         foreach (var d in _deliveryContracts)
         {
             if (!ids.Add(d.Id) || d.Id < 1000 || !_actors.ContainsKey(d.Supplier.Value) || !_items.ContainsKey(d.ItemId) ||
+                d.PreparedQuantity < 0 || d.InTransitQuantity < 0 || d.UnprovidedQuantity < 0 ||
                 d.Quantity <= 0 || d.UnitPriceMinor <= 0 || d.CreatedTick < 1 || d.CreatedTick >= Tick + 1 ||
                 d.DeadlineTick != checked(d.CreatedTick + Delivery.ContractTtlTicks) ||
                 d.CapacityHold != $"delivery:{d.Id}" || d.DeliveredQuantity < 0 || d.DeliveredQuantity > d.Quantity ||
@@ -87,6 +88,10 @@ public sealed partial class SimulationEngine
                 if (held != checked(d.RemainingQuantity * _items[d.ItemId].UnitVolume))
                     throw new InvalidOperationException("Delivery capacity reservation mismatch");
             }
+            long prepared = _logistics.Values.Where(l => l.Trip?.ContractId == d.Id && l.Trip.State == "Loading").Sum(l => l.Trip!.Quantity);
+            long transit = _logistics.Values.Where(l => l.Trip?.ContractId == d.Id && l.Trip.State == "Outbound").Sum(l => l.Trip!.Quantity);
+            if (d.PreparedQuantity != (active ? prepared : 0) || d.InTransitQuantity != (active ? transit : 0))
+                throw new InvalidOperationException("Delivery trip quota mismatch");
             ValidateDeliveryLedger(d);
         }
     }

@@ -1,6 +1,6 @@
 # Как запускать и проверять экономику без графики
 
-Автор: Шелестов Максим Евгеньевич. Состояние после P16, 14.10.2026.
+Автор: Шелестов Максим Евгеньевич. Состояние после P17a, 14.10.2026.
 
 ## Что выполняет прогон и зачем Python
 
@@ -14,7 +14,7 @@ Python сейчас лишь удобно запускает .NET-сборку/�
 
 ## Быстрый запуск в Rider или терминале Windows
 
-Получить ветку `feat/delivery-p16` (после её merge — текущую базовую ветку); безопасное обновление — [LOCAL_SETUP.md](LOCAL_SETUP.md). Открыть `Delsk.sln`. В терминале **корня репозитория**:
+Получить ветку `feat/logistics-p17a` (после её merge — текущую базовую ветку); безопасное обновление — [LOCAL_SETUP.md](LOCAL_SETUP.md). Открыть `Delsk.sln`. В терминале **корня репозитория**:
 
 ```powershell
 dotnet restore Delsk.sln --locked-mode --disable-parallel '-m:1'
@@ -80,7 +80,7 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --load artifac
 
 Первая команда сохраняет на350 **живой** мир и планы, затем продолжает до1000. Вторая непосредственно восстанавливает их и выполняет351…1000, не проигрывая первые350 тиков. Для автономного load конечный тик задаётся явно; seed/scenario/settings берутся из сохранения и не заменяются. `--checkpoint FILE` без checkpoint-at записывает состояние на конце прогона.
 
-Для старых synchronous fixtures checkpoint-at сначала записывает их полную командную ленту и сохраняет recorded cursor; такие saves знают финальный тик сами. Это не способ сохранения живых NPC. Session schema2 включает контроллеры. P16 World schema4/Rules delivery-1: старые World1–3 файлы не загружаются, автоматической миграции нет; оставить их для прежней версии кода. Декодированный сеанс с политиками требует `RestoreControllers` в composition root до Step; runner выполняет это сам. Неизвестная политика/версия отклоняется, контроллеры не исчезают молча.
+Для старых synchronous fixtures checkpoint-at сначала записывает их полную командную ленту и сохраняет recorded cursor; такие saves знают финальный тик сами. Это не способ сохранения живых NPC. Session schema2 включает контроллеры. P17a World schema5/Rules logistics-1: старые World1–4 файлы не загружаются, автоматической миграции нет; оставить их для прежней версии кода. Декодированный сеанс с политиками требует `RestoreControllers` в composition root до Step; runner выполняет это сам. Неизвестная политика/версия отклоняется, контроллеры не исчезают молча.
 
 `commands.jsonl` можно проиграть через `--replay PATH --scenario ... --ticks FINAL_TICK`: это повтор **мира** без повторного вызова NPC. Планы контроллеров проверять через checkpoint/load, не через command-only replay. Время отсутствия не продвигает мир. Исправный предыдущий файл — `.bak`; явный выбор backup: `--recover-backup true`. После corrupt main восстановиться и сохранить в новый путь; не вращать повреждённый main поверх backup.
 
@@ -89,12 +89,12 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --load artifac
 Если Python установлен:
 
 ```powershell
-python scripts/check_headless.py --output artifacts/headless-p16
+python scripts/check_headless.py --output artifacts/headless-p17a
 ```
 
-Она выполняет bounded restore/build,249 xUnit-тестов,5 прежних fixtures, market/pickup/delivery/capital-delivery и автономный прогон,7 пар save/load. Сверяет побайтно final-state/ledger/events/commands/metrics/labor/**controllers/decisions/agents**, затем независимо проверяет деньги, товар, вместимости и население. `artifacts/headless-p16/checks` содержит stdout/stderr/exit/timeout, `headless-check.json` — успешный итог. Сбой не маскируется и возвращает ненулевой код.
+Она выполняет bounded restore/build,281 xUnit-тестов,5 прежних fixtures, market/pickup/delivery/capital-delivery/logistics и автономный прогон,8 пар save/load. Сверяет побайтно final-state/ledger/events/commands/metrics/labor/**controllers/decisions/agents**, затем независимо проверяет деньги, товар, вместимости и население. `artifacts/headless-p17a/checks` содержит stdout/stderr/exit/timeout, `headless-check.json` — успешный итог. Сбой не маскируется и возвращает ненулевой код.
 
-Что это подтверждает: отсутствие отрицательных/повторных списаний, дублирования товара, потери численности, сохранение физической длительности и воспроизводимое продолжение. Что оценивать по данным отдельно: простаивание, накопление товара, окупаемость вложений, конкуренцию зарплат, повторение неудачных целей. Участнические аукционы P14 проверены; выдача P15 и поставочные договоры P16 проверены; авто-логистика/выборы ещё не реализованы. Их нельзя считать проверенными по успеху набора.
+Что это подтверждает: отсутствие отрицательных/повторных списаний, дублирования товара, потери численности, сохранение физической длительности и воспроизводимое продолжение. Что оценивать по данным отдельно: простаивание, накопление товара, окупаемость вложений, конкуренцию зарплат, повторение неудачных целей. Участнические аукционы P14 проверены; выдача P15 и поставочные договоры P16 проверены; первый рейс P17a реализован; оставшиеся P17b/выборы ещё не реализованы. Их нельзя считать проверенными по успеху набора.
 
 Полную экономику после P21 проверять **тем же C# runner без визуального оформления**: полноценный сценарий → ограниченный горизонт/результат → проверки → несколько одинаково настроенных seeds → сравнение выпуск/исполнение/безработица/победы/ошибки. Автоматизация серий и статистика — P24/P25; графики ещё не создаются. [Фактическая граница](PROTOTYPE_STATUS.md).
 
@@ -102,8 +102,8 @@ python scripts/check_headless.py --output artifacts/headless-p16
 
 ```powershell
 dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/market-window.json --script market --output artifacts/market
-dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/market-window.json --script market --checkpoint artifacts/market-p16.save.json --checkpoint-at 44 --output artifacts/market-saved
-dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/market-p16.save.json --output artifacts/market-loaded
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/market-window.json --script market --checkpoint artifacts/market-p17a.save.json --checkpoint-at 44 --output artifacts/market-saved
+dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/market-p17a.save.json --output artifacts/market-loaded
 ```
 
 Ожидается51 ticks. Seller физически добыл и привёз15 wood, publish36/cutoff41, shortage17, rounds41–46/46–51. Buyer2/3/4 requests6/8/3, final prices5/6/7 денег; allocations4/8/3, escrow89. Товар остаётся15 reserved в seller shop, у buyer пока0, seller cash100. На этом финальном тике выдача ещё не начата; её lifecycle проверяет отдельный P15 сценарий ниже. Market demo scripted; P13 NPC пока принимают наличные заказы столицы, новые bidding goals — P21.
@@ -137,3 +137,16 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --load artifac
 Набор после P16:249 tests,10 scenarios/7 save/load pairs,24 проверенных выгрузки. Сравниваются12 файлов (добавлен delivery.json). Cut delivery37 — physical outbound, capital-delivery3 — window/bond holds; unit tests дополнительно cuts1/3/7/14/17/21/34/37/41/46/47 с каждым последующим tick. Capital spot/future общее окно проверено отдельным xUnit и share ровно один budget, без второй эмиссии. Default bootstrap cash0 recovery всё ещё отдельная доступная spot sale.
 
 Current World4/Rules delivery-1; старые World1–3 files оставить для прежних веток, автоматической migration нет. Godot probe updated hashes после independent money/item checks; новый user save path по RulesVersion. Реальная ручная UI игра/авторейсы/модель/политика ещё не проверены и не готовы.
+
+
+## Первый транспортный цикл P17a
+
+`--scenario scenarios/logistics-cycle.json --script logistics --output artifacts/logistics`: supplier физически добывает20 wood, производит10 plank, покупает систему (N0), заключает delivery contract и назначает его системой. Worker groups полностью числовые; fixture ускоряет Labor step1/mobility1, group сначала нанимается. Route quota automatically10, без ручного повторного ввода. Prepare67/load68/arrival71/return74/final75, path2,0→5,0 и обратно. Logistics payroll50×6=300minor, полный wages800, supplier108200/buyer70000, total200000.
+
+На Loading quota R10/source stock hold10; Outbound I10/cargo reserved10/source return place10; при receipt I→D/cargo empty/return hold released, после return wage hold released. Generic Transfer managed cargo запрещён, manual receipt максимум U. Actual N и committed wage оплачиваются из upper capacity budget, новая ставка после end+1; idle неоплачиваемый. ETA>deadline не отправляется.
+
+`logistics.json` — системы/текущий trip/path/progress/holds/зарплата; final-state — real stocks; delivery.json — D/R/I/U; ledger — LogisticsPurchase/LogisticsWages/DeliveryPayment; events — prepare/load/accepted/completed; labor.csv — numerical crew/caps/readiness. Research Inspect может видеть весь cargo; чужие controllers получают только own projections. P17b queues/upgrades/все destinations/controlled late return и P21 policies ещё отсутствуют.
+
+Current набор281 tests/11 scenarios/8 save-load pairs,27 проверенных выгрузок,13 побайтных файлов каждой пары (добавлен logistics.json). Cut69 — outbound; unit cuts45/66/67/68/69/70/71/72/73/74 плюс зарплата и unused reserve cases. Headless сохраняет длительность перевозки, ускоряется только calculation. World5/Rules logistics-1 не мигрирует World1–4; сохранять предыдущие файлы/ветки. По умолчанию check_headless пишет artifacts/headless-p17a.
+
+[Исследовательская готовность и темы](RESEARCH_READINESS.md) описывает будущие пилоты/серии. Текущий regression подтверждает correctness этой реализации; эффект модели/новизну гипотез из него не выводить.
