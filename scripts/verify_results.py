@@ -155,15 +155,37 @@ def verify(folder):
         if system['trip'] is None: assert not cargo['stock']
         else:
             trip = system['trip']; assert trip['position'] == cargo['position']
-            assert trip['ownDestination']['value'] == own
-            assert trip['contractId'] == system['contractId']
-            if own:
+            incoming = trip['inboundSource']['value']
+            if incoming:
+                assert incoming == system['inboundSource']['value'] and trip['contractId'] == 0
+                factory = next(e for e in state['enterprises'] if e['id'] == system['enterpriseId'])
+                assert trip['ownDestination'] == factory['inputId']
+                assert trip['state'] in ['Loading', 'FetchingEmpty', 'ReturningInput']
+                assert inventories[trip['ownDestination']['value']]['reservedCapacity'] >= trip['quantity'] * items[trip['itemId']]
+            else:
+                assert trip['ownDestination']['value'] == own
+                assert trip['contractId'] == system['contractId']
+            if own and not incoming:
                 assert trip['state'] != 'ReturningCargo'
                 if trip['state'] in ['Loading', 'Outbound']:
                     assert inventories[own]['reservedCapacity'] >= trip['quantity'] * items[trip['itemId']]
-            q = trip['quantity'] if trip['state'] in ['Outbound','ReturningCargo'] else 0
+            q = trip['quantity'] if trip['state'] in ['Outbound','ReturningCargo','ReturningInput'] else 0
             assert sum(s['quantity'] for s in cargo['stock']) == q
             assert sum(s['reserved'] for s in cargo['stock']) == q
+            source = inventories[incoming or system['sourceInventory']['value']]
+            if q:
+                assert source['reservedCapacity'] >= q * items[trip['itemId']]
+            if not incoming and not own:
+                contract = next(d for d in contracts if d['id'] == trip['contractId'])
+                if trip['state'] == 'Loading':
+                    assert contract['closedTick'] is None and trip['arrivalTick'] <= contract['deadlineTick']
+                elif trip['state'] == 'ReturningCargo':
+                    assert contract['status'] == 'Expired' and contract['deadlineTick'] < trip['arrivalTick']
+                elif trip['state'] == 'ReturningEmpty':
+                    assert trip['arrivalTick'] <= contract['deadlineTick'] and contract['deliveredQuantity'] >= trip['quantity']
+            assert group['wageMinor'] == trip['committedWageMinor']
+            if group['payEffectiveTick'] is not None:
+                assert group['payEffectiveTick'] == trip['endTick'] + 1
             owner = accounts[people[system['ownerId']['value']]]
             assert owner['reservedMinor'] >= trip['wageBudgetMinor'] - trip['wagesPaidMinor'] >= 0
     events = [json.loads(line) for line in (folder/'events.jsonl').read_text(encoding='utf-8').splitlines()]

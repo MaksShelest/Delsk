@@ -19,4 +19,5 @@
   <ItemGroup><EmbeddedResource Include="../../scenarios/logistics-cycle.json" LogicalName="Fixture.logistics-cycle.json" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/logistics-upgrade.json" LogicalName="Fixture.logistics-upgrade.json" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/own-storage-cycle.json" LogicalName="Fixture.own-storage-cycle.json" /></ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/inbound-cycle.json" LogicalName="Fixture.inbound-cycle.json" /></ItemGroup>
 </Project>

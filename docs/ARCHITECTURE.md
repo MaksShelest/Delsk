@@ -554,3 +554,17 @@ LogisticsState сохраняет либо ContractId, либо OwnDestination W
 Prepare резервирует destination capacity вместе с source stock/full wage budget; load превращает source stock в cargo и обещает обратное место в source. Приёмка в собственный склад атомарно превращает destination hold в stock, освобождает return place, не создаёт escrow/payment/emission. ReturningEmpty/payroll/end tick прежние. Stop запрещает новые trips, а текущий завершается. Full inventory ждёт без оплаты, освобождение места восстанавливает readiness/числовой найм.
 
 World7/Rules logistics-3, Session2/Envelope1. Сохранение/валидатор расширены own references/hold ownership/path endpoints, private destination виден только owner/researcher. World1–6 явно отклоняются без migration, прежние файлы сохраняются. Остальные P17b части и полный Gate C/P21 не закрыты.
+
+
+## 23. P17: входящие поставки с независимым управлением
+
+InboundLogistics — конкретный Core module, без нового проекта/потоков. System.InboundSource/InboundEnabled независимы от исходящего ContractId/OwnDestination/Enabled и production. Один slot/group выбирает ready contract output, input shortage, own output, optional input refill; общая произвольная queue/fairness ещё не реализована. Item/quantity всегда из authoritatively validated recipe/stock/volume.
+
+Trip.InboundSource фиксирует goods source отдельно от home output inventory. Prepare stock/input capacity/full payroll; first leg FetchingEmpty/home→warehouse, ArrivalTick реально грузит cargo и source return capacity; ReturningInput/warehouse→home, EndTick принимает input и освобождает holds, последний payroll учитывается. Старый Trip.LoadTick для inbound — departure barrier пустой машины. Private references и reverse ownership/holds/time/state расширены в World8/Rules logistics-4, Session2/Envelope1, старые World1–7 без migration. Отчёт IMPLEMENTATION_REPORT_INBOUND.md; полный P17 ещё не закрыт.
+
+
+## 24. P17: сохранение позднего груза и граница ставки
+
+Проверка ETA≤deadline относится к допуску нового Loading. Для уже загруженного Outbound финансовый Expired не удаляет груз/путь/return capacity/payroll. ReturningCargo требует истечения до ArrivalTick и одного rejection event в момент физического прибытия; ReturningEmpty — своевременной приёмки и accepted event. Остальные структурные проверки грузов/места/геометрии/времени/обратного владения резервами сохранены.
+
+SetWage phase1 и успешный prepare phase4 одного тика теперь откладывают pending pay/attraction за EndTick, не меняя committed wage и верхний резерв. Неуспешный prepare не переносит ставку. Payroll зависит от фактической численности, параметры пути начатого рейса прежние. World8/Rules logistics-5, Session2/Envelope1; DTO прежние, несовместимость Rules явная, без миграции. Fault injection только в тестовом assembly; production load не имеет обхода checksum/hash/validation. Подробное происхождение аварийного снимка — в отчёте LOGISTICS_RETURN; это не игровой маршрут с динамическими задержками.

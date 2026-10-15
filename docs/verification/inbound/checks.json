@@ -1,0 +1,372 @@
+{
+  "stage": "P17 — входящие поставки",
+  "technical_id": "P17b3",
+  "author": "Шелестов Максим Евгеньевич",
+  "source_commit": "fb103e3cd1499079b060f5d5f7a14a3b0d712ad8",
+  "source_tree": "7e93b6a65ef84c9d174911bb9058da896c139962",
+  "world_schema": 8,
+  "rules": "logistics-4",
+  "session_schema": 2,
+  "envelope_format": 1,
+  "environment": "GitHub Actions; no local .NET/Godot build/test",
+  "core_ci": {
+    "id": 38742804055,
+    "job_id": 116448581092,
+    "conclusion": "success",
+    "url": "https://github.com/MaksShelest/Delsk/actions/runs/38742804055"
+  },
+  "windows_ci": {
+    "id": 38742804150,
+    "job_id": 116448580986,
+    "conclusion": "success",
+    "checked_ticks": 62,
+    "restore_ticks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "url": "https://github.com/MaksShelest/Delsk/actions/runs/38742804150"
+  },
+  "tests": {
+    "total": 369,
+    "executed": 369,
+    "passed": 369,
+    "failed": 0,
+    "timeout": 0,
+    "notExecuted": 0
+  },
+  "scenarios": 14,
+  "checkpoint_pairs": 11,
+  "independent_reverification": {
+    "exports": 36,
+    "continuous_vs_saved_and_loaded_comparisons": 22,
+    "files_per_comparison": 13,
+    "status": "passed"
+  },
+  "inbound_cycle": {
+    "tick": 110,
+    "state_hash": "5c8c07de7236fed2ac30214c54f5aca87552df9020ee71fd9589acac705e981f",
+    "harvested_wood": 30,
+    "input_quantities": [
+      10,
+      5
+    ],
+    "production_batches": 7,
+    "produced_plank": 7,
+    "output_trip_quantity": 7,
+    "warehouse_wood": 15,
+    "warehouse_plank": 7,
+    "factory_input_wood": 1,
+    "transport_systems": 1,
+    "logistics_groups": 1,
+    "supplier_minor": 78050,
+    "other_participant_minor": 100000,
+    "treasury_minor": 20700,
+    "wages_sink_minor": 1250,
+    "transport_wages_minor": 900,
+    "prepare_ticks": [
+      75,
+      83,
+      102
+    ],
+    "input_load_ticks": [
+      79,
+      87
+    ],
+    "input_receipt_ticks": [
+      82,
+      90
+    ],
+    "output_receipt_tick": 106,
+    "completed_ticks": [
+      82,
+      90,
+      109
+    ],
+    "emission_minor": 0
+  },
+  "checks": {
+    "pickup-load": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.318,
+      "started_at": "2026-10-15T13:28:46.067229+00:00",
+      "finished_at": "2026-10-15T13:28:47.385207+00:00"
+    },
+    "build": {
+      "exit_code": 0,
+      "timeout_seconds": 180,
+      "elapsed_seconds": 18.699,
+      "started_at": "2026-10-15T13:27:24.031736+00:00",
+      "finished_at": "2026-10-15T13:27:42.731208+00:00"
+    },
+    "market-save": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.418,
+      "started_at": "2026-10-15T13:28:40.400020+00:00",
+      "finished_at": "2026-10-15T13:28:41.818134+00:00"
+    },
+    "capital-delivery-load": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.368,
+      "started_at": "2026-10-15T13:28:54.399368+00:00",
+      "finished_at": "2026-10-15T13:28:55.767664+00:00"
+    },
+    "logistics-upgrade": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.318,
+      "started_at": "2026-10-15T13:29:00.180411+00:00",
+      "finished_at": "2026-10-15T13:29:01.498405+00:00"
+    },
+    "market-load": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.37,
+      "started_at": "2026-10-15T13:28:41.859561+00:00",
+      "finished_at": "2026-10-15T13:28:43.229559+00:00"
+    },
+    "pickup-save": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.418,
+      "started_at": "2026-10-15T13:28:44.606759+00:00",
+      "finished_at": "2026-10-15T13:28:46.025052+00:00"
+    },
+    "inbound-save": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.519,
+      "started_at": "2026-10-15T13:29:10.495457+00:00",
+      "finished_at": "2026-10-15T13:29:12.013995+00:00"
+    },
+    "autonomous-save": {
+      "exit_code": 0,
+      "timeout_seconds": 300,
+      "elapsed_seconds": 5.23,
+      "started_at": "2026-10-15T13:28:29.273267+00:00",
+      "finished_at": "2026-10-15T13:28:34.502963+00:00"
+    },
+    "logistics-save": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.519,
+      "started_at": "2026-10-15T13:28:57.191381+00:00",
+      "finished_at": "2026-10-15T13:28:58.710088+00:00"
+    },
+    "inbound-load": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.418,
+      "started_at": "2026-10-15T13:29:12.053865+00:00",
+      "finished_at": "2026-10-15T13:29:13.471961+00:00"
+    },
+    "logistics": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.318,
+      "started_at": "2026-10-15T13:28:55.832686+00:00",
+      "finished_at": "2026-10-15T13:28:57.150672+00:00"
+    },
+    "market": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.268,
+      "started_at": "2026-10-15T13:28:39.091634+00:00",
+      "finished_at": "2026-10-15T13:28:40.359597+00:00"
+    },
+    "labor": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.619,
+      "started_at": "2026-10-15T13:28:14.842459+00:00",
+      "finished_at": "2026-10-15T13:28:16.461080+00:00"
+    },
+    "logistics-upgrade-save": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.619,
+      "started_at": "2026-10-15T13:29:01.538575+00:00",
+      "finished_at": "2026-10-15T13:29:03.157470+00:00"
+    },
+    "logistics-load": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.368,
+      "started_at": "2026-10-15T13:28:58.750801+00:00",
+      "finished_at": "2026-10-15T13:29:00.118768+00:00"
+    },
+    "recovery": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.218,
+      "started_at": "2026-10-15T13:28:11.723987+00:00",
+      "finished_at": "2026-10-15T13:28:12.941577+00:00"
+    },
+    "autonomous": {
+      "exit_code": 0,
+      "timeout_seconds": 300,
+      "elapsed_seconds": 5.182,
+      "started_at": "2026-10-15T13:28:24.047622+00:00",
+      "finished_at": "2026-10-15T13:28:29.230114+00:00"
+    },
+    "equipment-load": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.419,
+      "started_at": "2026-10-15T13:28:22.562430+00:00",
+      "finished_at": "2026-10-15T13:28:23.981098+00:00"
+    },
+    "cycle-load": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.318,
+      "started_at": "2026-10-15T13:28:19.470021+00:00",
+      "finished_at": "2026-10-15T13:28:20.788264+00:00"
+    },
+    "capital-delivery": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.268,
+      "started_at": "2026-10-15T13:28:51.629128+00:00",
+      "finished_at": "2026-10-15T13:28:52.897072+00:00"
+    },
+    "cycle": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.268,
+      "started_at": "2026-10-15T13:28:10.392180+00:00",
+      "finished_at": "2026-10-15T13:28:11.660174+00:00"
+    },
+    "development": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.77,
+      "started_at": "2026-10-15T13:28:13.009258+00:00",
+      "finished_at": "2026-10-15T13:28:14.778976+00:00"
+    },
+    "own-storage": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.368,
+      "started_at": "2026-10-15T13:29:04.630017+00:00",
+      "finished_at": "2026-10-15T13:29:05.998451+00:00"
+    },
+    "pickup": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.268,
+      "started_at": "2026-10-15T13:28:43.296968+00:00",
+      "finished_at": "2026-10-15T13:28:44.564598+00:00"
+    },
+    "equipment": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.418,
+      "started_at": "2026-10-15T13:28:16.530021+00:00",
+      "finished_at": "2026-10-15T13:28:17.948264+00:00"
+    },
+    "delivery": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.268,
+      "started_at": "2026-10-15T13:28:47.447537+00:00",
+      "finished_at": "2026-10-15T13:28:48.715237+00:00"
+    },
+    "equipment-save": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.669,
+      "started_at": "2026-10-15T13:28:20.850298+00:00",
+      "finished_at": "2026-10-15T13:28:22.519393+00:00"
+    },
+    "logistics-upgrade-load": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.368,
+      "started_at": "2026-10-15T13:29:03.199798+00:00",
+      "finished_at": "2026-10-15T13:29:04.567996+00:00"
+    },
+    "capital-delivery-save": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.418,
+      "started_at": "2026-10-15T13:28:52.938889+00:00",
+      "finished_at": "2026-10-15T13:28:54.357171+00:00"
+    },
+    "restore": {
+      "exit_code": 0,
+      "timeout_seconds": 180,
+      "elapsed_seconds": 6.682,
+      "started_at": "2026-10-15T13:27:17.283322+00:00",
+      "finished_at": "2026-10-15T13:27:23.965853+00:00"
+    },
+    "autonomous-load": {
+      "exit_code": 0,
+      "timeout_seconds": 300,
+      "elapsed_seconds": 4.477,
+      "started_at": "2026-10-15T13:28:34.546358+00:00",
+      "finished_at": "2026-10-15T13:28:39.023683+00:00"
+    },
+    "delivery-load": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.368,
+      "started_at": "2026-10-15T13:28:50.216620+00:00",
+      "finished_at": "2026-10-15T13:28:51.584605+00:00"
+    },
+    "cycle-save": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.418,
+      "started_at": "2026-10-15T13:28:18.010751+00:00",
+      "finished_at": "2026-10-15T13:28:19.428980+00:00"
+    },
+    "delivery-save": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.418,
+      "started_at": "2026-10-15T13:28:48.756095+00:00",
+      "finished_at": "2026-10-15T13:28:50.174378+00:00"
+    },
+    "tests": {
+      "exit_code": 0,
+      "timeout_seconds": 120,
+      "elapsed_seconds": 27.531,
+      "started_at": "2026-10-15T13:27:42.796002+00:00",
+      "finished_at": "2026-10-15T13:28:10.327225+00:00"
+    },
+    "own-storage-save": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.619,
+      "started_at": "2026-10-15T13:29:06.041880+00:00",
+      "finished_at": "2026-10-15T13:29:07.660843+00:00"
+    },
+    "own-storage-load": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.368,
+      "started_at": "2026-10-15T13:29:07.702449+00:00",
+      "finished_at": "2026-10-15T13:29:09.070639+00:00"
+    },
+    "inbound": {
+      "exit_code": 0,
+      "timeout_seconds": 30,
+      "elapsed_seconds": 1.318,
+      "started_at": "2026-10-15T13:29:09.134868+00:00",
+      "finished_at": "2026-10-15T13:29:10.453124+00:00"
+    }
+  },
+  "platform_fixture": "Previous62hashes unchanged, verified on Windows",
+  "not_run": [
+    "local SDK/Godot build/test",
+    "new APK/EXE exports",
+    "Android device",
+    "general queues/fairness/full late-return/crew perturbation gate",
+    "real model/dissertation experiments"
+  ]
+}

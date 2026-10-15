@@ -2,13 +2,14 @@
 """Bounded regression of implemented economics without Godot. Author: Шелестов Максим Евгеньевич."""
 import argparse
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dotnet', default='dotnet', help='SDK executable or absolute path')
-parser.add_argument('--output', type=Path, default=Path('artifacts/headless-p17b2'))
+parser.add_argument('--output', type=Path, default=Path('artifacts/headless-late-return'))
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
 out = args.output.resolve()
@@ -21,14 +22,15 @@ def check(name, timeout, command):
 
 check('restore', 180, [args.dotnet, 'restore', 'Delsk.sln', '--locked-mode', '--disable-parallel', '-m:1'])
 check('build', 180, [args.dotnet, 'build', 'Delsk.sln', '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1'])
+os.environ['DELSK_RETURN_ARTIFACTS'] = str(out)
 check('tests', 120, [args.dotnet, 'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',
     '-noColor', '-noLogo', '-parallelMode', 'none', '-result-trx', out/'tests.trx'])
 runner = [args.dotnet, 'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll']
 scenarios = {'cycle':'economic-cycle', 'recovery':'zero-cash-recovery', 'development':'land-and-content',
-             'labor':'labor-dynamics', 'equipment':'equipment-cycle', 'autonomous':'autonomous-economy', 'market':'market-window', 'pickup':'pickup-lifecycle', 'delivery':'delivery-lifecycle', 'capital-delivery':'capital-delivery', 'logistics':'logistics-cycle', 'logistics-upgrade':'logistics-upgrade', 'own-storage':'own-storage-cycle'}
+             'labor':'labor-dynamics', 'equipment':'equipment-cycle', 'autonomous':'autonomous-economy', 'market':'market-window', 'pickup':'pickup-lifecycle', 'delivery':'delivery-lifecycle', 'capital-delivery':'capital-delivery', 'logistics':'logistics-cycle', 'logistics-upgrade':'logistics-upgrade', 'own-storage':'own-storage-cycle', 'inbound':'inbound-cycle'}
 for script, scenario in scenarios.items():
     check(script, 300 if script == 'autonomous' else 30, [*runner, '--scenario', f'scenarios/{scenario}.json', '--script', script, '--output', out/script])
-for script, tick in [('cycle', 55), ('equipment', 101), ('autonomous', 350), ('market', 44), ('pickup', 47), ('delivery', 37), ('capital-delivery', 3), ('logistics', 69), ('logistics-upgrade', 170), ('own-storage', 170)]:
+for script, tick in [('cycle', 55), ('equipment', 101), ('autonomous', 350), ('market', 44), ('pickup', 47), ('delivery', 37), ('capital-delivery', 3), ('logistics', 69), ('logistics-upgrade', 170), ('own-storage', 170), ('inbound', 78)]:
     checkpoint = out/f'{script}.save.json'
     check(f'{script}-save', 300 if script == 'autonomous' else 30, [*runner, '--scenario', f'scenarios/{scenarios[script]}.json', '--script', script,
         '--output', out/f'{script}-saved', '--checkpoint', checkpoint, '--checkpoint-at', tick])
@@ -37,11 +39,15 @@ for script, tick in [('cycle', 55), ('equipment', 101), ('autonomous', 350), ('m
         expected = (out/script/name).read_bytes()
         if any((out/f'{script}-{mode}'/name).read_bytes() != expected for mode in ['saved','loaded']):
             raise SystemExit(f'{script}: checkpoint continuation differs in {name}')
-folders = [out/s for s in scenarios] + [out/f'{s}-{mode}' for s in ['cycle','equipment','autonomous','market','pickup','delivery','capital-delivery','logistics','logistics-upgrade','own-storage'] for mode in ['saved','loaded']]
+check('late-return-load', 30, [*runner, '--load', out/'late-return.save.json', '--output', out/'late-return-loaded'])
+check('late-return-compare', 15, [sys.executable, 'scripts/verify_checkpoint_exports.py', out/'late-return', out/'late-return-loaded'])
+folders = [out/s for s in scenarios] + [out/f'{s}-{mode}' for s in ['cycle','equipment','autonomous','market','pickup','delivery','capital-delivery','logistics','logistics-upgrade','own-storage','inbound'] for mode in ['saved','loaded']]
+folders += [out/'late-return-at-expiry', out/'late-return', out/'late-return-loaded']
 check('balances', 15, [sys.executable, 'scripts/verify_results.py', *folders])
-manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases':{'cycle':55,'equipment':101,'autonomous':350,'market':44,'pickup':47,'delivery':37,'capital-delivery':3,'logistics':69,'logistics-upgrade':170,'own-storage':170},
+manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases':{'cycle':55,'equipment':101,'autonomous':350,'market':44,'pickup':47,'delivery':37,'capital-delivery':3,'logistics':69,'logistics-upgrade':170,'own-storage':170,'inbound':78},
             'comparison':'every exported tick hash, state, ledger, event, command and labor row',
-            'scope':'P00-P17b2: contract and own warehouse/shop trips, UntilFull, upgrade and autonomous NPC; incoming queues/full late-return gate/politics remain future tasks',
+            'controlled_fixture':{'name':'late-return','origin':'test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged','checkpoint_tick':72,'final_tick':80},
+            'scope':'P00-P17 controlled late-return, crew changes and wage preparation boundary; general queues/fairness/other destinations/politics remain future tasks',
             'author':'Шелестов Максим Евгеньевич'}
 (out/'headless-check.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
 print(f'Headless regression succeeded; results={out}')

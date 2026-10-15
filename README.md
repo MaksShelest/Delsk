@@ -3,7 +3,7 @@
 Исследовательская экономическая игра с автономными NPC.
 Автор: Шелестов Максим Евгеньевич.
 
-В C# реализованы P00–P16, P17a и P17b1–P17b2: тики/команды, деньги и конечные запасы, личное движение/добыча, две производственные цепочки, земля/стройка/уровни, числовой найм по зарплата³ с постепенными переходами, зарплата/энергия/неоплачиваемый простой, техника и direct checkpoint/load. Три алгоритмических NPC сами развивают хозяйства без модели. Слот человека в автономном консольном стенде бездействует; свободный игровой ввод/интерфейс ещё не готов.
+В C# реализованы P00–P16 и части P17 (рейсы, улучшение, вход/выход и контролируемый возврат): тики/команды, деньги и конечные запасы, личное движение/добыча, две производственные цепочки, земля/стройка/уровни, числовой найм по зарплата³ с постепенными переходами, зарплата/энергия/неоплачиваемый простой, техника и direct checkpoint/load. Три алгоритмических NPC сами развивают хозяйства без модели. Слот человека в автономном консольном стенде бездействует; свободный игровой ввод/интерфейс ещё не готов.
 
 ## Быстрый запуск без Python и Godot
 
@@ -111,4 +111,18 @@ P17b2 — собственный склад/лавочка UntilFull: [PR](https
 dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/own-storage-cycle.json --script own-storage --output artifacts/own-storage
 ```
 
-Проверено339/339tests/13scenarios/10load pairs и Windows62hashes. Fixture180ticks:60wood→30plank, trips10+5 в собственный склад15, output15. Own receipt не создаёт выручку/контракт; transport payroll600minor. Настройка берёт продукт из рецепта, объём из свободного места. Full destination ждёт без зарплаты и сам возобновляется после освобождения места, начатый trip заканчивается после stop. [Фактический отчёт](docs/IMPLEMENTATION_REPORT_P17B2.md). Current World7/Rules logistics-3, Session2/Envelope1; World1–6 не мигрируются. Следующий P17b3 — входящие поставки из своего склада, весь P17/Android device gate остаются открытыми.
+Проверено339/339tests/13scenarios/10load pairs и Windows62hashes. Fixture180ticks:60wood→30plank, trips10+5 в собственный склад15, output15. Own receipt не создаёт выручку/контракт; transport payroll600minor. Настройка берёт продукт из рецепта, объём из свободного места. Full destination ждёт без зарплаты и сам возобновляется после освобождения места, начатый trip заканчивается после stop. [Фактический отчёт](docs/IMPLEMENTATION_REPORT_P17B2.md). Исторический P17b2:World7/Rules logistics-3, Session2/Envelope1; World1–6 не мигрируются. Входящие поставки из своего склада реализованы следующей частью, весь P17/Android device gate остаются открытыми.
+
+
+P17 — входящие поставки на предприятие (технический ID P17b3): [PR](https://github.com/MaksShelest/Delsk/pull/14). Индексы a/b1/b2/b3 — небольшие итерации внутри исходного пункта P17, не дополнительные этапы MVP; расшифровка в начале [плана](docs/IMPLEMENTATION_PLAN.md).
+
+```powershell
+dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/inbound-cycle.json --script inbound --output artifacts/inbound
+```
+
+Проверено110ticks,369/369tests,14scenarios/11load pairs/Windows62hashes.30wood со своего склада→inbound10+5→7production batches→7plank исходящим рейсом в склад. Вход/выход/производство управляются отдельно, одна машина/числовая группа. Реальные empty approach/loading/loaded return, защищённые goods/input place/payroll. [Фактические проверки](docs/IMPLEMENTATION_REPORT_INBOUND.md). Current World8/Rules logistics-4, World1–7 без migration, device gate открыт. Следующая ограниченная работа P17 — controlled late cargo/physical return, общая очередь/fairness ещё не завершена.
+
+
+P17 — просрочка и физический возврат груза: [PR №15](https://github.com/MaksShelest/Delsk/pull/15), [отчёт](docs/IMPLEMENTATION_REPORT_LOGISTICS_RETURN.md). Исправлены сохранение позднего груза и ставка, назначенная в тик подготовки рейса. Проверки включают реальную трудовую конкуренцию, возвратное место и расчёты после expiry. Аварийный сценарий — явно помеченная test-only checkpoint fork, обычный scheduler не отправляет заведомо поздние рейсы. World8/Rules logistics-5, старые Rules без миграции. Полная проверка: `python scripts/check_headless.py --output artifacts/headless-late-return`. Следующее — собственное следующее производство как исходящее назначение; общая очередь/fairness ещё остаются в P17.
+
+Фактическая проверка текущего возврата:393/393теста,14обычных сценариев и отдельный аварийный сценарий,12пар сохранения суммарно; Godot/Windows прошёл. Подробные результаты и ограничения приведены в отчёте.

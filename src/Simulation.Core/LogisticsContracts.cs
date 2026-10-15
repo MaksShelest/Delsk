@@ -12,7 +12,7 @@ public record LogisticsTripView(long Id, long ContractId, string ItemId, long Qu
     long PreparedTick, long LoadTick, long ArrivalTick, long EndTick, Cell Position,
     ImmutableArray<Cell> Path, int PathIndex, int SegmentTicks, long CommittedWageMinor,
     long WageBudgetMinor, long WagesPaidMinor, string StockHold, string ReturnHold, string WageHold,
-    InventoryId OwnDestination = default)
+    InventoryId OwnDestination = default, InventoryId InboundSource = default)
 {
     public string CargoHold => $"logistics-cargo:{Id}";
     public string DestinationHold => $"logistics-destination:{Id}";
@@ -20,7 +20,7 @@ public record LogisticsTripView(long Id, long ContractId, string ItemId, long Qu
 public record LogisticsView(LogisticsId Id, ParticipantId OwnerId, EnterpriseId EnterpriseId,
     InventoryId SourceInventory, InventoryId CargoInventory, EmploymentGroupId GroupId,
     bool Enabled, long ContractId, string ReasonCode, long CompletedTrips, LogisticsTripView? Trip, int Level,
-    InventoryId OwnDestination);
+    InventoryId OwnDestination, InventoryId InboundSource, bool InboundEnabled);
 internal record SavedLogistics(LogisticsView View, EmploymentView Group);
 internal sealed class LogisticsState(long id, long owner, long enterprise, long source, long cargo,
     LogisticsSettings settings, int level = 1)
@@ -46,9 +46,11 @@ internal sealed class LogisticsState(long id, long owner, long enterprise, long 
     public bool Enabled { get; set; }
     public long Contract { get; set; }
     public long Destination { get; set; }
+    public long InboundSource { get; set; }
+    public bool InboundEnabled { get; set; }
     public string Reason { get; set; } = "NoDestination";
     public long Completed { get; set; }
     public LogisticsTripView? Trip { get; set; }
     public LogisticsView View() => new(new(Id), new(Owner), new(Enterprise), new(Source), new(Cargo), new(Id),
-        Enabled, Contract, Reason, Completed, Trip, Level, new(Destination));
+        Enabled, Contract, Reason, Completed, Trip, Level, new(Destination), new(InboundSource), InboundEnabled);
 }

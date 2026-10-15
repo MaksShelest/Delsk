@@ -27,7 +27,7 @@ public sealed partial class SimulationEngine
         if (c.Action.Quantity != 0) throw new RuleViolation("QuantityFromContract");
         if (!_deliveryContracts.Any(d => d.Id == c.Action.ContractId && d.Supplier.Value == actor.Id && (!c.Action.Enabled || d.ClosedTick is null)))
             throw new RuleViolation("NotAvailable");
-        if (l.Trip is not null && (l.Contract != c.Action.ContractId || l.Destination != 0)) throw new RuleViolation("LogisticsBusy");
+        if (l.Trip is { InboundSource.Value: 0 } && (l.Contract != c.Action.ContractId || l.Destination != 0)) throw new RuleViolation("LogisticsBusy");
         l.Contract = c.Action.ContractId; l.Destination = 0; l.Enabled = c.Action.Enabled;
         l.Reason = l.Enabled ? "Waiting" : "UserPaused";
         Emit("LogisticsContractSet", actor.Id, l.Id, reason: l.Reason, command: c.CommandId);
@@ -39,7 +39,7 @@ public sealed partial class SimulationEngine
         RequireIdle(actor);
         var enterprise = _enterprises[l.Enterprise];
         if (actor.Position != enterprise.Definition.Position) throw new RuleViolation("NotAtLocation");
-        if (l.Enabled || l.Trip is not null) throw new RuleViolation("LogisticsNotSafe");
+        if (l.Enabled || l.InboundEnabled || l.Trip is not null) throw new RuleViolation("LogisticsNotSafe");
         var upgrade = Logistics.Upgrade;
         if (l.Level != 1 || upgrade is null) throw new RuleViolation("MaxLogisticsLevel");
         long maximumTicks = Math.Max(2L, 2L * (_config.MapWidth * _config.MapHeight - 1) * Logistics.MoveTicksPerCell);
@@ -70,14 +70,15 @@ public sealed partial class SimulationEngine
             !IsOwnLogisticsStorage(actor.Id, c.Action.Destination.Value)) throw new RuleViolation("NotAvailable");
         if (c.Action.Quantity != 0) throw new RuleViolation("QuantityFromCapacity");
         if (c.Action.ItemId != "" || c.Action.ContractId != 0) throw new RuleViolation("ItemFromProduction");
-        if (l.Trip is not null && (l.Contract != 0 || l.Destination != c.Action.Destination.Value))
+        if (l.Trip is { InboundSource.Value: 0 } && (l.Contract != 0 || l.Destination != c.Action.Destination.Value))
             throw new RuleViolation("LogisticsBusy");
         l.Contract = 0; l.Destination = c.Action.Destination.Value; l.Enabled = c.Action.Enabled;
         l.Reason = l.Enabled ? "Waiting" : "UserPaused";
         Emit("LogisticsStorageSet", actor.Id, l.Id, reason: l.Reason, command: c.CommandId);
     }
-    private record LogisticsPlanData(int Index, string ItemId, Cell[] Path, long Quantity, long LegTicks);
-    private LogisticsPlanData LogisticsPlan(LogisticsState l)
+    private record LogisticsPlanData(int Index, string ItemId, Cell[] Path, long Quantity, long LegTicks,
+        long InboundSource = 0, long OwnDestination = 0, long GoodsSource = 0);
+    private LogisticsPlanData OutputLogisticsPlan(LogisticsState l)
     {
         if (!l.Enabled) throw new RuleViolation("UserPaused");
         var source = _economy.Inventories[l.Source];
@@ -144,14 +145,24 @@ public sealed partial class SimulationEngine
             var d = plan.Index >= 0 ? _deliveryContracts[plan.Index] : null;
             long load = checked(Tick + 1), arrival = checked(load + plan.LegTicks), end = checked(arrival + plan.LegTicks);
             long budget = checked(l.Group.Capacity * l.Group.Wage * checked(2 * plan.LegTicks));
+            long? deferredPay = l.Group.PayEffectiveTick is { } pay && pay <= end ? checked(end + 1) : null;
+            long? deferredAttraction = deferredPay.HasValue ? Math.Max(l.Group.AttractionEffectiveTick!.Value, deferredPay.Value) : null;
             var preparedTrip = new LogisticsTripView(id, d?.Id ?? 0, plan.ItemId, plan.Quantity, "Loading", Tick, load, arrival, end,
                 plan.Path[0], [.. plan.Path], 0, 0, l.Group.Wage, budget, 0,
-                $"logistics-stock:{id}", $"logistics-return:{id}", $"logistics-wage:{id}", new(l.Destination));
+                $"logistics-stock:{id}", $"logistics-return:{id}", $"logistics-wage:{id}", new(plan.OwnDestination), new(plan.InboundSource));
             var updated = d is null ? null : d with { PreparedQuantity = checked(d.PreparedQuantity + plan.Quantity) };
-            var tx = _economy.Begin(Tick); tx.ReserveStock(l.Source, preparedTrip.StockHold, plan.ItemId, plan.Quantity);
-            if (l.Destination != 0) tx.ReserveCapacity(l.Destination, preparedTrip.DestinationHold, plan.ItemId, plan.Quantity);
+            var tx = _economy.Begin(Tick); tx.ReserveStock(plan.GoodsSource, preparedTrip.StockHold, plan.ItemId, plan.Quantity);
+            if (plan.OwnDestination != 0) tx.ReserveCapacity(plan.OwnDestination, preparedTrip.DestinationHold, plan.ItemId, plan.Quantity);
             tx.HoldMoney(_actors[l.Owner].Account, preparedTrip.WageHold, budget); tx.Commit();
             _nextId = next; if (updated is not null) _deliveryContracts[plan.Index] = updated;
+            // A wage command can precede preparation in this same tick (phase1 -> phase4).
+            // Its previously scheduled next-tick pay must not change a committed trip.
+            if (deferredPay.HasValue)
+            {
+                l.Group.PayEffectiveTick = deferredPay;
+                l.Group.AttractionEffectiveTick = deferredAttraction;
+                Emit("LogisticsWageDeferred", l.Owner, l.Id, money: l.Group.PendingWage!.Value);
+            }
             l.Trip = preparedTrip; l.Reason = "Loading";
             Emit("LogisticsTripPrepared", l.Owner, id, plan.ItemId, plan.Quantity, budget);
         }
@@ -164,6 +175,11 @@ public sealed partial class SimulationEngine
             if (l.Trip is not { } t) continue;
             if (t.State == "Loading")
             {
+                if (t.InboundSource.Value != 0)
+                {
+                    l.Trip = t with { State = "FetchingEmpty" }; l.Reason = "FetchingEmpty";
+                    Emit("LogisticsInputDeparted", l.Owner, t.Id, t.ItemId, t.Quantity); continue;
+                }
                 int index = _deliveryContracts.FindIndex(d => d.Id == t.ContractId);
                 var d = index >= 0 ? _deliveryContracts[index] : null;
                 var next = d is null ? null : d with { PreparedQuantity = checked(d.PreparedQuantity - t.Quantity), InTransitQuantity = checked(d.InTransitQuantity + t.Quantity) };
@@ -173,12 +189,13 @@ public sealed partial class SimulationEngine
                 l.Trip = t with { State = "Outbound" }; l.Reason = "Outbound";
                 Emit("LogisticsCargoLoaded", l.Owner, t.Id, t.ItemId, t.Quantity); continue;
             }
-            if (t.State is not ("Outbound" or "ReturningEmpty" or "ReturningCargo")) continue;
+            if (t.State is not ("Outbound" or "ReturningEmpty" or "ReturningCargo" or "FetchingEmpty" or "ReturningInput")) continue;
             int indexPath = t.PathIndex, segment = checked(t.SegmentTicks + 1);
             if (t.Path.Length == 1) segment = 0;
             else if (segment == Logistics.MoveTicksPerCell) { ++indexPath; segment = 0; }
-            Cell position = t.Path[indexPath]; long arrival = t.State == "Outbound" ? t.ArrivalTick : t.EndTick;
-            string state = Tick == arrival ? (t.State == "Outbound" ? "Arrived" : "Finishing") : t.State;
+            bool firstLeg = t.State is "Outbound" or "FetchingEmpty";
+            Cell position = t.Path[indexPath]; long arrival = firstLeg ? t.ArrivalTick : t.EndTick;
+            string state = Tick == arrival ? (firstLeg ? "Arrived" : "Finishing") : t.State;
             l.Trip = t with { Position = position, PathIndex = indexPath, SegmentTicks = segment, State = state };
             _economy.Inventories[l.Cargo].Position = position;
         }
@@ -188,6 +205,10 @@ public sealed partial class SimulationEngine
         foreach (var l in _logistics.Values.OrderBy(l => l.Id))
         {
             if (l.Trip is not { } t) continue;
+            if (t.InboundSource.Value != 0)
+            {
+                AcceptInboundArrival(l, t); continue;
+            }
             if (t.State == "Arrived")
             {
                 bool accepted;
@@ -236,6 +257,7 @@ public sealed partial class SimulationEngine
             var v = s.View; var l = new LogisticsState(v.Id.Value, v.OwnerId.Value, v.EnterpriseId.Value,
                 v.SourceInventory.Value, v.CargoInventory.Value, Logistics, v.Level)
                 { Enabled = v.Enabled, Contract = v.ContractId, Destination = v.OwnDestination.Value,
+                    InboundSource = v.InboundSource.Value, InboundEnabled = v.InboundEnabled,
                     Reason = v.ReasonCode, Completed = v.CompletedTrips, Trip = v.Trip };
             LoadGroup(l.Group, s.Group); _logistics.Add(l.Id, l);
         }
