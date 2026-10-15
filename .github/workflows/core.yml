@@ -21,7 +21,10 @@ jobs:
       - name: Build
         run: python scripts/run_check.py --name build --timeout 180 -- dotnet build Delsk.sln -c Release --no-restore --disable-build-servers -m:1
       - name: xUnit
-        run: python scripts/run_check.py --name tests --timeout 120 -- dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release --no-build --no-restore -- --report-trx --results-directory artifacts/test-results --minimum-expected-tests 369
+        env:
+          DELSK_RETURN_ARTIFACTS: ${{ github.workspace }}/artifacts
+          DELSK_COMMIT: ${{ github.sha }}
+        run: python scripts/run_check.py --name tests --timeout 120 -- dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release --no-build --no-restore -- --report-trx --results-directory artifacts/test-results --minimum-expected-tests 393
       - name: Economic cycle
         env:
           DELSK_COMMIT: ${{ github.sha }}
@@ -109,10 +112,14 @@ jobs:
           python scripts/run_check.py --name inbound --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/inbound-cycle.json --script inbound --output artifacts/inbound
           python scripts/run_check.py --name inbound-save --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --scenario scenarios/inbound-cycle.json --script inbound --checkpoint artifacts/inbound.save.json --checkpoint-at 78 --output artifacts/inbound-saved
           python scripts/run_check.py --name inbound-load --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/inbound.save.json --output artifacts/inbound-loaded
+      - name: Controlled late cargo and strict restored return
+        env:
+          DELSK_COMMIT: ${{ github.sha }}
+        run: python scripts/run_check.py --name late-return-load --timeout 30 -- dotnet run --project src/Research.Runner -c Release --no-build -- --load artifacts/late-return.save.json --output artifacts/late-return-loaded
       - name: Compare restored exports
-        run: python scripts/verify_checkpoint_exports.py artifacts/cycle artifacts/cycle-loaded artifacts/equipment artifacts/equipment-loaded artifacts/autonomous artifacts/autonomous-loaded artifacts/market artifacts/market-loaded artifacts/pickup artifacts/pickup-loaded artifacts/delivery artifacts/delivery-loaded artifacts/capital-delivery artifacts/capital-delivery-loaded artifacts/logistics artifacts/logistics-loaded artifacts/logistics-upgrade artifacts/logistics-upgrade-loaded artifacts/own-storage artifacts/own-storage-loaded artifacts/inbound artifacts/inbound-loaded
+        run: python scripts/verify_checkpoint_exports.py artifacts/cycle artifacts/cycle-loaded artifacts/equipment artifacts/equipment-loaded artifacts/autonomous artifacts/autonomous-loaded artifacts/market artifacts/market-loaded artifacts/pickup artifacts/pickup-loaded artifacts/delivery artifacts/delivery-loaded artifacts/capital-delivery artifacts/capital-delivery-loaded artifacts/logistics artifacts/logistics-loaded artifacts/logistics-upgrade artifacts/logistics-upgrade-loaded artifacts/own-storage artifacts/own-storage-loaded artifacts/inbound artifacts/inbound-loaded artifacts/late-return artifacts/late-return-loaded
       - name: Check output balances
-        run: python scripts/verify_results.py artifacts/cycle artifacts/recovery artifacts/development artifacts/labor artifacts/equipment artifacts/cycle-loaded artifacts/equipment-loaded artifacts/autonomous artifacts/autonomous-loaded artifacts/market artifacts/market-loaded artifacts/pickup artifacts/pickup-loaded artifacts/delivery artifacts/delivery-loaded artifacts/capital-delivery artifacts/capital-delivery-loaded artifacts/logistics artifacts/logistics-loaded artifacts/logistics-upgrade artifacts/logistics-upgrade-loaded artifacts/own-storage artifacts/own-storage-loaded artifacts/inbound artifacts/inbound-loaded
+        run: python scripts/verify_results.py artifacts/cycle artifacts/recovery artifacts/development artifacts/labor artifacts/equipment artifacts/cycle-loaded artifacts/equipment-loaded artifacts/autonomous artifacts/autonomous-loaded artifacts/market artifacts/market-loaded artifacts/pickup artifacts/pickup-loaded artifacts/delivery artifacts/delivery-loaded artifacts/capital-delivery artifacts/capital-delivery-loaded artifacts/logistics artifacts/logistics-loaded artifacts/logistics-upgrade artifacts/logistics-upgrade-loaded artifacts/own-storage artifacts/own-storage-loaded artifacts/inbound artifacts/inbound-loaded artifacts/late-return-at-expiry artifacts/late-return artifacts/late-return-loaded
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -145,6 +145,8 @@ public sealed partial class SimulationEngine
             var d = plan.Index >= 0 ? _deliveryContracts[plan.Index] : null;
             long load = checked(Tick + 1), arrival = checked(load + plan.LegTicks), end = checked(arrival + plan.LegTicks);
             long budget = checked(l.Group.Capacity * l.Group.Wage * checked(2 * plan.LegTicks));
+            long? deferredPay = l.Group.PayEffectiveTick is { } pay && pay <= end ? checked(end + 1) : null;
+            long? deferredAttraction = deferredPay.HasValue ? Math.Max(l.Group.AttractionEffectiveTick!.Value, deferredPay.Value) : null;
             var preparedTrip = new LogisticsTripView(id, d?.Id ?? 0, plan.ItemId, plan.Quantity, "Loading", Tick, load, arrival, end,
                 plan.Path[0], [.. plan.Path], 0, 0, l.Group.Wage, budget, 0,
                 $"logistics-stock:{id}", $"logistics-return:{id}", $"logistics-wage:{id}", new(plan.OwnDestination), new(plan.InboundSource));
@@ -153,6 +155,14 @@ public sealed partial class SimulationEngine
             if (plan.OwnDestination != 0) tx.ReserveCapacity(plan.OwnDestination, preparedTrip.DestinationHold, plan.ItemId, plan.Quantity);
             tx.HoldMoney(_actors[l.Owner].Account, preparedTrip.WageHold, budget); tx.Commit();
             _nextId = next; if (updated is not null) _deliveryContracts[plan.Index] = updated;
+            // A wage command can precede preparation in this same tick (phase1 -> phase4).
+            // Its previously scheduled next-tick pay must not change a committed trip.
+            if (deferredPay.HasValue)
+            {
+                l.Group.PayEffectiveTick = deferredPay;
+                l.Group.AttractionEffectiveTick = deferredAttraction;
+                Emit("LogisticsWageDeferred", l.Owner, l.Id, money: l.Group.PendingWage!.Value);
+            }
             l.Trip = preparedTrip; l.Reason = "Loading";
             Emit("LogisticsTripPrepared", l.Owner, id, plan.ItemId, plan.Quantity, budget);
         }

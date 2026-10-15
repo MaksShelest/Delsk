@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "logistics-4";
+    public const string RulesVersion = "logistics-5";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;

@@ -70,10 +70,11 @@ public sealed partial class SimulationEngine
                 if (own ? t.ContractId != 0 || l.Contract != 0 || t.OwnDestination.Value != l.Destination ||
                         !IsOwnLogisticsStorage(l.Owner, t.OwnDestination.Value) || t.State == "ReturningCargo" :
                     d is null || l.Destination != 0 || d.Supplier.Value != l.Owner || t.ContractId != l.Contract ||
-                        t.ItemId != d.ItemId || t.Quantity > d.Quantity || t.ArrivalTick > d.DeadlineTick)
+                        t.ItemId != d.ItemId || t.Quantity > d.Quantity || t.PreparedTick < d.CreatedTick)
                     throw new InvalidOperationException("Invalid logistics destination");
                 if (t.State is not ("Loading" or "Outbound" or "ReturningEmpty" or "ReturningCargo"))
                     throw new InvalidOperationException("Invalid output logistics state");
+                if (!own) ValidateContractTripLifecycle(t, d!);
                 middle = own ? _economy.Inventories[t.OwnDestination.Value].Position : d!.Position;
             }
             if (!tripIds.Add(t.Id) || t.Id < 1000 || t.Quantity <= 0 || !_items.ContainsKey(t.ItemId) ||
@@ -81,7 +82,9 @@ public sealed partial class SimulationEngine
                 t.PreparedTick < 1 || t.PreparedTick > Tick || t.LoadTick != t.PreparedTick + 1 ||
                 t.Path.IsDefaultOrEmpty || t.Path.Any(p => !_map.Walkable(p)) ||
                 t.Path.Zip(t.Path.Skip(1)).Any(p => Math.Abs(p.First.X - p.Second.X) + Math.Abs(p.First.Z - p.Second.Z) != 1) ||
-                t.CommittedWageMinor <= 0 || t.WageBudgetMinor != checked(l.Group.Capacity * t.CommittedWageMinor * (t.EndTick - t.LoadTick)) ||
+                t.CommittedWageMinor <= 0 || l.Group.Wage != t.CommittedWageMinor ||
+                (l.Group.PayEffectiveTick is { } effective && effective != checked(t.EndTick + 1)) ||
+                t.WageBudgetMinor != checked(l.Group.Capacity * t.CommittedWageMinor * (t.EndTick - t.LoadTick)) ||
                 t.ArrivalTick != checked(t.LoadTick + Math.Max(1L, (t.Path.Length - 1L) * Logistics.MoveTicksPerCell)) ||
                 t.EndTick != checked(t.ArrivalTick + t.ArrivalTick - t.LoadTick) ||
                 t.WagesPaidMinor < 0 || t.WagesPaidMinor > t.WageBudgetMinor ||
@@ -113,6 +116,26 @@ public sealed partial class SimulationEngine
             if (own && _economy.Inventories[t.OwnDestination.Value].CapacityHolds.GetValueOrDefault(t.DestinationHold) !=
                 (LogisticsDestinationHeld(t) ? checked(t.Quantity * _items[t.ItemId].UnitVolume) : 0))
                 throw new InvalidOperationException("Logistics destination capacity mismatch");
+        }
+    }
+    private void ValidateContractTripLifecycle(LogisticsTripView t, DeliveryContractView d)
+    {
+        // Admission still rejects a known-late ETA. A loaded truck must survive financial
+        // expiry, including recovery from an adverse checkpoint; goods remain physical.
+        if (t.State == "Loading" && (d.ClosedTick is not null || t.ArrivalTick > d.DeadlineTick) ||
+            t.State == "Outbound" && d.ClosedTick is not null &&
+                (d.Status != "Expired" || d.DeadlineTick >= t.ArrivalTick) ||
+            t.State == "ReturningCargo" && (d.Status != "Expired" || d.DeadlineTick >= t.ArrivalTick) ||
+            t.State == "ReturningEmpty" && (t.ArrivalTick > d.DeadlineTick || d.DeliveredQuantity < t.Quantity))
+            throw new InvalidOperationException("Logistics contract lifecycle mismatch");
+        if (t.State is "ReturningCargo" or "ReturningEmpty")
+        {
+            string receipt = t.State == "ReturningCargo" ? "LogisticsDeliveryRejected" : "LogisticsDeliveryAccepted";
+            var events = _events.Where(e => e.EntityId == t.Id &&
+                e.Type is "LogisticsDeliveryAccepted" or "LogisticsDeliveryRejected").ToArray();
+            if (events.Length != 1 || events[0].Type != receipt || events[0].Tick != t.ArrivalTick ||
+                events[0].ActorId?.Value != d.Supplier.Value || events[0].ItemId != t.ItemId || events[0].Quantity != t.Quantity)
+                throw new InvalidOperationException("Logistics receipt history mismatch");
         }
     }
     private void AddExpectedLogisticsHolds(Dictionary<(long Inventory, string Hold), long> capacity,
