@@ -47,6 +47,12 @@ if args.report:
         raise SystemExit('Election replay/checkpoint probe was not completed')
     print(f"{report['Platform']}: {report['CheckedTicks']} checkpoints match runner; save/load at12/34/55/60 verified")
     print(f"Election probe: {len(elections)} checkpoints match runner; save/load at9/19/20/21 verified")
+    with (root/'scenarios/platform-support.checkpoints.csv').open(newline='') as source:
+        support = list(csv.DictReader(source))
+    if (report.get('SupportCheckedTicks') != len(support) or report.get('SupportStateHash') != support[-1]['state_hash'] or
+            report.get('SupportRestoredTicks') != [17,18,19,27,99,100]):
+        raise SystemExit('Support replay/checkpoint probe was not completed')
+    print(f"Support probe: {len(support)} checkpoints match runner; Proposed/Accepted/Signed restore verified")
 if args.windows_directory:
     folder = args.windows_directory
     executable = (folder / 'DelskProbe.exe').read_bytes()

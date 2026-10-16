@@ -135,6 +135,7 @@ public static partial class ScenarioValidation
         }
         ValidateLaborSettings(s);
         ValidateElectionSettings(s);
+        ValidateSupportSettings(s);
         ValidateEquipmentCatalog(s);
         var map = new GridMap(s);
         bool ValidId(long id) => id is > 0 and < 1000;

@@ -12,5 +12,8 @@
     <EmbeddedResource Include="../../scenarios/elections.json" LogicalName="Fixture.elections.json" />
     <EmbeddedResource Include="../../scenarios/platform-elections.commands.jsonl" LogicalName="Fixture.elections.commands.jsonl" />
     <EmbeddedResource Include="../../scenarios/platform-elections.checkpoints.csv" LogicalName="Fixture.elections.checkpoints.csv" />
+    <EmbeddedResource Include="../../scenarios/support-cycle.json" LogicalName="Fixture.support.json" />
+    <EmbeddedResource Include="../../scenarios/platform-support.commands.jsonl" LogicalName="Fixture.support.commands.jsonl" />
+    <EmbeddedResource Include="../../scenarios/platform-support.checkpoints.csv" LogicalName="Fixture.support.checkpoints.csv" />
   </ItemGroup>
 </Project>

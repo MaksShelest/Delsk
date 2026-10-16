@@ -28,6 +28,9 @@ public partial class PlatformProbe : Control
     private int _electionCheckedTicks;
     private string? _electionHash;
     private readonly List<long> _electionRestoredTicks = [];
+    private int _supportCheckedTicks;
+    private string? _supportHash;
+    private readonly List<long> _supportRestoredTicks = [];
     private string SavePath => ProjectSettings.GlobalizePath($"user://platform-checkpoint-{SimulationEngine.RulesVersion}.json");
     private string _reportPath = DefaultReportPath;
 
@@ -67,6 +70,7 @@ public partial class PlatformProbe : Control
             {
                 CheckLifecycle();
                 CheckElections();
+                CheckSupport();
                 // No wall-clock sleep; the same 62 ticks and physical paths remain intact.
                 while (!_finished) StepOne();
                 GetTree().Quit(0);
@@ -185,6 +189,39 @@ public partial class PlatformProbe : Control
         GD.Print($"DELSK_ELECTION_PASS ticks={_electionCheckedTicks} hash={_electionHash}");
     }
 
+    private void CheckSupport()
+    {
+        var definition = JsonSerializer.Deserialize<ScenarioDefinition>(ResourceText("Fixture.support.json"), SimulationJson.Options)!;
+        var tape = ResourceText("Fixture.support.commands.jsonl").Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => JsonSerializer.Deserialize<RecordedCommand>(line, SimulationJson.Options)!).ToArray();
+        var checkpoints = ResourceText("Fixture.support.checkpoints.csv").Split('\n', StringSplitOptions.RemoveEmptyEntries).Skip(1)
+            .Select(line => line.Trim().Split(','))
+            .ToDictionary(row => long.Parse(row[0], CultureInfo.InvariantCulture), row => row[1]);
+        var session = new GameSession(new SimulationEngine(definition));
+        session.ConfigurePlayback(tape, checkpoints.Keys.Max(), "support");
+        string path = ProjectSettings.GlobalizePath($"user://support-checkpoint-{SimulationEngine.RulesVersion}.json");
+        while (session.Engine.Tick < checkpoints.Keys.Max())
+        {
+            session.Step(); long tick = session.Engine.Tick;
+            string hash = session.Engine.ComputeStateHash();
+            if (hash != checkpoints[tick]) throw new InvalidOperationException($"Support hash differs from runner at tick {tick}");
+            if (tick is 17 or 18 or 19 or 27 or 99 or 100)
+            {
+                CheckpointStore.Save(session, path); session = CheckpointStore.Load(path).Session;
+                if (session.Engine.Tick != tick || session.Engine.ComputeStateHash() != hash)
+                    throw new InvalidOperationException("Support checkpoint changed the committed world");
+                _supportRestoredTicks.Add(tick);
+            }
+            _supportCheckedTicks++;
+        }
+        var politics = session.Engine.InspectSupport();
+        if (politics.Commitments.Length != 2 || politics.Commitments.Any(c => c.Status != PoliticalCommitmentStatus.Executed) ||
+            session.Engine.Inspect().Elections.FirstVictory != new ElectionVictory(new(1), new(1), 100))
+            throw new InvalidOperationException("Support probe did not execute S5");
+        _supportHash = session.Engine.ComputeStateHash();
+        GD.Print($"DELSK_SUPPORT_PASS ticks={_supportCheckedTicks} hash={_supportHash}");
+    }
+
     private void StepOne()
     {
         if (_finished || _failed || _suspended || _unfocused) return;
@@ -271,6 +308,7 @@ public partial class PlatformProbe : Control
             RestoredTicks = _restoredTicks.ToArray(),
             ElectionCheckedTicks = _electionCheckedTicks, ElectionStateHash = _electionHash,
             ElectionRestoredTicks = _electionRestoredTicks.ToArray(),
+            SupportCheckedTicks = _supportCheckedTicks, SupportStateHash = _supportHash, SupportRestoredTicks = _supportRestoredTicks.ToArray(),
             Runtime = System.Environment.Version.ToString(), Platform = OS.GetName(),
             GodotVersion = Engine.GetVersionInfo()["string"].AsString(),
             Author = "Шелестов Максим Евгеньевич"
