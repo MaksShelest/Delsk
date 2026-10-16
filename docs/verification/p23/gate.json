@@ -1,0 +1,109 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "2026-10-16",
+  "stage": "P23 local real-model gate",
+  "commit": "68606aa0fea0302c14e0d086a12193bd26b79deb",
+  "branch": "feat/p23-real-model-validation",
+  "world_schema": 12,
+  "rules": "baseline-1",
+  "session_schema": 2,
+  "envelope_schema": 1,
+  "policy": "hybrid-plan-v1/checkpoint1",
+  "prompt_version": "plan-choice-v1",
+  "sample_prompt_hash": "04e368be1393a28ea634e60f4a4b12740e8f4382bde8e505dbe11c237ec89438",
+  "sample_prompt_bytes": 3911,
+  "model_config_sha256": "db343e0e579127d48f9d8e2fd41b13efc6ddb7f8ce8261b6e6b7729b716282f3",
+  "model_config": "scenarios/local-model.example.json",
+  "runner_model_digest_field": null,
+  "runner_model_digest_reason": "Runner does not query /api/show; digest below is measured and is not inferred from the tag name",
+  "runtime": {
+    "name": "ollama",
+    "version": "0.40.5",
+    "endpoint": "http://127.0.0.1:11434/",
+    "second_server_started": false
+  },
+  "model": {
+    "tag": "qwen3.5:4b",
+    "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+    "family": "qwen35",
+    "parameter_size": "4.2B",
+    "parameter_count": 4205751296,
+    "quantization_level": "Q4_K_M",
+    "license": "apache-2.0",
+    "license_link": "https://huggingface.co/Qwen/Qwen3.5-4B/blob/main/LICENSE",
+    "weight_bytes": 3324173934,
+    "weight_bytes_are_not_ram": true,
+    "thinking_default": true,
+    "adapter_think": false
+  },
+  "machine": {
+    "os": "Windows 11 Pro 10.0.26200",
+    "cpu": "Intel Core i7-14650HX",
+    "cores": 16,
+    "logical_processors": 24,
+    "ram_visible_kib": 49924832,
+    "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+    "vram_mib": 8151,
+    "vram_source": "nvidia-smi",
+    "model_size_vram_bytes_after_warmup": 3140495604,
+    "model_size_vram_source": "ollama /api/ps",
+    "dotnet_sdk": "10.0.401",
+    "dotnet_location": "%USERPROFILE%\\.dotnet",
+    "godot": "4.7.2.stable.mono.official.ed1daf0bf"
+  },
+  "counts": {
+    "development": {"ModelResolved": 6, "FallbackResolved": 0, "invalid": 0, "stale": 0},
+    "logistics": {"ModelResolved": 0, "FallbackResolved": 6, "invalid": 0, "stale": 6, "unresolved_request_at_tick_87": 1},
+    "support": {"ModelResolved": 6, "FallbackResolved": 0, "invalid": 0, "stale": 0, "hold": 6},
+    "fallback_closed_port": {"ModelResolved": 0, "FallbackResolved": 3, "reason": "ModelUnavailable", "invalid": 0, "stale": 0}
+  },
+  "latency_ms": {
+    "development": [1660, 1871, 1916, 1812, 1501, 1629],
+    "logistics": [1766, 1310, 1375, 2206, 1528, 1666],
+    "support": [1616, 1335, 1386, 1560, 1287, 1274],
+    "fallback": [2082, 2029, 2045]
+  },
+  "tokens": {
+    "development_prompt": [1209, 1210, 1209, 1336, 1333, 1334],
+    "development_completion": [64, 78, 90, 80, 55, 56],
+    "logistics_prompt": [1206, 1205, 1200, 1360, 1103, 1247],
+    "logistics_completion": [81, 52, 54, 95, 64, 57],
+    "support_prompt": [889, 891, 891, 1293, 1055, 1157],
+    "support_completion": [66, 66, 66, 51, 49, 51],
+    "fallback": null
+  },
+  "model_commands_accepted_by_core": [
+    {"commandId": "s1:2:1", "actor": 2, "tick": 14, "kind": "MoveTo", "goal": "HarvestForSale"},
+    {"commandId": "s1:4:1", "actor": 4, "tick": 14, "kind": "MoveTo", "goal": "HarvestForSale"}
+  ],
+  "selected_plan_later_accepted_by_executor": [
+    "s1:2:2 Harvest wood 14",
+    "s1:2:3 MoveTo",
+    "s1:2:4 SellAvailableToCapital wood 14",
+    "s1:4:2 Harvest wood 14",
+    "s1:4:3 MoveTo",
+    "s1:4:4 SellAvailableToCapital wood 14"
+  ],
+  "tests": {"total": "618", "passed": "618", "failed": "0"},
+  "headless_final": {"status": "succeeded", "exports": 81, "replays": 9, "comparison_pairs": 54},
+  "replay": {"status": "world-only match", "model_decision_lines": 0, "timing": "recorded-headless"},
+  "resolved_slot_load": {"checkpoint_tick": 20, "final_tick": 40, "files_compared": 18, "new_model_request": false},
+  "godot_smoke": {
+    "status": "passed",
+    "checked_ticks": 62,
+    "state_hash": "befa38addd66ef7c7c7d9e6c7d98561edd21c4a4673ad32ba689a7bb45f89fff",
+    "restored_ticks": [12, 34, 55, 60],
+    "election_checked_ticks": 40,
+    "election_restored_ticks": [9, 19, 20, 21],
+    "support_checked_ticks": 120,
+    "support_restored_ticks": [17, 18, 19, 27, 99, 100]
+  },
+  "defect_fixed": "OllamaAdapter now sends think=false so qwen3.5 structured intent stays in message.content",
+  "not_verified": [
+    "P24 research series",
+    "Android physical device P06",
+    "current Windows EXE and Android APK on hardware",
+    "full-month paced hybrid",
+    "live identity of an interrupted pending slot"
+  ]
+}

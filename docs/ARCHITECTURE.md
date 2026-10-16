@@ -1,7 +1,7 @@
 # Архитектура Delsk
 
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
-Статус: архитектурная основа к спецификации0.3. P00–P22 реализованы и проверены в границах отчётов; P23 и далее остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
+Статус: архитектурная основа к спецификации0.3. P00–P23 реализованы и проверены в границах отчётов; P24 и далее остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
 
 ## 1. Основания и границы
 
@@ -631,4 +631,4 @@ Prompt — bounded allowlist own/bilateral/public, свои цели/довер�
 
 Hybrid checkpoint1 сохраняет logical Pending/Ready, request/options/revisions/reply, baseline checkpoint2/планы, serial/cooldown/budget/memory. Существующий Session2 epoch при restore аннулирует все неприменённые ответы; slot получает fallback в прежний applyTick без повторного HTTP. Ранее разрешённый slot и его receipt/обычные command IDs продолжаются точно. Внешняя очередь/Task/socket не сериализуется. World12/Rules baseline-1 и Envelope1 прежние; новая политика hybrid-plan-v1.
 
-Исследовательский ModelTrace/model-decisions.jsonl сохраняет prompt/hash/raw response/identity/timing/resolution/latency/token counts; public events и чужие observations его не получают. Direct continuation сравнивает18файлов, world-only command replay14; replay не вызывает модель. Fake S7 не объявляется P23. Фактические проверки — IMPLEMENTATION_REPORT_P22.md, локальный реальный gate — LOCAL_MODEL_VALIDATION.md.
+Исследовательский ModelTrace/model-decisions.jsonl сохраняет prompt/hash/raw response/identity/timing/resolution/latency/token counts; public events и чужие observations его не получают. Direct continuation сравнивает18файлов, world-only command replay14; replay не вызывает модель. Запрос к thinking-модели отправляет `think:false`, чтобы structured intent оставался в `content`, а не расходовал `num_predict` на рассуждение. Fake S7 не заменяет измеренный P23. Фактические проверки — IMPLEMENTATION_REPORT_P22.md и IMPLEMENTATION_REPORT_P23.md.

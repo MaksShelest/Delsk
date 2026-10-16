@@ -1,6 +1,6 @@
 # Как запускать и проверять экономику без графики
 
-Автор: Шелестов Максим Евгеньевич. Состояние после P22, 16.10.2026.
+Автор: Шелестов Максим Евгеньевич. Состояние после P23, 16.10.2026.
 
 ## P22: модель необязательна
 
@@ -14,7 +14,7 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --script hybri
 
 Реальный локальный transport включается только `--script hybrid --model-mode ollama --model-config scenarios/local-model.example.json`. `--mode paced` помечается Realtime, headless — LiveHeadlessStress. Планы/принятые обязательства/auction bid модель не задерживает; новый plan option применяется только в фиксированный apply tick. model-decisions.jsonl содержит private researcher prompt/response/resolution/latency; это не public stream. Replay с --model-mode/--model-config отклоняется, адаптер не создаётся.
 
-После load все незавершённые Pending/Ready slots получают fallback в прежний applyTick с новой epoch, без нового запроса. Уже разрешённые решения не повторяются. Это правило не обещает идентичность прерванной живой модели непрерывному realtime rollout. [Точная процедура реального P23](LOCAL_MODEL_VALIDATION.md).
+После load все незавершённые Pending/Ready slots получают fallback в прежний applyTick с новой epoch, без нового запроса. Уже разрешённые решения не повторяются. Это правило не обещает идентичность прерванной живой модели непрерывному realtime rollout. [Процедура P23](LOCAL_MODEL_VALIDATION.md) на этой машине выполнена: реальный `qwen3.5:4b`, применённый `MoveTo`, fallback и replay записаны в [IMPLEMENTATION_REPORT_P23.md](IMPLEMENTATION_REPORT_P23.md). Адаптер отключает thinking, чтобы JSON оставался в `content`.
 
 Далее приведены исторические показатели P21 и прежних итераций; текущие totals указаны выше.
 
