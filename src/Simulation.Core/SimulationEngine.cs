@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "elections-1";
+    public const string RulesVersion = "baseline-1";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -80,6 +80,7 @@ public sealed partial class SimulationEngine
         _unemployed = checked(_population - EmploymentGroups().Sum(g => (long)g.Headcount));
         InitializeCapitalDemand();
         InitializeElections();
+        InitializeSupport();
         Emit("WorldCreated");
         ValidateInvariants();
     }
@@ -103,7 +104,8 @@ public sealed partial class SimulationEngine
             command.CommandId.Length > 160 || command.Action.ItemId is null || command.Action.ItemId.Length > 50 ||
             command.Action.BuildingTypeId is null || command.Action.BuildingTypeId.Length > 50 ||
             command.Action.RecipeId is null || command.Action.RecipeId.Length > 50 ||
-            command.Action.EquipmentTypeId is null || command.Action.EquipmentTypeId.Length > 50)
+            command.Action.EquipmentTypeId is null || command.Action.EquipmentTypeId.Length > 50 ||
+            (command.Action.Compensation is { } compensation && (compensation.IsDefault || compensation.Length>8 || compensation.Any(m=>m is null || m.ItemId is null || m.ItemId.Length>50))))
             return new(command?.CommandId ?? "", ResultStatus.Rejected, "InvalidEnvelope", Tick);
         if (authenticatedActor != command.ActorId || !_actors.ContainsKey(authenticatedActor.Value))
             return new(command.CommandId, ResultStatus.Rejected, "NotAvailable", Tick);
@@ -142,12 +144,13 @@ public sealed partial class SimulationEngine
             _phase = 1;
             foreach (var c in allowed.Where(c => IsManagement(c.Action.Kind))) Execute(c);
             _phase = 2; AdvanceMovements(); AdvanceLogisticsMovements();
-            _phase = 3; AcceptLogisticsArrivals();
+            _phase = 3; AcceptLogisticsArrivals(); ReserveSupportResources();
             foreach (var c in allowed.Where(c => !IsManagement(c.Action.Kind))) Execute(c);
+            ReserveSupportResources();
             _phase = 4; AdvanceHarvests(); AdvanceWork();
             _phase = 5; AdvanceLabor();
             _phase = 6; CloseCapitalWindows(); AdvanceMarketWindows(); CloseBuyWindows(); AdvanceCapitalDemand();
-            _phase = 7; ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders();
+            _phase = 7; ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders(); ExpireSupport();
             _phase = 8; AdvanceElections();
             _phase = 9; ValidateInvariants(); Emit("TickCommitted");
         }
@@ -200,6 +203,10 @@ public sealed partial class SimulationEngine
                 case ActionKind.SetLogisticsInbound: SetLogisticsInbound(actor, c); break;
                 case ActionKind.QueueLogisticsJob: QueueLogisticsJob(actor, c); break;
                 case ActionKind.SetLogisticsEnabled: SetLogisticsEnabled(actor, c); break;
+                case ActionKind.ProposeSupport: ProposeSupport(actor, c); break;
+                case ActionKind.AcceptSupport: AcceptSupport(actor, c); break;
+                case ActionKind.RejectSupport: RejectSupport(actor, c); break;
+                case ActionKind.SignSupport: SignSupport(actor, c); break;
                 case ActionKind.SetVoteChoice: SetVoteChoice(actor, c); break;
                 case ActionKind.ContinueAfterVictory: ContinueAfterVictory(actor, c); break;
                 default: throw new RuleViolation("UnknownAction");
@@ -332,15 +339,15 @@ public sealed partial class SimulationEngine
             view.Plots, view.Buildings.Where(b => b.OwnerId == actorId).ToArray(), CopyBuildingCatalog(),
             view.EmploymentGroups.Where(g => g.OwnerId == actorId).ToArray(),
             view.EmploymentGroups.Select(g => new PublicEmploymentView(g.Id, g.OwnerId, g.Role, g.Headcount, g.Capacity, g.PendingWageMinor ?? g.WageMinor)).ToArray(),
-            view.Population, view.Unemployed, view.Equipment.Where(e => e.OwnerId == actorId).ToArray(), CopyEquipmentCatalog(), view.MarketOffers.Where(o => o.Status != MarketOfferStatus.Closed || o.Seller == actorId).ToArray(),
+            view.Population, view.Unemployed, view.Equipment.Where(e => e.OwnerId == actorId).ToArray(), CopyEquipmentCatalog(), view.MarketOffers.Where(o => o.Status != MarketOfferStatus.Closed || o.Seller == actorId || view.MarketAllocations.Any(a => a.OfferId == o.Id && a.Buyer == actorId && a.RemainingQuantity > 0)).ToArray(),
             view.MarketBids.Where(b => b.Buyer == actorId).ToArray(),
             view.MarketAllocations.Where(a => a.Buyer == actorId || a.Seller == actorId).ToArray(), Market, view.BuyOffers.Where(o => o.Status == "Open" || o.Buyer == actorId).ToArray(),
             view.SupplyRequests.Where(r => r.Supplier == actorId).ToArray(),
-            view.DeliveryContracts.Where(d => d.Supplier == actorId || d.Buyer == actorId).ToArray(), Delivery, view.Logistics.Where(l => l.OwnerId == actorId).ToArray(), Logistics, PublicCapitalPrices(false), PublicCapitalPrices(true), ObserveElections(actorId));
+            view.DeliveryContracts.Where(d => d.Supplier == actorId || d.Buyer == actorId).ToArray(), Delivery, view.Logistics.Where(l => l.OwnerId == actorId).ToArray(), Logistics, PublicCapitalPrices(false), PublicCapitalPrices(true), ObserveElections(actorId), ObserveSupport(actorId));
     }
     public string ComputeStateHash() => ScenarioValidation.Hash(new
     {
-        World = Inspect(), CommandRandom = _commandRandom.State, LaborRandom = _laborRandom.State, MarketRandom = _marketRandom.State,
+        World = Inspect(), Support = InspectSupport(), CommandRandom = _commandRandom.State, LaborRandom = _laborRandom.State, MarketRandom = _marketRandom.State,
         MoneyHolds = _economy.Accounts.OrderBy(x => x.Key).Select(x => new { x.Key, Holds = x.Value.Holds.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray() }).ToArray(),
         InventoryHolds = _economy.Inventories.OrderBy(x => x.Key).Select(x => new { x.Key,
             Stock = x.Value.Reservations.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray(),

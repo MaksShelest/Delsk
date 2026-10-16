@@ -10,6 +10,7 @@ from pathlib import Path
 parser = argparse.ArgumentParser()
 parser.add_argument('run_directory', type=Path)
 parser.add_argument('--elections-directory', type=Path, help='Verified 40-tick P19 runner output')
+parser.add_argument('--support-directory', type=Path, help='Verified 120-tick P20 runner output')
 args = parser.parse_args()
 summary = json.loads((args.run_directory / 'summary.json').read_text())
 if summary['status'] != 'succeeded' or summary['tick'] != 62:
@@ -39,6 +40,22 @@ if args.elections_directory:
         parser.error('Missing election checkpoint hashes')
     (root/'scenarios/platform-elections.commands.jsonl').write_bytes((directory/'commands.jsonl').read_bytes())
     with (root/'scenarios/platform-elections.checkpoints.csv').open('w', newline='') as target:
+        writer = csv.writer(target, lineterminator='\n')
+        writer.writerow(['tick','state_hash'])
+        writer.writerows((r['tick'], r['state_hash']) for r in rows)
+
+if args.support_directory:
+    directory = args.support_directory
+    summary = json.loads((directory/'summary.json').read_text())
+    support = json.loads((directory/'support.json').read_text())
+    if summary['status'] != 'succeeded' or summary['tick'] != 120 or len(support['commitments']) != 2 or any(c['status'] != 'Executed' for c in support['commitments']):
+        parser.error('Expected the verified S5 support fixture')
+    with (directory/'metrics.csv').open(newline='') as source:
+        rows = list(csv.DictReader(source))
+    if [int(r['tick']) for r in rows] != list(range(1,121)) or rows[-1]['state_hash'] != summary['stateHash']:
+        parser.error('Missing support checkpoint hashes')
+    (root/'scenarios/platform-support.commands.jsonl').write_bytes((directory/'commands.jsonl').read_bytes())
+    with (root/'scenarios/platform-support.checkpoints.csv').open('w', newline='') as target:
         writer = csv.writer(target, lineterminator='\n')
         writer.writerow(['tick','state_hash'])
         writer.writerows((r['tick'], r['state_hash']) for r in rows)

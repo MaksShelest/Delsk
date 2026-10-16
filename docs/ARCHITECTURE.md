@@ -1,7 +1,7 @@
 # Архитектура Delsk
 
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
-Статус: архитектурная основа к спецификации0.3. P00–P19 реализованы и проверены в границах отчётов; P20 и далее остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
+Статус: архитектурная основа к спецификации0.3. P00–P21 реализованы и проверены в границах отчётов; P22 и далее остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
 
 ## 1. Основания и границы
 
@@ -600,3 +600,21 @@ Phase8 использует один EmploymentGroups источник посл�
 Первый результат фиксирует ElectionVictory и Mode=Victory, закрывает scheduler. Победитель через ContinueAfterVictory phase1 переводит в Sandbox с датой; первый итог не меняется. Victory — опубликованный результат для хоста; управление паузой/завершением сессии сохраняет существующий GameSession.SetPaused, Core не вводит wall-clock или UI. В Sandbox экономика и действующие обязательства продолжают обычные фазы, повторных выборов нет.
 
 Полная ElectionStateView входит в World11/checkpoint/hash/research export. Public ElectionObservation immutable: rules/candidate IDs/schedule, собственный pending choice, прошлые ballots/workforce/result; без чужих текущих выборов или причины выбора. Полный journal содержит private declaration events для replay/invariant validation и не передаётся контроллеру. Строгий restore сверяет исторические группы с initial N и committed employment/creation/growth events, totals/tally/majority и journal. Проверки I01/I10–I14/I16 и S5 без договора, плюс S6 перед выборами — IMPLEMENTATION_REPORT_P19.md. Политическая часть I10 и полный S5 с компенсацией остаются P20.
+
+## 27. Приватные материальные договоры P20
+
+Support/SupportContracts/SupportValidation — модуль Core. SupportSettings создаёт собственные конечные секции в общей точке, личная физическая доставка прежним Transfer. Offered compensation неизменна, AcceptedAwaitingResources резервирует присутствующие материалы по мере поступления. SignSupport — phase3 whole transaction consume exclusive holds/add actual stock+one PoliticalCommitment receipt; не partial. До подписи блок свободен, после — один seller/election. Unsigned истекает phase7 включительного voting tick; signed исполняется phase8 независимо от результата и использует текущий N. Приобретённая поддержка не перепродаётся в составе собственного блока.
+
+WorldView не содержит support terms. Explicit researcher InspectSupport/full event payload доступны только исследованию; отдельная immutable SupportObservation фильтруется по сторонам. PublicEventsSince не выдаёт private events/commands/command IDs/raw sequence gaps. Proposal IDs namespaced по кандидату, чтобы чужие действия не меняли собственную нумерацию. Unknown/foreign IDs одинаковы NotAvailable. World12/Rules support-1 расширяет strict checkpoint/reference/reverse hold/journal validation; история receipt и один собственный block проверяются. Полный S5/I10/I12 подтверждены отдельным P20 gate до P21; детали — IMPLEMENTATION_REPORT_P20_P21.md.
+
+## 28. Utility baseline P21
+
+Agents.Algorithmic разделён по целям: ObligationGoals, MarketGoals, LogisticsGoals, PoliticalGoals и Planning. Модули читают immutable allowlist, создают конечный план обычных GameAction и используют общий исполнитель/валидатор Hosting. Runtime не получает ссылку на Engine/WorldState, не читает файлы или clocks, не вызывает LLM.
+
+Обязательства/оплаченный pickup имеют приоритет над расширением. Свободные деньги/товар исключают существующие резервы, потребность вычитает собственные pending acquisitions; future supply admission ограничен одним контрактом/запросом. Политика учитывает физический ETA, объём, срок и экономическую стоимость. Автоназначения используют существующую очередь P17: contract earliest deadline, вход при нехватке сырья, output own storage; ядро сохраняет авторитетный dispatch/fairness.
+
+Удалённое решение во время движения/работы сохраняет остаток основного плана, cursor/goal/reason в SuspendedPlan; после feedback он восстанавливается и повторно проверяется. Иначе принятая по пути политическая сделка могла бы затерять доставку. BidReviews предотвращает повторное повышение одного раунда, FailedSupport — повторные попытки подписать уже проданный конкурентом блок. Эти данные, private PRNG/cooldowns/trust вместе с планом входят в checkpoint2 utility-economy-v2.
+
+В MarketOffers контроллеру дополнительно оставляется закрытый public offer, если у него есть неоплаченный выдачей собственный allocation: позиция выдачи нужна для реального пути. Это уже опубликованная информация, не доступ к чужим claims. Политические оценки читают только bilateral commitments, собственный блок никогда не включает купленные голоса. Цена/риск majority/приоритет собственной победы могут привести к отказу даже за высокую компенсацию.
+
+Rules baseline-1 фиксирует новую версию политики/проекции; World12/Session2/Envelope1 прежние. Старые rules/policy state явно отклоняются без миграции. Подробные критерии, фактические сценарии и ограничения — IMPLEMENTATION_REPORT_P20_P21.md.

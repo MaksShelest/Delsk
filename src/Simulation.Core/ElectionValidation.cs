@@ -73,7 +73,7 @@ public sealed partial class SimulationEngine
             foreach (var b in r.Ballots)
                 if (!_actors.ContainsKey(b.Candidate.Value) || b.BaseWeight != Elections.BaseVote ||
                     b.WorkerWeight != r.Employment.Where(g => g.Owner == b.Voter).Sum(g => (long)g.Headcount) ||
-                    b.Candidate.Value != choices.GetValueOrDefault(b.Voter.Value, b.Voter.Value))
+                    b.Candidate.Value != (_politicalCommitments.Values.SingleOrDefault(c => c.Seller == b.Voter && c.Election == r.Id)?.Candidate.Value ?? choices.GetValueOrDefault(b.Voter.Value, b.Voter.Value)))
                     throw new InvalidOperationException("Invalid election ballot weight or choice");
             choices.Clear();
             if (!r.Tally.SequenceEqual(TallyBallots(r.Ballots)) || r.TotalWeight != r.Ballots.Sum(b => b.Weight) ||

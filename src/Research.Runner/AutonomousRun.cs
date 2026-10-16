@@ -20,7 +20,7 @@ internal static class AutonomousRun
             config.Npcs.Any(n => n.ActorId == config.HumanActorId || !ids.Contains(n.ActorId) ||
                 !scenario.ResourceNodes.Any(r => r.ItemId == n.PreferredInput)))
             throw new ArgumentException("Invalid autonomous configuration");
-        session.AttachControllers(config.Npcs.Select(n => new AlgorithmicController(n, ControllerSeed(scenario.Seed, n.ActorId), ids)));
+        session.AttachControllers(config.Npcs.Select(n => new AlgorithmicController(n with { HumanActorId=config.HumanActorId }, ControllerSeed(scenario.Seed, n.ActorId), ids)));
         return config.FinalTick;
     }
     private static ulong ControllerSeed(ulong seed, long actor)

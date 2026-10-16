@@ -27,7 +27,7 @@ public static class RunArtifacts
             Controller = session.HasControllers ? "algorithmic" : session.PlaybackFinalTick.HasValue ? "recorded-inputs" : "scripted",
             Controllers = session.ControllerStates, ControllerStateHash = session.ComputeControllerStateHash(), Model = (string?)null, RuntimeVersion = Environment.Version.ToString(),
             Commit = Environment.GetEnvironmentVariable("DELSK_COMMIT"), TickSeconds = 1,
-            Stage = "P19", Author = "Шелестов Максим Евгеньевич"
+            Stage = "P20", Author = "Шелестов Максим Евгеньевич"
         });
         WriteJson("summary.json", new { Status = status, Failure = failure, state.Tick, StateHash = session.Engine.ComputeStateHash(),
             ControllerStateHash = session.ComputeControllerStateHash(),
@@ -40,6 +40,8 @@ public static class RunArtifacts
         WriteJson("logistics.json", new { Systems = state.Logistics });
         WriteJson("capital-demand.json", state.CapitalDemand!);
         WriteJson("elections.json", state.Elections);
+        WriteJson("support.json", session.Engine.InspectSupport());
+        WriteLines("public-events.jsonl", session.Engine.PublicEventsSince(0));
         WriteJson("delivery.json", new { state.BuyOffers, state.SupplyRequests, Contracts = state.DeliveryContracts });
         WriteJson("market.json", new { Offers = state.MarketOffers, Bids = state.MarketBids, Allocations = state.MarketAllocations });
         WriteJson("final-state.json", state); // Inspection export; this is not a loadable checkpoint (P12).

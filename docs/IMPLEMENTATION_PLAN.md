@@ -72,8 +72,8 @@ Upgrade/own output/входящие поставки выполнены как �
 | P17 — выполнен | P16,P11,P10 | Система доставки, приобретение/апгрейд, входящая очередь, автопродукция, contract quota, return path | S6 и I05–I09; qty только из контракта; два задания не резервируют один остаток; late cargo возвращается физически; стоп входа/выхода/производства независим |
 | P18 — выполнен | P16,P08 | Выпуск города, внутреннее потребление/запасы, сглаживание, спрос1.1 и товарные волны, bootstrap бюджет | Нулевой выпуск не блокирует восстановление; рыночная цена не увеличивает G; бюджет округляется ограниченно; будущие цены скрыты |
 | P19 — выполнен | P10,P12,P13 | Election scheduler, выбор контроллера, current worker blocks, strict majority, первый результат/песочница | S5 без договора; 50% не победа; все группы ровно один раз; безработные не голосуют; election replay даёт те же ballots |
-| P20 | P19,P15,P17 | Приватные support proposals, доставка компенсации, атомарная подпись, обязательный голос | S5 полностью; один блок/выборы, нет цепочки перепродажи, no partial signing, доступ только сторонам/исследователю |
-| P21 | P14–P20 | Расширить utility-решения: аукцион/лимит, исполнение срока, автоназначения, зарплата, оценка/покупка/продажа поддержки | Без модели NPC используют все доступные человеку системы; не обязаны продавать голос за любую цену; результаты baseline и отсутствие тупиков зафиксированы |
+| P20 — выполнен | P19,P15,P17 | Приватные support proposals, доставка компенсации, атомарная подпись, обязательный голос | S5 полностью; один блок/выборы, нет цепочки перепродажи, no partial signing, доступ только сторонам/исследователю |
+| P21 — выполнен | P14–P20 | Расширить utility-решения: аукцион/лимит, исполнение срока, автоназначения, зарплата, оценка/покупка/продажа поддержки | Без модели NPC используют все доступные человеку системы; не обязаны продавать голос за любую цену; результаты baseline и отсутствие тупиков зафиксированы |
 
 **Gate C:** полная алгоритмическая версия месячного прототипа в headless: два хозяйственных цикла, конкуренция в окне, автоотправка частями, найм/простой и выборы с секретной сделкой. Снимки расширены для каждого нового состояния; не оставлять сохранение торгов/политики «на потом» после Gate C.
 
@@ -81,7 +81,7 @@ Upgrade/own output/входящие поставки выполнены как �
 
 | ID | Зависит от | Объём | Критерий готовности |
 | --- | --- | --- | --- |
-| P22 | P21 | ILocalModelAdapter+Ollama HTTP, строгий intent parser, bounded queue, decision slots/TTL/epoch, fallback | S7 на fake adapter без сети в CI; таймаут не блокирует Step, actor подделать нельзя, replay не обращается к модели |
+| P22 | P21 — выполнен | ILocalModelAdapter+Ollama HTTP, строгий intent parser, bounded queue, decision slots/TTL/epoch, fallback | S7 на fake adapter без сети в CI; таймаут не блокирует Step, actor подделать нельзя, replay не обращается к модели |
 | P23 | P22 | Реальная локальная модель, один общий runtime/раздельная память NPC, 2–3 дилеммы, лимиты контекста | Хотя бы один измеренный реальный запрос+валидное применение и один fallback; model digest/quantization/runtime/prompt записаны; отсутствие модели не ломает игру |
 | P24 | P21,P23 | Runner series, manifest/metrics, baseline/hybrid/hybrid+structured communication, recorded replay | Одинаковые seeds/config/info; timing-policy не смешаны; полностью выключенная модель — рабочий baseline; сохранены ошибки и raw observations |
 | P25 | P24 | Python отчёт по paired seeds, графики/таблицы, разброс, latency/fallback/контракты/экономика | Первые10 seeds на режим; медианы+разброс/парные разницы и ограничения; не делать общего вывода по одной победе; отчёт воспроизводим из результатов |
@@ -232,3 +232,14 @@ P18 реализован и проверен полным набором476/476 
 Выборы проверены по фактическому коду и результатам:512/512tests,19ordinary scenarios,16ordinary save/load pairs+controlled pair,3command replays,57exports/36comparisons15files и независимые money/item/population/ballot/majority checks. Godot Linux сверил62экономических+40выборных hashes и real file restores12/34/55/60,9/19/20/21.
 
 Закрыты scheduler/electionId/период, текущие numeric blocks после найма без дублирования/голосов unemployed, SetVoteChoice/default self/current-election scope, strict>50%/exact50/next election, immutable first winner/ContinueAfterVictory/Sandbox, private pending choices/public ballots, direct restore и deterministic replay. S5 проверен без политического договора; полный S5 и политические ограничения I10 остаются следующему **P20**. [Отчёт](IMPLEMENTATION_REPORT_P19.md), verification/p19. P20/LLM/UI не начинались, P06 Android device gate открыт.
+
+P20 завершён отдельно до начала P21:538tests,20scenarios,17ordinary save/load pairs+controlled,4replays,61exports/39comparisons17files и Linux Godot222hashes/14actual restores. Закрыты S5/I10/I12 материальной приватной поддержки; [отчёт](IMPLEMENTATION_REPORT_P20_P21.md), verification/p20-p21/p20-gate.json. Следующее в текущем задании — P21. P22/LLM/UI не начинались.
+
+
+## Завершение P20 и P21 (16.10.2026)
+
+P20 полностью прошёл отдельный gate538tests/20scenarios/17ordinary load pairs+controlled/4replays/61exports/Godot222hashes14restores и закреплён промежуточным commit768c33f до начала P21.
+
+P21 проверен561/561tests,24runner-сценариями,21обычной save/load парой+controlled pair,8replays,77independent exports/51comparison pairs. Direct continuation сравнивает17файлов, world-only baseline replay14без трёх policy traces. Godot Linux снова222tick hashes/14file restores. Три реальные политики самостоятельно добывают, производят, торгуют, исполняют сроки, участвуют в аукционе, управляют зарплатами/логистикой и оценивают/покупают/продают поддержку через общий валидатор. В нулевой кассе работает прежний bootstrap; порядок AttachControllers не меняет результат, планы/цели/PRNG/bid review/suspended route сохраняются. Скрытые третьесторонние условия и будущие цены недоступны.
+
+Факты/подготовленные fixtures/профиль/ограничения — [отчёт](IMPLEMENTATION_REPORT_P20_P21.md), verification/p20-p21/final-gate.json. Программная часть Gate C закрыта; Android device gate P06 остаётся отдельным открытым ограничением. Следующий пункт — **P22**; реальная LLM/UI/серии не добавлены.

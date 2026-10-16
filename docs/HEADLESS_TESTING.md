@@ -1,6 +1,24 @@
 # Как запускать и проверять экономику без графики
 
-Автор: Шелестов Максим Евгеньевич. Состояние после P19, 15.10.2026.
+Автор: Шелестов Максим Евгеньевич. Состояние после P21, 16.10.2026.
+
+## Текущий baseline P21
+
+```powershell
+dotnet run --project src/Research.Runner -c Release --no-build -- --script baseline --seed 42 --output artifacts/baseline
+dotnet run --project src/Research.Runner -c Release --no-build -- --script baseline --scenario scenarios/baseline-auction.json --controllers scenarios/baseline-auction-controllers.json --output artifacts/baseline-auction
+dotnet run --project src/Research.Runner -c Release --no-build -- --script baseline --scenario scenarios/baseline-politics.json --controllers scenarios/baseline-politics-controllers.json --output artifacts/baseline-politics
+dotnet run --project src/Research.Runner -c Release --no-build -- --script baseline --scenario scenarios/baseline-logistics.json --controllers scenarios/baseline-logistics-controllers.json --output artifacts/baseline-logistics
+python scripts/check_headless.py --output artifacts/headless-p21
+```
+
+Обычный economy стартует без готового бизнеса: три NPC развивают две цепочки, торгуют и исполняют сроки1200ticks. Остальные три сценария подготовлены для конкуренции в аукционе180ticks, политики160ticks и автологистики360ticks. Human1 бездействует, модель полностью отсутствует. Research runner дополнительно проверяет фактические критерии поведения по окончании соответствующего горизонта, включая replay.
+
+Проверено561test,24обычных сценария,21обычная save/load пара+controlled pair,8command replays,77выгрузок с независимыми balance/invariant/privacy assertions. Direct continuation сравнивает17файлов; world-only replay14, поскольку policy trace без вызова контроллера не возникает. Полный shared gate используется также CI; каждый этап имеет hard timeout. Ошибки чтения/прогона не маскируются успешным summary.
+
+Новые настройки: MaximumBuyPriceBasisPoints12500, SellPriceBasisPoints10000, SupportPricePerVoteMinor500, PoliticalHorizonTicks180, Trade/Logistics/Politics/FutureContractsEnabled=true, MarketLotQuantity10. Алгоритм сравнивает свободные средства/товар с holds, ETA/вместимость/срок, покупку с добычей; обязательство раньше расширения. Политика может отказаться от поддержки из-за цены или риска проиграть выборы. Состояния utility-economy-v2/checkpoint2 сохраняют основной и прерванный план, bid reviews, failed signs, cooldowns и private PRNG. World12/Rules baseline-1; старые rules/policy файлы оставлять для прежнего кода.
+
+support.json/events.jsonl/commands.jsonl и raw controller observations — исследовательские приватные материалы, не публичный UI. public-events.jsonl содержит отфильтрованные события без условий сделок; controller allowlist — только own/bilateral support. Подробные измерения и ограничения — [отчёт](IMPLEMENTATION_REPORT_P20_P21.md). Последующие старые примеры autonomous сохранены как регрессии, их исторические показатели не являются текущими результатами P21.
 
 ## Что выполняет прогон и зачем Python
 
@@ -14,7 +32,7 @@ Python сейчас лишь удобно запускает .NET-сборку/�
 
 ## Быстрый запуск в Rider или терминале Windows
 
-Получить ветку `feat/elections-p19` (после её merge — текущую базовую ветку); безопасное обновление — [LOCAL_SETUP.md](LOCAL_SETUP.md). Открыть `Delsk.sln`. В терминале **корня репозитория**:
+Получить ветку `feat/private-support-baseline` (после её merge — текущую базовую ветку); безопасное обновление — [LOCAL_SETUP.md](LOCAL_SETUP.md). Открыть `Delsk.sln`. В терминале **корня репозитория**:
 
 ```powershell
 dotnet restore Delsk.sln --locked-mode --disable-parallel '-m:1'

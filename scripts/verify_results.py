@@ -276,7 +276,48 @@ def verify(folder):
         assert len(elections['results']) == state['tick'] // period
         assert elections['nextElectionId']['value'] == len(elections['results']) + 1
         assert elections['nextVotingTick'] == (len(elections['results']) + 1) * period
-    print(f'{folder}: money, item flows, capacity, population, settlements and elections verified; tick={summary["tick"]}')
+    support = json.loads((folder/'support.json').read_text(encoding='utf-8'))
+    assert 'support' not in state, 'Private political state leaked into generic WorldView'
+    proposals = {p['id']: p for p in support['proposals']}
+    assert len(proposals) == len(support['proposals'])
+    for candidate in people:
+        owned = sorted(p['id'] for p in proposals.values() if p['candidate']['value'] == candidate)
+        assert owned == [(candidate-1)*1_000_000_000+i for i in range(1,len(owned)+1)]
+    sections = {x['owner']['value']: x['inventory']['value'] for x in support['sections']}
+    assert len(sections) == len(set(sections.values()))
+    if config.get('support'):
+        assert sorted(sections) == actor_ids
+        for owner, inv in sections.items():
+            assert inventories[inv]['ownerId']['value'] == owner
+            assert inventories[inv]['position'] == config['support']['tradingPoint']
+    else: assert not sections and not proposals and not support['commitments']
+    blocks = set()
+    for c in support['commitments']:
+        key = (c['seller']['value'],c['election']['value']); assert key not in blocks; blocks.add(key)
+        p = proposals[c['proposalId']]
+        assert p['status'] == 'Signed' and not p['reserved'] and p['closedTick'] == c['signedTick']
+        for name in ['seller','candidate','election','source','destination','compensation']: assert p[name] == c[name]
+        signed = [e for e in events if e['type']=='SupportSigned' and e.get('support',{}).get('proposal',{}).get('id')==p['id']]
+        assert len(signed)==1 and signed[0]['phase']==3 and signed[0]['tick']==c['signedTick']
+        receipt = signed[0]['support']['commitment']; assert receipt['compensation']==p['compensation']
+        result = next((r for r in elections['results'] if r['id']==c['election']),None)
+        assert (c['status']=='Executed') == (result is not None)
+        if result:
+            assert c['executedTick']==result['votingTick']
+            assert next(b for b in result['ballots'] if b['voter']==c['seller'])['candidate']==c['candidate']
+    for p in proposals.values():
+        assert p['seller']!=p['candidate'] and p['source']['value']==sections[p['candidate']['value']] and p['destination']['value']==sections[p['seller']['value']]
+        assert p['expiryTick']==p['election']['value']*period
+        terms={m['itemId']:m['quantity'] for m in p['compensation']}; assert len(terms)==len(p['compensation']) and all(q>0 for q in terms.values())
+        for r in p['reserved']:
+            assert p['status']=='AcceptedAwaitingResources' and 0<r['quantity']<=terms[r['itemId']]
+            assert next(x for x in inventories[p['source']['value']]['stock'] if x['itemId']==r['itemId'])['reserved']>=r['quantity']
+        if p['status']=='Expired': assert p['closedTick']==p['expiryTick'] and not p['reserved']
+        if p['status'] in ('Proposed','AcceptedAwaitingResources'): assert p['closedTick'] is None and p['expiryTick']>state['tick']
+    public=[json.loads(line) for line in (folder/'public-events.jsonl').read_text(encoding='utf-8').splitlines()]
+    assert [e['sequence'] for e in public]==list(range(1,len(public)+1))
+    assert all(not e['type'].startswith('Support') and e['type']!='VoteChoiceChanged' and 'commandId' not in e and 'support' not in e for e in public)
+    print(f'{folder}: money, item flows, capacity, population, settlements, elections and private support verified; tick={summary["tick"]}')
 
 if len(sys.argv) < 2:
     raise SystemExit('Usage: verify_results.py RUN_DIRECTORY [RUN_DIRECTORY]')

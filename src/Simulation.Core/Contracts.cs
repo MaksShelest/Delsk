@@ -15,20 +15,30 @@ public readonly record struct ElectionId(long Value);
 public readonly record struct Cell(int X, int Z);
 
 public enum ActionKind { MoveTo, Harvest, Transfer, SetProductionEnabled, SellAvailableToCapital, CancelCapitalSale,
-    ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe, SetWage, BuyEquipment, UpgradeEquipment, SetEquipmentMode, CreateSellOffer, SubmitBuyRequest, RaiseBid, WithdrawBid, CollectPurchase, CreateBuyOffer, AcceptDeliveryQuantity, WithdrawSupplyRequest, CancelBuyOffer, DeliverContract, BuyLogistics, SetLogisticsContract, UpgradeLogistics, SetLogisticsStorage, SetLogisticsInbound, SetLogisticsProduction, QueueLogisticsJob, SetLogisticsEnabled, SetVoteChoice, ContinueAfterVictory }
+    ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe, SetWage, BuyEquipment, UpgradeEquipment, SetEquipmentMode, CreateSellOffer, SubmitBuyRequest, RaiseBid, WithdrawBid, CollectPurchase, CreateBuyOffer, AcceptDeliveryQuantity, WithdrawSupplyRequest, CancelBuyOffer, DeliverContract, BuyLogistics, SetLogisticsContract, UpgradeLogistics, SetLogisticsStorage, SetLogisticsInbound, SetLogisticsProduction, QueueLogisticsJob, SetLogisticsEnabled, SetVoteChoice, ContinueAfterVictory, ProposeSupport, AcceptSupport, RejectSupport, SignSupport }
 public enum ResultStatus { Accepted, Rejected }
 public record GameAction(ActionKind Kind, Cell Target = default, string ItemId = "", long Quantity = 0,
     InventoryId Source = default, InventoryId Destination = default, EnterpriseId Enterprise = default,
     bool Enabled = false, long OfferId = 0, PlotId Plot = default, BuildingId Building = default,
     string BuildingTypeId = "", string RecipeId = "", EmploymentGroupId Group = default, long WageMinor = 0, EquipmentId Equipment = default,
-    string EquipmentTypeId = "", int EquipmentLevel = 1, EquipmentMode Mode = EquipmentMode.Personal, long MarketOfferId = 0, long UnitPriceMinor = 0, long MaximumPriceMinor = 0, int MarketRound = 0, long PurchaseId = 0, long BuyOfferId = 0, int OfferWindow = 1, long ContractId = 0, LogisticsId Logistics = default, LogisticsDirection Direction = LogisticsDirection.Output, ElectionId Election = default, ParticipantId Candidate = default);
+    string EquipmentTypeId = "", int EquipmentLevel = 1, EquipmentMode Mode = EquipmentMode.Personal, long MarketOfferId = 0, long UnitPriceMinor = 0, long MaximumPriceMinor = 0, int MarketRound = 0, long PurchaseId = 0, long BuyOfferId = 0, int OfferWindow = 1, long ContractId = 0, LogisticsId Logistics = default, LogisticsDirection Direction = LogisticsDirection.Output, ElectionId Election = default, ParticipantId Candidate = default, ParticipantId SupportSeller = default, long SupportProposalId = 0, System.Collections.Immutable.ImmutableArray<MaterialCost>? Compensation = null);
 public record CommandEnvelope(string CommandId, ParticipantId ActorId, long LocalSequence,
-    long IssuedAtTick, long NotBeforeTick, long ExpiresAtTick, GameAction Action);
+    long IssuedAtTick, long NotBeforeTick, long ExpiresAtTick, GameAction Action)
+{
+    // ImmutableArray equality is reference equality; identical decoded inputs must still deduplicate.
+    public virtual bool Equals(CommandEnvelope? other) => other is not null &&
+        (CommandId, ActorId, LocalSequence, IssuedAtTick, NotBeforeTick, ExpiresAtTick) ==
+        (other.CommandId, other.ActorId, other.LocalSequence, other.IssuedAtTick, other.NotBeforeTick, other.ExpiresAtTick) &&
+        (ReferenceEquals(Action, other.Action) || (Action is not null && other.Action is not null &&
+            (Action with { Compensation = null }) == (other.Action with { Compensation = null }) &&
+            (Action.Compensation ?? []).SequenceEqual(other.Action.Compensation ?? [])));
+    public override int GetHashCode() => HashCode.Combine(CommandId, ActorId, LocalSequence);
+}
 public record CommandResult(string CommandId, ResultStatus Status, string ReasonCode, long AppliedTick);
 public record LedgerRecord(long Tick, AccountId DebitAccount, AccountId CreditAccount, long AmountMinor, string Reason);
 public record SimulationEvent(long Sequence, long Tick, int Phase, string Type,
     ParticipantId? ActorId = null, long EntityId = 0, string ItemId = "", long Quantity = 0,
-    long AmountMinor = 0, string ReasonCode = "", string? CommandId = null);
+    long AmountMinor = 0, string ReasonCode = "", string? CommandId = null, SupportEventData? Support = null);
 
 public record ResourceNodeDefinition(string ItemId, Cell Position);
 public record ItemDefinition(string Id, long UnitVolume, long BasePriceMinor);
@@ -63,7 +73,7 @@ public record ScenarioDefinition(string Id, ulong Seed, int MapWidth, int MapHei
     int MaxCommandsPerActorTick = 8, long Population = 2, long MaxTicks = 500,
     PlotDefinition[]? Plots = null, BuildingTypeDefinition[]? BuildingTypes = null,
     BuildingDefinition[]? Buildings = null, int LandReservationTicks = 120, int MaxActivePlotReservations = 4,
-    LaborSettings? Labor = null, EquipmentTypeDefinition[]? EquipmentTypes = null, MarketSettings? Market = null, DeliverySettings? Delivery = null, LogisticsSettings? Logistics = null, CapitalDemandSettings? CapitalDemand = null, ElectionSettings? Elections = null);
+    LaborSettings? Labor = null, EquipmentTypeDefinition[]? EquipmentTypes = null, MarketSettings? Market = null, DeliverySettings? Delivery = null, LogisticsSettings? Logistics = null, CapitalDemandSettings? CapitalDemand = null, ElectionSettings? Elections = null, SupportSettings? Support = null);
 
 public record StockView(string ItemId, long Quantity, long Reserved);
 public record InventoryView(InventoryId Id, ParticipantId OwnerId, Cell Position, long Capacity,
@@ -107,7 +117,7 @@ public record WorldView(long Tick, long NextId, ulong AllocationRandomState, str
 public record ParticipantObservation(long Tick, ParticipantView Participant, AccountView Account,
     InventoryView[] OwnInventories, EnterpriseView[] OwnEnterprises, CapitalOfferView[] CapitalOffers,
     PlotView[] Plots, BuildingView[] OwnBuildings, BuildingTypeDefinition[] BuildingTypes,
-    EmploymentView[] OwnEmploymentGroups, PublicEmploymentView[] LaborMarket, long Population, long Unemployed, EquipmentView[] OwnEquipment, EquipmentTypeDefinition[] EquipmentTypes, MarketOfferView[] MarketOffers, MarketBidView[] OwnMarketBids, MarketAllocationView[] OwnMarketAllocations, MarketSettings MarketRules, BuyOfferView[] BuyOffers, SupplyRequest[] OwnSupplyRequests, DeliveryContractView[] OwnDeliveryContracts, DeliverySettings DeliveryRules, LogisticsView[] OwnLogistics, LogisticsSettings LogisticsRules, System.Collections.Immutable.ImmutableArray<MarketPricePoint> CapitalPrices, System.Collections.Immutable.ImmutableArray<MarketPricePoint> CapitalPriceHistory, ElectionObservation Elections);
+    EmploymentView[] OwnEmploymentGroups, PublicEmploymentView[] LaborMarket, long Population, long Unemployed, EquipmentView[] OwnEquipment, EquipmentTypeDefinition[] EquipmentTypes, MarketOfferView[] MarketOffers, MarketBidView[] OwnMarketBids, MarketAllocationView[] OwnMarketAllocations, MarketSettings MarketRules, BuyOfferView[] BuyOffers, SupplyRequest[] OwnSupplyRequests, DeliveryContractView[] OwnDeliveryContracts, DeliverySettings DeliveryRules, LogisticsView[] OwnLogistics, LogisticsSettings LogisticsRules, System.Collections.Immutable.ImmutableArray<MarketPricePoint> CapitalPrices, System.Collections.Immutable.ImmutableArray<MarketPricePoint> CapitalPriceHistory, ElectionObservation Elections, SupportObservation Support);
 
 public static class SimulationJson
 {

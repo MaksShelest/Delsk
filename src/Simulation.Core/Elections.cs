@@ -47,7 +47,7 @@ public sealed partial class SimulationEngine
             .Select(g => new ElectionEmployment(new(g.Id), new(g.Owner), g.Role, g.Headcount)).ToImmutableArray();
         var workers = groups.GroupBy(g => g.Owner.Value).ToDictionary(g => g.Key, g => g.Sum(x => (long)x.Headcount));
         var ballots = _actors.Keys.Order().Select(v => new ElectionBallot(new(v),
-            new(_voteChoices.GetValueOrDefault(v, v)), Elections.BaseVote, workers.GetValueOrDefault(v))).ToImmutableArray();
+            new(VoteRecipient(v, id)), Elections.BaseVote, workers.GetValueOrDefault(v))).ToImmutableArray();
         var tally = TallyBallots(ballots);
         long total = ballots.Sum(b => b.Weight);
         var winner = tally.Where(t => (Int128)2 * t.Weight > total).Select(t => (ParticipantId?)t.Candidate).SingleOrDefault();
@@ -59,6 +59,7 @@ public sealed partial class SimulationEngine
         Emit("ElectionCompleted", entity: id.Value, quantity: total,
             reason: winner?.Value.ToString(CultureInfo.InvariantCulture) ?? "NoMajority");
         _voteChoices.Clear();
+        ExecuteSupport(id);
         if (winner is { } elected)
         {
             _firstVictory = new(id, elected, Tick);
