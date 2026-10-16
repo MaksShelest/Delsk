@@ -1,12 +1,12 @@
 # Фактическая готовность Delsk
 
-Автор: Шелестов Максим Евгеньевич. После P23, 16.10.2026.
+Автор: Шелестов Максим Евгеньевич. После P24, 16.10.2026.
 
-P00–P22 реализованы в проверенных программных границах: полный headless цикл экономики, физическая логистика, рынки/сроки, выборы, приватная поддержка и расширенный алгоритмический baseline.618tests;26runner-сценариев;22обычные save/load пары+controlled pair;9replays;81independent exports. Godot Linux —222tick hashes/14file restores. Доказательства — [отчёт P20/P21](IMPLEMENTATION_REPORT_P20_P21.md) и verification/p20-p21.
+P00–P24 реализованы в проверенных программных границах. Финальный regression gate P24: 618/618 тестов, 81 экспорт, 9 replay, 54 сравнения; выключенная модель совпала с baseline и осталась на метке `headless`. Godot Linux исторически — 222 tick hashes/14 file restores, в этом gate заново не повторялся. Доказательства — [отчёт P24](IMPLEMENTATION_REPORT_P24.md) и verification/p24.
 
-Три NPC без LLM используют торговлю/аукционы, обязательства, зарплаты, автоназначения и политические предложения. Обычный economy1200ticks начинает без бизнеса; подготовленные auction/logistics/politics fixtures проверяют отдельные конкурентные условия. Конкретные seed/config не доказывают общий баланс — серии относятся к P24/P25.
+P24 добавил парный протокол baseline / hybrid / hybrid со структурированными переговорами, manifest, metrics и recorded replay. Выключенная модель совпала с baseline на двух seeds экономики и на politics. Живая модель на одном paced seed выбрала зарплату без переговоров и Hold при включённых переговорах. Это не статистический вывод: 10 seeds и разброс остаются P25. Отчёт — [IMPLEMENTATION_REPORT_P24.md](IMPLEMENTATION_REPORT_P24.md).
 
-P22: Ollama transport/ограниченная очередь/фиксированные slots/fallback/save/replay проверены fake S7. P23 измерен локально: `qwen3.5:4b` выбрала план, Core принял `MoveTo`, закрытый endpoint дал fallback, replay модель не вызывал. Отчёт — [IMPLEMENTATION_REPORT_P23.md](IMPLEMENTATION_REPORT_P23.md). Научные серии и игровой UI не реализованы; ручной Godot input относится к P26. Android device gate P06 открыт, актуальные Windows EXE/Android APK на устройствах в этой итерации не проверены. [Текущий запуск baseline](HEADLESS_TESTING.md).
+Конкретные seed/config не доказывают общий баланс. Научный отчёт и игровой UI не готовы; ручной Godot input относится к P26. Android device gate P06 открыт, актуальные Windows EXE/Android APK на устройствах в этой итерации не проверены. [Текущий запуск baseline](HEADLESS_TESTING.md).
 
 Далее сохранены исторические примеры и показатели предыдущих итераций; они не заменяют актуальный статус выше.
 

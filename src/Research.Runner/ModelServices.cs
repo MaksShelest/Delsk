@@ -19,7 +19,8 @@ internal sealed class ModelServices : IDisposable
     public object? Metadata => _runtime is null ? null : new
     {
         Mode = _mode, Configuration = _config, Policy = HybridController.PolicyKind, PromptVersion = ModelPrompt.Version,
-        ModelDigest = (string?)null, ModelDigestReason = "P22 transport; real model metadata must be measured in P23",
+        // Имя тега не является digest. Серия измеряет его отдельно и не подставляет сюда.
+        ModelDigest = (string?)null, ModelDigestReason = "not measured by the runner; research series records the measured digest",
         RamBytes = (long?)null, RamMeasurementReason = "not measured", Runtime = Environment.Version.ToString()
     };
     private void Setup(Dictionary<string, string> options, long[] actors, bool safety)

@@ -78,7 +78,10 @@ try
                 : AutonomousRun.Configure(session, definition, controllers);
             target ??= horizon;
             if (script == "model-safety") { target = options.ContainsKey("--ticks") ? target : 60; mode = "ControlledFakeS7"; }
-            if (script == "hybrid") mode = mode == "paced" ? "Realtime" : "LiveHeadlessStress";
+            // Выключенная модель остаётся тем же headless/paced, что и baseline.
+            // LiveHeadlessStress и Realtime обозначают только включённый runtime.
+            if (script == "hybrid" && options.GetValueOrDefault("--model-mode", "off") != "off")
+                mode = mode == "paced" ? "Realtime" : "LiveHeadlessStress";
         }
         else if (tape is not null || saveTick.HasValue)
         {
