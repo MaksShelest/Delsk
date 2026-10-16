@@ -42,7 +42,8 @@ public sealed class OllamaAdapter : ILocalModelAdapter, IDisposable
         };
         byte[] body = JsonSerializer.SerializeToUtf8Bytes(new
         {
-            model = _settings.Model, stream = false, format = schema, keep_alive = "5m",
+            // qwen3.5 по умолчанию думает и забирает весь num_predict, оставляя content пустым.
+            model = _settings.Model, stream = false, think = false, format = schema, keep_alive = "5m",
             options = new { num_ctx = _settings.ContextTokens, num_predict = _settings.MaximumOutputTokens, temperature = 0, seed = _settings.Seed },
             messages = new[] { new { role = "user", content = request.Prompt } }
         });

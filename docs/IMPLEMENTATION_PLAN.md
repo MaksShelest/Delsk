@@ -252,3 +252,7 @@ P21 проверен561/561tests,24runner-сценариями,21обычной 
 Отдельный полный gate618tests (57новых),26runner-сценариев,22обычные save/load пары+controlled pair,9replays,81independent exports/54comparisons. Direct continuation18файлов, world-only replay14. Source baseline при model-off идентичен. S7 включает valid/foreign actor/late, unit — malformed/stale/duplicates/timeout/cancellation/epoch/corrupt checkpoint/privacy. Подтверждения — IMPLEMENTATION_REPORT_P22.md и verification/p22. Применимый Godot gate фиксируется там же.
 
 P23 не закрывается fake-ответами. Следующий пункт — реальный локальный runtime/model, command application+fallback и digest/quantization/runtime/prompt/latency evidence; подготовлена LOCAL_MODEL_VALIDATION.md. P24/реальная серия/UI в этот PR не входят, Android physical-device gate P06 открыт.
+
+## Завершение P23 (16.10.2026)
+
+На Windows локально измерены Ollama 0.40.5 и `qwen3.5:4b` digest `d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04`, Q4_K_M, Apache-2.0. Три paced hybrid-прогона по 90 тиков, fallback на закрытый порт, replay без модели и load уже разрешённого слота прошли. Development дал `ModelResolved` и `CommandAccepted` для `MoveTo` участников 2 и 4; logistics зафиксировал stale fallback, support выбрал Hold. Адаптер отключает thinking, иначе `content` остаётся пустым. Финальный gate 618/618 и Windows Godot smoke 62+40+120 хешей. Подробности — [отчёт](IMPLEMENTATION_REPORT_P23.md) и verification/p23/gate.json. P24/UI не начаты, Android device gate P06 и EXE/APK на устройстве открыты.

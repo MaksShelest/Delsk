@@ -27,7 +27,8 @@ public class OllamaAdapterTests
         Assert.Equal("Completed", reply.Outcome); Assert.Equal(120, reply.PromptTokens); Assert.Equal(20, reply.CompletionTokens);
         Assert.Equal("test-model", reply.Model); Assert.Equal(new Uri("http://127.0.0.1:11434/api/chat"), url);
         using var doc = JsonDocument.Parse(body!); var root = doc.RootElement;
-        Assert.False(root.GetProperty("stream").GetBoolean()); Assert.Equal(4096, root.GetProperty("options").GetProperty("num_ctx").GetInt32());
+        Assert.False(root.GetProperty("stream").GetBoolean()); Assert.False(root.GetProperty("think").GetBoolean());
+        Assert.Equal(4096, root.GetProperty("options").GetProperty("num_ctx").GetInt32());
         Assert.Equal(512, root.GetProperty("options").GetProperty("num_predict").GetInt32());
         Assert.False(root.GetProperty("format").GetProperty("additionalProperties").GetBoolean());
         Assert.Equal(r.Prompt, root.GetProperty("messages")[0].GetProperty("content").GetString());
