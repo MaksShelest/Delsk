@@ -21,6 +21,8 @@
     "supportCheckedTicks": 120
   },
   "playfieldLoad": "--quit-after 2 exited 0 without a script error",
+  "smokeSceneChange": "deferred via SceneTree.CallDeferred; repeated headless smoke stderr had no ERROR",
+  "logCheck": "verify_platform_probe.py self-test rejects remove_child while the parent is busy",
   "scope": "Headless regression plus the player-desk tests. The Playfield scene was compiled, not exercised in the editor. UI polish and the Android device gate are excluded.",
   "author": "Шелестов Максим Евгеньевич"
 }

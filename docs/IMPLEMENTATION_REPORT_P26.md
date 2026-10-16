@@ -29,6 +29,8 @@ Godot .NET 4.7.2, сцена `src/Client.Godot/Playfield.tscn`. F5 запуск�
 
 `PlayerDeskTests`: ставка не меняет баланс относительно такого же шага без команды; предложение между двумя NPC не видно третьему; работа, поставки и ставка — разные команды; ключи RU и EN совпадают. Формула семени контроллера `controller-v1:{seed}:{actor}` вынесена в `AlgorithmicController.RuntimeSeed` и совпадает с прежней. Клиентский проект собрался. Regression gate: 621/621, 81 экспорт, 9 replay, 54 сравнения. Счёт — [verification/p26/regression-gate.json](verification/p26/regression-gate.json).
 
-Headless Godot .NET 4.7.2 импортировал проект и прошёл `--smoke`: 62 такта, lifecycle, restore, 40 выборных и 120 тактов поддержки, статус отчёта `passed`. `Playfield` загрузилась с `--quit-after 2` без ошибки скрипта. Ручные нажатия кнопок в окне редактора этой сессией не заменялись. Android device gate, EXE и APK не проверялись.
+Переход `--smoke` на `PlatformProbe` отложен через `SceneTree.CallDeferred`: немедленный `ChangeSceneToFile` из `_Ready` вызывал `remove_child` у родителя, который ещё добавлял узел. `verify_platform_probe.py` отвергает эту строку и любой другой `ERROR`, кроме известного editor notice, и проверяет это самотестом до чтения журнала.
+
+Повторный headless Godot .NET 4.7.2: import, `--smoke` и `Playfield --quit-after 2` завершились с кодом 0. Smoke-журнал без `ERROR`: 62 такта, lifecycle, restore, 40 выборных и 120 тактов поддержки. Ручные нажатия кнопок в окне редактора этой сессией не заменялись. Android device gate, EXE и APK не проверялись.
 
 Следующий этап — P27. Этот отчёт его не открывает.

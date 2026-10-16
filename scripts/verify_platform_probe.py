@@ -8,22 +8,49 @@ import json
 from pathlib import Path
 import struct
 
+KNOWN_EDITOR_ERROR = 'ERROR: EditorSettings not instantiated yet when getting setting "export/android/shutdown_adb_on_exit".'
+BUSY_PARENT = "remove_child() can't be called at this time"
+
+
+def godot_problems(text):
+    problems = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped == KNOWN_EDITOR_ERROR:
+            continue
+        if stripped.startswith('ERROR:') or stripped.startswith('SCRIPT ERROR:') or BUSY_PARENT in stripped or 'Parent node is busy adding/removing children' in stripped:
+            problems.append(stripped)
+    return problems
+
+
+def self_test():
+    if godot_problems(KNOWN_EDITOR_ERROR + '\nDELSK_PLATFORM_PASS ticks=62'):
+        raise SystemExit('Known editor notice was treated as a probe failure')
+    busy = "ERROR: Parent node is busy adding/removing children, remove_child() can't be called at this time."
+    if not godot_problems(busy) or not godot_problems(BUSY_PARENT):
+        raise SystemExit('Busy-parent scene change would pass unnoticed')
+    if godot_problems('DELSK_PLATFORM_PASS ticks=62'):
+        raise SystemExit('A passing probe line was treated as an error')
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--report', type=Path)
 parser.add_argument('--log-prefix', type=Path, action='append', default=[])
 parser.add_argument('--windows-directory', type=Path)
+parser.add_argument('--self-test-only', action='store_true')
 args = parser.parse_args()
+self_test()
+if args.self_test_only:
+    print('Platform probe log self-test passed')
+    raise SystemExit(0)
 if not (args.report or args.log_prefix or args.windows_directory):
     parser.error('Supply a report, log prefix or Windows export directory')
 for prefix in args.log_prefix:
     metadata = json.loads(prefix.with_suffix('.json').read_text())
     if metadata['exit_code'] != 0 or metadata.get('timed_out'):
         raise SystemExit(f'Process failed: {prefix}')
-    lines = []
-    for suffix in ('.stdout.log', '.stderr.log'):
-        lines.extend(Path(str(prefix) + suffix).read_text(errors='replace').splitlines())
-    errors = [line for line in lines if line.startswith('ERROR:') and
-              line != 'ERROR: EditorSettings not instantiated yet when getting setting "export/android/shutdown_adb_on_exit".']
+    text = ''.join(Path(str(prefix) + suffix).read_text(errors='replace') for suffix in ('.stdout.log', '.stderr.log'))
+    errors = godot_problems(text)
     if errors:
         raise SystemExit(f'Godot reported errors despite exit=0: {errors}')
 if args.report:

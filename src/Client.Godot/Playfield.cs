@@ -30,8 +30,9 @@ public partial class Playfield : Control
     {
         if (OS.GetCmdlineUserArgs().Contains("--smoke"))
         {
+            // _Ready ещё внутри add_child. Немедленный ChangeSceneToFile вызывает remove_child у занятого родителя.
             _left = true;
-            GetTree().ChangeSceneToFile("res://PlatformProbe.tscn");
+            GetTree().CallDeferred(SceneTree.MethodName.ChangeSceneToFile, "res://PlatformProbe.tscn");
             return;
         }
         Start("economy");
