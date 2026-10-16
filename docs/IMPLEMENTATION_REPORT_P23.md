@@ -2,7 +2,7 @@
 
 Автор: Шелестов Максим Евгеньевич. Дата: 16.10.2026.
 
-База — `68606aa0fea0302c14e0d086a12193bd26b79deb`, ветка `feat/p23-real-model-validation`. P22 на этом коммите уже содержал Ollama transport, слоты и fake S7. `ModelDigest` в runner по-прежнему `null`: имя тега не считается digest. Измеренные metadata записаны здесь и в [verification/p23/gate.json](verification/p23/gate.json). Игровые World12/Rules baseline-1/Session2/Envelope1 и сроки торговли не менялись. P24 не начинался. Commit по запросу пользователя не создавался.
+База — `68606aa0fea0302c14e0d086a12193bd26b79deb`, ветка `feat/p23-real-model-validation`. P22 на этом коммите уже содержал Ollama transport, слоты и fake S7. `ModelDigest` в runner по-прежнему `null`: имя тега не считается digest. Измеренные metadata записаны здесь и в [verification/p23/gate.json](verification/p23/gate.json). Игровые World12/Rules baseline-1/Session2/Envelope1 и сроки торговли не менялись. P24 не начинался. Результат зафиксирован commit `dee589d6d03db101c7b28ade384a3013e96b8b84` и открытым [PR #21](https://github.com/MaksShelest/Delsk/pull/21) в `feat/economic-cycle-p00-p05`; PR не слит.
 
 ## Среда
 
