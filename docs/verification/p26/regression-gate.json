@@ -12,7 +12,15 @@
   "replays": 9,
   "comparisonPairs": 54,
   "clientBuild": "dotnet build src/Client.Godot/Delsk.Client.csproj -c Release succeeded",
-  "godotEditor": "not launched; Godot .NET executable was not found in this session",
+  "godotSmoke": {
+    "status": "passed",
+    "ticks": 62,
+    "lifecycleAdapterChecked": true,
+    "checkpointRestoreChecked": true,
+    "electionCheckedTicks": 40,
+    "supportCheckedTicks": 120
+  },
+  "playfieldLoad": "--quit-after 2 exited 0 without a script error",
   "scope": "Headless regression plus the player-desk tests. The Playfield scene was compiled, not exercised in the editor. UI polish and the Android device gate are excluded.",
   "author": "Шелестов Максим Евгеньевич"
 }

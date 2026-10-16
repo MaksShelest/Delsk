@@ -29,6 +29,6 @@ Godot .NET 4.7.2, сцена `src/Client.Godot/Playfield.tscn`. F5 запуск�
 
 `PlayerDeskTests`: ставка не меняет баланс относительно такого же шага без команды; предложение между двумя NPC не видно третьему; работа, поставки и ставка — разные команды; ключи RU и EN совпадают. Формула семени контроллера `controller-v1:{seed}:{actor}` вынесена в `AlgorithmicController.RuntimeSeed` и совпадает с прежней. Клиентский проект собрался. Regression gate: 621/621, 81 экспорт, 9 replay, 54 сравнения. Счёт — [verification/p26/regression-gate.json](verification/p26/regression-gate.json).
 
-Редактор Godot в этой сессии не запускался: исполняемый файл Godot .NET в окружении не найден. Android device gate, EXE и APK не проверялись.
+Headless Godot .NET 4.7.2 импортировал проект и прошёл `--smoke`: 62 такта, lifecycle, restore, 40 выборных и 120 тактов поддержки, статус отчёта `passed`. `Playfield` загрузилась с `--quit-after 2` без ошибки скрипта. Ручные нажатия кнопок в окне редактора этой сессией не заменялись. Android device gate, EXE и APK не проверялись.
 
 Следующий этап — P27. Этот отчёт его не открывает.
