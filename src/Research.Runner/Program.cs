@@ -12,15 +12,15 @@ try
     {
         if (i + 1 >= args.Length || args[i] is not ("--scenario" or "--output" or "--script" or "--mode" or "--seed" or
             "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers"))
-            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|support] [--mode headless|paced] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
+            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|support|baseline] [--mode headless|paced] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
         if (!options.TryAdd(args[i], args[i + 1])) throw new ArgumentException("Duplicate argument");
     }
     string directory = options.GetValueOrDefault("--output", "artifacts/cycle");
     string script = options.GetValueOrDefault("--script", "cycle");
     string mode = options.GetValueOrDefault("--mode", "headless");
-    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market" or "pickup" or "delivery" or "capital-delivery" or "logistics" or "logistics-upgrade" or "own-storage" or "inbound" or "own-production" or "logistics-queue" or "capital-demand" or "elections" or "support") || mode is not ("headless" or "paced"))
+    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market" or "pickup" or "delivery" or "capital-delivery" or "logistics" or "logistics-upgrade" or "own-storage" or "inbound" or "own-production" or "logistics-queue" or "capital-demand" or "elections" or "support" or "baseline") || mode is not ("headless" or "paced"))
         throw new ArgumentException("Invalid script or mode");
-    if (options.ContainsKey("--controllers") && (script != "autonomous" || options.ContainsKey("--load") || options.ContainsKey("--replay")))
+    if (options.ContainsKey("--controllers") && (script is not ("autonomous" or "baseline") || options.ContainsKey("--load") || options.ContainsKey("--replay")))
         throw new ArgumentException("--controllers applies only to a new autonomous run");
     if (options.ContainsKey("--checkpoint-at") && !options.ContainsKey("--checkpoint"))
         throw new ArgumentException("--checkpoint-at requires --checkpoint");
@@ -62,14 +62,14 @@ try
     }
     else
     {
-        definition = RunArtifacts.LoadScenario(options.GetValueOrDefault("--scenario", script == "autonomous" ? "scenarios/autonomous-economy.json" : "scenarios/economic-cycle.json"));
+        definition = RunArtifacts.LoadScenario(options.GetValueOrDefault("--scenario", script == "baseline" ? "scenarios/baseline-economy.json" : script == "autonomous" ? "scenarios/autonomous-economy.json" : "scenarios/economic-cycle.json"));
         if (options.TryGetValue("--seed", out string? seed)) definition = definition with { Seed = ulong.Parse(seed, CultureInfo.InvariantCulture) };
-        if (target.HasValue && tape is null && !saveTick.HasValue && script != "autonomous")
+        if (target.HasValue && tape is null && !saveTick.HasValue && script is not ("autonomous" or "baseline"))
             throw new ArgumentException("--ticks requires --load, --replay or checkpointed fixture playback");
         session = new(new SimulationEngine(definition), beforeStep: mode == "paced" ? Pace : null);
-        if (script == "autonomous" && tape is null)
+        if (script is ("autonomous" or "baseline") && tape is null)
         {
-            long horizon = AutonomousRun.Configure(session, definition, options.GetValueOrDefault("--controllers", "scenarios/autonomous-controllers.json"));
+            long horizon = AutonomousRun.Configure(session, definition, options.GetValueOrDefault("--controllers", script=="baseline"?"scenarios/baseline-controllers.json":"scenarios/autonomous-controllers.json"));
             target ??= horizon;
         }
         else if (tape is not null || saveTick.HasValue)
@@ -94,6 +94,7 @@ try
         }
         if (target.HasValue) session.AdvanceTo(target.Value);
         else RunScript(session, definition, script);
+        BaselineValidation.Check(session,definition);
         if (saveTick.HasValue && !saved) throw new ArgumentException("Checkpoint tick was not reached");
         if (!saveTick.HasValue && options.ContainsKey("--checkpoint")) Save(session);
     }

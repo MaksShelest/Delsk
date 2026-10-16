@@ -17,36 +17,64 @@ public sealed partial class AlgorithmicController
             if (result is null) return Wait("AwaitingValidation");
             if (result.Status == ResultStatus.Rejected)
             {
+                var failed = _state.Plan[_state.NextStep].Action;
+                if(failed.Kind==ActionKind.SignSupport && result.ReasonCode=="NotAvailable")
+                    _state = _state with {FailedSupport=[.._state.FailedSupport.Where(id=>id!=failed.SupportProposalId),failed.SupportProposalId]};
                 _state = _state with { PendingCommandId = null, Plan = [], NextStep = 0,
-                    BlockedGoal = _state.Goal, BlockedUntilTick = checked(o.Tick + _state.Settings.BlockedRetryTicks),
+                    BlockedGoal = failed.Kind==ActionKind.SignSupport?"":_state.Goal, BlockedUntilTick = checked(o.Tick + _state.Settings.BlockedRetryTicks),
                     Rejections = _state.Rejections + 1, Reason = result.ReasonCode, NextDecisionTick = o.Tick };
             }
             else
             {
+                var action = _state.Plan[_state.NextStep].Action;
+                if (action.Kind == ActionKind.RaiseBid)
+                    _state = _state with { BidReviews = [.. _state.BidReviews.Where(r => r.OfferId != action.MarketOfferId), new(action.MarketOfferId, action.MarketRound)] };
                 _state = _state with { PendingCommandId = null, NextStep = _state.NextStep + 1 };
                 completed = _state.NextStep == _state.Plan.Length;
             }
         }
-        // An accepted move/harvest still occupies the actor. A sale hold must finish before moving.
+        if(_state.PendingCommandId is null && _state.NextStep>=_state.Plan.Length && _state.SuspendedPlan.Length>0)
+            _state = _state with {Plan=_state.SuspendedPlan,NextStep=_state.SuspendedNextStep,Goal=_state.SuspendedGoal,Reason=_state.SuspendedReason,
+                SuspendedPlan=[],SuspendedNextStep=0,SuspendedGoal="",SuspendedReason=""};
+        _state = _state with {FailedSupport=_state.FailedSupport.Where(id=>o.Support.Proposals.Any(p=>p.Id==id && p.Election==o.Elections.NextElectionId)).ToArray()};
+        _state = _state with { BidReviews = _state.BidReviews.Where(r => o.MarketOffers.Any(m => m.Id == r.OfferId && m.Status != MarketOfferStatus.Closed)).ToArray() };
+        // Preserve the remainder while a remote decision runs; then restore and revalidate it.
+        // The physical job itself keeps advancing in the core.
+        var remote = RemoteCandidates(o).Where(c => Feasible(c,o)).ToArray();
+        if (remote.Length > 0) {
+            if(_state.NextStep<_state.Plan.Length)
+                _state=_state with {SuspendedPlan=_state.Plan,SuspendedNextStep=_state.NextStep,SuspendedGoal=_state.Goal,SuspendedReason=_state.Reason};
+            return Choose(o,remote);
+        }
         if (o.Participant.Busy || Carrier(o).Stock.Any(s => s.Reserved > 0)) return Wait("ActiveJobOrSaleHold");
+        if (!PlanRelevant(o) || (HasObligations(o) && !ObligationGoal(_state.Goal)))
+            _state = _state with { Plan = [], NextStep = 0, NextDecisionTick = o.Tick };
         if (_state.NextStep < _state.Plan.Length)
             return new(_state.Goal, _state.Reason, [_state.Plan[_state.NextStep].Action]);
         if (!completed && o.Tick < _state.NextDecisionTick) return Wait("DecisionInterval");
-        var candidates = Candidates(o).Where(c => c.Steps.Length > 0 && c.Score > 0 &&
-            !(c.Goal == _state.BlockedGoal && o.Tick < _state.BlockedUntilTick)).ToArray();
-        // Stable candidate order before a private tie draw; list iteration does not decide equal utility.
+        var candidates = Candidates(o).Concat(ContractCandidates(o)).Concat(MarketCandidates(o))
+            .Concat(LogisticsCandidates(o)).Concat(PoliticalCandidates(o))
+            .Where(c => Feasible(c,o) && (!HasObligations(o) || !ExpansionGoal(c.Goal)) &&
+                (o.OwnSupplyRequests.Length==0 || c.Goal is not ("SellCarried" or "SellOutput" or "HarvestForSale")))
+            .Select(c => HasObligations(o) && c.Goal is "SupplyProduction" or "ResumeProduction" or "AdjustWage"
+                ? c with { Score = c.Score + 300000 } : c).ToArray();
+        return Choose(o,candidates);
+    }
+    private bool Feasible(Candidate c, ControllerObservation o) => c.Steps.Length > 0 && c.Score > 0 && (!ExpansionGoal(c.Goal) || _state.Settings.ExpansionWeight>0) &&
+        !(c.Goal == _state.BlockedGoal && o.Tick < _state.BlockedUntilTick);
+    private ControllerDecision Choose(ControllerObservation o, Candidate[] candidates)
+    {
         var ranked = candidates.OrderBy(c => c.Goal, StringComparer.Ordinal).ThenBy(c => c.Reason, StringComparer.Ordinal)
             .Select(c => (Candidate: c, Tie: RandomTie())).OrderByDescending(c => c.Candidate.Score).ThenBy(c => c.Tie).ToArray();
-        _state = _state with { Decisions = _state.Decisions + 1,
-            NextDecisionTick = checked(o.Tick + _state.Settings.DecisionIntervalTicks) };
+        _state = _state with { Decisions = _state.Decisions + 1, NextDecisionTick = checked(o.Tick + _state.Settings.DecisionIntervalTicks) };
         if (ranked.Length == 0)
         {
             _state = _state with { Goal = "Idle", Reason = "NoFeasibleGoal", Plan = [], NextStep = 0 };
-            return new(_state.Goal, _state.Reason, []);
+            return new(_state.Goal,_state.Reason,[]);
         }
-        var chosen = ranked[0].Candidate;
-        _state = _state with { Goal = chosen.Goal, Reason = chosen.Reason, Plan = chosen.Steps, NextStep = 0 };
-        return new(chosen.Goal, chosen.Reason, [chosen.Steps[0].Action]);
+        var chosen=ranked[0].Candidate;
+        _state = _state with { Goal=chosen.Goal,Reason=chosen.Reason,Plan=chosen.Steps,NextStep=0 };
+        return new(chosen.Goal,chosen.Reason,[chosen.Steps[0].Action]);
     }
     private ControllerDecision Wait(string reason) => new(_state.Goal, reason, [], Record: false);
     private IEnumerable<Candidate> Candidates(ControllerObservation o)
@@ -91,7 +119,7 @@ public sealed partial class AlgorithmicController
             if (recovery && enterprise.Enabled)
                 yield return One("PreserveCash", "UnpaidPause", 200000, new(ActionKind.SetProductionEnabled, Enterprise: enterprise.Id, Enabled: false));
             if (!recovery && !enterprise.Enabled)
-                yield return One("ResumeProduction", recipe.Id, 110000, new(ActionKind.SetProductionEnabled, Enterprise: enterprise.Id, Enabled: true));
+                yield return One("ResumeProduction", recipe.Id, 110000*settings.ProductionWeight/100, new(ActionKind.SetProductionEnabled, Enterprise: enterprise.Id, Enabled: true));
             long targetWage = settings.BaseWageMinor;
             if (group.Ready && group.Headcount < recipe.MinimumStaff && o.Tick >= _state.NextWageTick)
             {
@@ -104,7 +132,7 @@ public sealed partial class AlgorithmicController
             {
                 yield return One("AdjustWage", recipe.Id, 100000, new(ActionKind.SetWage, Group: group.Id, WageMinor: targetWage));
             }
-            if (!recovery && Free(input, recipe.InputItem) < Math.Max(recipe.InputQuantity, settings.BatchQuantity / 2))
+            if (!recovery && Free(input, recipe.InputItem) < Math.Max(recipe.InputQuantity, settings.BatchQuantity / 2) && Need(o,recipe.InputItem)>0)
             {
                 long q = Math.Min(settings.BatchQuantity, Math.Min(freeVolume, FreeVolume(input)) / Volume(o, recipe.InputItem));
                 var steps = Acquire(o, recipe.InputItem, q);
@@ -240,7 +268,8 @@ public sealed partial class AlgorithmicController
     }
     private static CapitalOfferView? BestOffer(ControllerObservation o, string item, long q, Cell source)
         => o.CapitalOffers.Where(a => a.ItemId == item && a.RemainingQuantity > 0 &&
-            Distance(o.Map, source, a.Position) >= 0).OrderByDescending(a => Rate(o, a, q, source)).ThenBy(a => a.Id).FirstOrDefault();
+            Distance(o.Map, source, a.Position) >= 0 && (a.ExpiresAtTick is null ||
+            a.ExpiresAtTick>=o.Tick+(long)Distance(o.Map,source,a.Position)*o.Map.MoveTicksPerCell+o.Map.TradeWindowTicks+2)).OrderByDescending(a => Rate(o, a, q, source)).ThenBy(a => a.Id).FirstOrDefault();
     private static long Rate(ControllerObservation o, CapitalOfferView offer, long q, Cell source)
     {
         long distance = Distance(o.Map, source, offer.Position);

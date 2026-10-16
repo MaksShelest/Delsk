@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "support-1";
+    public const string RulesVersion = "baseline-1";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -104,7 +104,8 @@ public sealed partial class SimulationEngine
             command.CommandId.Length > 160 || command.Action.ItemId is null || command.Action.ItemId.Length > 50 ||
             command.Action.BuildingTypeId is null || command.Action.BuildingTypeId.Length > 50 ||
             command.Action.RecipeId is null || command.Action.RecipeId.Length > 50 ||
-            command.Action.EquipmentTypeId is null || command.Action.EquipmentTypeId.Length > 50)
+            command.Action.EquipmentTypeId is null || command.Action.EquipmentTypeId.Length > 50 ||
+            (command.Action.Compensation is { } compensation && (compensation.IsDefault || compensation.Length>8 || compensation.Any(m=>m is null || m.ItemId is null || m.ItemId.Length>50))))
             return new(command?.CommandId ?? "", ResultStatus.Rejected, "InvalidEnvelope", Tick);
         if (authenticatedActor != command.ActorId || !_actors.ContainsKey(authenticatedActor.Value))
             return new(command.CommandId, ResultStatus.Rejected, "NotAvailable", Tick);
@@ -338,7 +339,7 @@ public sealed partial class SimulationEngine
             view.Plots, view.Buildings.Where(b => b.OwnerId == actorId).ToArray(), CopyBuildingCatalog(),
             view.EmploymentGroups.Where(g => g.OwnerId == actorId).ToArray(),
             view.EmploymentGroups.Select(g => new PublicEmploymentView(g.Id, g.OwnerId, g.Role, g.Headcount, g.Capacity, g.PendingWageMinor ?? g.WageMinor)).ToArray(),
-            view.Population, view.Unemployed, view.Equipment.Where(e => e.OwnerId == actorId).ToArray(), CopyEquipmentCatalog(), view.MarketOffers.Where(o => o.Status != MarketOfferStatus.Closed || o.Seller == actorId).ToArray(),
+            view.Population, view.Unemployed, view.Equipment.Where(e => e.OwnerId == actorId).ToArray(), CopyEquipmentCatalog(), view.MarketOffers.Where(o => o.Status != MarketOfferStatus.Closed || o.Seller == actorId || view.MarketAllocations.Any(a => a.OfferId == o.Id && a.Buyer == actorId && a.RemainingQuantity > 0)).ToArray(),
             view.MarketBids.Where(b => b.Buyer == actorId).ToArray(),
             view.MarketAllocations.Where(a => a.Buyer == actorId || a.Seller == actorId).ToArray(), Market, view.BuyOffers.Where(o => o.Status == "Open" || o.Buyer == actorId).ToArray(),
             view.SupplyRequests.Where(r => r.Supplier == actorId).ToArray(),
