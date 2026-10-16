@@ -1,0 +1,435 @@
+{
+  "stage": "P25",
+  "protocol": "p25-paired-pilot",
+  "primaryMetric": "outputBaseValueMinor",
+  "commit": "b29620ad00b337b5bcef2f5e7cece64f08bef406",
+  "model": {
+    "name": "qwen3.5:4b",
+    "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+    "quantization": "Q4_K_M",
+    "family": "qwen35",
+    "parameterSize": "4.2B",
+    "license": "Apache-2.0"
+  },
+  "attemptedLiveSeeds": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51
+  ],
+  "pairs": [
+    {
+      "pair": "model-factor",
+      "factor": "model",
+      "attempted": 10,
+      "complete": 10,
+      "metrics": {
+        "outputBaseValueMinor": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": {
+            "pairs": null,
+            "standardDeviation": 0.0,
+            "reason": "pilot mean difference is 0"
+          }
+        },
+        "unemployed": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": null
+        },
+        "supportSigned": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": null
+        },
+        "supportProposed": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": null
+        },
+        "deliveredQuantity": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": null
+        },
+        "fineMinor": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": null
+        },
+        "laborIdleRows": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": null
+        },
+        "controllerRejections": {
+          "spread": {
+            "n": 10,
+            "median": -0.5,
+            "q1": -1.0,
+            "q3": 1.75,
+            "iqr": 2.75,
+            "minimum": -1,
+            "maximum": 2,
+            "mean": 0.2
+          },
+          "sampleSize": null
+        },
+        "fallbackResolved": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": null
+        },
+        "staleResolved": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": null
+        }
+      }
+    },
+    {
+      "pair": "communication-factor",
+      "factor": "politicsEnabled",
+      "attempted": 10,
+      "complete": 10,
+      "metrics": {
+        "outputBaseValueMinor": {
+          "spread": {
+            "n": 10,
+            "median": 5500.0,
+            "q1": 5500.0,
+            "q3": 5500.0,
+            "iqr": 0.0,
+            "minimum": 5500,
+            "maximum": 5500,
+            "mean": 5500.0
+          },
+          "sampleSize": {
+            "pairs": 1,
+            "standardDeviation": 0,
+            "reason": "all observed paired differences are equal and nonzero"
+          }
+        },
+        "unemployed": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": null
+        },
+        "supportSigned": {
+          "spread": {
+            "n": 10,
+            "median": 3.0,
+            "q1": 3.0,
+            "q3": 3.0,
+            "iqr": 0.0,
+            "minimum": 3,
+            "maximum": 3,
+            "mean": 3.0
+          },
+          "sampleSize": null
+        },
+        "supportProposed": {
+          "spread": {
+            "n": 10,
+            "median": 8.0,
+            "q1": 8.0,
+            "q3": 8.0,
+            "iqr": 0.0,
+            "minimum": 8,
+            "maximum": 8,
+            "mean": 8.0
+          },
+          "sampleSize": null
+        },
+        "deliveredQuantity": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": null
+        },
+        "fineMinor": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": null
+        },
+        "laborIdleRows": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": null
+        },
+        "controllerRejections": {
+          "spread": {
+            "n": 10,
+            "median": 2.5,
+            "q1": 2.0,
+            "q3": 4.75,
+            "iqr": 2.75,
+            "minimum": 2,
+            "maximum": 5,
+            "mean": 3.2
+          },
+          "sampleSize": null
+        },
+        "fallbackResolved": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": null
+        },
+        "staleResolved": {
+          "spread": {
+            "n": 10,
+            "median": 0.0,
+            "q1": 0.0,
+            "q3": 0.0,
+            "iqr": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "mean": 0.0
+          },
+          "sampleSize": null
+        }
+      }
+    }
+  ],
+  "winners": [
+    {
+      "arm": "baseline",
+      "games": 10,
+      "winners": {
+        "none": 10
+      },
+      "latencyP50OfRunMedians": null
+    },
+    {
+      "arm": "hybrid",
+      "games": 10,
+      "winners": {
+        "none": 10
+      },
+      "latencyP50OfRunMedians": 1341.0
+    },
+    {
+      "arm": "hybrid-communication",
+      "games": 10,
+      "winners": {
+        "none": 10
+      },
+      "latencyP50OfRunMedians": 1244.75
+    }
+  ],
+  "pooledLatency": {
+    "hybrid": {
+      "samples": 30,
+      "p50Ms": 1341.0,
+      "p95Ms": 1768.0499999999997,
+      "minimumMs": 1008,
+      "maximumMs": 1983
+    },
+    "hybrid-communication": {
+      "samples": 60,
+      "p50Ms": 1265.0,
+      "p95Ms": 1537.35,
+      "minimumMs": 722,
+      "maximumMs": 1674
+    }
+  },
+  "disabledModelEquality": [
+    {
+      "comparison": "disabled-model-politics",
+      "seed": 42,
+      "equal": true,
+      "leftHash": "1638800952f31454bb41e7d0e9d817e08a6ebbb0602797e1cc200b6b9205268b",
+      "rightHash": "1638800952f31454bb41e7d0e9d817e08a6ebbb0602797e1cc200b6b9205268b"
+    },
+    {
+      "comparison": "disabled-model-politics",
+      "seed": 43,
+      "equal": true,
+      "leftHash": "26a3217d7c24adcdce0f0cb9c6aba9ef305e41261a9be674d5fd3b01aafe7d52",
+      "rightHash": "26a3217d7c24adcdce0f0cb9c6aba9ef305e41261a9be674d5fd3b01aafe7d52"
+    },
+    {
+      "comparison": "disabled-model-politics",
+      "seed": 44,
+      "equal": true,
+      "leftHash": "b3a02a395ca08eb3795fdd232f43727c08920f76c75718202c783f26c88c7b11",
+      "rightHash": "b3a02a395ca08eb3795fdd232f43727c08920f76c75718202c783f26c88c7b11"
+    },
+    {
+      "comparison": "disabled-model-politics",
+      "seed": 45,
+      "equal": true,
+      "leftHash": "4bb47cc2684828809ef093611e9f07e89a5ca3d04fc33e7663c9e2ed1ad0fdcc",
+      "rightHash": "4bb47cc2684828809ef093611e9f07e89a5ca3d04fc33e7663c9e2ed1ad0fdcc"
+    },
+    {
+      "comparison": "disabled-model-politics",
+      "seed": 46,
+      "equal": true,
+      "leftHash": "098b80fce3d2559cd089e369c6fc7c49a5f6b28de712cb21d822b9369b6f708c",
+      "rightHash": "098b80fce3d2559cd089e369c6fc7c49a5f6b28de712cb21d822b9369b6f708c"
+    },
+    {
+      "comparison": "disabled-model-politics",
+      "seed": 47,
+      "equal": true,
+      "leftHash": "81a6ea634bfa4144f86a2fdcde4a656dd26522b4d545e0842f59791e66d68ae5",
+      "rightHash": "81a6ea634bfa4144f86a2fdcde4a656dd26522b4d545e0842f59791e66d68ae5"
+    },
+    {
+      "comparison": "disabled-model-politics",
+      "seed": 48,
+      "equal": true,
+      "leftHash": "c3a3c19e604d2ab858bb2921286ed40796328172184f5284a56fac3e23f70fdf",
+      "rightHash": "c3a3c19e604d2ab858bb2921286ed40796328172184f5284a56fac3e23f70fdf"
+    },
+    {
+      "comparison": "disabled-model-politics",
+      "seed": 49,
+      "equal": true,
+      "leftHash": "ede6d1019048694771c92161ba9bc8d0a71f9bcafc2f7f52eeb13d37c0e45217",
+      "rightHash": "ede6d1019048694771c92161ba9bc8d0a71f9bcafc2f7f52eeb13d37c0e45217"
+    },
+    {
+      "comparison": "disabled-model-politics",
+      "seed": 50,
+      "equal": true,
+      "leftHash": "466c050b342c9b7538cc33ca30f115318da36133e4b8dd4cafeea0f4f9bdc1ba",
+      "rightHash": "466c050b342c9b7538cc33ca30f115318da36133e4b8dd4cafeea0f4f9bdc1ba"
+    },
+    {
+      "comparison": "disabled-model-politics",
+      "seed": 51,
+      "equal": true,
+      "leftHash": "aa565e35de330ab8663ae3e4fe54952b874f80dac3f3e98006109567b32fa6b9",
+      "rightHash": "aa565e35de330ab8663ae3e4fe54952b874f80dac3f3e98006109567b32fa6b9"
+    }
+  ],
+  "problems": [],
+  "limitations": [
+    "Ten paired seeds are a pilot, not a settled ranking.",
+    "Victory counts are one metric and do not establish a general winner.",
+    "Latency is reported separately from economic differences.",
+    "The algorithmic baseline is native and is not budget-matched to the model.",
+    "Horizon is 120 ticks of the politics fixture.",
+    "A new model run with the same seed can differ; this report describes the saved runs."
+  ]
+}

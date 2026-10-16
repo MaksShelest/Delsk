@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Проверка серии P24: один фактор, timing-policy, baseline без модели, replay и сырые наблюдения.
+"""Проверка парной серии: один фактор, timing-policy, baseline без модели, replay и сырые наблюдения.
 
 Author: Шелестов Максим Евгеньевич.
 """
@@ -226,7 +226,8 @@ def main():
                 if not equal:
                     problems.append(f'Recorded replay diverged for {arm} seed {seed}: {name}')
 
-    evidence = {'stage': 'P24', 'protocol': protocol['id'], 'commit': series.get('commit'),
+    stage = 'P25' if str(protocol.get('id', '')).startswith('p25') else 'P24'
+    evidence = {'stage': stage, 'protocol': protocol['id'], 'commit': series.get('commit'),
                 'model': {key: series.get('model', {}).get(key) for key in
                           ('status', 'name', 'digest', 'family', 'parameterSize', 'quantization', 'license',
                            'sizeBytes', 'vramBytes', 'vramSource', 'vramReason', 'gameRamBytes', 'gameRamReason', 'warmup')},
@@ -241,7 +242,7 @@ def main():
             writer = csv.DictWriter(handle, fieldnames=list(rows[0].keys()))
             writer.writeheader()
             writer.writerows(rows)
-    print(f"P24 verification {'passed' if evidence['passed'] else 'failed'}: {evidence_path}")
+    print(f"{stage} verification {'passed' if evidence['passed'] else 'failed'}: {evidence_path}")
     if problems:
         print('\n'.join(problems))
         return 1

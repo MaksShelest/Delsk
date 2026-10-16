@@ -1,0 +1,16 @@
+{
+  "stage": "P25",
+  "command": "py -3 scripts/check_headless.py --output artifacts/p25-regression",
+  "status": "succeeded",
+  "tests": {
+    "total": "618",
+    "executed": "618",
+    "passed": "618",
+    "failed": "0"
+  },
+  "exports": 81,
+  "replays": 9,
+  "comparisonPairs": 54,
+  "scope": "Existing headless regression. Live Ollama series is separate evidence in series-gate.json and summary.json. UI excluded.",
+  "author": "Шелестов Максим Евгеньевич"
+}
