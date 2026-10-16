@@ -2,14 +2,14 @@
 config_version=5
 
 [application]
-config/name="Delsk — проверка общего ядра"
+config/name="Delsk"
 config/icon="res://icon.svg"
-run/main_scene="res://PlatformProbe.tscn"
+run/main_scene="res://Playfield.tscn"
 config/features=PackedStringArray("4.7", "C#", "GL Compatibility")
 
 [display]
-window/size/viewport_width=900
-window/size/viewport_height=600
+window/size/viewport_width=980
+window/size/viewport_height=720
 window/stretch/mode="canvas_items"
 
 [dotnet]

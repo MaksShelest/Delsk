@@ -1,6 +1,3 @@
-using System.Buffers.Binary;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using Agents.Algorithmic;
 using Simulation.Core;
@@ -11,7 +8,7 @@ internal static class AutonomousRun
     public static long Configure(GameSession session, ScenarioDefinition scenario, string path, Func<AlgorithmicController, IController>? decorate = null)
     {
         var config = ReadConfiguration(scenario, path);
-        session.AttachControllers(config.Npcs.Select(n => new AlgorithmicController(n with { HumanActorId=config.HumanActorId }, ControllerSeed(scenario.Seed, n.ActorId), scenario.Participants.Select(p => p.Id)))
+        session.AttachControllers(config.Npcs.Select(n => new AlgorithmicController(n with { HumanActorId=config.HumanActorId }, AlgorithmicController.RuntimeSeed(scenario.Seed, n.ActorId), scenario.Participants.Select(p => p.Id)))
             .Select(c => decorate is null ? c : decorate(c)));
         return config.FinalTick;
     }
@@ -29,6 +26,4 @@ internal static class AutonomousRun
             throw new ArgumentException("Invalid autonomous configuration");
         return config;
     }
-    private static ulong ControllerSeed(ulong seed, long actor)
-        => BinaryPrimitives.ReadUInt64LittleEndian(SHA256.HashData(Encoding.UTF8.GetBytes(FormattableString.Invariant($"controller-v1:{seed}:{actor}"))));
 }

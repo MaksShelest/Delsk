@@ -23,6 +23,12 @@
           "GodotSharp": "4.7.2"
         }
       },
+      "agents.algorithmic": {
+        "type": "Project",
+        "dependencies": {
+          "Simulation.Core": "[1.0.0, )"
+        }
+      },
       "simulation.core": {
         "type": "Project"
       },
