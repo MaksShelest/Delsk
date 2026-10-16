@@ -1,12 +1,10 @@
 # Фактическая готовность Delsk
 
-Автор: Шелестов Максим Евгеньевич. После P24, 16.10.2026.
+Автор: Шелестов Максим Евгеньевич. После P25, 16.10.2026.
 
-P00–P24 реализованы в проверенных программных границах. Финальный regression gate P24: 618/618 тестов, 81 экспорт, 9 replay, 54 сравнения; выключенная модель совпала с baseline и осталась на метке `headless`. Godot Linux исторически — 222 tick hashes/14 file restores, в этом gate заново не повторялся. Доказательства — [отчёт P24](IMPLEMENTATION_REPORT_P24.md) и verification/p24.
+P00–P25 реализованы в проверенных программных границах. P25 прогнал десять парных семян 42–51 politics/120 тиков. Выпуск baseline и hybrid-communication совпал на каждом семени; победителя выборов нет в 10/10 партий. Regression gate: 618/618, 81 экспорт, 9 replay, 54 сравнения. Отчёт — [IMPLEMENTATION_REPORT_P25.md](IMPLEMENTATION_REPORT_P25.md).
 
-P24 добавил парный протокол baseline / hybrid / hybrid со структурированными переговорами, manifest, metrics и recorded replay. Выключенная модель совпала с baseline на двух seeds экономики и на politics. Живая модель на одном paced seed выбрала зарплату без переговоров и Hold при включённых переговорах. Это не статистический вывод: 10 seeds и разброс остаются P25. Отчёт — [IMPLEMENTATION_REPORT_P24.md](IMPLEMENTATION_REPORT_P24.md).
-
-Конкретные seed/config не доказывают общий баланс. Научный отчёт и игровой UI не готовы; ручной Godot input относится к P26. Android device gate P06 открыт, актуальные Windows EXE/Android APK на устройствах в этой итерации не проверены. [Текущий запуск baseline](HEADLESS_TESTING.md).
+Игровой UI не готов и относится к P26. Android device gate P06 открыт, актуальные Windows EXE/Android APK на устройствах в этой итерации не проверены. [Текущий запуск baseline](HEADLESS_TESTING.md).
 
 Далее сохранены исторические примеры и показатели предыдущих итераций; они не заменяют актуальный статус выше.
 

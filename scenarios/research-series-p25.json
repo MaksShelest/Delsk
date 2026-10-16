@@ -1,0 +1,54 @@
+{
+  "id": "p25-paired-pilot",
+  "protocol": "paired-one-factor-v1",
+  "modelConfig": "scenarios/local-model.example.json",
+  "modelName": "qwen3.5:4b",
+  "promptVersion": "plan-choice-v1",
+  "primaryMetric": "outputBaseValueMinor",
+  "primaryMetricMeaning": "Сумма собранного и произведённого количества, умноженная на базовую цену сценария. WIP не входит. Победа на выборах этой метрикой не является.",
+  "seeds": [42, 43, 44, 45, 46, 47, 48, 49, 50, 51],
+  "comparisons": [
+    {
+      "id": "disabled-model-politics",
+      "scenario": "scenarios/baseline-politics.json",
+      "controllers": "scenarios/baseline-politics-controllers.json",
+      "timing": "headless",
+      "ticks": 120,
+      "seeds": [42, 43, 44, 45, 46, 47, 48, 49, 50, 51],
+      "expectEqualWorld": ["baseline", "hybrid-off"],
+      "arms": [
+        { "id": "baseline", "script": "baseline", "model": "off" },
+        { "id": "hybrid-off", "script": "hybrid", "model": "off" }
+      ]
+    },
+    {
+      "id": "live-modes",
+      "scenario": "scenarios/baseline-politics.json",
+      "controllers": "scenarios/baseline-politics-controllers.json",
+      "timing": "paced",
+      "ticks": 120,
+      "seeds": [42, 43, 44, 45, 46, 47, 48, 49, 50, 51],
+      "arms": [
+        { "id": "baseline", "script": "baseline", "model": "off" },
+        { "id": "hybrid", "script": "hybrid", "model": "ollama", "politicsEnabled": false },
+        { "id": "hybrid-communication", "script": "hybrid", "model": "ollama", "politicsEnabled": true }
+      ],
+      "pairs": [
+        {
+          "id": "model-factor",
+          "left": "baseline",
+          "right": "hybrid-communication",
+          "factor": "model",
+          "samePolitics": true
+        },
+        {
+          "id": "communication-factor",
+          "left": "hybrid",
+          "right": "hybrid-communication",
+          "factor": "politicsEnabled"
+        }
+      ],
+      "replay": ["baseline", "hybrid", "hybrid-communication"]
+    }
+  ]
+}

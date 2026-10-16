@@ -141,10 +141,35 @@ def read_export(directory):
             'manifest': json.loads(manifest.read_text(encoding='utf-8'))}
 
 
+def cell_from_export(comparison, arm, seed, controllers, exported, replay_export, replay_dir):
+    cell = {'comparison': comparison['id'], 'arm': arm['id'], 'seed': seed, 'script': arm['script'],
+            'model': arm['model'], 'politicsEnabled': arm.get('politicsEnabled'),
+            'timingGroup': comparison['timing'], 'ticks': comparison['ticks'],
+            'scenario': comparison['scenario'], 'scenarioHash': sha256(comparison['scenario']),
+            'controllers': str(controllers), 'controllersHash': sha256(controllers),
+            'status': 'succeeded', 'exitCode': 0, 'check': {'resumed': True},
+            'export': {'stateHash': exported['summary'].get('stateHash'),
+                       'status': exported['summary'].get('status'),
+                       'timingPolicy': exported['manifest'].get('timingPolicy'),
+                       'configHash': exported['manifest'].get('configHash'),
+                       'rulesVersion': exported['manifest'].get('rulesVersion'),
+                       'schemaVersion': exported['manifest'].get('schemaVersion'),
+                       'commit': exported['manifest'].get('commit'),
+                       'promptVersion': (exported['manifest'].get('model') or {}).get('promptVersion'),
+                       'modelDigest': (exported['manifest'].get('model') or {}).get('modelDigest')}}
+    if replay_dir is not None:
+        cell['replay'] = {'status': 'succeeded', 'exitCode': 0, 'check': {'resumed': True},
+                          'directory': str(replay_dir),
+                          'timingPolicy': None if replay_export is None else replay_export['manifest'].get('timingPolicy'),
+                          'stateHash': None if replay_export is None else replay_export['summary'].get('stateHash')}
+    return cell
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--protocol', default='scenarios/research-series.json')
     parser.add_argument('--output', default='artifacts/p24-series')
+    parser.add_argument('--resume', action='store_true')
     args = parser.parse_args()
     prepare_dotnet()
     os.environ['DELSK_COMMIT'] = commit() or ''
@@ -193,7 +218,15 @@ def main():
             for arm in comparison['arms']:
                 name = f"{comparison['id']}-s{seed}-{arm['id']}"
                 run_dir = output / 'runs' / comparison['id'] / str(seed) / arm['id']
+                replay_dir = output / 'replays' / comparison['id'] / str(seed) / arm['id']
+                need_replay = arm['id'] in comparison.get('replay', [])
                 controllers = controllers_for(arm, comparison['controllers'], output)
+                if args.resume and read_export(run_dir) and read_export(run_dir)['summary'].get('status') == 'succeeded' and (not need_replay or (read_export(replay_dir) and read_export(replay_dir)['summary'].get('status') == 'succeeded')):
+                    exported = read_export(run_dir)
+                    replay_export = read_export(replay_dir) if need_replay else None
+                    print(f'{name}: resume')
+                    cells.append(cell_from_export(comparison, arm, seed, controllers, exported, replay_export, replay_dir if need_replay else None))
+                    continue
                 timeout = 240 if comparison['timing'] == 'paced' else 90
                 code, meta = run_checked(name, timeout, logs, runner_command(
                     str(run_dir), arm['script'], comparison['timing'], comparison['ticks'], seed,
@@ -215,8 +248,7 @@ def main():
                                   'commit': exported['manifest'].get('commit'),
                                   'promptVersion': (exported['manifest'].get('model') or {}).get('promptVersion'),
                                   'modelDigest': (exported['manifest'].get('model') or {}).get('modelDigest')}})
-                if code == 0 and exported and arm['id'] in comparison.get('replay', []):
-                    replay_dir = output / 'replays' / comparison['id'] / str(seed) / arm['id']
+                if code == 0 and exported and need_replay:
                     replay_code, replay_meta = run_checked(name + '-replay', 90, logs, [
                         'dotnet', 'run', '--project', 'src/Research.Runner', '-c', 'Release', '--no-build', '--',
                         '--scenario', str(run_dir / 'scenario.json'), '--replay', str(run_dir / 'commands.jsonl'),
