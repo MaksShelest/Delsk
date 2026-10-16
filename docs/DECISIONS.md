@@ -401,4 +401,8 @@ HybridState/checkpoint1 сохраняет logical slot и baseline2, но не 
 
 ## 27. P23: измеренный локальный runtime (16.10.2026)
 
-Техническое решение: для строгого JSON intent адаптер отправляет `think:false`. У `qwen3.5:4b` thinking включён по умолчанию и иначе забирает весь `num_predict`, оставляя `content` пустым. Это не изменение игровых правил, цен или сроков. Digest, quantization, license, latency и token counts берутся из измеренного runtime/ответа Ollama, а не из имени тега. Runner по-прежнему не подставляет digest сам. Факты — IMPLEMENTATION_REPORT_P23.md. Серии P24 этим решением не открыты.
+Техническое решение: для строгого JSON intent адаптер отправляет `think:false`. У `qwen3.5:4b` thinking включён по умолчанию и иначе забирает весь `num_predict`, оставляя `content` пустым. Это не изменение игровых правил, цен или сроков. Digest, quantization, license, latency и token counts берутся из измеренного runtime/ответа Ollama, а не из имени тега. Runner по-прежнему не подставляет digest сам. Факты — IMPLEMENTATION_REPORT_P23.md.
+
+## 28. P24: серии и метка выключенной модели (16.10.2026)
+
+Техническое решение: исследовательская серия меняет один записанный фактор при тех же сценарии, семени, горизонте и allowlist. Структурированные переговоры — это существующие планы поддержки при `politicsEnabled`, а не свободный текст и не новое правило Core. `Realtime` и `LiveHeadlessStress` пишутся только когда runtime модели включён; `--model-mode off` сохраняет `headless` или `paced`, как baseline. Digest по-прежнему измеряется снаружи runner. Статистика по 10 seeds этим решением не считается выполненной. Факты — IMPLEMENTATION_REPORT_P24.md.

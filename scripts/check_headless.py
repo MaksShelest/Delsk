@@ -74,6 +74,12 @@ check('model-safety-replay',30,[*runner,'--script','model-safety','--scenario','
 check('model-safety-replay-compare',15,[sys.executable,'scripts/verify_checkpoint_exports.py','--world-only',out/'model-safety',out/'model-safety-replayed'])
 check('model-off',300,[*runner,'--script','hybrid','--model-mode','off','--output',out/'model-off'])
 check('model-off-compare',15,[sys.executable,'scripts/verify_checkpoint_exports.py','--world-only',out/'baseline-economy',out/'model-off'])
+disabled = json.loads((out/'model-off'/'manifest.json').read_text(encoding='utf-8'))
+baseline = json.loads((out/'baseline-economy'/'manifest.json').read_text(encoding='utf-8'))
+if disabled.get('timingPolicy') != 'headless' or baseline.get('timingPolicy') != 'headless':
+    raise SystemExit(f"Disabled model changed the baseline clock: hybrid={disabled.get('timingPolicy')} baseline={baseline.get('timingPolicy')}")
+if (disabled.get('model') or {}).get('modelDigest') not in (None,):
+    raise SystemExit('Runner stored an unmeasured model digest')
 check('model-privacy',15,[sys.executable,'scripts/verify_model_results.py',out/'model-safety',out/'model-safety-loaded',out/'model-off'])
 check('late-return-load', 30, [*runner, '--load', out/'late-return.save.json', '--output', out/'late-return-loaded'])
 check('late-return-compare', 15, [sys.executable, 'scripts/verify_checkpoint_exports.py', out/'late-return', out/'late-return-loaded'])
@@ -88,9 +94,9 @@ manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases
             'controlled_fixture':{'name':'late-return','origin':'test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged','checkpoint_tick':72,'final_tick':80},
             'baseline_cases':{name:{'final_tick':horizon,'checkpoint_tick':cut} for name,(horizon,cut) in baseline_cases.items()},
             'model_safety':{'checkpoint_tick':6,'final_tick':60,'valid':1,'forged_actor':1,'late_reply':1},
-            'model_off':'exact world/input equality with baseline-economy',
+            'model_off':'exact world equality with baseline-economy and the same headless timing label',
             'exports':len(folders), 'replays':9, 'comparison_pairs':54,
-            'scope':'P00-P22; local adapter/fake S7; P23 real model/P24 series/UI excluded',
+            'scope':'P00-P24 disabled-model timing; live Ollama series is separate evidence; UI excluded',
             'author':'Шелестов Максим Евгеньевич'}
 (out/'headless-check.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
 print(f'Headless regression succeeded; results={out}')
