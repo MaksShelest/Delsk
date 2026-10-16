@@ -1,6 +1,22 @@
 # Как запускать и проверять экономику без графики
 
-Автор: Шелестов Максим Евгеньевич. Состояние после P21, 16.10.2026.
+Автор: Шелестов Максим Евгеньевич. Состояние после P22, 16.10.2026.
+
+## P22: модель необязательна
+
+```powershell
+python scripts/check_headless.py --output artifacts/headless-p22
+dotnet run --project src/Research.Runner -c Release --no-build -- --script model-safety --output artifacts/s7
+dotnet run --project src/Research.Runner -c Release --no-build -- --script hybrid --model-mode off --output artifacts/model-off
+```
+
+Проверено618tests/26scenarios/22ordinary load pairs+controlled/9replays/81exports/54comparisons. Direct continuation18файлов, world-only replay14. Godot Linux222hashes/14file restores. S7 использует3настоящих гибридных контроллера и контролируемые fake responses; это не реальный LLM эксперимент. Полностью отключённый hybrid совпадает с baseline по миру/командам. Подробности — IMPLEMENTATION_REPORT_P22.md.
+
+Реальный локальный transport включается только `--script hybrid --model-mode ollama --model-config scenarios/local-model.example.json`. `--mode paced` помечается Realtime, headless — LiveHeadlessStress. Планы/принятые обязательства/auction bid модель не задерживает; новый plan option применяется только в фиксированный apply tick. model-decisions.jsonl содержит private researcher prompt/response/resolution/latency; это не public stream. Replay с --model-mode/--model-config отклоняется, адаптер не создаётся.
+
+После load все незавершённые Pending/Ready slots получают fallback в прежний applyTick с новой epoch, без нового запроса. Уже разрешённые решения не повторяются. Это правило не обещает идентичность прерванной живой модели непрерывному realtime rollout. [Точная процедура реального P23](LOCAL_MODEL_VALIDATION.md).
+
+Далее приведены исторические показатели P21 и прежних итераций; текущие totals указаны выше.
 
 ## Текущий baseline P21
 

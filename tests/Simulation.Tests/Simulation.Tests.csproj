@@ -9,6 +9,7 @@
   </ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/equipment-cycle.json" LogicalName="Fixture.equipment-cycle.json" /></ItemGroup>
   <ItemGroup><ProjectReference Include="../../src/Agents.Algorithmic/Agents.Algorithmic.csproj" /></ItemGroup>
+  <ItemGroup><ProjectReference Include="../../src/Agents.Llm/Agents.Llm.csproj" /></ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../../scenarios/autonomous-economy.json" LogicalName="Fixture.autonomous-economy.json" />
     <EmbeddedResource Include="../../scenarios/autonomous-controllers.json" LogicalName="Fixture.autonomous-controllers.json" />

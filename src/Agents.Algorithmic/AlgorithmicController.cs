@@ -52,14 +52,14 @@ public sealed partial class AlgorithmicController
         if (_state.NextStep < _state.Plan.Length)
             return new(_state.Goal, _state.Reason, [_state.Plan[_state.NextStep].Action]);
         if (!completed && o.Tick < _state.NextDecisionTick) return Wait("DecisionInterval");
-        var candidates = Candidates(o).Concat(ContractCandidates(o)).Concat(MarketCandidates(o))
+        return Choose(o, DecisionCandidates(o));
+    }
+    private Candidate[] DecisionCandidates(ControllerObservation o) => Candidates(o).Concat(ContractCandidates(o)).Concat(MarketCandidates(o))
             .Concat(LogisticsCandidates(o)).Concat(PoliticalCandidates(o))
             .Where(c => Feasible(c,o) && (!HasObligations(o) || !ExpansionGoal(c.Goal)) &&
                 (o.OwnSupplyRequests.Length==0 || c.Goal is not ("SellCarried" or "SellOutput" or "HarvestForSale")))
             .Select(c => HasObligations(o) && c.Goal is "SupplyProduction" or "ResumeProduction" or "AdjustWage"
                 ? c with { Score = c.Score + 300000 } : c).ToArray();
-        return Choose(o,candidates);
-    }
     private bool Feasible(Candidate c, ControllerObservation o) => c.Steps.Length > 0 && c.Score > 0 && (!ExpansionGoal(c.Goal) || _state.Settings.ExpansionWeight>0) &&
         !(c.Goal == _state.BlockedGoal && o.Tick < _state.BlockedUntilTick);
     private ControllerDecision Choose(ControllerObservation o, Candidate[] candidates)

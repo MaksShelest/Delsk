@@ -1,0 +1,982 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "2026-10-16",
+  "base": "900b8d4b1993f198e3d18153ecd4687a7ef28e42",
+  "stage": "P22 separate full gate; P23 not executed",
+  "world_schema": 12,
+  "rules": "baseline-1",
+  "session_schema": 2,
+  "envelope_schema": 1,
+  "policy": "hybrid-plan-v1/checkpoint1",
+  "tests": {
+    "total": "618",
+    "executed": "618",
+    "passed": "618",
+    "failed": "0",
+    "error": "0",
+    "timeout": "0",
+    "aborted": "0",
+    "inconclusive": "0",
+    "passedButRunAborted": "0",
+    "notRunnable": "0",
+    "notExecuted": "0",
+    "disconnected": "0",
+    "warning": "0",
+    "completed": "0",
+    "inProgress": "0",
+    "pending": "0"
+  },
+  "new_tests": 57,
+  "headless": {
+    "status": "succeeded",
+    "scenarios": [
+      "cycle",
+      "recovery",
+      "development",
+      "labor",
+      "equipment",
+      "autonomous",
+      "market",
+      "pickup",
+      "delivery",
+      "capital-delivery",
+      "logistics",
+      "logistics-upgrade",
+      "own-storage",
+      "inbound",
+      "own-production",
+      "logistics-queue",
+      "capital-demand",
+      "autonomous-demand",
+      "elections",
+      "support"
+    ],
+    "checkpoint_cases": {
+      "cycle": 55,
+      "equipment": 101,
+      "autonomous": 350,
+      "market": 44,
+      "pickup": 47,
+      "delivery": 37,
+      "capital-delivery": 3,
+      "logistics": 69,
+      "logistics-upgrade": 170,
+      "own-storage": 170,
+      "inbound": 78,
+      "own-production": 170,
+      "logistics-queue": 185,
+      "capital-demand": 85,
+      "autonomous-demand": 350,
+      "elections": 9,
+      "support": 18
+    },
+    "comparison": "every exported tick hash, state, ledger, event, command and labor row",
+    "controlled_fixture": {
+      "name": "late-return",
+      "origin": "test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged",
+      "checkpoint_tick": 72,
+      "final_tick": 80
+    },
+    "baseline_cases": {
+      "economy": {
+        "final_tick": 1200,
+        "checkpoint_tick": 350
+      },
+      "auction": {
+        "final_tick": 180,
+        "checkpoint_tick": 30
+      },
+      "politics": {
+        "final_tick": 160,
+        "checkpoint_tick": 19
+      },
+      "logistics": {
+        "final_tick": 360,
+        "checkpoint_tick": 80
+      }
+    },
+    "model_safety": {
+      "checkpoint_tick": 6,
+      "final_tick": 60,
+      "valid": 1,
+      "forged_actor": 1,
+      "late_reply": 1
+    },
+    "model_off": "exact world/input equality with baseline-economy",
+    "exports": 81,
+    "replays": 9,
+    "comparison_pairs": 54,
+    "scope": "P00-P22; local adapter/fake S7; P23 real model/P24 series/UI excluded",
+    "author": "Шелестов Максим Евгеньевич"
+  },
+  "ordinary_scenarios": 26,
+  "ordinary_save_load_pairs": 22,
+  "controlled_pairs": 1,
+  "replays": 9,
+  "independent_exports": 81,
+  "comparison_pairs": 54,
+  "direct_compared_files": 18,
+  "controller_free_replay_files": 14,
+  "platform": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "befa38addd66ef7c7c7d9e6c7d98561edd21c4a4673ad32ba689a7bb45f89fff",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "ElectionCheckedTicks": 40,
+    "ElectionStateHash": "a878e9e122ef5a26ae4a120dfd62a690c93dfa5c870c38e0039caa891ce958e8",
+    "ElectionRestoredTicks": [
+      9,
+      19,
+      20,
+      21
+    ],
+    "SupportCheckedTicks": 120,
+    "SupportStateHash": "12e2f23d454aa2fb11421dffad3f6c141981ad788556fe507ef052def77a393a",
+    "SupportRestoredTicks": [
+      17,
+      18,
+      19,
+      27,
+      99,
+      100
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "s7": {
+    "timing_policy": "ControlledFakeS7",
+    "real_model": false,
+    "resolutions": [
+      {
+        "actor": 2,
+        "submitted_at_tick": 4,
+        "decision_id": "s1:model:2:1",
+        "apply_tick": 5,
+        "resolution": "ModelResolved",
+        "reason": "Accepted"
+      },
+      {
+        "actor": 3,
+        "submitted_at_tick": 4,
+        "decision_id": "s1:model:3:1",
+        "apply_tick": 5,
+        "resolution": "FallbackResolved",
+        "reason": "DecisionIdentityMismatch"
+      },
+      {
+        "actor": 4,
+        "submitted_at_tick": 4,
+        "decision_id": "s1:model:4:1",
+        "apply_tick": 5,
+        "resolution": "FallbackResolved",
+        "reason": "DecisionDeadline"
+      }
+    ],
+    "checkpoint_tick": 6,
+    "final_tick": 60,
+    "checkpoint_bytes": 295414,
+    "state_hash": "7c25b692dcd4692915bcb86b7cde8ad5c579519a2009da54a94ce95ded30a716"
+  },
+  "model_off": {
+    "same_world_and_input_as": "baseline-economy",
+    "ticks": 1200,
+    "model_requests": 0
+  },
+  "checks": {
+    "autonomous-demand-load": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T09:59:34.541864+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.03,
+      "finished_at": "2026-10-16T09:59:39.572194+00:00"
+    },
+    "autonomous-demand-save": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T09:59:29.430150+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.081,
+      "finished_at": "2026-10-16T09:59:34.511001+00:00"
+    },
+    "autonomous-demand": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T09:58:48.978959+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.342,
+      "finished_at": "2026-10-16T09:58:54.320772+00:00"
+    },
+    "autonomous-load": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T09:59:04.755054+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.632,
+      "finished_at": "2026-10-16T09:59:09.386920+00:00"
+    },
+    "autonomous-save": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T09:58:59.335501+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.383,
+      "finished_at": "2026-10-16T09:59:04.718774+00:00"
+    },
+    "autonomous": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T09:58:34.761574+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.513,
+      "finished_at": "2026-10-16T09:58:40.274182+00:00"
+    },
+    "balances": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T10:00:39.932658+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.217,
+      "finished_at": "2026-10-16T10:00:41.150155+00:00"
+    },
+    "baseline-auction-load": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:14.958469+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.117,
+      "finished_at": "2026-10-16T10:00:16.076003+00:00"
+    },
+    "baseline-auction-loaded-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:16.176763+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-16T10:00:16.209131+00:00"
+    },
+    "baseline-auction-replay-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:16.990160+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-16T10:00:17.022627+00:00"
+    },
+    "baseline-auction-replay": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:16.241566+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.716,
+      "finished_at": "2026-10-16T10:00:16.957635+00:00"
+    },
+    "baseline-auction-save": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:13.707542+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.218,
+      "finished_at": "2026-10-16T10:00:14.925425+00:00"
+    },
+    "baseline-auction-saved-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:16.109696+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-16T10:00:16.141649+00:00"
+    },
+    "baseline-auction": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:12.604165+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.07,
+      "finished_at": "2026-10-16T10:00:13.674248+00:00"
+    },
+    "baseline-economy-load": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:00.876313+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.143,
+      "finished_at": "2026-10-16T10:00:07.019561+00:00"
+    },
+    "baseline-economy-loaded-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:07.154641+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.064,
+      "finished_at": "2026-10-16T10:00:07.219004+00:00"
+    },
+    "baseline-economy-replay-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:12.491680+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-16T10:00:12.556543+00:00"
+    },
+    "baseline-economy-replay": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:07.250766+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.195,
+      "finished_at": "2026-10-16T10:00:12.445756+00:00"
+    },
+    "baseline-economy-save": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T09:59:54.058538+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.784,
+      "finished_at": "2026-10-16T10:00:00.843045+00:00"
+    },
+    "baseline-economy-saved-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:07.056329+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.064,
+      "finished_at": "2026-10-16T10:00:07.120699+00:00"
+    },
+    "baseline-economy": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T09:59:46.567732+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 7.459,
+      "finished_at": "2026-10-16T09:59:54.026701+00:00"
+    },
+    "baseline-logistics-load": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:25.014022+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.97,
+      "finished_at": "2026-10-16T10:00:26.983811+00:00"
+    },
+    "baseline-logistics-loaded-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:27.101989+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-16T10:00:27.134180+00:00"
+    },
+    "baseline-logistics-replay-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:28.679046+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.033,
+      "finished_at": "2026-10-16T10:00:28.712402+00:00"
+    },
+    "baseline-logistics-replay": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:27.175933+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.468,
+      "finished_at": "2026-10-16T10:00:28.644372+00:00"
+    },
+    "baseline-logistics-save": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:23.012522+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.97,
+      "finished_at": "2026-10-16T10:00:24.982760+00:00"
+    },
+    "baseline-logistics-saved-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:27.019520+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-16T10:00:27.051680+00:00"
+    },
+    "baseline-logistics": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:21.210175+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.771,
+      "finished_at": "2026-10-16T10:00:22.981199+00:00"
+    },
+    "baseline-politics-load": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:19.158937+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.017,
+      "finished_at": "2026-10-16T10:00:20.176253+00:00"
+    },
+    "baseline-politics-loaded-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:20.274321+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-16T10:00:20.306546+00:00"
+    },
+    "baseline-politics-replay-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:21.143501+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-16T10:00:21.175670+00:00"
+    },
+    "baseline-politics-replay": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:20.340856+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.768,
+      "finished_at": "2026-10-16T10:00:21.108638+00:00"
+    },
+    "baseline-politics-save": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:17.900919+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.218,
+      "finished_at": "2026-10-16T10:00:19.119127+00:00"
+    },
+    "baseline-politics-saved-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:20.208540+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-16T10:00:20.240600+00:00"
+    },
+    "baseline-politics": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:17.055303+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.816,
+      "finished_at": "2026-10-16T10:00:17.871521+00:00"
+    },
+    "build": {
+      "timeout_seconds": 180,
+      "started_at": "2026-10-16T09:57:46.281307+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.727,
+      "finished_at": "2026-10-16T09:57:48.008712+00:00"
+    },
+    "capital-delivery-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:15.441994+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.766,
+      "finished_at": "2026-10-16T09:59:16.208428+00:00"
+    },
+    "capital-delivery-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:14.537652+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.867,
+      "finished_at": "2026-10-16T09:59:15.404311+00:00"
+    },
+    "capital-delivery": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:42.499428+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.767,
+      "finished_at": "2026-10-16T09:58:43.266592+00:00"
+    },
+    "capital-demand-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:28.667719+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.716,
+      "finished_at": "2026-10-16T09:59:29.383932+00:00"
+    },
+    "capital-demand-replay-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T09:59:44.967550+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-16T09:59:45.032860+00:00"
+    },
+    "capital-demand-replay": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:44.265548+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.667,
+      "finished_at": "2026-10-16T09:59:44.932103+00:00"
+    },
+    "capital-demand-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:27.717204+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.917,
+      "finished_at": "2026-10-16T09:59:28.634331+00:00"
+    },
+    "capital-demand": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:48.228597+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.717,
+      "finished_at": "2026-10-16T09:58:48.945686+00:00"
+    },
+    "cycle-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:56.716879+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.717,
+      "finished_at": "2026-10-16T09:58:57.433871+00:00"
+    },
+    "cycle-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:55.866200+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.817,
+      "finished_at": "2026-10-16T09:58:56.682780+00:00"
+    },
+    "cycle": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:30.336171+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.618,
+      "finished_at": "2026-10-16T09:58:30.954501+00:00"
+    },
+    "delivery-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:13.729684+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.766,
+      "finished_at": "2026-10-16T09:59:14.496220+00:00"
+    },
+    "delivery-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:12.813830+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.868,
+      "finished_at": "2026-10-16T09:59:13.681673+00:00"
+    },
+    "delivery": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:41.788756+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.666,
+      "finished_at": "2026-10-16T09:58:42.455211+00:00"
+    },
+    "development": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:31.641655+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.219,
+      "finished_at": "2026-10-16T09:58:32.861031+00:00"
+    },
+    "elections-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:40.425998+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.717,
+      "finished_at": "2026-10-16T09:59:41.143068+00:00"
+    },
+    "elections-replay-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T09:59:45.726115+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.033,
+      "finished_at": "2026-10-16T09:59:45.759466+00:00"
+    },
+    "elections-replay": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:45.074088+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.616,
+      "finished_at": "2026-10-16T09:59:45.690088+00:00"
+    },
+    "elections-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:39.620963+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.766,
+      "finished_at": "2026-10-16T09:59:40.387395+00:00"
+    },
+    "elections": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:54.359999+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.666,
+      "finished_at": "2026-10-16T09:58:55.026369+00:00"
+    },
+    "equipment-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:58.482835+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.817,
+      "finished_at": "2026-10-16T09:58:59.299591+00:00"
+    },
+    "equipment-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:57.479379+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.968,
+      "finished_at": "2026-10-16T09:58:58.447126+00:00"
+    },
+    "equipment": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:33.953001+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.767,
+      "finished_at": "2026-10-16T09:58:34.719713+00:00"
+    },
+    "inbound-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:22.949403+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.716,
+      "finished_at": "2026-10-16T09:59:23.665746+00:00"
+    },
+    "inbound-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:21.996262+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.917,
+      "finished_at": "2026-10-16T09:59:22.913075+00:00"
+    },
+    "inbound": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:45.752915+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.767,
+      "finished_at": "2026-10-16T09:58:46.519870+00:00"
+    },
+    "labor": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:32.899994+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.017,
+      "finished_at": "2026-10-16T09:58:33.917354+00:00"
+    },
+    "late-return-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:39.866559+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-16T10:00:39.898676+00:00"
+    },
+    "late-return-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T10:00:39.064973+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.766,
+      "finished_at": "2026-10-16T10:00:39.831309+00:00"
+    },
+    "logistics-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:17.198607+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.766,
+      "finished_at": "2026-10-16T09:59:17.964995+00:00"
+    },
+    "logistics-queue-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:26.863283+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.816,
+      "finished_at": "2026-10-16T09:59:27.679793+00:00"
+    },
+    "logistics-queue-replay-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T09:59:44.194631+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-16T09:59:44.226834+00:00"
+    },
+    "logistics-queue-replay": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:43.241744+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.917,
+      "finished_at": "2026-10-16T09:59:44.159041+00:00"
+    },
+    "logistics-queue-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:25.705811+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.117,
+      "finished_at": "2026-10-16T09:59:26.823320+00:00"
+    },
+    "logistics-queue": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:47.412302+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.768,
+      "finished_at": "2026-10-16T09:58:48.180049+00:00"
+    },
+    "logistics-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:16.246132+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.917,
+      "finished_at": "2026-10-16T09:59:17.162987+00:00"
+    },
+    "logistics-upgrade-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:19.105789+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.817,
+      "finished_at": "2026-10-16T09:59:19.923122+00:00"
+    },
+    "logistics-upgrade-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:17.999716+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.068,
+      "finished_at": "2026-10-16T09:59:19.067671+00:00"
+    },
+    "logistics-upgrade": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:44.074065+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.869,
+      "finished_at": "2026-10-16T09:58:44.942959+00:00"
+    },
+    "logistics": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:43.302504+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.717,
+      "finished_at": "2026-10-16T09:58:44.019616+00:00"
+    },
+    "market-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:10.241060+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.716,
+      "finished_at": "2026-10-16T09:59:10.957477+00:00"
+    },
+    "market-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:09.438824+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.768,
+      "finished_at": "2026-10-16T09:59:10.206615+00:00"
+    },
+    "market": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:40.330620+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.819,
+      "finished_at": "2026-10-16T09:58:41.149334+00:00"
+    },
+    "model-off-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:38.928912+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-16T10:00:38.961094+00:00"
+    },
+    "model-off": {
+      "timeout_seconds": 300,
+      "started_at": "2026-10-16T10:00:31.648262+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 7.246,
+      "finished_at": "2026-10-16T10:00:38.894010+00:00"
+    },
+    "model-privacy": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:38.995586+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-16T10:00:39.027679+00:00"
+    },
+    "model-safety-load-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:30.761594+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-16T10:00:30.793755+00:00"
+    },
+    "model-safety-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T10:00:29.751848+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.967,
+      "finished_at": "2026-10-16T10:00:30.718811+00:00"
+    },
+    "model-safety-replay-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:00:31.581257+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.033,
+      "finished_at": "2026-10-16T10:00:31.613891+00:00"
+    },
+    "model-safety-replay": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T10:00:30.829127+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.717,
+      "finished_at": "2026-10-16T10:00:31.546084+00:00"
+    },
+    "model-safety": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T10:00:28.742598+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.97,
+      "finished_at": "2026-10-16T10:00:29.712473+00:00"
+    },
+    "own-production-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:24.800882+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.867,
+      "finished_at": "2026-10-16T09:59:25.667835+00:00"
+    },
+    "own-production-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:23.699220+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.067,
+      "finished_at": "2026-10-16T09:59:24.766336+00:00"
+    },
+    "own-production": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:46.557893+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.817,
+      "finished_at": "2026-10-16T09:58:47.374647+00:00"
+    },
+    "own-storage-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:21.024542+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.917,
+      "finished_at": "2026-10-16T09:59:21.941944+00:00"
+    },
+    "own-storage-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:19.972977+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.017,
+      "finished_at": "2026-10-16T09:59:20.989907+00:00"
+    },
+    "own-storage": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:44.983861+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.717,
+      "finished_at": "2026-10-16T09:58:45.701357+00:00"
+    },
+    "pickup-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:11.946645+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.818,
+      "finished_at": "2026-10-16T09:59:12.764438+00:00"
+    },
+    "pickup-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:10.995956+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.917,
+      "finished_at": "2026-10-16T09:59:11.913499+00:00"
+    },
+    "pickup": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:41.184434+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.565,
+      "finished_at": "2026-10-16T09:58:41.749951+00:00"
+    },
+    "recovery": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:30.992557+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.616,
+      "finished_at": "2026-10-16T09:58:31.609108+00:00"
+    },
+    "restore": {
+      "timeout_seconds": 180,
+      "started_at": "2026-10-16T09:57:44.763343+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.48,
+      "finished_at": "2026-10-16T09:57:46.243823+00:00"
+    },
+    "support-load": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:42.336437+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.867,
+      "finished_at": "2026-10-16T09:59:43.203530+00:00"
+    },
+    "support-replay-compare": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T09:59:46.499086+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.033,
+      "finished_at": "2026-10-16T09:59:46.532306+00:00"
+    },
+    "support-replay": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:45.794866+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.666,
+      "finished_at": "2026-10-16T09:59:46.460891+00:00"
+    },
+    "support-save": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:59:41.184616+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.118,
+      "finished_at": "2026-10-16T09:59:42.303319+00:00"
+    },
+    "support": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T09:58:55.068623+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.767,
+      "finished_at": "2026-10-16T09:58:55.835205+00:00"
+    },
+    "tests": {
+      "timeout_seconds": 120,
+      "started_at": "2026-10-16T09:57:48.054849+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 42.225,
+      "finished_at": "2026-10-16T09:58:30.279619+00:00"
+    },
+    "p22-final-headless": {
+      "timeout_seconds": 780,
+      "started_at": "2026-10-16T09:57:44.705434+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 176.508,
+      "finished_at": "2026-10-16T10:00:41.213706+00:00"
+    },
+    "p22-platform-fixture": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:01:22.639256+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-16T10:01:22.703808+00:00"
+    },
+    "p22-client-restore": {
+      "timeout_seconds": 180,
+      "started_at": "2026-10-16T10:01:22.739640+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.174,
+      "finished_at": "2026-10-16T10:01:23.913923+00:00"
+    },
+    "p22-client-build": {
+      "timeout_seconds": 180,
+      "started_at": "2026-10-16T10:01:23.945864+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 10.396,
+      "finished_at": "2026-10-16T10:01:34.341664+00:00"
+    },
+    "p22-godot-import": {
+      "timeout_seconds": 120,
+      "started_at": "2026-10-16T10:01:34.383991+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.879,
+      "finished_at": "2026-10-16T10:01:38.263216+00:00"
+    },
+    "p22-godot-smoke": {
+      "timeout_seconds": 30,
+      "started_at": "2026-10-16T10:01:38.299626+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.468,
+      "finished_at": "2026-10-16T10:01:39.767884+00:00"
+    },
+    "p22-godot-verify": {
+      "timeout_seconds": 15,
+      "started_at": "2026-10-16T10:01:39.806273+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-16T10:01:39.838348+00:00"
+    }
+  },
+  "specification_sha256": "b86447e9311ab676538e1edbf7fd217c5a09896c3fc0d5edda7569ae088e9376",
+  "not_verified": [
+    "real local model/P23 (requires actual measured request, command application and metadata)",
+    "Android physical device P06",
+    "current Windows EXE/Android APK on hardware",
+    "P24 research series/UI outside scope"
+  ]
+}

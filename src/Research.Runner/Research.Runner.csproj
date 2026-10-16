@@ -2,4 +2,5 @@
   <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
   <ItemGroup><ProjectReference Include="../Simulation.Hosting/Simulation.Hosting.csproj" /></ItemGroup>
   <ItemGroup><ProjectReference Include="../Agents.Algorithmic/Agents.Algorithmic.csproj" /></ItemGroup>
+  <ItemGroup><ProjectReference Include="../Agents.Llm/Agents.Llm.csproj" /></ItemGroup>
 </Project>

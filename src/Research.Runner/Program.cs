@@ -7,21 +7,25 @@ using Simulation.Hosting;
 
 try
 {
+    using var models = new ModelServices();
     var options = new Dictionary<string, string>(StringComparer.Ordinal);
     for (int i = 0; i < args.Length; i += 2)
     {
         if (i + 1 >= args.Length || args[i] is not ("--scenario" or "--output" or "--script" or "--mode" or "--seed" or
-            "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers"))
-            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|support|baseline] [--mode headless|paced] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
+            "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers" or "--model-mode" or "--model-config"))
+            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|support|baseline|hybrid|model-safety] [--mode headless|paced] [--model-mode off|ollama --model-config PATH] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
         if (!options.TryAdd(args[i], args[i + 1])) throw new ArgumentException("Duplicate argument");
     }
     string directory = options.GetValueOrDefault("--output", "artifacts/cycle");
     string script = options.GetValueOrDefault("--script", "cycle");
     string mode = options.GetValueOrDefault("--mode", "headless");
-    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market" or "pickup" or "delivery" or "capital-delivery" or "logistics" or "logistics-upgrade" or "own-storage" or "inbound" or "own-production" or "logistics-queue" or "capital-demand" or "elections" or "support" or "baseline") || mode is not ("headless" or "paced"))
+    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market" or "pickup" or "delivery" or "capital-delivery" or "logistics" or "logistics-upgrade" or "own-storage" or "inbound" or "own-production" or "logistics-queue" or "capital-demand" or "elections" or "support" or "baseline" or "hybrid" or "model-safety") || mode is not ("headless" or "paced"))
         throw new ArgumentException("Invalid script or mode");
-    if (options.ContainsKey("--controllers") && (script is not ("autonomous" or "baseline") || options.ContainsKey("--load") || options.ContainsKey("--replay")))
+    if (options.ContainsKey("--controllers") && (script is not ("autonomous" or "baseline" or "hybrid" or "model-safety") || options.ContainsKey("--load") || options.ContainsKey("--replay")))
         throw new ArgumentException("--controllers applies only to a new autonomous run");
+    if ((options.ContainsKey("--model-config") || options.ContainsKey("--model-mode")) &&
+        (options.ContainsKey("--replay") || !options.ContainsKey("--load") && script != "hybrid"))
+        throw new ArgumentException("Model options require a live hybrid session; replay never creates a model runtime");
     if (options.ContainsKey("--checkpoint-at") && !options.ContainsKey("--checkpoint"))
         throw new ArgumentException("--checkpoint-at requires --checkpoint");
     long? saveTick = options.TryGetValue("--checkpoint-at", out string? saveAt) ? long.Parse(saveAt, CultureInfo.InvariantCulture) : null;
@@ -48,7 +52,7 @@ try
         bool recover = options.TryGetValue("--recover-backup", out string? recovery) && bool.Parse(recovery);
         var loaded = CheckpointStore.Load(loadPath, recover, mode == "paced" ? Pace : null);
         session = loaded.Session; definition = session.Engine.Configuration();
-        session.RestoreControllers(AlgorithmicController.Restore);
+        models.Restore(session, options);
         if (loaded.UsedBackup) Console.WriteLine($"Recovered backup: {loaded.LoadedPath}; tick={session.Engine.Tick}");
         target ??= session.PlaybackFinalTick ?? throw new ArgumentException("Load without a recorded plan requires --ticks FINAL_TICK");
         if (tape is not null)
@@ -62,15 +66,19 @@ try
     }
     else
     {
-        definition = RunArtifacts.LoadScenario(options.GetValueOrDefault("--scenario", script == "baseline" ? "scenarios/baseline-economy.json" : script == "autonomous" ? "scenarios/autonomous-economy.json" : "scenarios/economic-cycle.json"));
+        definition = RunArtifacts.LoadScenario(options.GetValueOrDefault("--scenario", script == "model-safety" ? "scenarios/model-safety.json" : script is "baseline" or "hybrid" ? "scenarios/baseline-economy.json" : script == "autonomous" ? "scenarios/autonomous-economy.json" : "scenarios/economic-cycle.json"));
         if (options.TryGetValue("--seed", out string? seed)) definition = definition with { Seed = ulong.Parse(seed, CultureInfo.InvariantCulture) };
-        if (target.HasValue && tape is null && !saveTick.HasValue && script is not ("autonomous" or "baseline"))
+        if (target.HasValue && tape is null && !saveTick.HasValue && script is not ("autonomous" or "baseline" or "hybrid" or "model-safety"))
             throw new ArgumentException("--ticks requires --load, --replay or checkpointed fixture playback");
         session = new(new SimulationEngine(definition), beforeStep: mode == "paced" ? Pace : null);
-        if (script is ("autonomous" or "baseline") && tape is null)
+        if (script is ("autonomous" or "baseline" or "hybrid" or "model-safety") && tape is null)
         {
-            long horizon = AutonomousRun.Configure(session, definition, options.GetValueOrDefault("--controllers", script=="baseline"?"scenarios/baseline-controllers.json":"scenarios/autonomous-controllers.json"));
+            string controllers = options.GetValueOrDefault("--controllers", script == "autonomous" ? "scenarios/autonomous-controllers.json" : "scenarios/baseline-controllers.json");
+            long horizon = script is "hybrid" or "model-safety" ? models.Configure(session, definition, controllers, options, script == "model-safety")
+                : AutonomousRun.Configure(session, definition, controllers);
             target ??= horizon;
+            if (script == "model-safety") { target = options.ContainsKey("--ticks") ? target : 60; mode = "ControlledFakeS7"; }
+            if (script == "hybrid") mode = mode == "paced" ? "Realtime" : "LiveHeadlessStress";
         }
         else if (tape is not null || saveTick.HasValue)
         {
@@ -92,7 +100,8 @@ try
             if (saveTick.Value == session.Engine.Tick) Save(session);
             session.TickCompleted += s => { if (s.Engine.Tick == saveTick.Value) Save(s); };
         }
-        if (target.HasValue) session.AdvanceTo(target.Value);
+        if (script == "model-safety" && session.HasControllers) await models.RunSafety(session, target!.Value);
+        else if (target.HasValue) session.AdvanceTo(target.Value);
         else RunScript(session, definition, script);
         BaselineValidation.Check(session,definition);
         if (saveTick.HasValue && !saved) throw new ArgumentException("Checkpoint tick was not reached");
@@ -100,10 +109,10 @@ try
     }
     catch (Exception ex)
     {
-        watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, "failed", ex.Message);
+        watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, "failed", ex.Message, models.Metadata);
         throw;
     }
-    watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds);
+    watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, modelMetadata: models.Metadata);
     Console.WriteLine(JsonSerializer.Serialize(new { Status = "succeeded", Tick = session.Engine.Tick,
         StateHash = session.Engine.ComputeStateHash(), Output = Path.GetFullPath(directory), CheckpointSaved = saved }, SimulationJson.Options));
     return 0;

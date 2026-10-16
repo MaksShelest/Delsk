@@ -1,7 +1,7 @@
 # Архитектура Delsk
 
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
-Статус: архитектурная основа к спецификации0.3. P00–P21 реализованы и проверены в границах отчётов; P22 и далее остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
+Статус: архитектурная основа к спецификации0.3. P00–P22 реализованы и проверены в границах отчётов; P23 и далее остаются планом. Фактический статус — в IMPLEMENTATION_PLAN.md; Android device gate P06 открыт.
 
 ## 1. Основания и границы
 
@@ -618,3 +618,17 @@ Agents.Algorithmic разделён по целям: ObligationGoals, MarketGoal
 В MarketOffers контроллеру дополнительно оставляется закрытый public offer, если у него есть неоплаченный выдачей собственный allocation: позиция выдачи нужна для реального пути. Это уже опубликованная информация, не доступ к чужим claims. Политические оценки читают только bilateral commitments, собственный блок никогда не включает купленные голоса. Цена/риск majority/приоритет собственной победы могут привести к отказу даже за высокую компенсацию.
 
 Rules baseline-1 фиксирует новую версию политики/проекции; World12/Session2/Envelope1 прежние. Старые rules/policy state явно отклоняются без миграции. Подробные критерии, фактические сценарии и ограничения — IMPLEMENTATION_REPORT_P20_P21.md.
+
+## 29. Реализованные model slots P22
+
+Agents.Llm содержит ILocalModelAdapter/OllamaAdapter, bounded shared ModelRuntime и HybridController. Никакого HTTP в Core/Hosting, прямой мутации мира из callback или второго экономического валидатора. Модель выбирает неизменяемый PolicyOption из существующих Algorithmic candidates; executor и Send/validation прежние. Чистый preview не расходует PRNG. Неизвестный/отредактированный action не может быть разобран как команда.
+
+IController имеет default lifecycle hooks: Hosting связывает session/epoch и замораживает ready replies до всех Decide; после сбора всех заявок запускает общий runtime. Admission очередь/response barrier не зависят от позиции NPC в массиве. Один concurrent inference/queue3, min30ticks, apply15/TTL15,4requests/120ticks, HTTP4s/retries0. Даже игнорирующий отмену adapter не блокирует Step и не разрешает вторую физическую инференцию до окончания первой.
+
+Prompt — bounded allowlist own/bilateral/public, свои цели/доверие/короткая память и варианты. Ни world seed/hash, future price state, ни третьесторонняя политическая компенсация не передаются. Parser требует ровно6полей/целую identity/допустимый option. На applyTick проверяется relevant fingerprint текущих own и referenced public условий; цены/адресат/объём не исправляются догадкой. Обычный Core validator остаётся финальной защитой, включая одновременные конфликты.
+
+Модель подключается на границе нового плана; начатые планы, принятые поставки, pickup и auction bid не откладываются. Неотправленный выбранный план очищается до ожидания, чтобы baseline заново выбрал fallback без сохранения своей remote команды как SuspendedPlan. Если обязательство появилось во время slot, алгоритм исполняет его до applyTick. Результат модели не получает внеочередного действия; no feasible fallback записывает Hold.
+
+Hybrid checkpoint1 сохраняет logical Pending/Ready, request/options/revisions/reply, baseline checkpoint2/планы, serial/cooldown/budget/memory. Существующий Session2 epoch при restore аннулирует все неприменённые ответы; slot получает fallback в прежний applyTick без повторного HTTP. Ранее разрешённый slot и его receipt/обычные command IDs продолжаются точно. Внешняя очередь/Task/socket не сериализуется. World12/Rules baseline-1 и Envelope1 прежние; новая политика hybrid-plan-v1.
+
+Исследовательский ModelTrace/model-decisions.jsonl сохраняет prompt/hash/raw response/identity/timing/resolution/latency/token counts; public events и чужие observations его не получают. Direct continuation сравнивает18файлов, world-only command replay14; replay не вызывает модель. Fake S7 не объявляется P23. Фактические проверки — IMPLEMENTATION_REPORT_P22.md, локальный реальный gate — LOCAL_MODEL_VALIDATION.md.

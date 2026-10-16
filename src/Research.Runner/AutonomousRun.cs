@@ -8,7 +8,14 @@ using Simulation.Hosting;
 
 internal static class AutonomousRun
 {
-    public static long Configure(GameSession session, ScenarioDefinition scenario, string path)
+    public static long Configure(GameSession session, ScenarioDefinition scenario, string path, Func<AlgorithmicController, IController>? decorate = null)
+    {
+        var config = ReadConfiguration(scenario, path);
+        session.AttachControllers(config.Npcs.Select(n => new AlgorithmicController(n with { HumanActorId=config.HumanActorId }, ControllerSeed(scenario.Seed, n.ActorId), scenario.Participants.Select(p => p.Id)))
+            .Select(c => decorate is null ? c : decorate(c)));
+        return config.FinalTick;
+    }
+    public static AutonomousConfiguration ReadConfiguration(ScenarioDefinition scenario, string path)
     {
         if (new FileInfo(path).Length > 1024 * 1024) throw new ArgumentException("Controller configuration too large");
         var config = JsonSerializer.Deserialize<AutonomousConfiguration>(File.ReadAllText(path), SimulationJson.Options)
@@ -20,8 +27,7 @@ internal static class AutonomousRun
             config.Npcs.Any(n => n.ActorId == config.HumanActorId || !ids.Contains(n.ActorId) ||
                 !scenario.ResourceNodes.Any(r => r.ItemId == n.PreferredInput)))
             throw new ArgumentException("Invalid autonomous configuration");
-        session.AttachControllers(config.Npcs.Select(n => new AlgorithmicController(n with { HumanActorId=config.HumanActorId }, ControllerSeed(scenario.Seed, n.ActorId), ids)));
-        return config.FinalTick;
+        return config;
     }
     private static ulong ControllerSeed(ulong seed, long actor)
         => BinaryPrimitives.ReadUInt64LittleEndian(SHA256.HashData(Encoding.UTF8.GetBytes(FormattableString.Invariant($"controller-v1:{seed}:{actor}"))));

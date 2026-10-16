@@ -3,7 +3,9 @@
 Исследовательская экономическая игра с автономными NPC.
 Автор: Шелестов Максим Евгеньевич.
 
-В C# реализованы и проверены P00–P21: физическая экономика/логистика, рынки и сроки, периодический спрос столицы, выборы, приватная материально оплаченная поддержка и utility baseline трёх NPC без LLM. Контроллеры используют те же команды/валидаторы, что и человек, видят только разрешённую проекцию. Интерактивный игровой ввод/интерфейс ещё не готов. [Проверки и ограничения P20/P21](docs/IMPLEMENTATION_REPORT_P20_P21.md).
+В C# реализованы и проверены P00–P22: физическая экономика/логистика, рынки и сроки, периодический спрос столицы, выборы, приватная материально оплаченная поддержка и utility baseline трёх NPC без LLM. Контроллеры используют те же команды/валидаторы, что и человек, видят только разрешённую проекцию. Интерактивный игровой ввод/интерфейс ещё не готов. [Проверки и ограничения P20/P21](docs/IMPLEMENTATION_REPORT_P20_P21.md).
+P22 добавляет необязательный Ollama HTTP transport и безопасный выбор готового плана. Модель выключена по умолчанию;Fake/остальные unit-тесты не заменяют реальный P23. [Отчёт P22](docs/IMPLEMENTATION_REPORT_P22.md), [локальное завершение P23](docs/LOCAL_MODEL_VALIDATION.md).
+
 ## Быстрый запуск без Python и Godot
 
 Нужен .NET SDK **10.0.401 x64**, закреплённый в global.json. Из корня репозитория (PowerShell):
@@ -15,7 +17,7 @@ dotnet tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll -noColor 
 dotnet run --project src/Research.Runner -c Release --no-build -- --script baseline --seed 42 --output artifacts/run-42
 ```
 
-561 xUnit-тест прошёл локально. Результат runner — статус/тик/хеш/путь в консоли и JSON/JSONL/CSV в `artifacts/run-42`: summary, деньги/товар/численности, agents/labor, decisions/commands/events/ledger, manifest и inspection final-state. Все игровые расчёты и политики на C#; Python только запускает проверки и читает результаты. [Параметры, значение прогона и файлы](docs/HEADLESS_TESTING.md).
+618 xUnit-тестов прошли локально. Результат runner — статус/тик/хеш/путь в консоли и JSON/JSONL/CSV в `artifacts/run-42`: summary, деньги/товар/численности, agents/labor, decisions/commands/events/ledger, manifest и inspection final-state. Все игровые расчёты и политики на C#; Python только запускает проверки и читает результаты. [Параметры, значение прогона и файлы](docs/HEADLESS_TESTING.md).
 
 `--mode headless` по умолчанию выполняет те же тики без ожидания реальных секунд; перевозка остаётся физической. `--mode paced` ждёт1 секунду/тик. Мир задаётся `--scenario`, политики — `--controllers`; начальные настройки лежат в scenarios/baseline-*.json (historical autonomous-*.json сохранены).
 
@@ -28,17 +30,17 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --load artifac
 
 Checkpoint сохраняет текущий мир и план каждого NPC; load продолжает без повторения первых350 тиков и без offline catch-up. final-state.json — только inspection, не save. Командную ленту можно повторить `--replay PATH --scenario PATH --ticks FINAL_TICK` без вызова контроллеров; это проверка мира, не восстановление их планов.
 
-Если установлен Python, одна команда с hard timeouts выполняет restore/build/561tests,24 runner-сценария,21 обычную пару checkpoint/load+controlled fixture,8 replay и независимые проверки77выгрузок:
+Если установлен Python, одна команда с hard timeouts выполняет restore/build/618tests,26 runner-сценариев,22обычные пары checkpoint/load+controlled fixture,9replay и независимые проверки81выгрузки:
 
 ```powershell
-python scripts/check_headless.py --output artifacts/headless-p21
+python scripts/check_headless.py --output artifacts/headless-p22
 ```
 
 Старые scripts: cycle/economic-cycle.json, recovery/zero-cash-recovery.json, development/land-and-content.json, labor/labor-dynamics.json, equipment/equipment-cycle.json. Они сохранились как регрессии. На обычной машине доступен также MTP `dotnet test --project tests/Simulation.Tests/Simulation.Tests.csproj -c Release --no-build --no-restore`; в этой облачной среде использован встроенный xUnit runner из-за ограничения IPC.
 
 ## Границы готовности
 
-P20 и P21 закрыты в проверенных программных границах. Следующий пункт — P22 (адаптер/очередь/fallback); реальная LLM, экспериментальные серии и UI остаются P23–P26. Проверки конкретных fixtures/seed не означают доказанный баланс всех конфигураций.
+P20 и P21 закрыты в проверенных программных границах. P22 (адаптер/очередь/fallback) также проверен; следующий пункт — P23 (реальная модель и измерения); реальная LLM, экспериментальные серии и UI остаются P23–P26. Проверки конкретных fixtures/seed не означают доказанный баланс всех конфигураций.
 
 Godot .NET4.7.2 использует общий Core/Hosting: Linux smoke проверяет222tick hashes и14реальных file restores (экономика, выборы, приватная поддержка). Windows/Android экспорты ранее созданы; актуальный EXE/APK на устройствах в этой итерации не запускался, Android device gate P06 открыт. [Локальная работа](docs/LOCAL_SETUP.md), [клиентский стенд](src/Client.Godot/README.md).
 
