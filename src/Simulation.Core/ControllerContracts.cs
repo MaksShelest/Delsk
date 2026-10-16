@@ -27,8 +27,13 @@ public record ControllerObservation(long Tick, ParticipantView Participant, Acco
     ImmutableArray<MarketAllocationView> OwnMarketAllocations, MarketSettings MarketRules, ImmutableArray<BuyOfferView> BuyOffers, ImmutableArray<SupplyRequest> OwnSupplyRequests,
     ImmutableArray<DeliveryContractView> OwnDeliveryContracts, DeliverySettings DeliveryRules, ImmutableArray<LogisticsView> OwnLogistics, LogisticsSettings LogisticsRules,
     ImmutableArray<MarketPricePoint> CapitalPrices, ImmutableArray<MarketPricePoint> CapitalPriceHistory, ElectionObservation Elections, SupportObservation Support);
-public record ControllerDecision(string Goal, string Reason, ImmutableArray<GameAction> Actions, bool Record = true);
+public record ModelDecisionTrace(string DecisionId, long RequestedTick, long ApplyTick, long SessionEpoch,
+    string Resolution, string ReasonCode, string RequestJson, string? ResponseJson = null,
+    long? LatencyMilliseconds = null, long? PromptTokens = null, long? CompletionTokens = null, string? Model = null);
+public record ControllerDecision(string Goal, string Reason, ImmutableArray<GameAction> Actions, bool Record = true,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ModelDecisionTrace? ModelTrace = null);
 public record ControllerCheckpoint(string Kind, int Version, ParticipantId Actor, string StateJson, ImmutableArray<string> PendingCommandIds);
+public record ControllerSessionContext(string SessionId, long Epoch, long Tick, bool Restored);
 
 /// <summary>Replaceable policy; only the host assigns identity and submits validated commands.</summary>
 public interface IController
@@ -37,6 +42,9 @@ public interface IController
     ControllerDecision Decide(ControllerObservation observation, ImmutableArray<CommandResult> ownResults);
     ControllerCheckpoint Capture();
     void CommandSubmitted(string commandId);
+    void BindSession(ControllerSessionContext context) { }
+    void BeginDecisionBarrier(long tick) { }
+    void EndDecisionBarrier(long tick) { }
 }
 
 public sealed partial class SimulationEngine

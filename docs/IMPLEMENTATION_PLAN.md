@@ -81,7 +81,7 @@ Upgrade/own output/входящие поставки выполнены как �
 
 | ID | Зависит от | Объём | Критерий готовности |
 | --- | --- | --- | --- |
-| P22 | P21 — выполнен | ILocalModelAdapter+Ollama HTTP, строгий intent parser, bounded queue, decision slots/TTL/epoch, fallback | S7 на fake adapter без сети в CI; таймаут не блокирует Step, actor подделать нельзя, replay не обращается к модели |
+| P22 — выполнен | P21 | ILocalModelAdapter+Ollama HTTP, строгий intent parser, bounded queue, decision slots/TTL/epoch, fallback | S7 на fake adapter без сети в CI; таймаут не блокирует Step, actor подделать нельзя, replay не обращается к модели |
 | P23 | P22 | Реальная локальная модель, один общий runtime/раздельная память NPC, 2–3 дилеммы, лимиты контекста | Хотя бы один измеренный реальный запрос+валидное применение и один fallback; model digest/quantization/runtime/prompt записаны; отсутствие модели не ломает игру |
 | P24 | P21,P23 | Runner series, manifest/metrics, baseline/hybrid/hybrid+structured communication, recorded replay | Одинаковые seeds/config/info; timing-policy не смешаны; полностью выключенная модель — рабочий baseline; сохранены ошибки и raw observations |
 | P25 | P24 | Python отчёт по paired seeds, графики/таблицы, разброс, latency/fallback/контракты/экономика | Первые10 seeds на режим; медианы+разброс/парные разницы и ограничения; не делать общего вывода по одной победе; отчёт воспроизводим из результатов |
@@ -243,3 +243,12 @@ P20 полностью прошёл отдельный gate538tests/20scenarios/
 P21 проверен561/561tests,24runner-сценариями,21обычной save/load парой+controlled pair,8replays,77independent exports/51comparison pairs. Direct continuation сравнивает17файлов, world-only baseline replay14без трёх policy traces. Godot Linux снова222tick hashes/14file restores. Три реальные политики самостоятельно добывают, производят, торгуют, исполняют сроки, участвуют в аукционе, управляют зарплатами/логистикой и оценивают/покупают/продают поддержку через общий валидатор. В нулевой кассе работает прежний bootstrap; порядок AttachControllers не меняет результат, планы/цели/PRNG/bid review/suspended route сохраняются. Скрытые третьесторонние условия и будущие цены недоступны.
 
 Факты/подготовленные fixtures/профиль/ограничения — [отчёт](IMPLEMENTATION_REPORT_P20_P21.md), verification/p20-p21/final-gate.json. Программная часть Gate C закрыта; Android device gate P06 остаётся отдельным открытым ограничением. Следующий пункт — **P22**; реальная LLM/UI/серии не добавлены.
+
+
+## Завершение P22 (16.10.2026)
+
+На базе merge PR19 реализованы ILocalModelAdapter/Ollama HTTP, строгий plan-option intent, shared bounded/fair queue, общий response barrier, decisionId/actor/observation/epoch/TTL/applyTick, отсутствие await в Step, один fallback без retry/duplicate. Algorithmic executor/Core validator прежние; принятые обязательства/начатые планы/auction bid модель не задерживает. Pending/Ready/resolved slots сохраняются; load аннулирует старый callback и не отправляет HTTP заново, recorded command replay не создаёт модель.
+
+Отдельный полный gate618tests (57новых),26runner-сценариев,22обычные save/load пары+controlled pair,9replays,81independent exports/54comparisons. Direct continuation18файлов, world-only replay14. Source baseline при model-off идентичен. S7 включает valid/foreign actor/late, unit — malformed/stale/duplicates/timeout/cancellation/epoch/corrupt checkpoint/privacy. Подтверждения — IMPLEMENTATION_REPORT_P22.md и verification/p22. Применимый Godot gate фиксируется там же.
+
+P23 не закрывается fake-ответами. Следующий пункт — реальный локальный runtime/model, command application+fallback и digest/quantization/runtime/prompt/latency evidence; подготовлена LOCAL_MODEL_VALIDATION.md. P24/реальная серия/UI в этот PR не входят, Android physical-device gate P06 открыт.

@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../Simulation.Core/Simulation.Core.csproj" />
+    <ProjectReference Include="../Agents.Algorithmic/Agents.Algorithmic.csproj" />
+  </ItemGroup>
+</Project>

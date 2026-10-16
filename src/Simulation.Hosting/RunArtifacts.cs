@@ -15,7 +15,7 @@ public static class RunArtifacts
         ScenarioValidation.Validate(scenario); return scenario;
     }
     public static void Export(GameSession session, ScenarioDefinition definition, string directory,
-        string timingPolicy, string script, double elapsedMilliseconds, string status = "succeeded", string? failure = null)
+        string timingPolicy, string script, double elapsedMilliseconds, string status = "succeeded", string? failure = null, object? modelMetadata = null)
     {
         Directory.CreateDirectory(directory);
         var state = session.Engine.Inspect();
@@ -24,10 +24,10 @@ public static class RunArtifacts
         {
             ScenarioId = definition.Id, definition.Seed, SimulationEngine.RulesVersion,
             ConfigHash = session.Engine.ConfigHash, TimingPolicy = timingPolicy, Script = script,
-            Controller = session.HasControllers ? "algorithmic" : session.PlaybackFinalTick.HasValue ? "recorded-inputs" : "scripted",
-            Controllers = session.ControllerStates, ControllerStateHash = session.ComputeControllerStateHash(), Model = (string?)null, RuntimeVersion = Environment.Version.ToString(),
+            Controller = session.ControllerStates.Any(c => c.Kind.StartsWith("hybrid-", StringComparison.Ordinal)) ? "hybrid" : session.HasControllers ? "algorithmic" : session.PlaybackFinalTick.HasValue ? "recorded-inputs" : "scripted",
+            Controllers = session.ControllerStates, ControllerStateHash = session.ComputeControllerStateHash(), Model = modelMetadata, RuntimeVersion = Environment.Version.ToString(),
             Commit = Environment.GetEnvironmentVariable("DELSK_COMMIT"), TickSeconds = 1,
-            Stage = "P20", Author = "Шелестов Максим Евгеньевич"
+            Stage = "P22", Author = "Шелестов Максим Евгеньевич"
         });
         WriteJson("summary.json", new { Status = status, Failure = failure, state.Tick, StateHash = session.Engine.ComputeStateHash(),
             ControllerStateHash = session.ComputeControllerStateHash(),
@@ -50,6 +50,8 @@ public static class RunArtifacts
         WriteLines("ledger.jsonl", session.Engine.Ledger());
         WriteJson("controllers.json", session.ControllerStates);
         WriteLines("decisions.jsonl", session.ControllerTurns);
+        WriteLines("model-decisions.jsonl", session.ControllerTurns.Where(t => t.Decision.ModelTrace is not null)
+            .Select(t => new { t.Tick, t.Actor, Trace = t.Decision.ModelTrace }));
         using var agents = new StreamWriter(Path.Combine(directory, "agents.csv"), false, new UTF8Encoding(false));
         agents.WriteLine("tick,actor_id,cash_minor,stock_base_value_minor,stock_units,headcount,enterprises,equipment,busy,goal,reason");
         foreach (var row in session.ControllerSamples)

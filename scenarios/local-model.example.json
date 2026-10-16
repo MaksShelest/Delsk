@@ -1,0 +1,21 @@
+{
+  "policy": {
+    "minimumIntervalTicks": 30,
+    "applyDelayTicks": 15,
+    "decisionTtlTicks": 15,
+    "budgetPeriodTicks": 120,
+    "maximumRequestsPerPeriod": 4,
+    "enabled": true
+  },
+  "runtime": {
+    "queueCapacity": 3,
+    "timeoutMilliseconds": 4000
+  },
+  "ollama": {
+    "endpoint": "http://127.0.0.1:11434/",
+    "model": "qwen3.5:4b",
+    "contextTokens": 4096,
+    "maximumOutputTokens": 512,
+    "seed": 42
+  }
+}

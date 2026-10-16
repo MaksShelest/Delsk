@@ -33,7 +33,11 @@ public sealed partial class GameSession
         if (array.Length == 0 || array.Select(c => c.Actor).Distinct().Count() != array.Length || array.Any(c => !participants.Contains(c.Actor)))
             throw new ArgumentException("Invalid controller participants");
         _controllers = array;
-        foreach (var controller in array) _controllerAwaiting.Add(controller.Actor.Value, []);
+        foreach (var controller in array)
+        {
+            _controllerAwaiting.Add(controller.Actor.Value, []);
+            controller.BindSession(new(SessionId, SessionEpoch, Engine.Tick, false));
+        }
     }
     // The composition root knows concrete policies; Hosting has no dependency on Algorithmic/LLM.
     public void RestoreControllers(Func<ControllerCheckpoint, IController> restore)
@@ -44,11 +48,13 @@ public sealed partial class GameSession
                 JsonSerializer.Serialize(_unrestoredControllers[i], SimulationJson.Options)).Any())
             throw new CheckpointException("ControllerRestoreMismatch");
         _controllers = restored; _unrestoredControllers = [];
+        foreach (var controller in restored) controller.BindSession(new(SessionId, SessionEpoch, Engine.Tick, true));
     }
     private void SubmitControllerInputs()
     {
         if (_unrestoredControllers.Length > 0) throw new InvalidOperationException("RestoreControllers required before advancing this checkpoint");
         if (_controllers.Length == 0) return;
+        foreach (var controller in _controllers) controller.BeginDecisionBarrier(Engine.Tick);
         // Freeze every observation before any policy or submission is called. World mutations still occur only in Step.
         var observations = _controllers.Select(c => Engine.ObserveController(c.Actor)).ToArray();
         var decisions = new ControllerDecision[_controllers.Length];
@@ -62,6 +68,7 @@ public sealed partial class GameSession
                 throw new InvalidOperationException("Controller exceeded equal command budget");
             awaiting.RemoveAll(id => feedback[i].Any(r => r.CommandId == id));
         }
+        foreach (var controller in _controllers) controller.EndDecisionBarrier(Engine.Tick);
         for (int i = 0; i < _controllers.Length; i++)
         {
             var ids = ImmutableArray.CreateBuilder<string>();
