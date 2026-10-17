@@ -146,16 +146,16 @@ public partial class PresentationStage : Node3D
                 "plot-reserved" => Tile(marker.X, marker.Z, new Color(0.72f, 0.55f, 0.22f), 0.03f),
                 "shop-plot" => Tile(marker.X, marker.Z, new Color(0.46f, 0.36f, 0.55f), 0.03f),
                 "resource" => Mark(new CylinderMesh { TopRadius = 0.22f, BottomRadius = 0.22f, Height = 0.7f },
-                    marker.Label == "wood" ? new Color(0.25f, 0.55f, 0.22f) : new Color(0.82f, 0.72f, 0.2f),
-                    new Vector3(marker.X, 0.35f, marker.Z), marker.Label),
+                    marker.Label == "wood" ? new Color(0.25f, 0.55f, 0.22f) : new Color(0.72f, 0.45f, 0.16f),
+                    new Vector3(marker.X, 0.35f, marker.Z), ""),
                 "production" => Mark(new BoxMesh { Size = new Vector3(0.7f, 0.7f, 0.7f) }, new Color(0.55f, 0.32f, 0.18f),
-                    new Vector3(marker.X, 0.35f, marker.Z), marker.Label),
+                    new Vector3(marker.X, 0.35f, marker.Z), ""),
                 "warehouse" => Mark(new BoxMesh { Size = new Vector3(0.75f, 0.45f, 0.75f) }, new Color(0.25f, 0.4f, 0.62f),
-                    new Vector3(marker.X, 0.25f, marker.Z), marker.Label),
+                    new Vector3(marker.X, 0.25f, marker.Z), ""),
                 "shop" => Mark(new BoxMesh { Size = new Vector3(0.6f, 0.55f, 0.6f) }, new Color(0.55f, 0.28f, 0.62f),
-                    new Vector3(marker.X, 0.3f, marker.Z), marker.Label),
+                    new Vector3(marker.X, 0.3f, marker.Z), ""),
                 "capital" => Mark(new CylinderMesh { TopRadius = 0.18f, BottomRadius = 0.28f, Height = 1.1f },
-                    new Color(0.9f, 0.75f, 0.15f), new Vector3(marker.X, 0.55f, marker.Z), marker.Label),
+                    new Color(0.9f, 0.75f, 0.15f), new Vector3(marker.X, 0.55f, marker.Z), ""),
                 _ => null
             };
             if (node is not null) AddChild(node);

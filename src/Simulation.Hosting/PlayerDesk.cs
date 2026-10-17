@@ -15,7 +15,8 @@ public static class PlayerDesk
         ActionKind.SetProductionEnabled, ActionKind.SetWage,
         ActionKind.BuyLogistics, ActionKind.SetLogisticsEnabled,
         ActionKind.SetLogisticsStorage, ActionKind.SetLogisticsInbound,
-        ActionKind.AcceptSupport, ActionKind.RejectSupport, ActionKind.SetVoteChoice
+        ActionKind.AcceptSupport, ActionKind.RejectSupport, ActionKind.SetVoteChoice,
+        ActionKind.ReservePlot, ActionKind.BuyPlot
     ];
 
     public static GameAction Check(GameAction action)
@@ -54,18 +55,20 @@ public static class PlayerDesk
     public static GameAction RejectSupport(long proposal) => Check(new(ActionKind.RejectSupport, SupportProposalId: proposal));
     public static GameAction Vote(long election, long candidate)
         => Check(new(ActionKind.SetVoteChoice, Election: new(election), Candidate: new(candidate)));
+    public static GameAction ReservePlot(long plot) => Check(new(ActionKind.ReservePlot, Plot: new(plot)));
+    public static GameAction BuyPlot(long plot) => Check(new(ActionKind.BuyPlot, Plot: new(plot)));
 
     public static PlayerView Read(SimulationEngine engine, ParticipantId actor)
     {
         var seen = engine.Observe(actor);
         return new(seen.Tick, seen.Participant, seen.Account.BalanceMinor, seen.OwnInventories, seen.OwnEnterprises,
-            seen.OwnBuildings, seen.OwnEmploymentGroups, seen.OwnLogistics, seen.LaborMarket, seen.Support, seen.Elections);
+            seen.OwnBuildings, seen.OwnEmploymentGroups, seen.OwnLogistics, seen.LaborMarket, seen.Support, seen.Elections, seen.Plots);
     }
 }
 
 public record PlayerView(long Tick, ParticipantView Participant, long CashMinor, InventoryView[] Inventories,
     EnterpriseView[] Enterprises, BuildingView[] Buildings, EmploymentView[] Employment, LogisticsView[] Logistics,
-    PublicEmploymentView[] LaborMarket, SupportObservation Support, ElectionObservation Elections);
+    PublicEmploymentView[] LaborMarket, SupportObservation Support, ElectionObservation Elections, PlotView[] Plots);
 
 public static class PlayerText
 {
@@ -128,7 +131,7 @@ public static class PlayerText
         ["trip"] = "Рейс",
         ["you"] = "Вы",
         ["selected"] = "Выбрано",
-        ["scene.hint"] = "Клик по клетке: ход, добыча или своё предприятие.",
+        ["scene.hint"] = "WASD — ход. Наведение объясняет объект. Стрелки и Enter — действие на вашей клетке.",
         ["menu.title"] = "Меню",
         ["menu.continue"] = "Продолжить",
         ["menu.debug"] = "Debug-режим",
@@ -152,6 +155,31 @@ public static class PlayerText
         ["reason.NotAtLocation"] = "Подойдите к нужному месту.",
         ["reason.NoPath"] = "Сюда пройти нельзя.",
         ["reason.NotAvailable"] = "Сейчас это действие недоступно.",
+        ["reason.PlotOwned"] = "Участок уже куплен.",
+        ["reason.PlotReserved"] = "Участок забронирован другим участником.",
+        ["reason.ProtectedCorridor"] = "Проход нельзя купить или забронировать.",
+        ["reason.ReservationLimit"] = "Слишком много действующих броней.",
+        ["money"] = "Деньги",
+        ["item.wood"] = "древесина",
+        ["item.grain"] = "зерно",
+        ["context.hint"] = "Подойдите к объекту. Стрелки выбирают действие, Enter подтверждает одно.",
+        ["context.harvest"] = "Добыть",
+        ["context.buy"] = "Купить участок за {0}",
+        ["context.reserve"] = "Забронировать за {0}",
+        ["context.card"] = "Открыть карточку предприятия",
+        ["context.transfer"] = "Передать 1 {0}",
+        ["context.approach"] = "Подойдите ближе: издалека действие недоступно.",
+        ["plot.free"] = "Свободный участок",
+        ["plot.own"] = "Ваш участок",
+        ["plot.foreign"] = "Чужой участок",
+        ["plot.reserved"] = "Забронирован до тика {0}",
+        ["plot.price"] = "Покупка {0}, бронь {1} и не засчитывается в цену.",
+        ["hover.resource"] = "Ресурс {0}. Добыча одной единицы занимает обычное время.",
+        ["hover.capital"] = "Терминал столицы. Публичные предложения: {0}.",
+        ["hover.blocked"] = "Непроходимая клетка.",
+        ["hover.corridor"] = "Проход. Его нельзя купить.",
+        ["hover.building"] = "{0}. Владелец {1}.",
+        ["hover.empty"] = "Пустая клетка.",
         ["new.session"] = "Новая партия:",
         ["legend.title"] = "Легенда",
         ["legend.player"] = "круг с номером — вы",
@@ -223,7 +251,7 @@ public static class PlayerText
         ["trip"] = "Trip",
         ["you"] = "You",
         ["selected"] = "Selected",
-        ["scene.hint"] = "Click a cell: move, harvest, or your enterprise.",
+        ["scene.hint"] = "WASD moves. Hover explains an object. Arrows and Enter act on your cell.",
         ["menu.title"] = "Menu",
         ["menu.continue"] = "Continue",
         ["menu.debug"] = "Debug mode",
@@ -247,6 +275,31 @@ public static class PlayerText
         ["reason.NotAtLocation"] = "Move to the right place.",
         ["reason.NoPath"] = "That cell cannot be reached.",
         ["reason.NotAvailable"] = "That action is not available now.",
+        ["reason.PlotOwned"] = "The plot is already owned.",
+        ["reason.PlotReserved"] = "Another participant has reserved the plot.",
+        ["reason.ProtectedCorridor"] = "A passage cannot be bought or reserved.",
+        ["reason.ReservationLimit"] = "Too many active reservations.",
+        ["money"] = "Money",
+        ["item.wood"] = "wood",
+        ["item.grain"] = "grain",
+        ["context.hint"] = "Walk up to an object. Arrows choose an action, Enter confirms one.",
+        ["context.harvest"] = "Harvest",
+        ["context.buy"] = "Buy plot for {0}",
+        ["context.reserve"] = "Reserve for {0}",
+        ["context.card"] = "Open the enterprise card",
+        ["context.transfer"] = "Transfer 1 {0}",
+        ["context.approach"] = "Move closer: distance does not grant the action.",
+        ["plot.free"] = "Free plot",
+        ["plot.own"] = "Your plot",
+        ["plot.foreign"] = "Someone else's plot",
+        ["plot.reserved"] = "Reserved until tick {0}",
+        ["plot.price"] = "Purchase {0}, reservation {1} and it is not credited toward the price.",
+        ["hover.resource"] = "Resource {0}. Harvesting one unit takes the normal time.",
+        ["hover.capital"] = "Capital terminal. Public offers: {0}.",
+        ["hover.blocked"] = "Blocked cell.",
+        ["hover.corridor"] = "Passage. It cannot be bought.",
+        ["hover.building"] = "{0}. Owner {1}.",
+        ["hover.empty"] = "Empty cell.",
         ["new.session"] = "New session:",
         ["legend.title"] = "Legend",
         ["legend.player"] = "numbered circle — you",
@@ -267,6 +320,12 @@ public static class PlayerText
         ["cell.selected"] = "Cell",
         ["debug.hint"] = "Choose an action, then press One tick. Time stays stopped until you confirm it."
     };
+
+    public static string Item(string language, string itemId)
+    {
+        string key = "item." + itemId;
+        return Keys(language).Contains(key) ? Get(language, key) : itemId;
+    }
 
     public static string Reason(string language, string code)
     {
