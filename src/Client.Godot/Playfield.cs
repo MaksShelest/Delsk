@@ -64,7 +64,11 @@ public partial class Playfield : Control
     private int _contextFirst;
     private string SavePath => ProjectSettings.GlobalizePath($"user://play-{_mode}-{SimulationEngine.RulesVersion}.json");
 
-    private enum Surface { Play, Menu, Debug }
+    private enum Surface { Play, Menu, Debug, Maps }
+    private string _mapKey = PlayMaps.First;
+    private MapSelectionScreen? _mapSelection;
+    private HBoxContainer? _hudGoods;
+    private string _hudGoodsKey = "";
 
     public override void _Ready()
     {
@@ -79,14 +83,20 @@ public partial class Playfield : Control
         Engine.MaxFps = 60;
         Theme = PresentationTheme.Create();
         EnsureStage();
-        Start(OS.GetCmdlineUserArgs().Contains("--trip") ? "trip" : "economy", false);
-        BuildChrome();
-        Refresh();
+        if (OS.GetCmdlineUserArgs().Contains("--trip")) Start("trip", false);
+        else ShowMaps();
     }
 
     public override void _UnhandledInput(InputEvent e)
     {
-        if (_left || _session is null || e is not InputEventKey key) return;
+        if (_left || e is not InputEventKey key) return;
+        if (_surface == Surface.Maps)
+        {
+            if (key.Pressed && !key.Echo && key.Keycode == Key.Escape && _session is not null)
+            { DismissMaps(); OpenMenu(); GetViewport().SetInputAsHandled(); }
+            return;
+        }
+        if (_session is null) return;
         if (!key.Pressed)
         {
             if (_waitRelease && !MovementHeld()) _waitRelease = false;
@@ -160,9 +170,55 @@ public partial class Playfield : Control
         Refresh();
     }
 
+    private ScenarioDefinition ReadMap(string key) =>
+        JsonSerializer.Deserialize<ScenarioDefinition>(Text(PlayMaps.Resource(key)), SimulationJson.Options)
+        ?? throw new InvalidOperationException(key);
+
+    private void DismissMaps()
+    { _mapSelection?.QueueFree(); _mapSelection = null; }
+
+    private void ShowMaps()
+    {
+        if (_session is not null) { StopHeading(); _scheduler.SetPaused(true); }
+        _surface = Surface.Maps;
+        ApplySurface();
+        DismissMaps();
+        _mapSelection = new MapSelectionScreen(_language, _session is not null || System.IO.File.Exists(SavePath), ReadMap);
+        _mapSelection.MapChosen += key =>
+        {
+            if (_session is null && !System.IO.File.Exists(SavePath)) { BeginMap(key); return; }
+            var confirm = new ConfirmationDialog { DialogText = PlayerText.Local(_language,
+                "Начать новую партию? Текущая партия будет заменена.", "Start a new game? The current game will be replaced.") };
+            AddChild(confirm);
+            confirm.Confirmed += () => { confirm.QueueFree(); BeginMap(key); };
+            confirm.Canceled += () => confirm.QueueFree();
+            confirm.PopupCentered();
+        };
+        _mapSelection.Continued += () =>
+        {
+            if (_session is not null) { DismissMaps(); ContinueGame(); }
+            else { try { Load(); } catch (Exception failure) { _mapSelection.TooltipText = failure.Message; GD.PushWarning(failure.Message); } }
+        };
+        _mapSelection.LanguageChanged += () => { _language = _language == "ru" ? "en" : "ru"; ShowMaps(); };
+        _mapSelection.QuitRequested += ExitGame;
+        AddChild(_mapSelection);
+    }
+
+    private void BeginMap(string key)
+    {
+        _mapKey = key;
+        _stage?.ResetMotion();
+        DismissMaps();
+        Start("economy", false);
+        try { CheckpointStore.Save(_session, SavePath); }
+        catch (Exception failure) { _feedback = failure.Message; }
+    }
+
     private void Start(string mode, bool hold)
     {
         _mode = mode;
+        _gain = "";
+        _hoverX = _hoverZ = null;
         _selectedEnterprise = 0;
         _pending = null;
         _trackedId = null;
@@ -187,10 +243,10 @@ public partial class Playfield : Control
             CatchPublicCursor();
             _feedback = T("new.session") + " " + T("trip");
             ApplyPause();
-            if (_status is not null) CallDeferred(nameof(RebuildChrome));
+            CallDeferred(nameof(RebuildChrome));
             return;
         }
-        string scenarioName = mode == "politics" ? "Play.baseline-politics.json" : "Play.baseline-economy.json";
+        string scenarioName = mode == "politics" ? "Play.baseline-politics.json" : PlayMaps.Resource(_mapKey);
         string controllerName = mode == "politics" ? "Play.baseline-politics-controllers.json" : "Play.baseline-controllers.json";
         _scenario = JsonSerializer.Deserialize<ScenarioDefinition>(Text(scenarioName), SimulationJson.Options)
             ?? throw new InvalidOperationException(scenarioName);
@@ -208,7 +264,7 @@ public partial class Playfield : Control
         _surface = hold ? Surface.Menu : Surface.Play;
         CatchPublicCursor();
         ApplyPause();
-        if (_status is not null) CallDeferred(nameof(RebuildChrome));
+        CallDeferred(nameof(RebuildChrome));
     }
 
     private void RebuildChrome()
@@ -346,6 +402,7 @@ public partial class Playfield : Control
         string inventory = $"{T("inventory.title")}: {stock}\n{T("inventory.capacity")} {pack.OccupiedVolume}/{pack.Capacity}";
         if (_inventoryLabel is not null) _inventoryLabel.Text = inventory;
         if (_playInventory is not null) _playInventory.Text = HudStock(view, pack);
+        UpdateHudGoods(pack);
         var standing = view.Buildings.FirstOrDefault(b => b.Position == actor.Position && b.Kind == BuildingKind.Production);
         if (_cardOpen && (standing is null || standing.Id.Value != _selectedEnterprise)) { _cardOpen = false; _playFilled = false; }
         if (_playCard is not null) _playCard.Visible = _cardOpen;
@@ -380,16 +437,23 @@ public partial class Playfield : Control
         }
     }
 
-    private string HudStock(PlayerView view, InventoryView pack)
+    private string HudStock(PlayerView view, InventoryView pack) =>
+        $"{T("money")} {PlayerText.Money(view.CashMinor)} · {T("inventory.capacity")} {pack.OccupiedVolume}/{pack.Capacity}";
+
+    private void UpdateHudGoods(InventoryView pack)
     {
-        var ids = _scenario.ResourceNodes.Select(n => n.ItemId).Concat(pack.Stock.Select(s => s.ItemId))
-            .Distinct(StringComparer.Ordinal).OrderBy(id => id, StringComparer.Ordinal);
-        string lines = string.Join("  ", ids.Select(id =>
+        if (_hudGoods is null) return;
+        var ids = _scenario.Items.Select(i => i.Id).Concat(pack.Stock.Select(s => s.ItemId)).Distinct(StringComparer.Ordinal).OrderBy(i => i, StringComparer.Ordinal).ToArray();
+        string key = _language + "|" + string.Join(";", ids.Select(id => id + ":" + pack.Stock.Where(s => s.ItemId == id).Sum(s => s.Quantity)));
+        if (key == _hudGoodsKey) return;
+        _hudGoodsKey = key;
+        foreach (Node child in _hudGoods.GetChildren()) child.QueueFree();
+        foreach (string id in ids)
         {
-            long quantity = pack.Stock.Where(s => s.ItemId == id).Sum(s => s.Quantity);
-            return PlayerText.Item(_language, id) + " ×" + quantity.ToString(CultureInfo.InvariantCulture);
-        }));
-        return $"{T("money")} {PlayerText.Money(view.CashMinor)}\n{lines}\n{T("inventory.capacity")} {pack.OccupiedVolume}/{pack.Capacity}";
+            var icon = new ResourceIcon { Item = id, CustomMinimumSize = new Vector2(24, 24), TooltipText = PlayerText.Item(_language, id) };
+            _hudGoods.AddChild(icon);
+            _hudGoods.AddChild(new Label { Text = pack.Stock.Where(s => s.ItemId == id).Sum(s => s.Quantity).ToString(CultureInfo.InvariantCulture), TooltipText = PlayerText.Item(_language, id) });
+        }
     }
 
     private static string CardSignature(PlayerView view) =>
@@ -499,7 +563,7 @@ public partial class Playfield : Control
         if (_stage is not null) return;
         _view = new SubViewportContainer { Stretch = true, MouseFilter = MouseFilterEnum.Stop };
         _view.SetAnchorsPreset(LayoutPreset.FullRect);
-        _view.OffsetTop = 108;
+        _view.OffsetTop = 74;
         _view.OffsetBottom = -205;
         var viewport = new SubViewport
         {
@@ -554,7 +618,7 @@ public partial class Playfield : Control
         AddChild(_playChrome);
         var bar = new ColorRect { Color = new Color(0.14f, 0.20f, 0.22f), MouseFilter = MouseFilterEnum.Stop };
         bar.SetAnchorsPreset(LayoutPreset.TopWide);
-        bar.OffsetBottom = 108;
+        bar.OffsetBottom = 74;
         _playChrome.AddChild(bar);
         var settings = new Button { Text = T("menu.settings"), FocusMode = FocusModeEnum.None };
         settings.Position = new Vector2(8, 8);
@@ -573,16 +637,22 @@ public partial class Playfield : Control
         bar.AddChild(_playInventory);
         _playInventory.SetAnchorsPreset(LayoutPreset.TopRight);
         _playInventory.OffsetLeft = -700; _playInventory.OffsetRight = -14;
-        _playInventory.OffsetTop = 6; _playInventory.OffsetBottom = 68;
+        _playInventory.OffsetTop = 6; _playInventory.OffsetBottom = 30;
+        _hudGoods = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.End };
+        bar.AddChild(_hudGoods);
+        _hudGoods.SetAnchorsAndOffsetsPreset(LayoutPreset.TopRight);
+        _hudGoods.OffsetLeft = -700; _hudGoods.OffsetRight = -14;
+        _hudGoods.OffsetTop = 30; _hudGoods.OffsetBottom = 54;
+        _hudGoodsKey = "";
         _playInventory.HorizontalAlignment = HorizontalAlignment.Right;
         _playNotice = new Label
         {
-            Position = new Vector2(8, 68),
-            Size = new Vector2(790, 36),
+            Position = new Vector2(8, 46),
+            Size = new Vector2(790, 24),
             AutowrapMode = TextServer.AutowrapMode.WordSmart
         };
         bar.AddChild(_playNotice);
-        _fpsLabel = new Label { Position = new Vector2(810, 78), Size = new Vector2(275, 22), HorizontalAlignment = HorizontalAlignment.Right };
+        _fpsLabel = new Label { Position = new Vector2(810, 46), Size = new Vector2(275, 22), HorizontalAlignment = HorizontalAlignment.Right };
         bar.AddChild(_fpsLabel);
         var bottom = new ColorRect { Color = new Color(0.14f, 0.20f, 0.22f), MouseFilter = MouseFilterEnum.Stop };
         bottom.SetAnchorsPreset(LayoutPreset.BottomWide);
@@ -615,7 +685,7 @@ public partial class Playfield : Control
         _playCard = new ColorRect { Color = new Color(0.20f, 0.28f, 0.30f), MouseFilter = MouseFilterEnum.Stop, Visible = false };
         _playCard.SetAnchorsPreset(LayoutPreset.RightWide);
         _playCard.OffsetLeft = -360;
-        _playCard.OffsetTop = 116;
+        _playCard.OffsetTop = 82;
         _playCard.OffsetBottom = -213;
         _playChrome.AddChild(_playCard);
         var cardScroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, MouseFilter = MouseFilterEnum.Stop };
@@ -639,7 +709,7 @@ public partial class Playfield : Control
         split.AddChild(mapColumn);
         var mapToolbar = new HBoxContainer();
         mapColumn.AddChild(mapToolbar);
-        mapToolbar.AddChild(new Label { Text = PlayerText.Local(_language, "Карта · пошаговый режим", "Map · step mode"), SizeFlagsHorizontal = SizeFlags.ExpandFill });
+        mapToolbar.AddChild(new Label { Text = PlayerText.Local(_language, "Карта · пошаговый режим · " + PlayMaps.Name(_mapKey, _language), "Map · step mode · " + PlayMaps.Name(_mapKey, _language)), SizeFlagsHorizontal = SizeFlags.ExpandFill });
         var legendToggle = new Button { Text = PlayerText.Local(_language, "Легенда ▸", "Legend ▸"), FocusMode = FocusModeEnum.None };
         mapToolbar.AddChild(legendToggle);
         var mapRow = new HBoxContainer { SizeFlagsVertical = SizeFlags.ExpandFill };
@@ -666,7 +736,8 @@ public partial class Playfield : Control
             ("shop-plot", "", "Место лавочки", "Assigned shop site"), ("corridor", "", "Проход", "Protected passage"),
             ("blocked", "", "Непроходимо", "Blocked"), ("production", "", "Предприятие", "Production"),
             ("warehouse", "", "Склад", "Warehouse"), ("shop", "", "Лавочка", "Shop"),
-            ("capital", "", "Терминал столицы", "Capital terminal"), ("cargo", "", "Груз в пути", "Cargo in transit")
+            ("capital", "", "Терминал столицы", "Capital terminal"), ("cargo", "", "Груз в пути", "Cargo in transit"),
+            ("truck-home", "", "Грузовик без груза", "Empty truck"), ("equipment", "", "Добывающая техника", "Extraction equipment")
         })
         {
             legend.AddChild(new LegendIcon { Kind = entry.Item1, Item = entry.Item2, CustomMinimumSize = new Vector2(34, 32) });
@@ -721,10 +792,13 @@ public partial class Playfield : Control
         _menu.AddChild(center);
         var box = new VBoxContainer { CustomMinimumSize = new Vector2(360, 0) };
         center.AddChild(box);
-        box.AddChild(new Label { Text = T("menu.title"), HorizontalAlignment = HorizontalAlignment.Center });
+        box.AddChild(new Label { Text = T("menu.title") + " · " + PlayMaps.Name(_mapKey, _language), HorizontalAlignment = HorizontalAlignment.Center });
         box.AddChild(new Label { Text = T("menu.escape"), AutowrapMode = TextServer.AutowrapMode.WordSmart });
         Button(box, "menu.continue", ContinueGame);
         Button(box, "menu.debug", OpenDebug);
+        var chooseMap = new Button { Text = PlayerText.Local(_language, "Выбрать карту / новая партия", "Choose map / new game"), FocusMode = FocusModeEnum.None };
+        chooseMap.Pressed += ShowMaps;
+        box.AddChild(chooseMap);
         Button(box, "language", () => { _language = _language == "ru" ? "en" : "ru"; CallDeferred(nameof(RebuildChrome)); });
         Button(box, "menu.exit", ExitGame);
         ApplySurface();
@@ -771,7 +845,7 @@ public partial class Playfield : Control
 
     private void ExitGame()
     {
-        try { CheckpointStore.Save(_session, SavePath); }
+        try { if (_session is not null) CheckpointStore.Save(_session, SavePath); }
         catch (Exception failure) { _feedback = failure.Message; Refresh(); return; }
         GetTree().Quit();
     }
@@ -798,6 +872,9 @@ public partial class Playfield : Control
         var loaded = CheckpointStore.Load(SavePath);
         _stage?.ResetMotion();
         _session = loaded.Session;
+        _scenario = _session.Engine.Configuration();
+        _mapKey = PlayMaps.KeyForScenario(_scenario.Id);
+        _human = new(1);
         _session.RestoreControllers(AlgorithmicController.Restore);
         _scheduler = new TickScheduler(_session);
         _pending = null;
@@ -817,8 +894,8 @@ public partial class Playfield : Control
         _playFilled = false;
         _hoverX = null;
         _hoverZ = null;
-        ApplySurface();
-        Refresh();
+        DismissMaps();
+        CallDeferred(nameof(RebuildChrome));
     }
 
     private void CatchPublicCursor()

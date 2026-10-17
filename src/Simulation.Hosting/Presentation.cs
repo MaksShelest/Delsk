@@ -6,7 +6,7 @@ public readonly record struct PresentationPoint(float X, float Z);
 public record PresentationActor(long Id, bool Human, int X, int Z, bool Busy,
     int OffsetX = SimulationEngine.TravelCenter, int OffsetZ = SimulationEngine.TravelCenter, int FacingX = 0, int FacingZ = -1);
 public record PresentationMarker(string Kind, int X, int Z, string Label, long EntityId, long OwnerId);
-public record PresentationTrip(long LogisticsId, long OwnerId, string ItemId, string State, int X, int Z);
+public record PresentationTrip(long LogisticsId, long OwnerId, string ItemId, string State, int X, int Z, bool Loaded = false);
 public record PresentationFrame(long Tick, int MapWidth, int MapHeight, PresentationActor[] Actors,
     PresentationMarker[] Markers, PresentationTrip[] Trips);
 
@@ -60,8 +60,18 @@ public static class Presentation
             .Concat(scenario.CapitalDemand is { } demand ? [demand.Terminal] : []).Distinct())
             if (!markers.Any(m => m.Kind == "capital" && m.X == terminal.X && m.Z == terminal.Z))
                 markers.Add(new("capital", terminal.X, terminal.Z, "", 0, 0));
+        foreach (var equipment in world.Equipment.OrderBy(e => e.Id.Value))
+        {
+            string item = scenario.EquipmentTypes!.Single(t => t.Id == equipment.TypeId).ItemId;
+            markers.Add(new("equipment", equipment.Position.X, equipment.Position.Z, item, equipment.Id.Value, equipment.OwnerId.Value));
+        }
+        foreach (var logistics in world.Logistics.OrderBy(l => l.Id.Value))
+        {
+            var home = world.Inventories.Single(i => i.Id == logistics.SourceInventory).Position;
+            markers.Add(new("truck-home", home.X, home.Z, "", logistics.Id.Value, logistics.OwnerId.Value));
+        }
         var trips = world.Logistics.Where(l => l.Trip is not null).OrderBy(l => l.Id.Value).Select(l =>
-            new PresentationTrip(l.Id.Value, l.OwnerId.Value, l.Trip!.ItemId, l.Trip.State, l.Trip.Position.X, l.Trip.Position.Z)).ToArray();
+            new PresentationTrip(l.Id.Value, l.OwnerId.Value, l.Trip!.ItemId, l.Trip.State, l.Trip.Position.X, l.Trip.Position.Z, l.Trip.State is "Outbound" or "ReturningCargo" or "ReturningInput")).ToArray();
         return new(world.Tick, scenario.MapWidth, scenario.MapHeight, actors, markers.ToArray(), trips);
     }
 }

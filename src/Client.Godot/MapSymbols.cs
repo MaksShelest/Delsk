@@ -18,8 +18,8 @@ public static class MapSymbols
                 canvas.DrawLine(new Vector2(area.End.X, area.Position.Y), new Vector2(area.Position.X, area.End.Y), Colors.White, 1);
                 break;
             case "corridor":
-                canvas.DrawRect(area, new Color(0.62f, 0.56f, 0.42f));
-                canvas.DrawLine(new Vector2(area.Position.X, center.Y), new Vector2(area.End.X, center.Y), new Color(0.3f, 0.26f, 0.18f), 2);
+                canvas.DrawRect(area, new Color("78858a"));
+                canvas.DrawLine(new Vector2(area.Position.X, center.Y), new Vector2(area.End.X, center.Y), new Color("e6ddba"), 2);
                 break;
             case "plot-free":
                 canvas.DrawRect(area, new Color(0.62f, 0.45f, 0.26f), false, 2);
@@ -52,6 +52,12 @@ public static class MapSymbols
                 break;
             case "shop":
                 canvas.DrawColoredPolygon([center + new Vector2(0, -cell * 0.2f), center + new Vector2(cell * 0.18f, cell * 0.16f), center + new Vector2(-cell * 0.18f, cell * 0.16f)], new Color(0.62f, 0.28f, 0.7f));
+                break;
+            case "equipment":
+                canvas.DrawRect(new Rect2(center - new Vector2(cell * 0.18f, cell * 0.12f), new Vector2(cell * 0.36f, cell * 0.24f)), new Color("d4af4d"));
+                break;
+            case "truck-home":
+                canvas.DrawRect(new Rect2(center - new Vector2(cell * 0.18f, cell * 0.1f), new Vector2(cell * 0.36f, cell * 0.2f)), new Color("5b94b1"));
                 break;
             case "capital":
                 canvas.DrawColoredPolygon(Diamond(center, cell * 0.2f), new Color(0.95f, 0.72f, 0.15f));
