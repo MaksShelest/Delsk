@@ -44,7 +44,18 @@ public partial class Playfield : Control
     private Label? _cellLabel;
     private Label? _playInventory;
     private Label? _playNotice;
+    private Label? _tooltip;
+    private VBoxContainer? _contextHost;
+    private Control? _playCard;
+    private VBoxContainer? _playCards;
     private VBoxContainer _cards = null!;
+    private ContextChoice[] _choices = [];
+    private int _contextIndex;
+    private string _contextKey = "";
+    private bool _cardOpen;
+    private bool _playFilled;
+    private int? _hoverX;
+    private int? _hoverZ;
     private string SavePath => ProjectSettings.GlobalizePath($"user://play-{_mode}-{SimulationEngine.RulesVersion}.json");
 
     private enum Surface { Play, Menu, Debug }
@@ -74,6 +85,21 @@ public partial class Playfield : Control
             return;
         }
         if (key.Echo) return;
+        if (_surface == Surface.Play && key.Keycode is Key.Left or Key.Right or Key.Up or Key.Down)
+        {
+            if (_choices.Length > 0)
+                _contextIndex = ( _contextIndex + (key.Keycode is Key.Right or Key.Down ? 1 : _choices.Length - 1)) % _choices.Length;
+            _contextKey = "";
+            Refresh();
+            GetViewport().SetInputAsHandled();
+            return;
+        }
+        if (_surface == Surface.Play && key.Keycode is Key.Enter or Key.KpEnter or Key.Space)
+        {
+            ConfirmContext();
+            GetViewport().SetInputAsHandled();
+            return;
+        }
         if (key.Keycode == Key.Escape)
         {
             if (_surface == Surface.Debug) OpenMenu();
@@ -201,6 +227,49 @@ public partial class Playfield : Control
         Refresh();
     }
 
+    private void Offer(GameAction action)
+    {
+        if (_surface == Surface.Play) Submit(action);
+        else Select(action);
+    }
+
+    private void ConfirmContext()
+    {
+        if (_choices.Length == 0) return;
+        var choice = _choices[Math.Clamp(_contextIndex, 0, _choices.Length - 1)];
+        if (choice.Key.StartsWith("card:", StringComparison.Ordinal))
+        {
+            _selectedEnterprise = long.Parse(choice.Key["card:".Length..], CultureInfo.InvariantCulture);
+            _cardOpen = true;
+            _playFilled = false;
+            _cardsSignature = "";
+            Refresh();
+            return;
+        }
+        if (choice.Command is { } action) Submit(action);
+    }
+
+    private void RebuildContext()
+    {
+        if (_contextHost is null) return;
+        foreach (Node child in _contextHost.GetChildren()) child.QueueFree();
+        for (int i = 0; i < _choices.Length; i++)
+        {
+            int index = i;
+            var button = new Button
+            {
+                Text = (i == _contextIndex ? "> " : "") + _choices[i].Label,
+                FocusMode = FocusModeEnum.None
+            };
+            button.Pressed += () =>
+            {
+                _contextIndex = index;
+                ConfirmContext();
+            };
+            _contextHost.AddChild(button);
+        }
+    }
+
     private void Submit(GameAction action)
     {
         try
@@ -236,7 +305,19 @@ public partial class Playfield : Control
             : string.Join(", ", pack.Stock.OrderBy(s => s.ItemId, StringComparer.Ordinal).Select(s => $"{s.ItemId} ×{s.Quantity}"));
         string inventory = $"{T("inventory.title")}: {stock}\n{T("inventory.capacity")} {pack.OccupiedVolume}/{pack.Capacity}";
         if (_inventoryLabel is not null) _inventoryLabel.Text = inventory;
-        if (_playInventory is not null) _playInventory.Text = inventory;
+        if (_playInventory is not null) _playInventory.Text = HudStock(view, pack);
+        var standing = view.Buildings.FirstOrDefault(b => b.Position == actor.Position && b.Kind == BuildingKind.Production);
+        if (_cardOpen && (standing is null || standing.Id.Value != _selectedEnterprise)) { _cardOpen = false; _playFilled = false; }
+        if (_playCard is not null) _playCard.Visible = _cardOpen;
+        var next = PlayContext.At(view, _scenario, _language);
+        _contextIndex = PlayContext.Keep(_contextIndex, _choices, next);
+        _choices = next;
+        string contextKey = _contextIndex.ToString(CultureInfo.InvariantCulture) + "|" + string.Join(",", next.Select(c => c.Key));
+        if (contextKey != _contextKey) { _contextKey = contextKey; RebuildContext(); }
+        if (_tooltip is not null)
+            _tooltip.Text = _hoverX is int hx && _hoverZ is int hz
+                ? PlayContext.Hover(frame, view, hx, hz, _language)
+                : T("context.hint");
         PollHarvest();
         _feedback = Describe(view);
         _status.Text = $"{T(paused ? "paused" : "running")}  {T("tick")}: {_session.Engine.Tick}\n" +
@@ -246,7 +327,29 @@ public partial class Playfield : Control
         if (_playNotice is not null) _playNotice.Text = _feedback;
         if (_cellLabel is not null) _cellLabel.Text = CellText(frame);
         string signature = _selectedEnterprise + "|" + CardSignature(view);
-        if (signature != _cardsSignature) { _cardsSignature = signature; FillCards(view); }
+        if (signature != _cardsSignature)
+        {
+            _cardsSignature = signature;
+            FillCards(view, _cards);
+            _playFilled = false;
+        }
+        if (_cardOpen && !_playFilled && _playCards is not null)
+        {
+            FillCards(view, _playCards);
+            _playFilled = true;
+        }
+    }
+
+    private string HudStock(PlayerView view, InventoryView pack)
+    {
+        var ids = _scenario.ResourceNodes.Select(n => n.ItemId).Concat(pack.Stock.Select(s => s.ItemId))
+            .Distinct(StringComparer.Ordinal).OrderBy(id => id, StringComparer.Ordinal);
+        string lines = string.Join("  ", ids.Select(id =>
+        {
+            long quantity = pack.Stock.Where(s => s.ItemId == id).Sum(s => s.Quantity);
+            return PlayerText.Item(_language, id) + " ×" + quantity.ToString(CultureInfo.InvariantCulture);
+        }));
+        return $"{T("money")} {view.CashMinor.ToString(CultureInfo.InvariantCulture)}\n{lines}\n{T("inventory.capacity")} {pack.OccupiedVolume}/{pack.Capacity}";
     }
 
     private static string CardSignature(PlayerView view) =>
@@ -257,21 +360,21 @@ public partial class Playfield : Control
         string.Join(";", view.Support.Proposals.Select(p => $"{p.Id}:{p.Status}")) + "|" +
         view.Elections.NextElectionId?.Value + ":" + view.Elections.OwnChoice?.Value;
 
-    private void FillCards(PlayerView view)
+    private void FillCards(PlayerView view, Container host)
     {
-        foreach (Node child in _cards.GetChildren()) child.QueueFree();
-        if (view.Enterprises.Length == 0) _cards.AddChild(new Label { Text = T("no.enterprise") });
+        foreach (Node child in host.GetChildren()) child.QueueFree();
+        if (view.Enterprises.Length == 0) host.AddChild(new Label { Text = T("no.enterprise") });
         foreach (var enterprise in view.Enterprises)
         {
             var card = new VBoxContainer();
-            _cards.AddChild(card);
+            host.AddChild(card);
             card.AddChild(new Label { Text = (enterprise.Id.Value == _selectedEnterprise ? T("selected") + " " : "") + $"#{enterprise.Id.Value}  {enterprise.RecipeId}" });
             var work = Section("card.work");
             card.AddChild(work);
             work.AddChild(new Label { Text = $"{enterprise.ReasonCode}  {enterprise.Staff}/{enterprise.StaffCapacity}" });
-            Button(work, enterprise.Enabled ? "work.stop" : "work.start", () => Select(PlayerDesk.Work(enterprise.Id.Value, !enterprise.Enabled)));
+            Button(work, enterprise.Enabled ? "work.stop" : "work.start", () => Offer(PlayerDesk.Work(enterprise.Id.Value, !enterprise.Enabled)));
             var recipe = _scenario.Recipes.Single(r => r.Id == enterprise.RecipeId);
-            Button(work, "transfer.input", () => Select(PlayerDesk.Transfer(view.Participant.InventoryId.Value, enterprise.InputId.Value, recipe.InputItem, 1)));
+            Button(work, "transfer.input", () => Offer(PlayerDesk.Transfer(view.Participant.InventoryId.Value, enterprise.InputId.Value, recipe.InputItem, 1)));
             var wages = Section("card.wages");
             card.AddChild(wages);
             var production = view.Employment.Single(g => g.Role == EmploymentRole.Production && g.Id.Value == enterprise.Id.Value);
@@ -279,43 +382,43 @@ public partial class Playfield : Control
             var supplies = Section("card.supplies");
             card.AddChild(supplies);
             var logistics = view.Logistics.SingleOrDefault(l => l.EnterpriseId == enterprise.Id);
-            if (logistics is null) Button(supplies, "supplies.buy", () => Select(PlayerDesk.BuyLogistics(enterprise.Id.Value)));
+            if (logistics is null) Button(supplies, "supplies.buy", () => Offer(PlayerDesk.BuyLogistics(enterprise.Id.Value)));
             else
             {
                 supplies.AddChild(new Label { Text = logistics.ReasonCode });
                 Button(supplies, logistics.Enabled ? "supplies.output.off" : "supplies.output.on",
-                    () => Select(PlayerDesk.Supplies(logistics.Id.Value, LogisticsDirection.Output, !logistics.Enabled)));
+                    () => Offer(PlayerDesk.Supplies(logistics.Id.Value, LogisticsDirection.Output, !logistics.Enabled)));
                 Button(supplies, logistics.InboundEnabled ? "supplies.inbound.off" : "supplies.inbound.on",
-                    () => Select(PlayerDesk.Supplies(logistics.Id.Value, LogisticsDirection.Inbound, !logistics.InboundEnabled)));
+                    () => Offer(PlayerDesk.Supplies(logistics.Id.Value, LogisticsDirection.Inbound, !logistics.InboundEnabled)));
                 var crew = view.Employment.Single(g => g.Id == logistics.GroupId);
                 WageRow(wages, crew);
                 foreach (var building in view.Buildings.Where(b => b.Kind is BuildingKind.Warehouse or BuildingKind.Shop))
                 {
-                    Button(supplies, "supplies.send", () => Select(PlayerDesk.SendProduct(logistics.Id.Value, building.InputId.Value, true)));
-                    Button(supplies, "supplies.fetch", () => Select(PlayerDesk.FetchInput(logistics.Id.Value, building.InputId.Value, true)));
+                    Button(supplies, "supplies.send", () => Offer(PlayerDesk.SendProduct(logistics.Id.Value, building.InputId.Value, true)));
+                    Button(supplies, "supplies.fetch", () => Offer(PlayerDesk.FetchInput(logistics.Id.Value, building.InputId.Value, true)));
                 }
             }
         }
-        _cards.AddChild(new Label { Text = T("support.title") });
-        if (view.Support.Proposals.Length == 0) _cards.AddChild(new Label { Text = T("support.none") });
+        host.AddChild(new Label { Text = T("support.title") });
+        if (view.Support.Proposals.Length == 0) host.AddChild(new Label { Text = T("support.none") });
         foreach (var proposal in view.Support.Proposals)
         {
             var row = new HBoxContainer();
-            _cards.AddChild(row);
+            host.AddChild(row);
             string terms = string.Join(", ", proposal.Compensation.Select(m => $"{m.Quantity} {m.ItemId}"));
             row.AddChild(new Label { Text = $"#{proposal.Id} {proposal.Status} {proposal.Candidate.Value}->{proposal.Seller.Value} {terms}" });
             if (proposal.Seller == _human && proposal.Status == SupportProposalStatus.Proposed)
-                Button(row, "support.accept", () => Select(PlayerDesk.AcceptSupport(proposal.Id)));
+                Button(row, "support.accept", () => Offer(PlayerDesk.AcceptSupport(proposal.Id)));
             if (proposal.Status is SupportProposalStatus.Proposed or SupportProposalStatus.AcceptedAwaitingResources)
-                Button(row, "support.reject", () => Select(PlayerDesk.RejectSupport(proposal.Id)));
+                Button(row, "support.reject", () => Offer(PlayerDesk.RejectSupport(proposal.Id)));
         }
         if (view.Elections.NextElectionId is { } election)
         {
-            _cards.AddChild(new Label { Text = $"{T("vote.title")} #{election.Value}  {view.Elections.OwnChoice?.Value.ToString() ?? T("no")}" });
+            host.AddChild(new Label { Text = $"{T("vote.title")} #{election.Value}  {view.Elections.OwnChoice?.Value.ToString() ?? T("no")}" });
             var votes = new HBoxContainer();
-            _cards.AddChild(votes);
+            host.AddChild(votes);
             foreach (var candidate in view.Elections.Participants.Where(p => p != _human))
-                Button(votes, "vote.choose", () => Select(PlayerDesk.Vote(election.Value, candidate.Value)), candidate.Value.ToString(CultureInfo.InvariantCulture));
+                Button(votes, "vote.choose", () => Offer(PlayerDesk.Vote(election.Value, candidate.Value)), candidate.Value.ToString(CultureInfo.InvariantCulture));
         }
     }
 
@@ -325,8 +428,8 @@ public partial class Playfield : Control
         parent.AddChild(new Label { Text = $"{group.Role} {group.Headcount}/{group.Capacity} {shown}" });
         var row = new HBoxContainer();
         parent.AddChild(row);
-        Button(row, "wage.raise", () => Select(PlayerDesk.Wage(group.Id.Value, shown + PlayerDesk.WageStepMinor)));
-        Button(row, "wage.lower", () => Select(PlayerDesk.Wage(group.Id.Value, Math.Max(0, shown - PlayerDesk.WageStepMinor))));
+        Button(row, "wage.raise", () => Offer(PlayerDesk.Wage(group.Id.Value, shown + PlayerDesk.WageStepMinor)));
+        Button(row, "wage.lower", () => Offer(PlayerDesk.Wage(group.Id.Value, Math.Max(0, shown - PlayerDesk.WageStepMinor))));
     }
 
     private VBoxContainer Section(string key)
@@ -360,35 +463,27 @@ public partial class Playfield : Control
 
     private void OnViewInput(InputEvent e)
     {
-        if (_surface != Surface.Play || _stage is null || _view is null || e is not InputEventMouseButton button || !button.Pressed || button.ButtonIndex != MouseButton.Left)
-            return;
+        if (_surface != Surface.Play || _stage is null || _view is null) return;
+        Vector2 position = e switch
+        {
+            InputEventMouseButton button when button.Pressed && button.ButtonIndex == MouseButton.Left => button.Position,
+            InputEventMouseMotion motion => motion.Position,
+            _ => new Vector2(-1, -1)
+        };
+        if (position.X < 0) return;
         var viewport = (SubViewport)_stage.GetParent();
         var size = _view.Size;
         if (size.X < 1 || size.Y < 1) return;
-        _stage.Pick(new Vector2(button.Position.X / size.X * viewport.Size.X, button.Position.Y / size.Y * viewport.Size.Y));
-        GetViewport().SetInputAsHandled();
+        _stage.Pick(new Vector2(position.X / size.X * viewport.Size.X, position.Y / size.Y * viewport.Size.Y));
+        if (e is InputEventMouseButton) GetViewport().SetInputAsHandled();
     }
 
     private void OnCell(int x, int z)
     {
         if (_surface != Surface.Play || x < 0 || z < 0 || x >= _scenario.MapWidth || z >= _scenario.MapHeight) return;
-        var frame = Presentation.Read(_scenario, _session.Engine, _human.Value);
-        var own = frame.Markers.FirstOrDefault(m => m.X == x && m.Z == z && m.OwnerId == _human.Value && m.Kind == "production");
-        if (own is not null)
-        {
-            _selectedEnterprise = own.EntityId;
-            _feedback = $"{T("selected")} #{own.EntityId}";
-            _cardsSignature = "";
-            Refresh();
-            return;
-        }
-        var resource = frame.Markers.FirstOrDefault(m => m.Kind == "resource" && m.X == x && m.Z == z);
-        if (resource is not null)
-        {
-            Submit(PlayerDesk.Harvest(resource.Label, 1));
-            return;
-        }
-        Submit(PlayerDesk.Move(x, z));
+        _hoverX = x;
+        _hoverZ = z;
+        Refresh();
     }
 
     private void BuildChrome()
@@ -400,14 +495,60 @@ public partial class Playfield : Control
         _playChrome = new Control { MouseFilter = MouseFilterEnum.Ignore };
         _playChrome.SetAnchorsPreset(LayoutPreset.FullRect);
         AddChild(_playChrome);
-        var settings = new Button { Text = T("menu.settings") };
+        var bar = new ColorRect { Color = new Color(0.1f, 0.11f, 0.13f), MouseFilter = MouseFilterEnum.Stop };
+        bar.SetAnchorsPreset(LayoutPreset.TopWide);
+        bar.OffsetBottom = 108;
+        _playChrome.AddChild(bar);
+        var settings = new Button { Text = T("menu.settings"), FocusMode = FocusModeEnum.None };
         settings.Position = new Vector2(8, 8);
         settings.Pressed += OpenMenu;
-        _playChrome.AddChild(settings);
-        _playInventory = new Label { Position = new Vector2(620, 8), Size = new Vector2(460, 80), AutowrapMode = TextServer.AutowrapMode.WordSmart };
-        _playChrome.AddChild(_playInventory);
-        _playNotice = new Label { Position = new Vector2(8, 640), Size = new Vector2(760, 70), AutowrapMode = TextServer.AutowrapMode.WordSmart };
-        _playChrome.AddChild(_playNotice);
+        bar.AddChild(settings);
+        var language = new Button { Text = T("language"), FocusMode = FocusModeEnum.None };
+        language.Position = new Vector2(150, 8);
+        language.Pressed += () => { _language = _language == "ru" ? "en" : "ru"; CallDeferred(nameof(RebuildChrome)); };
+        bar.AddChild(language);
+        _playInventory = new Label
+        {
+            Position = new Vector2(310, 6),
+            Size = new Vector2(770, 64),
+            AutowrapMode = TextServer.AutowrapMode.WordSmart
+        };
+        bar.AddChild(_playInventory);
+        _playNotice = new Label
+        {
+            Position = new Vector2(8, 68),
+            Size = new Vector2(1080, 36),
+            AutowrapMode = TextServer.AutowrapMode.WordSmart
+        };
+        bar.AddChild(_playNotice);
+        var bottom = new ColorRect { Color = new Color(0.1f, 0.11f, 0.13f), MouseFilter = MouseFilterEnum.Stop };
+        bottom.SetAnchorsPreset(LayoutPreset.BottomWide);
+        bottom.OffsetTop = -168;
+        _playChrome.AddChild(bottom);
+        _tooltip = new Label
+        {
+            Position = new Vector2(8, 4),
+            Size = new Vector2(760, 64),
+            AutowrapMode = TextServer.AutowrapMode.WordSmart
+        };
+        bottom.AddChild(_tooltip);
+        _contextHost = new VBoxContainer { Position = new Vector2(8, 70), Size = new Vector2(760, 92) };
+        bottom.AddChild(_contextHost);
+        _playCard = new ColorRect { Color = new Color(0.12f, 0.13f, 0.15f), MouseFilter = MouseFilterEnum.Stop, Visible = false };
+        _playCard.SetAnchorsPreset(LayoutPreset.RightWide);
+        _playCard.OffsetLeft = -360;
+        _playCard.OffsetTop = 116;
+        _playCard.OffsetBottom = -176;
+        _playChrome.AddChild(_playCard);
+        var cardScroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, MouseFilter = MouseFilterEnum.Stop };
+        cardScroll.SetAnchorsPreset(LayoutPreset.FullRect);
+        _playCard.AddChild(cardScroll);
+        _playCards = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        cardScroll.AddChild(_playCards);
+        _contextKey = "";
+        _choices = [];
+        _cardOpen = false;
+        _playFilled = false;
 
         _panel = new Control { MouseFilter = MouseFilterEnum.Ignore };
         _panel.SetAnchorsPreset(LayoutPreset.FullRect);
@@ -554,6 +695,12 @@ public partial class Playfield : Control
         ApplyPause();
         _feedback = T("load");
         _cardsSignature = "";
+        _contextKey = "";
+        _choices = [];
+        _cardOpen = false;
+        _playFilled = false;
+        _hoverX = null;
+        _hoverZ = null;
         ApplySurface();
         Refresh();
     }
