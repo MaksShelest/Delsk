@@ -3,7 +3,8 @@ using Simulation.Core;
 namespace Simulation.Hosting;
 
 public readonly record struct PresentationPoint(float X, float Z);
-public record PresentationActor(long Id, bool Human, int X, int Z, bool Busy);
+public record PresentationActor(long Id, bool Human, int X, int Z, bool Busy,
+    int OffsetX = SimulationEngine.TravelCenter, int OffsetZ = SimulationEngine.TravelCenter, int FacingX = 0, int FacingZ = -1);
 public record PresentationMarker(string Kind, int X, int Z, string Label, long EntityId, long OwnerId);
 public record PresentationTrip(long LogisticsId, long OwnerId, string ItemId, string State, int X, int Z);
 public record PresentationFrame(long Tick, int MapWidth, int MapHeight, PresentationActor[] Actors,
@@ -23,7 +24,11 @@ public static class Presentation
     {
         var world = engine.Inspect();
         var actors = world.Participants.OrderBy(p => p.Id.Value).Select(p =>
-            new PresentationActor(p.Id.Value, p.Id.Value == humanId, p.Position.X, p.Position.Z, p.Busy)).ToArray();
+        {
+            var travel = engine.TravelOf(p.Id);
+            return new PresentationActor(p.Id.Value, p.Id.Value == humanId, p.Position.X, p.Position.Z, p.Busy,
+                travel.OffsetX, travel.OffsetZ, travel.FacingX, travel.FacingZ);
+        }).ToArray();
         var markers = new List<PresentationMarker>();
         var blocked = new HashSet<Cell>(scenario.BlockedCells);
         for (int x = 0; x < scenario.MapWidth; x++)

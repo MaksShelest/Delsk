@@ -156,6 +156,11 @@ public sealed partial class SimulationEngine
         {
             if (!_map.Walkable(actor.Position) || _economy.Inventories[actor.Inventory].Position != actor.Position)
                 throw new InvalidOperationException("Invalid carrier position");
+            if (actor.OffsetX is < 0 or >= TravelUnitsPerCell || actor.OffsetZ is < 0 or >= TravelUnitsPerCell ||
+                actor.HeadingX is < -1 or > 1 || actor.HeadingZ is < -1 or > 1 ||
+                actor.FacingX is < -1 or > 1 || actor.FacingZ is < -1 or > 1 ||
+                (actor.FacingX == 0 && actor.FacingZ == 0))
+                throw new InvalidOperationException("Invalid travel position");
             if (actor.Job is { } job && _completedPersonalJobs.Contains(job.Id))
                 throw new InvalidOperationException("I08: completed job still active");
         }

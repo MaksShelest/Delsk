@@ -21,6 +21,7 @@ public partial class Playfield : Control
     private bool _skipNextFrame;
     private bool _left;
     private bool _waitRelease = true;
+    private TravelHeading _sent;
     private long _selectedEnterprise;
     private long _publicCursor;
     private GameAction? _pending;
@@ -57,6 +58,7 @@ public partial class Playfield : Control
             GetTree().CallDeferred(SceneTree.MethodName.ChangeSceneToFile, "res://PlatformProbe.tscn");
             return;
         }
+        Input.MouseMode = Input.MouseModeEnum.Visible;
         EnsureStage();
         Start(OS.GetCmdlineUserArgs().Contains("--trip") ? "trip" : "economy", false);
         BuildChrome();
@@ -80,11 +82,6 @@ public partial class Playfield : Control
             GetViewport().SetInputAsHandled();
             return;
         }
-        if (_surface != Surface.Play || _waitRelease) return;
-        if (key.Keycode == Key.W) Move(0, -1);
-        else if (key.Keycode == Key.S) Move(0, 1);
-        else if (key.Keycode == Key.A) Move(-1, 0);
-        else if (key.Keycode == Key.D) Move(1, 0);
     }
 
     public override void _Process(double delta)
@@ -93,9 +90,14 @@ public partial class Playfield : Control
         try
         {
             if (_skipNextFrame) { _skipNextFrame = false; return; }
+            if (_waitRelease && !MovementHeld()) _waitRelease = false;
+            SampleHeading();
             long prior = _session.Engine.Tick;
+            int priorQuantum = _session.Engine.TravelQuantum;
+            var priorTravel = _session.Engine.TravelOf(_human);
             _scheduler.AdvanceElapsed(TimeSpan.FromSeconds(Math.Min(delta, 0.25)));
-            if (_session.Engine.Tick != prior) Refresh();
+            var travel = _session.Engine.TravelOf(_human);
+            if (_session.Engine.Tick != prior || _session.Engine.TravelQuantum != priorQuantum || travel != priorTravel) Refresh();
         }
         catch (Exception failure) { _feedback = failure.Message; Refresh(); }
     }
@@ -103,8 +105,8 @@ public partial class Playfield : Control
     public override void _Notification(int what)
     {
         if (_left || _session is null) return;
-        if (what == NotificationApplicationPaused) { _suspended = true; _waitRelease = true; }
-        else if (what == NotificationApplicationFocusOut) { _unfocused = true; _waitRelease = true; }
+        if (what == NotificationApplicationPaused) { _suspended = true; _waitRelease = true; StopHeading(); }
+        else if (what == NotificationApplicationFocusOut) { _unfocused = true; _waitRelease = true; StopHeading(); }
         else if (what == NotificationApplicationResumed) { _suspended = false; _skipNextFrame = true; }
         else if (what == NotificationApplicationFocusIn) { _unfocused = false; _skipNextFrame = true; }
         else return;
@@ -125,6 +127,7 @@ public partial class Playfield : Control
         _cellX = null;
         _cellZ = null;
         _waitRelease = true;
+        _sent = default;
         if (mode == "trip")
         {
             _scenario = JsonSerializer.Deserialize<ScenarioDefinition>(Text("Play.logistics-cycle.json"), SimulationJson.Options)
@@ -184,7 +187,7 @@ public partial class Playfield : Control
                 _pending = null;
             }
             _scheduler.SetPaused(false);
-            _session.Step();
+            _session.CompleteTravelTick();
         }
         catch (Exception failure) { _feedback = failure.Message; }
         ApplyPause();
@@ -223,9 +226,10 @@ public partial class Playfield : Control
         if (_status is null) return;
         var view = PlayerDesk.Read(_session.Engine, _human);
         var actor = view.Participant;
+        var travelOffset = _session.Engine.TravelOf(_human);
         bool paused = _surface != Surface.Play || _suspended || _unfocused;
         var frame = Presentation.Read(_scenario, _session.Engine, _human.Value);
-        _stage?.Show(frame, paused, _selectedEnterprise, T("you"));
+        _stage?.Show(frame, paused, _selectedEnterprise, T("you"), _surface == Surface.Play);
         _board?.Show(frame, _cellX, _cellZ);
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
         string stock = pack.Stock.Length == 0 ? T("inventory.empty")
@@ -236,7 +240,7 @@ public partial class Playfield : Control
         PollHarvest();
         _feedback = Describe(view);
         _status.Text = $"{T(paused ? "paused" : "running")}  {T("tick")}: {_session.Engine.Tick}\n" +
-            $"{T("position")}: ({actor.Position.X}, {actor.Position.Z})  {T("busy")}: {T(actor.Busy ? "yes" : "no")}\n" +
+            $"{T("position")}: ({actor.Position.X}, {actor.Position.Z}) +({travelOffset.OffsetX}, {travelOffset.OffsetZ})  {T("busy")}: {T(actor.Busy ? "yes" : "no")}\n" +
             $"{T("npc.title")}: " + string.Join("; ", view.LaborMarket.Where(g => g.OwnerId != _human).Select(g => $"{g.OwnerId.Value} {g.Role} {g.Headcount}/{g.Capacity}"));
         _feedbackLabel.Text = _feedback;
         if (_playNotice is not null) _playNotice.Text = _feedback;
@@ -484,6 +488,7 @@ public partial class Playfield : Control
     {
         _surface = Surface.Menu;
         _waitRelease = true;
+        StopHeading();
         ApplyPause();
         ApplySurface();
         Refresh();
@@ -493,6 +498,7 @@ public partial class Playfield : Control
     {
         _surface = Surface.Debug;
         _waitRelease = true;
+        StopHeading();
         ApplyPause();
         ApplySurface();
         Refresh();
@@ -542,6 +548,8 @@ public partial class Playfield : Control
         _trackedKind = null;
         _surface = Surface.Menu;
         _waitRelease = true;
+        _sent = default;
+        StopHeading();
         CatchPublicCursor();
         ApplyPause();
         _feedback = T("load");
@@ -587,6 +595,26 @@ public partial class Playfield : Control
         var markers = frame.Markers.Where(m => m.X == x && m.Z == z).Select(m => m.Label.Length == 0 ? m.Kind : $"{m.Kind}: {m.Label}");
         var actors = frame.Actors.Where(a => a.X == x && a.Z == z).Select(a => a.Human ? T("you") : a.Id.ToString(CultureInfo.InvariantCulture));
         return $"{T("cell.selected")} ({x}, {z}): " + string.Join("; ", actors.Concat(markers));
+    }
+
+    private void SampleHeading()
+    {
+        if (_surface != Surface.Play || _waitRelease || _suspended || _unfocused) return;
+        var heading = TravelHeading.FromKeys(
+            Input.IsPhysicalKeyPressed(Key.D), Input.IsPhysicalKeyPressed(Key.A),
+            Input.IsPhysicalKeyPressed(Key.S), Input.IsPhysicalKeyPressed(Key.W));
+        if (heading == _sent) return;
+        _sent = heading;
+        _session.SetTravelHeading(_human, heading.X, heading.Z);
+    }
+
+    private void StopHeading()
+    {
+        _sent = default;
+        if (_session is null) return;
+        var travel = _session.Engine.TravelOf(_human);
+        if (travel.HeadingX == 0 && travel.HeadingZ == 0) return;
+        _session.SetTravelHeading(_human, 0, 0);
     }
 
     private static bool MovementHeld() =>

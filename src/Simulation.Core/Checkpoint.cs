@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Simulation.Core;
 
@@ -13,7 +14,9 @@ internal record SavedInventory(long Id, long Owner, Cell Position, long Capacity
     KeyValuePair<string, long>[] Stock, SavedStockHold[] Reservations, KeyValuePair<string, long>[] CapacityHolds);
 internal record SavedJob(long Id, string Kind, long StartTick, long CompletionTick, Cell[] Path, int PathIndex,
     int SegmentTicks, string Item, long Quantity, string CapacityHold, string CommandId, long EquipmentId);
-internal record SavedActor(long Id, long Account, long Inventory, Cell Position, SavedJob? Job);
+internal record SavedActor(long Id, long Account, long Inventory, Cell Position, SavedJob? Job,
+    int OffsetX = SimulationEngine.TravelCenter, int OffsetZ = SimulationEngine.TravelCenter,
+    int HeadingX = 0, int HeadingZ = 0, int FacingX = 0, int FacingZ = -1);
 internal record SavedBatch(long Id, string Hold, long WorkRequired, long WorkDone, long EnergyPaid);
 internal record SavedEnterprise(EnterpriseDefinition Definition, long Input, long Output, string RecipeId,
     bool Enabled, string Reason, SavedBatch? Batch, long Completed, long EnergyPaid, EmploymentView Group);
@@ -29,7 +32,8 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
     BuildingView[] Buildings, SavedOffer[] Offers, FlowView[] Flows, SettlementView[] Settlements,
     long[] CompletedJobs, CommandEnvelope[] Commands, CommandResult[] Results, string[] Pending,
     LedgerRecord[] Ledger, SimulationEvent[] Events, ulong MarketRandom,
-    SavedMarketOffer[] MarketOffers, MarketAllocationView[] MarketAllocations, SavedBuyOffer[] BuyOffers, DeliveryContractView[] DeliveryContracts, long CapitalCompensation, SavedLogistics[] Logistics, CapitalDemandView? CapitalDemand, ElectionStateView Elections, SupportResearchState Support);
+    SavedMarketOffer[] MarketOffers, MarketAllocationView[] MarketAllocations, SavedBuyOffer[] BuyOffers, DeliveryContractView[] DeliveryContracts, long CapitalCompensation, SavedLogistics[] Logistics, CapitalDemandView? CapitalDemand, ElectionStateView Elections, SupportResearchState Support,
+    int TravelQuantum = 0);
 
 public sealed partial class SimulationEngine
 {
@@ -55,7 +59,8 @@ public sealed partial class SimulationEngine
             _economy.Inventories.Values.OrderBy(i => i.Id).Select(i => new SavedInventory(i.Id, i.Owner, i.Position,
                 i.Capacity, Ordered(i.Stock), i.Reservations.OrderBy(x => x.Key, StringComparer.Ordinal)
                     .Select(x => new SavedStockHold(x.Key, x.Value.Item, x.Value.Quantity)).ToArray(), Ordered(i.CapacityHolds))).ToArray(),
-            _actors.Values.OrderBy(a => a.Id).Select(a => new SavedActor(a.Id, a.Account, a.Inventory, a.Position, SaveJob(a.Job))).ToArray(),
+            _actors.Values.OrderBy(a => a.Id).Select(a => new SavedActor(a.Id, a.Account, a.Inventory, a.Position, SaveJob(a.Job),
+                a.OffsetX, a.OffsetZ, a.HeadingX, a.HeadingZ, a.FacingX, a.FacingZ)).ToArray(),
             _enterprises.Values.OrderBy(e => e.Definition.Id).Select(e => new SavedEnterprise(e.Definition, e.Input,
                 e.Output, e.Recipe.Id, e.Enabled, e.Reason, SaveBatch(e.Batch), e.Completed, e.EnergyPaid, e.Group.View())).ToArray(),
             _equipment.Values.OrderBy(e => e.Id).Select(e => new SavedEquipment(e.Id, e.Owner, e.Position, e.Storage,
@@ -66,9 +71,25 @@ public sealed partial class SimulationEngine
                     r.Reservation, r.CommandId)).ToArray(), o.SupplyRequests.Values.OrderBy(r => r.Supplier.Value).ToArray(), o.Window)).ToArray(), world.Flows, world.Settlements,
             _completedPersonalJobs.Order().ToArray(), _seenCommands.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(),
             _results.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(), _pending.Select(c => c.CommandId).ToArray(),
-            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport());
+            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum);
         return JsonSerializer.Serialize(saved, SimulationJson.Options);
     }
+    private static string MigrateTravel(string json)
+    {
+        var root = JsonNode.Parse(json) as JsonObject ?? throw new CheckpointException("EmptyCheckpoint");
+        bool changed = root["travelQuantum"] is null;
+        if (changed) root["travelQuantum"] = 0;
+        if (root["actors"] is JsonArray actors)
+            foreach (var node in actors)
+                if (node is JsonObject actor && actor["offsetX"] is null)
+                {
+                    actor["offsetX"] = TravelCenter; actor["offsetZ"] = TravelCenter;
+                    actor["headingX"] = 0; actor["headingZ"] = 0; actor["facingX"] = 0; actor["facingZ"] = -1;
+                    changed = true;
+                }
+        return changed ? root.ToJsonString(SimulationJson.Options) : json;
+    }
+
     private static KeyValuePair<string, long>[] Ordered(Dictionary<string, long> values)
         => values.OrderBy(x => x.Key, StringComparer.Ordinal).ToArray();
     private static SavedJob? SaveJob(PersonalJob? j) => j is null ? null : new(j.Id, j.Kind, j.StartTick,
@@ -92,7 +113,7 @@ public sealed partial class SimulationEngine
         if (json is null || json.Length > 64 * 1024 * 1024) throw new CheckpointException("CheckpointTooLarge");
         try
         {
-            var s = JsonSerializer.Deserialize<WorldCheckpoint>(json, SimulationJson.Options)
+            var s = JsonSerializer.Deserialize<WorldCheckpoint>(MigrateTravel(json), SimulationJson.Options)
                 ?? throw new CheckpointException("EmptyCheckpoint");
             if (s.SchemaVersion != CheckpointSchemaVersion) throw new CheckpointException("UnknownWorldSchema");
             if (s.RulesVersion != RulesVersion) throw new CheckpointException("UnknownRulesVersion");
@@ -111,7 +132,7 @@ public sealed partial class SimulationEngine
 
     private void RestoreWorld(WorldCheckpoint s)
     {
-        Tick = s.Tick; _nextId = s.NextId; _eventSequence = s.EventSequence;
+        Tick = s.Tick; _travelQuantum = s.TravelQuantum; _nextId = s.NextId; _eventSequence = s.EventSequence;
         _allocationRandom.RestoreState(s.AllocationRandom); _commandRandom.RestoreState(s.CommandRandom);
         _laborRandom.RestoreState(s.LaborRandom); _population = s.Population; _unemployed = s.Unemployed;
         _lastGrowthPeriod = s.LastGrowthPeriod;
@@ -135,7 +156,11 @@ public sealed partial class SimulationEngine
         _actors.Clear();
         foreach (var a in s.Actors)
         {
-            var value = new ActorState(a.Id, a.Account, a.Inventory, a.Position);
+            var value = new ActorState(a.Id, a.Account, a.Inventory, a.Position)
+            {
+                OffsetX = a.OffsetX, OffsetZ = a.OffsetZ, HeadingX = a.HeadingX, HeadingZ = a.HeadingZ,
+                FacingX = a.FacingX, FacingZ = a.FacingZ
+            };
             if (a.Job is { } j) value.Job = new(j.Id, j.Kind, j.StartTick, j.CompletionTick, j.Path.ToArray(), j.Item,
                 j.Quantity, j.CapacityHold, j.CommandId, j.EquipmentId) { PathIndex = j.PathIndex, SegmentTicks = j.SegmentTicks };
             _actors.Add(a.Id, value);

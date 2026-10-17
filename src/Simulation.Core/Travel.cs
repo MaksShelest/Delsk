@@ -1,0 +1,97 @@
+namespace Simulation.Core;
+
+public readonly record struct TravelState(int OffsetX, int OffsetZ, int HeadingX, int HeadingZ, int FacingX, int FacingZ);
+
+public sealed partial class SimulationEngine
+{
+    public const int TravelUnitsPerCell = 1000;
+    public const int TravelQuantaPerTick = 10;
+    public const int TravelCenter = 500;
+    private int _travelQuantum;
+    public int TravelQuantum => _travelQuantum;
+
+    public TravelState TravelOf(ParticipantId actor)
+    {
+        var state = _actors[actor.Value];
+        return new(state.OffsetX, state.OffsetZ, state.HeadingX, state.HeadingZ, state.FacingX, state.FacingZ);
+    }
+
+    /// <summary>Курс применяется сразу и не ждёт фазы команды. Ноль останавливает.</summary>
+    public void SetTravelHeading(ParticipantId actor, int x, int z)
+    {
+        if (_stepping) throw new InvalidOperationException("Step is not reentrant");
+        if (x is < -1 or > 1 || z is < -1 or > 1) throw new ArgumentOutOfRangeException(nameof(x));
+        if (!_actors.TryGetValue(actor.Value, out var state)) throw new ArgumentException("Participant not available");
+        state.HeadingX = x;
+        state.HeadingZ = z;
+        if (x != 0 || z != 0) { state.FacingX = x; state.FacingZ = z; }
+    }
+
+    /// <summary>Один квант текущего тика. true означает, что бюджет тика исчерпан и пора вызвать Step.</summary>
+    public bool MoveTravelQuantum()
+    {
+        if (_stepping) throw new InvalidOperationException("Step is not reentrant");
+        int distance = QuantumDistance();
+        if (distance > 0)
+            foreach (var actor in _actors.Values.OrderBy(a => a.Id))
+                TravelActor(actor, distance);
+        _travelQuantum++;
+        if (_travelQuantum < TravelQuantaPerTick) return false;
+        _travelQuantum = 0;
+        return true;
+    }
+
+    internal object? TravelDeviation()
+    {
+        var actors = _actors.Values.OrderBy(a => a.Id)
+            .Where(a => a.OffsetX != TravelCenter || a.OffsetZ != TravelCenter || a.HeadingX != 0 || a.HeadingZ != 0)
+            .Select(a => new { a.Id, a.OffsetX, a.OffsetZ, a.HeadingX, a.HeadingZ })
+            .ToArray();
+        if (actors.Length == 0 && _travelQuantum == 0) return null;
+        return new { Quantum = _travelQuantum, Actors = actors };
+    }
+
+    private int QuantumDistance()
+    {
+        int total = TravelUnitsPerCell / _config.MoveTicksPerCell;
+        int share = total / TravelQuantaPerTick;
+        int extra = total % TravelQuantaPerTick;
+        return share + (_travelQuantum < extra ? 1 : 0);
+    }
+
+    private void TravelActor(ActorState actor, int distance)
+    {
+        if (actor.HeadingX == 0 && actor.HeadingZ == 0) return;
+        if (actor.Job is not null || HasSale(actor.Id)) return;
+        int step = actor.HeadingX != 0 && actor.HeadingZ != 0 ? checked(distance * 707 / 1000) : distance;
+        var before = actor.Position;
+        MoveAxis(actor, checked(actor.HeadingX * step), alongX: true);
+        MoveAxis(actor, checked(actor.HeadingZ * step), alongX: false);
+        if (actor.Position != before) _economy.Inventories[actor.Inventory].Position = actor.Position;
+    }
+
+    private void MoveAxis(ActorState actor, int delta, bool alongX)
+    {
+        if (delta == 0) return;
+        int offset = alongX ? actor.OffsetX : actor.OffsetZ;
+        int cell = alongX ? actor.Position.X : actor.Position.Z;
+        int other = alongX ? actor.Position.Z : actor.Position.X;
+        offset = checked(offset + delta);
+        while (offset >= TravelUnitsPerCell)
+        {
+            int next = cell + 1;
+            if (!_map.Walkable(alongX ? new Cell(next, other) : new Cell(other, next))) { offset = TravelUnitsPerCell - 1; break; }
+            offset -= TravelUnitsPerCell;
+            cell = next;
+        }
+        while (offset < 0)
+        {
+            int next = cell - 1;
+            if (!_map.Walkable(alongX ? new Cell(next, other) : new Cell(other, next))) { offset = 0; break; }
+            offset += TravelUnitsPerCell;
+            cell = next;
+        }
+        if (alongX) { actor.OffsetX = offset; actor.Position = new Cell(cell, actor.Position.Z); }
+        else { actor.OffsetZ = offset; actor.Position = new Cell(actor.Position.X, cell); }
+    }
+}

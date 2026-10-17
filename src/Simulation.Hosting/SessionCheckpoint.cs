@@ -11,6 +11,8 @@ internal record SavedSession(int SchemaVersion, string SessionId, long Epoch, bo
 public sealed partial class GameSession
 {
     private RecordedPlaybackState? _playback;
+    private RecordedCommand[] _headingPlayback = [];
+    private int _headingPlaybackIndex;
     public long? PlaybackFinalTick => _playback?.FinalTick;
     public string? PlaybackLabel => _playback?.Label;
     public void ConfigurePlayback(RecordedCommand[] tape, long finalTick, string label = "recorded-inputs")

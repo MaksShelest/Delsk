@@ -224,7 +224,9 @@ public sealed partial class SimulationEngine
     {
         RequireIdle(actor);
         Cell[] path = _map.FindPath(actor.Position, c.Action.Target);
+        actor.HeadingX = 0; actor.HeadingZ = 0; actor.OffsetX = TravelCenter; actor.OffsetZ = TravelCenter;
         if (path.Length == 1) return;
+        actor.FacingX = Math.Sign(path[1].X - path[0].X); actor.FacingZ = Math.Sign(path[1].Z - path[0].Z);
         long arrival = checked(Tick + checked((long)(path.Length - 1) * _config.MoveTicksPerCell));
         actor.Job = new(_nextId++, "Move", Tick, arrival, path, "", 0, "", c.CommandId);
         Emit("MovementStarted", actor.Id, actor.Job.Id, reason: arrival.ToString(System.Globalization.CultureInfo.InvariantCulture), command: c.CommandId);
@@ -275,6 +277,7 @@ public sealed partial class SimulationEngine
             ++job.SegmentTicks;
             if (job.SegmentTicks < _config.MoveTicksPerCell) continue;
             job.SegmentTicks = 0; ++job.PathIndex; actor.Position = job.Path[job.PathIndex];
+            actor.OffsetX = TravelCenter; actor.OffsetZ = TravelCenter;
             _economy.Inventories[actor.Inventory].Position = actor.Position;
             if (Tick >= job.CompletionTick) CompleteMovement(actor.Id, job.Id);
         }
@@ -283,7 +286,8 @@ public sealed partial class SimulationEngine
     {
         if (!_actors.TryGetValue(actorId, out var actor) || actor.Job is not { Kind: "Move" } job ||
             job.Id != jobId || Tick < job.CompletionTick || !_completedPersonalJobs.Add(jobId)) return false;
-        actor.Position = job.Path[^1]; _economy.Inventories[actor.Inventory].Position = actor.Position;
+        actor.Position = job.Path[^1]; actor.OffsetX = TravelCenter; actor.OffsetZ = TravelCenter;
+        _economy.Inventories[actor.Inventory].Position = actor.Position;
         actor.Job = null;
         Emit("MovementArrived", actor.Id, jobId, command: job.CommandId); return true;
     }
@@ -345,7 +349,14 @@ public sealed partial class SimulationEngine
             view.SupplyRequests.Where(r => r.Supplier == actorId).ToArray(),
             view.DeliveryContracts.Where(d => d.Supplier == actorId || d.Buyer == actorId).ToArray(), Delivery, view.Logistics.Where(l => l.OwnerId == actorId).ToArray(), Logistics, PublicCapitalPrices(false), PublicCapitalPrices(true), ObserveElections(actorId), ObserveSupport(actorId));
     }
-    public string ComputeStateHash() => ScenarioValidation.Hash(new
+    public string ComputeStateHash()
+    {
+        object payload = StatePayload();
+        var travel = TravelDeviation();
+        return ScenarioValidation.Hash(travel is null ? payload : new { Payload = payload, Travel = travel });
+    }
+
+    private object StatePayload() => new
     {
         World = Inspect(), Support = InspectSupport(), CommandRandom = _commandRandom.State, LaborRandom = _laborRandom.State, MarketRandom = _marketRandom.State,
         MoneyHolds = _economy.Accounts.OrderBy(x => x.Key).Select(x => new { x.Key, Holds = x.Value.Holds.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray() }).ToArray(),
@@ -361,5 +372,5 @@ public sealed partial class SimulationEngine
         Results = _results.OrderBy(x => x.Key, StringComparer.Ordinal).ToArray(),
         Pending = _pending.OrderBy(c => c.ActorId.Value).ThenBy(c => c.LocalSequence).ToArray(),
         Ledger = Ledger(), EventSequence = _eventSequence
-    });
+    };
 }
