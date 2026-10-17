@@ -49,6 +49,8 @@ public static class WorldModels
 
     public static Node3D Building(string kind, string type)
     {
+        if (kind == "production" && type == "sawmill") return Sawmill();
+        if (kind == "production" && type == "bakery") return Bakery();
         var root = new Node3D();
         Color wall = kind switch { "warehouse" => new("8aabba"), "shop" => new("d4b8cb"), "capital" => new("dfd4b7"), _ => new("d1b486") };
         Color roof = kind switch { "warehouse" => new("4e7182"), "shop" => new("91608d"), "capital" => new("587987"), _ => new("a85e48") };
@@ -100,6 +102,63 @@ public static class WorldModels
         foreach (float x in new[] { -0.24f, 0.24f }) foreach (float z in new[] { -0.18f, 0.18f })
             Round(root, 0.075f, new Color("46505a"), new Vector3(x, 0.09f, z));
         Box(root, new Vector3(0.48f, 0.025f, 0.05f), new Color("775c40"), new Vector3(0, 0.35f, 0));
+        return root;
+    }
+
+    private static Node3D Sawmill()
+    {
+        var root = new Node3D();
+        Box(root, new Vector3(0.9f,0.08f,0.86f), new Color("888d83"), new Vector3(0,0.04f,0));
+        foreach (float x in new[] {-0.34f,0.34f}) foreach (float z in new[] {-0.3f,0.3f})
+            Box(root,new Vector3(0.065f,0.6f,0.065f),new Color("8b643f"),new Vector3(x,0.37f,z));
+        Part(root,new PrismMesh {Size=new Vector3(0.95f,0.28f,0.9f)},new Color("527c78"),new Vector3(0,0.76f,0));
+        Box(root,new Vector3(0.6f,0.09f,0.3f),new Color("bca27b"),new Vector3(0,0.37f,0));
+        var saw=Part(root,new CylinderMesh {TopRadius=0.14f,BottomRadius=0.14f,Height=0.025f,RadialSegments=12},new Color("b5c1c2"),new Vector3(0.1f,0.49f,0));
+        saw.RotationDegrees=new Vector3(90,0,0);
+        for (int i=0;i<3;i++)
+        {
+            var log=Part(root,new CylinderMesh {TopRadius=0.055f,BottomRadius=0.055f,Height=0.5f,RadialSegments=8},new Color("ac8655"),new Vector3(-0.31f,0.13f+i*0.07f,0.2f));
+            log.RotationDegrees=new Vector3(90,0,0);
+            Box(root,new Vector3(0.19f,0.035f,0.5f),new Color("d6ae76"),new Vector3(0.32f,0.12f+i*0.04f,0.18f));
+        }
+        return root;
+    }
+    private static Node3D Bakery()
+    {
+        var root=new Node3D();
+        Box(root,new Vector3(0.9f,0.08f,0.86f),new Color("888d83"),new Vector3(0,0.04f,0));
+        Box(root,new Vector3(0.66f,0.48f,0.58f),new Color("bd8468"),new Vector3(0,0.32f,-0.06f));
+        Part(root,new PrismMesh {Size=new Vector3(0.85f,0.3f,0.8f)},new Color("a85e48"),new Vector3(0,0.69f,-0.06f));
+        Box(root,new Vector3(0.24f,0.23f,0.025f),new Color("493f39"),new Vector3(0,0.27f,0.25f));
+        Box(root,new Vector3(0.16f,0.06f,0.03f),new Color("e0a750"),new Vector3(0,0.2f,0.27f));
+        Box(root,new Vector3(0.13f,0.5f,0.13f),new Color("906b5d"),new Vector3(-0.21f,0.85f,-0.16f));
+        Box(root,new Vector3(0.65f,0.07f,0.25f),new Color("9d7754"),new Vector3(0,0.22f,0.44f));
+        foreach(float x in new[] {-0.21f,0f,0.21f})
+            Part(root,new SphereMesh {Radius=0.075f,Height=0.1f,RadialSegments=8,Rings=4},new Color("e7bc79"),new Vector3(x,0.29f,0.44f));
+        return root;
+    }
+    public static Node3D Truck(bool loaded)
+    {
+        var root=new Node3D();
+        Box(root,new Vector3(0.4f,0.12f,0.66f),new Color("526475"),new Vector3(0,0.18f,0));
+        Box(root,new Vector3(0.4f,0.28f,0.22f),new Color("5b94b1"),new Vector3(0,0.36f,-0.23f));
+        Box(root,new Vector3(0.3f,0.1f,0.025f),new Color("b9dce0"),new Vector3(0,0.41f,-0.35f));
+        foreach(float x in new[] {-0.22f,0.22f}) foreach(float z in new[] {-0.21f,0.21f})
+            Round(root,0.08f,new Color("35434b"),new Vector3(x,0.1f,z));
+        foreach(float x in new[] {-0.21f,0.21f}) Box(root,new Vector3(0.04f,0.12f,0.43f),new Color("738b94"),new Vector3(x,0.28f,0.1f));
+        if(loaded) Box(root,new Vector3(0.3f,0.24f,0.36f),new Color("d5b263"),new Vector3(0,0.37f,0.1f));
+        return root;
+    }
+    public static Node3D Equipment(string item)
+    {
+        var root=Truck(false);
+        Box(root,new Vector3(0.36f,0.19f,0.4f),new Color("d4af4d"),new Vector3(0,0.42f,0.08f));
+        if(item=="wood")
+        {
+            Box(root,new Vector3(0.06f,0.65f,0.06f),new Color("c49b43"),new Vector3(0.13f,0.68f,0.15f));
+            Box(root,new Vector3(0.46f,0.06f,0.06f),new Color("c49b43"),new Vector3(-0.06f,0.99f,0.15f));
+        }
+        else Box(root,new Vector3(0.68f,0.12f,0.2f),new Color("e2bf57"),new Vector3(0,0.16f,-0.42f));
         return root;
     }
 }

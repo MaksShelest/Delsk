@@ -1,0 +1,180 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "2026-10-17",
+  "basis": "5692f9822aa7f441e4ecdcae5ddeb854afecf00c",
+  "scope": "P26.6 A; B/C documented, not implemented",
+  "reconstructed_after_environment_cleanup": true,
+  "sdk": "10.0.401",
+  "godot": "4.7.2.stable.mono.official.ed1daf0bf",
+  "core_rules_changed": false,
+  "tests": {
+    "total": "648",
+    "executed": "648",
+    "passed": "648",
+    "failed": "0",
+    "error": "0",
+    "timeout": "0",
+    "aborted": "0",
+    "inconclusive": "0",
+    "passedButRunAborted": "0",
+    "notRunnable": "0",
+    "notExecuted": "0",
+    "disconnected": "0",
+    "warning": "0",
+    "completed": "0",
+    "inProgress": "0",
+    "pending": "0"
+  },
+  "headless": {
+    "status": "succeeded",
+    "scenarios": [
+      "cycle",
+      "recovery",
+      "development",
+      "labor",
+      "equipment",
+      "autonomous",
+      "market",
+      "pickup",
+      "delivery",
+      "capital-delivery",
+      "logistics",
+      "logistics-upgrade",
+      "own-storage",
+      "inbound",
+      "own-production",
+      "logistics-queue",
+      "capital-demand",
+      "autonomous-demand",
+      "elections",
+      "support"
+    ],
+    "checkpoint_cases": {
+      "cycle": 55,
+      "equipment": 101,
+      "autonomous": 350,
+      "market": 44,
+      "pickup": 47,
+      "delivery": 37,
+      "capital-delivery": 3,
+      "logistics": 69,
+      "logistics-upgrade": 170,
+      "own-storage": 170,
+      "inbound": 78,
+      "own-production": 170,
+      "logistics-queue": 185,
+      "capital-demand": 85,
+      "autonomous-demand": 350,
+      "elections": 9,
+      "support": 18
+    },
+    "comparison": "every exported tick hash, state, ledger, event, command and labor row",
+    "controlled_fixture": {
+      "name": "late-return",
+      "origin": "test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged",
+      "checkpoint_tick": 72,
+      "final_tick": 80
+    },
+    "baseline_cases": {
+      "economy": {
+        "final_tick": 1200,
+        "checkpoint_tick": 350
+      },
+      "auction": {
+        "final_tick": 180,
+        "checkpoint_tick": 30
+      },
+      "politics": {
+        "final_tick": 160,
+        "checkpoint_tick": 19
+      },
+      "logistics": {
+        "final_tick": 360,
+        "checkpoint_tick": 80
+      }
+    },
+    "model_safety": {
+      "checkpoint_tick": 6,
+      "final_tick": 60,
+      "valid": 1,
+      "forged_actor": 1,
+      "late_reply": 1
+    },
+    "model_off": "exact world equality with baseline-economy and the same headless timing label",
+    "exports": 81,
+    "replays": 9,
+    "comparison_pairs": 54,
+    "scope": "P00-P26.6 play HUD and context actions; live Ollama series is separate evidence; windowed and device checks are separate",
+    "author": "Шелестов Максим Евгеньевич"
+  },
+  "second_map": {
+    "id": "presentation-map-two-v1",
+    "width": 16,
+    "height": 11,
+    "wood_cells": 6,
+    "grain_cells": 6,
+    "production_plots": 12,
+    "maximum_resource_to_capital_ticks": 18,
+    "autonomous_ticks": 1200,
+    "checkpoint_tick": 1000,
+    "continuation_equal": true,
+    "final_hash": "522060aa8221d633674712ac49c61e2dff5c7200e55729b028b32deb58828974"
+  },
+  "platform_probe": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "befa38addd66ef7c7c7d9e6c7d98561edd21c4a4673ad32ba689a7bb45f89fff",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "ElectionCheckedTicks": 40,
+    "ElectionStateHash": "a878e9e122ef5a26ae4a120dfd62a690c93dfa5c870c38e0039caa891ce958e8",
+    "ElectionRestoredTicks": [
+      9,
+      19,
+      20,
+      21
+    ],
+    "SupportCheckedTicks": 120,
+    "SupportStateHash": "12e2f23d454aa2fb11421dffad3f6c141981ad788556fe507ef052def77a393a",
+    "SupportRestoredTicks": [
+      17,
+      18,
+      19,
+      27,
+      99,
+      100
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "window": {
+    "platform": "Linux/Xvfb/llvmpipe/OpenGL Compatibility",
+    "exit_code": 0,
+    "checks": [
+      "DELSK_MAP_UI_PASS no_world_before_start ru_en second_map wasd debug_legend save cancel_replacement confirm_first",
+      "DELSK_MAP_RESUME_PASS second_map_restored_from_fresh_process",
+      "DELSK_MAP_MODELS_PASS real_autonomous_checkpoint productions equipment"
+    ]
+  },
+  "not_implemented": [
+    "large tablets and tactical pause",
+    "continuous harvest and Core cancellation on leaving",
+    "participant market UI",
+    "free-choice shop sites and NPC selection"
+  ],
+  "not_checked": [
+    "Windows executable execution",
+    "Android device",
+    "long-session performance profile"
+  ]
+}

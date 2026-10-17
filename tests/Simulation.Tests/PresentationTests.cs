@@ -48,6 +48,16 @@ public class PresentationTests
         Assert.Equal(trip.Position.X, shown.X);
         Assert.Equal(trip.Position.Z, shown.Z);
         Assert.Equal(trip.ItemId, shown.ItemId);
+        Assert.False(shown.Loaded);
+        Assert.Single(frame.Markers,m => m.Kind == "truck-home");
+        session.Step();
+        Assert.True(Assert.Single(Presentation.Read(definition, session.Engine, 1).Trips).Loaded);
+        int guard = 0;
+        while (session.Engine.Inspect().Logistics.Single().Trip is not null)
+        { Assert.True(++guard < 200); session.Step(); }
+        var returned = Presentation.Read(definition, session.Engine, 1);
+        Assert.Empty(returned.Trips);
+        Assert.Single(returned.Markers,m => m.Kind == "truck-home");
         Assert.DoesNotContain("compensation", JsonSerializer.Serialize(frame, SimulationJson.Options), StringComparison.OrdinalIgnoreCase);
     }
 }

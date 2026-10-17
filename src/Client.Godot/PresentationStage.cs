@@ -15,6 +15,7 @@ public partial class PresentationStage : Node3D
         public float Elapsed = 1;
         public float Duration = 0.1f;
         public bool Human;
+        public bool Loaded;
     }
     private readonly System.Collections.Generic.Dictionary<long, Mover> _actors = new();
     private readonly System.Collections.Generic.Dictionary<long, Mover> _trips = new();
@@ -22,8 +23,7 @@ public partial class PresentationStage : Node3D
     private string _staticKey = "";
     private bool _frozen = true;
     private bool _follow;
-    private int _mapWidth;
-    private int _mapHeight;
+    private readonly System.Collections.Generic.Dictionary<long, Node3D> _parked = new();
 
     public override void _Ready()
     {
@@ -52,8 +52,6 @@ public partial class PresentationStage : Node3D
         bool snap = frozen || _frozen || _follow != followHuman;
         _frozen = frozen;
         _follow = followHuman;
-        _mapWidth = frame.MapWidth;
-        _mapHeight = frame.MapHeight;
         string staticKey = frame.MapWidth + "x" + frame.MapHeight + "|" + string.Join(",", frame.Markers.Select(m =>
             $"{m.Kind}:{m.X}:{m.Z}:{(m.Kind == "capital" ? "" : m.Label)}:{(m.Kind == "capital" ? 0 : m.EntityId)}:{m.OwnerId}"));
         if (_staticKey != staticKey)
@@ -92,16 +90,26 @@ public partial class PresentationStage : Node3D
             var at = new Vector3(trip.X + 0.28f, 0.08f, trip.Z + 0.42f);
             if (!_trips.TryGetValue(trip.LogisticsId, out var mover))
             {
-                var body = WorldModels.Cargo();
+                var body = new Node3D();
                 body.Position = at;
                 AddChild(body);
-                mover = new Mover(body, at);
+                body.AddChild(WorldModels.Truck(trip.Loaded));
+                mover = new Mover(body, at) { Loaded = trip.Loaded };
                 _trips[trip.LogisticsId] = mover;
             }
+            if (mover.Loaded != trip.Loaded)
+            {
+                foreach (Node child in mover.Node.GetChildren()) child.QueueFree();
+                mover.Node.AddChild(WorldModels.Truck(trip.Loaded));
+                mover.Loaded = trip.Loaded;
+            }
+            var heading = at - mover.To;
+            if (heading.LengthSquared() > 0.001f) mover.Node.Rotation = new Vector3(0, Mathf.Atan2(-heading.X, -heading.Z), 0);
             Target(mover, at, 1, snap);
         }
         foreach (long id in _trips.Keys.Where(id => !live.Contains(id)).ToArray())
         { _trips[id].Node.QueueFree(); _trips.Remove(id); }
+        foreach (var parked in _parked) parked.Value.Visible = !live.Contains(parked.Key);
         var selected = frame.Markers.FirstOrDefault(m => m.Kind == "production" && m.EntityId == selectedBuilding);
         _selection.Visible = selected is not null;
         if (selected is not null) _selection.Position = new Vector3(selected.X, 0.075f, selected.Z);
@@ -143,12 +151,7 @@ public partial class PresentationStage : Node3D
         var human = _actors.Values.FirstOrDefault(m => m.Human);
         if (human is null) return;
         _camera.Rotation = new Vector3(Mathf.DegToRad(-55), 0, 0);
-        // Keep the player visible at map edges, without spending the playable view on empty space.
-        float xMargin = Mathf.Min(3.2f, (_mapWidth - 1) * 0.5f);
-        float zMargin = Mathf.Min(2.8f, (_mapHeight - 1) * 0.5f);
-        var focus = new Vector3(Mathf.Clamp(human.Node.Position.X, xMargin, _mapWidth - 1 - xMargin), 0,
-            Mathf.Clamp(human.Node.Position.Z - 0.6f, zMargin, _mapHeight - 1 - zMargin));
-        _camera.Position = focus + new Vector3(0, 6.5f, 4.55f);
+        _camera.Position = human.Node.Position + new Vector3(0, 4.2f, 2.94f);
     }
 
     public void Pick(Vector2 viewportPosition)
@@ -169,6 +172,7 @@ public partial class PresentationStage : Node3D
     {
         foreach (var node in _staticNodes) node.QueueFree();
         _staticNodes.Clear();
+        _parked.Clear();
         var ground = new Node3D();
         WorldModels.Part(ground, new BoxMesh { Size = new Vector3(frame.MapWidth + 1, 0.15f, frame.MapHeight + 1) },
             new Color("729365"), new Vector3(frame.MapWidth / 2f - 0.5f, -0.13f, frame.MapHeight / 2f - 0.5f));
@@ -182,27 +186,33 @@ public partial class PresentationStage : Node3D
         foreach (var marker in frame.Markers)
         {
             Node3D? node = null;
-            if (marker.Kind == "resource") node = WorldModels.Resource(marker.Label);
+            if (marker.Kind == "equipment") node = WorldModels.Equipment(marker.Label);
+            else if (marker.Kind == "truck-home") { node = WorldModels.Truck(false); _parked[marker.EntityId] = node; }
+            else if (marker.Kind == "resource") node = WorldModels.Resource(marker.Label);
             else if (marker.Kind is "production" or "warehouse" or "shop" or "capital") node = WorldModels.Building(marker.Kind, marker.Label);
             else
             {
                 var tile = new Node3D();
                 Color color = marker.Kind switch
                 {
-                    "blocked" => new("596970"), "corridor" => new("bcb8a1"), "shop-plot" => new("a294ba"),
+                    "blocked" => new("596970"), "corridor" => new("78858a"), "shop-plot" => new("a294ba"),
                     "plot-own" => new("88b47a"), "plot-foreign" => new("be9285"), "plot-reserved" => new("dbbb70"),
                     _ => new("bfa17c")
                 };
-                WorldModels.Part(tile, new BoxMesh { Size = new Vector3(0.91f, 0.035f, 0.91f) }, color, new Vector3(0, 0.025f, 0));
+                WorldModels.Part(tile, new BoxMesh { Size = new Vector3(marker.Kind == "corridor" ? 1 : 0.91f, 0.035f, marker.Kind == "corridor" ? 1 : 0.91f) }, color, new Vector3(0, 0.025f, 0));
                 if (marker.Kind == "corridor")
+                {
+                    bool horizontal = frame.Markers.Any(m => m.Kind == "corridor" && m.Z == marker.Z && Math.Abs(m.X - marker.X) == 1);
                     for (int n = -1; n <= 1; n++)
-                        WorldModels.Part(tile, new BoxMesh { Size = new Vector3(0.82f, 0.018f, 0.19f) }, new Color("d6d0b8"), new Vector3(0, 0.055f, n * 0.27f));
+                        WorldModels.Part(tile, new BoxMesh { Size = horizontal ? new Vector3(0.17f, 0.018f, 0.04f) : new Vector3(0.04f, 0.018f, 0.17f) },
+                            new Color("e6ddba"), horizontal ? new Vector3(n * 0.29f, 0.055f, 0) : new Vector3(0, 0.055f, n * 0.29f));
+                }
                 if (marker.Kind.StartsWith("plot", System.StringComparison.Ordinal) || marker.Kind == "shop-plot")
                     foreach (float x in new[] { -0.39f, 0.39f }) foreach (float z in new[] { -0.39f, 0.39f })
                         WorldModels.Part(tile, new BoxMesh { Size = new Vector3(0.055f, 0.18f, 0.055f) }, new Color("e4d8b3"), new Vector3(x, 0.1f, z));
                 node = tile;
             }
-            if (node is not null) { node.Position = new Vector3(marker.X, 0.045f, marker.Z); AddStatic(node); }
+            if (node is not null) { node.Position = marker.Kind is "truck-home" or "equipment" ? new Vector3(marker.X + 0.28f, 0.08f, marker.Z + 0.42f) : new Vector3(marker.X, 0.045f, marker.Z); AddStatic(node); }
         }
     }
 }

@@ -22,4 +22,5 @@
     <EmbeddedResource Include="../../scenarios/platform-support.commands.jsonl" LogicalName="Fixture.support.commands.jsonl" />
     <EmbeddedResource Include="../../scenarios/platform-support.checkpoints.csv" LogicalName="Fixture.support.checkpoints.csv" />
   </ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/presentation-map-two.json" LogicalName="Play.presentation-map-two.json" /></ItemGroup>
 </Project>

@@ -116,12 +116,14 @@ public static class PlayContext
     {
         var here = view.Participant.Position.X == x && view.Participant.Position.Z == z;
         var lines = new List<string>();
-        var markers = frame.Markers.Where(m => m.X == x && m.Z == z).ToArray();
+        var markers = frame.Markers.Where(m => m.X == x && m.Z == z && (m.Kind != "truck-home" || !frame.Trips.Any(t => t.LogisticsId == m.EntityId))).ToArray();
         if (markers.Length == 0) lines.Add(PlayerText.Get(language, "hover.empty"));
         foreach (var marker in markers)
             lines.Add(marker.Kind switch
             {
                 "resource" => string.Format(CultureInfo.InvariantCulture, PlayerText.Get(language, "hover.resource"), PlayerText.Item(language, marker.Label)),
+                "equipment" => L(language, "Добывающая техника: ", "Extraction equipment: ") + PlayerText.Item(language, marker.Label) + L(language, " · владелец ", " · owner ") + marker.OwnerId,
+                "truck-home" => L(language, "Грузовик у предприятия · владелец ", "Truck at its enterprise · owner ") + marker.OwnerId,
                 "blocked" => PlayerText.Get(language, "hover.blocked"),
                 "corridor" => PlayerText.Get(language, "hover.corridor"),
                 "capital" => CapitalHint(view, x, z, language),

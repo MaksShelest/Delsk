@@ -41,7 +41,7 @@ public partial class DebugBoard : Control
             for (int z = 0; z < _frame.MapHeight; z++)
                 DrawRect(new Rect2(x * cell, z * cell, cell - 1, cell - 1), new Color(0.36f, 0.44f, 0.3f));
         foreach (var marker in _frame.Markers)
-            DrawMarker(marker, cell);
+            if (marker.Kind != "truck-home" || !_frame.Trips.Any(t => t.LogisticsId == marker.EntityId)) DrawMarker(marker, cell);
         foreach (var actor in _frame.Actors)
             DrawActor(actor, cell, font);
         foreach (var trip in _frame.Trips)
@@ -68,7 +68,7 @@ public partial class DebugBoard : Control
     private void DrawCargo(PresentationTrip trip, float cell)
     {
         var origin = new Vector2((trip.X + 0.55f) * cell, (trip.Z + 0.15f) * cell);
-        DrawRect(new Rect2(origin, new Vector2(cell * 0.28f, cell * 0.22f)), MapSymbols.CargoColor);
+        DrawRect(new Rect2(origin, new Vector2(cell * 0.28f, cell * 0.22f)), trip.Loaded ? MapSymbols.CargoColor : new Color("5b94b1"));
     }
 
     private Vector2I? CellAt(Vector2 position)
