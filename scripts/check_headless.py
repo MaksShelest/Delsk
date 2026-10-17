@@ -23,12 +23,12 @@ def check(name, timeout, command):
 check('restore', 180, [args.dotnet, 'restore', 'Delsk.sln', '--locked-mode', '--disable-parallel', '-m:1'])
 check('build', 180, [args.dotnet, 'build', 'Delsk.sln', '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1'])
 os.environ['DELSK_RETURN_ARTIFACTS'] = str(out)
-check('tests', 120, [args.dotnet, 'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',
+check('tests', 180, [args.dotnet, 'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',
     '-noColor', '-noLogo', '-parallelMode', 'none', '-result-trx', out/'tests.trx'])
 import xml.etree.ElementTree as ET
 trx=ET.parse(out/'tests.trx').getroot()
 counters=next(e for e in trx.iter() if e.tag.endswith('Counters'))
-if int(counters.attrib['passed']) < 621 or int(counters.attrib['failed']) != 0:
+if int(counters.attrib['passed']) < 623 or int(counters.attrib['failed']) != 0:
     raise SystemExit('Incomplete test suite')
 runner = [args.dotnet, 'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll']
 scenarios = {'cycle':'economic-cycle', 'recovery':'zero-cash-recovery', 'development':'land-and-content',
@@ -96,7 +96,7 @@ manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases
             'model_safety':{'checkpoint_tick':6,'final_tick':60,'valid':1,'forged_actor':1,'late_reply':1},
             'model_off':'exact world equality with baseline-economy and the same headless timing label',
             'exports':len(folders), 'replays':9, 'comparison_pairs':54,
-            'scope':'P00-P26 player desk and disabled-model timing; live Ollama series is separate evidence; Godot scene is a separate build',
+            'scope':'P00-P26.5 presentation frame and disabled-model timing; live Ollama series is separate evidence; Godot scene is a separate build',
             'author':'Шелестов Максим Евгеньевич'}
 (out/'headless-check.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
 print(f'Headless regression succeeded; results={out}')

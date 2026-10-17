@@ -124,7 +124,11 @@ public static class PlayerText
         ["feedback.sent"] = "Команда поставлена в очередь ядра.",
         ["no.enterprise"] = "Своего предприятия пока нет. Добыча и ход доступны.",
         ["paused"] = "Пауза",
-        ["running"] = "Идёт"
+        ["running"] = "Идёт",
+        ["trip"] = "Рейс",
+        ["you"] = "Вы",
+        ["selected"] = "Выбрано",
+        ["scene.hint"] = "Клик по клетке: ход, добыча или своё предприятие."
     };
 
     private static Dictionary<string, string> En() => new(StringComparer.Ordinal)
@@ -173,6 +177,10 @@ public static class PlayerText
         ["feedback.sent"] = "Command queued for the core.",
         ["no.enterprise"] = "No enterprise yet. Harvest and movement are available.",
         ["paused"] = "Paused",
-        ["running"] = "Running"
+        ["running"] = "Running",
+        ["trip"] = "Trip",
+        ["you"] = "You",
+        ["selected"] = "Selected",
+        ["scene.hint"] = "Click a cell: move, harvest, or your enterprise."
     };
 }

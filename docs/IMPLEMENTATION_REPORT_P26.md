@@ -33,4 +33,4 @@ Godot .NET 4.7.2, сцена `src/Client.Godot/Playfield.tscn`. F5 запуск�
 
 Повторный headless Godot .NET 4.7.2: import, `--smoke` и `Playfield --quit-after 2` завершились с кодом 0. Smoke-журнал без `ERROR`: 62 такта, lifecycle, restore, 40 выборных и 120 тактов поддержки. Ручные нажатия кнопок в окне редактора этой сессией не заменялись. Android device gate, EXE и APK не проверялись.
 
-Следующий этап — P27. Этот отчёт его не открывает.
+Следующий этап после этого отчёта — простая 3D-сцена. Её факты — [IMPLEMENTATION_REPORT_P26_5.md](IMPLEMENTATION_REPORT_P26_5.md). P27 этим отчётом не открывается.

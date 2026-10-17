@@ -21,6 +21,10 @@ public partial class Playfield : Control
     private bool _unfocused;
     private bool _skipNextFrame;
     private bool _left;
+    private long _selectedEnterprise;
+    private SubViewportContainer? _view;
+    private PresentationStage? _stage;
+    private Control? _panel;
     private Label _status = null!;
     private Label _feedbackLabel = null!;
     private VBoxContainer _cards = null!;
@@ -35,9 +39,19 @@ public partial class Playfield : Control
             GetTree().CallDeferred(SceneTree.MethodName.ChangeSceneToFile, "res://PlatformProbe.tscn");
             return;
         }
-        Start("economy");
+        EnsureStage();
+        Start(OS.GetCmdlineUserArgs().Contains("--trip") ? "trip" : "economy");
         BuildChrome();
         Refresh();
+    }
+
+    public override void _UnhandledInput(InputEvent e)
+    {
+        if (_left || _session is null || e is not InputEventKey key || !key.Pressed || key.Echo) return;
+        if (key.Keycode is Key.W or Key.Up) Move(0, -1);
+        else if (key.Keycode is Key.S or Key.Down) Move(0, 1);
+        else if (key.Keycode is Key.A or Key.Left) Move(-1, 0);
+        else if (key.Keycode is Key.D or Key.Right) Move(1, 0);
     }
 
     public override void _Process(double delta)
@@ -70,6 +84,25 @@ public partial class Playfield : Control
     private void Start(string mode)
     {
         _mode = mode;
+        _selectedEnterprise = 0;
+        if (mode == "trip")
+        {
+            _scenario = JsonSerializer.Deserialize<ScenarioDefinition>(Text("Play.logistics-cycle.json"), SimulationJson.Options)
+                ?? throw new InvalidOperationException("Play.logistics-cycle.json");
+            _human = new(1);
+            _session = new GameSession(new SimulationEngine(_scenario));
+            _scheduler = new TickScheduler(_session);
+            _manualPause = false;
+            _feedback = "";
+            _cardsSignature = "";
+            ApplyPause();
+            try { ScriptedScenarios.PrepareVisibleTrip(_session, _scenario); }
+            catch (Exception failure) { _feedback = failure.Message; }
+            _manualPause = true;
+            ApplyPause();
+            if (_status is not null) CallDeferred(nameof(RebuildChrome));
+            return;
+        }
         string scenarioName = mode == "politics" ? "Play.baseline-politics.json" : "Play.baseline-economy.json";
         string controllerName = mode == "politics" ? "Play.baseline-politics-controllers.json" : "Play.baseline-controllers.json";
         _scenario = JsonSerializer.Deserialize<ScenarioDefinition>(Text(scenarioName), SimulationJson.Options)
@@ -123,12 +156,14 @@ public partial class Playfield : Control
         if (_status is null) return;
         var view = PlayerDesk.Read(_session.Engine, _human);
         var actor = view.Participant;
-        _status.Text = $"{T(_manualPause || _suspended || _unfocused ? "paused" : "running")}  {T("tick")}: {_session.Engine.Tick}\n" +
+        bool paused = _manualPause || _suspended || _unfocused;
+        _stage?.Show(Presentation.Read(_scenario, _session.Engine, _human.Value), paused, _selectedEnterprise, T("you"));
+        _status.Text = $"{T(paused ? "paused" : "running")}  {T("tick")}: {_session.Engine.Tick}\n" +
             $"{T("cash")}: {(view.CashMinor / 100m).ToString("0.00", CultureInfo.InvariantCulture)}\n" +
             $"{T("position")}: ({actor.Position.X}, {actor.Position.Z})  {T("busy")}: {T(actor.Busy ? "yes" : "no")}\n" +
             $"{T("npc.title")}: " + string.Join("; ", view.LaborMarket.Where(g => g.OwnerId != _human).Select(g => $"{g.OwnerId.Value} {g.Role} {g.Headcount}/{g.Capacity}"));
         _feedbackLabel.Text = _feedback;
-        string signature = CardSignature(view);
+        string signature = _selectedEnterprise + "|" + CardSignature(view);
         if (signature != _cardsSignature) { _cardsSignature = signature; FillCards(view); }
     }
 
@@ -148,7 +183,7 @@ public partial class Playfield : Control
         {
             var card = new VBoxContainer();
             _cards.AddChild(card);
-            card.AddChild(new Label { Text = $"#{enterprise.Id.Value}  {enterprise.RecipeId}" });
+            card.AddChild(new Label { Text = (enterprise.Id.Value == _selectedEnterprise ? T("selected") + " " : "") + $"#{enterprise.Id.Value}  {enterprise.RecipeId}" });
             var work = Section("card.work");
             card.AddChild(work);
             work.AddChild(new Label { Text = $"{enterprise.ReasonCode}  {enterprise.Staff}/{enterprise.StaffCapacity}" });
@@ -219,12 +254,79 @@ public partial class Playfield : Control
         return box;
     }
 
+    private void EnsureStage()
+    {
+        if (_stage is not null) return;
+        _view = new SubViewportContainer { Stretch = true, MouseFilter = MouseFilterEnum.Stop };
+        _view.SetAnchorsPreset(LayoutPreset.FullRect);
+        _view.OffsetRight = -348;
+        var viewport = new SubViewport
+        {
+            Size = new Vector2I(752, 720),
+            OwnWorld3D = true,
+            RenderTargetUpdateMode = SubViewport.UpdateMode.Always,
+            HandleInputLocally = false,
+            GuiDisableInput = true
+        };
+        _stage = new PresentationStage();
+        _stage.CellChosen += OnCell;
+        viewport.AddChild(_stage);
+        _view.AddChild(viewport);
+        _view.GuiInput += OnViewInput;
+        AddChild(_view);
+        MoveChild(_view, 0);
+    }
+
+    private void OnViewInput(InputEvent e)
+    {
+        if (_stage is null || _view is null || e is not InputEventMouseButton button || !button.Pressed || button.ButtonIndex != MouseButton.Left)
+            return;
+        var viewport = (SubViewport)_stage.GetParent();
+        var size = _view.Size;
+        if (size.X < 1 || size.Y < 1) return;
+        _stage.Pick(new Vector2(button.Position.X / size.X * viewport.Size.X, button.Position.Y / size.Y * viewport.Size.Y));
+        GetViewport().SetInputAsHandled();
+    }
+
+    private void OnCell(int x, int z)
+    {
+        if (x < 0 || z < 0 || x >= _scenario.MapWidth || z >= _scenario.MapHeight) return;
+        var frame = Presentation.Read(_scenario, _session.Engine, _human.Value);
+        var own = frame.Markers.FirstOrDefault(m => m.X == x && m.Z == z && m.OwnerId == _human.Value && m.Kind == "production");
+        if (own is not null)
+        {
+            _selectedEnterprise = own.EntityId;
+            _feedback = $"{T("selected")} #{own.EntityId}";
+            _cardsSignature = "";
+            Refresh();
+            return;
+        }
+        var resource = frame.Markers.FirstOrDefault(m => m.Kind == "resource" && m.X == x && m.Z == z);
+        if (resource is not null)
+        {
+            Submit(PlayerDesk.Harvest(resource.Label, 1));
+            return;
+        }
+        Submit(PlayerDesk.Move(x, z));
+    }
+
     private void BuildChrome()
     {
-        foreach (Node child in GetChildren()) child.QueueFree();
-        var scroll = new ScrollContainer();
-        scroll.SetAnchorsPreset(LayoutPreset.FullRect);
-        AddChild(scroll);
+        _panel?.QueueFree();
+        EnsureStage();
+        _panel = new Control { MouseFilter = MouseFilterEnum.Ignore };
+        _panel.SetAnchorsPreset(LayoutPreset.FullRect);
+        AddChild(_panel);
+        var scroll = new ScrollContainer { MouseFilter = MouseFilterEnum.Stop };
+        scroll.AnchorLeft = 1;
+        scroll.AnchorRight = 1;
+        scroll.AnchorTop = 0;
+        scroll.AnchorBottom = 1;
+        scroll.OffsetLeft = -340;
+        scroll.OffsetRight = -8;
+        scroll.OffsetTop = 8;
+        scroll.OffsetBottom = -8;
+        _panel.AddChild(scroll);
         var column = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
         scroll.AddChild(column);
         column.AddChild(new Label { Text = T("title") });
@@ -237,6 +339,8 @@ public partial class Playfield : Control
         Button(controls, "load", Load);
         Button(controls, "economy", () => Start("economy"));
         Button(controls, "politics", () => Start("politics"));
+        Button(controls, "trip", () => Start("trip"));
+        column.AddChild(new Label { Text = T("scene.hint"), AutowrapMode = TextServer.AutowrapMode.WordSmart });
         _status = new Label();
         column.AddChild(_status);
         _feedbackLabel = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart };

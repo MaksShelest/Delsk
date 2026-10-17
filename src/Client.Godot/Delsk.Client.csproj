@@ -11,6 +11,7 @@
     <EmbeddedResource Include="../../scenarios/baseline-controllers.json" LogicalName="Play.baseline-controllers.json" />
     <EmbeddedResource Include="../../scenarios/baseline-politics.json" LogicalName="Play.baseline-politics.json" />
     <EmbeddedResource Include="../../scenarios/baseline-politics-controllers.json" LogicalName="Play.baseline-politics-controllers.json" />
+    <EmbeddedResource Include="../../scenarios/logistics-cycle.json" LogicalName="Play.logistics-cycle.json" />
     <EmbeddedResource Include="../../scenarios/economic-cycle.json" LogicalName="Fixture.scenario.json" />
     <EmbeddedResource Include="../../scenarios/platform-cycle.commands.jsonl" LogicalName="Fixture.commands.jsonl" />
     <EmbeddedResource Include="../../scenarios/platform-cycle.checkpoints.csv" LogicalName="Fixture.checkpoints.csv" />
