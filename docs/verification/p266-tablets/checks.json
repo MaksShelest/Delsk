@@ -1,0 +1,173 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "2026-10-17",
+  "basis": "1493f96d598cc0a592875710b8e90ededc3a1057",
+  "scope": "P26.6 B1; B2/C remain planned",
+  "sdk": "10.0.401",
+  "godot": "4.7.2.stable.mono.official.ed1daf0bf",
+  "core_rules_changed": false,
+  "read_only_core_queries": [
+    "CanTravel",
+    "CapitalTradingOf"
+  ],
+  "tests": {
+    "total": "658",
+    "executed": "658",
+    "passed": "658",
+    "failed": "0",
+    "error": "0",
+    "timeout": "0",
+    "aborted": "0",
+    "inconclusive": "0",
+    "passedButRunAborted": "0",
+    "notRunnable": "0",
+    "notExecuted": "0",
+    "disconnected": "0",
+    "warning": "0",
+    "completed": "0",
+    "inProgress": "0",
+    "pending": "0"
+  },
+  "headless": {
+    "status": "succeeded",
+    "scenarios": [
+      "cycle",
+      "recovery",
+      "development",
+      "labor",
+      "equipment",
+      "autonomous",
+      "market",
+      "pickup",
+      "delivery",
+      "capital-delivery",
+      "logistics",
+      "logistics-upgrade",
+      "own-storage",
+      "inbound",
+      "own-production",
+      "logistics-queue",
+      "capital-demand",
+      "autonomous-demand",
+      "elections",
+      "support"
+    ],
+    "checkpoint_cases": {
+      "cycle": 55,
+      "equipment": 101,
+      "autonomous": 350,
+      "market": 44,
+      "pickup": 47,
+      "delivery": 37,
+      "capital-delivery": 3,
+      "logistics": 69,
+      "logistics-upgrade": 170,
+      "own-storage": 170,
+      "inbound": 78,
+      "own-production": 170,
+      "logistics-queue": 185,
+      "capital-demand": 85,
+      "autonomous-demand": 350,
+      "elections": 9,
+      "support": 18
+    },
+    "comparison": "every exported tick hash, state, ledger, event, command and labor row",
+    "controlled_fixture": {
+      "name": "late-return",
+      "origin": "test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged",
+      "checkpoint_tick": 72,
+      "final_tick": 80
+    },
+    "baseline_cases": {
+      "economy": {
+        "final_tick": 1200,
+        "checkpoint_tick": 350
+      },
+      "auction": {
+        "final_tick": 180,
+        "checkpoint_tick": 30
+      },
+      "politics": {
+        "final_tick": 160,
+        "checkpoint_tick": 19
+      },
+      "logistics": {
+        "final_tick": 360,
+        "checkpoint_tick": 80
+      }
+    },
+    "model_safety": {
+      "checkpoint_tick": 6,
+      "final_tick": 60,
+      "valid": 1,
+      "forged_actor": 1,
+      "late_reply": 1
+    },
+    "model_off": "exact world equality with baseline-economy and the same headless timing label",
+    "exports": 81,
+    "replays": 9,
+    "comparison_pairs": 54,
+    "scope": "P00-P26.6 play HUD and context actions; live Ollama series is separate evidence; windowed and device checks are separate",
+    "author": "Шелестов Максим Евгеньевич"
+  },
+  "platform_probe": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "befa38addd66ef7c7c7d9e6c7d98561edd21c4a4673ad32ba689a7bb45f89fff",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "ElectionCheckedTicks": 40,
+    "ElectionStateHash": "a878e9e122ef5a26ae4a120dfd62a690c93dfa5c870c38e0039caa891ce958e8",
+    "ElectionRestoredTicks": [
+      9,
+      19,
+      20,
+      21
+    ],
+    "SupportCheckedTicks": 120,
+    "SupportStateHash": "12e2f23d454aa2fb11421dffad3f6c141981ad788556fe507ef052def77a393a",
+    "SupportRestoredTicks": [
+      17,
+      18,
+      19,
+      27,
+      99,
+      100
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "window": {
+    "platform": "Linux/Xvfb/llvmpipe/OpenGL Compatibility",
+    "size": "1100x720",
+    "exit_code": 0,
+    "checks": [
+      "DELSK_TABLET_CAPITAL_PASS pause queue run cancel filters sort reopen ru_en wasd_until_cell_exit",
+      "DELSK_TABLET_BUSY_PASS loaded_request blocked_wasd cancel focus_pause_survives_close no_catchup",
+      "DELSK_TABLET_ENTERPRISE_PASS enterprise real_progress stock routes ru_en run menu_pause close",
+      "DELSK_TABLET_ENTERPRISE_PASS trip real_progress stock routes ru_en run menu_pause close"
+    ],
+    "additional_debug_preservation_exit_code": 0,
+    "fixtures": "Existing land-and-content/logistics-cycle scenarios; ordinary Core harvest, move, transfer, production, paid warehouse/truck and actual trip; no direct world edits"
+  },
+  "not_implemented": [
+    "continuous harvest and authoritative cancellation on leaving",
+    "participant market lots/bids/auctions/pickup UI",
+    "free-choice shop sites and NPC selection"
+  ],
+  "not_checked": [
+    "Windows executable execution",
+    "Android device",
+    "long-session device performance profile"
+  ]
+}

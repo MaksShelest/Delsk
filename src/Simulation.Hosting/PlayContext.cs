@@ -12,7 +12,7 @@ public static class PlayContext
     private static string L(string lang, string ru, string en) => PlayerText.Local(lang, ru, en);
     private static long Free(InventoryView pack, string item) => pack.Stock.Where(s => s.ItemId == item).Sum(s => s.Quantity - s.Reserved);
 
-    public static ContextChoice[] At(PlayerView view, ScenarioDefinition scenario, string language)
+    public static ContextChoice[] At(PlayerView view, ScenarioDefinition scenario, string language, bool tablets = false)
     {
         var cell = view.Participant.Position;
         var choices = new List<ContextChoice>();
@@ -72,7 +72,9 @@ public static class PlayContext
             choices.Add(new("build:" + type.Id, L(language, "Построить: ", "Build: ") + PlayerText.Building(language, type.Id) + " — " + price,
                 PlayerDesk.Build(cell, type.Id), issues.Count == 0, string.Join("; ", issues)));
         }
-        foreach (var offer in view.CapitalOffers.Where(o => o.Position == cell && o.RemainingQuantity > 0 && (o.ExpiresAtTick is null || o.ExpiresAtTick >= view.Tick))
+        if (tablets && TabletState.IsCapital(scenario, cell))
+            choices.Add(new("exchange", L(language, "Открыть биржу", "Open exchange"), null));
+        foreach (var offer in view.CapitalOffers.Where(o => !tablets && o.Position == cell && o.RemainingQuantity > 0 && (o.ExpiresAtTick is null || o.ExpiresAtTick >= view.Tick))
             .OrderBy(o => o.ItemId, StringComparer.Ordinal).ThenBy(o => o.Id))
         {
             long available = Free(pack, offer.ItemId);
