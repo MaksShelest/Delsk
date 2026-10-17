@@ -1,0 +1,28 @@
+{
+  "stage": "P26",
+  "command": "py -3 scripts/check_headless.py --output artifacts/p26-regression",
+  "status": "succeeded",
+  "tests": {
+    "total": "621",
+    "executed": "621",
+    "passed": "621",
+    "failed": "0"
+  },
+  "exports": 81,
+  "replays": 9,
+  "comparisonPairs": 54,
+  "clientBuild": "dotnet build src/Client.Godot/Delsk.Client.csproj -c Release succeeded",
+  "godotSmoke": {
+    "status": "passed",
+    "ticks": 62,
+    "lifecycleAdapterChecked": true,
+    "checkpointRestoreChecked": true,
+    "electionCheckedTicks": 40,
+    "supportCheckedTicks": 120
+  },
+  "playfieldLoad": "--quit-after 2 exited 0 without a script error",
+  "smokeSceneChange": "deferred via SceneTree.CallDeferred; repeated headless smoke stderr had no ERROR",
+  "logCheck": "verify_platform_probe.py self-test rejects remove_child while the parent is busy",
+  "scope": "Headless regression plus the player-desk tests. The Playfield scene was compiled, not exercised in the editor. UI polish and the Android device gate are excluded.",
+  "author": "Шелестов Максим Евгеньевич"
+}

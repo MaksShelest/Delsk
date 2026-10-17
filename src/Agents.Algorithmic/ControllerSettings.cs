@@ -1,4 +1,7 @@
+using System.Buffers.Binary;
 using System.Collections.Immutable;
+using System.Security.Cryptography;
+using System.Text;
 using Simulation.Core;
 
 namespace Agents.Algorithmic;
@@ -25,6 +28,9 @@ public sealed partial class AlgorithmicController : IController
     public const string PolicyKind = "utility-economy-v2";
     private AlgorithmState _state;
     public ParticipantId Actor => new(_state.Settings.ActorId);
+    /// <summary>Тот же вывод семени, что у runner: порядок присоединения контроллеров его не меняет.</summary>
+    public static ulong RuntimeSeed(ulong scenarioSeed, long actor)
+        => BinaryPrimitives.ReadUInt64LittleEndian(SHA256.HashData(Encoding.UTF8.GetBytes(FormattableString.Invariant($"controller-v1:{scenarioSeed}:{actor}"))));
     public AlgorithmicController(ControllerSettings settings, ulong seed, IEnumerable<long> participants)
     {
         ValidateSettings(settings);

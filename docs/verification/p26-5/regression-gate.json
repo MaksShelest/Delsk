@@ -1,0 +1,33 @@
+{
+  "stage": "P26.5",
+  "command": "py -3 scripts/check_headless.py --output artifacts/p265-regression",
+  "status": "succeeded",
+  "tests": {
+    "total": "623",
+    "executed": "623",
+    "passed": "623",
+    "failed": "0",
+    "timeSeconds": 117.23
+  },
+  "exports": 81,
+  "replays": 9,
+  "comparisonPairs": 54,
+  "clientBuild": "dotnet build src/Client.Godot/Delsk.Client.csproj -c Debug succeeded",
+  "godotSmoke": {
+    "status": "passed",
+    "ticks": 62,
+    "lifecycleAdapterChecked": true,
+    "checkpointRestoreChecked": true,
+    "restoredTicks": [12, 34, 55, 60],
+    "electionCheckedTicks": 40,
+    "electionRestoredTicks": [9, 19, 20, 21],
+    "supportCheckedTicks": 120,
+    "supportRestoredTicks": [17, 18, 19, 27, 99, 100]
+  },
+  "playfieldLoad": "--quit-after 3 exited 0 without ERROR",
+  "tripLoad": "--quit-after 8 -- --trip exited 0 without ERROR",
+  "import": "exit 0; stderr contained only the known EditorSettings Android notice",
+  "windowedVisualCheck": "not performed",
+  "deviceCheck": "not performed",
+  "author": "Шелестов Максим Евгеньевич"
+}
