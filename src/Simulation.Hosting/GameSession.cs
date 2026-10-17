@@ -1,8 +1,10 @@
+using System.Text.Json.Serialization;
 using Simulation.Core;
 
 namespace Simulation.Hosting;
 
-public record RecordedCommand(long SubmittedAtTick, ParticipantId AuthenticatedActor, CommandEnvelope Command);
+public record RecordedCommand(long SubmittedAtTick, ParticipantId AuthenticatedActor, CommandEnvelope Command,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] int TravelQuantum = 0);
 public record TickSample(long Tick, long ParticipantCashMinor, long WageExpenseMinor, long EnergyExpenseMinor,
     long Harvested, long Produced, long Exported, string StateHash, long Population, long Unemployed);
 public record LaborSample(long Tick, EmploymentView[] EmploymentGroups);
@@ -60,13 +62,79 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
         TickCompleted?.Invoke(this);
     }
     public void SetPaused(bool paused) => Paused = paused;
+    public void SetTravelHeading(ParticipantId actor, int x, int z)
+    {
+        if (x is < -1 or > 1 || z is < -1 or > 1) throw new ArgumentOutOfRangeException(nameof(x));
+        long sequence = checked(_sequences.GetValueOrDefault(actor.Value) + 1);
+        var envelope = new CommandEnvelope($"{SessionId}:{actor.Value}:{sequence}", actor, sequence,
+            Engine.Tick, Engine.Tick, Engine.Tick, new GameAction(ActionKind.SetTravelHeading, new Cell(x, z)));
+        Engine.SetTravelHeading(actor, x, z);
+        _sequences[actor.Value] = sequence;
+        _tape.Add(new(Engine.Tick, actor, envelope, Engine.TravelQuantum));
+    }
+
+    public void AdvanceTravelQuantum()
+    {
+        if (Paused) return;
+        ApplyHeadingPlayback();
+        if (Engine.MoveTravelQuantum()) Step();
+    }
+
+    public void CompleteTravelTick()
+    {
+        if (Paused) return;
+        int guard = 0;
+        do
+        {
+            AdvanceTravelQuantum();
+            if (++guard > SimulationEngine.TravelQuantaPerTick)
+                throw new InvalidOperationException("Travel tick did not close");
+        }
+        while (Engine.TravelQuantum != 0);
+    }
+
+    public void UseHeadingPlayback(RecordedCommand[] tape)
+    {
+        if (tape.Any(c => c.Command.Action.Kind == ActionKind.SetTravelHeading &&
+            (c.TravelQuantum < 0 || c.TravelQuantum >= SimulationEngine.TravelQuantaPerTick ||
+                c.Command.Action.Target.X is < -1 or > 1 || c.Command.Action.Target.Z is < -1 or > 1)))
+            throw new ArgumentException("Invalid travel playback");
+        _headingPlayback = tape.Where(c => c.Command.Action.Kind == ActionKind.SetTravelHeading)
+            .OrderBy(c => c.SubmittedAtTick).ThenBy(c => c.TravelQuantum).ThenBy(c => c.Command.LocalSequence).ToArray();
+        _headingPlaybackIndex = 0;
+    }
+
+    private void ApplyHeadingPlayback()
+    {
+        while (_headingPlaybackIndex < _headingPlayback.Length)
+        {
+            var input = _headingPlayback[_headingPlaybackIndex];
+            if (input.SubmittedAtTick > Engine.Tick ||
+                (input.SubmittedAtTick == Engine.Tick && input.TravelQuantum > Engine.TravelQuantum))
+                return;
+            if (input.SubmittedAtTick != Engine.Tick || input.TravelQuantum != Engine.TravelQuantum)
+                throw new InvalidOperationException("Playback input missed its barrier");
+            Engine.SetTravelHeading(input.AuthenticatedActor, input.Command.Action.Target.X, input.Command.Action.Target.Z);
+            _tape.Add(input);
+            _sequences[input.AuthenticatedActor.Value] = Math.Max(
+                _sequences.GetValueOrDefault(input.AuthenticatedActor.Value), input.Command.LocalSequence);
+            _headingPlaybackIndex++;
+        }
+    }
+
     public static GameSession Replay(ScenarioDefinition definition, RecordedCommand[] tape, long finalTick)
     {
         if (finalTick < 0 || finalTick > definition.MaxTicks || tape.Any(x => x.SubmittedAtTick < 0 || x.SubmittedAtTick > finalTick))
             throw new ArgumentException("Invalid replay horizon");
         var session = new GameSession(new SimulationEngine(definition), "replay");
-        session.ConfigurePlayback(tape, finalTick);
-        while (session.Engine.Tick < finalTick) session.Step();
+        bool travel = tape.Any(x => x.Command.Action.Kind == ActionKind.SetTravelHeading);
+        session.ConfigurePlayback(travel ? tape.Where(x => x.Command.Action.Kind != ActionKind.SetTravelHeading).ToArray() : tape, finalTick);
+        if (travel) session.UseHeadingPlayback(tape);
+        while (session.Engine.Tick < finalTick)
+        {
+            if (travel) session.AdvanceTravelQuantum();
+            else session.Step();
+        }
         session.SubmitPlaybackInputs(); // Preserve inputs submitted at the final published barrier.
         return session;
     }
@@ -77,11 +145,14 @@ public sealed class TickScheduler
 {
     private readonly GameSession _session;
     private readonly long _tickDuration;
+    private readonly long _quantumDuration;
     private long _accumulator;
     public TickScheduler(GameSession session, TimeSpan? tickDuration = null)
     {
         _session = session; _tickDuration = (tickDuration ?? TimeSpan.FromSeconds(1)).Ticks;
-        if (_tickDuration <= 0) throw new ArgumentException("Tick duration must be positive");
+        if (_tickDuration <= 0 || _tickDuration % SimulationEngine.TravelQuantaPerTick != 0)
+            throw new ArgumentException("Tick duration must be positive and divide into equal travel quanta");
+        _quantumDuration = _tickDuration / SimulationEngine.TravelQuantaPerTick;
     }
     public void Headless(long count)
     {
@@ -93,8 +164,8 @@ public sealed class TickScheduler
         if (elapsed.Ticks < 0) throw new ArgumentException("Elapsed time cannot be negative");
         if (_session.Paused) { _accumulator = 0; return; }
         _accumulator = checked(_accumulator + elapsed.Ticks);
-        while (_accumulator >= _tickDuration)
-        { _session.Step(); _accumulator -= _tickDuration; }
+        while (_accumulator >= _quantumDuration)
+        { _session.AdvanceTravelQuantum(); _accumulator -= _quantumDuration; }
     }
     public void SetPaused(bool paused)
     { _accumulator = 0; _session.SetPaused(paused); }

@@ -3,7 +3,8 @@ using Simulation.Core;
 namespace Simulation.Hosting;
 
 public readonly record struct PresentationPoint(float X, float Z);
-public record PresentationActor(long Id, bool Human, int X, int Z, bool Busy);
+public record PresentationActor(long Id, bool Human, int X, int Z, bool Busy,
+    int OffsetX = SimulationEngine.TravelCenter, int OffsetZ = SimulationEngine.TravelCenter, int FacingX = 0, int FacingZ = -1);
 public record PresentationMarker(string Kind, int X, int Z, string Label, long EntityId, long OwnerId);
 public record PresentationTrip(long LogisticsId, long OwnerId, string ItemId, string State, int X, int Z);
 public record PresentationFrame(long Tick, int MapWidth, int MapHeight, PresentationActor[] Actors,
@@ -23,7 +24,11 @@ public static class Presentation
     {
         var world = engine.Inspect();
         var actors = world.Participants.OrderBy(p => p.Id.Value).Select(p =>
-            new PresentationActor(p.Id.Value, p.Id.Value == humanId, p.Position.X, p.Position.Z, p.Busy)).ToArray();
+        {
+            var travel = engine.TravelOf(p.Id);
+            return new PresentationActor(p.Id.Value, p.Id.Value == humanId, p.Position.X, p.Position.Z, p.Busy,
+                travel.OffsetX, travel.OffsetZ, travel.FacingX, travel.FacingZ);
+        }).ToArray();
         var markers = new List<PresentationMarker>();
         var blocked = new HashSet<Cell>(scenario.BlockedCells);
         for (int x = 0; x < scenario.MapWidth; x++)
@@ -32,7 +37,12 @@ public static class Presentation
                     markers.Add(new("blocked", x, z, "", 0, 0));
         foreach (var plot in world.Plots.OrderBy(p => p.Id.Value))
         {
-            string kind = plot.IsCorridor ? "corridor" : plot.ShopParticipantId.HasValue ? "shop-plot" : "plot";
+            string kind = plot.IsCorridor ? "corridor"
+                : plot.ShopParticipantId.HasValue ? "shop-plot"
+                : plot.ReservedBy.HasValue ? "plot-reserved"
+                : plot.OwnerId?.Value == humanId ? "plot-own"
+                : plot.OwnerId.HasValue ? "plot-foreign"
+                : "plot-free";
             markers.Add(new(kind, plot.Position.X, plot.Position.Z, "", plot.Id.Value, plot.OwnerId?.Value ?? 0));
         }
         foreach (var node in scenario.ResourceNodes)
@@ -40,8 +50,11 @@ public static class Presentation
         foreach (var building in world.Buildings.OrderBy(b => b.Id.Value))
             markers.Add(new(building.Kind.ToString().ToLowerInvariant(), building.Position.X, building.Position.Z,
                 building.TypeId, building.Id.Value, building.OwnerId.Value));
-        foreach (var offer in world.CapitalOffers.Where(o => o.RemainingQuantity > 0))
-            markers.Add(new("capital", offer.Position.X, offer.Position.Z, offer.ItemId, offer.Id, 0));
+        foreach (var group in world.CapitalOffers.Where(o => o.RemainingQuantity > 0).GroupBy(o => o.Position))
+        {
+            string label = string.Join(", ", group.OrderBy(o => o.ItemId, StringComparer.Ordinal).Select(o => $"{o.ItemId} {o.RemainingQuantity}"));
+            markers.Add(new("capital", group.Key.X, group.Key.Z, label, group.Min(o => o.Id), 0));
+        }
         var trips = world.Logistics.Where(l => l.Trip is not null).OrderBy(l => l.Id.Value).Select(l =>
             new PresentationTrip(l.Id.Value, l.OwnerId.Value, l.Trip!.ItemId, l.Trip.State, l.Trip.Position.X, l.Trip.Position.Z)).ToArray();
         return new(world.Tick, scenario.MapWidth, scenario.MapHeight, actors, markers.ToArray(), trips);

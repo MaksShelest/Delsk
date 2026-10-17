@@ -42,6 +42,12 @@ internal sealed class ActorState(long id, long account, long inventory, Cell pos
     public long Inventory { get; } = inventory;
     public Cell Position { get; set; } = position;
     public PersonalJob? Job { get; set; }
+    public int OffsetX { get; set; } = SimulationEngine.TravelCenter;
+    public int OffsetZ { get; set; } = SimulationEngine.TravelCenter;
+    public int HeadingX { get; set; }
+    public int HeadingZ { get; set; }
+    public int FacingX { get; set; }
+    public int FacingZ { get; set; } = -1;
 }
 internal sealed class PersonalJob(long id, string kind, long startTick, long completionTick,
     Cell[] path, string item, long quantity, string capacityHold, string commandId, long equipmentId = 0)

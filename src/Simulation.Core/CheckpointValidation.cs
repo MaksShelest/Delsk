@@ -25,6 +25,15 @@ public sealed partial class SimulationEngine
             _economy.Accounts.Count(a => a.Value.Kind == "Participant") != _actors.Count)
             throw new CheckpointException("InvalidAccounts");
         var balances = _economy.Accounts.Keys.ToDictionary(id => id, _ => 0L);
+        if (_travelQuantum is < 0 or >= TravelQuantaPerTick) throw new CheckpointException("InvalidTravel");
+        foreach (var actor in _actors.Values)
+            if (actor.OffsetX is < 0 or >= TravelUnitsPerCell || actor.OffsetZ is < 0 or >= TravelUnitsPerCell ||
+                actor.HeadingX is < -1 or > 1 || actor.HeadingZ is < -1 or > 1 ||
+                actor.FacingX is < -1 or > 1 || actor.FacingZ is < -1 or > 1 ||
+                (actor.FacingX == 0 && actor.FacingZ == 0) ||
+                (actor.Job is { Kind: "Move" } && (actor.OffsetX != TravelCenter || actor.OffsetZ != TravelCenter ||
+                    actor.HeadingX != 0 || actor.HeadingZ != 0)))
+                throw new CheckpointException("InvalidTravel");
         foreach (var a in _actors.Values)
         {
             if (_economy.Accounts[a.Account].Kind != "Participant" || _economy.Inventories[a.Inventory].Owner != a.Id ||

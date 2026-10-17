@@ -14,7 +14,7 @@ public readonly record struct EmploymentGroupId(long Value);
 public readonly record struct ElectionId(long Value);
 public readonly record struct Cell(int X, int Z);
 
-public enum ActionKind { MoveTo, Harvest, Transfer, SetProductionEnabled, SellAvailableToCapital, CancelCapitalSale,
+public enum ActionKind { MoveTo, Harvest, Transfer, SetProductionEnabled, SellAvailableToCapital, CancelCapitalSale, SetTravelHeading,
     ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe, SetWage, BuyEquipment, UpgradeEquipment, SetEquipmentMode, CreateSellOffer, SubmitBuyRequest, RaiseBid, WithdrawBid, CollectPurchase, CreateBuyOffer, AcceptDeliveryQuantity, WithdrawSupplyRequest, CancelBuyOffer, DeliverContract, BuyLogistics, SetLogisticsContract, UpgradeLogistics, SetLogisticsStorage, SetLogisticsInbound, SetLogisticsProduction, QueueLogisticsJob, SetLogisticsEnabled, SetVoteChoice, ContinueAfterVictory, ProposeSupport, AcceptSupport, RejectSupport, SignSupport }
 public enum ResultStatus { Accepted, Rejected }
 public record GameAction(ActionKind Kind, Cell Target = default, string ItemId = "", long Quantity = 0,

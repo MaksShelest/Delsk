@@ -10,10 +10,12 @@ public partial class PresentationStage : Node3D
     private readonly System.Collections.Generic.Dictionary<long, Vector3> _from = new();
     private readonly System.Collections.Generic.Dictionary<long, Vector3> _to = new();
     private readonly System.Collections.Generic.Dictionary<long, MeshInstance3D> _trips = new();
+    private readonly System.Collections.Generic.Dictionary<long, Vector2> _facing = new();
     private string _staticKey = "";
     private long _tick = -1;
     private float _fraction = 1;
     private bool _frozen = true;
+    private bool _follow;
 
     public override void _Ready()
     {
@@ -33,9 +35,10 @@ public partial class PresentationStage : Node3D
         PlaceMovers();
     }
 
-    public void Show(Simulation.Hosting.PresentationFrame frame, bool frozen, long selectedBuilding, string you)
+    public void Show(Simulation.Hosting.PresentationFrame frame, bool frozen, long selectedBuilding, string you, bool followHuman)
     {
         _frozen = frozen;
+        _follow = followHuman;
         if (_staticKey != StaticKey(frame))
         {
             _staticKey = StaticKey(frame);
@@ -45,8 +48,9 @@ public partial class PresentationStage : Node3D
         foreach (var actor in frame.Actors)
         {
             var body = Actor(actor.Id, actor.Human, actor.Human ? you : actor.Id.ToString());
-            var next = new Vector3(actor.X, 0.7f, actor.Z);
-            if (step && _to.TryGetValue(actor.Id, out var previous)) { _from[actor.Id] = previous; _fraction = 0; }
+            var next = new Vector3(actor.X + (actor.OffsetX - 500) / 1000f, 0.7f, actor.Z + (actor.OffsetZ - 500) / 1000f);
+            _facing[actor.Id] = new Vector2(actor.FacingX, actor.FacingZ);
+            if (!actor.Human && step && _to.TryGetValue(actor.Id, out var previous)) { _from[actor.Id] = previous; _fraction = 0; }
             else _from[actor.Id] = next;
             _to[actor.Id] = next;
         }
@@ -70,6 +74,18 @@ public partial class PresentationStage : Node3D
         _tick = frame.Tick;
         if (frozen || !step) _fraction = 1;
         PlaceMovers();
+        if (_follow) FollowHuman(frame);
+    }
+
+    private void FollowHuman(Simulation.Hosting.PresentationFrame frame)
+    {
+        var human = frame.Actors.FirstOrDefault(a => a.Human);
+        if (human is null) return;
+        float x = human.X + (human.OffsetX - 500) / 1000f;
+        float z = human.Z + (human.OffsetZ - 500) / 1000f;
+        // Фиксированный наклон: камера выше и сзади, W смотрит к верху кадра, впереди больше места.
+        _camera.Rotation = new Vector3(Mathf.DegToRad(-55), 0, 0);
+        _camera.Position = new Vector3(x, 0, z) + new Vector3(0, 16, 10);
     }
 
     public void Pick(Vector2 viewportPosition)
@@ -87,7 +103,11 @@ public partial class PresentationStage : Node3D
     {
         foreach (var actor in _actors)
             if (_from.TryGetValue(actor.Key, out var from) && _to.TryGetValue(actor.Key, out var to))
+            {
                 actor.Value.Position = from.Lerp(to, _fraction);
+                if (_facing.TryGetValue(actor.Key, out var facing) && (facing.X != 0 || facing.Y != 0))
+                    actor.Value.LookAt(actor.Value.Position + new Vector3(facing.X, 0, facing.Y), Vector3.Up);
+            }
         foreach (var trip in _trips)
         {
             long key = -trip.Key;
@@ -102,11 +122,15 @@ public partial class PresentationStage : Node3D
             if (child != _camera && child != _selection && child is not DirectionalLight3D) child.QueueFree();
         _actors.Clear();
         _trips.Clear();
-        float centerX = frame.MapWidth / 2f - 0.5f;
-        float centerZ = frame.MapHeight / 2f - 0.5f;
-        float span = Mathf.Max(frame.MapWidth, frame.MapHeight);
-        _camera.Position = new Vector3(centerX, span * 1.05f, centerZ + span * 0.95f);
-        _camera.LookAt(new Vector3(centerX, 0, centerZ), Vector3.Up);
+        _facing.Clear();
+        if (!_follow)
+        {
+            float centerX = frame.MapWidth / 2f - 0.5f;
+            float centerZ = frame.MapHeight / 2f - 0.5f;
+            float span = Mathf.Max(frame.MapWidth, frame.MapHeight);
+            _camera.Position = new Vector3(centerX, span * 1.05f, centerZ + span * 0.95f);
+            _camera.LookAt(new Vector3(centerX, 0, centerZ), Vector3.Up);
+        }
         for (int x = 0; x < frame.MapWidth; x++)
             for (int z = 0; z < frame.MapHeight; z++)
                 AddChild(Tile(x, z, new Color(0.42f, 0.52f, 0.3f)));
@@ -116,7 +140,10 @@ public partial class PresentationStage : Node3D
             {
                 "blocked" => Tile(marker.X, marker.Z, new Color(0.22f, 0.23f, 0.26f), 0.03f),
                 "corridor" => Tile(marker.X, marker.Z, new Color(0.58f, 0.52f, 0.4f), 0.03f),
-                "plot" => Tile(marker.X, marker.Z, new Color(0.62f, 0.45f, 0.26f), 0.03f),
+                "plot" or "plot-free" => Tile(marker.X, marker.Z, new Color(0.62f, 0.45f, 0.26f), 0.03f),
+                "plot-own" => Tile(marker.X, marker.Z, new Color(0.4f, 0.58f, 0.28f), 0.03f),
+                "plot-foreign" => Tile(marker.X, marker.Z, new Color(0.45f, 0.28f, 0.24f), 0.03f),
+                "plot-reserved" => Tile(marker.X, marker.Z, new Color(0.72f, 0.55f, 0.22f), 0.03f),
                 "shop-plot" => Tile(marker.X, marker.Z, new Color(0.46f, 0.36f, 0.55f), 0.03f),
                 "resource" => Mark(new CylinderMesh { TopRadius = 0.22f, BottomRadius = 0.22f, Height = 0.7f },
                     marker.Label == "wood" ? new Color(0.25f, 0.55f, 0.22f) : new Color(0.82f, 0.72f, 0.2f),
@@ -145,6 +172,12 @@ public partial class PresentationStage : Node3D
             _ => new Color(0.95f, 0.55f, 0.15f)
         };
         var body = Mark(new CapsuleMesh { Radius = 0.22f, Height = 0.9f }, color, Vector3.Zero, caption);
+        if (human)
+        {
+            var nose = Solid(new BoxMesh { Size = new Vector3(0.08f, 0.08f, 0.18f) }, new Color(0.15f, 0.15f, 0.15f));
+            nose.Position = new Vector3(0, 0.15f, -0.42f);
+            body.AddChild(nose);
+        }
         AddChild(body);
         _actors[id] = body;
         return body;
