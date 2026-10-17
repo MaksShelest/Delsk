@@ -11,9 +11,9 @@ public class PlayNoticeTests
     public void HarvestNoticeUsesTheCompletedQuantityAndKnownReasonsStayReadable()
     {
         var done = new PublicSimulationEvent(1, 2, 3, "HarvestCompleted", new(1), 9, "wood", 1, 0, "");
-        Assert.Equal("Получено: wood ×1", PlayerText.OwnHarvest([done], 1, "ru"));
+        Assert.Equal("Получено: древесина ×1", PlayerText.OwnHarvest([done], 1, "ru"));
         Assert.Null(PlayerText.OwnHarvest([done], 2, "ru"));
-        Assert.Equal("Недостаточно денег для покупки.", PlayerText.Reason("ru", "NoMoney"));
+        Assert.Equal("Недостаточно денег.", PlayerText.Reason("ru", "NoMoney"));
         Assert.Equal("CustomCode", PlayerText.Reason("ru", "CustomCode"));
         Assert.Equal(PlayerText.Keys("ru").Order(), PlayerText.Keys("en").Order());
     }
@@ -33,7 +33,7 @@ public class PlayNoticeTests
         session.Step();
         Assert.False(session.Engine.Observe(new(1)).Participant.Busy);
         Assert.Equal(before + 1, PersonalWood(session));
-        Assert.Equal("Получено: wood ×1", PlayerText.OwnHarvest(session.Engine.PublicEventsSince(0), 1, "ru"));
+        Assert.Equal("Получено: древесина ×1", PlayerText.OwnHarvest(session.Engine.PublicEventsSince(0), 1, "ru"));
 
         var cycle = JsonSerializer.Deserialize<ScenarioDefinition>(File.ReadAllText(ScenarioPath("economic-cycle.json")), SimulationJson.Options)!;
         var frame = Presentation.Read(cycle, new SimulationEngine(cycle), 1);

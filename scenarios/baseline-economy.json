@@ -1,5 +1,5 @@
 {
-  "id": "baseline-economy-v2",
+  "id": "baseline-economy-v3",
   "seed": 42,
   "mapWidth": 16,
   "mapHeight": 7,
@@ -214,6 +214,15 @@
       },
       "priceMinor": 10000,
       "shopParticipantId": 4
+    },
+    {
+      "id": 11,
+      "position": {
+        "x": 12,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "shopParticipantId": 1
     }
   ],
   "buildingTypes": [

@@ -1,0 +1,190 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "2026-10-17",
+  "basis": "bf74bb21c1c0a7b32650a9890dea3e7af1a80ba7",
+  "toolchain": {
+    "dotnet_sdk": "10.0.401",
+    "godot": "4.7.2.stable.mono.official.ed1daf0bf",
+    "platform": "Linux x86_64"
+  },
+  "builds": {
+    "release_solution": "passed",
+    "debug_client": "passed",
+    "warnings": 0,
+    "errors": 0
+  },
+  "tests": {
+    "total": 643,
+    "passed": 643,
+    "failed": 0,
+    "new_integration_tests": 3,
+    "final_command": "dotnet tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll -noColor -noLogo -parallelMode none"
+  },
+  "headless": {
+    "status": "succeeded",
+    "exports": 81,
+    "replays": 9,
+    "comparison_pairs": 54
+  },
+  "platform_probe": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "befa38addd66ef7c7c7d9e6c7d98561edd21c4a4673ad32ba689a7bb45f89fff",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "ElectionCheckedTicks": 40,
+    "ElectionStateHash": "a878e9e122ef5a26ae4a120dfd62a690c93dfa5c870c38e0039caa891ce958e8",
+    "ElectionRestoredTicks": [
+      9,
+      19,
+      20,
+      21
+    ],
+    "SupportCheckedTicks": 120,
+    "SupportStateHash": "12e2f23d454aa2fb11421dffad3f6c141981ad788556fe507ef052def77a393a",
+    "SupportRestoredTicks": [
+      17,
+      18,
+      19,
+      27,
+      99,
+      100
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "window": {
+    "display": "Xvfb 1280x900, client 1100x720",
+    "renderer": "OpenGL Compatibility, Mesa llvmpipe (software)",
+    "economy_exit_code": 0,
+    "trip_exit_code": 0,
+    "review_exit_code": 0,
+    "checks": [
+      "WASD",
+      "wood harvest and HUD inventory",
+      "purchase and disabled construction reasons",
+      "capital sale window and settlement",
+      "menu pause",
+      "same-session Debug",
+      "matching legend",
+      "single manual tick",
+      "resume",
+      "trip and factory card",
+      "menu exit/save"
+    ]
+  },
+  "performance": {
+    "configured_max_fps": 60,
+    "economic_tick_ms": 1000,
+    "discarded_warmup_intervals": 5,
+    "steady_play_samples": [
+      {
+        "fps": 60.0,
+        "max_frame_ms": 18.0
+      },
+      {
+        "fps": 60.0,
+        "max_frame_ms": 16.7
+      },
+      {
+        "fps": 60.0,
+        "max_frame_ms": 16.7
+      },
+      {
+        "fps": 60.0,
+        "max_frame_ms": 16.7
+      },
+      {
+        "fps": 60.0,
+        "max_frame_ms": 16.9
+      },
+      {
+        "fps": 60.0,
+        "max_frame_ms": 31.5
+      },
+      {
+        "fps": 60.0,
+        "max_frame_ms": 16.7
+      },
+      {
+        "fps": 60.0,
+        "max_frame_ms": 16.7
+      },
+      {
+        "fps": 60.0,
+        "max_frame_ms": 16.7
+      },
+      {
+        "fps": 59.7,
+        "max_frame_ms": 21.7
+      },
+      {
+        "fps": 60.3,
+        "max_frame_ms": 16.7
+      },
+      {
+        "fps": 51.7,
+        "max_frame_ms": 50.1
+      },
+      {
+        "fps": 48.8,
+        "max_frame_ms": 83.3
+      },
+      {
+        "fps": 60.0,
+        "max_frame_ms": 16.7
+      },
+      {
+        "fps": 60.0,
+        "max_frame_ms": 21.9
+      },
+      {
+        "fps": 59.1,
+        "max_frame_ms": 41.3
+      },
+      {
+        "fps": 60.0,
+        "max_frame_ms": 16.7
+      },
+      {
+        "fps": 60.0,
+        "max_frame_ms": 16.7
+      },
+      {
+        "fps": 60.0,
+        "max_frame_ms": 16.7
+      },
+      {
+        "fps": 60.0,
+        "max_frame_ms": 16.7
+      }
+    ],
+    "fps_median": 60.0,
+    "fps_min": 48.8,
+    "fps_max": 60.3,
+    "worst_frame_ms": 83.3,
+    "scope": "20 one-second intervals; moving player + three NPCs; no screenshot capture during measured run; software render, not a device guarantee"
+  },
+  "not_checked": [
+    "user PC acceptance",
+    "Windows executable execution",
+    "Android device and lifecycle",
+    "long-session P27 profiling"
+  ],
+  "unchanged": [
+    "Simulation.Core rules",
+    "NPC policy",
+    "World/Session schema and RulesVersion",
+    "export presets"
+  ]
+}

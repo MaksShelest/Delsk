@@ -1,91 +1,154 @@
 using Godot;
+using Simulation.Hosting;
 
-/// <summary>Простые фигуры карты. Позиции берутся из ядра, сдвиг между клетками только рисуется.</summary>
+/// <summary>Rendering only. Fixed-step world positions are interpolated independently of FPS.</summary>
 public partial class PresentationStage : Node3D
 {
     public event System.Action<int, int>? CellChosen;
     private Camera3D _camera = null!;
     private MeshInstance3D _selection = null!;
-    private readonly System.Collections.Generic.Dictionary<long, MeshInstance3D> _actors = new();
-    private readonly System.Collections.Generic.Dictionary<long, Vector3> _from = new();
-    private readonly System.Collections.Generic.Dictionary<long, Vector3> _to = new();
-    private readonly System.Collections.Generic.Dictionary<long, MeshInstance3D> _trips = new();
-    private readonly System.Collections.Generic.Dictionary<long, Vector2> _facing = new();
+    private sealed class Mover(Node3D node, Vector3 at)
+    {
+        public Node3D Node = node;
+        public Vector3 From = at;
+        public Vector3 To = at;
+        public float Elapsed = 1;
+        public float Duration = 0.1f;
+        public bool Human;
+    }
+    private readonly System.Collections.Generic.Dictionary<long, Mover> _actors = new();
+    private readonly System.Collections.Generic.Dictionary<long, Mover> _trips = new();
+    private readonly System.Collections.Generic.List<Node3D> _staticNodes = new();
     private string _staticKey = "";
-    private long _tick = -1;
-    private float _fraction = 1;
     private bool _frozen = true;
     private bool _follow;
+    private int _mapWidth;
+    private int _mapHeight;
 
     public override void _Ready()
     {
-        _camera = new Camera3D { Current = true, Fov = 42 };
+        _camera = new Camera3D { Current = true, Fov = 46 };
         AddChild(_camera);
-        var light = new DirectionalLight3D { RotationDegrees = new Vector3(-48, 30, 0) };
-        AddChild(light);
-        _selection = Solid(new BoxMesh { Size = new Vector3(0.9f, 0.06f, 0.9f) }, new Color(1, 0.85f, 0.2f));
-        _selection.Visible = false;
+        AddChild(new WorldEnvironment { Environment = new Godot.Environment
+        { BackgroundMode = Godot.Environment.BGMode.Color, BackgroundColor = new Color("96aeb2") } });
+        _selection = new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(0.96f, 0.025f, 0.96f) }, Visible = false };
+        _selection.MaterialOverride = new StandardMaterial3D { AlbedoColor = new Color("f2cd6a"), ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded };
         AddChild(_selection);
     }
 
     public override void _Process(double delta)
     {
         if (_frozen) return;
-        _fraction = Mathf.Min(1, _fraction + (float)delta);
-        PlaceMovers();
+        foreach (var mover in _actors.Values.Concat(_trips.Values))
+        {
+            mover.Elapsed = Mathf.Min(mover.Duration, mover.Elapsed + (float)delta);
+            mover.Node.Position = mover.From.Lerp(mover.To, Mathf.Clamp(mover.Elapsed / mover.Duration, 0, 1));
+        }
+        FollowHuman();
     }
 
-    public void Show(Simulation.Hosting.PresentationFrame frame, bool frozen, long selectedBuilding, string you, bool followHuman)
+    public void Show(PresentationFrame frame, bool frozen, long selectedBuilding, string you, bool followHuman)
     {
+        bool snap = frozen || _frozen || _follow != followHuman;
         _frozen = frozen;
         _follow = followHuman;
-        if (_staticKey != StaticKey(frame))
+        _mapWidth = frame.MapWidth;
+        _mapHeight = frame.MapHeight;
+        string staticKey = frame.MapWidth + "x" + frame.MapHeight + "|" + string.Join(",", frame.Markers.Select(m =>
+            $"{m.Kind}:{m.X}:{m.Z}:{(m.Kind == "capital" ? "" : m.Label)}:{(m.Kind == "capital" ? 0 : m.EntityId)}:{m.OwnerId}"));
+        if (_staticKey != staticKey)
         {
-            _staticKey = StaticKey(frame);
+            _staticKey = staticKey;
             RebuildStatic(frame);
         }
-        bool step = frame.Tick == _tick + 1;
+        var liveActors = new System.Collections.Generic.HashSet<long>();
         foreach (var actor in frame.Actors)
         {
-            var body = Actor(actor.Id, actor.Human, actor.Human ? you : actor.Id.ToString());
-            var next = new Vector3(actor.X + (actor.OffsetX - 500) / 1000f, 0.7f, actor.Z + (actor.OffsetZ - 500) / 1000f);
-            _facing[actor.Id] = new Vector2(actor.FacingX, actor.FacingZ);
-            if (!actor.Human && step && _to.TryGetValue(actor.Id, out var previous)) { _from[actor.Id] = previous; _fraction = 0; }
-            else _from[actor.Id] = next;
-            _to[actor.Id] = next;
+            liveActors.Add(actor.Id);
+            var at = new Vector3(actor.X + (actor.OffsetX - 500) / 1000f, 0.07f, actor.Z + (actor.OffsetZ - 500) / 1000f);
+            if (!_actors.TryGetValue(actor.Id, out var mover))
+            {
+                var body = WorldModels.Person(actor.Human ? new Color("eef0dc") : actor.Id switch
+                { 2 => new Color("d87667"), 3 => new Color("6699cf"), _ => new Color("e7ae58") }, actor.Human ? you : actor.Id.ToString());
+                body.Position = at;
+                AddChild(body);
+                mover = new Mover(body, at) { Human = actor.Human };
+                _actors[actor.Id] = mover;
+            }
+            Target(mover, at, actor.Human ? 0.1f : 1, snap);
+            int labelRow = frame.Actors.Count(other => other.X == actor.X && other.Z == actor.Z && other.Id < actor.Id);
+            foreach (var label in mover.Node.GetChildren().OfType<Label3D>())
+                label.Position = new Vector3(0, 1.01f + labelRow * 0.23f, 0);
+            if (actor.FacingX != 0 || actor.FacingZ != 0)
+                mover.Node.Rotation = new Vector3(0, Mathf.Atan2(-actor.FacingX, -actor.FacingZ), 0);
         }
+        foreach (long id in _actors.Keys.Where(id => !liveActors.Contains(id)).ToArray())
+        { _actors[id].Node.QueueFree(); _actors.Remove(id); }
         var live = new System.Collections.Generic.HashSet<long>();
         foreach (var trip in frame.Trips)
         {
             live.Add(trip.LogisticsId);
-            var cargo = Cargo(trip.LogisticsId, trip.ItemId);
-            var next = new Vector3(trip.X, 0.45f, trip.Z);
-            long key = -trip.LogisticsId;
-            if (step && _to.TryGetValue(key, out var previous)) { _from[key] = previous; _fraction = 0; }
-            else _from[key] = next;
-            _to[key] = next;
-            cargo.Visible = true;
+            // Draw beside the loading door so a cart on the building's cell is not hidden by its roof.
+            var at = new Vector3(trip.X + 0.28f, 0.08f, trip.Z + 0.42f);
+            if (!_trips.TryGetValue(trip.LogisticsId, out var mover))
+            {
+                var body = WorldModels.Cargo();
+                body.Position = at;
+                AddChild(body);
+                mover = new Mover(body, at);
+                _trips[trip.LogisticsId] = mover;
+            }
+            Target(mover, at, 1, snap);
         }
-        foreach (var id in _trips.Keys.ToArray())
-            if (!live.Contains(id)) _trips[id].Visible = false;
+        foreach (long id in _trips.Keys.Where(id => !live.Contains(id)).ToArray())
+        { _trips[id].Node.QueueFree(); _trips.Remove(id); }
         var selected = frame.Markers.FirstOrDefault(m => m.Kind == "production" && m.EntityId == selectedBuilding);
         _selection.Visible = selected is not null;
-        if (selected is not null) _selection.Position = new Vector3(selected.X, 0.08f, selected.Z);
-        _tick = frame.Tick;
-        if (frozen || !step) _fraction = 1;
-        PlaceMovers();
-        if (_follow) FollowHuman(frame);
+        if (selected is not null) _selection.Position = new Vector3(selected.X, 0.075f, selected.Z);
+        if (_follow) FollowHuman();
+        else
+        {
+            float span = Mathf.Max(frame.MapWidth, frame.MapHeight);
+            var center = new Vector3(frame.MapWidth / 2f - 0.5f, 0, frame.MapHeight / 2f - 0.5f);
+            _camera.Position = center + new Vector3(0, span * 0.8f, span * 0.7f);
+            _camera.LookAt(center, Vector3.Up);
+        }
     }
 
-    private void FollowHuman(Simulation.Hosting.PresentationFrame frame)
+    private static void Target(Mover mover, Vector3 at, float duration, bool snap)
     {
-        var human = frame.Actors.FirstOrDefault(a => a.Human);
+        if (snap)
+        {
+            mover.From = mover.To = mover.Node.Position = at;
+            mover.Elapsed = mover.Duration;
+            return;
+        }
+        if (mover.To.IsEqualApprox(at)) return;
+        mover.From = mover.Node.Position;
+        mover.To = at;
+        mover.Elapsed = 0;
+        mover.Duration = duration;
+    }
+
+    public void ResetMotion()
+    {
+        foreach (var mover in _actors.Values.Concat(_trips.Values))
+        { mover.From = mover.To = mover.Node.Position; mover.Elapsed = mover.Duration; }
+        _frozen = true;
+    }
+
+    private void FollowHuman()
+    {
+        if (!_follow) return;
+        var human = _actors.Values.FirstOrDefault(m => m.Human);
         if (human is null) return;
-        float x = human.X + (human.OffsetX - 500) / 1000f;
-        float z = human.Z + (human.OffsetZ - 500) / 1000f;
-        // Фиксированный наклон: камера выше и сзади, W смотрит к верху кадра, впереди больше места.
         _camera.Rotation = new Vector3(Mathf.DegToRad(-55), 0, 0);
-        _camera.Position = new Vector3(x, 0, z) + new Vector3(0, 16, 10);
+        // Keep the player visible at map edges, without spending the playable view on empty space.
+        float xMargin = Mathf.Min(3.2f, (_mapWidth - 1) * 0.5f);
+        float zMargin = Mathf.Min(2.8f, (_mapHeight - 1) * 0.5f);
+        var focus = new Vector3(Mathf.Clamp(human.Node.Position.X, xMargin, _mapWidth - 1 - xMargin), 0,
+            Mathf.Clamp(human.Node.Position.Z - 0.6f, zMargin, _mapHeight - 1 - zMargin));
+        _camera.Position = focus + new Vector3(0, 6.5f, 4.55f);
     }
 
     public void Pick(Vector2 viewportPosition)
@@ -99,136 +162,47 @@ public partial class PresentationStage : Node3D
         CellChosen?.Invoke(Mathf.RoundToInt(hit.X), Mathf.RoundToInt(hit.Z));
     }
 
-    private void PlaceMovers()
-    {
-        foreach (var actor in _actors)
-            if (_from.TryGetValue(actor.Key, out var from) && _to.TryGetValue(actor.Key, out var to))
-            {
-                actor.Value.Position = from.Lerp(to, _fraction);
-                if (_facing.TryGetValue(actor.Key, out var facing) && (facing.X != 0 || facing.Y != 0))
-                    actor.Value.LookAt(actor.Value.Position + new Vector3(facing.X, 0, facing.Y), Vector3.Up);
-            }
-        foreach (var trip in _trips)
-        {
-            long key = -trip.Key;
-            if (_from.TryGetValue(key, out var from) && _to.TryGetValue(key, out var to))
-                trip.Value.Position = from.Lerp(to, _fraction);
-        }
-    }
+    private void AddStatic(Node3D node)
+    { AddChild(node); _staticNodes.Add(node); }
 
-    private void RebuildStatic(Simulation.Hosting.PresentationFrame frame)
+    private void RebuildStatic(PresentationFrame frame)
     {
-        foreach (Node child in GetChildren())
-            if (child != _camera && child != _selection && child is not DirectionalLight3D) child.QueueFree();
-        _actors.Clear();
-        _trips.Clear();
-        _facing.Clear();
-        if (!_follow)
+        foreach (var node in _staticNodes) node.QueueFree();
+        _staticNodes.Clear();
+        var ground = new Node3D();
+        WorldModels.Part(ground, new BoxMesh { Size = new Vector3(frame.MapWidth + 1, 0.15f, frame.MapHeight + 1) },
+            new Color("729365"), new Vector3(frame.MapWidth / 2f - 0.5f, -0.13f, frame.MapHeight / 2f - 0.5f));
+        for (int x = 0; x < frame.MapWidth; x++) for (int z = 0; z < frame.MapHeight; z++)
         {
-            float centerX = frame.MapWidth / 2f - 0.5f;
-            float centerZ = frame.MapHeight / 2f - 0.5f;
-            float span = Mathf.Max(frame.MapWidth, frame.MapHeight);
-            _camera.Position = new Vector3(centerX, span * 1.05f, centerZ + span * 0.95f);
-            _camera.LookAt(new Vector3(centerX, 0, centerZ), Vector3.Up);
+            float shade = ((x * 17 + z * 31) % 9) * 0.005f;
+            WorldModels.Part(ground, new BoxMesh { Size = new Vector3(0.98f, 0.035f, 0.98f) },
+                new Color(0.48f + shade, 0.62f + shade, 0.39f + shade), new Vector3(x, -0.005f, z));
         }
-        for (int x = 0; x < frame.MapWidth; x++)
-            for (int z = 0; z < frame.MapHeight; z++)
-                AddChild(Tile(x, z, new Color(0.42f, 0.52f, 0.3f)));
+        AddStatic(ground);
         foreach (var marker in frame.Markers)
         {
-            var node = marker.Kind switch
+            Node3D? node = null;
+            if (marker.Kind == "resource") node = WorldModels.Resource(marker.Label);
+            else if (marker.Kind is "production" or "warehouse" or "shop" or "capital") node = WorldModels.Building(marker.Kind, marker.Label);
+            else
             {
-                "blocked" => Tile(marker.X, marker.Z, new Color(0.22f, 0.23f, 0.26f), 0.03f),
-                "corridor" => Tile(marker.X, marker.Z, new Color(0.58f, 0.52f, 0.4f), 0.03f),
-                "plot" or "plot-free" => Tile(marker.X, marker.Z, new Color(0.62f, 0.45f, 0.26f), 0.03f),
-                "plot-own" => Tile(marker.X, marker.Z, new Color(0.4f, 0.58f, 0.28f), 0.03f),
-                "plot-foreign" => Tile(marker.X, marker.Z, new Color(0.45f, 0.28f, 0.24f), 0.03f),
-                "plot-reserved" => Tile(marker.X, marker.Z, new Color(0.72f, 0.55f, 0.22f), 0.03f),
-                "shop-plot" => Tile(marker.X, marker.Z, new Color(0.46f, 0.36f, 0.55f), 0.03f),
-                "resource" => Mark(new CylinderMesh { TopRadius = 0.22f, BottomRadius = 0.22f, Height = 0.7f },
-                    marker.Label == "wood" ? new Color(0.25f, 0.55f, 0.22f) : new Color(0.72f, 0.45f, 0.16f),
-                    new Vector3(marker.X, 0.35f, marker.Z), ""),
-                "production" => Mark(new BoxMesh { Size = new Vector3(0.7f, 0.7f, 0.7f) }, new Color(0.55f, 0.32f, 0.18f),
-                    new Vector3(marker.X, 0.35f, marker.Z), ""),
-                "warehouse" => Mark(new BoxMesh { Size = new Vector3(0.75f, 0.45f, 0.75f) }, new Color(0.25f, 0.4f, 0.62f),
-                    new Vector3(marker.X, 0.25f, marker.Z), ""),
-                "shop" => Mark(new BoxMesh { Size = new Vector3(0.6f, 0.55f, 0.6f) }, new Color(0.55f, 0.28f, 0.62f),
-                    new Vector3(marker.X, 0.3f, marker.Z), ""),
-                "capital" => Mark(new CylinderMesh { TopRadius = 0.18f, BottomRadius = 0.28f, Height = 1.1f },
-                    new Color(0.9f, 0.75f, 0.15f), new Vector3(marker.X, 0.55f, marker.Z), ""),
-                _ => null
-            };
-            if (node is not null) AddChild(node);
+                var tile = new Node3D();
+                Color color = marker.Kind switch
+                {
+                    "blocked" => new("596970"), "corridor" => new("bcb8a1"), "shop-plot" => new("a294ba"),
+                    "plot-own" => new("88b47a"), "plot-foreign" => new("be9285"), "plot-reserved" => new("dbbb70"),
+                    _ => new("bfa17c")
+                };
+                WorldModels.Part(tile, new BoxMesh { Size = new Vector3(0.91f, 0.035f, 0.91f) }, color, new Vector3(0, 0.025f, 0));
+                if (marker.Kind == "corridor")
+                    for (int n = -1; n <= 1; n++)
+                        WorldModels.Part(tile, new BoxMesh { Size = new Vector3(0.82f, 0.018f, 0.19f) }, new Color("d6d0b8"), new Vector3(0, 0.055f, n * 0.27f));
+                if (marker.Kind.StartsWith("plot", System.StringComparison.Ordinal) || marker.Kind == "shop-plot")
+                    foreach (float x in new[] { -0.39f, 0.39f }) foreach (float z in new[] { -0.39f, 0.39f })
+                        WorldModels.Part(tile, new BoxMesh { Size = new Vector3(0.055f, 0.18f, 0.055f) }, new Color("e4d8b3"), new Vector3(x, 0.1f, z));
+                node = tile;
+            }
+            if (node is not null) { node.Position = new Vector3(marker.X, 0.045f, marker.Z); AddStatic(node); }
         }
-    }
-
-    private MeshInstance3D Actor(long id, bool human, string caption)
-    {
-        if (_actors.TryGetValue(id, out var existing)) return existing;
-        var color = human ? new Color(0.95f, 0.95f, 0.95f) : id switch
-        {
-            2 => new Color(0.85f, 0.25f, 0.22f),
-            3 => new Color(0.2f, 0.45f, 0.9f),
-            _ => new Color(0.95f, 0.55f, 0.15f)
-        };
-        var body = Mark(new CapsuleMesh { Radius = 0.22f, Height = 0.9f }, color, Vector3.Zero, caption);
-        if (human)
-        {
-            var nose = Solid(new BoxMesh { Size = new Vector3(0.08f, 0.08f, 0.18f) }, new Color(0.15f, 0.15f, 0.15f));
-            nose.Position = new Vector3(0, 0.15f, -0.42f);
-            body.AddChild(nose);
-        }
-        AddChild(body);
-        _actors[id] = body;
-        return body;
-    }
-
-    private MeshInstance3D Cargo(long id, string item)
-    {
-        if (_trips.TryGetValue(id, out var existing)) return existing;
-        var cargo = Mark(new BoxMesh { Size = new Vector3(0.38f, 0.28f, 0.55f) }, new Color(0.95f, 0.82f, 0.2f), Vector3.Zero, item);
-        AddChild(cargo);
-        _trips[id] = cargo;
-        return cargo;
-    }
-
-    private static string StaticKey(Simulation.Hosting.PresentationFrame frame) =>
-        frame.MapWidth + "x" + frame.MapHeight + "|" + string.Join(",", frame.Markers.Select(m => $"{m.Kind}:{m.X}:{m.Z}:{m.Label}:{m.EntityId}"));
-
-    private static MeshInstance3D Tile(int x, int z, Color color, float y = 0)
-    {
-        var tile = Solid(new BoxMesh { Size = new Vector3(0.94f, 0.04f, 0.94f) }, color);
-        tile.Position = new Vector3(x, y, z);
-        return tile;
-    }
-
-    private static MeshInstance3D Mark(Mesh mesh, Color color, Vector3 position, string caption)
-    {
-        var node = Solid(mesh, color);
-        node.Position = position;
-        if (caption.Length > 0)
-        {
-            node.AddChild(new Label3D
-            {
-                Text = caption,
-                FontSize = 28,
-                PixelSize = 0.012f,
-                Billboard = BaseMaterial3D.BillboardModeEnum.Enabled,
-                Position = new Vector3(0, 0.85f, 0),
-                OutlineSize = 6
-            });
-        }
-        return node;
-    }
-
-    private static MeshInstance3D Solid(Mesh mesh, Color color)
-    {
-        var node = new MeshInstance3D { Mesh = mesh };
-        node.SetSurfaceOverrideMaterial(0, new StandardMaterial3D
-        {
-            AlbedoColor = color,
-            ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded
-        });
-        return node;
     }
 }

@@ -16,7 +16,8 @@ public static class PlayerDesk
         ActionKind.BuyLogistics, ActionKind.SetLogisticsEnabled,
         ActionKind.SetLogisticsStorage, ActionKind.SetLogisticsInbound,
         ActionKind.AcceptSupport, ActionKind.RejectSupport, ActionKind.SetVoteChoice,
-        ActionKind.ReservePlot, ActionKind.BuyPlot
+        ActionKind.ReservePlot, ActionKind.BuyPlot, ActionKind.Build,
+        ActionKind.SellAvailableToCapital, ActionKind.CancelCapitalSale
     ];
 
     public static GameAction Check(GameAction action)
@@ -57,18 +58,24 @@ public static class PlayerDesk
         => Check(new(ActionKind.SetVoteChoice, Election: new(election), Candidate: new(candidate)));
     public static GameAction ReservePlot(long plot) => Check(new(ActionKind.ReservePlot, Plot: new(plot)));
     public static GameAction BuyPlot(long plot) => Check(new(ActionKind.BuyPlot, Plot: new(plot)));
+    public static GameAction Build(Cell cell, string type) => Check(new(ActionKind.Build, Target: cell, BuildingTypeId: type));
+    public static GameAction Sell(long offer, string item, long quantity) => Check(new(ActionKind.SellAvailableToCapital,
+        OfferId: offer, ItemId: item, Quantity: quantity));
+    public static GameAction CancelSale(long offer) => Check(new(ActionKind.CancelCapitalSale, OfferId: offer));
 
     public static PlayerView Read(SimulationEngine engine, ParticipantId actor)
     {
         var seen = engine.Observe(actor);
         return new(seen.Tick, seen.Participant, seen.Account.BalanceMinor, seen.OwnInventories, seen.OwnEnterprises,
-            seen.OwnBuildings, seen.OwnEmploymentGroups, seen.OwnLogistics, seen.LaborMarket, seen.Support, seen.Elections, seen.Plots);
+            seen.OwnBuildings, seen.OwnEmploymentGroups, seen.OwnLogistics, seen.LaborMarket, seen.Support, seen.Elections, seen.Plots,
+            seen.CapitalOffers, seen.Account.AvailableMinor);
     }
 }
 
 public record PlayerView(long Tick, ParticipantView Participant, long CashMinor, InventoryView[] Inventories,
     EnterpriseView[] Enterprises, BuildingView[] Buildings, EmploymentView[] Employment, LogisticsView[] Logistics,
-    PublicEmploymentView[] LaborMarket, SupportObservation Support, ElectionObservation Elections, PlotView[] Plots);
+    PublicEmploymentView[] LaborMarket, SupportObservation Support, ElectionObservation Elections, PlotView[] Plots,
+    CapitalOfferView[] CapitalOffers, long AvailableCashMinor);
 
 public static class PlayerText
 {
@@ -148,7 +155,10 @@ public static class PlayerText
         ["inventory.capacity"] = "Место",
         ["received"] = "Получено: {0} ×{1}",
         ["harvest.left"] = "Добыча {0}: осталось {1}",
-        ["reason.NoMoney"] = "Недостаточно денег для покупки.",
+        ["reason.NoMoney"] = "Недостаточно денег.",
+        ["reason.NoStock"] = "Недостаточно свободных материалов.",
+        ["reason.LandNotOwned"] = "Сначала купите все клетки участка.",
+        ["reason.WrongBuildingSite"] = "Этот тип здания здесь недоступен.",
         ["reason.NoCapacity"] = "Инвентарь заполнен.",
         ["reason.ParticipantBusy"] = "Персонаж занят добычей.",
         ["reason.NoResourceNode"] = "Подойдите к точке ресурса.",
@@ -162,6 +172,8 @@ public static class PlayerText
         ["money"] = "Деньги",
         ["item.wood"] = "древесина",
         ["item.grain"] = "зерно",
+        ["item.plank"] = "доски",
+        ["item.bread"] = "хлеб",
         ["context.hint"] = "Подойдите к объекту. Стрелки выбирают действие, Enter подтверждает одно.",
         ["context.harvest"] = "Добыть",
         ["context.buy"] = "Купить участок за {0}",
@@ -177,7 +189,7 @@ public static class PlayerText
         ["hover.resource"] = "Ресурс {0}. Добыча одной единицы занимает обычное время.",
         ["hover.capital"] = "Терминал столицы. Публичные предложения: {0}.",
         ["hover.blocked"] = "Непроходимая клетка.",
-        ["hover.corridor"] = "Проход. Его нельзя купить.",
+        ["hover.corridor"] = "Проход. Можно ходить; покупать и строить нельзя.",
         ["hover.building"] = "{0}. Владелец {1}.",
         ["hover.empty"] = "Пустая клетка.",
         ["new.session"] = "Новая партия:",
@@ -268,7 +280,10 @@ public static class PlayerText
         ["inventory.capacity"] = "Space",
         ["received"] = "Received: {0} ×{1}",
         ["harvest.left"] = "Harvest {0}: {1} left",
-        ["reason.NoMoney"] = "Not enough money to buy.",
+        ["reason.NoMoney"] = "Not enough money.",
+        ["reason.NoStock"] = "Not enough unreserved materials.",
+        ["reason.LandNotOwned"] = "Buy all footprint cells first.",
+        ["reason.WrongBuildingSite"] = "This building does not fit this site.",
         ["reason.NoCapacity"] = "Inventory is full.",
         ["reason.ParticipantBusy"] = "The character is busy harvesting.",
         ["reason.NoResourceNode"] = "Move to the resource.",
@@ -282,6 +297,8 @@ public static class PlayerText
         ["money"] = "Money",
         ["item.wood"] = "wood",
         ["item.grain"] = "grain",
+        ["item.plank"] = "planks",
+        ["item.bread"] = "bread",
         ["context.hint"] = "Walk up to an object. Arrows choose an action, Enter confirms one.",
         ["context.harvest"] = "Harvest",
         ["context.buy"] = "Buy plot for {0}",
@@ -297,7 +314,7 @@ public static class PlayerText
         ["hover.resource"] = "Resource {0}. Harvesting one unit takes the normal time.",
         ["hover.capital"] = "Capital terminal. Public offers: {0}.",
         ["hover.blocked"] = "Blocked cell.",
-        ["hover.corridor"] = "Passage. It cannot be bought.",
+        ["hover.corridor"] = "Passage. Walk here; purchase and building are not allowed.",
         ["hover.building"] = "{0}. Owner {1}.",
         ["hover.empty"] = "Empty cell.",
         ["new.session"] = "New session:",
@@ -327,6 +344,17 @@ public static class PlayerText
         return Keys(language).Contains(key) ? Get(language, key) : itemId;
     }
 
+    public static string Local(string language, string ru, string en) => language == "ru" ? ru : en;
+    public static string Money(long minor) => (minor / 100m).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+    public static string Building(string language, string type) => type switch
+    {
+        "sawmill" => Local(language, "Лесопилка", "Sawmill"),
+        "bakery" => Local(language, "Пекарня", "Bakery"),
+        "warehouse" => Local(language, "Склад", "Warehouse"),
+        "shop" => Local(language, "Лавочка", "Shop"),
+        _ => type
+    };
+
     public static string Reason(string language, string code)
     {
         string key = "reason." + code;
@@ -342,6 +370,6 @@ public static class PlayerText
     public static string? OwnHarvest(PublicSimulationEvent[] events, long actor, string language)
     {
         var done = events.LastOrDefault(e => e.Type == "HarvestCompleted" && e.ActorId?.Value == actor);
-        return done is null ? null : Received(language, done.ItemId, done.Quantity);
+        return done is null ? null : Received(language, Item(language, done.ItemId), done.Quantity);
     }
 }

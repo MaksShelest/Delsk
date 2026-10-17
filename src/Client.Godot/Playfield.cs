@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text.Json;
 using Agents.Algorithmic;
 using Godot;
@@ -46,6 +46,7 @@ public partial class Playfield : Control
     private Label? _playNotice;
     private Label? _tooltip;
     private VBoxContainer? _contextHost;
+    private VBoxContainer? _debugContext;
     private Control? _playCard;
     private VBoxContainer? _playCards;
     private VBoxContainer _cards = null!;
@@ -56,6 +57,11 @@ public partial class Playfield : Control
     private bool _playFilled;
     private int? _hoverX;
     private int? _hoverZ;
+    private Label? _fpsLabel;
+    private double _frameSampleSeconds;
+    private int _frameSampleCount;
+    private double _worstFrame;
+    private int _contextFirst;
     private string SavePath => ProjectSettings.GlobalizePath($"user://play-{_mode}-{SimulationEngine.RulesVersion}.json");
 
     private enum Surface { Play, Menu, Debug }
@@ -70,6 +76,8 @@ public partial class Playfield : Control
             return;
         }
         Input.MouseMode = Input.MouseModeEnum.Visible;
+        Engine.MaxFps = 60;
+        Theme = PresentationTheme.Create();
         EnsureStage();
         Start(OS.GetCmdlineUserArgs().Contains("--trip") ? "trip" : "economy", false);
         BuildChrome();
@@ -85,7 +93,7 @@ public partial class Playfield : Control
             return;
         }
         if (key.Echo) return;
-        if (_surface == Surface.Play && key.Keycode is Key.Left or Key.Right or Key.Up or Key.Down)
+        if (_surface is Surface.Play or Surface.Debug && key.Keycode is Key.Left or Key.Right or Key.Up or Key.Down)
         {
             if (_choices.Length > 0)
                 _contextIndex = ( _contextIndex + (key.Keycode is Key.Right or Key.Down ? 1 : _choices.Length - 1)) % _choices.Length;
@@ -94,7 +102,7 @@ public partial class Playfield : Control
             GetViewport().SetInputAsHandled();
             return;
         }
-        if (_surface == Surface.Play && key.Keycode is Key.Enter or Key.KpEnter or Key.Space)
+        if (_surface is Surface.Play or Surface.Debug && key.Keycode is Key.Enter or Key.KpEnter or Key.Space)
         {
             ConfirmContext();
             GetViewport().SetInputAsHandled();
@@ -115,6 +123,16 @@ public partial class Playfield : Control
         if (_left || _session is null) return;
         try
         {
+            _frameSampleSeconds += delta;
+            _frameSampleCount++;
+            _worstFrame = Math.Max(_worstFrame, delta);
+            if (_frameSampleSeconds >= 1)
+            {
+                if (_fpsLabel is not null) _fpsLabel.Text = $"{_frameSampleCount / _frameSampleSeconds:0} FPS · max {_worstFrame * 1000:0.0} ms";
+                if (OS.GetCmdlineUserArgs().Contains("--profile-frames"))
+                    GD.Print(FormattableString.Invariant($"DELSK_FRAME fps={_frameSampleCount / _frameSampleSeconds:0.0} max_ms={_worstFrame * 1000:0.0} surface={_surface}"));
+                _frameSampleSeconds = 0; _frameSampleCount = 0; _worstFrame = 0;
+            }
             if (_skipNextFrame) { _skipNextFrame = false; return; }
             if (_waitRelease && !MovementHeld()) _waitRelease = false;
             SampleHeading();
@@ -236,7 +254,12 @@ public partial class Playfield : Control
     private void ConfirmContext()
     {
         if (_choices.Length == 0) return;
+        var current = PlayContext.At(PlayerDesk.Read(_session.Engine, _human), _scenario, _language);
         var choice = _choices[Math.Clamp(_contextIndex, 0, _choices.Length - 1)];
+        var valid = current.FirstOrDefault(c => c.Key == choice.Key);
+        if (valid is null) { Refresh(); return; }
+        choice = valid;
+        if (!choice.Enabled) { _feedback = choice.Details; _gain = ""; _trackedId = null; Refresh(); return; }
         if (choice.Key.StartsWith("card:", StringComparison.Ordinal))
         {
             _selectedEnterprise = long.Parse(choice.Key["card:".Length..], CultureInfo.InvariantCulture);
@@ -246,28 +269,45 @@ public partial class Playfield : Control
             Refresh();
             return;
         }
-        if (choice.Command is { } action) Submit(action);
+        if (choice.Command is { } action) Offer(action);
     }
 
     private void RebuildContext()
     {
-        if (_contextHost is null) return;
-        foreach (Node child in _contextHost.GetChildren()) child.QueueFree();
-        for (int i = 0; i < _choices.Length; i++)
+        if (_contextHost is not null) FillContext(_contextHost);
+        if (_debugContext is not null) FillContext(_debugContext);
+    }
+
+    private void FillContext(VBoxContainer host)
+    {
+        foreach (Node child in host.GetChildren()) child.QueueFree();
+        _contextFirst = Math.Clamp(_contextIndex - 1, 0, Math.Max(0, _choices.Length - 3));
+        for (int i = _contextFirst; i < Math.Min(_choices.Length, _contextFirst + 3); i++)
         {
             int index = i;
             var button = new Button
             {
-                Text = (i == _contextIndex ? "> " : "") + _choices[i].Label,
-                FocusMode = FocusModeEnum.None
+                Text = (i == _contextIndex ? "› " : "") + _choices[i].Label,
+                TooltipText = _choices[i].Label + "\n" + _choices[i].Details,
+                Disabled = !_choices[i].Enabled,
+                FocusMode = FocusModeEnum.None,
+                Alignment = HorizontalAlignment.Left,
+                TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis
             };
             button.Pressed += () =>
             {
                 _contextIndex = index;
                 ConfirmContext();
             };
-            _contextHost.AddChild(button);
+            host.AddChild(button);
         }
+            if (_choices.Length > 0)
+            host.AddChild(new Label { Text = $"{_contextIndex + 1}/{_choices.Length} · " +
+                (_surface == Surface.Debug
+                    ? PlayerText.Local(_language, "↑↓ выбор · Enter / Space выбрать, затем Один тик · ", "↑↓ select · Enter / Space queue, then One tick · ")
+                    : PlayerText.Local(_language, "↑↓ выбор · Enter / Space подтвердить · ", "↑↓ select · Enter / Space confirm · ")) + _choices[_contextIndex].Details,
+                AutowrapMode = TextServer.AutowrapMode.WordSmart, MaxLinesVisible = 2,
+                TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis });
     }
 
     private void Submit(GameAction action)
@@ -298,11 +338,11 @@ public partial class Playfield : Control
         var travelOffset = _session.Engine.TravelOf(_human);
         bool paused = _surface != Surface.Play || _suspended || _unfocused;
         var frame = Presentation.Read(_scenario, _session.Engine, _human.Value);
-        _stage?.Show(frame, paused, _selectedEnterprise, T("you"), _surface == Surface.Play);
-        _board?.Show(frame, _cellX, _cellZ);
+        if (_surface == Surface.Play || paused) _stage?.Show(frame, paused, _selectedEnterprise, T("you"), _surface == Surface.Play);
+        if (_surface == Surface.Debug) _board?.Show(frame, _cellX, _cellZ);
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
         string stock = pack.Stock.Length == 0 ? T("inventory.empty")
-            : string.Join(", ", pack.Stock.OrderBy(s => s.ItemId, StringComparer.Ordinal).Select(s => $"{s.ItemId} ×{s.Quantity}"));
+            : string.Join(", ", pack.Stock.OrderBy(s => s.ItemId, StringComparer.Ordinal).Select(s => $"{PlayerText.Item(_language, s.ItemId)} ×{s.Quantity}"));
         string inventory = $"{T("inventory.title")}: {stock}\n{T("inventory.capacity")} {pack.OccupiedVolume}/{pack.Capacity}";
         if (_inventoryLabel is not null) _inventoryLabel.Text = inventory;
         if (_playInventory is not null) _playInventory.Text = HudStock(view, pack);
@@ -312,12 +352,12 @@ public partial class Playfield : Control
         var next = PlayContext.At(view, _scenario, _language);
         _contextIndex = PlayContext.Keep(_contextIndex, _choices, next);
         _choices = next;
-        string contextKey = _contextIndex.ToString(CultureInfo.InvariantCulture) + "|" + string.Join(",", next.Select(c => c.Key));
+        string contextKey = _contextIndex.ToString(CultureInfo.InvariantCulture) + "|" + string.Join(",", next.Select(c => $"{c.Key}:{c.Label}:{c.Enabled}:{c.Details}"));
         if (contextKey != _contextKey) { _contextKey = contextKey; RebuildContext(); }
         if (_tooltip is not null)
             _tooltip.Text = _hoverX is int hx && _hoverZ is int hz
                 ? PlayContext.Hover(frame, view, hx, hz, _language)
-                : T("context.hint");
+                : PlayContext.Hover(frame, view, actor.Position.X, actor.Position.Z, _language);
         PollHarvest();
         _feedback = Describe(view);
         _status.Text = $"{T(paused ? "paused" : "running")}  {T("tick")}: {_session.Engine.Tick}\n" +
@@ -349,7 +389,7 @@ public partial class Playfield : Control
             long quantity = pack.Stock.Where(s => s.ItemId == id).Sum(s => s.Quantity);
             return PlayerText.Item(_language, id) + " ×" + quantity.ToString(CultureInfo.InvariantCulture);
         }));
-        return $"{T("money")} {view.CashMinor.ToString(CultureInfo.InvariantCulture)}\n{lines}\n{T("inventory.capacity")} {pack.OccupiedVolume}/{pack.Capacity}";
+        return $"{T("money")} {PlayerText.Money(view.CashMinor)}\n{lines}\n{T("inventory.capacity")} {pack.OccupiedVolume}/{pack.Capacity}";
     }
 
     private static string CardSignature(PlayerView view) =>
@@ -357,6 +397,7 @@ public partial class Playfield : Control
         string.Join(";", view.Employment.Select(g => $"{g.Id.Value}:{g.Role}:{g.Headcount}:{g.WageMinor}:{g.PendingWageMinor}")) + "|" +
         string.Join(";", view.Logistics.Select(l => $"{l.Id.Value}:{l.EnterpriseId.Value}:{l.Enabled}:{l.InboundEnabled}:{l.ReasonCode}")) + "|" +
         string.Join(";", view.Buildings.Select(b => b.Id.Value)) + "|" +
+        string.Join(";", view.Inventories.Select(i => $"{i.Id}:{i.OccupiedVolume}:" + string.Join(",", i.Stock.Select(s => $"{s.ItemId}:{s.Quantity}:{s.Reserved}")))) + "|" +
         string.Join(";", view.Support.Proposals.Select(p => $"{p.Id}:{p.Status}")) + "|" +
         view.Elections.NextElectionId?.Value + ":" + view.Elections.OwnChoice?.Value;
 
@@ -372,9 +413,23 @@ public partial class Playfield : Control
             var work = Section("card.work");
             card.AddChild(work);
             work.AddChild(new Label { Text = $"{enterprise.ReasonCode}  {enterprise.Staff}/{enterprise.StaffCapacity}" });
+            foreach (var inventory in view.Inventories.Where(i => i.Id == enterprise.InputId || i.Id == enterprise.OutputId))
+            {
+                string goods = string.Join(", ", inventory.Stock.Select(s => PlayerText.Item(_language, s.ItemId) + $" ×{s.Quantity}"));
+                work.AddChild(new Label { Text = PlayerText.Local(_language, inventory.Id == enterprise.InputId ? "Вход: " : "Выход: ", inventory.Id == enterprise.InputId ? "Input: " : "Output: ") +
+                    (goods.Length == 0 ? T("inventory.empty") : goods) + $" · {inventory.OccupiedVolume}/{inventory.Capacity}", AutowrapMode = TextServer.AutowrapMode.WordSmart });
+            }
+            if (enterprise.Staff == 0) work.AddChild(new Label { Text = PlayerText.Local(_language, "Для найма включите работу, внесите сырьё и обеспечьте зарплату. Найм постепенный.", "Enable production, supply inputs and afford wages. Hiring is gradual."), AutowrapMode = TextServer.AutowrapMode.WordSmart });
             Button(work, enterprise.Enabled ? "work.stop" : "work.start", () => Offer(PlayerDesk.Work(enterprise.Id.Value, !enterprise.Enabled)));
             var recipe = _scenario.Recipes.Single(r => r.Id == enterprise.RecipeId);
             Button(work, "transfer.input", () => Offer(PlayerDesk.Transfer(view.Participant.InventoryId.Value, enterprise.InputId.Value, recipe.InputItem, 1)));
+            foreach (var stock in view.Inventories.Single(i => i.Id == enterprise.OutputId).Stock.Where(s => s.Quantity > s.Reserved))
+            {
+                var take = new Button { Text = PlayerText.Local(_language, "Забрать ", "Take ") + PlayerText.Item(_language, stock.ItemId) + " ×1", FocusMode = FocusModeEnum.None };
+                string item = stock.ItemId;
+                take.Pressed += () => Offer(PlayerDesk.Transfer(enterprise.OutputId.Value, view.Participant.InventoryId.Value, item, 1));
+                work.AddChild(take);
+            }
             var wages = Section("card.wages");
             card.AddChild(wages);
             var production = view.Employment.Single(g => g.Role == EmploymentRole.Production && g.Id.Value == enterprise.Id.Value);
@@ -425,7 +480,7 @@ public partial class Playfield : Control
     private void WageRow(Container parent, EmploymentView group)
     {
         long shown = group.PendingWageMinor ?? group.WageMinor;
-        parent.AddChild(new Label { Text = $"{group.Role} {group.Headcount}/{group.Capacity} {shown}" });
+        parent.AddChild(new Label { Text = $"{group.Role} {group.Headcount}/{group.Capacity} {PlayerText.Money(shown)}" });
         var row = new HBoxContainer();
         parent.AddChild(row);
         Button(row, "wage.raise", () => Offer(PlayerDesk.Wage(group.Id.Value, shown + PlayerDesk.WageStepMinor)));
@@ -444,6 +499,8 @@ public partial class Playfield : Control
         if (_stage is not null) return;
         _view = new SubViewportContainer { Stretch = true, MouseFilter = MouseFilterEnum.Stop };
         _view.SetAnchorsPreset(LayoutPreset.FullRect);
+        _view.OffsetTop = 108;
+        _view.OffsetBottom = -205;
         var viewport = new SubViewport
         {
             Size = new Vector2I(1100, 720),
@@ -495,7 +552,7 @@ public partial class Playfield : Control
         _playChrome = new Control { MouseFilter = MouseFilterEnum.Ignore };
         _playChrome.SetAnchorsPreset(LayoutPreset.FullRect);
         AddChild(_playChrome);
-        var bar = new ColorRect { Color = new Color(0.1f, 0.11f, 0.13f), MouseFilter = MouseFilterEnum.Stop };
+        var bar = new ColorRect { Color = new Color(0.14f, 0.20f, 0.22f), MouseFilter = MouseFilterEnum.Stop };
         bar.SetAnchorsPreset(LayoutPreset.TopWide);
         bar.OffsetBottom = 108;
         _playChrome.AddChild(bar);
@@ -514,31 +571,52 @@ public partial class Playfield : Control
             AutowrapMode = TextServer.AutowrapMode.WordSmart
         };
         bar.AddChild(_playInventory);
+        _playInventory.SetAnchorsPreset(LayoutPreset.TopRight);
+        _playInventory.OffsetLeft = -700; _playInventory.OffsetRight = -14;
+        _playInventory.OffsetTop = 6; _playInventory.OffsetBottom = 68;
+        _playInventory.HorizontalAlignment = HorizontalAlignment.Right;
         _playNotice = new Label
         {
             Position = new Vector2(8, 68),
-            Size = new Vector2(1080, 36),
+            Size = new Vector2(790, 36),
             AutowrapMode = TextServer.AutowrapMode.WordSmart
         };
         bar.AddChild(_playNotice);
-        var bottom = new ColorRect { Color = new Color(0.1f, 0.11f, 0.13f), MouseFilter = MouseFilterEnum.Stop };
+        _fpsLabel = new Label { Position = new Vector2(810, 78), Size = new Vector2(275, 22), HorizontalAlignment = HorizontalAlignment.Right };
+        bar.AddChild(_fpsLabel);
+        var bottom = new ColorRect { Color = new Color(0.14f, 0.20f, 0.22f), MouseFilter = MouseFilterEnum.Stop };
         bottom.SetAnchorsPreset(LayoutPreset.BottomWide);
-        bottom.OffsetTop = -168;
+        bottom.OffsetTop = -205;
         _playChrome.AddChild(bottom);
         _tooltip = new Label
         {
             Position = new Vector2(8, 4),
-            Size = new Vector2(760, 64),
+            Size = new Vector2(1020, 48),
             AutowrapMode = TextServer.AutowrapMode.WordSmart
         };
         bottom.AddChild(_tooltip);
-        _contextHost = new VBoxContainer { Position = new Vector2(8, 70), Size = new Vector2(760, 92) };
+        _contextHost = new VBoxContainer { Position = new Vector2(8, 56), Size = new Vector2(1020, 149) };
         bottom.AddChild(_contextHost);
-        _playCard = new ColorRect { Color = new Color(0.12f, 0.13f, 0.15f), MouseFilter = MouseFilterEnum.Stop, Visible = false };
+        var paging = new VBoxContainer { Position = new Vector2(1040, 56) };
+        bottom.AddChild(paging);
+        foreach (int direction in new[] { -1, 1 })
+        {
+            int step = direction;
+            var button = new Button { Text = step < 0 ? "↑" : "↓", FocusMode = FocusModeEnum.None };
+            button.Pressed += () =>
+            {
+                if (_choices.Length == 0) return;
+                _contextIndex = (_contextIndex + step + _choices.Length) % _choices.Length;
+                _contextKey = "";
+                Refresh();
+            };
+            paging.AddChild(button);
+        }
+        _playCard = new ColorRect { Color = new Color(0.20f, 0.28f, 0.30f), MouseFilter = MouseFilterEnum.Stop, Visible = false };
         _playCard.SetAnchorsPreset(LayoutPreset.RightWide);
         _playCard.OffsetLeft = -360;
         _playCard.OffsetTop = 116;
-        _playCard.OffsetBottom = -176;
+        _playCard.OffsetBottom = -213;
         _playChrome.AddChild(_playCard);
         var cardScroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, MouseFilter = MouseFilterEnum.Stop };
         cardScroll.SetAnchorsPreset(LayoutPreset.FullRect);
@@ -550,57 +628,92 @@ public partial class Playfield : Control
         _cardOpen = false;
         _playFilled = false;
 
-        _panel = new Control { MouseFilter = MouseFilterEnum.Ignore };
+        _panel = new ColorRect { Color = new Color("26383d"), MouseFilter = MouseFilterEnum.Stop };
         _panel.SetAnchorsPreset(LayoutPreset.FullRect);
         AddChild(_panel);
-        var row = new HBoxContainer();
-        row.SetAnchorsPreset(LayoutPreset.FullRect);
-        _panel.AddChild(row);
-        var mapColumn = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill, SizeFlagsStretchRatio = 1.6f };
-        row.AddChild(mapColumn);
-        _board = new DebugBoard();
-        _board.SizeFlagsVertical = SizeFlags.ExpandFill;
+        var split = new VSplitContainer { SplitOffsets = [425] };
+        split.SetAnchorsPreset(LayoutPreset.FullRect);
+        split.OffsetLeft = 10; split.OffsetRight = -10; split.OffsetTop = 8; split.OffsetBottom = -8;
+        _panel.AddChild(split);
+        var mapColumn = new VBoxContainer { CustomMinimumSize = new Vector2(0, 230), SizeFlagsVertical = SizeFlags.ExpandFill };
+        split.AddChild(mapColumn);
+        var mapToolbar = new HBoxContainer();
+        mapColumn.AddChild(mapToolbar);
+        mapToolbar.AddChild(new Label { Text = PlayerText.Local(_language, "Карта · пошаговый режим", "Map · step mode"), SizeFlagsHorizontal = SizeFlags.ExpandFill });
+        var legendToggle = new Button { Text = PlayerText.Local(_language, "Легенда ▸", "Legend ▸"), FocusMode = FocusModeEnum.None };
+        mapToolbar.AddChild(legendToggle);
+        var mapRow = new HBoxContainer { SizeFlagsVertical = SizeFlags.ExpandFill };
+        mapColumn.AddChild(mapRow);
+        _board = new DebugBoard { SizeFlagsVertical = SizeFlags.ExpandFill, SizeFlagsHorizontal = SizeFlags.ExpandFill };
         _board.CellChosen += OnDebugCell;
-        mapColumn.AddChild(_board);
-        mapColumn.AddChild(new Label { Text = T("legend.title") });
+        mapRow.AddChild(_board);
+        var legendScroll = new ScrollContainer { Visible = false, CustomMinimumSize = new Vector2(290, 0), HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled };
+        mapRow.AddChild(legendScroll);
+        legendToggle.Pressed += () =>
+        {
+            legendScroll.Visible = !legendScroll.Visible;
+            legendToggle.Text = PlayerText.Local(_language, "Легенда ", "Legend ") + (legendScroll.Visible ? "▾" : "▸");
+        };
         var legend = new GridContainer { Columns = 2 };
-        mapColumn.AddChild(legend);
-        foreach (string key in new[] { "legend.player", "legend.npc", "legend.wood", "legend.grain", "legend.plot.free", "legend.plot.own", "legend.plot.foreign", "legend.plot.reserved", "legend.corridor", "legend.blocked", "legend.production", "legend.warehouse", "legend.shop", "legend.capital", "legend.cargo" })
-            legend.AddChild(new Label { Text = T(key) });
+        legendScroll.AddChild(legend);
+        foreach (var entry in new[]
+        {
+            ("player", "", "Вы", "You"), ("npc", "2", "Участник NPC 2", "NPC participant 2"),
+            ("npc", "3", "Участник NPC 3", "NPC participant 3"), ("npc", "4", "Участник NPC 4", "NPC participant 4"),
+            ("resource", "wood", "Древесина", "Wood"), ("resource", "grain", "Зерно", "Grain"),
+            ("plot-free", "", "Свободный участок", "Free plot"), ("plot-own", "", "Ваш участок", "Your plot"),
+            ("plot-foreign", "", "Чужой участок", "Other participant's plot"), ("plot-reserved", "", "Бронь", "Reserved plot"),
+            ("shop-plot", "", "Место лавочки", "Assigned shop site"), ("corridor", "", "Проход", "Protected passage"),
+            ("blocked", "", "Непроходимо", "Blocked"), ("production", "", "Предприятие", "Production"),
+            ("warehouse", "", "Склад", "Warehouse"), ("shop", "", "Лавочка", "Shop"),
+            ("capital", "", "Терминал столицы", "Capital terminal"), ("cargo", "", "Груз в пути", "Cargo in transit")
+        })
+        {
+            legend.AddChild(new LegendIcon { Kind = entry.Item1, Item = entry.Item2, CustomMinimumSize = new Vector2(34, 32) });
+            legend.AddChild(new Label { Text = PlayerText.Local(_language, entry.Item3, entry.Item4), VerticalAlignment = VerticalAlignment.Center });
+        }
 
-        var scroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, CustomMinimumSize = new Vector2(340, 0), MouseFilter = MouseFilterEnum.Stop };
-        row.AddChild(scroll);
+        var scroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, CustomMinimumSize = new Vector2(0, 210), MouseFilter = MouseFilterEnum.Stop };
+        split.AddChild(scroll);
         var column = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
         scroll.AddChild(column);
-        column.AddChild(new Label { Text = T("title"), AutowrapMode = TextServer.AutowrapMode.WordSmart });
-        column.AddChild(new Label { Text = T("debug.hint"), AutowrapMode = TextServer.AutowrapMode.WordSmart });
-        Button(column, "language", () => { _language = _language == "ru" ? "en" : "ru"; CallDeferred(nameof(RebuildChrome)); });
-        Button(column, "step", StepOne);
-        Button(column, "save", () => { CheckpointStore.Save(_session, SavePath); _feedback = T("save"); Refresh(); });
-        Button(column, "load", Load);
-        column.AddChild(new Label { Text = T("new.session"), AutowrapMode = TextServer.AutowrapMode.WordSmart });
-        Button(column, "economy", () => Start("economy", true));
-        Button(column, "politics", () => Start("politics", true));
-        Button(column, "trip", () => Start("trip", true));
-        _status = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart };
-        column.AddChild(_status);
-        _inventoryLabel = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart };
-        column.AddChild(_inventoryLabel);
+        var controls = new HBoxContainer();
+        column.AddChild(controls);
+        Button(controls, "step", StepOne);
+        Button(controls, "save", () => { CheckpointStore.Save(_session, SavePath); _feedback = T("save"); Refresh(); });
+        Button(controls, "load", Load);
+        Button(controls, "language", () => { _language = _language == "ru" ? "en" : "ru"; CallDeferred(nameof(RebuildChrome)); });
+        controls.AddChild(new VSeparator());
+        controls.AddChild(new Label { Text = T("new.session"), VerticalAlignment = VerticalAlignment.Center });
+        Button(controls, "economy", () => Start("economy", true));
+        Button(controls, "politics", () => Start("politics", true));
+        Button(controls, "trip", () => Start("trip", true));
+        var stateRow = new HBoxContainer();
+        column.AddChild(stateRow);
+        _status = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart, SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        stateRow.AddChild(_status);
+        _inventoryLabel = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart, SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        stateRow.AddChild(_inventoryLabel);
         _cellLabel = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart };
         column.AddChild(_cellLabel);
         _feedbackLabel = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart };
         column.AddChild(_feedbackLabel);
-        Button(column, "move.north", () => Move(0, -1));
-        Button(column, "move.south", () => Move(0, 1));
-        Button(column, "move.west", () => Move(-1, 0));
-        Button(column, "move.east", () => Move(1, 0));
+        var moves = new HBoxContainer();
+        column.AddChild(moves);
+        Button(moves, "move.north", () => Move(0, -1));
+        Button(moves, "move.south", () => Move(0, 1));
+        Button(moves, "move.west", () => Move(-1, 0));
+        Button(moves, "move.east", () => Move(1, 0));
         foreach (string item in _scenario.ResourceNodes.Select(n => n.ItemId).Distinct(StringComparer.Ordinal))
-            Button(column, "harvest", () => Select(PlayerDesk.Harvest(item, 1)), item);
+            Button(moves, "harvest", () => Select(PlayerDesk.Harvest(item, 1)), PlayerText.Item(_language, item));
+        moves.AddChild(new Label { Text = PlayerText.Local(_language, "Выбор команды → Один тик", "Select action → One tick"), VerticalAlignment = VerticalAlignment.Center });
+        _debugContext = new VBoxContainer();
+        column.AddChild(_debugContext);
         _cards = new VBoxContainer();
         column.AddChild(_cards);
         _cardsSignature = "";
 
-        _menu = new ColorRect { Color = new Color(0.08f, 0.09f, 0.1f, 0.92f), MouseFilter = MouseFilterEnum.Stop };
+        _menu = new ColorRect { Color = new Color(0.15f, 0.20f, 0.23f, 0.97f), MouseFilter = MouseFilterEnum.Stop };
         _menu.SetAnchorsPreset(LayoutPreset.FullRect);
         AddChild(_menu);
         var center = new CenterContainer();
@@ -620,6 +733,8 @@ public partial class Playfield : Control
     private void ApplySurface()
     {
         if (_view is not null) _view.Visible = _surface == Surface.Play;
+        if (_stage?.GetParent() is SubViewport viewport)
+            viewport.RenderTargetUpdateMode = _surface == Surface.Play ? SubViewport.UpdateMode.Always : SubViewport.UpdateMode.Disabled;
         if (_playChrome is not null) _playChrome.Visible = _surface == Surface.Play;
         if (_panel is not null) _panel.Visible = _surface == Surface.Debug;
         if (_menu is not null) _menu.Visible = _surface == Surface.Menu;
@@ -681,6 +796,7 @@ public partial class Playfield : Control
     private void Load()
     {
         var loaded = CheckpointStore.Load(SavePath);
+        _stage?.ResetMotion();
         _session = loaded.Session;
         _session.RestoreControllers(AlgorithmicController.Restore);
         _scheduler = new TickScheduler(_session);
@@ -717,6 +833,18 @@ public partial class Playfield : Control
         if (events.Length == 0) return;
         _publicCursor = events[^1].Sequence;
         if (PlayerText.OwnHarvest(events, _human.Value, _language) is { } gain) _gain = gain;
+        foreach (var done in events.Where(e => e.ActorId?.Value == _human.Value))
+        {
+            if (done.Type == "CapitalSaleSettled")
+                _gain = PlayerText.Local(_language, "Продано: ", "Sold: ") + PlayerText.Item(_language, done.ItemId) + $" ×{done.Quantity} · +{PlayerText.Money(done.AmountMinor)}";
+            if (done.Type == "BuildingConstructed")
+            {
+                var materials = _scenario.BuildingTypes?.FirstOrDefault(t => t.Id == done.ReasonCode)?.Levels.Single(l => l.Level == 1).Materials;
+                _gain = PlayerText.Local(_language, "Построено: ", "Built: ") + PlayerText.Building(_language, done.ReasonCode) +
+                    $" · -{PlayerText.Money(done.AmountMinor)}" +
+                    (materials is null ? "" : " · " + string.Join(", ", materials.Select(m => "-" + PlayerText.Item(_language, m.ItemId) + " ×" + m.Quantity)));
+            }
+        }
     }
 
     private string Describe(PlayerView view)
@@ -726,6 +854,8 @@ public partial class Playfield : Control
         var result = _session.Engine.Result(_trackedId);
         if (result is null) return T("command.sent");
         if (result.Status == ResultStatus.Rejected) return T("command.rejected") + " " + PlayerText.Reason(_language, result.ReasonCode);
+        if (_trackedKind == ActionKind.SellAvailableToCapital && view.Participant.Busy)
+            return PlayerText.Local(_language, "Заявка на продажу принята. Ожидаем закрытия торгового окна.", "Sale request accepted. Waiting for the trading window to close.");
         if (view.Participant.Busy && view.Participant.ArrivalTick is long end)
         {
             long left = Math.Max(0, end - _session.Engine.Tick);
@@ -770,7 +900,8 @@ public partial class Playfield : Control
     private void Button(Container parent, string key, Action action, string suffix = "")
     {
         var button = new Button { Text = suffix.Length == 0 ? T(key) : $"{T(key)} {suffix}" };
-        button.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        button.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
+        button.FocusMode = FocusModeEnum.None;
         button.Pressed += () => { try { action(); } catch (Exception failure) { _feedback = failure.Message; Refresh(); } };
         parent.AddChild(button);
     }

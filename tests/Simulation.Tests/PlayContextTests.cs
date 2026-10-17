@@ -49,8 +49,8 @@ public class PlayContextTests
         var choices = PlayContext.At(view, scenario, "ru");
         var buy = Assert.Single(choices, choice => choice.Key == "buy:1");
         var reserve = Assert.Single(choices, choice => choice.Key == "reserve:1");
-        Assert.Contains("10000", buy.Label, StringComparison.Ordinal);
-        Assert.Contains("1000", reserve.Label, StringComparison.Ordinal);
+        Assert.Contains("100.00", buy.Label, StringComparison.Ordinal);
+        Assert.Contains("10.00", reserve.Label, StringComparison.Ordinal);
         Assert.Equal(ActionKind.BuyPlot, buy.Command!.Kind);
         Assert.Equal(ActionKind.ReservePlot, reserve.Command!.Kind);
         Assert.Equal(1000, PlayContext.ReservationFee(10000));
