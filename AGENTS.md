@@ -8,7 +8,7 @@
 2. Проверить git status/diff, текущую ветку, последние коммиты и удалённые refs. Сохранять существующую работу. Не начинать повторную реализацию без проверки файлов.
 3. Выполнять ограниченный объём текущего задания. В архитектурной ветке только документы; код начинается отдельным заданием/PR.
 4. Новые явные указания пользователя имеют приоритет. В источнике отличать принятое правило, план, предложение и открытый параметр. Поздние §23–25 уточняют ранние варианты. Не переоткрывать согласованные вопросы.
-5. P00–P25 выполнены в программных границах отчётов; Android device gate P06 открыт. Текущее состояние — IMPLEMENTATION_REPORT_P25.md и verification/p25. P24 прогнал парные режимы и replay. P25 посчитал десять семян 42–51: медианы, разброс и парные разницы без вывода о победителе. Следующий пункт P26; UI не объявлен готовым. Считать готовность по фактическим проверкам, а не наличию кода или документации. Ниже сохранены исторические правила/версии отдельных итераций; текущая версия World12/Rules baseline-1, Session2/Envelope1, utility-economy-v2/checkpoint2.
+5. P00–P25 интегрированы; P26 технически завершён в `feat/p26-godot-client` (commit6885b7f, PR #25 на момент 17.10.2026 открыт). Актуальный статус и ссылка на отчёт — PROTOTYPE_STATUS.md. Следующий шаг после интеграции P26 — P26.5, затем P27; оба пока запланированы. P26.5 — простая 3D-презентация первого месяца, полноценный интерфейс развивается во втором. Считать готовность по фактическим проверкам; Android device gate P06 открыт. Ниже сохранены исторические правила/версии отдельных итераций; текущая версия World12/Rules baseline-1, Session2/Envelope1, utility-economy-v2/checkpoint2.
 
 ## Архитектурные ограничения
 
@@ -29,9 +29,10 @@
 ## Реализация и изменения требований
 
 - Держать модули небольшими, обычные классы/records и явные вызовы предпочтительнее универсальных абстракций. Создавать проекты по мере реальной необходимости, без пустых заглушек всех будущих систем.
+- Для визуального клиента соблюдать границы [P26.5](docs/IMPLEMENTATION_PLAN.md#p265): простая 3D-сцена поверх общего Core, без второй экономики и объектов работников; P27 проверяет её перед передачей, полноценный UI развивается во втором месяце. План или headless smoke не равны визуальной приёмке.
 - Баланс и контент — версионированные настройки. Стартовые допущения перечислены в DECISIONS; изменения помечать как допущения, не как согласованные исторические правила.
 - Сохранять весь месячный объём §15. Не объявлять числовой найм, автоматику и выборы «потом вне MVP». При риске срока сообщить о переносе фактического завершения, а не незаметно сокращать требования.
-- Не изменять `docs/requirements/game_specification.md` без явного указания. Его исходный SHA-256 указан в DECISIONS. Новые технические решения записывать отдельно.
+- Не изменять `docs/requirements/game_specification.md` без явного указания. Его исходный SHA-256 указан в DECISIONS как исторический; уточнение визуального клиента от 17.10.2026 внесено по явному заданию пользователя. Новые технические решения записывать отдельно.
 - Секретные договоры не передавать в generic world dump, prompt, чужой debug/error или публичный event stream. Проверять allowlist проекций.
 - Состояние PRNG, очереди/окна/дедлайны, грузы/holds, WIP, кадровые остатки и разрешённые решения должны сохраняться. Replay читает решения, а не повторно спрашивает модель.
 - При выходе/сворачивании останавливать ticks, при resume не делать офлайн-catch-up. Проверить это на устройстве, не только в unit tests.
@@ -56,7 +57,7 @@
 ## Git, передача в Cursor и авторство
 
 - Отдельная ветка на задачу, небольшие коммиты и PR с объяснением проблемы, решения, проверок и оставшихся рисков. Без автоматического merge, force push, reset --hard или clean чужой работы.
-- Перед push проверить diff и author/committer. В авторстве указывать только «Шелестов Максим Евгеньевич». Не добавлять иных авторов, Co-authored-by и служебных подписей инструментов. Технические описания LLM как компонента игры сохраняются.
+- Перед push проверить diff и author/committer. Автор — Шелестов Максим Евгеньевич; по разрешению пользователя от 17.10.2026 допустимы английское написание имени и подтверждённый GitHub-логин `MaksShelest` в git author/committer. Это тот же автор. Не добавлять иных авторов, Co-authored-by и служебных подписей инструментов. Технические описания LLM как компонента игры сохраняются.
 - Не менять глобальный git config; при необходимости настройка только этого репозитория. Не придумывать личный email: использовать подтверждённый адрес либо GitHub noreply владельца.
 - Cursor следует тем же инструкциям; локальное окружение не даёт права дублировать правила в UI. Передача: branch/commit, фактические статусы задач, воспроизводимая команда, непройденные gates.
 - В конце задачи кратко сообщить что изменено, что реально проверено, ссылку на PR и точный следующий ограниченный шаг. Не выдавать архитектуру/план за реализацию.
@@ -66,7 +67,7 @@
 - Agents.Algorithmic -> Core; Hosting не знает concrete policy. Наблюдение ControllerObservation immutable через вложенные ImmutableArray; никакого engine/ScenarioDefinition/raw seed/research hash/foreign stock в Decide. Future secret fields только own/bilateral allowlist.
 - Hosting фиксирует все observations перед Decide/Send и даёт только own results. Единственный путь действий — обычные Send/Enqueue/Core validation; общий command budget8, текущий baseline выбирает1. Busy и sale hold не равны завершённой операции.
 - Capture сохраняет settings/goals/finite plan/cursor/pending ID/timers/private PRNG/trust/counts. Session2 сохраняет controller blobs/awaiting refs/turns/samples; composition root обязан RestoreControllers до Step. Attach только tick0; не выдать command replay за восстановление памяти NPC.
-- Вариативные economic coefficients пока не реализованы: settings принимают только1. В P21 политические weights/trust влияют на цену и риск поддержки. Исследовательские серии P24 не вычёркивать. Три NPC в console уже самостоятельные, human slot idle; Godot сцена по-прежнему technical playback, не NPC UI.
+- Вариативные economic coefficients пока не реализованы: settings принимают только1. В P21 политические weights/trust влияют на цену и риск поддержки. Исследовательские серии P24 не вычёркивать. Три NPC в console самостоятельные, human slot runner idle; статус технического клиента P26 и следующей 3D-сцены P26.5 см. PROTOTYPE_STATUS.
 - Параметры запуска/выгрузок — HEADLESS_TESTING; новая итерация расширяет checkpoints и independent continuous/load comparison. Snapshot может достигнуть64MiB из-за полных traces; следить за реальными размерами. В P17 не добавлять demand generator P18, политику/LLM/UI; остальные P17 части не вычёркивать.
 
 ## Рынок P14
@@ -194,4 +195,4 @@
 - Shared ModelRuntime: один физический inference, queue3, one pending/actor, batch admission с tick rotation и frozen responses. Default min interval30, apply15/TTL15, max4/120ticks, HTTP4s, retries0. Cancellation-ignoring request удерживает физический slot до фактического окончания, но не блокирует Step/fallback. Minimum apply2; bounds не поднимать без записи конфигурации.
 - HybridState v1 сохраняет utility checkpoint2, logical Pending/Ready slot/request/options/reply/relevant versions, serial/cooldown/budget/memory/resolutions. Task/HTTP не сериализовать. Load меняет epoch: незавершённый slot, включая ещё не применённый Ready, получает один fallback на сохранённом applyTick, повторного запроса нет. Старые callbacks не применяются. Resolved slot не выполняется повторно.
 - model-decisions.jsonl/ModelTrace — private researcher evidence, не public event/чужой prompt. Память только собственная; raw reason модели не возвращать как инструкции следующего prompt. Policy settings/trust/current published prices разрешены; future state/PRNG/договоры третьих сторон запрещены.
-- hybrid по умолчанию off, --model-mode ollama требует explicit config и loopback endpoint. Realtime и LiveHeadlessStress ставятся только при включённом runtime; выключенная модель сохраняет headless/paced и совпадает с baseline по миру. ControlledFakeS7 не выдавать за реальную LLM. Source World12/Rules baseline-1, Session2/Envelope1 прежние, hybrid-plan-v1/checkpoint1. P25: десять парных семян, отчёт IMPLEMENTATION_REPORT_P25.md. P26 не начат.
+- hybrid по умолчанию off, --model-mode ollama требует explicit config и loopback endpoint. Realtime и LiveHeadlessStress ставятся только при включённом runtime; выключенная модель сохраняет headless/paced и совпадает с baseline по миру. ControlledFakeS7 не выдавать за реальную LLM. Source World12/Rules baseline-1, Session2/Envelope1 прежние, hybrid-plan-v1/checkpoint1. P25: десять парных семян, отчёт IMPLEMENTATION_REPORT_P25.md. P26 технически завершён; актуальная последовательность P26.5→P27 — IMPLEMENTATION_PLAN.
