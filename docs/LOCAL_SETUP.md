@@ -67,7 +67,7 @@ dotnet build src/Client.Godot/Delsk.Client.csproj --no-restore --disable-build-s
 
 В Godot: **Editor → Editor Settings → Dotnet → Editor → External Editor → JetBrains Rider**. В Rider проверить путь к установленному Godot .NET в настройках Godot Engine. Настройка интеграции подтверждена [официальной документацией Rider](https://www.jetbrains.com/help/rider/Godot.html); [Godot C# basics](https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/c_sharp_basics.html) описывает .NET-редактор и SDK. Версии проекта закреплены файлами global.json и Delsk.Client.csproj.
 
-Нажать **F5**. Открывается `Playfield`: пауза, один тик, ход, добыча и карточка предприятия, если оно есть. Кнопки **Экономика** и **Политика** загружают соответствующие baseline-сценарии с тремя NPC. Баланс только отображается. Проверка старых хешей остаётся отдельной: Godot с аргументом `--smoke` открывает `PlatformProbe`. Подробности — [IMPLEMENTATION_REPORT_P26.md](IMPLEMENTATION_REPORT_P26.md).
+Нажать **F5**. Открывается `Playfield`: пауза, один тик, ход, добыча и карточка предприятия. `--smoke` открывает `PlatformProbe`. 3D-показ — [P26.5](IMPLEMENTATION_PLAN.md#p265). Подробности технического клиента — [IMPLEMENTATION_REPORT_P26.md](IMPLEMENTATION_REPORT_P26.md).
 
 Ошибку ручной проверки записать вместе с `git rev-parse HEAD`, версиями SDK/Godot, сценарием и журналом; не менять SDK/TFM или ожидаемые хеши для маскировки ошибки. Android и готовый Windows EXE в этой итерации заново не экспортировались; телефонный gate остаётся открытым.
 
