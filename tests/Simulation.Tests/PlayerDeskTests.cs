@@ -24,7 +24,7 @@ public class PlayerDeskTests
         long hidden = left.Engine.InspectSupport().Proposals.Single().Id;
         Assert.DoesNotContain(PlayerDesk.Read(left.Engine, new(1)).Support.Proposals, p => p.Id == hidden);
         Assert.Contains(PlayerDesk.Read(left.Engine, new(2)).Support.Proposals, p => p.Id == hidden && p.Seller == new ParticipantId(3));
-        Assert.Throws<ArgumentException>(() => PlayerDesk.Check(new(ActionKind.SellAvailableToCapital)));
+        Assert.Throws<ArgumentException>(() => PlayerDesk.Check(new(ActionKind.CreateBuyOffer)));
     }
 
     [Fact]

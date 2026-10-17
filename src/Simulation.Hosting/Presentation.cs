@@ -55,6 +55,11 @@ public static class Presentation
             string label = string.Join(", ", group.OrderBy(o => o.ItemId, StringComparer.Ordinal).Select(o => $"{o.ItemId} {o.RemainingQuantity}"));
             markers.Add(new("capital", group.Key.X, group.Key.Z, label, group.Min(o => o.Id), 0));
         }
+        // The terminal is a place, including between demand publications and after an order is filled.
+        foreach (var terminal in scenario.CapitalOffers.Select(o => o.Position)
+            .Concat(scenario.CapitalDemand is { } demand ? [demand.Terminal] : []).Distinct())
+            if (!markers.Any(m => m.Kind == "capital" && m.X == terminal.X && m.Z == terminal.Z))
+                markers.Add(new("capital", terminal.X, terminal.Z, "", 0, 0));
         var trips = world.Logistics.Where(l => l.Trip is not null).OrderBy(l => l.Id.Value).Select(l =>
             new PresentationTrip(l.Id.Value, l.OwnerId.Value, l.Trip!.ItemId, l.Trip.State, l.Trip.Position.X, l.Trip.Position.Z)).ToArray();
         return new(world.Tick, scenario.MapWidth, scenario.MapHeight, actors, markers.ToArray(), trips);
