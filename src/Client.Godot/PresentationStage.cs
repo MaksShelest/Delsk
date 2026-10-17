@@ -116,7 +116,10 @@ public partial class PresentationStage : Node3D
             {
                 "blocked" => Tile(marker.X, marker.Z, new Color(0.22f, 0.23f, 0.26f), 0.03f),
                 "corridor" => Tile(marker.X, marker.Z, new Color(0.58f, 0.52f, 0.4f), 0.03f),
-                "plot" => Tile(marker.X, marker.Z, new Color(0.62f, 0.45f, 0.26f), 0.03f),
+                "plot" or "plot-free" => Tile(marker.X, marker.Z, new Color(0.62f, 0.45f, 0.26f), 0.03f),
+                "plot-own" => Tile(marker.X, marker.Z, new Color(0.4f, 0.58f, 0.28f), 0.03f),
+                "plot-foreign" => Tile(marker.X, marker.Z, new Color(0.45f, 0.28f, 0.24f), 0.03f),
+                "plot-reserved" => Tile(marker.X, marker.Z, new Color(0.72f, 0.55f, 0.22f), 0.03f),
                 "shop-plot" => Tile(marker.X, marker.Z, new Color(0.46f, 0.36f, 0.55f), 0.03f),
                 "resource" => Mark(new CylinderMesh { TopRadius = 0.22f, BottomRadius = 0.22f, Height = 0.7f },
                     marker.Label == "wood" ? new Color(0.25f, 0.55f, 0.22f) : new Color(0.82f, 0.72f, 0.2f),

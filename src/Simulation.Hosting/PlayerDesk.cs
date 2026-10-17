@@ -128,7 +128,49 @@ public static class PlayerText
         ["trip"] = "Рейс",
         ["you"] = "Вы",
         ["selected"] = "Выбрано",
-        ["scene.hint"] = "Клик по клетке: ход, добыча или своё предприятие."
+        ["scene.hint"] = "Клик по клетке: ход, добыча или своё предприятие.",
+        ["menu.title"] = "Меню",
+        ["menu.continue"] = "Продолжить",
+        ["menu.debug"] = "Debug-режим",
+        ["menu.exit"] = "Выйти из игры",
+        ["menu.settings"] = "Настройки",
+        ["menu.escape"] = "Escape здесь означает «Продолжить», если окно в фокусе.",
+        ["command.selected"] = "Выбрано, ещё не отправлено.",
+        ["command.sent"] = "Отправлено, ждёт тик.",
+        ["command.running"] = "Выполняется, осталось {0}",
+        ["command.done"] = "Завершено.",
+        ["command.rejected"] = "Отклонено:",
+        ["inventory.title"] = "Личный инвентарь",
+        ["inventory.empty"] = "пусто",
+        ["inventory.capacity"] = "Место",
+        ["received"] = "Получено: {0} ×{1}",
+        ["harvest.left"] = "Добыча {0}: осталось {1}",
+        ["reason.NoMoney"] = "Недостаточно денег для покупки.",
+        ["reason.NoCapacity"] = "Инвентарь заполнен.",
+        ["reason.ParticipantBusy"] = "Персонаж занят добычей.",
+        ["reason.NoResourceNode"] = "Подойдите к точке ресурса.",
+        ["reason.NotAtLocation"] = "Подойдите к нужному месту.",
+        ["reason.NoPath"] = "Сюда пройти нельзя.",
+        ["reason.NotAvailable"] = "Сейчас это действие недоступно.",
+        ["new.session"] = "Новая партия:",
+        ["legend.title"] = "Легенда",
+        ["legend.player"] = "круг с номером — вы",
+        ["legend.npc"] = "круг с номером — NPC",
+        ["legend.wood"] = "круг — древесина",
+        ["legend.grain"] = "ромб — зерно",
+        ["legend.plot.free"] = "квадрат — свободный участок",
+        ["legend.plot.own"] = "квадрат с рамкой — свой участок",
+        ["legend.plot.foreign"] = "квадрат — чужой участок",
+        ["legend.plot.reserved"] = "пунктир — забронированный участок",
+        ["legend.corridor"] = "полосы — проход",
+        ["legend.blocked"] = "крест — непроходимо",
+        ["legend.production"] = "квадрат — предприятие",
+        ["legend.warehouse"] = "широкий прямоугольник — склад",
+        ["legend.shop"] = "треугольник — лавочка",
+        ["legend.capital"] = "ромб — терминал столицы",
+        ["legend.cargo"] = "ящик — груз в пути",
+        ["cell.selected"] = "Клетка",
+        ["debug.hint"] = "Выберите действие и нажмите «Один тик». Пока оно не подтверждено, время стоит."
     };
 
     private static Dictionary<string, string> En() => new(StringComparer.Ordinal)
@@ -181,6 +223,66 @@ public static class PlayerText
         ["trip"] = "Trip",
         ["you"] = "You",
         ["selected"] = "Selected",
-        ["scene.hint"] = "Click a cell: move, harvest, or your enterprise."
+        ["scene.hint"] = "Click a cell: move, harvest, or your enterprise.",
+        ["menu.title"] = "Menu",
+        ["menu.continue"] = "Continue",
+        ["menu.debug"] = "Debug mode",
+        ["menu.exit"] = "Exit game",
+        ["menu.settings"] = "Settings",
+        ["menu.escape"] = "Escape here means Continue while the window is focused.",
+        ["command.selected"] = "Selected, not sent yet.",
+        ["command.sent"] = "Sent, waiting for a tick.",
+        ["command.running"] = "Running, {0} left",
+        ["command.done"] = "Finished.",
+        ["command.rejected"] = "Rejected:",
+        ["inventory.title"] = "Personal inventory",
+        ["inventory.empty"] = "empty",
+        ["inventory.capacity"] = "Space",
+        ["received"] = "Received: {0} ×{1}",
+        ["harvest.left"] = "Harvest {0}: {1} left",
+        ["reason.NoMoney"] = "Not enough money to buy.",
+        ["reason.NoCapacity"] = "Inventory is full.",
+        ["reason.ParticipantBusy"] = "The character is busy harvesting.",
+        ["reason.NoResourceNode"] = "Move to the resource.",
+        ["reason.NotAtLocation"] = "Move to the right place.",
+        ["reason.NoPath"] = "That cell cannot be reached.",
+        ["reason.NotAvailable"] = "That action is not available now.",
+        ["new.session"] = "New session:",
+        ["legend.title"] = "Legend",
+        ["legend.player"] = "numbered circle — you",
+        ["legend.npc"] = "numbered circle — NPC",
+        ["legend.wood"] = "circle — wood",
+        ["legend.grain"] = "diamond — grain",
+        ["legend.plot.free"] = "square — free plot",
+        ["legend.plot.own"] = "framed square — your plot",
+        ["legend.plot.foreign"] = "square — someone else's plot",
+        ["legend.plot.reserved"] = "dashed square — reserved plot",
+        ["legend.corridor"] = "stripes — passage",
+        ["legend.blocked"] = "cross — blocked",
+        ["legend.production"] = "square — enterprise",
+        ["legend.warehouse"] = "wide rectangle — warehouse",
+        ["legend.shop"] = "triangle — shop",
+        ["legend.capital"] = "diamond — capital terminal",
+        ["legend.cargo"] = "box — cargo on a trip",
+        ["cell.selected"] = "Cell",
+        ["debug.hint"] = "Choose an action, then press One tick. Time stays stopped until you confirm it."
     };
+
+    public static string Reason(string language, string code)
+    {
+        string key = "reason." + code;
+        return Keys(language).Contains(key) ? Get(language, key) : code;
+    }
+
+    public static string Received(string language, string item, long quantity) =>
+        string.Format(System.Globalization.CultureInfo.InvariantCulture, Get(language, "received"), item, quantity);
+
+    public static string HarvestLeft(string language, string item, long remaining) =>
+        string.Format(System.Globalization.CultureInfo.InvariantCulture, Get(language, "harvest.left"), item, remaining);
+
+    public static string? OwnHarvest(PublicSimulationEvent[] events, long actor, string language)
+    {
+        var done = events.LastOrDefault(e => e.Type == "HarvestCompleted" && e.ActorId?.Value == actor);
+        return done is null ? null : Received(language, done.ItemId, done.Quantity);
+    }
 }

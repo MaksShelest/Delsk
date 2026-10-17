@@ -16,7 +16,7 @@ dotnet run --project src/Research.Runner -c Release --no-build -- --script hybri
 
 Серия P25: `py -3 scripts/run_research_series.py --protocol scenarios/research-series-p25.json --output artifacts/p25-series --resume`, затем `py -3 scripts/analyze_paired_series.py --series artifacts/p25-series --evidence docs/verification/p25`. Десять семян 42–51, отчёт — [IMPLEMENTATION_REPORT_P25.md](IMPLEMENTATION_REPORT_P25.md).
 
-Клиент P26.5: Godot .NET, F5 на `Playfield.tscn`. `--smoke` гоняет `PlatformProbe`. Отчёт — [IMPLEMENTATION_REPORT_P26_5.md](IMPLEMENTATION_REPORT_P26_5.md). Headless-прогон не заменяет оконную проверку.
+Клиент P26.6: Godot .NET, F5 на `Playfield.tscn`. Обычная игра идёт, Escape открывает меню, Debug шагает вручную. `--smoke` гоняет `PlatformProbe`. Отчёт — [IMPLEMENTATION_REPORT_P26_6.md](IMPLEMENTATION_REPORT_P26_6.md). Headless-прогон не заменяет оконную проверку.
 
 После load все незавершённые Pending/Ready slots получают fallback в прежний applyTick с новой epoch, без нового запроса. Уже разрешённые решения не повторяются. Это правило не обещает идентичность прерванной живой модели непрерывному realtime rollout. [Процедура P23](LOCAL_MODEL_VALIDATION.md) на этой машине выполнена: реальный `qwen3.5:4b`, применённый `MoveTo`, fallback и replay записаны в [IMPLEMENTATION_REPORT_P23.md](IMPLEMENTATION_REPORT_P23.md). Адаптер отключает thinking, чтобы JSON оставался в `content`.
 

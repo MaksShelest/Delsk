@@ -32,7 +32,12 @@ public static class Presentation
                     markers.Add(new("blocked", x, z, "", 0, 0));
         foreach (var plot in world.Plots.OrderBy(p => p.Id.Value))
         {
-            string kind = plot.IsCorridor ? "corridor" : plot.ShopParticipantId.HasValue ? "shop-plot" : "plot";
+            string kind = plot.IsCorridor ? "corridor"
+                : plot.ShopParticipantId.HasValue ? "shop-plot"
+                : plot.ReservedBy.HasValue ? "plot-reserved"
+                : plot.OwnerId?.Value == humanId ? "plot-own"
+                : plot.OwnerId.HasValue ? "plot-foreign"
+                : "plot-free";
             markers.Add(new(kind, plot.Position.X, plot.Position.Z, "", plot.Id.Value, plot.OwnerId?.Value ?? 0));
         }
         foreach (var node in scenario.ResourceNodes)
@@ -40,8 +45,11 @@ public static class Presentation
         foreach (var building in world.Buildings.OrderBy(b => b.Id.Value))
             markers.Add(new(building.Kind.ToString().ToLowerInvariant(), building.Position.X, building.Position.Z,
                 building.TypeId, building.Id.Value, building.OwnerId.Value));
-        foreach (var offer in world.CapitalOffers.Where(o => o.RemainingQuantity > 0))
-            markers.Add(new("capital", offer.Position.X, offer.Position.Z, offer.ItemId, offer.Id, 0));
+        foreach (var group in world.CapitalOffers.Where(o => o.RemainingQuantity > 0).GroupBy(o => o.Position))
+        {
+            string label = string.Join(", ", group.OrderBy(o => o.ItemId, StringComparer.Ordinal).Select(o => $"{o.ItemId} {o.RemainingQuantity}"));
+            markers.Add(new("capital", group.Key.X, group.Key.Z, label, group.Min(o => o.Id), 0));
+        }
         var trips = world.Logistics.Where(l => l.Trip is not null).OrderBy(l => l.Id.Value).Select(l =>
             new PresentationTrip(l.Id.Value, l.OwnerId.Value, l.Trip!.ItemId, l.Trip.State, l.Trip.Position.X, l.Trip.Position.Z)).ToArray();
         return new(world.Tick, scenario.MapWidth, scenario.MapHeight, actors, markers.ToArray(), trips);

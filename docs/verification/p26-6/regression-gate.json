@@ -1,0 +1,30 @@
+{
+  "stage": "P26.6 iteration 1",
+  "command": "py -3 scripts/check_headless.py --output artifacts/p266-regression",
+  "status": "succeeded",
+  "tests": {
+    "total": "625",
+    "executed": "625",
+    "passed": "625",
+    "failed": "0",
+    "timeSeconds": 120.406
+  },
+  "exports": 81,
+  "replays": 9,
+  "comparisonPairs": 54,
+  "clientBuild": "dotnet build src/Client.Godot/Delsk.Client.csproj -c Debug succeeded",
+  "godotSmoke": {
+    "status": "passed",
+    "ticks": 62,
+    "lifecycleAdapterChecked": true,
+    "checkpointRestoreChecked": true,
+    "electionCheckedTicks": 40,
+    "supportCheckedTicks": 120
+  },
+  "playfieldLoad": "--quit-after 3 exited 0 without ERROR",
+  "tripLoad": "--quit-after 8 -- --trip exited 0 without ERROR",
+  "windowedVisualCheck": "not performed",
+  "deviceCheck": "not performed",
+  "iterationsLeft": ["movement and camera", "game interface"],
+  "author": "Шелестов Максим Евгеньевич"
+}
