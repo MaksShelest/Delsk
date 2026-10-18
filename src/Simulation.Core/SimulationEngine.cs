@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "baseline-1";
+    public const string RulesVersion = "manual-harvest-1";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -171,6 +171,8 @@ public sealed partial class SimulationEngine
             {
                 case ActionKind.MoveTo: StartMove(actor, c); break;
                 case ActionKind.Harvest: StartHarvest(actor, c); break;
+                case ActionKind.StartHarvesting: StartHarvesting(actor, c); break;
+                case ActionKind.StopHarvest: StopHarvest(actor, c); break;
                 case ActionKind.Transfer: Transfer(actor, c); break;
                 case ActionKind.SetProductionEnabled: SetProduction(actor, c); break;
                 case ActionKind.SellAvailableToCapital: StartSale(actor, c); break;
@@ -222,12 +224,13 @@ public sealed partial class SimulationEngine
     { if (actor.Job is not null || HasSale(actor.Id)) throw new RuleViolation("ParticipantBusy"); }
     private void StartMove(ActorState actor, CommandEnvelope c)
     {
-        RequireIdle(actor);
+        if (!IsHarvest(actor.Job)) RequireIdle(actor);
         Cell[] path = _map.FindPath(actor.Position, c.Action.Target);
+        long arrival = checked(Tick + checked((long)(path.Length - 1) * _config.MoveTicksPerCell));
+        if (path.Length > 1 && IsHarvest(actor.Job)) CancelHarvest(actor, "MovementStarted");
         actor.HeadingX = 0; actor.HeadingZ = 0; actor.OffsetX = TravelCenter; actor.OffsetZ = TravelCenter;
         if (path.Length == 1) return;
         actor.FacingX = Math.Sign(path[1].X - path[0].X); actor.FacingZ = Math.Sign(path[1].Z - path[0].Z);
-        long arrival = checked(Tick + checked((long)(path.Length - 1) * _config.MoveTicksPerCell));
         actor.Job = new(_nextId++, "Move", Tick, arrival, path, "", 0, "", c.CommandId);
         Emit("MovementStarted", actor.Id, actor.Job.Id, reason: arrival.ToString(System.Globalization.CultureInfo.InvariantCulture), command: c.CommandId);
     }
@@ -295,7 +298,7 @@ public sealed partial class SimulationEngine
     {
         foreach (var actor in _actors.Values.OrderBy(a => a.Id))
         {
-            if (actor.Job is not { } job || job.Kind is not ("Harvest" or "EquipmentHarvest") || Tick < job.CompletionTick) continue;
+            if (actor.Job is not { } job || !IsHarvest(job) || Tick < job.CompletionTick) continue;
             long total = checked(_flows[job.Item].Harvested + job.Quantity);
             var tx = _economy.Begin(Tick);
             tx.ReleaseCapacity(actor.Inventory, job.CapacityHold); tx.AddStock(actor.Inventory, job.Item, job.Quantity); tx.Commit();
@@ -307,6 +310,12 @@ public sealed partial class SimulationEngine
             _flows[job.Item].Harvested = total;
             _completedPersonalJobs.Add(job.Id); actor.Job = null;
             Emit("HarvestCompleted", actor.Id, job.Id, job.Item, job.Quantity, command: job.CommandId);
+            if (job.Kind == "HarvestLoop")
+            {
+                try { BeginHarvestCycle(actor, job.Item, job.CommandId); }
+                catch (RuleViolation ex) when (ex.ReasonCode == "NoCapacity")
+                { Emit("HarvestLoopStopped", actor.Id, job.Id, job.Item, reason: ex.ReasonCode, command: job.CommandId); }
+            }
         }
     }
     public WorldView Inspect()

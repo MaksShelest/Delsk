@@ -332,8 +332,11 @@ public partial class Playfield : Control
         if (choice.Command is { } action) Offer(action);
     }
 
+    private readonly List<ProgressBar> _harvestBars = [];
+
     private void RebuildContext()
     {
+        _harvestBars.Clear();
         if (_contextHost is not null) FillContext(_contextHost);
         if (_debugContext is not null) FillContext(_debugContext);
     }
@@ -360,6 +363,17 @@ public partial class Playfield : Control
                 ConfirmContext();
             };
             host.AddChild(button);
+            if (_choices[i].Command?.Kind == ActionKind.StopHarvest)
+            {
+                button.CustomMinimumSize = new Vector2(0, 38);
+                var bar = new ProgressBar { ShowPercentage = false, MinValue = 0, MaxValue = 100,
+                    MouseFilter = MouseFilterEnum.Ignore, AnchorRight = 1, AnchorTop = 1, AnchorBottom = 1,
+                    OffsetLeft = 6, OffsetRight = -6, OffsetTop = -7, OffsetBottom = -2 };
+                bar.AddThemeStyleboxOverride("fill", new StyleBoxFlat { BgColor = new Color("77ba88"),
+                    CornerRadiusTopLeft = 2, CornerRadiusTopRight = 2, CornerRadiusBottomLeft = 2, CornerRadiusBottomRight = 2 });
+                button.AddChild(bar);
+                _harvestBars.Add(bar);
+            }
         }
             if (_choices.Length > 0)
             host.AddChild(new Label { Text = $"{_contextIndex + 1}/{_choices.Length} · " +
@@ -372,6 +386,7 @@ public partial class Playfield : Control
 
     private void Submit(GameAction action)
     {
+        if (action.Kind is ActionKind.StartHarvesting or ActionKind.StopHarvest && WaitingCommand) return;
         if (_tabletState.IsOpen)
         {
             if (!_tabletState.ValidateLocation(PlayerDesk.Read(_session.Engine,_human),_scenario)) { CloseTablet(); return; }
@@ -416,9 +431,17 @@ public partial class Playfield : Control
         UpdateHudGoods(pack);
         var next = PlayContext.At(view, _scenario, _language, _surface == Surface.Play);
         _contextIndex = PlayContext.Keep(_contextIndex, _choices, next);
+        if (WaitingCommand)
+            next = next.Select(c => c.Command?.Kind is ActionKind.StartHarvesting or ActionKind.StopHarvest
+                ? c with { Enabled = false, Details = T("command.sent") } : c).ToArray();
         _choices = next;
         string contextKey = _contextIndex.ToString(CultureInfo.InvariantCulture) + "|" + string.Join(",", next.Select(c => $"{c.Key}:{c.Label}:{c.Enabled}:{c.Details}"));
         if (contextKey != _contextKey) { _contextKey = contextKey; RebuildContext(); }
+        foreach (var bar in _harvestBars)
+        {
+            bar.Value = HarvestProgress.Percent(view.Harvest, view.Tick, _session.Engine.TravelQuantum);
+            bar.TooltipText = PlayerText.Local(_language, "Текущий цикл", "Current cycle") + $": {bar.Value:0}%";
+        }
         if (_tooltip is not null)
             _tooltip.Text = _hoverX is int hx && _hoverZ is int hz
                 ? PlayContext.Hover(frame, view, hx, hz, _language)
@@ -914,6 +937,10 @@ public partial class Playfield : Control
         if (PlayerText.OwnHarvest(events, _human.Value, _language) is { } gain) _gain = gain;
         foreach (var done in events.Where(e => e.ActorId?.Value == _human.Value))
         {
+            if (done.Type is "HarvestCancelled" or "HarvestLoopStopped")
+                _gain = done.ReasonCode == "NoCapacity"
+                    ? PlayerText.Local(_language, "Добыча остановлена: инвентарь заполнен.", "Harvesting stopped: inventory full.")
+                    : PlayerText.Local(_language, "Добыча остановлена. Незавершённый прогресс сброшен.", "Harvesting stopped. Unfinished progress discarded.");
             if (done.Type == "CapitalSaleSettled")
                 _gain = PlayerText.Local(_language, "Продано: ", "Sold: ") + PlayerText.Item(_language, done.ItemId) + $" ×{done.Quantity} · +{PlayerText.Money(done.AmountMinor)}";
             if (done.Type == "BuildingConstructed")
@@ -935,6 +962,9 @@ public partial class Playfield : Control
         if (result.Status == ResultStatus.Rejected) return T("command.rejected") + " " + PlayerText.Reason(_language, result.ReasonCode);
         if (_trackedKind == ActionKind.SellAvailableToCapital && view.Participant.Busy)
             return PlayerText.Local(_language, "Заявка на продажу принята. Ожидаем закрытия торгового окна.", "Sale request accepted. Waiting for the trading window to close.");
+        if (view.Harvest is { Repeating: true } harvest)
+            return PlayerText.Local(_language, "Добываем: ", "Harvesting: ") + PlayerText.Item(_language, harvest.ItemId) +
+                PlayerText.Local(_language, " · по 1 за цикл", " · 1 per cycle") + (_gain.Length == 0 ? "" : " · " + _gain);
         if (view.Participant.Busy && view.Participant.ArrivalTick is long end)
         {
             long left = Math.Max(0, end - _session.Engine.Tick);

@@ -62,12 +62,24 @@ public sealed partial class SimulationEngine
     private void TravelActor(ActorState actor, int distance)
     {
         if (actor.HeadingX == 0 && actor.HeadingZ == 0) return;
-        if (actor.Job is not null || HasSale(actor.Id)) return;
+        if ((actor.Job is not null && !IsHarvest(actor.Job)) || HasSale(actor.Id)) return;
         int step = actor.HeadingX != 0 && actor.HeadingZ != 0 ? checked(distance * 707 / 1000) : distance;
         var before = actor.Position;
         MoveAxis(actor, checked(actor.HeadingX * step), alongX: true);
         MoveAxis(actor, checked(actor.HeadingZ * step), alongX: false);
-        if (actor.Position != before) _economy.Inventories[actor.Inventory].Position = actor.Position;
+        if (actor.Position != before)
+        {
+            _economy.Inventories[actor.Inventory].Position = actor.Position;
+            if (actor.Job is { } job && IsHarvest(job) &&
+                (!_config.ResourceNodes.Any(n => n.Position == actor.Position && n.ItemId == job.Item) ||
+                 job.EquipmentId != 0 && _equipment[job.EquipmentId].Position != actor.Position))
+            {
+                // Travel happens between committed ticks, including immediately after load.
+                int previousPhase = _phase; _phase = 9;
+                try { CancelHarvest(actor, "LeftResourceArea"); }
+                finally { _phase = previousPhase; }
+            }
+        }
     }
 
     private void MoveAxis(ActorState actor, int delta, bool alongX)

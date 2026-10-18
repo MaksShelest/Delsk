@@ -92,7 +92,7 @@ public class TabletTests
         session.SetTravelHeading(Human,1,0);session.CompleteTravelTick();session.SetTravelHeading(Human,0,0);
         string before=session.Engine.ComputeStateHash();Assert.False(session.Engine.CanTravel(Human,1,0));Assert.True(session.Engine.CanTravel(Human,-1,0));Assert.False(session.Engine.CanTravel(Human,0,0));Assert.Equal(before,session.Engine.ComputeStateHash());
         LandContentFixtures.Harvest(session,"wood",1);
-        Fixtures.Command(session,PlayerDesk.Harvest("wood",1));Assert.False(session.Engine.CanTravel(Human,-1,0));
+        Fixtures.Command(session,PlayerDesk.Harvest("wood",1));Assert.True(session.Engine.CanTravel(Human,-1,0));
     }
 
     [Fact]

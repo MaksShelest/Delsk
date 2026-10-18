@@ -17,10 +17,17 @@ public static class PlayContext
         var cell = view.Participant.Position;
         var choices = new List<ContextChoice>();
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
+        if (view.Harvest is { } harvest)
+            choices.Add(new("harvest:stop", L(language, "Остановить добычу: ", "Stop harvesting: ") + PlayerText.Item(language, harvest.ItemId),
+                PlayerDesk.StopHarvest(), Details: L(language, "При остановке незавершённый прогресс теряется. Выход из области ресурса также отменяет добычу.",
+                    "Stopping discards unfinished progress. Leaving the resource area also cancels harvesting.")));
+        else
         foreach (var node in scenario.ResourceNodes.Where(n => n.Position == cell).OrderBy(n => n.ItemId, StringComparer.Ordinal))
             choices.Add(new("harvest:" + node.ItemId,
-                PlayerText.Get(language, "context.harvest") + " " + PlayerText.Item(language, node.ItemId) + " ×1",
-                PlayerDesk.Harvest(node.ItemId, 1)));
+                (tablets ? L(language, "Добывать", "Harvest") : PlayerText.Get(language, "context.harvest")) + " " + PlayerText.Item(language, node.ItemId) + (tablets ? "" : " ×1"),
+                tablets ? PlayerDesk.StartHarvesting(node.ItemId) : PlayerDesk.Harvest(node.ItemId, 1),
+                Details: tablets ? L(language, "Повторяется по одной единице до остановки, ухода или заполнения инвентаря.",
+                    "Repeats one unit at a time until stopped, leaving the area or inventory full.") : ""));
         var plot = view.Plots.SingleOrDefault(p => p.Position == cell);
         if (plot is { IsCorridor: false, OwnerId: null } &&
             (plot.ShopParticipantId is null || plot.ShopParticipantId == view.Participant.Id) &&
@@ -94,14 +101,15 @@ public static class PlayContext
         // Preview only; the shared validator remains authoritative when a queued action runs.
         return choices.Select(choice =>
         {
-            string reason = view.Participant.Busy && choice.Command is not null ? L(language, "Персонаж занят. Дождитесь завершения действия.", "Participant busy. Wait for the current action.") : choice.Details;
-            bool enabled = choice.Enabled && (!view.Participant.Busy || choice.Command is null);
+            bool busy = view.Participant.Busy && choice.Command?.Kind != ActionKind.StopHarvest;
+            string reason = busy && choice.Command is not null ? L(language, "Персонаж занят. Дождитесь завершения действия.", "Participant busy. Wait for the current action.") : choice.Details;
+            bool enabled = choice.Enabled && (!busy || choice.Command is null);
             if (choice.Command?.Kind is ActionKind.BuyPlot or ActionKind.ReservePlot)
             {
                 long cost = choice.Command.Kind == ActionKind.BuyPlot ? plot!.PriceMinor : ReservationFee(plot!.PriceMinor);
                 if (view.AvailableCashMinor < cost) { enabled = false; reason = L(language, "Недостаточно денег.", "Not enough money."); }
             }
-            if (choice.Command?.Kind == ActionKind.Harvest && pack.OccupiedVolume + pack.ReservedCapacity + scenario.Items.Single(i => i.Id == choice.Command.ItemId).UnitVolume > pack.Capacity)
+            if (choice.Command?.Kind is (ActionKind.Harvest or ActionKind.StartHarvesting) && pack.OccupiedVolume + pack.ReservedCapacity + scenario.Items.Single(i => i.Id == choice.Command.ItemId).UnitVolume > pack.Capacity)
             { enabled = false; reason = L(language, "Инвентарь заполнен.", "Inventory full."); }
             return choice with { Enabled = enabled, Details = reason };
         }).ToArray();
