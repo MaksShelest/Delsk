@@ -1,0 +1,13 @@
+{
+  "measuredTicks": 1200,
+  "averageTickMs": 4.9790440000000045,
+  "medianTickMs": 4.4613,
+  "p95TickMs": 9.2591,
+  "maximumTickMs": 229.7497,
+  "saveBytes": 4115499,
+  "encodeMs": 236.1576,
+  "decodeMs": 546.1258,
+  "workingSetBytes": 375287808,
+  "checkpointHashMatches": true,
+  "scope": "Hosted headless Step including controllers, invariants and sample/hash; includes JIT; save/load measured separately; no rendering or device claim"
+}

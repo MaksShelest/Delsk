@@ -38,7 +38,7 @@ public static class Presentation
         foreach (var plot in world.Plots.OrderBy(p => p.Id.Value))
         {
             string kind = plot.IsCorridor ? "corridor"
-                : plot.ShopParticipantId.HasValue ? "shop-plot"
+                : plot.IsShopSite || plot.ShopParticipantId.HasValue ? "shop-plot"
                 : plot.ReservedBy.HasValue ? "plot-reserved"
                 : plot.OwnerId?.Value == humanId ? "plot-own"
                 : plot.OwnerId.HasValue ? "plot-foreign"

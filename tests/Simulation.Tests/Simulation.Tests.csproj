@@ -27,4 +27,5 @@
   <ItemGroup><EmbeddedResource Include="../../scenarios/autonomous-demand.json" LogicalName="Fixture.autonomous-demand.json" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/baseline-*.json" LogicalName="Fixture.%(Filename)%(Extension)" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/presentation-map-two.json" LogicalName="Fixture.presentation-map-two.json" /></ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../config/economy.json" LogicalName="Fixture.economy.json" /></ItemGroup>
 </Project>

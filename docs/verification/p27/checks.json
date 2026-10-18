@@ -1,0 +1,435 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "2026-10-18",
+  "basis": "58c5920eb398a9815804af7ec10bfe48728e101e",
+  "scope": "P26.6 C, central economy profile, P27 available software/cloud validation; local device/live gates open",
+  "rules": "research-economy-1",
+  "world_schema": 13,
+  "session_schema": 2,
+  "envelope_format": 2,
+  "sdk": "10.0.401",
+  "godot": "4.7.2.stable.mono.official.ed1daf0bf",
+  "tests": {
+    "total": "694",
+    "executed": "694",
+    "passed": "694",
+    "failed": "0",
+    "error": "0",
+    "timeout": "0",
+    "aborted": "0",
+    "inconclusive": "0",
+    "passedButRunAborted": "0",
+    "notRunnable": "0",
+    "notExecuted": "0",
+    "disconnected": "0",
+    "warning": "0",
+    "completed": "0",
+    "inProgress": "0",
+    "pending": "0"
+  },
+  "headless": {
+    "status": "succeeded",
+    "scenarios": [
+      "cycle",
+      "recovery",
+      "development",
+      "labor",
+      "equipment",
+      "autonomous",
+      "market",
+      "pickup",
+      "delivery",
+      "capital-delivery",
+      "logistics",
+      "logistics-upgrade",
+      "own-storage",
+      "inbound",
+      "own-production",
+      "logistics-queue",
+      "capital-demand",
+      "autonomous-demand",
+      "elections",
+      "support"
+    ],
+    "checkpoint_cases": {
+      "cycle": 55,
+      "equipment": 101,
+      "autonomous": 350,
+      "market": 44,
+      "pickup": 47,
+      "delivery": 37,
+      "capital-delivery": 3,
+      "logistics": 69,
+      "logistics-upgrade": 170,
+      "own-storage": 170,
+      "inbound": 78,
+      "own-production": 170,
+      "logistics-queue": 185,
+      "capital-demand": 85,
+      "autonomous-demand": 350,
+      "elections": 9,
+      "support": 18
+    },
+    "comparison": "every exported tick hash, state, ledger, event, command and labor row",
+    "controlled_fixture": {
+      "name": "late-return",
+      "origin": "test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged",
+      "checkpoint_tick": 72,
+      "final_tick": 80
+    },
+    "baseline_cases": {
+      "economy": {
+        "final_tick": 1200,
+        "checkpoint_tick": 350
+      },
+      "auction": {
+        "final_tick": 180,
+        "checkpoint_tick": 30
+      },
+      "politics": {
+        "final_tick": 160,
+        "checkpoint_tick": 19
+      },
+      "logistics": {
+        "final_tick": 360,
+        "checkpoint_tick": 80
+      }
+    },
+    "model_safety": {
+      "checkpoint_tick": 6,
+      "final_tick": 60,
+      "valid": 1,
+      "forged_actor": 1,
+      "late_reply": 1
+    },
+    "model_off": "exact world equality with baseline-economy and the same headless timing label",
+    "exports": 82,
+    "replays": 9,
+    "comparison_pairs": 54,
+    "scope": "P00-P26.6 play HUD and context actions; live Ollama series is separate evidence; windowed and device checks are separate",
+    "author": "Шелестов Максим Евгеньевич"
+  },
+  "checks": {
+    "p27-acceptance-final": {
+      "command": [
+        "python3",
+        "scripts/check_headless.py",
+        "--output",
+        "artifacts/p27-acceptance-final"
+      ],
+      "timeout_seconds": 1200,
+      "started_at": "2026-10-18T10:08:15.268064+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 169.252,
+      "finished_at": "2026-10-18T10:11:04.520609+00:00"
+    },
+    "p27-final-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--nologo",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-18T09:46:01.839622+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.495,
+      "finished_at": "2026-10-18T09:46:08.334273+00:00"
+    },
+    "p27-client-final-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "-c",
+        "Debug",
+        "--nologo",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-18T09:58:08.882577+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.354,
+      "finished_at": "2026-10-18T09:58:15.236254+00:00"
+    },
+    "p27-import": {
+      "command": [
+        "../toolchain/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--editor",
+        "--path",
+        "src/Client.Godot",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-18T09:48:50.266942+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.878,
+      "finished_at": "2026-10-18T09:48:54.145414+00:00"
+    },
+    "p27-godot-smoke": {
+      "command": [
+        "../toolchain/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--",
+        "--smoke",
+        "--report",
+        "/workspace/scratch/80193353a16b/Delsk/artifacts/p27-platform.json"
+      ],
+      "timeout_seconds": 45,
+      "started_at": "2026-10-18T09:48:54.177410+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.519,
+      "finished_at": "2026-10-18T09:48:55.696509+00:00"
+    },
+    "p27-market-window": {
+      "command": [
+        "python3",
+        "artifacts/p27-qa/run.py"
+      ],
+      "timeout_seconds": 165,
+      "started_at": "2026-10-18T09:58:15.265546+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 23.131,
+      "finished_at": "2026-10-18T09:58:38.396839+00:00"
+    },
+    "p27-profile-compressed": {
+      "command": [
+        "dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--script",
+        "baseline",
+        "--economy",
+        "config/economy.json",
+        "--scenario",
+        "scenarios/baseline-economy.json",
+        "--ticks",
+        "1200",
+        "--profile",
+        "true",
+        "--output",
+        "artifacts/p27-profile-compressed"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-18T09:50:16.075416+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 7.298,
+      "finished_at": "2026-10-18T09:50:23.373551+00:00"
+    },
+    "p27-long-profile-fixed": {
+      "command": [
+        "dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--script",
+        "baseline",
+        "--economy",
+        "config/economy.json",
+        "--scenario",
+        "scenarios/baseline-economy.json",
+        "--ticks",
+        "5000",
+        "--profile",
+        "true",
+        "--output",
+        "artifacts/p27-long-profile-fixed"
+      ],
+      "timeout_seconds": 240,
+      "started_at": "2026-10-18T09:53:17.972268+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 91.295,
+      "finished_at": "2026-10-18T09:54:49.267175+00:00"
+    },
+    "p27-study": {
+      "command": [
+        "python3",
+        "scripts/run_economy_study.py",
+        "--economy",
+        "config/economy.json",
+        "--economy",
+        "artifacts/p27-study-input/higher-wages.json",
+        "--seeds",
+        "42,43,44",
+        "--ticks",
+        "600",
+        "--output",
+        "artifacts/p27-study"
+      ],
+      "timeout_seconds": 240,
+      "started_at": "2026-10-18T09:50:39.941970+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 20.082,
+      "finished_at": "2026-10-18T09:51:00.023610+00:00"
+    }
+  },
+  "source_sha256": {
+    "config/economy.json": "0776925562432d3b73f06dfd3c3ab771fe45355ef71ffba440063c556741d5d5",
+    "scenarios/baseline-economy.json": "d2b7ea61b89c67419159fac2ef818a54fb097da9cb88d463d050e46e86178c83",
+    "scenarios/presentation-map-two.json": "e2d20f3ac3b0489005d3505759f2cffd133bcefb849de16303dc345b4d177830",
+    "scripts/check_headless.py": "c029c74dcbcfcb1a8d6855e7b9cf2ebdbdad0de1570337dfb5ec91a8fb6a7d7a",
+    "scripts/run_economy_study.py": "cc0bd2d0c96461ad2bcd8fe6cc4922f43e4994df839b2a8ba049bfff4809e3bb",
+    "scripts/verify_results.py": "37a482893981b380fd063a55090f600c16c14ec9b6aac9a61c74910e6e65fe76",
+    "src/Agents.Algorithmic/AlgorithmicController.cs": "0eba407d28c8914f6133c4475e18aab17eee513c59e648be7f814d4bd031688e",
+    "src/Agents.Algorithmic/ControllerSettings.cs": "05efc4a5ed2c6276411b1b8a02297b1318b2b04627c154defcd327191f1b3dcb",
+    "src/Agents.Algorithmic/EconomyPolicy.cs": "acc2e8180abae1f2e0f98d4bf2955c6cdcb3bf15e17ee9abfd5153b07d25831a",
+    "src/Agents.Algorithmic/MarketGoals.cs": "0799c3615417b8d46d6a76e8125e2d6b07663bedafdc2ee089a104a42618df9d",
+    "src/Agents.Algorithmic/ObligationGoals.cs": "9ec8474b6a18584a50d2cccbe6a21c12d726a842988ef8f89dbb2d3253c9468d",
+    "src/Client.Godot/Delsk.Client.csproj": "edf92a1979239875cf0aaaba33f2b1def4b2025ad613b0194717a84de9eb4236",
+    "src/Client.Godot/EnterpriseTablet.cs": "2d4e7b6c9eb26d7ae4d283d09eaba9f9e1011e329a82333aed78b8c5aa2499a3",
+    "src/Client.Godot/ParticipantMarketTablet.cs": "496ce1554d82e82873fd10f8d08727936c9fd94e84e97190f235fd2cbc13fefd",
+    "src/Client.Godot/ParticipantMarketTablet.cs.uid": "cb99e644f69fc1b2ca056396c82a3b533610da5442af6661218306ba1cd8dd32",
+    "src/Client.Godot/Playfield.Economy.cs": "2292968b7c38d01211e41df48273caea9510029a9e5c3dec5340a553959a91cf",
+    "src/Client.Godot/Playfield.Economy.cs.uid": "b1b90fd3aef378ff7385d0ad363179159b80b922c9f3ee9ede46e752110ad870",
+    "src/Client.Godot/Playfield.Tablets.cs": "fac5c1a6a54d20539b1ce6bad42e68b5dc0824f88f6bd6b7f2cc063d2c6f54de",
+    "src/Client.Godot/Playfield.cs": "b1e2858301c8ab4cb059db03e92201f3cc27dea02accfb3c017e0f3c843b97df",
+    "src/Client.Godot/README.md": "46315e5b1a61d1ffd4c491ee42362843736765e92bfa0e025a14bda231d2a9d6",
+    "src/Research.Runner/AutonomousRun.cs": "f1955804a4117747b07fc615fc5b026f2c0a8ac8e3f5628fca6b6044907bb106",
+    "src/Research.Runner/ModelServices.cs": "f4f738b2212a68a0c895b567d5da017a1a5b04fa1ac668a64680d65479396af9",
+    "src/Research.Runner/Program.cs": "63dac793ab8712c2a5df0f3a10e4cd979a412c480f134707117973374326f4a4",
+    "src/Simulation.Core/CapitalDemand.cs": "2c8e1a05e3e4c13fdfe4fcd32f5eab55bc6519adced3075b078e432d75427c8a",
+    "src/Simulation.Core/Checkpoint.cs": "e8dc2410a8bb52545a3259ec8f424e5e0a633520309d0d850a888f43ce041970",
+    "src/Simulation.Core/Contracts.cs": "1b2bae61e39f02c8ad8f322dd969a18745378a9483d3d30fcdd63167b40c64ca",
+    "src/Simulation.Core/EconomicRules.cs": "57d0ab192ddfea2c8ad99a3d8569023db1b0776d99c65b466f7df724a4a1576f",
+    "src/Simulation.Core/Labor.cs": "69b579c37227b2cf68d91432ab2d0cc465d703445c7255659beed4e1e8d26a8d",
+    "src/Simulation.Core/LandAndBuildings.cs": "b6f267b7ff50a5a6f313a2ae56f758e41f5508f0f81f982406e47e7129359f8d",
+    "src/Simulation.Core/LandAndContentValidation.cs": "0824e6db2bc3c6149972528ff0429a8fd9af3e13e5c50f9dfba5256aaa7e44a3",
+    "src/Simulation.Core/PresentationQueries.cs": "d11df081184c0301cacc06e14de7f196c2f74b8b0de45ff275ee6b7fd90da789",
+    "src/Simulation.Core/ProductionAndTrade.cs": "73980075e348f1b0130ecc87ec21728a5db530ec636073d6b5c439d332873193",
+    "src/Simulation.Core/SimulationEngine.cs": "281bbc311e401546e1bae6dfb1724f8b9b78531740eec91fab838799538ff710",
+    "src/Simulation.Core/World.cs": "56d4257d6b12496aa0df3149be31a9c602c493788aed009d26dbb5cde9322dd0",
+    "src/Simulation.Hosting/CheckpointStore.cs": "95cafb022f5db3942aaf53a6652380f0d954ef51a39a0008b25aedc041d35ed7",
+    "src/Simulation.Hosting/EconomyProfile.cs": "9489b8f631f97a68c1a2a9501353a65bbb5bc0a790d8ed8793e78d94924cd2a6",
+    "src/Simulation.Hosting/PlayContext.cs": "41381b246e35ff635cd72c28a80af2eb5ba0094e3b9cfe441e92564f04c13c39",
+    "src/Simulation.Hosting/PlayerDesk.cs": "f76244df28876ed99b6f01f1efa01e244ecffe1764f87f7942c70917d0484326",
+    "src/Simulation.Hosting/Presentation.cs": "d3d5a9f83646e4c178db60f45b727c42142d097ab4bd3a0ca9ddf08fa98be038",
+    "src/Simulation.Hosting/RunArtifacts.cs": "4b251634749537594dd67d147d2ea3775035152e3837fb3cd824e270b1608c56",
+    "src/Simulation.Hosting/SessionProfiler.cs": "a0ef3caeb171e35e3a0e9a4d9d07c46afc0eae25f5926becd1e48d9bc6007398",
+    "src/Simulation.Hosting/TabletState.cs": "5cc51f4357e098e73f33af8bab11d42ff216378abfecd1216d02149906e391b3",
+    "tests/Simulation.Tests/CheckpointTests.cs": "db19595c6c3fbe040ffd2fe5a5ccc0662abdf5205ab19b3b3d1e132bb3d5bf2d",
+    "tests/Simulation.Tests/EconomyProfileTests.cs": "e24fc1aa0ae9cce961da3452f7555455ccafafdd02e34d45cd68fd33170b6b05",
+    "tests/Simulation.Tests/PlayContextTests.cs": "259319d532df73a90b44f145d2f0050ea4c7cbe171310ba83c4dc69d5190c55c",
+    "tests/Simulation.Tests/PlayableEconomyTests.cs": "c43fd426cb29d0b3807ab5bcbee58dd4f7e0f9fc920a5acc3a8e441e8a3a7d79",
+    "tests/Simulation.Tests/PresentationMapTests.cs": "54d3ec5842bd815ea08cb477c15691793fbc8e695dd73be137bc7d994b5def61",
+    "tests/Simulation.Tests/SharedShopTests.cs": "ddb14dade6059ed4ff897a5f61b5e9a9f27454c11de03a60c25879d6c88b5b53",
+    "tests/Simulation.Tests/Simulation.Tests.csproj": "47806f8c705a047cf1f2aca5f4278d47b3242513b2e65c1e717f9f30b6943422"
+  },
+  "platform": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "befa38addd66ef7c7c7d9e6c7d98561edd21c4a4673ad32ba689a7bb45f89fff",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "ElectionCheckedTicks": 40,
+    "ElectionStateHash": "a878e9e122ef5a26ae4a120dfd62a690c93dfa5c870c38e0039caa891ce958e8",
+    "ElectionRestoredTicks": [
+      9,
+      19,
+      20,
+      21
+    ],
+    "SupportCheckedTicks": 120,
+    "SupportStateHash": "12e2f23d454aa2fb11421dffad3f6c141981ad788556fe507ef052def77a393a",
+    "SupportRestoredTicks": [
+      17,
+      18,
+      19,
+      27,
+      99,
+      100
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "window": {
+    "checks": [
+      "install QA buyer",
+      "shop action at actual shop: buyer",
+      "market tablet explains physical pickup",
+      "public lot visible",
+      "request controls validate quantity and limit",
+      "tactical pause queues market command",
+      "phase: Аукцион",
+      "auction raise available within original limit",
+      "raised price comes back from Core",
+      "market English",
+      "phase: collect within",
+      "paid purchase collect available only at seller",
+      "physical pickup completed",
+      "install QA auction",
+      "shop action at actual shop: auction",
+      "withdraw available in current auction round",
+      "round-aware withdrawal releases own request",
+      "install QA seller",
+      "shop action at actual shop: seller",
+      "own shop sale form",
+      "deposit uses actual own stock",
+      "published lot visible at configured price",
+      "new map uses shared economic profile"
+    ],
+    "hardware_gate": false,
+    "renderer": "Linux Xvfb llvmpipe",
+    "status": "succeeded"
+  },
+  "profile_1200": {
+    "measuredTicks": 1200,
+    "averageTickMs": 4.9790440000000045,
+    "medianTickMs": 4.4613,
+    "p95TickMs": 9.2591,
+    "maximumTickMs": 229.7497,
+    "saveBytes": 4115499,
+    "encodeMs": 236.1576,
+    "decodeMs": 546.1258,
+    "workingSetBytes": 375287808,
+    "checkpointHashMatches": true,
+    "scope": "Hosted headless Step including controllers, invariants and sample/hash; includes JIT; save/load measured separately; no rendering or device claim"
+  },
+  "profile_5000": {
+    "measuredTicks": 5000,
+    "averageTickMs": 15.307210519999991,
+    "medianTickMs": 12.6739,
+    "p95TickMs": 33.2365,
+    "maximumTickMs": 265.3435,
+    "saveBytes": 58075453,
+    "encodeMs": 2113.8054,
+    "decodeMs": 11011.2694,
+    "workingSetBytes": 2932654080,
+    "checkpointHashMatches": true,
+    "scope": "Hosted headless Step including controllers, invariants and sample/hash; includes JIT; save/load measured separately; no rendering or device claim"
+  },
+  "save_size_before_compression_1200": 37823935,
+  "initial_long_profile_failure": {
+    "exit": 1,
+    "reason": "CheckpointTooLarge at initial 256MiB decoded limit",
+    "resolution": "Explicit decoded limit512MiB; same 5000-tick workload repeated successfully; history retained"
+  },
+  "long_world": {
+    "ticks": 5000,
+    "npc_shops": 3,
+    "published_market_lots": 101,
+    "market_allocations": 0
+  },
+  "not_checked": [
+    "current exported Windows EXE on device",
+    "Android device/lifecycle/touch/memory/FPS",
+    "new current-commit live Ollama Gate D demonstration"
+  ],
+  "known_limits": [
+    "5000 ticks:58MB compressed save and11s decode/restore",
+    "full research observations remain in memory; working set after restoring second session2.93GB",
+    "software Linux FPS is not device performance evidence"
+  ]
+}

@@ -99,7 +99,8 @@ public sealed partial class AlgorithmicController
         foreach(var type in o.BuildingTypes.Where(t=>t.Kind==BuildingKind.Shop && t.Footprint.Length==1))
         {
             var level=type.Levels.Single(l=>l.Level==1);
-            var plot=o.Plots.FirstOrDefault(p=>p.ShopParticipantId==Actor && p.BuildingId is null && (p.OwnerId is null || p.OwnerId==Actor) && (p.ReservedBy is null || p.ReservedBy==Actor) && Reachable(o,p.Position));
+            var plot=o.Plots.OrderByDescending(p=>p.OwnerId==Actor || p.ReservedBy==Actor)
+                .ThenBy(p=>Math.Abs(p.Position.X-o.Participant.Position.X)+Math.Abs(p.Position.Z-o.Participant.Position.Z)).ThenBy(p=>p.Id.Value).FirstOrDefault(p=>(p.IsShopSite || p.ShopParticipantId==Actor) && p.BuildingId is null && (p.OwnerId is null || p.OwnerId==Actor) && (p.ReservedBy is null || p.ReservedBy==Actor) && Reachable(o,p.Position));
             if(plot is null || o.Account.AvailableMinor<checked(level.PriceMinor+(plot.OwnerId is null?plot.PriceMinor:0)+_state.Settings.CashReserveMinor) ||
                 level.Materials.Sum(m=>checked(m.Quantity*Volume(o,m.ItemId)))>volume)continue;
             var steps=new List<PlanStep>();Cell end=o.Participant.Position;bool valid=true;

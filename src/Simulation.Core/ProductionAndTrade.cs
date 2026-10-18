@@ -150,6 +150,8 @@ public sealed partial class SimulationEngine
     }
     public void ValidateInvariants()
     {
+        if (_plots.Values.Where(p => p.Definition.IsShopSite).SelectMany(p => new[] { p.Owner, p.ReservedBy }.Where(a => a.HasValue))
+            .GroupBy(a => a).Any(g => g.Count() > 1)) throw new InvalidOperationException("Shared shop site limit exceeded");
         _economy.Validate();
         ValidateLaborInvariants();
         foreach (var actor in _actors.Values)

@@ -75,6 +75,8 @@ public sealed partial class SimulationEngine
         if (plot.Definition.ShopParticipantId.HasValue && plot.Definition.ShopParticipantId != actor.Id)
             throw new RuleViolation("NotAvailable");
         if (actor.Position != plot.Definition.Position) throw new RuleViolation("NotAtLocation");
+        if (plot.Definition.IsShopSite && _plots.Values.Any(p => p.Definition.IsShopSite && p != plot && (p.Owner == actor.Id || p.ReservedBy == actor.Id)))
+            throw new RuleViolation("ShopSiteLimit");
         return plot;
     }
 
@@ -86,9 +88,9 @@ public sealed partial class SimulationEngine
         if (_plots.Values.Count(p => p.ReservedBy == actor.Id) >= _config.MaxActivePlotReservations)
             throw new RuleViolation("ReservationLimit");
         long until = checked(Tick + _config.LandReservationTicks);
-        // Exactly 10% for integral prices; round fractional minor units upward without overflow.
-        long fee = checked((long)(((Int128)plot.Definition.PriceMinor + 9) / 10));
-        var tx = _economy.Begin(Tick); tx.Pay(actor.Account, _treasury, fee, "PlotReservation"); tx.Commit();
+        // Configured non-refundable fee; round fractional minor units upward without overflow.
+        long fee = EconomyRules.ReservationFee(plot.Definition.PriceMinor);
+        var tx = _economy.Begin(Tick); if (fee > 0) tx.Pay(actor.Account, _treasury, fee, "PlotReservation"); tx.Commit();
         plot.ReservedBy = actor.Id; plot.Until = until;
         Emit("PlotReserved", actor.Id, plot.Definition.Id, money: fee, reason: until.ToString(System.Globalization.CultureInfo.InvariantCulture), command: c.CommandId);
     }
@@ -133,10 +135,11 @@ public sealed partial class SimulationEngine
             if (!_plotsByCell.TryGetValue(cell, out var plot) || plot.Definition.IsCorridor) throw new RuleViolation("InvalidFootprint");
             if (plot.Owner != actor.Id) throw new RuleViolation("LandNotOwned");
             if (plot.Building.HasValue) throw new RuleViolation("LandOccupied");
-            if (plot.Definition.ShopParticipantId.HasValue && (type.Kind != BuildingKind.Shop || plot.Definition.ShopParticipantId != actor.Id))
+            if (plot.Definition.IsShopSite && type.Kind != BuildingKind.Shop ||
+                plot.Definition.ShopParticipantId.HasValue && (type.Kind != BuildingKind.Shop || plot.Definition.ShopParticipantId != actor.Id))
                 throw new RuleViolation("WrongBuildingSite");
         }
-        if (type.Kind == BuildingKind.Shop && _plotsByCell[c.Action.Target].Definition.ShopParticipantId != actor.Id)
+        if (type.Kind == BuildingKind.Shop && !_plotsByCell[c.Action.Target].Definition.IsShopSite && _plotsByCell[c.Action.Target].Definition.ShopParticipantId != actor.Id)
             throw new RuleViolation("WrongBuildingSite");
         var level = type.Levels.Single(l => l.Level == 1);
         long id = _nextId, input = checked(id + 1);
@@ -236,7 +239,7 @@ public sealed partial class SimulationEngine
         new(p.Definition.Id), p.Definition.Position, p.Definition.PriceMinor, p.Definition.IsCorridor,
         p.Owner.HasValue ? new ParticipantId(p.Owner.Value) : null, p.ReservedBy.HasValue ? new ParticipantId(p.ReservedBy.Value) : null,
         p.Until, p.Building.HasValue ? new BuildingId(p.Building.Value) : null,
-        p.Definition.ShopParticipantId.HasValue ? new ParticipantId(p.Definition.ShopParticipantId.Value) : null)).ToArray();
+        p.Definition.ShopParticipantId.HasValue ? new ParticipantId(p.Definition.ShopParticipantId.Value) : null, p.Definition.IsShopSite)).ToArray();
     private BuildingView[] BuildingViews() => _buildings.Values.OrderBy(b => b.Id).Select(b => new BuildingView(
         new(b.Id), new(b.Owner), b.Type.Id, b.Type.Kind, b.Level, b.Position, b.Footprint.ToArray(), new(b.Input),
         b.Output.HasValue ? new InventoryId(b.Output.Value) : null)).ToArray();

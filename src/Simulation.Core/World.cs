@@ -116,6 +116,7 @@ public static partial class ScenarioValidation
     public static void Validate(ScenarioDefinition s)
     {
         ArgumentNullException.ThrowIfNull(s);
+        s.Economy?.Validate();
         if (string.IsNullOrWhiteSpace(s.Id) || s.Id.Length > 80 || s.MapWidth is < 1 or > 128 ||
             s.MapHeight is < 1 or > 128 || s.HarvestTicksPerUnit <= 0 || s.MoveTicksPerCell <= 0 ||
             s.TradeWindowTicks <= 0 || s.MaxCommandsPerActorTick is < 1 or > 64 || s.MaxTicks is < 1 or > 1000000 ||

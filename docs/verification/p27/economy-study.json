@@ -1,0 +1,91 @@
+{
+  "status": "succeeded",
+  "scope": "algorithmic economy sensitivity; no LLM or device claim",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "ticks": 600,
+  "cases": [
+    {
+      "case": "profile-0-seed-42",
+      "economy_id": "presentation-economy-v1",
+      "input_sha256": "0776925562432d3b73f06dfd3c3ab771fe45355ef71ffba440063c556741d5d5",
+      "seed": 42,
+      "ticks": 600,
+      "produced_base_minor": 32500,
+      "capital_paid_minor": 78930,
+      "market_paid_minor": 0,
+      "p95_tick_ms": 6.3816,
+      "save_bytes": 928892,
+      "state_hash": "067b81fe8463d8558ff173af7bc245dd66b2da6ddecbcd487ef1073665a60248"
+    },
+    {
+      "case": "profile-0-seed-43",
+      "economy_id": "presentation-economy-v1",
+      "input_sha256": "0776925562432d3b73f06dfd3c3ab771fe45355ef71ffba440063c556741d5d5",
+      "seed": 43,
+      "ticks": 600,
+      "produced_base_minor": 36000,
+      "capital_paid_minor": 67282,
+      "market_paid_minor": 0,
+      "p95_tick_ms": 5.8632,
+      "save_bytes": 899905,
+      "state_hash": "9ebd5a64707e58b385faf342bc5e7629d0fec70e0953aed342c8634db8877285"
+    },
+    {
+      "case": "profile-0-seed-44",
+      "economy_id": "presentation-economy-v1",
+      "input_sha256": "0776925562432d3b73f06dfd3c3ab771fe45355ef71ffba440063c556741d5d5",
+      "seed": 44,
+      "ticks": 600,
+      "produced_base_minor": 26000,
+      "capital_paid_minor": 76509,
+      "market_paid_minor": 0,
+      "p95_tick_ms": 6.0339,
+      "save_bytes": 938665,
+      "state_hash": "1745b284adb10c62e6f8f6f7338f9c43037e2ff6ab4f9a53c5afa4011c455458"
+    },
+    {
+      "case": "profile-1-seed-42",
+      "economy_id": "wage-study-high",
+      "input_sha256": "02efb91d27bb506ae445c142615e2cbc64f30ffaf56e2f5c30cec4b3ef3226ff",
+      "seed": 42,
+      "ticks": 600,
+      "produced_base_minor": 32500,
+      "capital_paid_minor": 78930,
+      "market_paid_minor": 0,
+      "p95_tick_ms": 6.3487,
+      "save_bytes": 926869,
+      "state_hash": "4393879a93090662c65ed7354a92d7c3af6a9b612a7871be07c6664f7b00efa2"
+    },
+    {
+      "case": "profile-1-seed-43",
+      "economy_id": "wage-study-high",
+      "input_sha256": "02efb91d27bb506ae445c142615e2cbc64f30ffaf56e2f5c30cec4b3ef3226ff",
+      "seed": 43,
+      "ticks": 600,
+      "produced_base_minor": 22500,
+      "capital_paid_minor": 76798,
+      "market_paid_minor": 0,
+      "p95_tick_ms": 9.6286,
+      "save_bytes": 979024,
+      "state_hash": "8c6e88f9d650d6b27fe2e3958303e199b52b5e95fd635710286eaab4e0722813"
+    },
+    {
+      "case": "profile-1-seed-44",
+      "economy_id": "wage-study-high",
+      "input_sha256": "02efb91d27bb506ae445c142615e2cbc64f30ffaf56e2f5c30cec4b3ef3226ff",
+      "seed": 44,
+      "ticks": 600,
+      "produced_base_minor": 26000,
+      "capital_paid_minor": 76509,
+      "market_paid_minor": 0,
+      "p95_tick_ms": 8.558,
+      "save_bytes": 934108,
+      "state_hash": "38b2de233abadce1d9dd819e0fda9b8984c5477b80c784ab343de646d5fadac1"
+    }
+  ],
+  "author": "Шелестов Максим Евгеньевич"
+}

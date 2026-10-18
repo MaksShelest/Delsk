@@ -51,7 +51,8 @@ public record EnterpriseDefinition(long Id, long OwnerId, Cell Position, string 
 public enum BuildingKind { Production, Warehouse, Shop }
 public record MaterialCost(string ItemId, long Quantity);
 public record PlotDefinition(long Id, Cell Position, long PriceMinor, bool IsCorridor = false,
-    long? OwnerId = null, long? ShopParticipantId = null);
+    long? OwnerId = null, long? ShopParticipantId = null,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] bool IsShopSite = false);
 public record BuildingLevelDefinition(int Level, string RecipeId, long PriceMinor, MaterialCost[] Materials,
     long InputCapacity, long OutputCapacity, int StaffCapacity, long WageMinor, int WorkRateMultiplier = 1);
 public record BuildingTypeDefinition(string Id, BuildingKind Kind, Cell[] Footprint, BuildingLevelDefinition[] Levels);
@@ -73,7 +74,9 @@ public record ScenarioDefinition(string Id, ulong Seed, int MapWidth, int MapHei
     int MaxCommandsPerActorTick = 8, long Population = 2, long MaxTicks = 500,
     PlotDefinition[]? Plots = null, BuildingTypeDefinition[]? BuildingTypes = null,
     BuildingDefinition[]? Buildings = null, int LandReservationTicks = 120, int MaxActivePlotReservations = 4,
-    LaborSettings? Labor = null, EquipmentTypeDefinition[]? EquipmentTypes = null, MarketSettings? Market = null, DeliverySettings? Delivery = null, LogisticsSettings? Logistics = null, CapitalDemandSettings? CapitalDemand = null, ElectionSettings? Elections = null, SupportSettings? Support = null);
+    LaborSettings? Labor = null, EquipmentTypeDefinition[]? EquipmentTypes = null, MarketSettings? Market = null, DeliverySettings? Delivery = null, LogisticsSettings? Logistics = null, CapitalDemandSettings? CapitalDemand = null, ElectionSettings? Elections = null, SupportSettings? Support = null,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] EconomicRules? Economy = null,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? EconomyProfileId = null);
 
 public record StockView(string ItemId, long Quantity, long Reserved);
 public record InventoryView(InventoryId Id, ParticipantId OwnerId, Cell Position, long Capacity,
@@ -89,7 +92,8 @@ public record EnterpriseView(EnterpriseId Id, ParticipantId OwnerId, InventoryId
     long WorkRequired, long CompletedBatches, long EnergyPaidMinor, string RecipeId, int Level, int StaffCapacity,
     int WorkRateMultiplier);
 public record PlotView(PlotId Id, Cell Position, long PriceMinor, bool IsCorridor, ParticipantId? OwnerId,
-    ParticipantId? ReservedBy, long? ReservationUntilTick, BuildingId? BuildingId, ParticipantId? ShopParticipantId);
+    ParticipantId? ReservedBy, long? ReservationUntilTick, BuildingId? BuildingId, ParticipantId? ShopParticipantId,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] bool IsShopSite = false);
 public record BuildingView(BuildingId Id, ParticipantId OwnerId, string TypeId, BuildingKind Kind,
     int Level, Cell Position, Cell[] Footprint, InventoryId InputId, InventoryId? OutputId);
 public record FlowView(string ItemId, long Initial, long Harvested, long RecipeInput, long Produced, long Exported,

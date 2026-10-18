@@ -2,7 +2,7 @@ using Simulation.Core;
 
 namespace Simulation.Hosting;
 
-public enum TabletKind { Closed, Capital, Enterprise }
+public enum TabletKind { Closed, Capital, Enterprise, Market }
 
 /// <summary>Client interaction state, not an economic clock or a second world.</summary>
 public sealed class TabletState
@@ -26,6 +26,12 @@ public sealed class TabletState
         if (building is null) return false;
         Open(TabletKind.Enterprise, view.Participant.Position, id); return true;
     }
+    public bool OpenMarket(PlayerView view, ScenarioDefinition scenario, long shop = 0)
+    {
+        if (shop == 0 ? !IsCapital(scenario, view.Participant.Position) :
+            view.Market?.Shops.Any(s => s.Id.Value == shop && s.Footprint.Contains(view.Participant.Position)) != true) return false;
+        Open(TabletKind.Market, view.Participant.Position, shop); return true;
+    }
     private void Open(TabletKind kind, Cell cell, long enterprise)
     { Kind = kind; Location = cell; EnterpriseId = enterprise; PauseTime = true; }
     public void Close()
@@ -39,7 +45,9 @@ public sealed class TabletState
     public bool ValidateLocation(PlayerView view, ScenarioDefinition scenario)
     {
         if (!IsOpen) return false;
-        bool valid = Kind == TabletKind.Capital ? view.Participant.Position == Location && IsCapital(scenario, Location)
+        bool valid = Kind == TabletKind.Market ? (EnterpriseId == 0 ? view.Participant.Position == Location && IsCapital(scenario, Location) :
+            view.Market?.Shops.Any(s => s.Id.Value == EnterpriseId && s.Footprint.Contains(view.Participant.Position)) == true) :
+            Kind == TabletKind.Capital ? view.Participant.Position == Location && IsCapital(scenario, Location)
             : view.Buildings.Any(b => b.Id.Value == EnterpriseId && b.Kind == BuildingKind.Production && b.Footprint.Contains(view.Participant.Position));
         if (!valid) Close();
         return valid;

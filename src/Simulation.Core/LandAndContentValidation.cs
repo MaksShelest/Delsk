@@ -20,10 +20,14 @@ public static partial class ScenarioValidation
             (p.OwnerId.HasValue && !actors.Contains(p.OwnerId.Value)) ||
             (p.ShopParticipantId.HasValue && (!actors.Contains(p.ShopParticipantId.Value) ||
                 (p.OwnerId.HasValue && p.OwnerId != p.ShopParticipantId))) ||
-            (p.IsCorridor && (p.OwnerId.HasValue || p.ShopParticipantId.HasValue)) ||
+            (p.IsShopSite && p.ShopParticipantId.HasValue) ||
+            (p.IsCorridor && (p.OwnerId.HasValue || p.ShopParticipantId.HasValue || p.IsShopSite)) ||
             (!p.IsCorridor && (s.ResourceNodes.Any(n => n.Position == p.Position) ||
                 s.CapitalOffers.Any(o => o.Position == p.Position)))))
             throw new ArgumentException("Invalid plots or protected public cells");
+        if (plots.Any(p => p.IsShopSite) && (plots.Count(p => p.IsShopSite) != actors.Count ||
+            plots.Any(p => p.ShopParticipantId.HasValue) || plots.Where(p => p.IsShopSite && p.OwnerId.HasValue).GroupBy(p => p.OwnerId).Any(g => g.Count() > 1)))
+            throw new ArgumentException("Shared shop sites: exactly one per participant, no assignments or duplicate ownership");
         var shopSlots = plots.Where(p => p.ShopParticipantId.HasValue).Select(p => p.ShopParticipantId);
         if (shopSlots.Distinct().Count() != shopSlots.Count()) throw new ArgumentException("Duplicate shop slot");
         if (s.Enterprises.Length > 0 && (plots.Length > 0 || buildings.Length > 0))
@@ -93,10 +97,11 @@ public static partial class ScenarioValidation
                     (type.Kind != BuildingKind.Production && (building.Staff != 0 || building.Enabled)))
                     throw new ArgumentException("Invalid initial building employment");
                 if (type.Kind == BuildingKind.Shop &&
-                    (!byCell.TryGetValue(building.Position, out var site) || site.ShopParticipantId != building.OwnerId))
+                    (!byCell.TryGetValue(building.Position, out var site) || !site.IsShopSite && site.ShopParticipantId != building.OwnerId))
                     throw new ArgumentException("Shop must use its assigned trading site");
                 foreach (var cell in FootprintCells(building.Position, type))
                     if (!byCell.TryGetValue(cell, out var plot) || plot.IsCorridor || plot.OwnerId != building.OwnerId ||
+                        (plot.IsShopSite && type.Kind != BuildingKind.Shop) ||
                         (plot.ShopParticipantId.HasValue && (type.Kind != BuildingKind.Shop || plot.ShopParticipantId != building.OwnerId)) ||
                         !used.Add(cell)) throw new ArgumentException("Building must occupy its own exclusive footprint");
             }

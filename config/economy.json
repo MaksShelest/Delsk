@@ -1,0 +1,376 @@
+{
+  "version": 1,
+  "id": "presentation-economy-v1",
+  "world": {
+    "startingCashMinor": 20000,
+    "personalInventoryCapacity": 20,
+    "population": 20,
+    "plotPriceMinor": 10000,
+    "shopSitePriceMinor": 10000,
+    "harvestTicksPerUnit": 2,
+    "moveTicksPerCell": 1,
+    "tradeWindowTicks": 5,
+    "landReservationTicks": 120,
+    "maxActivePlotReservations": 4,
+    "maxTicks": 5000,
+    "items": [
+      {
+        "id": "wood",
+        "unitVolume": 1,
+        "basePriceMinor": 500
+      },
+      {
+        "id": "grain",
+        "unitVolume": 1,
+        "basePriceMinor": 300
+      },
+      {
+        "id": "plank",
+        "unitVolume": 1,
+        "basePriceMinor": 1500
+      },
+      {
+        "id": "bread",
+        "unitVolume": 1,
+        "basePriceMinor": 1000
+      }
+    ],
+    "recipes": [
+      {
+        "id": "sawmill-1",
+        "inputItem": "wood",
+        "inputQuantity": 2,
+        "outputItem": "plank",
+        "outputQuantity": 1,
+        "fullStaffTicks": 4,
+        "requiredStaff": 2,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 50
+      },
+      {
+        "id": "sawmill-2",
+        "inputItem": "wood",
+        "inputQuantity": 2,
+        "outputItem": "plank",
+        "outputQuantity": 1,
+        "fullStaffTicks": 4,
+        "requiredStaff": 4,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 50
+      },
+      {
+        "id": "bakery-1",
+        "inputItem": "grain",
+        "inputQuantity": 2,
+        "outputItem": "bread",
+        "outputQuantity": 1,
+        "fullStaffTicks": 3,
+        "requiredStaff": 2,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 25
+      },
+      {
+        "id": "bakery-2",
+        "inputItem": "grain",
+        "inputQuantity": 2,
+        "outputItem": "bread",
+        "outputQuantity": 1,
+        "fullStaffTicks": 3,
+        "requiredStaff": 4,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 25
+      }
+    ],
+    "buildingTypes": [
+      {
+        "id": "sawmill",
+        "kind": "Production",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "sawmill-1",
+            "priceMinor": 15000,
+            "materials": [
+              {
+                "itemId": "wood",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 40,
+            "outputCapacity": 40,
+            "staffCapacity": 2,
+            "wageMinor": 25,
+            "workRateMultiplier": 1
+          },
+          {
+            "level": 2,
+            "recipeId": "sawmill-2",
+            "priceMinor": 20000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 80,
+            "outputCapacity": 80,
+            "staffCapacity": 4,
+            "wageMinor": 25,
+            "workRateMultiplier": 2
+          }
+        ]
+      },
+      {
+        "id": "bakery",
+        "kind": "Production",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "bakery-1",
+            "priceMinor": 15000,
+            "materials": [
+              {
+                "itemId": "wood",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 40,
+            "outputCapacity": 40,
+            "staffCapacity": 2,
+            "wageMinor": 25,
+            "workRateMultiplier": 1
+          },
+          {
+            "level": 2,
+            "recipeId": "bakery-2",
+            "priceMinor": 20000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 80,
+            "outputCapacity": 80,
+            "staffCapacity": 4,
+            "wageMinor": 25,
+            "workRateMultiplier": 2
+          }
+        ]
+      },
+      {
+        "id": "warehouse",
+        "kind": "Warehouse",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "",
+            "priceMinor": 10000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 200,
+            "outputCapacity": 0,
+            "staffCapacity": 0,
+            "wageMinor": 0
+          }
+        ]
+      },
+      {
+        "id": "shop",
+        "kind": "Shop",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "",
+            "priceMinor": 10000,
+            "materials": [
+              {
+                "itemId": "wood",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 80,
+            "outputCapacity": 0,
+            "staffCapacity": 0,
+            "wageMinor": 0
+          }
+        ]
+      }
+    ],
+    "equipmentTypes": [
+      {
+        "id": "wood-extractor",
+        "itemId": "wood",
+        "levels": [
+          {
+            "level": 1,
+            "priceMinor": 15000,
+            "cycleQuantity": 2,
+            "cycleTicks": 2,
+            "storageCapacity": 20,
+            "minimumCrew": 2,
+            "crewCapacity": 2,
+            "wageMinor": 25
+          },
+          {
+            "level": 2,
+            "priceMinor": 60000,
+            "cycleQuantity": 6,
+            "cycleTicks": 2,
+            "storageCapacity": 40,
+            "minimumCrew": 5,
+            "crewCapacity": 5,
+            "wageMinor": 25
+          }
+        ]
+      },
+      {
+        "id": "grain-extractor",
+        "itemId": "grain",
+        "levels": [
+          {
+            "level": 1,
+            "priceMinor": 15000,
+            "cycleQuantity": 2,
+            "cycleTicks": 2,
+            "storageCapacity": 20,
+            "minimumCrew": 2,
+            "crewCapacity": 2,
+            "wageMinor": 25
+          },
+          {
+            "level": 2,
+            "priceMinor": 60000,
+            "cycleQuantity": 6,
+            "cycleTicks": 2,
+            "storageCapacity": 40,
+            "minimumCrew": 5,
+            "crewCapacity": 5,
+            "wageMinor": 25
+          }
+        ]
+      }
+    ],
+    "labor": {
+      "stepTicks": 10,
+      "salaryChangeDelayTicks": 20,
+      "mobilityNumerator": 1,
+      "mobilityDenominator": 10,
+      "growthPeriodTicks": 120,
+      "growthPerPeriod": 1
+    },
+    "market": {
+      "auctionRoundTicks": 5,
+      "auctionRounds": 2,
+      "minimumRaiseMinor": 1,
+      "pickupTtlTicks": 120,
+      "pickupFineBasisPoints": 500
+    },
+    "delivery": {
+      "contractTtlTicks": 180,
+      "fineBasisPoints": 500,
+      "offerTtlTicks": 180
+    },
+    "logistics": {
+      "purchasePriceMinor": 20000,
+      "cargoCapacity": 10,
+      "moveTicksPerCell": 1,
+      "minimumCrew": 2,
+      "crewCapacity": 2,
+      "wageMinor": 25,
+      "upgrade": null
+    },
+    "capitalDemand": {
+      "terminal": {
+        "x": 15,
+        "z": 3
+      },
+      "periodTicks": 60,
+      "bootstrapBaseBudgetMinor": 20000,
+      "demandNumerator": 11,
+      "demandDenominator": 10,
+      "commonWaveTicks": 600,
+      "itemWaveTicks": 240,
+      "orderTtlTicks": 180,
+      "priceScaleBasisPoints": 10000
+    },
+    "elections": {
+      "periodTicks": 600,
+      "baseVote": 1
+    },
+    "support": {
+      "tradingPoint": {
+        "x": 15,
+        "z": 3
+      },
+      "sectionCapacity": 80
+    },
+    "rules": {
+      "playerWageStepMinor": 100,
+      "reservationFeeBasisPoints": 1000,
+      "wageAttractionExponent": 3,
+      "commonPriceMinimumBasisPoints": 9000,
+      "commonPriceMaximumBasisPoints": 11000,
+      "itemPriceMinimumBasisPoints": 8000,
+      "itemPriceMaximumBasisPoints": 12000,
+      "noiseMinimumBasisPoints": 9800,
+      "noiseMaximumBasisPoints": 10200,
+      "demandWeightMinimumBasisPoints": 5000,
+      "demandWeightMaximumBasisPoints": 15000
+    }
+  },
+  "npc": {
+    "cashReserveMinor": 3000,
+    "batchQuantity": 20,
+    "baseWageMinor": 25,
+    "maximumWageMinor": 50,
+    "wageRaiseMinor": 1,
+    "wageReviewTicks": 60,
+    "blockedRetryTicks": 30,
+    "maximumBuyPriceBasisPoints": 12500,
+    "sellPriceBasisPoints": 10000,
+    "supportPricePerVoteMinor": 500,
+    "politicalHorizonTicks": 180,
+    "marketLotQuantity": 10,
+    "decisionIntervalTicks": 5,
+    "expansionWeight": 100,
+    "cashWeight": 100,
+    "productionWeight": 100,
+    "ownVictoryWeight": 100,
+    "humanDefeatWeight": 0,
+    "harvestCoefficient": 1,
+    "productionCoefficient": 1,
+    "tradeEnabled": true,
+    "logisticsEnabled": true,
+    "politicsEnabled": true,
+    "futureContractsEnabled": true
+  }
+}

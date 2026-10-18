@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.IO.Compression;
 using Simulation.Core;
 
 namespace Simulation.Hosting;
@@ -12,11 +13,18 @@ public record CheckpointLoadResult(GameSession Session, bool UsedBackup, string 
 public static class CheckpointStore
 {
     public const int MaximumBytes = 64 * 1024 * 1024;
+    public const int MaximumDecodedBytes = 512 * 1024 * 1024;
+    public const int FormatVersion = 2;
     private static string Digest(string value) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(value)));
     public static string Encode(GameSession session)
     {
         string payload = session.CreateSessionJson();
-        string json = JsonSerializer.Serialize(new CheckpointEnvelope(1, payload, Digest(payload)), SimulationJson.Options);
+        byte[] raw = Encoding.UTF8.GetBytes(payload);
+        if (raw.Length > MaximumDecodedBytes) throw new CheckpointException("CheckpointTooLarge");
+        using var compressed = new MemoryStream();
+        using (var gzip = new GZipStream(compressed, CompressionLevel.Fastest, leaveOpen:true)) gzip.Write(raw);
+        string encoded = Convert.ToBase64String(compressed.ToArray());
+        string json = JsonSerializer.Serialize(new CheckpointEnvelope(FormatVersion, encoded, Digest(encoded)), SimulationJson.Options);
         if (Encoding.UTF8.GetByteCount(json) > MaximumBytes) throw new CheckpointException("CheckpointTooLarge");
         return json;
     }
@@ -27,12 +35,28 @@ public static class CheckpointStore
         {
             var envelope = JsonSerializer.Deserialize<CheckpointEnvelope>(json, SimulationJson.Options)
                 ?? throw new CheckpointException("EmptyCheckpointEnvelope");
-            if (envelope.FormatVersion != 1) throw new CheckpointException("UnknownCheckpointFormat");
+            if (envelope.FormatVersion is not (1 or FormatVersion)) throw new CheckpointException("UnknownCheckpointFormat");
             if (envelope.PayloadJson is null || envelope.Sha256 != Digest(envelope.PayloadJson))
                 throw new CheckpointException("CheckpointChecksumMismatch");
-            return GameSession.FromSessionJson(envelope.PayloadJson, beforeStep);
+            string payload = envelope.PayloadJson;
+            if (envelope.FormatVersion == FormatVersion)
+            {
+                using var input = new MemoryStream(Convert.FromBase64String(payload));
+                using var gzip = new GZipStream(input,CompressionMode.Decompress);
+                using var output = new MemoryStream();
+                byte[] buffer = new byte[8192]; int count;
+                while ((count = gzip.Read(buffer)) > 0)
+                {
+                    if (output.Length + count > MaximumDecodedBytes) throw new CheckpointException("CheckpointTooLarge");
+                    output.Write(buffer,0,count);
+                }
+                payload = new UTF8Encoding(false,throwOnInvalidBytes:true).GetString(output.ToArray());
+            }
+            return GameSession.FromSessionJson(payload, beforeStep);
         }
         catch (JsonException ex) { throw new CheckpointException("InvalidCheckpointJson", ex); }
+        catch (Exception ex) when (ex is FormatException or InvalidDataException or DecoderFallbackException)
+        { throw new CheckpointException("InvalidCompressedCheckpoint",ex); }
     }
     public static void Save(GameSession session, string path)
     {
