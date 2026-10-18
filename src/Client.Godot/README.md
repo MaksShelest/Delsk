@@ -43,3 +43,7 @@ adb exec-out run-as com.maksshelest.delsk.probe cat 'files/platform-probe.json' 
 ## Checkpoint P12
 
 Smoke проверяет actual save/load на12/34/55/60, сохраняя все62 hashes. Обычный стенд имеет manual Сохранить/Загрузить/явный backup; путь user://platform-checkpoint.json. Autosave30, focus/pause и корректный выход используют общий CheckpointStore; elapsed после load/resume сбрасывается. Не путать с экспортом final-state и не заявлять device pass по desktop smoke. [Детали P12](../../docs/IMPLEMENTATION_REPORT_P12.md).
+
+### UI01: игровой экран
+
+Полноэкранный запуск по умолчанию; переключение в окно — в меню. Для принудительного оконного запуска: `godot --path src/Client.Godot --resolution 1100x720 -- --windowed`. Предпочтение хранится в `user://display.cfg`, отдельно от партии. Контекстные кнопки находятся поверх карты; «?» открывает соответствующую тему справки и приостанавливает мир. На бирже история вынесена в отдельную страницу. Debug сохраняет технические тики и FPS. Подробности — `docs/INTERFACE_ITERATIONS.md`.

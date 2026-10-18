@@ -76,7 +76,10 @@ public partial class PresentationStage : Node3D
             Target(mover, at, actor.Human ? 0.1f : 1, snap);
             int labelRow = frame.Actors.Count(other => other.X == actor.X && other.Z == actor.Z && other.Id < actor.Id);
             foreach (var label in mover.Node.GetChildren().OfType<Label3D>())
+            {
                 label.Position = new Vector3(0, 1.01f + labelRow * 0.23f, 0);
+                if (actor.Human) label.Text = you;
+            }
             if (actor.FacingX != 0 || actor.FacingZ != 0)
                 mover.Node.Rotation = new Vector3(0, Mathf.Atan2(-actor.FacingX, -actor.FacingZ), 0);
         }

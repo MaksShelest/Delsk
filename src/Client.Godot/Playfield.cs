@@ -78,6 +78,7 @@ public partial class Playfield : Control
         Input.MouseMode = Input.MouseModeEnum.Visible;
         Engine.MaxFps = 60;
         Theme = PresentationTheme.Create();
+        CallDeferred(nameof(ConfigureDisplay));
         EnsureStage();
         if (OS.GetCmdlineUserArgs().Contains("--trip")) Start("trip", false);
         else ShowMaps();
@@ -93,6 +94,11 @@ public partial class Playfield : Control
             return;
         }
         if (_session is null) return;
+        if (_helpOverlay is not null)
+        {
+            if (key.Pressed && !key.Echo && key.Keycode == Key.Escape) CloseHelp();
+            GetViewport().SetInputAsHandled(); return;
+        }
         if (!key.Pressed)
         {
             if (_waitRelease && !MovementHeld()) _waitRelease = false;
@@ -149,6 +155,7 @@ public partial class Playfield : Control
             _scheduler.AdvanceElapsed(TimeSpan.FromSeconds(Math.Min(delta, 0.25)));
             var travel = _session.Engine.TravelOf(_human);
             if (_session.Engine.Tick != prior || _session.Engine.TravelQuantum != priorQuantum || travel != priorTravel) Refresh();
+            AnimateInterface(delta);
         }
         catch (Exception failure) { _feedback = failure.Message; Refresh(); }
     }
@@ -176,6 +183,7 @@ public partial class Playfield : Control
 
     private void ShowMaps()
     {
+        DismissHelp();
         if (_session is not null) { StopHeading(); _scheduler.SetPaused(true); }
         _surface = Surface.Maps;
         ResetTablet();
@@ -214,6 +222,7 @@ public partial class Playfield : Control
 
     private void Start(string mode, bool hold)
     {
+        DismissHelp();
         ResetTablet(true);
         _mode = mode;
         _gain = "";
@@ -274,6 +283,7 @@ public partial class Playfield : Control
     private void RebuildChrome()
     {
         if (_left || _session is null) return;
+        DismissHelp();
         BuildChrome();
         Refresh();
     }
@@ -281,7 +291,7 @@ public partial class Playfield : Control
     private void ApplyPause()
     {
         if (_session is null) return;
-        bool paused = _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused);
+        bool paused = _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null);
         if (_session.Paused != paused) _scheduler.SetPaused(paused);
     }
 
@@ -344,7 +354,7 @@ public partial class Playfield : Control
     private void RebuildContext()
     {
         _harvestBars.Clear();
-        if (_contextHost is not null) FillContext(_contextHost);
+        if (_contextHost is not null) FillPlayContext(_contextHost);
         if (_debugContext is not null) FillContext(_debugContext);
     }
 
@@ -399,13 +409,15 @@ public partial class Playfield : Control
             if (!_tabletState.ValidateLocation(PlayerDesk.Read(_session.Engine,_human),_scenario)) { CloseTablet(); return; }
             if (WaitingCommand) return;
         }
+        _tabletError = "";
         try
         {
             Track(_session.Send(_human, PlayerDesk.Check(action)), action);
+            if (_tabletState.IsOpen) _tabletCommand = _trackedId;
             _pending = null;
             _feedback = T("command.sent");
         }
-        catch (Exception failure) { _feedback = failure.Message; }
+        catch (Exception failure) { _feedback = failure.Message; if (_tabletState.IsOpen) _tabletError = failure.Message; }
         Refresh();
     }
 
@@ -450,16 +462,19 @@ public partial class Playfield : Control
             bar.TooltipText = PlayerText.Local(_language, "Текущий цикл", "Current cycle") + $": {bar.Value:0}%";
         }
         if (_tooltip is not null)
-            _tooltip.Text = _hoverX is int hx && _hoverZ is int hz
-                ? PlayContext.Hover(frame, view, hx, hz, _language)
-                : PlayContext.Hover(frame, view, actor.Position.X, actor.Position.Z, _language);
+        {
+            int hx = _hoverX ?? actor.Position.X, hz = _hoverZ ?? actor.Position.Z;
+            _tooltip.Text = PlayContext.Hover(frame, view, hx, hz, _language);
+            _tooltip.Visible = _hoverX.HasValue && _hoverZ.HasValue && !_tabletState.IsOpen && _helpOverlay is null && frame.Markers.Any(m => m.X == hx && m.Z == hz);
+        }
         PollHarvest();
         _feedback = Describe(view);
         _status.Text = $"{T(paused ? "paused" : "running")}  {T("tick")}: {_session.Engine.Tick}\n" +
             $"{T("position")}: ({actor.Position.X}, {actor.Position.Z}) +({travelOffset.OffsetX}, {travelOffset.OffsetZ})  {T("busy")}: {T(actor.Busy ? "yes" : "no")}\n" +
             $"{T("npc.title")}: " + string.Join("; ", view.LaborMarket.Where(g => g.OwnerId != _human).Select(g => $"{g.OwnerId.Value} {g.Role} {g.Headcount}/{g.Capacity}"));
         _feedbackLabel.Text = _feedback;
-        if (_playNotice is not null) _playNotice.Text = _feedback;
+        UpdatePlayNotice();
+        if (_gameClock is not null) _gameClock.Text = L("Время ", "Time ") + GameTime(view.Tick) + (_session.Paused ? "  Ⅱ" : "  ▸");
         if (_cellLabel is not null) _cellLabel.Text = CellText(frame);
         string signature = _selectedEnterprise + "|" + CardSignature(view);
         if (signature != _cardsSignature)
@@ -482,7 +497,7 @@ public partial class Playfield : Control
         string key = _language + "|" + string.Join(";", ids.Select(id => id + ":" + pack.Stock.Where(s => s.ItemId == id).Sum(s => s.Quantity)));
         if (key == _hudGoodsKey) return;
         _hudGoodsKey = key;
-        foreach (Node child in _hudGoods.GetChildren()) child.QueueFree();
+        foreach (Node child in _hudGoods.GetChildren()) { _hudGoods.RemoveChild(child); child.QueueFree(); }
         foreach (string id in ids)
         {
             var icon = new ResourceIcon { Item = id, CustomMinimumSize = new Vector2(24, 24), TooltipText = PlayerText.Item(_language, id) };
@@ -603,8 +618,8 @@ public partial class Playfield : Control
         if (_stage is not null) return;
         _view = new SubViewportContainer { Stretch = true, MouseFilter = MouseFilterEnum.Stop };
         _view.SetAnchorsPreset(LayoutPreset.FullRect);
-        _view.OffsetTop = 74;
-        _view.OffsetBottom = -205;
+        _view.OffsetTop = 54;
+        _view.OffsetBottom = 0;
         var viewport = new SubViewport
         {
             Size = new Vector2I(1100, 720),
@@ -624,7 +639,7 @@ public partial class Playfield : Control
 
     private void OnViewInput(InputEvent e)
     {
-        if (_surface != Surface.Play || _tabletState.IsOpen || _stage is null || _view is null) return;
+        if (_surface != Surface.Play || _tabletState.IsOpen || _helpOverlay is not null || _stage is null || _view is null) return;
         Vector2 position = e switch
         {
             InputEventMouseButton button when button.Pressed && button.ButtonIndex == MouseButton.Left => button.Position,
@@ -657,75 +672,7 @@ public partial class Playfield : Control
         _playChrome = new Control { MouseFilter = MouseFilterEnum.Ignore };
         _playChrome.SetAnchorsPreset(LayoutPreset.FullRect);
         AddChild(_playChrome);
-        var bar = new ColorRect { Color = new Color(0.14f, 0.20f, 0.22f), MouseFilter = MouseFilterEnum.Stop };
-        bar.SetAnchorsPreset(LayoutPreset.TopWide);
-        bar.OffsetBottom = 74;
-        _playChrome.AddChild(bar);
-        var settings = new Button { Text = T("menu.settings"), FocusMode = FocusModeEnum.None };
-        settings.Position = new Vector2(8, 8);
-        settings.Pressed += OpenMenu;
-        bar.AddChild(settings);
-        var language = new Button { Text = T("language"), FocusMode = FocusModeEnum.None };
-        language.Position = new Vector2(150, 8);
-        language.Pressed += ChangeLanguage;
-        bar.AddChild(language);
-        _playInventory = new Label
-        {
-            Position = new Vector2(310, 6),
-            Size = new Vector2(770, 64),
-            AutowrapMode = TextServer.AutowrapMode.WordSmart
-        };
-        bar.AddChild(_playInventory);
-        _playInventory.SetAnchorsPreset(LayoutPreset.TopRight);
-        _playInventory.OffsetLeft = -700; _playInventory.OffsetRight = -14;
-        _playInventory.OffsetTop = 6; _playInventory.OffsetBottom = 30;
-        _hudGoods = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.End };
-        bar.AddChild(_hudGoods);
-        _hudGoods.SetAnchorsAndOffsetsPreset(LayoutPreset.TopRight);
-        _hudGoods.OffsetLeft = -700; _hudGoods.OffsetRight = -14;
-        _hudGoods.OffsetTop = 30; _hudGoods.OffsetBottom = 54;
-        _hudGoodsKey = "";
-        _playInventory.HorizontalAlignment = HorizontalAlignment.Right;
-        _playNotice = new Label
-        {
-            Position = new Vector2(8, 46),
-            Size = new Vector2(790, 24),
-            AutowrapMode = TextServer.AutowrapMode.WordSmart
-        };
-        bar.AddChild(_playNotice);
-        _fpsLabel = new Label { Position = new Vector2(810, 46), Size = new Vector2(275, 22), HorizontalAlignment = HorizontalAlignment.Right };
-        bar.AddChild(_fpsLabel);
-        var bottom = new ColorRect { Color = new Color(0.14f, 0.20f, 0.22f), MouseFilter = MouseFilterEnum.Stop };
-        bottom.SetAnchorsPreset(LayoutPreset.BottomWide);
-        bottom.OffsetTop = -205;
-        _playChrome.AddChild(bottom);
-        _bottomChrome = bottom;
-        _tooltip = new Label
-        {
-            Position = new Vector2(8, 4),
-            Size = new Vector2(1020, 48),
-            AutowrapMode = TextServer.AutowrapMode.WordSmart
-        };
-        bottom.AddChild(_tooltip);
-        _contextHost = new VBoxContainer { Position = new Vector2(8, 56), Size = new Vector2(1020, 149) };
-        bottom.AddChild(_contextHost);
-        var paging = new VBoxContainer { Position = new Vector2(1040, 56) };
-        bottom.AddChild(paging);
-        foreach (int direction in new[] { -1, 1 })
-        {
-            int step = direction;
-            var button = new Button { Text = step < 0 ? "↑" : "↓", FocusMode = FocusModeEnum.None };
-            button.Pressed += () =>
-            {
-                if (_choices.Length == 0) return;
-                _contextIndex = (_contextIndex + step + _choices.Length) % _choices.Length;
-                _contextKey = "";
-                Refresh();
-            };
-            paging.AddChild(button);
-        }
-        _contextKey = "";
-        _choices = [];
+        BuildPlayHud();
 
         _panel = new ColorRect { Color = new Color("26383d"), MouseFilter = MouseFilterEnum.Stop };
         _panel.SetAnchorsPreset(LayoutPreset.FullRect);
@@ -779,6 +726,7 @@ public partial class Playfield : Control
         scroll.AddChild(column);
         var controls = new HBoxContainer();
         column.AddChild(controls);
+        _fpsLabel = new Label(); controls.AddChild(_fpsLabel);
         Button(controls, "step", StepOne);
         Button(controls, "save", () => { CheckpointStore.Save(_session, SavePath); _feedback = T("save"); Refresh(); });
         Button(controls, "load", Load);
@@ -829,6 +777,10 @@ public partial class Playfield : Control
         chooseMap.Pressed += ShowMaps;
         box.AddChild(chooseMap);
         Button(box, "language", ChangeLanguage);
+        var display = new Button { Text = L("Полный экран / окно", "Fullscreen / window"), FocusMode = FocusModeEnum.None };
+        display.Pressed += ToggleFullscreen; box.AddChild(display);
+        var handbook = new Button { Text = L("Справка", "Help"), FocusMode = FocusModeEnum.None };
+        handbook.Pressed += () => OpenHelp(); box.AddChild(handbook);
         Button(box, "menu.exit", ExitGame);
         RebuildTablet();
         ApplySurface();
@@ -836,7 +788,7 @@ public partial class Playfield : Control
 
     private void ApplySurface()
     {
-        if (_view is not null) { _view.Visible = _surface == Surface.Play; _view.OffsetBottom = _tabletState.IsOpen ? 0 : -205; }
+        if (_view is not null) { _view.Visible = _surface == Surface.Play; _view.OffsetBottom = 0; }
         if (_bottomChrome is not null) _bottomChrome.Visible = !_tabletState.IsOpen;
         if (_tabletPanel is not null) _tabletPanel.Visible = _surface == Surface.Play && _tabletState.IsOpen;
         if (_stage?.GetParent() is SubViewport viewport)
@@ -903,6 +855,7 @@ public partial class Playfield : Control
     private void Load()
     {
         var loaded = CheckpointStore.Load(SavePath);
+        DismissHelp();
         ResetTablet(true);
         _stage?.ResetMotion();
         _session = loaded.Session;
@@ -992,7 +945,7 @@ public partial class Playfield : Control
 
     private void SampleHeading()
     {
-        if (_surface != Surface.Play || _waitRelease || _suspended || _unfocused) return;
+        if (_surface != Surface.Play || _waitRelease || _suspended || _unfocused || _helpOverlay is not null) return;
         var heading = TravelHeading.FromKeys(
             Input.IsPhysicalKeyPressed(Key.D), Input.IsPhysicalKeyPressed(Key.A),
             Input.IsPhysicalKeyPressed(Key.S), Input.IsPhysicalKeyPressed(Key.W));

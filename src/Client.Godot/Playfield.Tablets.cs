@@ -18,6 +18,8 @@ public partial class Playfield
     private EnterpriseTablet? _enterpriseTablet;
     private VBoxContainer? _tabletPolitics;
     private Control? _bottomChrome;
+    private string? _tabletCommand;
+    private string _tabletError = "";
     private bool WaitingCommand => _trackedId is not null && _session.Engine.Result(_trackedId) is null;
 
     private void OpenCapitalTablet()
@@ -34,11 +36,12 @@ public partial class Playfield
     private void PrepareTablet()
     {
         StopHeading(); _waitRelease = true;
+        _tabletCommand = null; _tabletError = "";
         ApplyPause(); RebuildTablet(); ApplySurface(); Refresh();
     }
     private void CloseTablet()
     {
-        _tabletState.Close(); DropTabletPanel(); ApplyPause(); ApplySurface(); Refresh();
+        _tabletState.Close(); _tabletCommand = null; _tabletError = ""; DropTabletPanel(); ApplyPause(); ApplySurface(); Refresh();
     }
     private void DropTabletPanel()
     {
@@ -60,6 +63,8 @@ public partial class Playfield
             : PlayerText.Building(_language,view.Buildings.Single(b => b.Id.Value == _tabletState.EnterpriseId).TypeId) + " #" + _tabletState.EnterpriseId;
         _tabletPanel = new TabletPanel(title,_language);
         _tabletPanel.Closed += CloseTablet;
+        _tabletPanel.HelpRequested += () => OpenHelp(_tabletState.Kind switch
+        { TabletKind.Capital => "exchange", TabletKind.Market => "market", _ => "production" });
         _tabletPanel.TimeRunningChanged += running =>
         { StopHeading(); _waitRelease = true; _tabletState.SetTimeRunning(running); ApplyPause(); Refresh(); };
         if (_tabletState.Kind == TabletKind.Market)
@@ -93,7 +98,9 @@ public partial class Playfield
         _marketTablet?.ShowData(view,WaitingCommand);
         _enterpriseTablet?.ShowData(view,WaitingCommand,_session.Paused);
         string status = WaitingCommand && _tabletState.BlocksTime
-            ? PlayerText.Local(_language,"Действие выбрано. Включите ход времени, чтобы ядро обработало его вместе с действиями NPC.","Action queued. Run time to process it alongside NPC actions.") : _feedback;
+            ? PlayerText.Local(_language,"Действие подготовлено — включите время.","Action queued — run time to continue.") : _tabletError;
+        if (_tabletCommand is { } command && _session.Engine.Result(command) is { Status: ResultStatus.Rejected } rejected)
+            status = PlayerText.Reason(_language,rejected.ReasonCode);
         _tabletPanel?.ShowClock(!_tabletState.PauseTime,_session.Paused,view.Tick,status);
     }
 }
