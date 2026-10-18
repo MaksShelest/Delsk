@@ -71,14 +71,15 @@ public class PlayContextTests
     }
 
     [Fact]
-    public void CorridorAndForeignShopDoNotOfferPurchase()
+    public void CorridorIsProtectedAndSharedShopCanBeChosen()
     {
         var (session, scenario) = Economy();
         Walk(session, new(4, 3));
         Assert.DoesNotContain(PlayContext.At(PlayerDesk.Read(session.Engine, Human), scenario, "en"), choice => choice.Command is not null);
         Walk(session, new(12, 0));
         var shop = PlayContext.At(PlayerDesk.Read(session.Engine, Human), scenario, "en");
-        Assert.DoesNotContain(shop, choice => choice.Key.StartsWith("buy:", StringComparison.Ordinal) || choice.Key.StartsWith("reserve:", StringComparison.Ordinal));
+        Assert.Contains(shop, choice => choice.Key.StartsWith("buy:", StringComparison.Ordinal));
+        Assert.Contains(shop, choice => choice.Key.StartsWith("reserve:", StringComparison.Ordinal));
         var frame = Presentation.Read(scenario, session.Engine, Human.Value);
         string hover = PlayContext.Hover(frame, PlayerDesk.Read(session.Engine, Human), 4, 3, "en");
         Assert.Contains("Passage", hover, StringComparison.Ordinal);

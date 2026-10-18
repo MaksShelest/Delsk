@@ -12,10 +12,18 @@ try
     for (int i = 0; i < args.Length; i += 2)
     {
         if (i + 1 >= args.Length || args[i] is not ("--scenario" or "--output" or "--script" or "--mode" or "--seed" or
-            "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers" or "--model-mode" or "--model-config"))
-            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|support|baseline|hybrid|model-safety] [--mode headless|paced] [--model-mode off|ollama --model-config PATH] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
+            "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers" or "--model-mode" or "--model-config" or "--economy" or "--validate-only" or "--profile"))
+            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--economy config/economy.json] [--validate-only true] [--profile true] [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|support|baseline|hybrid|model-safety] [--mode headless|paced] [--model-mode off|ollama --model-config PATH] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
         if (!options.TryAdd(args[i], args[i + 1])) throw new ArgumentException("Duplicate argument");
     }
+    foreach (string flag in new[] { "--profile", "--validate-only" })
+        if (options.TryGetValue(flag,out var value) && !bool.TryParse(value,out _)) throw new ArgumentException(flag + " requires true or false");
+    if ((options.ContainsKey("--load") || options.ContainsKey("--replay")) &&
+        (options.GetValueOrDefault("--profile","false") == "true" || options.GetValueOrDefault("--validate-only","false") == "true"))
+        throw new ArgumentException("Profile/validate-only require a new run");
+    EconomyProfile? economics = options.TryGetValue("--economy", out var economyPath) ? EconomyProfile.Load(economyPath) : null;
+    if (economics is not null && (options.ContainsKey("--load") || options.ContainsKey("--replay")))
+        throw new ArgumentException("--economy only applies to a new run; load/replay use the saved resolved configuration");
     string directory = options.GetValueOrDefault("--output", "artifacts/cycle");
     string script = options.GetValueOrDefault("--script", "cycle");
     string mode = options.GetValueOrDefault("--mode", "headless");
@@ -67,6 +75,13 @@ try
     else
     {
         definition = RunArtifacts.LoadScenario(options.GetValueOrDefault("--scenario", script == "model-safety" ? "scenarios/model-safety.json" : script is "baseline" or "hybrid" ? "scenarios/baseline-economy.json" : script == "autonomous" ? "scenarios/autonomous-economy.json" : "scenarios/economic-cycle.json"));
+        if (economics is not null) definition = economics.Apply(definition);
+        if (options.GetValueOrDefault("--validate-only", "false") == "true")
+        {
+            foreach (var n in AutonomousRun.ReadConfiguration(definition, options.GetValueOrDefault("--controllers", "scenarios/baseline-controllers.json")).Npcs)
+                AlgorithmicController.WithEconomy(n, economics?.Npc ?? JsonSerializer.SerializeToElement(new { }));
+            Console.WriteLine($"Economy/scenario valid: {economics?.Id ?? definition.Id}"); return 0;
+        }
         if (options.TryGetValue("--seed", out string? seed)) definition = definition with { Seed = ulong.Parse(seed, CultureInfo.InvariantCulture) };
         if (target.HasValue && tape is null && !saveTick.HasValue && script is not ("autonomous" or "baseline" or "hybrid" or "model-safety"))
             throw new ArgumentException("--ticks requires --load, --replay or checkpointed fixture playback");
@@ -74,8 +89,8 @@ try
         if (script is ("autonomous" or "baseline" or "hybrid" or "model-safety") && tape is null)
         {
             string controllers = options.GetValueOrDefault("--controllers", script == "autonomous" ? "scenarios/autonomous-controllers.json" : "scenarios/baseline-controllers.json");
-            long horizon = script is "hybrid" or "model-safety" ? models.Configure(session, definition, controllers, options, script == "model-safety")
-                : AutonomousRun.Configure(session, definition, controllers);
+            long horizon = script is "hybrid" or "model-safety" ? models.Configure(session, definition, controllers, options, script == "model-safety", economics)
+                : AutonomousRun.Configure(session, definition, controllers, economics: economics);
             target ??= horizon;
             if (script == "model-safety") { target = options.ContainsKey("--ticks") ? target : 60; mode = "ControlledFakeS7"; }
             // Выключенная модель остаётся тем же headless/paced, что и baseline.
@@ -104,9 +119,18 @@ try
             session.TickCompleted += s => { if (s.Engine.Tick == saveTick.Value) Save(s); };
         }
         if (script == "model-safety" && session.HasControllers) await models.RunSafety(session, target!.Value);
+        else if (options.GetValueOrDefault("--profile", "false") == "true")
+        {
+            if (mode != "headless" || script is not ("baseline" or "autonomous") || target is null || saveTick.HasValue)
+                throw new ArgumentException("--profile true requires a new headless baseline/autonomous run without checkpoint-at");
+            var profile = SessionProfiler.Run(session,target.Value,AlgorithmicController.Restore);
+            Directory.CreateDirectory(directory);
+            File.WriteAllText(Path.Combine(directory,"profile.json"),JsonSerializer.Serialize(profile,new JsonSerializerOptions(SimulationJson.Options) {WriteIndented=true}));
+        }
         else if (target.HasValue) session.AdvanceTo(target.Value);
         else RunScript(session, definition, script);
-        BaselineValidation.Check(session,definition);
+        // Research profiles may deliberately eliminate profitable production. Fixed fixture targets are not economic rules.
+        if (definition.EconomyProfileId is null) BaselineValidation.Check(session,definition);
         if (saveTick.HasValue && !saved) throw new ArgumentException("Checkpoint tick was not reached");
         if (!saveTick.HasValue && options.ContainsKey("--checkpoint")) Save(session);
     }
@@ -116,6 +140,8 @@ try
         throw;
     }
     watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, modelMetadata: models.Metadata);
+    if (economics is not null)
+        File.WriteAllText(Path.Combine(directory,"economy-profile.json"),JsonSerializer.Serialize(economics,new JsonSerializerOptions(SimulationJson.Options) {WriteIndented=true}));
     Console.WriteLine(JsonSerializer.Serialize(new { Status = "succeeded", Tick = session.Engine.Tick,
         StateHash = session.Engine.ComputeStateHash(), Output = Path.GetFullPath(directory), CheckpointSaved = saved }, SimulationJson.Options));
     return 0;

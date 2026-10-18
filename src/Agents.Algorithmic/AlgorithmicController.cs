@@ -124,7 +124,7 @@ public sealed partial class AlgorithmicController
             if (group.Ready && group.Headcount < recipe.MinimumStaff && o.Tick >= _state.NextWageTick)
             {
                 long competitor = o.LaborMarket.Where(g => g.OwnerId != Actor && g.Headcount > 0).Select(g => g.WageMinor).DefaultIfEmpty(targetWage).Max();
-                targetWage = Math.Min(settings.MaximumWageMinor, Math.Max(targetWage, checked(competitor + 1)));
+                targetWage = Math.Min(settings.MaximumWageMinor, Math.Max(targetWage, checked(competitor + settings.WageRaiseMinor)));
             }
             long announced = group.PendingWageMinor ?? group.WageMinor;
             if (!recovery && announced != targetWage && o.Tick >= _state.NextWageTick &&
@@ -158,12 +158,12 @@ public sealed partial class AlgorithmicController
             long margin = offer is null ? 0 : checked(offer.UnitPriceMinor * recipe.OutputQuantity - inputPrice * recipe.InputQuantity -
                 recipe.EnergyPerBatchMinor - settings.BaseWageMinor * recipe.RequiredStaff * recipe.FullStaffTicks);
             if (margin <= 0) continue;
-            foreach (var plot in o.Plots.Where(p => p.BuildingId is null && !p.IsCorridor && p.ShopParticipantId is null &&
+            foreach (var plot in o.Plots.Where(p => p.BuildingId is null && !p.IsCorridor && !p.IsShopSite && p.ShopParticipantId is null &&
                 (p.OwnerId is null || p.OwnerId == Actor) && (p.ReservedBy is null || p.ReservedBy == Actor)).OrderBy(p => p.Id.Value))
             {
                 var footprint = type.Footprint.Select(offset => new Cell(plot.Position.X + offset.X, plot.Position.Z + offset.Z)).ToArray();
                 var plots = footprint.Select(cell => o.Plots.FirstOrDefault(p => p.Position == cell && p.BuildingId is null &&
-                    !p.IsCorridor && p.ShopParticipantId is null && (p.OwnerId is null || p.OwnerId == Actor) &&
+                    !p.IsCorridor && !p.IsShopSite && p.ShopParticipantId is null && (p.OwnerId is null || p.OwnerId == Actor) &&
                     (p.ReservedBy is null || p.ReservedBy == Actor))).ToArray();
                 if (plots.Any(p => p is null)) continue;
                 long cost = checked(level.PriceMinor + plots.Sum(p => p!.OwnerId is null ? p.PriceMinor : 0));

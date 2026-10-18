@@ -195,7 +195,7 @@
         "z": 0
       },
       "priceMinor": 10000,
-      "shopParticipantId": 2
+      "isShopSite": true
     },
     {
       "id": 9,
@@ -204,7 +204,7 @@
         "z": 3
       },
       "priceMinor": 10000,
-      "shopParticipantId": 3
+      "isShopSite": true
     },
     {
       "id": 10,
@@ -213,7 +213,7 @@
         "z": 6
       },
       "priceMinor": 10000,
-      "shopParticipantId": 4
+      "isShopSite": true
     },
     {
       "id": 11,
@@ -222,7 +222,7 @@
         "z": 1
       },
       "priceMinor": 10000,
-      "shopParticipantId": 1
+      "isShopSite": true
     }
   ],
   "buildingTypes": [

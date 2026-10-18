@@ -40,13 +40,13 @@ internal sealed class ModelServices : IDisposable
         else adapter = new UnavailableAdapter();
         _runtime = new(adapter, actors, _config.Runtime ?? new(), enabled: _mode != "off");
     }
-    public long Configure(GameSession session, ScenarioDefinition definition, string controllers, Dictionary<string, string> options, bool safety)
+    public long Configure(GameSession session, ScenarioDefinition definition, string controllers, Dictionary<string, string> options, bool safety, EconomyProfile? economics = null)
     {
         var config = AutonomousRun.ReadConfiguration(definition, controllers);
         Setup(options, config.Npcs.Select(p => p.ActorId).ToArray(), safety);
         var policy = _config.Policy ?? new();
         if (_mode == "off") policy = policy with { Enabled = false };
-        return AutonomousRun.Configure(session, definition, controllers, c => new HybridController(c, _runtime!, policy));
+        return AutonomousRun.Configure(session, definition, controllers, c => new HybridController(c, _runtime!, policy), economics);
     }
     public void Restore(GameSession session, Dictionary<string, string> options)
     {

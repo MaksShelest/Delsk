@@ -181,7 +181,7 @@ public sealed class CheckpointTests
         Assert.Throws<CheckpointException>(() => CheckpointStore.Decode(JsonSerializer.Serialize(envelope with
             { PayloadJson = envelope.PayloadJson + " " }, SimulationJson.Options)));
         Assert.Throws<CheckpointException>(() => CheckpointStore.Decode(JsonSerializer.Serialize(envelope with
-            { FormatVersion = 2 }, SimulationJson.Options)));
+            { FormatVersion = 999 }, SimulationJson.Options)));
         Assert.Throws<CheckpointException>(() => CheckpointStore.Decode("{broken"));
     }
 

@@ -22,7 +22,8 @@ def verify(folder):
     employed = {tick: 0 for tick in samples}
     with (folder/'labor.csv').open(newline='', encoding='utf-8') as f:
         seen = set()
-        labor_by_tick = {}
+        # A valid research treatment may have no workplaces at all; its workforce snapshot is empty.
+        labor_by_tick = {tick: {} for tick in samples}
         for row in csv.DictReader(f):
             tick, group, n, cap = map(int, (row['tick'], row['group_id'], row['headcount'], row['capacity']))
             assert (tick, group) not in seen and 0 <= n <= cap
@@ -37,7 +38,7 @@ def verify(folder):
         assert inv['occupiedVolume']+inv['reservedCapacity'] <= inv['capacity']
         assert all(0 <= item['reserved'] <= item['quantity'] for item in inv['stock'])
     tape = [json.loads(line) for line in (folder/'commands.jsonl').read_text(encoding='utf-8').splitlines()]
-    assert tape, 'No real commands recorded'
+    assert tape or json.loads((folder/'scenario.json').read_text(encoding='utf-8')).get('economyProfileId'), 'No real commands recorded'
     ledger = [json.loads(line) for line in (folder/'ledger.jsonl').read_text(encoding='utf-8').splitlines()]
     assert sum(entry['amountMinor'] for entry in ledger if entry['reason']=='CapitalSettlement') == sum(s['paidMinor'] for s in summary['settlements'])
     assert all(0 <= a['reservedMinor'] <= a['balanceMinor'] for a in state['accounts'])

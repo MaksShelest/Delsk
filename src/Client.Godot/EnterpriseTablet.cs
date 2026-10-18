@@ -74,8 +74,8 @@ public partial class EnterpriseTablet : VBoxContainer
         right.AddChild(new Label { Text = L("Работники производства", "Production workers") }); right.AddChild(_crew);
         right.AddChild(new Label { Text = L("Найм постепенный. При простое зарплата не списывается; работники постепенно уходят.", "Hiring takes time. Idle workers are not paid and gradually leave."), AutowrapMode = TextServer.AutowrapMode.WordSmart });
         var wages = new HBoxContainer(); right.AddChild(wages);
-        _raise = Action(wages, L("Зарплата +", "Wage +"), () => ChangeWage(EmploymentRole.Production, PlayerDesk.WageStepMinor));
-        _lower = Action(wages, L("Зарплата −", "Wage −"), () => ChangeWage(EmploymentRole.Production, -PlayerDesk.WageStepMinor));
+        _raise = Action(wages, L("Зарплата +", "Wage +"), () => ChangeWage(EmploymentRole.Production, (_scenario.Economy ?? new()).PlayerWageStepMinor));
+        _lower = Action(wages, L("Зарплата −", "Wage −"), () => ChangeWage(EmploymentRole.Production, -(_scenario.Economy ?? new()).PlayerWageStepMinor));
         right.AddChild(new HSeparator()); right.AddChild(new Label { Text = L("Логистика", "Logistics") }); right.AddChild(_logistics);
     }
     public void ShowData(PlayerView view, bool pending, bool paused)
@@ -131,8 +131,8 @@ public partial class EnterpriseTablet : VBoxContainer
         _tripBar = new ProgressBar { ShowPercentage = true, CustomMinimumSize = new Vector2(0,14) }; _logistics.AddChild(_tripBar);
         _logCrew = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart }; _logistics.AddChild(_logCrew);
         var wages = new HBoxContainer(); _logistics.AddChild(wages);
-        _logRaise = Action(wages, L("Зарплата +", "Wage +"), () => ChangeWage(EmploymentRole.Logistics,PlayerDesk.WageStepMinor));
-        _logLower = Action(wages, L("Зарплата −", "Wage −"), () => ChangeWage(EmploymentRole.Logistics,-PlayerDesk.WageStepMinor));
+        _logRaise = Action(wages, L("Зарплата +", "Wage +"), () => ChangeWage(EmploymentRole.Logistics,(_scenario.Economy ?? new()).PlayerWageStepMinor));
+        _logLower = Action(wages, L("Зарплата −", "Wage −"), () => ChangeWage(EmploymentRole.Logistics,-(_scenario.Economy ?? new()).PlayerWageStepMinor));
         var switches = new HBoxContainer(); _logistics.AddChild(switches);
         _outbound = Action(switches, "", () => _submit(PlayerDesk.Supplies(_system!.Id.Value,LogisticsDirection.Output,!_system.Enabled)));
         _inbound = Action(switches, "", () => _submit(PlayerDesk.Supplies(_system!.Id.Value,LogisticsDirection.Inbound,!_system.InboundEnabled)));

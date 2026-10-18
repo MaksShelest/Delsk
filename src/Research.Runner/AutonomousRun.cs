@@ -5,9 +5,10 @@ using Simulation.Hosting;
 
 internal static class AutonomousRun
 {
-    public static long Configure(GameSession session, ScenarioDefinition scenario, string path, Func<AlgorithmicController, IController>? decorate = null)
+    public static long Configure(GameSession session, ScenarioDefinition scenario, string path, Func<AlgorithmicController, IController>? decorate = null, EconomyProfile? economics = null)
     {
         var config = ReadConfiguration(scenario, path);
+        if (economics is not null) config = config with { Npcs = config.Npcs.Select(n => AlgorithmicController.WithEconomy(n, economics.Npc)).ToArray() };
         session.AttachControllers(config.Npcs.Select(n => new AlgorithmicController(n with { HumanActorId=config.HumanActorId }, AlgorithmicController.RuntimeSeed(scenario.Seed, n.ActorId), scenario.Participants.Select(p => p.Id)))
             .Select(c => decorate is null ? c : decorate(c)));
         return config.FinalTick;

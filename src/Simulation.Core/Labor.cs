@@ -35,9 +35,9 @@ internal record WeightedPlace(long Id, int Capacity, BigInteger Weight);
 
 internal static class LaborAllocation
 {
-    public static Dictionary<long, int> Cubic(long population, LaborCandidate[] candidates, DeterministicRandom random)
+    public static Dictionary<long, int> Cubic(long population, LaborCandidate[] candidates, DeterministicRandom random, int exponent = 3)
         => Weighted(population, candidates.Where(c => c.Capacity > 0 && c.Wage > 0)
-            .Select(c => new WeightedPlace(c.Id, c.Capacity, BigInteger.Pow(c.Wage, 3))).ToArray(), random);
+            .Select(c => new WeightedPlace(c.Id, c.Capacity, BigInteger.Pow(c.Wage, exponent))).ToArray(), random);
 
     // Exact water filling, followed by largest remainders; no floating point and no fixed first ID.
     public static Dictionary<long, int> Weighted(long population, WeightedPlace[] places, DeterministicRandom random)
@@ -172,7 +172,7 @@ public sealed partial class SimulationEngine
             ready[e.Group.Id] = reason == "Ready"; reasons[e.Group.Id] = reason;
         }
         var targets = LaborAllocation.Cubic(population, groups.Where(e => ready[e.Group.Id])
-            .Select(e => new LaborCandidate(e.Group.Id, e.Group.Capacity, e.Group.AttractionWage)).ToArray(), _laborRandom);
+            .Select(e => new LaborCandidate(e.Group.Id, e.Group.Capacity, e.Group.AttractionWage)).ToArray(), _laborRandom, EconomyRules.WageAttractionExponent);
         var next = groups.ToDictionary(e => e.Group.Id, e => e.Group.Headcount);
         var credits = new Dictionary<long, long>();
         var requests = new List<WeightedPlace>();

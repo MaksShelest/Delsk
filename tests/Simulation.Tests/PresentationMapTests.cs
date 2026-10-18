@@ -23,8 +23,8 @@ public class PresentationMapTests
         Assert.Equal(6, second.ResourceNodes.Count(n => n.ItemId == "wood"));
         Assert.Equal(6, second.ResourceNodes.Count(n => n.ItemId == "grain"));
         Assert.Equal(12, second.ResourceNodes.Select(n => n.Position).Distinct().Count());
-        Assert.True(second.Plots!.Count(p => !p.IsCorridor && p.ShopParticipantId is null) > first.Plots!.Count(p => !p.IsCorridor && p.ShopParticipantId is null));
-        Assert.Equal(second.Participants.Length, second.Plots!.Count(p => p.ShopParticipantId.HasValue));
+        Assert.True(second.Plots!.Count(p => !p.IsCorridor && !p.IsShopSite && p.ShopParticipantId is null) > first.Plots!.Count(p => !p.IsCorridor && !p.IsShopSite && p.ShopParticipantId is null));
+        Assert.Equal(second.Participants.Length, second.Plots!.Count(p => p.IsShopSite));
         int budget = first.ResourceNodes.Max(n => (new GridMap(first).FindPath(n.Position, first.CapitalDemand!.Terminal).Length - 1) * first.MoveTicksPerCell);
         foreach (var node in second.ResourceNodes)
             Assert.InRange((new GridMap(second).FindPath(node.Position, second.CapitalDemand!.Terminal).Length - 1) * second.MoveTicksPerCell, 1, budget);

@@ -98,7 +98,7 @@ public sealed partial class AlgorithmicController
         {
             long announced=group.PendingWageMinor??group.WageMinor;
             long competitor=o.LaborMarket.Where(g=>g.OwnerId!=Actor && g.Headcount>0).Select(g=>g.WageMinor).DefaultIfEmpty(_state.Settings.BaseWageMinor).Max();
-            long wage=Math.Min(_state.Settings.MaximumWageMinor,Math.Max(_state.Settings.BaseWageMinor,competitor+1));
+            long wage=Math.Min(_state.Settings.MaximumWageMinor,Math.Max(_state.Settings.BaseWageMinor,checked(competitor+_state.Settings.WageRaiseMinor)));
             if(wage>announced && o.Account.AvailableMinor>=checked(wage*group.Capacity*_state.Settings.WageReviewTicks))
                 yield return One("AdjustWage",group.Role.ToString(),250000,new(ActionKind.SetWage,Group:group.Id,WageMinor:wage));
         }

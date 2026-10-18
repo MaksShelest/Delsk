@@ -3,7 +3,7 @@
 Исследовательская экономическая игра с автономными NPC.
 Автор: Шелестов Максим Евгеньевич.
 
-В C# реализованы и проверены P00–P22: физическая экономика/логистика, рынки и сроки, периодический спрос столицы, выборы, приватная материально оплаченная поддержка и utility baseline трёх NPC без LLM. Контроллеры используют те же команды/валидаторы, что и человек, видят только разрешённую проекцию. В P26.6 доступны игровой ввод, Debug, две карты, планшеты с тактической паузой и непрерывная добыча. Текущий статус — [отчёт B2](docs/IMPLEMENTATION_REPORT_P26_6_HARVEST.md); торговля участников/общие площадки C ещё впереди. [Проверки и ограничения P20/P21](docs/IMPLEMENTATION_REPORT_P20_P21.md).
+В C# реализованы и проверены P00–P22: физическая экономика/логистика, рынки и сроки, периодический спрос столицы, выборы, приватная материально оплаченная поддержка и utility baseline трёх NPC без LLM. Контроллеры используют те же команды/валидаторы, что и человек, видят только разрешённую проекцию. В P26.6 доступны игровой ввод, Debug, две карты, планшеты с тактической паузой и непрерывная добыча. Завершены также торговля участников/общие площадки C. Основной баланс — [config/economy.json](config/economy.json), [руководство по параметрам и опытам](docs/ECONOMY_CONFIGURATION.md). Текущий [отчёт P27](docs/IMPLEMENTATION_REPORT_P27.md) отделяет выполненную облачную часть от локальной аппаратной приёмки и ограничений длинной истории. [Проверки и ограничения P20/P21](docs/IMPLEMENTATION_REPORT_P20_P21.md).
 P22 добавляет необязательный Ollama HTTP transport и безопасный выбор готового плана. Модель выключена по умолчанию;Fake/остальные unit-тесты не заменяют реальный P23. [Отчёт P22](docs/IMPLEMENTATION_REPORT_P22.md), [локальное завершение P23](docs/LOCAL_MODEL_VALIDATION.md).
 
 ## Быстрый запуск без Python и Godot
@@ -14,10 +14,10 @@ P22 добавляет необязательный Ollama HTTP transport и б�
 dotnet restore Delsk.sln --locked-mode --disable-parallel '-m:1'
 dotnet build Delsk.sln -c Release --no-restore --disable-build-servers '-m:1'
 dotnet tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll -noColor -noLogo -parallelMode none
-dotnet run --project src/Research.Runner -c Release --no-build -- --script baseline --seed 42 --output artifacts/run-42
+dotnet run --project src/Research.Runner -c Release --no-build -- --script baseline --economy config/economy.json --seed 42 --output artifacts/run-42
 ```
 
-679 xUnit-тестов прошли локально. Результат runner — статус/тик/хеш/путь в консоли и JSON/JSONL/CSV в `artifacts/run-42`: summary, деньги/товар/численности, agents/labor, decisions/commands/events/ledger, manifest и inspection final-state. Все игровые расчёты и политики на C#; Python только запускает проверки и читает результаты. [Параметры, значение прогона и файлы](docs/HEADLESS_TESTING.md).
+694 xUnit-теста прошли локально. Результат runner — статус/тик/хеш/путь в консоли и JSON/JSONL/CSV в `artifacts/run-42`: summary, деньги/товар/численности, agents/labor, decisions/commands/events/ledger, manifest и inspection final-state. Все игровые расчёты и политики на C#; Python только запускает проверки и читает результаты. [Параметры, значение прогона и файлы](docs/HEADLESS_TESTING.md).
 
 `--mode headless` по умолчанию выполняет те же тики без ожидания реальных секунд; перевозка остаётся физической. `--mode paced` ждёт1 секунду/тик. Мир задаётся `--scenario`, политики — `--controllers`; начальные настройки лежат в scenarios/baseline-*.json (historical autonomous-*.json сохранены).
 

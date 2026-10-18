@@ -37,7 +37,7 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
 
 public sealed partial class SimulationEngine
 {
-    public const int CheckpointSchemaVersion = 12;
+    public const int CheckpointSchemaVersion = 13;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
@@ -188,7 +188,7 @@ public sealed partial class SimulationEngine
             if (!seenPlots.Add(v.Id.Value)) throw new CheckpointException("DuplicatePlot");
             var p = _plots[v.Id.Value];
             if (p.Definition.Position != v.Position || p.Definition.PriceMinor != v.PriceMinor || p.Definition.IsCorridor != v.IsCorridor ||
-                p.Definition.ShopParticipantId != v.ShopParticipantId?.Value) throw new CheckpointException("InvalidPlotDefinition");
+                p.Definition.ShopParticipantId != v.ShopParticipantId?.Value || p.Definition.IsShopSite != v.IsShopSite) throw new CheckpointException("InvalidPlotDefinition");
             p.Owner = v.OwnerId?.Value; p.ReservedBy = v.ReservedBy?.Value; p.Until = v.ReservationUntilTick; p.Building = v.BuildingId?.Value;
         }
         _buildings.Clear();

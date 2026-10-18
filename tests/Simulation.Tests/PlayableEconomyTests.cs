@@ -71,11 +71,11 @@ public class PlayableEconomyTests
     }
 
     [Fact]
-    public void ShopSitesAreAssignedAndDoNotGrantFreeLand()
+    public void ShopSitesAreSharedPaidAndLimitedToOne()
     {
         var scenario = Economy();
         var session = new GameSession(new SimulationEngine(scenario));
-        var own = Assert.Single(scenario.Plots!, p => p.ShopParticipantId == 1);
+        var own = scenario.Plots!.Last(p => p.IsShopSite);
         Walk(session, own.Position);
         Assert.Contains(PlayContext.At(PlayerDesk.Read(session.Engine, Human), scenario, "en"), c => c.Key == "buy:" + own.Id);
         Fixtures.Command(session, PlayerDesk.BuyPlot(own.Id));
@@ -83,10 +83,10 @@ public class PlayableEconomyTests
         Assert.Contains(choices, c => c.Key == "build:shop");
         Assert.DoesNotContain(choices, c => c.Key == "build:sawmill");
         Walk(session, new(12, 0));
-        Assert.Empty(PlayContext.At(PlayerDesk.Read(session.Engine, Human), scenario, "en"));
+        Assert.All(PlayContext.At(PlayerDesk.Read(session.Engine, Human), scenario, "en"), c => Assert.False(c.Enabled));
         string hint = PlayContext.Hover(Presentation.Read(scenario, session.Engine, 1), PlayerDesk.Read(session.Engine, Human), 12, 0, "en");
-        Assert.Contains("participant 2", hint);
-        Assert.Contains("another participant", hint);
+        Assert.Contains("Shared shop site", hint);
+        Assert.Contains("At most one", hint);
     }
 
     private static ScenarioDefinition Economy()

@@ -17,7 +17,9 @@ public static class PlayerDesk
         ActionKind.SetLogisticsStorage, ActionKind.SetLogisticsInbound,
         ActionKind.AcceptSupport, ActionKind.RejectSupport, ActionKind.SetVoteChoice,
         ActionKind.ReservePlot, ActionKind.BuyPlot, ActionKind.Build,
-        ActionKind.SellAvailableToCapital, ActionKind.CancelCapitalSale
+        ActionKind.SellAvailableToCapital, ActionKind.CancelCapitalSale,
+        ActionKind.CreateSellOffer, ActionKind.SubmitBuyRequest, ActionKind.RaiseBid, ActionKind.WithdrawBid, ActionKind.CollectPurchase,
+        ActionKind.CancelPlotReservation
     ];
 
     public static GameAction Check(GameAction action)
@@ -64,20 +66,33 @@ public static class PlayerDesk
     public static GameAction Sell(long offer, string item, long quantity) => Check(new(ActionKind.SellAvailableToCapital,
         OfferId: offer, ItemId: item, Quantity: quantity));
     public static GameAction CancelSale(long offer) => Check(new(ActionKind.CancelCapitalSale, OfferId: offer));
+    public static GameAction PublishLot(long shop, string item, long quantity, long price) => Check(new(ActionKind.CreateSellOffer,
+        Building: new(shop), ItemId: item, Quantity: quantity, UnitPriceMinor: price));
+    public static GameAction Bid(long offer, long quantity, long maximum) => Check(new(ActionKind.SubmitBuyRequest,
+        MarketOfferId: offer, Quantity: quantity, MaximumPriceMinor: maximum));
+    public static GameAction RaiseBid(long offer, int round, long price) => Check(new(ActionKind.RaiseBid,
+        MarketOfferId: offer, MarketRound: round, UnitPriceMinor: price));
+    public static GameAction WithdrawBid(long offer, int round = 0) => Check(new(ActionKind.WithdrawBid, MarketOfferId: offer, MarketRound: round));
+    public static GameAction CollectPurchase(long purchase, long quantity) => Check(new(ActionKind.CollectPurchase,
+        PurchaseId: purchase, Quantity: quantity));
 
     public static PlayerView Read(SimulationEngine engine, ParticipantId actor)
     {
         var seen = engine.Observe(actor);
         return new(seen.Tick, seen.Participant, seen.Account.BalanceMinor, seen.OwnInventories, seen.OwnEnterprises,
             seen.OwnBuildings, seen.OwnEmploymentGroups, seen.OwnLogistics, seen.LaborMarket, seen.Support, seen.Elections, seen.Plots,
-            seen.CapitalOffers, seen.Account.AvailableMinor, engine.HarvestOf(actor));
+            seen.CapitalOffers, seen.Account.AvailableMinor, engine.HarvestOf(actor), engine.EconomyRules,
+            new(seen.MarketOffers, seen.OwnMarketBids, seen.OwnMarketAllocations, seen.MarketRules, engine.PublicShops()));
     }
 }
 
 public record PlayerView(long Tick, ParticipantView Participant, long CashMinor, InventoryView[] Inventories,
     EnterpriseView[] Enterprises, BuildingView[] Buildings, EmploymentView[] Employment, LogisticsView[] Logistics,
     PublicEmploymentView[] LaborMarket, SupportObservation Support, ElectionObservation Elections, PlotView[] Plots,
-    CapitalOfferView[] CapitalOffers, long AvailableCashMinor, OwnHarvest? Harvest = null);
+    CapitalOfferView[] CapitalOffers, long AvailableCashMinor, OwnHarvest? Harvest = null, EconomicRules? Economy = null, PlayerMarketView? Market = null);
+
+public sealed record PlayerMarketView(MarketOfferView[] Offers, MarketBidView[] Bids, MarketAllocationView[] Allocations,
+    MarketSettings Rules, PublicShop[] Shops);
 
 public static class PlayerText
 {
@@ -162,7 +177,7 @@ public static class PlayerText
         ["reason.LandNotOwned"] = "Сначала купите все клетки участка.",
         ["reason.WrongBuildingSite"] = "Этот тип здания здесь недоступен.",
         ["reason.NoCapacity"] = "Инвентарь заполнен.",
-        ["reason.ParticipantBusy"] = "Персонаж занят добычей.",
+        ["reason.ParticipantBusy"] = "Персонаж занят другим действием.",
         ["reason.NoResourceNode"] = "Подойдите к точке ресурса.",
         ["reason.NotAtLocation"] = "Подойдите к нужному месту.",
         ["reason.NoPath"] = "Сюда пройти нельзя.",
@@ -171,6 +186,11 @@ public static class PlayerText
         ["reason.PlotReserved"] = "Участок забронирован другим участником.",
         ["reason.ProtectedCorridor"] = "Проход нельзя купить или забронировать.",
         ["reason.ReservationLimit"] = "Слишком много действующих броней.",
+        ["reason.ShopSiteLimit"] = "У вас уже есть купленное или забронированное место лавки.",
+        ["reason.StaleMarketRound"] = "Раунд торгов изменился. Выберите действие ещё раз.",
+        ["reason.BidLimitExceeded"] = "Цена выше вашего первоначального лимита заявки.",
+        ["reason.RaiseTooSmall"] = "Повышение меньше минимального шага аукциона.",
+        ["reason.PurchaseClosed"] = "Выдача закрыта или срок получения истёк.",
         ["money"] = "Деньги",
         ["item.wood"] = "древесина",
         ["item.grain"] = "зерно",
@@ -287,7 +307,7 @@ public static class PlayerText
         ["reason.LandNotOwned"] = "Buy all footprint cells first.",
         ["reason.WrongBuildingSite"] = "This building does not fit this site.",
         ["reason.NoCapacity"] = "Inventory is full.",
-        ["reason.ParticipantBusy"] = "The character is busy harvesting.",
+        ["reason.ParticipantBusy"] = "The character is busy with another action.",
         ["reason.NoResourceNode"] = "Move to the resource.",
         ["reason.NotAtLocation"] = "Move to the right place.",
         ["reason.NoPath"] = "That cell cannot be reached.",
@@ -296,6 +316,11 @@ public static class PlayerText
         ["reason.PlotReserved"] = "Another participant has reserved the plot.",
         ["reason.ProtectedCorridor"] = "A passage cannot be bought or reserved.",
         ["reason.ReservationLimit"] = "Too many active reservations.",
+        ["reason.ShopSiteLimit"] = "You already own or reserve a shop site.",
+        ["reason.StaleMarketRound"] = "The auction round changed. Select the action again.",
+        ["reason.BidLimitExceeded"] = "The price exceeds your original request limit.",
+        ["reason.RaiseTooSmall"] = "The increase is smaller than the minimum auction step.",
+        ["reason.PurchaseClosed"] = "Pickup is closed or its deadline has expired.",
         ["money"] = "Money",
         ["item.wood"] = "wood",
         ["item.grain"] = "grain",

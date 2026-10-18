@@ -89,6 +89,23 @@ folders += [out/'logistics-queue-replayed', out/'capital-demand-replayed', out/'
 folders += [out/f'baseline-{name}{suffix}' for name in baseline_cases for suffix in ['', '-saved','-loaded','-replayed']]
 folders += [out/'model-safety',out/'model-safety-loaded',out/'model-safety-replayed',out/'model-off']
 check('balances', 30, [sys.executable, 'scripts/verify_results.py', *folders])
+# Explicit profile/CLI path: an unprofitable research treatment is a valid run, not a failed baseline fixture.
+profile = json.loads((root/'config/economy.json').read_text(encoding='utf-8'))
+profile['id'] = 'gate-unprofitable-land'
+profile['world']['plotPriceMinor'] = 1000000000
+profile['world']['shopSitePriceMinor'] = 1000000000
+profile_path = out/'profile-input.json'
+profile_path.write_text(json.dumps(profile), encoding='utf-8')
+check('economy-profile-validation',30,[*runner,'--script','baseline','--scenario','scenarios/baseline-economy.json',
+    '--economy',profile_path,'--validate-only','true'])
+check('economy-profile-run',300,[*runner,'--script','baseline','--scenario','scenarios/baseline-economy.json',
+    '--economy',profile_path,'--ticks','1200','--profile','true','--output',out/'economy-profile'])
+profile_state=json.loads((out/'economy-profile/final-state.json').read_text())
+profile_measure=json.loads((out/'economy-profile/profile.json').read_text())
+if profile_state['enterprises'] or not profile_measure['checkpointHashMatches'] or profile_measure['measuredTicks'] != 1200:
+    raise SystemExit('Research profile/measurement path did not apply its independent economic treatment')
+folders.append(out/'economy-profile')
+check('economy-profile-balances',30,[sys.executable,'scripts/verify_results.py',out/'economy-profile'])
 manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases':{'cycle':55,'equipment':101,'autonomous':350,'market':44,'pickup':47,'delivery':37,'capital-delivery':3,'logistics':69,'logistics-upgrade':170,'own-storage':170,'inbound':78,'own-production':170,'logistics-queue':185,'capital-demand':85,'autonomous-demand':350,'elections':9,'support':18},
             'comparison':'every exported tick hash, state, ledger, event, command and labor row',
             'controlled_fixture':{'name':'late-return','origin':'test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged','checkpoint_tick':72,'final_tick':80},

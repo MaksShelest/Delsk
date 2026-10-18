@@ -14,7 +14,7 @@ public record ControllerSettings(long ActorId, string PreferredInput, int Decisi
     int HarvestCoefficient = 1, int ProductionCoefficient = 1,
     int MaximumBuyPriceBasisPoints = 12500, int SellPriceBasisPoints = 10000,
     long SupportPricePerVoteMinor = 500, int PoliticalHorizonTicks = 180,
-    bool TradeEnabled = true, bool LogisticsEnabled = true, bool PoliticsEnabled = true, long HumanActorId = 1, bool FutureContractsEnabled = true, int MarketLotQuantity = 10);
+    bool TradeEnabled = true, bool LogisticsEnabled = true, bool PoliticsEnabled = true, long HumanActorId = 1, bool FutureContractsEnabled = true, int MarketLotQuantity = 10, long WageRaiseMinor = 1);
 public record AutonomousConfiguration(int Version, long HumanActorId, long FinalTick, ControllerSettings[] Npcs);
 public record TrustEntry(long ParticipantId, int Value);
 public record PlanStep(GameAction Action);
@@ -70,7 +70,7 @@ public sealed partial class AlgorithmicController : IController
     }
     private static void ValidateSettings(ControllerSettings s)
     {
-        if (s.ActorId <= 0 || string.IsNullOrWhiteSpace(s.PreferredInput) || s.PreferredInput.Length > 80 ||
+        if (s.WageRaiseMinor is < 0 or > 10000 || s.ActorId <= 0 || string.IsNullOrWhiteSpace(s.PreferredInput) || s.PreferredInput.Length > 80 ||
             s.DecisionIntervalTicks is < 1 or > 100 || s.BatchQuantity is < 1 or > 1000 ||
             s.CashReserveMinor is < 0 or > 1_000_000_000 || s.BaseWageMinor is < 1 or > 10000 ||
             s.MaximumWageMinor < s.BaseWageMinor || s.MaximumWageMinor > 10000 ||

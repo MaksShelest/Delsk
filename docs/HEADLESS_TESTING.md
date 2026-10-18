@@ -1,5 +1,8 @@
 # Как запускать и проверять экономику без графики
 
+> Актуально18.10.2026: единый редактируемый баланс обычной игры — [config/economy.json](../config/economy.json); [руководство](ECONOMY_CONFIGURATION.md). Для опытов используйте runner --economy PATH явно; старые примеры без этого аргумента ниже читают самостоятельные scenarios/fixtures. --validate-only true проверяет настройки, --profile true измеряет headless Step/save/load, run_economy_study.py выполняет одинаковые seeds для профилей A/B. World13/Rules research-economy-1, Session2/Envelope2. Старые rules saves отдельно без миграции. Программный месячный объём/облачная P27-проверка выполнены, аппаратная приёмка и ограничения — [отчёт P27](IMPLEMENTATION_REPORT_P27.md).
+
+
 Автор: Шелестов Максим Евгеньевич. Состояние после P24, 16.10.2026.
 
 ## P22: модель необязательна

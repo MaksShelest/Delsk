@@ -32,9 +32,9 @@ public sealed partial class SimulationEngine
     {
         var settings = _config.CapitalDemand!;
         var cycle = _commodityCycles.Single(c => c.ItemId == item.Id);
-        int common = Wave(tick, settings.CommonWaveTicks, _commonPhase, 9000, 11000);
-        int commodity = Wave(tick, settings.ItemWaveTicks, cycle.PricePhase, 8000, 12000);
-        int noise = 9800 + random.Index(401);
+        int common = Wave(tick, settings.CommonWaveTicks, _commonPhase, EconomyRules.CommonPriceMinimumBasisPoints, EconomyRules.CommonPriceMaximumBasisPoints);
+        int commodity = Wave(tick, settings.ItemWaveTicks, cycle.PricePhase, EconomyRules.ItemPriceMinimumBasisPoints, EconomyRules.ItemPriceMaximumBasisPoints);
+        int noise = EconomyRules.NoiseMinimumBasisPoints + random.Index(EconomyRules.NoiseMaximumBasisPoints - EconomyRules.NoiseMinimumBasisPoints + 1);
         return Math.Max(1, checked((long)((Int128)item.BasePriceMinor * common * commodity * noise * settings.PriceScaleBasisPoints / 10000000000000000L)));
     }
     private void AdvanceCapitalDemand()
@@ -61,7 +61,7 @@ public sealed partial class SimulationEngine
         long[] quantities = metrics.Select(m => raw.Contains(m.ItemId) ? 1L : 0L).ToArray();
         long remaining = checked(target - metrics.Select((m, i) => checked(quantities[i] * _items[m.ItemId].BasePriceMinor)).Sum());
         long[] weights = metrics.Select(m => (long)Wave(Tick, settings.ItemWaveTicks,
-            _commodityCycles.Single(c => c.ItemId == m.ItemId).DemandPhase, 5000, 15000)).ToArray();
+            _commodityCycles.Single(c => c.ItemId == m.ItemId).DemandPhase, EconomyRules.DemandWeightMinimumBasisPoints, EconomyRules.DemandWeightMaximumBasisPoints)).ToArray();
         long totalWeight = weights.Sum();
         for (int i = 0; i < metrics.Length; i++)
             quantities[i] = checked(quantities[i] + (long)((Int128)remaining * weights[i] / totalWeight / _items[metrics[i].ItemId].BasePriceMinor));

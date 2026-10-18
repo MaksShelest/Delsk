@@ -22,12 +22,12 @@ public static class RunArtifacts
         var json = new JsonSerializerOptions(SimulationJson.Options) { WriteIndented = true };
         WriteJson("manifest.json", new
         {
-            ScenarioId = definition.Id, definition.Seed, SchemaVersion = SimulationEngine.CheckpointSchemaVersion,
+            ScenarioId = definition.Id, definition.Seed, definition.EconomyProfileId, SchemaVersion = SimulationEngine.CheckpointSchemaVersion,
             SimulationEngine.RulesVersion, ConfigHash = session.Engine.ConfigHash, TimingPolicy = timingPolicy, Script = script,
             Controller = session.ControllerStates.Any(c => c.Kind.StartsWith("hybrid-", StringComparison.Ordinal)) ? "hybrid" : session.HasControllers ? "algorithmic" : session.PlaybackFinalTick.HasValue ? "recorded-inputs" : "scripted",
             Controllers = session.ControllerStates, ControllerStateHash = session.ComputeControllerStateHash(), Model = modelMetadata, RuntimeVersion = Environment.Version.ToString(),
             Commit = Environment.GetEnvironmentVariable("DELSK_COMMIT"), TickSeconds = 1,
-            Stage = "P24", Author = "Шелестов Максим Евгеньевич"
+            Stage = "P27", Author = "Шелестов Максим Евгеньевич"
         });
         WriteJson("summary.json", new { Status = status, Failure = failure, state.Tick, StateHash = session.Engine.ComputeStateHash(),
             ControllerStateHash = session.ComputeControllerStateHash(),

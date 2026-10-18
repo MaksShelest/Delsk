@@ -2,9 +2,12 @@ namespace Simulation.Core;
 
 public record OwnCapitalRequest(long OfferId, string ItemId, long Quantity, int Window, long? CutoffTick);
 public record OwnCapitalTrading(OwnCapitalRequest[] Requests, SettlementView[] Settlements);
+public record PublicShop(BuildingId Id, ParticipantId Owner, Cell Position, Cell[] Footprint);
 
 public sealed partial class SimulationEngine
 {
+    public PublicShop[] PublicShops() => _buildings.Values.Where(b => b.Type.Kind == BuildingKind.Shop).OrderBy(b => b.Id)
+        .Select(b => new PublicShop(new(b.Id), new(b.Owner), b.Position, b.Footprint.ToArray())).ToArray();
     /// <summary>Read-only availability of manual movement, including collision and occupation.</summary>
     public bool CanTravel(ParticipantId actor, int x, int z)
     {

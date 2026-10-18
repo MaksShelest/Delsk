@@ -167,9 +167,9 @@ public partial class Playfield : Control
         Refresh();
     }
 
-    private ScenarioDefinition ReadMap(string key) =>
+    private ScenarioDefinition ReadMap(string key) => ReadEconomy().Apply(
         JsonSerializer.Deserialize<ScenarioDefinition>(Text(PlayMaps.Resource(key)), SimulationJson.Options)
-        ?? throw new InvalidOperationException(key);
+        ?? throw new InvalidOperationException(key));
 
     private void DismissMaps()
     { _mapSelection?.QueueFree(); _mapSelection = null; }
@@ -251,6 +251,11 @@ public partial class Playfield : Control
             ?? throw new InvalidOperationException(scenarioName);
         var config = JsonSerializer.Deserialize<AutonomousConfiguration>(Text(controllerName), SimulationJson.Options)
             ?? throw new InvalidOperationException(controllerName);
+        if (mode == "economy")
+        {
+            var economy = ReadEconomy(); _scenario = economy.Apply(_scenario);
+            config = config with { Npcs = config.Npcs.Select(n => AlgorithmicController.WithEconomy(n, economy.Npc)).ToArray() };
+        }
         _human = new(config.HumanActorId);
         _session = new GameSession(new SimulationEngine(_scenario));
         _session.AttachControllers(config.Npcs.Select(n => new AlgorithmicController(
@@ -328,6 +333,8 @@ public partial class Playfield : Control
             Refresh();
             return;
         }
+        if (choice.Key.StartsWith("market:", StringComparison.Ordinal))
+        { OpenMarketTablet(long.Parse(choice.Key[7..], CultureInfo.InvariantCulture)); return; }
         if (choice.Key == "exchange") { OpenCapitalTablet(); return; }
         if (choice.Command is { } action) Offer(action);
     }
@@ -580,8 +587,8 @@ public partial class Playfield : Control
         parent.AddChild(new Label { Text = $"{group.Role} {group.Headcount}/{group.Capacity} {PlayerText.Money(shown)}" });
         var row = new HBoxContainer();
         parent.AddChild(row);
-        Button(row, "wage.raise", () => Offer(PlayerDesk.Wage(group.Id.Value, shown + PlayerDesk.WageStepMinor)));
-        Button(row, "wage.lower", () => Offer(PlayerDesk.Wage(group.Id.Value, Math.Max(0, shown - PlayerDesk.WageStepMinor))));
+        Button(row, "wage.raise", () => Offer(PlayerDesk.Wage(group.Id.Value, shown + (_scenario.Economy ?? new()).PlayerWageStepMinor)));
+        Button(row, "wage.lower", () => Offer(PlayerDesk.Wage(group.Id.Value, Math.Max(0, shown - (_scenario.Economy ?? new()).PlayerWageStepMinor))));
     }
 
     private VBoxContainer Section(string key)
