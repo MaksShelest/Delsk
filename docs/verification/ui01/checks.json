@@ -1,0 +1,266 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "2026-10-18",
+  "base": "b74f6e612ce73deed1ff211cba8254664a63c550",
+  "scope": "UI01 only; Core/Hosting/controllers/config/scenarios/save versions unchanged",
+  "sdk": "10.0.401",
+  "godot": "4.7.2.stable.mono.ed1daf0bf",
+  "tests": {
+    "total": "694",
+    "executed": "694",
+    "passed": "694",
+    "failed": "0",
+    "error": "0",
+    "timeout": "0",
+    "aborted": "0",
+    "inconclusive": "0",
+    "passedButRunAborted": "0",
+    "notRunnable": "0",
+    "notExecuted": "0",
+    "disconnected": "0",
+    "warning": "0",
+    "completed": "0",
+    "inProgress": "0",
+    "pending": "0"
+  },
+  "commands": {
+    "core-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--nologo",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-18T18:59:21.181039+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 49.829,
+      "finished_at": "2026-10-18T19:00:11.010370+00:00"
+    },
+    "tests": {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-result-trx",
+        "/workspace/scratch/80193353a16b/Delsk/artifacts/ui-cleanup-01/tests.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-18T19:00:28.237658+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 41.318,
+      "finished_at": "2026-10-18T19:01:09.555452+00:00"
+    },
+    "final-client-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "-c",
+        "Debug",
+        "--no-incremental",
+        "--nologo",
+        "-m:1"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-18T19:12:22.017202+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 14.945,
+      "finished_at": "2026-10-18T19:12:36.961797+00:00"
+    },
+    "export-release-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "-c",
+        "ExportRelease",
+        "--nologo",
+        "-m:1"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-18T19:12:36.996691+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 14.339,
+      "finished_at": "2026-10-18T19:12:51.336196+00:00"
+    },
+    "final-debug-restore": {
+      "command": [
+        "dotnet",
+        "restore",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-18T19:13:16.071359+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.42,
+      "finished_at": "2026-10-18T19:13:17.491674+00:00"
+    },
+    "final-import": {
+      "command": [
+        "/workspace/scratch/80193353a16b/toolchain/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--editor",
+        "--path",
+        "src/Client.Godot",
+        "--import"
+      ],
+      "timeout_seconds": 90,
+      "started_at": "2026-10-18T19:13:17.526213+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.625,
+      "finished_at": "2026-10-18T19:13:21.151303+00:00"
+    },
+    "final-smoke": {
+      "command": [
+        "/workspace/scratch/80193353a16b/toolchain/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--",
+        "--smoke",
+        "--report",
+        "/workspace/scratch/80193353a16b/Delsk/artifacts/ui-cleanup-01/final-platform.json"
+      ],
+      "timeout_seconds": 45,
+      "started_at": "2026-10-18T19:13:21.185378+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.519,
+      "finished_at": "2026-10-18T19:13:22.704005+00:00"
+    }
+  },
+  "window_checks": {
+    "gui-checks-1100x720.json": {
+      "status": "succeeded",
+      "checks": [
+        "actual startup window width 1100",
+        "map uses full area below 54px HUD",
+        "empty ground has no action strip",
+        "help freezes ticks and movement",
+        "help restores running world",
+        "help preserves menu pause",
+        "ordinary MoveTo 0,0",
+        "harvest starts through contextual button",
+        "harvest awards real inventory goods",
+        "harvest fill freezes during help",
+        "ordinary MoveTo 15,3",
+        "exchange opens paused",
+        "exchange contains no tick or stale harvest feedback",
+        "history has its own page",
+        "sale queued while paused",
+        "help preserves tactical pause and queued sale",
+        "queued sale settles after running time",
+        "filter and price order survive language change",
+        "world player label follows language change",
+        "filter survives tablet reopening",
+        "exchange controls fit actual 1100px viewport",
+        "tablet shows command rejection reason",
+        "fullscreen toggle works",
+        "windowed mode restored",
+        "debug keeps paused steps and FPS diagnostics"
+      ]
+    },
+    "gui-checks-1280x800.json": {
+      "status": "succeeded",
+      "checks": [
+        "actual startup window width 1280",
+        "map uses full area below 54px HUD",
+        "empty ground has no action strip",
+        "help freezes ticks and movement",
+        "help restores running world",
+        "help preserves menu pause",
+        "ordinary MoveTo 0,0",
+        "harvest starts through contextual button",
+        "harvest awards real inventory goods",
+        "harvest fill freezes during help",
+        "ordinary MoveTo 15,3",
+        "exchange opens paused",
+        "exchange contains no tick or stale harvest feedback",
+        "history has its own page",
+        "sale queued while paused",
+        "help preserves tactical pause and queued sale",
+        "queued sale settles after running time",
+        "filter and price order survive language change",
+        "filter survives tablet reopening",
+        "exchange controls fit actual 1280px viewport",
+        "fullscreen toggle works",
+        "windowed mode restored",
+        "debug keeps paused steps and FPS diagnostics"
+      ]
+    },
+    "gui-default-fullscreen.json": {
+      "status": "succeeded",
+      "checks": [
+        "fresh settings start fullscreen"
+      ]
+    }
+  },
+  "window_check_count": 49,
+  "window_environment": "Linux Xvfb TCP / llvmpipe; native windows1100x720 and1280x800, logical canvas1100x720; no physical Windows/Android/DPI acceptance",
+  "smoke": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "befa38addd66ef7c7c7d9e6c7d98561edd21c4a4673ad32ba689a7bb45f89fff",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "ElectionCheckedTicks": 40,
+    "ElectionStateHash": "a878e9e122ef5a26ae4a120dfd62a690c93dfa5c870c38e0039caa891ce958e8",
+    "ElectionRestoredTicks": [
+      9,
+      19,
+      20,
+      21
+    ],
+    "SupportCheckedTicks": 120,
+    "SupportStateHash": "12e2f23d454aa2fb11421dffad3f6c141981ad788556fe507ef052def77a393a",
+    "SupportRestoredTicks": [
+      17,
+      18,
+      19,
+      27,
+      99,
+      100
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "source_sha256": {
+    "src/Client.Godot/CapitalTablet.cs": "6ec5ccad9f3edcc0159077af825e34521caf0b94dfce6022d563f60f7c26e4e6",
+    "src/Client.Godot/ContextActionButton.cs": "b6e11050d6aec424ba10c0c29aba628e896592fff192361ef91dec4dcd7a9a9c",
+    "src/Client.Godot/DebugBoard.cs": "8d0cf62eb6f0caf94419fcbe4c6a194199619d2566dd6fe578f6ec79a2a1c1e5",
+    "src/Client.Godot/EnterpriseTablet.cs": "2d4e7b6c9eb26d7ae4d283d09eaba9f9e1011e329a82333aed78b8c5aa2499a3",
+    "src/Client.Godot/HelpOverlay.cs": "7bdccf70f3e40d3baa40008ce802a1ce00be548f258f262f03ae6f6a85dfb7e7",
+    "src/Client.Godot/MapSelectionScreen.cs": "070d400c370f17b22dc5b25bf57efe5d0077aa173a3c74e343fe74b71d03edc0",
+    "src/Client.Godot/MapSymbols.cs": "54c8f6bebf630e9192ae262c076a09015cae71c2f506b059e1b0495a59d6144f",
+    "src/Client.Godot/ParticipantMarketTablet.cs": "496ce1554d82e82873fd10f8d08727936c9fd94e84e97190f235fd2cbc13fefd",
+    "src/Client.Godot/PlatformProbe.cs": "ab16dd79bbfb09b48842a1ceecc75cfbec1e1b1c77e7a1c7391be6b298d58d4e",
+    "src/Client.Godot/Playfield.Economy.cs": "2292968b7c38d01211e41df48273caea9510029a9e5c3dec5340a553959a91cf",
+    "src/Client.Godot/Playfield.Interface.cs": "f24572be601b9915bc83e7f71aac4737ec3033a67a86b214d6e1c1c8feb621db",
+    "src/Client.Godot/Playfield.Tablets.cs": "90b77347a6d12831717318fe3ae52b798042f15b7772790536658b9e681bd5b4",
+    "src/Client.Godot/Playfield.cs": "53f463c5af5da2e965205e3c5c34c334ccf16fb4fdca1ce4b5f78ea7b7031de0",
+    "src/Client.Godot/PresentationStage.cs": "952aa4b477198ff4313c20bc4a4585c50db883321639cd544314ece172a59a7b",
+    "src/Client.Godot/PresentationTheme.cs": "b894529c0d0ad8e4d0e17ede8d30140272aaff9ff491bcb34a9b2a0395499557",
+    "src/Client.Godot/ResourceIcon.cs": "49964f404b53a214c0e66fc6544f64a7b1d40b91769ed5b90337ef84edf4c25d",
+    "src/Client.Godot/TabletPanel.cs": "9db9da8842141750f6f6f1a9cf290a5c53a263ea3e8d9f4eca64d7ee821a22a4",
+    "src/Client.Godot/WorldModels.cs": "5724292b10e3c7e5ffd344dc6b05d52aa672b11390ac8fa31b00c8f5854d3b50"
+  }
+}
