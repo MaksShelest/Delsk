@@ -1,0 +1,292 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "2026-10-18",
+  "basis": "c40f12dc0df3175e5e82243bd5d926cb2567182c",
+  "scope": "P26.6 B2; C remains planned",
+  "rules": "manual-harvest-1",
+  "world_schema": 12,
+  "session_schema": 2,
+  "envelope_format": 1,
+  "sdk": "10.0.401",
+  "godot": "4.7.2.stable.mono.official.ed1daf0bf",
+  "tests": {
+    "total": "679",
+    "executed": "679",
+    "passed": "679",
+    "failed": "0",
+    "error": "0",
+    "timeout": "0",
+    "aborted": "0",
+    "inconclusive": "0",
+    "passedButRunAborted": "0",
+    "notRunnable": "0",
+    "notExecuted": "0",
+    "disconnected": "0",
+    "warning": "0",
+    "completed": "0",
+    "inProgress": "0",
+    "pending": "0"
+  },
+  "additional_final_focused_tests": 26,
+  "headless": {
+    "status": "succeeded",
+    "scenarios": [
+      "cycle",
+      "recovery",
+      "development",
+      "labor",
+      "equipment",
+      "autonomous",
+      "market",
+      "pickup",
+      "delivery",
+      "capital-delivery",
+      "logistics",
+      "logistics-upgrade",
+      "own-storage",
+      "inbound",
+      "own-production",
+      "logistics-queue",
+      "capital-demand",
+      "autonomous-demand",
+      "elections",
+      "support"
+    ],
+    "checkpoint_cases": {
+      "cycle": 55,
+      "equipment": 101,
+      "autonomous": 350,
+      "market": 44,
+      "pickup": 47,
+      "delivery": 37,
+      "capital-delivery": 3,
+      "logistics": 69,
+      "logistics-upgrade": 170,
+      "own-storage": 170,
+      "inbound": 78,
+      "own-production": 170,
+      "logistics-queue": 185,
+      "capital-demand": 85,
+      "autonomous-demand": 350,
+      "elections": 9,
+      "support": 18
+    },
+    "comparison": "every exported tick hash, state, ledger, event, command and labor row",
+    "controlled_fixture": {
+      "name": "late-return",
+      "origin": "test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged",
+      "checkpoint_tick": 72,
+      "final_tick": 80
+    },
+    "baseline_cases": {
+      "economy": {
+        "final_tick": 1200,
+        "checkpoint_tick": 350
+      },
+      "auction": {
+        "final_tick": 180,
+        "checkpoint_tick": 30
+      },
+      "politics": {
+        "final_tick": 160,
+        "checkpoint_tick": 19
+      },
+      "logistics": {
+        "final_tick": 360,
+        "checkpoint_tick": 80
+      }
+    },
+    "model_safety": {
+      "checkpoint_tick": 6,
+      "final_tick": 60,
+      "valid": 1,
+      "forged_actor": 1,
+      "late_reply": 1
+    },
+    "model_off": "exact world equality with baseline-economy and the same headless timing label",
+    "exports": 81,
+    "replays": 9,
+    "comparison_pairs": 54,
+    "scope": "P00-P26.6 play HUD and context actions; live Ollama series is separate evidence; windowed and device checks are separate",
+    "author": "Шелестов Максим Евгеньевич"
+  },
+  "platform": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "befa38addd66ef7c7c7d9e6c7d98561edd21c4a4673ad32ba689a7bb45f89fff",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "ElectionCheckedTicks": 40,
+    "ElectionStateHash": "a878e9e122ef5a26ae4a120dfd62a690c93dfa5c870c38e0039caa891ce958e8",
+    "ElectionRestoredTicks": [
+      9,
+      19,
+      20,
+      21
+    ],
+    "SupportCheckedTicks": 120,
+    "SupportStateHash": "12e2f23d454aa2fb11421dffad3f6c141981ad788556fe507ef052def77a393a",
+    "SupportRestoredTicks": [
+      17,
+      18,
+      19,
+      27,
+      99,
+      100
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Linux",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "window": {
+    "checks": [
+      "first-map-resource-action",
+      "continuous-action-shows-progress-on-button",
+      "menu-freezes-active-harvest",
+      "english-stop-label",
+      "focus-checkpoint-load-preserves-active-loop",
+      "one-command-produced-repeated-units-in-hud",
+      "explicit-stop-removes-active-loop",
+      "explicit-stop-does-not-credit-partial-cycle",
+      "explicit-restart",
+      "walking-out-cancels-before-next-completion",
+      "leaving-preserves-only-completed-goods",
+      "returning-does-not-auto-restart",
+      "debug-world-stays-paused",
+      "debug-advances-exactly-one-tick",
+      "second-map-resource-start",
+      "neighboring-same-resource-cell-keeps-loop"
+    ],
+    "hardware_gate": false,
+    "renderer": "Linux Xvfb llvmpipe",
+    "status": "succeeded"
+  },
+  "checks": {
+    "b2-regression": {
+      "command": [
+        "python3",
+        "scripts/check_headless.py",
+        "--output",
+        "artifacts/p266-harvest-regression"
+      ],
+      "timeout_seconds": 1200,
+      "started_at": "2026-10-18T09:08:22.724835+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 162.867,
+      "finished_at": "2026-10-18T09:11:05.592304+00:00"
+    },
+    "b2-final-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--nologo",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-18T09:13:32.141728+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.438,
+      "finished_at": "2026-10-18T09:13:35.579945+00:00"
+    },
+    "b2-client-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "-c",
+        "Debug",
+        "--nologo",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-18T09:11:28.851099+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.7,
+      "finished_at": "2026-10-18T09:11:35.550734+00:00"
+    },
+    "b2-final-focused": {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.ManualHarvestTests",
+        "-class",
+        "Simulation.Tests.PlayContextTests"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-18T09:13:35.607731+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.067,
+      "finished_at": "2026-10-18T09:13:36.674344+00:00"
+    },
+    "b2-godot-import": {
+      "command": [
+        "../toolchain/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--editor",
+        "--path",
+        "src/Client.Godot",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-18T09:07:22.926994+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.135,
+      "finished_at": "2026-10-18T09:07:27.061766+00:00"
+    },
+    "b2-godot-smoke": {
+      "command": [
+        "../toolchain/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--",
+        "--smoke",
+        "--report",
+        "/workspace/scratch/80193353a16b/Delsk/artifacts/b2-platform.json"
+      ],
+      "timeout_seconds": 45,
+      "started_at": "2026-10-18T09:13:36.704279+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.368,
+      "finished_at": "2026-10-18T09:13:38.071884+00:00"
+    },
+    "b2-window-final": {
+      "command": [
+        "python3",
+        "artifacts/b2-window/run.py"
+      ],
+      "timeout_seconds": 115,
+      "started_at": "2026-10-18T09:12:50.772128+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 28.964,
+      "finished_at": "2026-10-18T09:13:19.736174+00:00"
+    }
+  },
+  "not_implemented": [
+    "participant-market UI",
+    "shared shop sites with one owned-or-reserved limit and NPC selection"
+  ],
+  "not_checked": [
+    "Windows executable on device",
+    "Android device",
+    "long-session device performance profile"
+  ]
+}

@@ -46,7 +46,7 @@ public sealed partial class SimulationEngine
 
     public string CreateCheckpointJson()
     {
-        if (_stepping || (Tick > 0 && (_events.Count == 0 || _events[^1].Type != "TickCommitted" || _events[^1].Tick != Tick)))
+        if (_stepping || !HasCommittedBoundary())
             throw new CheckpointException("NotCommittedTick");
         ValidateInvariants();
         var world = Inspect();

@@ -11,7 +11,7 @@ public sealed partial class SimulationEngine
             throw new CheckpointException("InvalidWorldStructure");
         var commits = _events.Where(e => e.Type == "TickCommitted").ToArray();
         if (commits.LongLength != Tick || commits.Where((e, i) => e.Tick != i + 1L || e.Phase != 9).Any() ||
-            (Tick > 0 && _events[^1] != commits[^1]) ||
+            !HasCommittedBoundary() ||
             _events.Where((e, i) => e.Sequence != i + 1L || e.Tick < 0 || e.Tick > Tick || e.Phase is < 0 or > 9 ||
                 (i > 0 && e.Tick < _events[i - 1].Tick) || (e.ActorId.HasValue && !_actors.ContainsKey(e.ActorId.Value.Value))).Any())
             throw new CheckpointException("UncommittedJournal");
@@ -106,14 +106,21 @@ public sealed partial class SimulationEngine
                     Tick - j.StartTick != checked((long)j.PathIndex * _config.MoveTicksPerCell + j.SegmentTicks))
                     throw new CheckpointException("InvalidPathProgress");
             }
-            else if (j.Kind is "Harvest" or "EquipmentHarvest")
+            else if (IsHarvest(j))
             {
                 if (j.Quantity <= 0 || j.Path.Length != 0 || !_config.ResourceNodes.Any(n => n.ItemId == j.Item && n.Position == actor.Position))
                     throw new CheckpointException("InvalidHarvestJob");
-                long duration = j.Kind == "Harvest" ? checked(j.Quantity * _config.HarvestTicksPerUnit) :
+                long duration = j.Kind != "EquipmentHarvest" ? checked(j.Quantity * _config.HarvestTicksPerUnit) :
                     checked(((j.Quantity - 1) / _equipment[j.EquipmentId].Characteristics.CycleQuantity + 1) *
                         _equipment[j.EquipmentId].Characteristics.CycleTicks);
                 if (j.CompletionTick != checked(j.StartTick + duration)) throw new CheckpointException("InvalidHarvestTime");
+                if (j.Kind == "HarvestLoop" && (j.Quantity != 1 || j.EquipmentId != 0 ||
+                    j.CapacityHold != $"harvest-loop:{j.Id}" ||
+                    _seenCommands[j.CommandId].ActorId.Value != actor.Id ||
+                    _seenCommands[j.CommandId].Action.Kind != ActionKind.StartHarvesting ||
+                    _seenCommands[j.CommandId].Action.ItemId != j.Item ||
+                    !_results.TryGetValue(j.CommandId, out var start) || start.Status != ResultStatus.Accepted))
+                    throw new CheckpointException("InvalidHarvestLoop");
                 expectedCapacity.Add((actor.Inventory, j.CapacityHold), checked(j.Quantity * _items[j.Item].UnitVolume));
             }
             else throw new CheckpointException("UnknownPersonalJob");

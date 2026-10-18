@@ -11,7 +11,7 @@ public static class PlayerDesk
     public const long WageStepMinor = 100;
     public static readonly ActionKind[] Allowed =
     [
-        ActionKind.MoveTo, ActionKind.Harvest, ActionKind.Transfer,
+        ActionKind.MoveTo, ActionKind.Harvest, ActionKind.StartHarvesting, ActionKind.StopHarvest, ActionKind.Transfer,
         ActionKind.SetProductionEnabled, ActionKind.SetWage,
         ActionKind.BuyLogistics, ActionKind.SetLogisticsEnabled,
         ActionKind.SetLogisticsStorage, ActionKind.SetLogisticsInbound,
@@ -33,6 +33,8 @@ public static class PlayerDesk
         if (string.IsNullOrWhiteSpace(itemId) || quantity <= 0) throw new ArgumentOutOfRangeException(nameof(quantity));
         return Check(new(ActionKind.Harvest, ItemId: itemId, Quantity: quantity));
     }
+    public static GameAction StartHarvesting(string itemId) => Check(new(ActionKind.StartHarvesting, ItemId: itemId, Quantity: 1));
+    public static GameAction StopHarvest() => Check(new(ActionKind.StopHarvest));
     public static GameAction Transfer(long source, long destination, string itemId, long quantity)
     {
         if (quantity <= 0) throw new ArgumentOutOfRangeException(nameof(quantity));
@@ -68,14 +70,14 @@ public static class PlayerDesk
         var seen = engine.Observe(actor);
         return new(seen.Tick, seen.Participant, seen.Account.BalanceMinor, seen.OwnInventories, seen.OwnEnterprises,
             seen.OwnBuildings, seen.OwnEmploymentGroups, seen.OwnLogistics, seen.LaborMarket, seen.Support, seen.Elections, seen.Plots,
-            seen.CapitalOffers, seen.Account.AvailableMinor);
+            seen.CapitalOffers, seen.Account.AvailableMinor, engine.HarvestOf(actor));
     }
 }
 
 public record PlayerView(long Tick, ParticipantView Participant, long CashMinor, InventoryView[] Inventories,
     EnterpriseView[] Enterprises, BuildingView[] Buildings, EmploymentView[] Employment, LogisticsView[] Logistics,
     PublicEmploymentView[] LaborMarket, SupportObservation Support, ElectionObservation Elections, PlotView[] Plots,
-    CapitalOfferView[] CapitalOffers, long AvailableCashMinor);
+    CapitalOfferView[] CapitalOffers, long AvailableCashMinor, OwnHarvest? Harvest = null);
 
 public static class PlayerText
 {

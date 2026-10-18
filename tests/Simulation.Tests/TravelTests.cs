@@ -61,23 +61,17 @@ public class TravelTests
     }
 
     [Fact]
-    public void HarvestKeepsItsCellAndDurationWhileHeadingIsHeld()
+    public void WalkingOutCancelsHarvestWithoutCreditingGoods()
     {
         var session = Fixtures.Session();
         var actor = new ParticipantId(1);
-        session.Send(actor, new(ActionKind.Harvest, ItemId: "wood", Quantity: 1));
-        session.Step();
-        Assert.True(session.Engine.Observe(actor).Participant.Busy);
+        Fixtures.Command(session, PlayerDesk.Harvest("wood", 1));
         session.SetTravelHeading(actor, 1, 0);
         session.CompleteTravelTick();
-        Assert.Equal(new Cell(0, 0), CellOf(session));
-        Assert.Equal(500, session.Engine.TravelOf(actor).OffsetX);
-        Assert.Equal(0, Fixtures.Count(session, session.Engine.Observe(actor).Participant.InventoryId, "wood"));
-        session.CompleteTravelTick();
+        Assert.Equal(new Cell(1, 0), CellOf(session));
         Assert.False(session.Engine.Observe(actor).Participant.Busy);
-        Assert.Equal(1, Fixtures.Count(session, session.Engine.Observe(actor).Participant.InventoryId, "wood"));
-        session.AdvanceTravelQuantum();
-        Assert.Equal(600, session.Engine.TravelOf(actor).OffsetX);
+        session.CompleteTravelTick();
+        Assert.Equal(0, Fixtures.Count(session, session.Engine.Observe(actor).Participant.InventoryId, "wood"));
     }
 
     [Fact]

@@ -81,14 +81,14 @@ public sealed class EquipmentTests
     }
 
     [Fact]
-    public void PersonalOperationLocksActorAndMachine_AndDuplicateCommandDoesNotHarvestTwice()
+    public void PersonalOperationLocksOtherWorkAndMachine_AndDuplicateCommandDoesNotHarvestTwice()
     {
         var s = Session(); var e = Buy(s);
         var id = s.Send(new(1), new(ActionKind.Harvest, Equipment: e.Id, ItemId: "wood", Quantity: 6));
         var input = s.CommandTape.Last(); s.Step();
         Assert.Equal("Accepted", s.Engine.Result(id)!.ReasonCode);
         Assert.Equal("Accepted", s.Submit(input.AuthenticatedActor, input.Command)!.ReasonCode);
-        Assert.Equal("ParticipantBusy", Command(s, new(ActionKind.MoveTo, Target: new(1, 0))));
+        Assert.Equal("ParticipantBusy", Command(s, new(ActionKind.Transfer, ItemId: "wood", Quantity: 1)));
         Assert.Equal("EquipmentBusy", Command(s, new(ActionKind.SetEquipmentMode, Equipment: e.Id, Mode: EquipmentMode.Automatic)));
         Assert.Equal("ParticipantBusy", Command(s, new(ActionKind.Harvest, ItemId: "wood", Quantity: 1)));
         Fixtures.UntilIdle(s); Assert.Equal(6, Fixtures.Count(s, s.Engine.Observe(new(1)).Participant.InventoryId, "wood"));

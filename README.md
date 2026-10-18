@@ -3,7 +3,7 @@
 Исследовательская экономическая игра с автономными NPC.
 Автор: Шелестов Максим Евгеньевич.
 
-В C# реализованы и проверены P00–P22: физическая экономика/логистика, рынки и сроки, периодический спрос столицы, выборы, приватная материально оплаченная поддержка и utility baseline трёх NPC без LLM. Контроллеры используют те же команды/валидаторы, что и человек, видят только разрешённую проекцию. Интерактивный игровой ввод/интерфейс ещё не готов. [Проверки и ограничения P20/P21](docs/IMPLEMENTATION_REPORT_P20_P21.md).
+В C# реализованы и проверены P00–P22: физическая экономика/логистика, рынки и сроки, периодический спрос столицы, выборы, приватная материально оплаченная поддержка и utility baseline трёх NPC без LLM. Контроллеры используют те же команды/валидаторы, что и человек, видят только разрешённую проекцию. В P26.6 доступны игровой ввод, Debug, две карты, планшеты с тактической паузой и непрерывная добыча. Текущий статус — [отчёт B2](docs/IMPLEMENTATION_REPORT_P26_6_HARVEST.md); торговля участников/общие площадки C ещё впереди. [Проверки и ограничения P20/P21](docs/IMPLEMENTATION_REPORT_P20_P21.md).
 P22 добавляет необязательный Ollama HTTP transport и безопасный выбор готового плана. Модель выключена по умолчанию;Fake/остальные unit-тесты не заменяют реальный P23. [Отчёт P22](docs/IMPLEMENTATION_REPORT_P22.md), [локальное завершение P23](docs/LOCAL_MODEL_VALIDATION.md).
 
 ## Быстрый запуск без Python и Godot
@@ -17,7 +17,7 @@ dotnet tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll -noColor 
 dotnet run --project src/Research.Runner -c Release --no-build -- --script baseline --seed 42 --output artifacts/run-42
 ```
 
-618 xUnit-тестов прошли локально. Результат runner — статус/тик/хеш/путь в консоли и JSON/JSONL/CSV в `artifacts/run-42`: summary, деньги/товар/численности, agents/labor, decisions/commands/events/ledger, manifest и inspection final-state. Все игровые расчёты и политики на C#; Python только запускает проверки и читает результаты. [Параметры, значение прогона и файлы](docs/HEADLESS_TESTING.md).
+679 xUnit-тестов прошли локально. Результат runner — статус/тик/хеш/путь в консоли и JSON/JSONL/CSV в `artifacts/run-42`: summary, деньги/товар/численности, agents/labor, decisions/commands/events/ledger, manifest и inspection final-state. Все игровые расчёты и политики на C#; Python только запускает проверки и читает результаты. [Параметры, значение прогона и файлы](docs/HEADLESS_TESTING.md).
 
 `--mode headless` по умолчанию выполняет те же тики без ожидания реальных секунд; перевозка остаётся физической. `--mode paced` ждёт1 секунду/тик. Мир задаётся `--scenario`, политики — `--controllers`; начальные настройки лежат в scenarios/baseline-*.json (historical autonomous-*.json сохранены).
 

@@ -136,6 +136,7 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
             else session.Step();
         }
         session.SubmitPlaybackInputs(); // Preserve inputs submitted at the final published barrier.
+        if (travel) session.ApplyHeadingPlayback();
         return session;
     }
 }
