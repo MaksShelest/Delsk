@@ -44,7 +44,7 @@ public record ResourceNodeDefinition(string ItemId, Cell Position);
 public record ItemDefinition(string Id, long UnitVolume, long BasePriceMinor);
 public record RecipeDefinition(string Id, string InputItem, long InputQuantity, string OutputItem,
     long OutputQuantity, long FullStaffTicks, int RequiredStaff, int MinimumStaff, long EnergyPerBatchMinor);
-public record ParticipantDefinition(long Id, long CashMinor, Cell Position, long InventoryCapacity);
+public record ParticipantDefinition(long Id, long CashMinor, Cell Position, long InventoryCapacity, string PublicPreferenceItem = "");
 public record EnterpriseDefinition(long Id, long OwnerId, Cell Position, string RecipeId,
     long InputCapacity, long OutputCapacity, int Staff, int Capacity, long WageMinor, bool Enabled = false,
     string BuildingTypeId = "", int Level = 1, int WorkRateMultiplier = 1);
@@ -121,7 +121,7 @@ public record WorldView(long Tick, long NextId, ulong AllocationRandomState, str
 public record ParticipantObservation(long Tick, ParticipantView Participant, AccountView Account,
     InventoryView[] OwnInventories, EnterpriseView[] OwnEnterprises, CapitalOfferView[] CapitalOffers,
     PlotView[] Plots, BuildingView[] OwnBuildings, BuildingTypeDefinition[] BuildingTypes,
-    EmploymentView[] OwnEmploymentGroups, PublicEmploymentView[] LaborMarket, long Population, long Unemployed, EquipmentView[] OwnEquipment, EquipmentTypeDefinition[] EquipmentTypes, MarketOfferView[] MarketOffers, MarketBidView[] OwnMarketBids, MarketAllocationView[] OwnMarketAllocations, MarketSettings MarketRules, BuyOfferView[] BuyOffers, SupplyRequest[] OwnSupplyRequests, DeliveryContractView[] OwnDeliveryContracts, DeliverySettings DeliveryRules, LogisticsView[] OwnLogistics, LogisticsSettings LogisticsRules, System.Collections.Immutable.ImmutableArray<MarketPricePoint> CapitalPrices, System.Collections.Immutable.ImmutableArray<MarketPricePoint> CapitalPriceHistory, ElectionObservation Elections, SupportObservation Support);
+    EmploymentView[] OwnEmploymentGroups, PublicEmploymentView[] LaborMarket, long Population, long Unemployed, EquipmentView[] OwnEquipment, EquipmentTypeDefinition[] EquipmentTypes, MarketOfferView[] MarketOffers, MarketBidView[] OwnMarketBids, MarketAllocationView[] OwnMarketAllocations, MarketSettings MarketRules, BuyOfferView[] BuyOffers, SupplyRequest[] OwnSupplyRequests, DeliveryContractView[] OwnDeliveryContracts, DeliverySettings DeliveryRules, LogisticsView[] OwnLogistics, LogisticsSettings LogisticsRules, System.Collections.Immutable.ImmutableArray<MarketPricePoint> CapitalPrices, System.Collections.Immutable.ImmutableArray<MarketPricePoint> CapitalPriceHistory, ElectionObservation Elections, SupportObservation Support, CityEconomy City);
 
 public static class SimulationJson
 {

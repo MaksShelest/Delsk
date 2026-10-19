@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "id": "presentation-economy-v1",
+  "id": "presentation-economy-v2",
   "world": {
     "startingCashMinor": 20000,
     "personalInventoryCapacity": 20,
@@ -105,7 +105,7 @@
             "inputCapacity": 40,
             "outputCapacity": 40,
             "staffCapacity": 2,
-            "wageMinor": 25,
+            "wageMinor": 20,
             "workRateMultiplier": 1
           },
           {
@@ -121,7 +121,7 @@
             "inputCapacity": 80,
             "outputCapacity": 80,
             "staffCapacity": 4,
-            "wageMinor": 25,
+            "wageMinor": 20,
             "workRateMultiplier": 2
           }
         ]
@@ -149,7 +149,7 @@
             "inputCapacity": 40,
             "outputCapacity": 40,
             "staffCapacity": 2,
-            "wageMinor": 25,
+            "wageMinor": 20,
             "workRateMultiplier": 1
           },
           {
@@ -165,7 +165,7 @@
             "inputCapacity": 80,
             "outputCapacity": 80,
             "staffCapacity": 4,
-            "wageMinor": 25,
+            "wageMinor": 20,
             "workRateMultiplier": 2
           }
         ]
@@ -238,7 +238,7 @@
             "storageCapacity": 20,
             "minimumCrew": 2,
             "crewCapacity": 2,
-            "wageMinor": 25
+            "wageMinor": 20
           },
           {
             "level": 2,
@@ -248,7 +248,7 @@
             "storageCapacity": 40,
             "minimumCrew": 5,
             "crewCapacity": 5,
-            "wageMinor": 25
+            "wageMinor": 20
           }
         ]
       },
@@ -264,7 +264,7 @@
             "storageCapacity": 20,
             "minimumCrew": 2,
             "crewCapacity": 2,
-            "wageMinor": 25
+            "wageMinor": 20
           },
           {
             "level": 2,
@@ -274,7 +274,7 @@
             "storageCapacity": 40,
             "minimumCrew": 5,
             "crewCapacity": 5,
-            "wageMinor": 25
+            "wageMinor": 20
           }
         ]
       }
@@ -305,8 +305,19 @@
       "moveTicksPerCell": 1,
       "minimumCrew": 2,
       "crewCapacity": 2,
-      "wageMinor": 25,
-      "upgrade": null
+      "wageMinor": 20,
+      "upgrade": {
+        "priceMinor": 30000,
+        "materials": [
+          {
+            "itemId": "plank",
+            "quantity": 10
+          }
+        ],
+        "cargoCapacity": 20,
+        "minimumCrew": 3,
+        "crewCapacity": 3
+      }
     },
     "capitalDemand": {
       "terminal": {
@@ -334,7 +345,7 @@
       "sectionCapacity": 80
     },
     "rules": {
-      "playerWageStepMinor": 100,
+      "playerWageStepMinor": 5,
       "reservationFeeBasisPoints": 1000,
       "wageAttractionExponent": 3,
       "commonPriceMinimumBasisPoints": 9000,
@@ -344,13 +355,31 @@
       "noiseMinimumBasisPoints": 9800,
       "noiseMaximumBasisPoints": 10200,
       "demandWeightMinimumBasisPoints": 5000,
-      "demandWeightMaximumBasisPoints": 15000
+      "demandWeightMaximumBasisPoints": 15000,
+      "city": {
+        "confirmationTicks": 30,
+        "settlement": {
+          "capitalMinor": 150000,
+          "population": 25,
+          "activeProductions": 1
+        },
+        "smallTown": {
+          "capitalMinor": 400000,
+          "population": 40,
+          "activeProductions": 3
+        },
+        "developedTown": {
+          "capitalMinor": 1000000,
+          "population": 80,
+          "activeProductions": 6
+        }
+      }
     }
   },
   "npc": {
     "cashReserveMinor": 3000,
     "batchQuantity": 20,
-    "baseWageMinor": 25,
+    "baseWageMinor": 20,
     "maximumWageMinor": 50,
     "wageRaiseMinor": 1,
     "wageReviewTicks": 60,

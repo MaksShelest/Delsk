@@ -89,7 +89,8 @@
         "x": 1,
         "z": 5
       },
-      "inventoryCapacity": 20
+      "inventoryCapacity": 20,
+      "publicPreferenceItem": "wood"
     },
     {
       "id": 3,
@@ -98,7 +99,8 @@
         "x": 2,
         "z": 5
       },
-      "inventoryCapacity": 20
+      "inventoryCapacity": 20,
+      "publicPreferenceItem": "grain"
     },
     {
       "id": 4,
@@ -107,7 +109,8 @@
         "x": 3,
         "z": 5
       },
-      "inventoryCapacity": 20
+      "inventoryCapacity": 20,
+      "publicPreferenceItem": "wood"
     }
   ],
   "enterprises": [],
@@ -539,6 +542,18 @@
       },
       "priceMinor": 0,
       "isCorridor": true
+    },
+    {
+      "id": 40,
+      "position": {
+        "x": 12,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null,
+      "isShopSite": true
     }
   ],
   "buildingTypes": [

@@ -155,12 +155,13 @@ public class ControllerTests
         Assert.Equal(hash, s.ComputeControllerStateHash()); Assert.Equal(world, s.Engine.ComputeStateHash());
     }
     [Fact]
-    public void ChangingForeignCashDoesNotChangeObservation()
+    public void ChangingForeignCashRevealsOnlyTheAuthorisedCapitalTotal()
     {
         var d = Scenario();
         var other = d with { Participants = d.Participants.Select(p => p.Id == 3 ? p with { CashMinor = 99999 } : p).ToArray() };
         var a = new SimulationEngine(d).ObserveController(new(2)); var b = new SimulationEngine(other).ObserveController(new(2));
-        Assert.Equal(JsonSerializer.Serialize(a, SimulationJson.Options), JsonSerializer.Serialize(b, SimulationJson.Options));
+        Assert.Equal(JsonSerializer.Serialize(a with { City = null! }, SimulationJson.Options), JsonSerializer.Serialize(b with { City = null! }, SimulationJson.Options));
+        Assert.Equal(79999, b.City.Participants.Single(p=>p.Actor.Value==3).CapitalMinor-a.City.Participants.Single(p=>p.Actor.Value==3).CapitalMinor);
     }
     [Fact]
     public void ExcessPolicyBudgetIsRejectedBeforeEnqueueOrWorldMutation()

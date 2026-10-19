@@ -7,6 +7,18 @@ public sealed partial class AlgorithmicController
     private static bool ExpansionGoal(string goal) => goal is "BuildProduction" or "BuyExtraction" or "BuildShop" or "BuyLogistics";
     private static bool ObligationGoal(string goal) => goal is "DeliverContract" or "CollectPurchase" or "ConfigureContract" or
         "BuyInputs" or "SupplyProduction" or "ResumeProduction" or "AdjustWage" or "ClearCarrier";
+    private Candidate WageCandidate(ControllerObservation o, EmploymentView group, long wage, long score, string reason)
+    {
+        Cell location = group.Role switch
+        {
+            EmploymentRole.Production => Inventory(o,o.Enterprises.Single(e=>e.Id.Value==group.Id.Value).InputId).Position,
+            EmploymentRole.Extraction => o.Equipment.Single(e=>e.GroupId==group.Id).Position,
+            _ => Inventory(o,o.Enterprises.Single(e=>e.Id==o.OwnLogistics.Single(l=>l.GroupId==group.Id).EnterpriseId).InputId).Position
+        };
+        var steps=new List<PlanStep>(); Move(steps,o.Participant.Position,location);
+        steps.Add(new(new(ActionKind.SetWage,Group:group.Id,WageMinor:wage)));
+        return new("AdjustWage",reason,Distance(o.Map,o.Participant.Position,location)<0?0:score,steps.ToArray());
+    }
     private bool HasObligations(ControllerObservation o) => o.OwnDeliveryContracts.Any(c=>c.Supplier==Actor && c.ClosedTick is null && c.UnprovidedQuantity>0) ||
         o.OwnMarketAllocations.Any(c=>c.Buyer==Actor && c.RemainingQuantity>0) || o.OwnSupplyRequests.Length>0;
     private bool PlanRelevant(ControllerObservation o)

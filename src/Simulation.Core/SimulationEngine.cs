@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "research-economy-1";
+    public const string RulesVersion = "household-management-1";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -152,7 +152,7 @@ public sealed partial class SimulationEngine
             _phase = 6; CloseCapitalWindows(); AdvanceMarketWindows(); CloseBuyWindows(); AdvanceCapitalDemand();
             _phase = 7; ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders(); ExpireSupport();
             _phase = 8; AdvanceElections();
-            _phase = 9; ValidateInvariants(); Emit("TickCommitted");
+            _phase = 9; AdvanceCityStage(); ValidateInvariants(); Emit("TickCommitted");
         }
         finally { _stepping = false; }
     }
@@ -167,6 +167,10 @@ public sealed partial class SimulationEngine
         {
             if (c.Action.Quantity < 0) throw new RuleViolation("InvalidQuantity");
             ActorState actor = _actors[c.ActorId.Value];
+            var access = AccessFor(c.ActorId, c.Action);
+            // Existing local handlers retain their established privacy/busy/resource error order.
+            if (!access.Allowed && c.Action.Kind == ActionKind.SetWage)
+                throw new RuleViolation(access.ReasonCode);
             switch (c.Action.Kind)
             {
                 case ActionKind.MoveTo: StartMove(actor, c); break;
@@ -239,8 +243,7 @@ public sealed partial class SimulationEngine
         RequireIdle(actor);
         if (c.Action.Quantity <= 0) throw new RuleViolation("InvalidQuantity");
         if (c.Action.Equipment.Value != 0) { StartEquipmentHarvest(actor, c); return; }
-        if (!_config.ResourceNodes.Any(n => n.ItemId == c.Action.ItemId && n.Position == actor.Position))
-            throw new RuleViolation("NoResourceNode");
+        RequireActionLocation(actor, c.Action, "NoResourceNode");
         long end = checked(Tick + checked(c.Action.Quantity * _config.HarvestTicksPerUnit));
         string hold = $"harvest:{c.CommandId}";
         var tx = _economy.Begin(Tick);
@@ -257,9 +260,7 @@ public sealed partial class SimulationEngine
             throw new RuleViolation("NotAvailable");
         if (_logistics.Values.Any(l => l.Cargo == source.Id || l.Cargo == destination.Id))
             throw new RuleViolation("ManagedCargo");
-        if (source.Position != actor.Position || destination.Position != actor.Position ||
-            (source.Id != actor.Inventory && destination.Id != actor.Inventory))
-            throw new RuleViolation("NotAtLocation");
+        RequireActionLocation(actor, c.Action);
         var tx = _economy.Begin(Tick);
         tx.MoveStock(source.Id, destination.Id, c.Action.ItemId, c.Action.Quantity); tx.Commit();
         Emit("StockTransferred", actor.Id, destination.Id, c.Action.ItemId, c.Action.Quantity, command: c.CommandId);
@@ -356,7 +357,7 @@ public sealed partial class SimulationEngine
             view.MarketBids.Where(b => b.Buyer == actorId).ToArray(),
             view.MarketAllocations.Where(a => a.Buyer == actorId || a.Seller == actorId).ToArray(), Market, view.BuyOffers.Where(o => o.Status == "Open" || o.Buyer == actorId).ToArray(),
             view.SupplyRequests.Where(r => r.Supplier == actorId).ToArray(),
-            view.DeliveryContracts.Where(d => d.Supplier == actorId || d.Buyer == actorId).ToArray(), Delivery, view.Logistics.Where(l => l.OwnerId == actorId).ToArray(), Logistics, PublicCapitalPrices(false), PublicCapitalPrices(true), ObserveElections(actorId), ObserveSupport(actorId));
+            view.DeliveryContracts.Where(d => d.Supplier == actorId || d.Buyer == actorId).ToArray(), Delivery, view.Logistics.Where(l => l.OwnerId == actorId).ToArray(), Logistics, PublicCapitalPrices(false), PublicCapitalPrices(true), ObserveElections(actorId), ObserveSupport(actorId), PublicEconomy());
     }
     public string ComputeStateHash()
     {
@@ -367,7 +368,7 @@ public sealed partial class SimulationEngine
 
     private object StatePayload() => new
     {
-        World = Inspect(), Support = InspectSupport(), CommandRandom = _commandRandom.State, LaborRandom = _laborRandom.State, MarketRandom = _marketRandom.State,
+        World = Inspect(), CityStage = _cityStage, Support = InspectSupport(), CommandRandom = _commandRandom.State, LaborRandom = _laborRandom.State, MarketRandom = _marketRandom.State,
         MoneyHolds = _economy.Accounts.OrderBy(x => x.Key).Select(x => new { x.Key, Holds = x.Value.Holds.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray() }).ToArray(),
         InventoryHolds = _economy.Inventories.OrderBy(x => x.Key).Select(x => new { x.Key,
             Stock = x.Value.Reservations.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray(),

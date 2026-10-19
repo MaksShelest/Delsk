@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "Actual saved production, warehouse and equipment cards; remote wage uses Core reason",
+    "Local wage +0.05 queued while paused and executed by normal ticks",
+    "Same saved session rendered in RU/EN"
+  ],
+  "display": "X11",
+  "failures": [],
+  "window_size": "(1100, 720)"
+}

@@ -93,6 +93,9 @@ public sealed partial class AlgorithmicController
         foreach(var c in AuctionCandidates(o))yield return c;
         foreach(var p in SupportResponses(o))yield return p;
         foreach(var c in LogisticsCandidates(o).Where(c=>c.Steps.Length==1 && c.Steps[0].Action.Kind is ActionKind.QueueLogisticsJob or ActionKind.SetLogisticsEnabled))yield return c;
+    }
+    private IEnumerable<Candidate> WageCandidates(ControllerObservation o)
+    {
         if(o.Tick<_state.NextWageTick || o.Account.AvailableMinor<_state.Settings.CashReserveMinor)yield break;
         foreach(var group in o.EmploymentGroups.Where(g=>g.Ready && g.Headcount<g.Capacity))
         {
@@ -100,7 +103,7 @@ public sealed partial class AlgorithmicController
             long competitor=o.LaborMarket.Where(g=>g.OwnerId!=Actor && g.Headcount>0).Select(g=>g.WageMinor).DefaultIfEmpty(_state.Settings.BaseWageMinor).Max();
             long wage=Math.Min(_state.Settings.MaximumWageMinor,Math.Max(_state.Settings.BaseWageMinor,checked(competitor+_state.Settings.WageRaiseMinor)));
             if(wage>announced && o.Account.AvailableMinor>=checked(wage*group.Capacity*_state.Settings.WageReviewTicks))
-                yield return One("AdjustWage",group.Role.ToString(),250000,new(ActionKind.SetWage,Group:group.Id,WageMinor:wage));
+                yield return WageCandidate(o,group,wage,250000,group.Role.ToString());
         }
     }
     private IEnumerable<Candidate> AuctionCandidates(ControllerObservation o)

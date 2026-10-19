@@ -8,19 +8,9 @@ namespace Simulation.Hosting;
 /// </summary>
 public static class PlayerDesk
 {
-    public const long WageStepMinor = 100;
-    public static readonly ActionKind[] Allowed =
-    [
-        ActionKind.MoveTo, ActionKind.Harvest, ActionKind.StartHarvesting, ActionKind.StopHarvest, ActionKind.Transfer,
-        ActionKind.SetProductionEnabled, ActionKind.SetWage,
-        ActionKind.BuyLogistics, ActionKind.SetLogisticsEnabled,
-        ActionKind.SetLogisticsStorage, ActionKind.SetLogisticsInbound,
-        ActionKind.AcceptSupport, ActionKind.RejectSupport, ActionKind.SetVoteChoice,
-        ActionKind.ReservePlot, ActionKind.BuyPlot, ActionKind.Build,
-        ActionKind.SellAvailableToCapital, ActionKind.CancelCapitalSale,
-        ActionKind.CreateSellOffer, ActionKind.SubmitBuyRequest, ActionKind.RaiseBid, ActionKind.WithdrawBid, ActionKind.CollectPurchase,
-        ActionKind.CancelPlotReservation
-    ];
+    public const long WageStepMinor = 5;
+    // SetTravelHeading uses the existing authenticated travel-input path, not the command inbox.
+    public static readonly ActionKind[] Allowed = Enum.GetValues<ActionKind>().Where(k => k != ActionKind.SetTravelHeading).ToArray();
 
     public static GameAction Check(GameAction action)
     {
@@ -82,14 +72,16 @@ public static class PlayerDesk
         return new(seen.Tick, seen.Participant, seen.Account.BalanceMinor, seen.OwnInventories, seen.OwnEnterprises,
             seen.OwnBuildings, seen.OwnEmploymentGroups, seen.OwnLogistics, seen.LaborMarket, seen.Support, seen.Elections, seen.Plots,
             seen.CapitalOffers, seen.Account.AvailableMinor, engine.HarvestOf(actor), engine.EconomyRules,
-            new(seen.MarketOffers, seen.OwnMarketBids, seen.OwnMarketAllocations, seen.MarketRules, engine.PublicShops()));
+            new(seen.MarketOffers, seen.OwnMarketBids, seen.OwnMarketAllocations, seen.MarketRules, engine.PublicShops()),
+            seen.OwnEquipment, seen.OwnDeliveryContracts, seen.BuyOffers, seen.OwnSupplyRequests, seen.City);
     }
 }
 
 public record PlayerView(long Tick, ParticipantView Participant, long CashMinor, InventoryView[] Inventories,
     EnterpriseView[] Enterprises, BuildingView[] Buildings, EmploymentView[] Employment, LogisticsView[] Logistics,
     PublicEmploymentView[] LaborMarket, SupportObservation Support, ElectionObservation Elections, PlotView[] Plots,
-    CapitalOfferView[] CapitalOffers, long AvailableCashMinor, OwnHarvest? Harvest = null, EconomicRules? Economy = null, PlayerMarketView? Market = null);
+    CapitalOfferView[] CapitalOffers, long AvailableCashMinor, OwnHarvest? Harvest = null, EconomicRules? Economy = null, PlayerMarketView? Market = null, EquipmentView[]? Equipment = null, DeliveryContractView[]? Contracts = null,
+    BuyOfferView[]? BuyOffers = null, SupplyRequest[]? SupplyRequests = null, CityEconomy? City = null);
 
 public sealed record PlayerMarketView(MarketOfferView[] Offers, MarketBidView[] Bids, MarketAllocationView[] Allocations,
     MarketSettings Rules, PublicShop[] Shops);
@@ -107,6 +99,17 @@ public static class PlayerText
 
     private static Dictionary<string, string> Ru() => new(StringComparer.Ordinal)
     {
+        ["reason.ProductionNotSafe"] = "Остановите производство и дождитесь завершения начатой партии.",
+        ["reason.EquipmentNotSafe"] = "Остановите технику; начатого цикла быть не должно.",
+        ["reason.EquipmentBusy"] = "Техника занята; завершите текущую работу.",
+        ["reason.LogisticsNotSafe"] = "Выключите оба направления и дождитесь завершения рейса.",
+        ["reason.IncompleteCompensation"] = "Компенсация доставлена не полностью.",
+        ["reason.MaxLevel"] = "Достигнут максимальный уровень здания.",
+        ["reason.MaxEquipmentLevel"] = "Достигнут максимальный уровень техники.",
+        ["reason.RecipeLocked"] = "Этот рецепт ещё не открыт.",
+        ["reason.ContractClosed"] = "Договор уже закрыт или срок истёк.",
+        ["reason.NotAtResourceNode"] = "Подойдите к выбранной ресурсной точке.",
+        ["reason.NoBondMoney"] = "Недостаточно денег для залога.",
         ["title"] = "Delsk — партия",
         ["language"] = "EN",
         ["pause"] = "Пуск / пауза",
@@ -237,6 +240,17 @@ public static class PlayerText
 
     private static Dictionary<string, string> En() => new(StringComparer.Ordinal)
     {
+        ["reason.ProductionNotSafe"] = "Stop production and finish the batch in progress.",
+        ["reason.EquipmentNotSafe"] = "Stop equipment; no cycle may be in progress.",
+        ["reason.EquipmentBusy"] = "Equipment is busy; finish its current work.",
+        ["reason.LogisticsNotSafe"] = "Disable both directions and wait for the trip to finish.",
+        ["reason.IncompleteCompensation"] = "Compensation has not been delivered in full.",
+        ["reason.MaxLevel"] = "The building is at its maximum level.",
+        ["reason.MaxEquipmentLevel"] = "Equipment is at its maximum level.",
+        ["reason.RecipeLocked"] = "This recipe is not unlocked.",
+        ["reason.ContractClosed"] = "The contract is closed or its deadline has expired.",
+        ["reason.NotAtResourceNode"] = "Walk to the selected resource node.",
+        ["reason.NoBondMoney"] = "Not enough money for the collateral.",
         ["title"] = "Delsk — session",
         ["language"] = "RU",
         ["pause"] = "Run / pause",

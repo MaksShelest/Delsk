@@ -24,6 +24,7 @@ public static class ModelPrompt
             Inventories = o.Inventories.Take(6).Select(i => new { i.Id, i.Capacity, i.OccupiedVolume, i.ReservedCapacity, Stock = i.Stock.Take(8) }),
             Workforce = o.EmploymentGroups.Take(8).Select(g => new { g.Id, g.Role, g.Headcount, g.WageMinor, g.Capacity }),
             PublicWorkforce = o.LaborMarket.Take(16), Population = o.Population, o.Unemployed,
+            City = new { o.City.ValuationVersion, o.City.CapitalMinor, o.City.Stage, Participants = o.City.Participants.Take(16), o.City.Labor.EmployedRate, o.City.Labor.VacancyRate, Vacancies = o.City.Labor.Offers.Take(16) },
             Offers = o.CapitalOffers.Take(6), Market = o.MarketOffers.Take(4),
             CurrentPrices = o.CapitalPrices.Take(8), Recipes = o.Map.Recipes.Take(4),
             Contracts = o.OwnDeliveryContracts.Where(c => c.ClosedTick is null).Take(4),

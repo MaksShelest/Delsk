@@ -11,6 +11,7 @@ public class PlayerDeskTests
     {
         var left = new GameSession(new SimulationEngine(SupportTests.Scenario()));
         var right = new GameSession(new SimulationEngine(SupportTests.Scenario()));
+        LandContentFixtures.Move(left,new(10,0)); LandContentFixtures.Move(right,new(10,0));
         var group = left.Engine.Observe(new(1)).OwnEmploymentGroups.Single(g => g.Role == EmploymentRole.Production);
         long requested = group.WageMinor + PlayerDesk.WageStepMinor;
         Assert.Equal("Accepted", LandContentFixtures.Reason(left, PlayerDesk.Wage(group.Id.Value, requested)));
@@ -24,7 +25,7 @@ public class PlayerDeskTests
         long hidden = left.Engine.InspectSupport().Proposals.Single().Id;
         Assert.DoesNotContain(PlayerDesk.Read(left.Engine, new(1)).Support.Proposals, p => p.Id == hidden);
         Assert.Contains(PlayerDesk.Read(left.Engine, new(2)).Support.Proposals, p => p.Id == hidden && p.Seller == new ParticipantId(3));
-        Assert.Throws<ArgumentException>(() => PlayerDesk.Check(new(ActionKind.CreateBuyOffer)));
+        Assert.Equal(ActionKind.CreateBuyOffer,PlayerDesk.Check(new(ActionKind.CreateBuyOffer)).Kind);
     }
 
     [Fact]

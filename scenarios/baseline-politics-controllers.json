@@ -45,7 +45,8 @@
       "tradeEnabled": false,
       "logisticsEnabled": false,
       "politicsEnabled": true,
-      "politicalHorizonTicks": 120
+      "politicalHorizonTicks": 120,
+      "supportPricePerVoteMinor": 1500
     },
     {
       "actorId": 4,

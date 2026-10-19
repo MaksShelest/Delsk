@@ -25,9 +25,9 @@ public static partial class ScenarioValidation
             (!p.IsCorridor && (s.ResourceNodes.Any(n => n.Position == p.Position) ||
                 s.CapitalOffers.Any(o => o.Position == p.Position)))))
             throw new ArgumentException("Invalid plots or protected public cells");
-        if (plots.Any(p => p.IsShopSite) && (plots.Count(p => p.IsShopSite) != actors.Count ||
+        if (plots.Any(p => p.IsShopSite) && (plots.Count(p => p.IsShopSite) < actors.Count ||
             plots.Any(p => p.ShopParticipantId.HasValue) || plots.Where(p => p.IsShopSite && p.OwnerId.HasValue).GroupBy(p => p.OwnerId).Any(g => g.Count() > 1)))
-            throw new ArgumentException("Shared shop sites: exactly one per participant, no assignments or duplicate ownership");
+            throw new ArgumentException("Shared shop sites: at least one per participant, no assignments or duplicate ownership");
         var shopSlots = plots.Where(p => p.ShopParticipantId.HasValue).Select(p => p.ShopParticipantId);
         if (shopSlots.Distinct().Count() != shopSlots.Count()) throw new ArgumentException("Duplicate shop slot");
         if (s.Enterprises.Length > 0 && (plots.Length > 0 || buildings.Length > 0))

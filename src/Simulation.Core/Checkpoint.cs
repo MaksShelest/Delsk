@@ -33,11 +33,11 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
     long[] CompletedJobs, CommandEnvelope[] Commands, CommandResult[] Results, string[] Pending,
     LedgerRecord[] Ledger, SimulationEvent[] Events, ulong MarketRandom,
     SavedMarketOffer[] MarketOffers, MarketAllocationView[] MarketAllocations, SavedBuyOffer[] BuyOffers, DeliveryContractView[] DeliveryContracts, long CapitalCompensation, SavedLogistics[] Logistics, CapitalDemandView? CapitalDemand, ElectionStateView Elections, SupportResearchState Support,
-    int TravelQuantum = 0);
+    int TravelQuantum = 0, CityStageState? CityStage = null);
 
 public sealed partial class SimulationEngine
 {
-    public const int CheckpointSchemaVersion = 13;
+    public const int CheckpointSchemaVersion = 14;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
@@ -71,7 +71,7 @@ public sealed partial class SimulationEngine
                     r.Reservation, r.CommandId)).ToArray(), o.SupplyRequests.Values.OrderBy(r => r.Supplier.Value).ToArray(), o.Window)).ToArray(), world.Flows, world.Settlements,
             _completedPersonalJobs.Order().ToArray(), _seenCommands.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(),
             _results.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(), _pending.Select(c => c.CommandId).ToArray(),
-            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum);
+            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum, _cityStage);
         return JsonSerializer.Serialize(saved, SimulationJson.Options);
     }
     private static string MigrateTravel(string json)
@@ -120,7 +120,7 @@ public sealed partial class SimulationEngine
             var e = new SimulationEngine(s.Config); // Only validates/configures a fresh, unpublished instance.
             if (e.ConfigHash != s.ConfigHash) throw new CheckpointException("ConfigurationHashMismatch");
             e.RestoreWorld(s);
-            e.ValidateCheckpointState(); e.ValidateInvariants();
+            e.ValidateCheckpointState(); e.ValidateCityStage(); e.ValidateInvariants();
             if (e.ComputeStateHash() != s.StateHash) throw new CheckpointException("StateHashMismatch");
             return e;
         }
@@ -132,6 +132,9 @@ public sealed partial class SimulationEngine
 
     private void RestoreWorld(WorldCheckpoint s)
     {
+        if (s.CityStage is not { } stage || stage.Stage is < 0 or > 3 || stage.Candidate is < 0 or > 3 || stage.SinceTick < 0 || stage.SinceTick > s.Tick)
+            throw new CheckpointException("InvalidCityStage");
+        _cityStage = stage;
         Tick = s.Tick; _travelQuantum = s.TravelQuantum; _nextId = s.NextId; _eventSequence = s.EventSequence;
         _allocationRandom.RestoreState(s.AllocationRandom); _commandRandom.RestoreState(s.CommandRandom);
         _laborRandom.RestoreState(s.LaborRandom); _population = s.Population; _unemployed = s.Unemployed;

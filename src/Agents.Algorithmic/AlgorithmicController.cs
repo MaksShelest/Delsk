@@ -54,7 +54,7 @@ public sealed partial class AlgorithmicController
         if (!completed && o.Tick < _state.NextDecisionTick) return Wait("DecisionInterval");
         return Choose(o, DecisionCandidates(o));
     }
-    private Candidate[] DecisionCandidates(ControllerObservation o) => Candidates(o).Concat(ContractCandidates(o)).Concat(MarketCandidates(o))
+    private Candidate[] DecisionCandidates(ControllerObservation o) => Candidates(o).Concat(WageCandidates(o)).Concat(ContractCandidates(o)).Concat(MarketCandidates(o))
             .Concat(LogisticsCandidates(o)).Concat(PoliticalCandidates(o))
             .Where(c => Feasible(c,o) && (!HasObligations(o) || !ExpansionGoal(c.Goal)) &&
                 (o.OwnSupplyRequests.Length==0 || c.Goal is not ("SellCarried" or "SellOutput" or "HarvestForSale")))
@@ -130,7 +130,7 @@ public sealed partial class AlgorithmicController
             if (!recovery && announced != targetWage && o.Tick >= _state.NextWageTick &&
                 cash >= checked(targetWage * group.Capacity * settings.WageReviewTicks))
             {
-                yield return One("AdjustWage", recipe.Id, 100000, new(ActionKind.SetWage, Group: group.Id, WageMinor: targetWage));
+                yield return WageCandidate(o, group, targetWage, 100000, recipe.Id);
             }
             if (!recovery && Free(input, recipe.InputItem) < Math.Max(recipe.InputQuantity, settings.BatchQuantity / 2) && Need(o,recipe.InputItem)>0)
             {

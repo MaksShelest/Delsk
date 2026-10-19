@@ -46,6 +46,7 @@ public static class PlayContext
             choices.Add(new("card:" + building.Id.Value, PlayerText.Get(language, "context.card"), null));
         if (building?.Kind is BuildingKind.Warehouse or BuildingKind.Shop)
         {
+            if (tablets) choices.Insert(0,new("object:building:" + building.Id.Value,L(language,"Открыть карточку хранилища","Open storage card"),null));
             var storage = view.Inventories.Single(i => i.Id == building.InputId);
             foreach (var item in pack.Stock.Where(s => s.Quantity > s.Reserved).OrderBy(s => s.ItemId, StringComparer.Ordinal))
                 choices.Add(new("transfer:" + item.ItemId,
@@ -79,6 +80,9 @@ public static class PlayContext
             choices.Add(new("build:" + type.Id, L(language, "Построить: ", "Build: ") + PlayerText.Building(language, type.Id) + " — " + price,
                 PlayerDesk.Build(cell, type.Id), issues.Count == 0, string.Join("; ", issues)));
         }
+        if (tablets)
+            foreach (var machine in (view.Equipment ?? []).Where(e => e.Position == cell))
+                choices.Add(new("object:equipment:" + machine.Id.Value,L(language,"Открыть карточку техники","Open equipment card"),null));
         if (tablets && TabletState.IsCapital(scenario, cell))
         {
             choices.Add(new("exchange", L(language, "Открыть биржу", "Open exchange"), null));

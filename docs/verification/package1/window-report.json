@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "Actual display settings toggled fullscreen and windowed mode under X11",
+    "Main menu/catalog cancelled and new game started via actual buttons",
+    "Four global tabs rendered; pause preserved the displayed game clock"
+  ],
+  "display": "X11",
+  "failures": [],
+  "window_size": "(1100, 720)"
+}

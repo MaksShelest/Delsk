@@ -9,8 +9,7 @@ public sealed partial class SimulationEngine
         var a = _marketAllocations[index];
         if (a.ClosedTick is not null || Tick > a.DeadlineTick) throw new RuleViolation("PurchaseClosed");
         RequireIdle(actor);
-        if (_economy.Inventories[a.SourceInventory.Value].Position != actor.Position)
-            throw new RuleViolation("NotAtLocation");
+        RequireActionLocation(actor, c.Action);
         long quantity = c.Action.Quantity;
         if (quantity <= 0 || quantity > a.RemainingQuantity) throw new RuleViolation("InvalidQuantity");
         long collected = checked(a.CollectedQuantity + quantity), payment = checked(quantity * a.UnitPriceMinor);
