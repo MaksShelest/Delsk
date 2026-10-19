@@ -16,7 +16,9 @@ public partial class ParticipantMarketTablet : VBoxContainer
     private readonly Label _selected = new() { AutowrapMode = TextServer.AutowrapMode.WordSmart };
     private readonly Label _stock = new() { AutowrapMode = TextServer.AutowrapMode.WordSmart };
     private readonly Label _history = new() { AutowrapMode = TextServer.AutowrapMode.WordSmart };
-    private readonly SpinBox _quantity = new() { MinValue = 1, MaxValue = 1000000, Value = 1, Step = 1 };
+    private readonly QuantityInput _quantity=new();
+    private readonly OptionButton _source=new();
+    private string _sourcesKey="";
     private readonly SpinBox _price = new() { MinValue = .01, MaxValue = 1000000, Value = 1, Step = .01 };
     private readonly Button _buy;
     private readonly Button _raise;
@@ -40,8 +42,8 @@ public partial class ParticipantMarketTablet : VBoxContainer
     {
         _scenario = scenario; _language = language; _preferences = preferences; _shop = shop; _submit = submit;
         _item = scenario.Items[0].Id; _price.Value = scenario.Items[0].BasePriceMinor / 100d;
-        AddChild(new Label { Text = L("Продавец кладёт товар в свою лавку и публикует лот. Покупатель подаёт заявку; при дефиците идёт аукцион. Оплаченное нужно забрать в лавке продавца до срока — иначе штраф.",
-            "Sellers deposit stock in their shop, then publish a lot. Buyers request a quantity; shortages trigger an auction. Collect paid goods at the seller's shop before the deadline to avoid a fine."), AutowrapMode = TextServer.AutowrapMode.WordSmart });
+        AddChild(new Label { Text = L("Для торговли нужна своя лавка. Источник лота выбирается отдельно; место выдачи видно до заявки. При дефиците действует аукцион. Покупку нужно физически получить до срока.",
+            "Trading requires your own shop. Select a separate stock source; the pickup point is visible before bidding. Shortages trigger an auction. Physically collect purchases before the deadline."), AutowrapMode = TextServer.AutowrapMode.WordSmart });
         var filters = new HBoxContainer(); AddChild(filters);
         var items = new[] { "" }.Concat(scenario.Items.Select(i => i.Id)).ToArray();
         var filter = new OptionButton { FocusMode = FocusModeEnum.None };
@@ -62,10 +64,11 @@ public partial class ParticipantMarketTablet : VBoxContainer
             var offer = _view?.Market?.Offers.SingleOrDefault(o => o.Id == _offer);
             if (offer is not null) _submit(PlayerDesk.RaiseBid(_offer, offer.Round, Price)); });
         _withdraw = Action(actions, L("Отозвать заявку", "Withdraw request"), () => _submit(PlayerDesk.WithdrawBid(_offer, _view?.Market?.Offers.SingleOrDefault(o => o.Id == _offer)?.Round ?? 0)));
-        _quantity.ValueChanged += _ => UpdateActions(); _price.ValueChanged += _ => UpdateActions();
+        _quantity.Changed += _ => UpdateActions(); _price.ValueChanged += _ => UpdateActions();
         AddChild(_rows);
         AddChild(_seller);
-        _seller.AddChild(new Label { Text = L("Моя лавка: товар для продажи должен лежать здесь, а не в рюкзаке.", "My shop: sale stock must be here, not in your backpack.") });
+        _seller.AddChild(new Label { Text = L("Мой источник лота · свободный запас здания", "My lot source · free building stock") });
+        _seller.AddChild(_source);_source.ItemSelected+=_=>UpdateActions();
         var goods = new HBoxContainer(); _seller.AddChild(goods);
         var goodsList = new OptionButton { FocusMode = FocusModeEnum.None };
         foreach (var item in scenario.Items) goodsList.AddItem(PlayerText.Item(language, item.Id));
@@ -73,7 +76,7 @@ public partial class ParticipantMarketTablet : VBoxContainer
         goods.AddChild(goodsList);
         _deposit = Action(goods, L("Положить из рюкзака", "Deposit from backpack"), () => Transfer(true));
         _take = Action(goods, L("Забрать в рюкзак", "Take to backpack"), () => Transfer(false));
-        _publish = Action(goods, L("Опубликовать лот", "Publish lot"), () => _submit(PlayerDesk.PublishLot(_shop, _item, Quantity, Price)));
+        _publish = Action(goods, L("Опубликовать лот", "Publish lot"), () => _submit(PlayerDesk.PublishLot(_shop, _item, Quantity, Price,Source()?.Id.Value??0)));
         _seller.AddChild(_stock);
         AddChild(new Label { Text = L("Мои покупки: физическое получение", "My purchases: physical pickup") });
         AddChild(_pickups); AddChild(_history);
@@ -87,10 +90,11 @@ public partial class ParticipantMarketTablet : VBoxContainer
     private void Transfer(bool deposit)
     {
         var building = _view?.Buildings.SingleOrDefault(b => b.Id.Value == _shop);
-        if (building is null || _view is null) return;
-        _submit(PlayerDesk.Transfer(deposit ? _view.Participant.InventoryId.Value : building.InputId.Value,
-            deposit ? building.InputId.Value : _view.Participant.InventoryId.Value, _item, Quantity));
+        if (building is null || _view is null || Source() is not {} source) return;
+        _submit(PlayerDesk.Transfer(deposit ? _view.Participant.InventoryId.Value : source.Id.Value,
+            deposit ? source.Id.Value : _view.Participant.InventoryId.Value, _item, Quantity));
     }
+    private InventoryView? Source()=>_view is null||_source.ItemCount==0?null:_view.Inventories.Single(i=>i.Id.Value==_source.GetItemMetadata(_source.Selected).AsInt64());
     private long PickupQuantity(MarketAllocationView claim)
     {
         var pack = _view!.Inventories.Single(i => i.Id == _view.Participant.InventoryId);
@@ -146,7 +150,7 @@ public partial class ParticipantMarketTablet : VBoxContainer
                 L("забрать в течение ","collect within ") + Math.Max(0,claim.DeadlineTick-_view.Tick) + L(" с", " s") + (offer is null ? "" : $" · ({offer.Position.X},{offer.Position.Z})") });
             var collect = Action(row,L("Забрать", "Collect"),()=>Collect(claim.Id));
             _collectButtons.Add((claim.Id,collect));
-            collect.TooltipText = L("Подойдите к лавке продавца. Выдача ограничена выбранным количеством и местом в рюкзаке.","Visit the seller's shop. Pickup is limited by the selected quantity and backpack capacity.");
+            collect.TooltipText = L("Подойдите к точке выдачи лота. Выдача ограничена выбранным количеством и местом в рюкзаке.","Visit the lot pickup point. Pickup is limited by the selected quantity and backpack capacity.");
         }
         _history.Text = L("Результаты: ","Results: ") + string.Join("; ",market.Allocations.TakeLast(8).Select(a => $"#{a.Id} " + ClaimStatus(a.Status) + " · " + L("выдано ","collected ") + a.CollectedQuantity + L(" · штраф "," · fine ") + PlayerText.Money(a.FineMinor)));
         UpdateActions();
@@ -167,23 +171,26 @@ public partial class ParticipantMarketTablet : VBoxContainer
         _selected.Text = offer is null ? L("Выберите лот; затем укажите количество и максимальную цену за 1.","Select a lot, then enter quantity and maximum unit price.") :
             $"#{offer.Id} · " + PlayerText.Item(_language,offer.ItemId) + (bid is null ? "" : L(" · моя ставка "," · my bid ") + PlayerText.Money(bid.CurrentPriceMinor) + L(" · мой лимит "," · my limit ") + PlayerText.Money(bid.MaximumPriceMinor));
         bool unavailable = _pending || offer is null || offer.Seller == _view.Participant.Id || offer.Status == MarketOfferStatus.Closed;
-        _buy.Disabled = unavailable || offer?.Status != MarketOfferStatus.Collecting || Price < offer?.BasePriceMinor || (Int128)Quantity * (offer?.BasePriceMinor ?? 0) > _view.AvailableCashMinor + (bid is null ? 0 : (Int128)bid.Quantity*bid.CurrentPriceMinor);
-        _raise.Disabled = unavailable || offer?.Status != MarketOfferStatus.Auction || bid is null || Price > bid.MaximumPriceMinor || Price-bid.CurrentPriceMinor < market.Rules.MinimumRaiseMinor;
+        _buy.Disabled = !_view.TradingParticipants.Contains(_view.Participant.Id) || unavailable || offer?.Status != MarketOfferStatus.Collecting || Price < offer?.BasePriceMinor || (Int128)Quantity * (offer?.BasePriceMinor ?? 0) > _view.AvailableCashMinor + (bid is null ? 0 : (Int128)bid.Quantity*bid.CurrentPriceMinor);
+        _raise.Disabled = !_view.TradingParticipants.Contains(_view.Participant.Id) || unavailable || offer?.Status != MarketOfferStatus.Auction || bid is null || Price > bid.MaximumPriceMinor || Price-bid.CurrentPriceMinor < market.Rules.MinimumRaiseMinor;
         _withdraw.Disabled = unavailable || bid is null;
         foreach (var row in _collectButtons)
         {
             var claim = market.Allocations.Single(a => a.Id == row.Id);
             var source = market.Offers.SingleOrDefault(o => o.Id == claim.OfferId);
-            row.Button.Disabled = _pending || _view.Participant.Busy || PickupQuantity(claim) <= 0 || source?.Position != _view.Participant.Position;
+            row.Button.Disabled = _pending || _view.Participant.Busy || PickupQuantity(claim) <= 0 || _view.PurchaseGuides.SingleOrDefault(g=>g.PurchaseId==claim.Id)?.Position != _view.Participant.Position;
         }
         var shop = _view.Buildings.SingleOrDefault(b => b.Id.Value == _shop && b.Kind == BuildingKind.Shop);
         _seller.Visible = shop is not null;
         if (shop is null) return;
-        var storage = _view.Inventories.Single(i => i.Id == shop.InputId);
+        var sources=_view.Inventories.Where(i=>_view.Buildings.Any(b=>b.InputId==i.Id||b.OutputId==i.Id)).ToArray();
+        string sourcesKey=string.Join(',',sources.Select(i=>i.Id.Value));
+        if(sourcesKey!=_sourcesKey){_sourcesKey=sourcesKey;_source.Clear();foreach(var i in sources){_source.AddItem("#"+i.Id.Value+$" ({i.Position.X},{i.Position.Z})");_source.SetItemMetadata(_source.ItemCount-1,i.Id.Value);}}
+        var storage=Source()!;
         var pack = _view.Inventories.Single(i => i.Id == _view.Participant.InventoryId);
         long Free(InventoryView i) => i.Stock.Where(s=>s.ItemId==_item).Sum(s=>s.Quantity-s.Reserved);
         long volume = _scenario.Items.Single(i=>i.Id==_item).UnitVolume;
-        _stock.Text = PlayerText.Item(_language,_item) + L(" · свободно в лавке "," · free shop stock ") + Free(storage) + L(" · в рюкзаке "," · backpack ") + Free(pack);
+        _stock.Text = PlayerText.Item(_language,_item) + L(" · свободно в источнике "," · free source stock ") + Free(storage) + L(" · в рюкзаке "," · backpack ") + Free(pack);
         _publish.Disabled = _pending || Free(storage)<Quantity;
         _deposit.Disabled = _pending || _view.Participant.Busy || Free(pack)<Quantity || (Int128)Quantity*volume > storage.Capacity-storage.OccupiedVolume-storage.ReservedCapacity;
         _take.Disabled = _pending || _view.Participant.Busy || Free(storage)<Quantity || (Int128)Quantity*volume > pack.Capacity-pack.OccupiedVolume-pack.ReservedCapacity;

@@ -13,6 +13,7 @@ parser.add_argument('--elections-directory', type=Path, help='Verified 40-tick P
 parser.add_argument('--support-directory', type=Path, help='Verified 120-tick P20 runner output')
 parser.add_argument('--stopped-directory', type=Path, help='Verified stopped-voting runner output')
 parser.add_argument('--physical-directory', type=Path, help='Verified physical-automation runner output')
+parser.add_argument('--trade-directory',type=Path,help='Verified participant-trade runner output')
 args = parser.parse_args()
 summary = json.loads((args.run_directory / 'summary.json').read_text())
 if summary['status'] != 'succeeded' or summary['tick'] != 62:
@@ -84,3 +85,16 @@ if args.support_directory:
         writer = csv.writer(target, lineterminator='\n')
         writer.writerow(['tick','state_hash'])
         writer.writerows((r['tick'], r['state_hash']) for r in rows)
+
+if args.trade_directory:
+    directory=args.trade_directory
+    summary=json.loads((directory/'summary.json').read_text())
+    talks=json.loads((directory/'negotiations.json').read_text())
+    if summary['status']!='succeeded' or summary['tick']!=220 or len(talks)!=3 or any(n['status']!='Accepted' for n in talks):
+        parser.error('Expected fully agreed and settled participant-trade fixture')
+    with (directory/'metrics.csv').open(newline='') as source:rows=list(csv.DictReader(source))
+    if [int(r['tick'])for r in rows]!=list(range(1,221)) or rows[-1]['state_hash']!=summary['stateHash']:
+        parser.error('Missing trade checkpoint hashes')
+    (root/'scenarios/platform-trade.commands.jsonl').write_bytes((directory/'commands.jsonl').read_bytes())
+    with (root/'scenarios/platform-trade.checkpoints.csv').open('w',newline='')as target:
+        writer=csv.writer(target,lineterminator='\n');writer.writerow(['tick','state_hash']);writer.writerows((r['tick'],r['state_hash'])for r in rows)

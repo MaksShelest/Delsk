@@ -1,0 +1,6 @@
+{
+  "checks": [
+    "Version2 reviewed, quantity slider/plus/exact synchronized; actual counter command creates version3 and prevents own acceptance"
+  ],
+  "failures": []
+}

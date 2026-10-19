@@ -1,0 +1,63 @@
+{
+  "Status": "passed",
+  "Failure": null,
+  "Tick": 62,
+  "StateHash": "c04fc72a5364c0768efc24ec04a6ce05fdd6bf706e156455a3a87b8afe84ec57",
+  "CheckedTicks": 62,
+  "LifecycleAdapterChecked": true,
+  "CheckpointRestoreChecked": true,
+  "RestoredTicks": [
+    12,
+    34,
+    55,
+    60
+  ],
+  "ElectionCheckedTicks": 40,
+  "ElectionStateHash": "065bd82bef157fae55859bb3d97e30b0132c5e6963726d90e9e65d2d4968ead6",
+  "ElectionRestoredTicks": [
+    9,
+    19,
+    20,
+    21
+  ],
+  "SupportCheckedTicks": 120,
+  "SupportStateHash": "c87f442872cb99fc140fce909dc9db409546fcbe554bb151ce399e2f6ab88ae5",
+  "SupportRestoredTicks": [
+    17,
+    18,
+    19,
+    27,
+    99,
+    100
+  ],
+  "StoppedVotingFinalHash": "705bae40823ce350f452c02812790c6147bb7fa25f9fd486f1970e68d075fd58",
+  "StoppedVotingRestoredTicks": [
+    3,
+    6
+  ],
+  "PhysicalCheckedTicks": 81,
+  "PhysicalStateHash": "542aad02da6702104c7bc182f62926f808ed49f5b543be53d1b37c19dd5c3d4e",
+  "PhysicalRestoredTicks": [
+    14,
+    18,
+    25,
+    33,
+    42,
+    76
+  ],
+  "TradeCheckedTicks": 220,
+  "TradeStateHash": "66c511b6d656d910943cb3f28ef6f810040ae4cd8e62c24e4973cbda582f1411",
+  "TradeRestoredTicks": [
+    32,
+    33,
+    34,
+    35,
+    38,
+    51,
+    69
+  ],
+  "Runtime": "10.0.12",
+  "Platform": "Linux",
+  "GodotVersion": "4.7.2-stable (official)",
+  "Author": "\u0428\u0435\u043B\u0435\u0441\u0442\u043E\u0432 \u041C\u0430\u043A\u0441\u0438\u043C \u0415\u0432\u0433\u0435\u043D\u044C\u0435\u0432\u0438\u0447"
+}

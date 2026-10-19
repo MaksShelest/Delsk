@@ -42,4 +42,9 @@
   </ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/presentation-map-one-v2.json" LogicalName="Play.presentation-map-one-v2.json" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/presentation-map-two-v2.json" LogicalName="Play.presentation-map-two-v2.json" /></ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../../scenarios/participant-trade.json" LogicalName="Fixture.trade.json" />
+    <EmbeddedResource Include="../../scenarios/platform-trade.commands.jsonl" LogicalName="Fixture.trade.commands.jsonl" />
+    <EmbeddedResource Include="../../scenarios/platform-trade.checkpoints.csv" LogicalName="Fixture.trade.checkpoints.csv" />
+  </ItemGroup>
 </Project>

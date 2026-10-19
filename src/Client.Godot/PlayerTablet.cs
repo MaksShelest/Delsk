@@ -16,6 +16,8 @@ public partial class PlayerTablet : VBoxContainer
     private readonly Label _city = Wrapped();
     private readonly Label _labor = Wrapped();
     private readonly CurrentDealsPanel _deals;
+    private readonly TradeNegotiationPanel _negotiations;
+    private readonly PurchaseGuidePanel _pickups;
     private readonly EquipmentPurchasePanel _purchases;
     private readonly Label _empty = Wrapped();
     private readonly Button _navigate = new() { FocusMode = FocusModeEnum.None };
@@ -42,7 +44,8 @@ public partial class PlayerTablet : VBoxContainer
         _purchases = new(scenario, language, submit, access); farm.AddChild(_purchases);
         Tab(L("Участники", "Participants")).AddChild(_participants);
         var deals = Tab(L("Переговоры", "Negotiations"));
-        deals.AddChild(new Label { Text = L("Действующие предложения и договоры. Встречные предложения пока недоступны.", "Current offers and agreements. Counteroffers are not available yet."), AutowrapMode = TextServer.AutowrapMode.WordSmart });
+        _negotiations=new(scenario,language,submit);deals.AddChild(_negotiations);
+        _pickups=new(scenario,language,submit);deals.AddChild(_pickups);
         _deals = new(scenario, language, submit, access); deals.AddChild(_deals);
         var city = Tab(L("Город", "City")); city.AddChild(_city); city.AddChild(new HSeparator()); city.AddChild(_labor);
     }
@@ -72,6 +75,7 @@ public partial class PlayerTablet : VBoxContainer
         }
         _empty.Visible = entries.Length == 0; _objects.Visible = _cardHost.Visible = _navigate.Visible = entries.Length > 0;
         _navigate.Disabled = pending || entries.Length == 0 || view.Participant.Busy;
+        _negotiations.ShowData(view,pending);_pickups.ShowData(view,pending);
         _card?.ShowData(view, pending, paused); _deals.ShowData(view, pending); _purchases.ShowData(view, pending);
         var city = view.City!;
         _participants.Text = L("Рейтинг по капиталу · фиксированная справочная оценка", "Capital ranking · fixed reference valuation") + "\n\n" +
