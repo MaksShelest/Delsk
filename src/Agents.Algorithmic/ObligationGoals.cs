@@ -26,7 +26,7 @@ public sealed partial class AlgorithmicController
             if(automatic)continue;
             long carried=Free(carrier,c.ItemId);
             long stock=o.Inventories.Where(i=>i.Id!=carrier.Id).Select(i=>Free(i,c.ItemId)).DefaultIfEmpty(0).Max();
-            long obtainable=o.Map.ResourceNodes.Any(n=>n.ItemId==c.ItemId)?long.MaxValue:checked(carried+stock);
+            long obtainable=o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)).Any(n=>n.ItemId==c.ItemId)?long.MaxValue:checked(carried+stock);
             long q=Math.Min(obtainable,Math.Min(c.UnprovidedQuantity,Math.Min(_state.Settings.BatchQuantity,checked(carried+volume/Volume(o,c.ItemId)))));
             if(q<=0)continue;
             var steps=new List<PlanStep>();Cell position=o.Participant.Position;
@@ -65,7 +65,7 @@ public sealed partial class AlgorithmicController
             foreach(var offer in o.BuyOffers.Where(b=>b.Buyer!=Actor && b.Status=="Open" && b.RemainingQuantity>0 && b.CreatedTick<=o.Tick && b.ExpiresAtTick>o.Tick))
             {
                 long available=o.Inventories.Sum(i=>Free(i,offer.ItemId));
-                bool raw=o.Map.ResourceNodes.Any(n=>n.ItemId==offer.ItemId);
+                bool raw=o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)).Any(n=>n.ItemId==offer.ItemId);
                 long q=Math.Min(offer.RemainingQuantity,Math.Min(_state.Settings.BatchQuantity,Math.Min(checked(Free(carrier,offer.ItemId)+volume/Volume(o,offer.ItemId)),raw?long.MaxValue:available)));
                 if(q<=0 || offer.UnitPriceMinor<BasePrice(o,offer.ItemId))continue;
                 long bond=checked((long)((Int128)q*offer.UnitPriceMinor*o.DeliveryRules.FineBasisPoints/10000));if(bond>o.Account.AvailableMinor)continue;

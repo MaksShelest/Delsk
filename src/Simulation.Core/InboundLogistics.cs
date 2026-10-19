@@ -33,23 +33,4 @@ public sealed partial class SimulationEngine
         long leg = Math.Max(1, checked((path.Length - 1L) * Logistics.MoveTicksPerCell));
         return new(-1, item, path, quantity, leg, origin, e.Input, origin);
     }
-    private void AcceptInboundArrival(LogisticsState l, LogisticsTripView t)
-    {
-        if (t.State == "Arrived")
-        {
-            var tx = _economy.Begin(Tick); tx.ConsumeReserved(t.InboundSource.Value, t.StockHold, t.Quantity);
-            tx.AddStock(l.Cargo, t.ItemId, t.Quantity); tx.ReserveStock(l.Cargo, t.CargoHold, t.ItemId, t.Quantity);
-            tx.ReserveCapacity(t.InboundSource.Value, t.ReturnHold, t.ItemId, t.Quantity); tx.Commit();
-            l.Trip = t with { State = "ReturningInput", Path = t.Path.Reverse().ToImmutableArray(), PathIndex = 0, SegmentTicks = 0 };
-            l.Reason = "ReturningInput";
-            Emit("LogisticsInputLoaded", l.Owner, t.Id, t.ItemId, t.Quantity);
-        }
-        else if (t.State == "Finishing")
-        {
-            var tx = _economy.Begin(Tick); tx.ConsumeReserved(l.Cargo, t.CargoHold, t.Quantity);
-            tx.ReceiveReservedCapacity(t.OwnDestination.Value, t.DestinationHold, t.ItemId, t.Quantity);
-            tx.ReleaseCapacity(t.InboundSource.Value, t.ReturnHold); tx.Commit();
-            Emit("LogisticsInputReceived", l.Owner, t.Id, t.ItemId, t.Quantity);
-        }
-    }
 }

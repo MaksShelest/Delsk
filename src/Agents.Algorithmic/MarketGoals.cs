@@ -40,7 +40,7 @@ public sealed partial class AlgorithmicController
             long budget=Math.Max(0,o.Account.AvailableMinor-_state.Settings.CashReserveMinor);
             long q=Math.Min(need,Math.Min(offer.Quantity,Math.Min(budget/Math.Max(1,limit),volume/Volume(o,offer.ItemId))));
             if(q<=0 || o.OwnMarketBids.Any(b=>b.OfferId==offer.Id) || offer.BasePriceMinor>limit || !Reachable(o,offer.Position))continue;
-            var node=o.Map.ResourceNodes.Where(n=>n.ItemId==offer.ItemId && Reachable(o,n.Position)).OrderBy(n=>Distance(o.Map,o.Participant.Position,n.Position)).FirstOrDefault();
+            var node=o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)).Where(n=>n.ItemId==offer.ItemId && Reachable(o,n.Position)).OrderBy(n=>Distance(o.Map,o.Participant.Position,n.Position)).FirstOrDefault();
             long mining=node is null?long.MaxValue:checked((long)Distance(o.Map,o.Participant.Position,node.Position)*o.Map.MoveTicksPerCell+q*o.Map.HarvestTicksPerUnit);
             long buying=checked((long)Distance(o.Map,o.Participant.Position,offer.Position)*o.Map.MoveTicksPerCell+o.Map.TradeWindowTicks+2);
             if(mining<=buying && offer.BasePriceMinor>=BasePrice(o,offer.ItemId))continue;
@@ -68,7 +68,7 @@ public sealed partial class AlgorithmicController
                 yield return One("PublishSellOffer",item.ItemId,160000,new(ActionKind.CreateSellOffer,Building:shop.Id,ItemId:item.ItemId,Quantity:q,UnitPriceMinor:Math.Max(1,price)));
             }
             if(o.MarketOffers.Any(m=>m.Seller==Actor && m.Shop==shop.Id && m.Status!=MarketOfferStatus.Closed))continue;
-            foreach(var node in o.Map.ResourceNodes.Where(n=>o.BuyOffers.Any(b=>b.Buyer!=Actor && b.Status=="Open" && b.ItemId==n.ItemId)))
+            foreach(var node in o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)).Where(n=>o.BuyOffers.Any(b=>b.Buyer!=Actor && b.Status=="Open" && b.ItemId==n.ItemId)))
             {
                 if(Free(stock,node.ItemId)>0 || carrier.Stock.Any(x=>x.Quantity>0))continue;
                 long q=Math.Min(_state.Settings.MarketLotQuantity,Math.Min(volume,FreeVolume(stock))/Volume(o,node.ItemId));

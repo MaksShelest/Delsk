@@ -30,7 +30,7 @@ public static class Presentation
                 travel.OffsetX, travel.OffsetZ, travel.FacingX, travel.FacingZ);
         }).ToArray();
         var markers = new List<PresentationMarker>();
-        var blocked = new HashSet<Cell>(scenario.BlockedCells);
+        var blocked = new HashSet<Cell>(engine.BlockedCells());
         for (int x = 0; x < scenario.MapWidth; x++)
             for (int z = 0; z < scenario.MapHeight; z++)
                 if (blocked.Contains(new(x, z)))
@@ -46,7 +46,7 @@ public static class Presentation
             markers.Add(new(kind, plot.Position.X, plot.Position.Z, "", plot.Id.Value, plot.OwnerId?.Value ?? 0));
         }
         foreach (var node in scenario.ResourceNodes)
-            markers.Add(new("resource", node.Position.X, node.Position.Z, node.ItemId, 0, 0));
+            markers.Add(new(engine.ResourceSites().Single(r=>r.Position==node.Position && r.ItemId==node.ItemId).Stock==0 ? "resource-depleted" : "resource", node.Position.X, node.Position.Z, node.ItemId, 0, 0));
         foreach (var building in world.Buildings.OrderBy(b => b.Id.Value))
             markers.Add(new(building.Kind.ToString().ToLowerInvariant(), building.Position.X, building.Position.Z,
                 building.TypeId, building.Id.Value, building.OwnerId.Value));
@@ -71,7 +71,7 @@ public static class Presentation
             markers.Add(new("truck-home", home.X, home.Z, "", logistics.Id.Value, logistics.OwnerId.Value));
         }
         var trips = world.Logistics.Where(l => l.Trip is not null).OrderBy(l => l.Id.Value).Select(l =>
-            new PresentationTrip(l.Id.Value, l.OwnerId.Value, l.Trip!.ItemId, l.Trip.State, l.Trip.Position.X, l.Trip.Position.Z, l.Trip.State is "Outbound" or "ReturningCargo" or "ReturningInput")).ToArray();
+            new PresentationTrip(l.Id.Value, l.OwnerId.Value, l.Trip!.ItemId, l.Trip.State, l.Trip.Position.X, l.Trip.Position.Z, world.Inventories.Single(i=>i.Id==l.CargoInventory).Stock.Any(s=>s.Quantity>0))).ToArray();
         return new(world.Tick, scenario.MapWidth, scenario.MapHeight, actors, markers.ToArray(), trips);
     }
 }

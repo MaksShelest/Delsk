@@ -30,4 +30,8 @@
   <ItemGroup><EmbeddedResource Include="../../scenarios/baseline-*.json" LogicalName="Fixture.%(Filename)%(Extension)" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/presentation-map-two.json" LogicalName="Fixture.presentation-map-two.json" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../config/economy.json" LogicalName="Fixture.economy.json" /></ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/presentation-map-three.json" LogicalName="Fixture.presentation-map-three.json" /></ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/physical-automation.json" LogicalName="Fixture.physical-automation.json" /></ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/presentation-map-one-v2.json" LogicalName="Fixture.presentation-map-one-v2.json" /></ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/presentation-map-two-v2.json" LogicalName="Fixture.presentation-map-two-v2.json" /></ItemGroup>
 </Project>

@@ -43,7 +43,7 @@ public sealed partial class SimulationEngine
         if (l.Enabled || l.InboundEnabled || l.Trip is not null) throw new RuleViolation("LogisticsNotSafe");
         var upgrade = Logistics.Upgrade;
         if (l.Level != 1 || upgrade is null) throw new RuleViolation("MaxLogisticsLevel");
-        long maximumTicks = Math.Max(2L, 2L * (_config.MapWidth * _config.MapHeight - 1) * Logistics.MoveTicksPerCell);
+        long maximumTicks = MaximumFreightTicks(_config,upgrade.CargoCapacity,2);
         _ = checked(upgrade.CrewCapacity * l.Group.Wage * maximumTicks);
         if (l.Group.PendingWage is { } pending) _ = checked(upgrade.CrewCapacity * pending * maximumTicks);
         var materials = upgrade.Materials.ToArray();
@@ -129,143 +129,15 @@ public sealed partial class SimulationEngine
     {
         if (l.Trip is not null) return 0;
         var plan = LogisticsPlan(l);
-        return checked(l.Group.Capacity * (l.Group.PendingWage ?? l.Group.Wage) * checked(2 * plan.LegTicks));
+        return FreightCost(l,plan);
     }
     private void AdvanceLogisticsWork(LogisticsState l)
-    {
-        if (l.Trip is { } trip)
-        {
-            if (Tick <= trip.LoadTick) return;
-            long wages = checked(l.Group.Headcount * trip.CommittedWageMinor);
-            long paid = checked(trip.WagesPaidMinor + wages); var tx = _economy.Begin(Tick);
-            if (wages > 0) tx.Pay(_actors[l.Owner].Account, _wages, wages, "LogisticsWages", trip.WageHold);
-            if (trip.State == "Finishing" && paid < trip.WageBudgetMinor) tx.ReleaseMoney(_actors[l.Owner].Account, trip.WageHold);
-            tx.Commit();
-            if (wages > 0) Emit("LogisticsWagesPaid", l.Owner, trip.Id, money: wages);
-            if (trip.State == "Finishing")
-            {
-                l.Trip = null; ++l.Completed; l.Reason = "Ready";
-                Emit("LogisticsTripCompleted", l.Owner, trip.Id, trip.ItemId, trip.Quantity, paid);
-            }
-            else l.Trip = trip with { WagesPaidMinor = paid };
-            return;
-        }
-        string reason = LogisticsVacancyReason(l);
-        if (reason != "Ready") { l.Reason = reason; return; }
-        if (l.Group.Headcount < l.MinimumCrew) { l.Reason = "NoStaff"; return; }
-        try
-        {
-            var plan = LogisticsPlan(l); long id = _nextId, next = checked(id + 1);
-            var d = plan.Index >= 0 ? _deliveryContracts[plan.Index] : null;
-            long load = checked(Tick + 1), arrival = checked(load + plan.LegTicks), end = checked(arrival + plan.LegTicks);
-            long budget = checked(l.Group.Capacity * l.Group.Wage * checked(2 * plan.LegTicks));
-            long? deferredPay = l.Group.PayEffectiveTick is { } pay && pay <= end ? checked(end + 1) : null;
-            long? deferredAttraction = deferredPay.HasValue ? Math.Max(l.Group.AttractionEffectiveTick!.Value, deferredPay.Value) : null;
-            var preparedTrip = new LogisticsTripView(id, d?.Id ?? 0, plan.ItemId, plan.Quantity, "Loading", Tick, load, arrival, end,
-                plan.Path[0], [.. plan.Path], 0, 0, l.Group.Wage, budget, 0,
-                $"logistics-stock:{id}", $"logistics-return:{id}", $"logistics-wage:{id}", new(plan.OwnDestination), new(plan.InboundSource), plan.JobKey);
-            var updated = d is null ? null : d with { PreparedQuantity = checked(d.PreparedQuantity + plan.Quantity) };
-            var tx = _economy.Begin(Tick); tx.ReserveStock(plan.GoodsSource, preparedTrip.StockHold, plan.ItemId, plan.Quantity);
-            if (plan.OwnDestination != 0) tx.ReserveCapacity(plan.OwnDestination, preparedTrip.DestinationHold, plan.ItemId, plan.Quantity);
-            tx.HoldMoney(_actors[l.Owner].Account, preparedTrip.WageHold, budget); tx.Commit();
-            _nextId = next; if (updated is not null) _deliveryContracts[plan.Index] = updated;
-            // A wage command can precede preparation in this same tick (phase1 -> phase4).
-            // Its previously scheduled next-tick pay must not change a committed trip.
-            if (deferredPay.HasValue)
-            {
-                l.Group.PayEffectiveTick = deferredPay;
-                l.Group.AttractionEffectiveTick = deferredAttraction;
-                Emit("LogisticsWageDeferred", l.Owner, l.Id, money: l.Group.PendingWage!.Value);
-            }
-            l.DispatchCount = checked(l.DispatchCount + 1);
-            int jobIndex = l.Queue.FindIndex(j => j.Key == plan.JobKey);
-            l.Queue[jobIndex] = l.Queue[jobIndex] with { LastServed = l.DispatchCount };
-            l.Trip = preparedTrip; l.Reason = "Loading";
-            Emit("LogisticsJobDispatched", l.Owner, id, reason: plan.JobKey);
-            Emit("LogisticsTripPrepared", l.Owner, id, plan.ItemId, plan.Quantity, budget);
-        }
-        catch (RuleViolation ex) { l.Reason = ex.ReasonCode; }
-    }
+    { if(l.Trip is null) PrepareFreight(l); else PayFreightWork(l); }
     private void AdvanceLogisticsMovements()
-    {
-        foreach (var l in _logistics.Values.OrderBy(l => l.Id))
-        {
-            if (l.Trip is not { } t) continue;
-            if (t.State == "Loading")
-            {
-                if (t.InboundSource.Value != 0)
-                {
-                    l.Trip = t with { State = "FetchingEmpty" }; l.Reason = "FetchingEmpty";
-                    Emit("LogisticsInputDeparted", l.Owner, t.Id, t.ItemId, t.Quantity); continue;
-                }
-                int index = _deliveryContracts.FindIndex(d => d.Id == t.ContractId);
-                var d = index >= 0 ? _deliveryContracts[index] : null;
-                var next = d is null ? null : d with { PreparedQuantity = checked(d.PreparedQuantity - t.Quantity), InTransitQuantity = checked(d.InTransitQuantity + t.Quantity) };
-                var tx = _economy.Begin(Tick); tx.ConsumeReserved(l.Source, t.StockHold, t.Quantity);
-                tx.AddStock(l.Cargo, t.ItemId, t.Quantity); tx.ReserveStock(l.Cargo, t.CargoHold, t.ItemId, t.Quantity); tx.ReserveCapacity(l.Source, t.ReturnHold, t.ItemId, t.Quantity); tx.Commit();
-                if (next is not null) _deliveryContracts[index] = next;
-                l.Trip = t with { State = "Outbound" }; l.Reason = "Outbound";
-                Emit("LogisticsCargoLoaded", l.Owner, t.Id, t.ItemId, t.Quantity); continue;
-            }
-            if (t.State is not ("Outbound" or "ReturningEmpty" or "ReturningCargo" or "FetchingEmpty" or "ReturningInput")) continue;
-            int indexPath = t.PathIndex, segment = checked(t.SegmentTicks + 1);
-            if (t.Path.Length == 1) segment = 0;
-            else if (segment == Logistics.MoveTicksPerCell) { ++indexPath; segment = 0; }
-            bool firstLeg = t.State is "Outbound" or "FetchingEmpty";
-            Cell position = t.Path[indexPath]; long arrival = firstLeg ? t.ArrivalTick : t.EndTick;
-            string state = Tick == arrival ? (firstLeg ? "Arrived" : "Finishing") : t.State;
-            l.Trip = t with { Position = position, PathIndex = indexPath, SegmentTicks = segment, State = state };
-            _economy.Inventories[l.Cargo].Position = position;
-        }
-    }
+    { foreach(var l in _logistics.Values.OrderBy(l=>l.Id)) AdvanceFreightMovement(l); }
     private void AcceptLogisticsArrivals()
-    {
-        foreach (var l in _logistics.Values.OrderBy(l => l.Id))
-        {
-            if (l.Trip is not { } t) continue;
-            if (t.InboundSource.Value != 0)
-            {
-                AcceptInboundArrival(l, t); continue;
-            }
-            if (t.State == "Arrived")
-            {
-                bool accepted;
-                if (t.OwnDestination.Value != 0)
-                {
-                    var tx = _economy.Begin(Tick); tx.ConsumeReserved(l.Cargo, t.CargoHold, t.Quantity);
-                    tx.ReceiveReservedCapacity(t.OwnDestination.Value, t.DestinationHold, t.ItemId, t.Quantity);
-                    tx.ReleaseCapacity(l.Source, t.ReturnHold); tx.Commit(); accepted = true;
-                    Emit(OwnProductionDestination(l, t.OwnDestination.Value) is not null ? "LogisticsProductionReceived" : "LogisticsStorageReceived",
-                        l.Owner, t.Id, t.ItemId, t.Quantity);
-                }
-                else
-                {
-                    int index = _deliveryContracts.FindIndex(d => d.Id == t.ContractId); var d = _deliveryContracts[index];
-                    accepted = d.ClosedTick is null && Tick <= d.DeadlineTick;
-                    if (accepted) ReceiveDelivery(index, l.Cargo, t.Quantity, true, l);
-                }
-                l.Trip = t with { State = accepted ? "ReturningEmpty" : "ReturningCargo",
-                    Path = t.Path.Reverse().ToImmutableArray(), PathIndex = 0, SegmentTicks = 0 };
-                l.Reason = l.Trip.State;
-                if (t.OwnDestination.Value == 0)
-                    Emit(accepted ? "LogisticsDeliveryAccepted" : "LogisticsDeliveryRejected", l.Owner, t.Id, t.ItemId, t.Quantity);
-            }
-            else if (t.State == "Finishing" && _economy.Inventories[l.Cargo].Count(t.ItemId) > 0)
-            {
-                var tx = _economy.Begin(Tick); tx.ConsumeReserved(l.Cargo, t.CargoHold, t.Quantity);
-                tx.ReceiveReservedCapacity(l.Source, t.ReturnHold, t.ItemId, t.Quantity); tx.Commit();
-                Emit("LogisticsCargoReturned", l.Owner, t.Id, t.ItemId, t.Quantity);
-            }
-        }
-    }
-    private void ReleasePreparedLogistics(long contract)
-    {
-        foreach (var l in _logistics.Values.Where(l => l.Trip?.ContractId == contract && l.Trip.State == "Loading"))
-        {
-            var t = l.Trip!; var tx = _economy.Begin(Tick); tx.ReleaseStock(l.Source, t.StockHold);
-            tx.ReleaseMoney(_actors[l.Owner].Account, t.WageHold); tx.Commit(); l.Trip = null;
-        }
-    }
+    { foreach(var l in _logistics.Values.OrderBy(l=>l.Id)) AdvanceFreightHandling(l); }
+    private void ReleasePreparedLogistics(long contract) => CancelPreparedFreight(contract);
     private LogisticsView[] LogisticsViews() => _logistics.Values.OrderBy(l => l.Id).Select(l => l.View()).ToArray();
     private SavedLogistics[] SaveLogistics() => _logistics.Values.OrderBy(l => l.Id).Select(l => new SavedLogistics(l.View(), l.Group.View())).ToArray();
     private void RestoreLogistics(SavedLogistics[] saved)

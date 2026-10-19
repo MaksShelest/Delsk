@@ -28,7 +28,7 @@ public static class RunArtifacts
             Controllers = session.ControllerStates, ControllerStateHash = session.ComputeControllerStateHash(), Model = modelMetadata, RuntimeVersion = Environment.Version.ToString(),
             Commit = Environment.GetEnvironmentVariable("DELSK_COMMIT"), TickSeconds = 1,
             MapId = definition.Id, Difficulty = (string?)null, DifficultyReason = "P51-P53 not implemented; recorded controller settings define the baseline",
-            Stage = "Package2", DeveloperBuild=SimulationEngine.IsDeveloperBuild, ResearchModified=session.Engine.ResearchModified,
+            Stage = "Package3", DeveloperBuild=SimulationEngine.IsDeveloperBuild, ResearchModified=session.Engine.ResearchModified,
             CleanComparisonEligible=!SimulationEngine.IsDeveloperBuild && !session.Engine.ResearchModified,
             Author = "Шелестов Максим Евгеньевич"
         });
@@ -42,6 +42,7 @@ public static class RunArtifacts
         WriteJson("scenario.json", definition);
         WriteJson("public-economy.json", session.Engine.PublicEconomy());
         WriteJson("research-modifications.json",session.Engine.ResearchModifications);
+        WriteJson("physical-state.json",new { Resources=session.Engine.ResourceSites(),Transfers=definition.Participants.SelectMany(p=>session.Engine.TransfersOf(new(p.Id))).OrderBy(t=>t.Id).ToArray(),Blocked=session.Engine.BlockedCells() });
         WriteJson("logistics.json", new { Systems = state.Logistics });
         WriteJson("capital-demand.json", state.CapitalDemand!);
         WriteJson("elections.json", state.Elections);

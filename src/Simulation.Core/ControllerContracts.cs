@@ -26,7 +26,10 @@ public record ControllerObservation(long Tick, ParticipantView Participant, Acco
     ImmutableArray<MarketOfferView> MarketOffers, ImmutableArray<MarketBidView> OwnMarketBids,
     ImmutableArray<MarketAllocationView> OwnMarketAllocations, MarketSettings MarketRules, ImmutableArray<BuyOfferView> BuyOffers, ImmutableArray<SupplyRequest> OwnSupplyRequests,
     ImmutableArray<DeliveryContractView> OwnDeliveryContracts, DeliverySettings DeliveryRules, ImmutableArray<LogisticsView> OwnLogistics, LogisticsSettings LogisticsRules,
-    ImmutableArray<MarketPricePoint> CapitalPrices, ImmutableArray<MarketPricePoint> CapitalPriceHistory, ElectionObservation Elections, SupportObservation Support, CityEconomy City);
+    ImmutableArray<MarketPricePoint> CapitalPrices, ImmutableArray<MarketPricePoint> CapitalPriceHistory, ElectionObservation Elections, SupportObservation Support, CityEconomy City)
+{
+    public System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources { get; init; } = [];
+}
 public record ModelDecisionTrace(string DecisionId, long RequestedTick, long ApplyTick, long SessionEpoch,
     string Resolution, string ReasonCode, string RequestJson, string? ResponseJson = null,
     long? LatencyMilliseconds = null, long? PromptTokens = null, long? CompletionTokens = null, string? Model = null);
@@ -71,8 +74,8 @@ public sealed partial class SimulationEngine
                     l.WageMinor, l.WorkRateMultiplier)).ToImmutableArray())).ToImmutableArray(),
             [.. o.OwnEmploymentGroups], [.. o.LaborMarket], o.Population, o.Unemployed, [.. o.OwnEquipment],
             o.EquipmentTypes.Select(t => new ControllerEquipmentType(t.Id, t.ItemId, [.. t.Levels])).ToImmutableArray(),
-            new(_config.MapWidth, _config.MapHeight, [.. _config.BlockedCells], [.. _config.ResourceNodes],
+            new(_config.MapWidth, _config.MapHeight, BlockedCells(), [.. _config.ResourceNodes],
                 [.. _config.Items], [.. _config.Recipes], _config.MoveTicksPerCell,
-                _config.HarvestTicksPerUnit, _config.TradeWindowTicks), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules, o.CapitalPrices, o.CapitalPriceHistory, o.Elections, o.Support, o.City);
+                _config.HarvestTicksPerUnit, _config.TradeWindowTicks), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules, o.CapitalPrices, o.CapitalPriceHistory, o.Elections, o.Support, o.City) { Resources = o.Resources };
     }
 }

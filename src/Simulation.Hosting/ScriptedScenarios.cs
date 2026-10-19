@@ -60,12 +60,15 @@ public static partial class ScriptedScenarios
         string id = session.Send(actor, action); session.Step();
         if (session.Engine.Result(id) is not { Status: ResultStatus.Accepted })
             throw new InvalidOperationException($"Script command failed: {session.Engine.Result(id)?.ReasonCode}");
+        if(action.Kind is ActionKind.Transfer or ActionKind.CollectPurchase or ActionKind.DeliverContract)
+            Wait(session,()=>session.Engine.TransfersOf(actor).Length==0);
     }
     private static void Wait(GameSession session, Func<bool> condition)
     {
         long start = session.Engine.Tick;
         while (!condition())
         {
+            if(session.Engine.WaitingForBallots)throw new InvalidOperationException("Script requires explicit ballots before continuing");
             if (session.Paused) throw new InvalidOperationException("Script cannot wait in paused session");
             if (session.Engine.Tick - start >= 5000) throw new InvalidOperationException("Script wait limit reached");
             session.Step();

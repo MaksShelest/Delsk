@@ -180,7 +180,7 @@ public sealed partial class AlgorithmicController
                 var steps = new List<PlanStep>(); Cell current = o.Participant.Position; bool feasible = true;
                 foreach (var material in level.Materials)
                 {
-                    var node = o.Map.ResourceNodes.FirstOrDefault(n => n.ItemId == material.ItemId && Distance(o.Map, current, n.Position) >= 0);
+                    var node = o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)).FirstOrDefault(n => n.ItemId == material.ItemId && AvailableResource(o,n,material.Quantity) && Distance(o.Map, current, n.Position) >= 0);
                     if (node is null) { feasible = false; break; }
                     Move(steps, current, node.Position); steps.Add(new(new(ActionKind.Harvest, ItemId: material.ItemId, Quantity: material.Quantity)));
                     current = node.Position;
@@ -202,10 +202,15 @@ public sealed partial class AlgorithmicController
         {
             var type = o.EquipmentTypes.FirstOrDefault(t => t.ItemId == settings.PreferredInput);
             var level = type?.Levels.Single(l => l.Level == 1);
-            var node = o.Map.ResourceNodes.FirstOrDefault(n => n.ItemId == settings.PreferredInput && Reachable(o, n.Position));
-            if (type is not null && level is not null && node is not null && cash >= checked(level.PriceMinor + settings.CashReserveMinor))
+            var site = o.Resources.Where(r=>r.ItemId==settings.PreferredInput && !r.Public &&
+                (r.Owner==Actor || r.Owner is null && r.Tenant is null) && Reachable(o,r.Position))
+                .OrderBy(r=>r.Owner==Actor?0:1).ThenBy(r=>Distance(o.Map,o.Participant.Position,r.Position)).FirstOrDefault();
+            var node = site is null ? null : o.Map.ResourceNodes.Single(n=>n.Position==site.Position);
+            long landCost=site is { Owner:null }?site.PurchasePriceMinor:0;
+            if (type is not null && level is not null && node is not null && cash >= checked(level.PriceMinor + landCost + settings.CashReserveMinor))
             {
                 var steps = new List<PlanStep>(); Move(steps, o.Participant.Position, node.Position);
+                if(landCost>0)steps.Add(new(new(ActionKind.BuyResource,Target:node.Position)));
                 steps.Add(new(new(ActionKind.BuyEquipment, Target: node.Position, EquipmentTypeId: type.Id)));
                 yield return new("BuyExtraction", type.Id, 40000 * settings.ExpansionWeight / 100, steps.ToArray());
             }
@@ -222,9 +227,10 @@ public sealed partial class AlgorithmicController
                 yield return One("AutomateExtraction", type.Id, 70000, new(ActionKind.SetEquipmentMode, Equipment: machine.Id, Mode: EquipmentMode.Automatic));
         }
         if (carrier.Stock.All(s => s.Quantity == 0))
-        foreach (var node in o.Map.ResourceNodes)
+        foreach (var node in o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)))
         {
-            long q = Math.Min(settings.BatchQuantity, freeVolume / Volume(o, node.ItemId));
+            long natural=o.Resources.Single(r=>r.Position==node.Position && r.ItemId==node.ItemId).Stock-o.Resources.Single(r=>r.Position==node.Position && r.ItemId==node.ItemId).Reserved;
+            long q = Math.Min(natural, Math.Min(settings.BatchQuantity, freeVolume / Volume(o, node.ItemId)));
             var offer = BestOffer(o, node.ItemId, q, node.Position);
             if (q <= 0 || offer is null || !Reachable(o, node.Position)) continue;
             q = Math.Min(q, offer.RemainingQuantity);
@@ -253,14 +259,14 @@ public sealed partial class AlgorithmicController
     {
         var machine = o.Equipment.Where(m => o.EquipmentTypes.Single(t => t.Id == m.TypeId).ItemId == item &&
             Free(Inventory(o, m.StorageId), item) >= q && Reachable(o, m.Position)).OrderBy(m => m.Id.Value).FirstOrDefault();
-        return machine?.Position ?? o.Map.ResourceNodes.First(n => n.ItemId == item && Reachable(o, n.Position)).Position;
+        return machine?.Position ?? o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)).First(n => n.ItemId == item && AvailableResource(o,n,q) && Reachable(o, n.Position)).Position;
     }
     private static List<PlanStep>? Acquire(ControllerObservation o, string item, long q)
     {
         if (q <= 0) return null;
         var machine = o.Equipment.Where(m => o.EquipmentTypes.Single(t => t.Id == m.TypeId).ItemId == item &&
             Free(Inventory(o, m.StorageId), item) >= q && Reachable(o, m.Position)).OrderBy(m => m.Id.Value).FirstOrDefault();
-        var node = o.Map.ResourceNodes.FirstOrDefault(n => n.ItemId == item && Reachable(o, n.Position));
+        var node = o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)).FirstOrDefault(n => n.ItemId == item && AvailableResource(o,n,q) && Reachable(o, n.Position));
         if (machine is null && node is null) return null;
         Cell source = machine?.Position ?? node!.Position;
         var steps = new List<PlanStep>(); Move(steps, o.Participant.Position, source);

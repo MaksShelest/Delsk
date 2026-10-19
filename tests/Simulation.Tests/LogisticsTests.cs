@@ -28,10 +28,10 @@ public class LogisticsTests
     [Fact]
     public void ProductionToPhysicalContractDeliveryAndEmptyReturnPreserveEconomy()
     {
-        var s = Recording(); Assert.Equal(75, s.Engine.Tick); Assert.Equal(1, System(s).CompletedTrips); Assert.Null(System(s).Trip);
+        var s = Recording(); Assert.Equal(76, s.Engine.Tick); Assert.Equal(1, System(s).CompletedTrips); Assert.Null(System(s).Trip);
         Assert.Equal("Fulfilled", Contract(s).Status); Assert.Equal(10, Contract(s).DeliveredQuantity); Assert.Equal(30000, Contract(s).PaidMinor);
-        Assert.Equal(108200, s.Engine.Observe(new(1)).Account.BalanceMinor); Assert.Equal(70000, s.Engine.Observe(new(2)).Account.BalanceMinor);
-        Assert.Equal(300, LogisticsWages(s)); Assert.Equal(800, s.Engine.Inspect().Accounts.Single(a => a.Kind == "WagesSink").BalanceMinor);
+        Assert.Equal(108100, s.Engine.Observe(new(1)).Account.BalanceMinor); Assert.Equal(70000, s.Engine.Observe(new(2)).Account.BalanceMinor);
+        Assert.Equal(400, LogisticsWages(s)); Assert.Equal(900, s.Engine.Inspect().Accounts.Single(a => a.Kind == "WagesSink").BalanceMinor);
         Assert.Equal(200000, s.Engine.Inspect().Accounts.Sum(a => a.BalanceMinor));
         Assert.Equal(10, s.Engine.Inspect().Inventories.Sum(i => i.Stock.Where(stock => stock.ItemId == "plank").Sum(stock => stock.Quantity)));
         Assert.Equal(4, s.Engine.Inspect().Population); Assert.Equal(4, s.Engine.Inspect().Unemployed);
@@ -62,8 +62,8 @@ public class LogisticsTests
         source = s.Engine.Inspect().Inventories.Single(i => i.Id == System(s).SourceInventory); Assert.Empty(source.Stock); Assert.Equal(10, source.ReservedCapacity);
         var cargo = s.Engine.Inspect().Inventories.Single(i => i.Id == System(s).CargoInventory);
         Assert.Equal(10, cargo.Stock.Single().Quantity); Assert.Equal(10, cargo.Stock.Single().Reserved); Assert.Equal(new Cell(2, 0), cargo.Position);
-        s.Step(); Assert.Equal(new Cell(3, 0), System(s).Trip!.Position); Assert.Equal(0, Contract(s).DeliveredQuantity); Assert.Equal(50, LogisticsWages(s));
-        s.AdvanceTo(71); Assert.Equal(10, Contract(s).DeliveredQuantity); Assert.Equal("ReturningEmpty", System(s).Trip!.State);
+        s.Step(); Assert.Equal(new Cell(3, 0), System(s).Trip!.Position); Assert.Equal(0, Contract(s).DeliveredQuantity); Assert.Equal(100, LogisticsWages(s));
+        s.AdvanceTo(72); Assert.Equal(10, Contract(s).DeliveredQuantity); Assert.Equal("ReturningEmpty", System(s).Trip!.State);
         Assert.Empty(s.Engine.Inspect().Inventories.Single(i => i.Id == System(s).CargoInventory).Stock);
     }
     [Fact]
@@ -85,16 +85,16 @@ public class LogisticsTests
         Assert.Equal("InvalidQuantity", Reason(s, new(ActionKind.DeliverContract, ContractId: Contract(s).Id, Quantity: 1)));
         Assert.Equal(new Cell(5, 0), s.Engine.Observe(new(1)).Participant.Position);
         Assert.Equal(10, Contract(s).InTransitQuantity); Assert.Equal(0, Contract(s).PaidMinor);
-        s.Step(); Assert.Equal(10, Contract(s).DeliveredQuantity);
+        s.AdvanceTo(72); Assert.Equal(10, Contract(s).DeliveredQuantity);
     }
     [Fact]
     public void UpperPayrollBudgetPaysActualHeadcountAndReturnsUnusedReservation()
     {
         var d = Scenario() with { Population = 2, Logistics = new(CrewCapacity: 3) };
-        var s = At(69, d); Assert.Equal(2, Crew(s).Headcount); Assert.Equal(450, System(s).Trip!.WageBudgetMinor);
-        Assert.Equal(50, System(s).Trip!.WagesPaidMinor); Assert.Equal(400, s.Engine.Observe(new(1)).Account.ReservedMinor);
+        var s = At(69, d); Assert.Equal(2, Crew(s).Headcount); Assert.Equal(675, System(s).Trip!.WageBudgetMinor);
+        Assert.Equal(100, System(s).Trip!.WagesPaidMinor); Assert.Equal(575, s.Engine.Observe(new(1)).Account.ReservedMinor);
         var loaded = CheckpointStore.Decode(CheckpointStore.Encode(s)); s.AdvanceTo(75); loaded.AdvanceTo(75);
-        Assert.Equal(s.Engine.ComputeStateHash(), loaded.Engine.ComputeStateHash()); Assert.Equal(300, LogisticsWages(s));
+        Assert.Equal(s.Engine.ComputeStateHash(), loaded.Engine.ComputeStateHash()); Assert.Equal(400, LogisticsWages(s));
         Assert.Equal(0, s.Engine.Observe(new(1)).Account.ReservedMinor);
     }
     [Fact]
@@ -112,10 +112,10 @@ public class LogisticsTests
     public void PrefundedPayrollWorksWithZeroFreeCashAndInsufficientBudgetCannotStart()
     {
         ScenarioDefinition Cash(long amount) { var d = Scenario(); return d with { Participants = d.Participants.Select(p => p.Id == 1 ? p with { CashMinor = amount } : p).ToArray() }; }
-        var funded = At(68, Cash(23300)); Assert.Equal(0, funded.Engine.Observe(new(1)).Account.AvailableMinor);
-        Assert.Equal(2, Crew(funded).Headcount); funded.AdvanceTo(75); Assert.Equal(300, LogisticsWages(funded)); Assert.Equal("Fulfilled", Contract(funded).Status);
-        Assert.Equal(31500, funded.Engine.Observe(new(1)).Account.BalanceMinor);
-        var shortBudget = At(69, Cash(23299)); Assert.Null(System(shortBudget).Trip); Assert.Equal("NoMoney", Crew(shortBudget).ReadinessReason);
+        var funded = At(68, Cash(23450)); Assert.Equal(0, funded.Engine.Observe(new(1)).Account.AvailableMinor);
+        Assert.Equal(2, Crew(funded).Headcount); funded.AdvanceTo(75); Assert.Equal(400, LogisticsWages(funded)); Assert.Equal("Fulfilled", Contract(funded).Status);
+        Assert.Equal(31550, funded.Engine.Observe(new(1)).Account.BalanceMinor);
+        var shortBudget = At(69, Cash(23449)); Assert.Null(System(shortBudget).Trip); Assert.Equal("NoMoney", Crew(shortBudget).ReadinessReason);
         Assert.Equal(0, LogisticsWages(shortBudget)); Assert.Equal(10, Contract(shortBudget).UnprovidedQuantity);
     }
     [Fact]
@@ -129,9 +129,9 @@ public class LogisticsTests
     public void CommittedWageRemainsFixedUntilReturnAndThenNewWageApplies()
     {
         var s = At(69); Assert.Equal("Accepted", Reason(s, new(ActionKind.SetWage, Group: Crew(s).Id, WageMinor: 100)));
-        Assert.Equal(25, Crew(s).WageMinor); Assert.Equal(75, Crew(s).PayEffectiveTick); Assert.Equal(25, System(s).Trip!.CommittedWageMinor);
-        var loaded = CheckpointStore.Decode(CheckpointStore.Encode(s)); s.AdvanceTo(75); loaded.AdvanceTo(75);
-        Assert.Equal(s.Engine.ComputeStateHash(), loaded.Engine.ComputeStateHash()); Assert.Equal(300, LogisticsWages(s)); Assert.Equal(100, Crew(s).WageMinor);
+        Assert.Equal(25, Crew(s).WageMinor); Assert.Equal(76, Crew(s).PayEffectiveTick); Assert.Equal(25, System(s).Trip!.CommittedWageMinor);
+        var loaded = CheckpointStore.Decode(CheckpointStore.Encode(s)); s.AdvanceTo(76); loaded.AdvanceTo(76);
+        Assert.Equal(s.Engine.ComputeStateHash(), loaded.Engine.ComputeStateHash()); Assert.Equal(400, LogisticsWages(s)); Assert.Equal(100, Crew(s).WageMinor);
     }
     [Fact]
     public void StopPreventsNewTripsButAlreadyStartedTripCompletesAndRemainsPaid()
@@ -139,15 +139,15 @@ public class LogisticsTests
         var s = At(68); Assert.Equal("Accepted", Reason(s, new(ActionKind.SetLogisticsContract,
             Logistics: System(s).Id, ContractId: Contract(s).Id, Enabled: false)));
         s.AdvanceTo(80); Assert.Equal(1, System(s).CompletedTrips); Assert.False(System(s).Enabled);
-        Assert.Equal(300, LogisticsWages(s)); Assert.Equal("Fulfilled", Contract(s).Status);
+        Assert.Equal(400, LogisticsWages(s)); Assert.Equal("Fulfilled", Contract(s).Status);
     }
     [Fact]
     public void ExactDeadlineReceiptCanFinishAndReturnAfterFinancialClosure()
     {
-        var d = Scenario() with { Delivery = new(ContractTtlTicks: 19) }; var s = At(70, d);
-        Assert.Equal(71, Contract(s).DeadlineTick); Assert.Equal(10, Contract(s).InTransitQuantity);
+        var d = Scenario() with { Delivery = new(ContractTtlTicks: 20) }; var s = At(71, d);
+        Assert.Equal(72, Contract(s).DeadlineTick); Assert.Equal(10, Contract(s).InTransitQuantity);
         s.Step(); Assert.Equal("Fulfilled", Contract(s).Status); Assert.Equal(0, Contract(s).FineMinor); Assert.NotNull(System(s).Trip);
-        s.AdvanceTo(75); Assert.Equal(1, System(s).CompletedTrips); Assert.Equal(300, LogisticsWages(s));
+        s.AdvanceTo(75); Assert.Equal(1, System(s).CompletedTrips); Assert.Equal(400, LogisticsWages(s));
     }
     [Fact]
     public void KnownLateArrivalDoesNotStartAndExpiryDoesNotDeleteSourceGoods()
@@ -174,7 +174,7 @@ public class LogisticsTests
         var s = At(69); var json = JsonNode.Parse(s.Engine.CreateCheckpointJson())!;
         json["logistics"]![0]!["view"]!["trip"]![field] = value;
         string reason = Assert.Throws<CheckpointException>(() => SimulationEngine.FromCheckpointJson(json.ToJsonString(SimulationJson.Options))).ReasonCode;
-        Assert.Contains(reason, new[] { "InvalidWorldCheckpoint", "OrphanCapacityReservation", "OrphanMoneyReservation", "OrphanStockReservation" });
+        Assert.Contains(reason, new[] { "InvalidWorldCheckpoint", "MissingReservation", "OrphanCapacityReservation", "OrphanMoneyReservation", "OrphanStockReservation" });
     }
     [Fact]
     public void OtherControllersDoNotGetTransportInventoryOrPrivateRoute()

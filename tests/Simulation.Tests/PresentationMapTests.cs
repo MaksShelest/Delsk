@@ -86,7 +86,7 @@ public class PresentationMapTests
     [Fact]
     public void ForeignExtractionProjectionContainsOnlyPublicIdentityAndPosition()
     {
-        var map=Second();var session=Fixtures.Session(map);var at=map.ResourceNodes.First(n=>n.ItemId=="wood").Position;
+        var map=Second();var at=map.ResourceNodes.First(n=>n.ItemId=="wood").Position;map=map with {ResourceNodes=map.ResourceNodes.Select(n=>n.Position==at?n with {Rules=new(false,InitialOwner:2)}:n).ToArray()};var session=Fixtures.Session(map);
         Fixtures.Command(session,new(ActionKind.MoveTo,Target:at),2);Fixtures.UntilIdle(session,2);
         Assert.Equal("Accepted",LandContentFixtures.Reason(session,new(ActionKind.BuyEquipment,Target:at,EquipmentTypeId:"wood-extractor"),2));
         var equipment=Assert.Single(session.Engine.Inspect().Equipment);

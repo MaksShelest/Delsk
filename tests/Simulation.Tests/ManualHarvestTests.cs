@@ -213,14 +213,14 @@ public class ManualHarvestTests
     public void PlayOffersContinuousHarvestAndDebugRetainsSingleStepWithAccessibleStop()
     {
         var s = Fixtures.Session(); var d = s.Engine.Configuration(); var view = PlayerDesk.Read(s.Engine, Human);
-        Assert.Equal(ActionKind.StartHarvesting, Assert.Single(PlayContext.At(view, d, "ru", true)).Command!.Kind);
-        Assert.Equal(ActionKind.Harvest, Assert.Single(PlayContext.At(view, d, "en")).Command!.Kind);
+        Assert.Equal(ActionKind.StartHarvesting, Assert.Single(PlayContext.At(view, d, "ru", true),c=>c.Command is not null).Command!.Kind);
+        Assert.Equal(ActionKind.Harvest, Assert.Single(PlayContext.At(view, d, "en"),c=>c.Command is not null).Command!.Kind);
         Start(s); view = PlayerDesk.Read(s.Engine, Human);
         foreach (string lang in new[] { "ru", "en" })
         {
-            var stop = Assert.Single(PlayContext.At(view, d, lang, true));
+            var stop = Assert.Single(PlayContext.At(view, d, lang, true),c=>c.Command is not null);
             Assert.True(stop.Enabled); Assert.Equal(ActionKind.StopHarvest, stop.Command!.Kind);
-            Assert.Equal(ActionKind.StopHarvest, Assert.Single(PlayContext.At(view, d, lang)).Command!.Kind);
+            Assert.Equal(ActionKind.StopHarvest, Assert.Single(PlayContext.At(view, d, lang),c=>c.Command is not null).Command!.Kind);
         }
     }
 }

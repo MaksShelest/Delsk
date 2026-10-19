@@ -45,8 +45,8 @@ public class InboundTests
         var s=Run();var w=s.Engine.Inspect();Assert.Equal(3,System(s).CompletedTrips);Assert.Null(System(s).Trip);
         Assert.Equal(1,Fixtures.Count(s,Factory(s).InputId,"wood"));Assert.Equal(15,Fixtures.Count(s,Storage(s),"wood"));
         Assert.Equal(7,Fixtures.Count(s,Storage(s),"plank"));Assert.Equal(0,Fixtures.Count(s,Factory(s).OutputId,"plank"));
-        Assert.Equal(78050,s.Engine.Observe(new(1)).Account.BalanceMinor);Assert.Equal(20700,w.Accounts.Single(a=>a.Kind=="Treasury").BalanceMinor);
-        Assert.Equal(1250,w.Accounts.Single(a=>a.Kind=="WagesSink").BalanceMinor);Assert.Equal(900,Wages(s));Assert.Equal(200000,w.Accounts.Sum(a=>a.BalanceMinor));
+        Assert.Equal(77750,s.Engine.Observe(new(1)).Account.BalanceMinor);Assert.Equal(20700,w.Accounts.Single(a=>a.Kind=="Treasury").BalanceMinor);
+        Assert.Equal(1550,w.Accounts.Single(a=>a.Kind=="WagesSink").BalanceMinor);Assert.Equal(1200,Wages(s));Assert.Equal(200000,w.Accounts.Sum(a=>a.BalanceMinor));
         Assert.Single(w.Logistics);Assert.Single(w.EmploymentGroups,g=>g.Role==EmploymentRole.Logistics);Assert.Equal(4,w.Population);
         Assert.Equal(30,w.Flows.Single(f=>f.ItemId=="wood").Harvested);Assert.Equal(14,w.Flows.Single(f=>f.ItemId=="wood").RecipeInput);
         Assert.Equal(7,w.Flows.Single(f=>f.ItemId=="plank").Produced);Assert.Equal(0,w.ExternalMoneyInMinor);Assert.Empty(w.DeliveryContracts);
@@ -60,13 +60,13 @@ public class InboundTests
         Assert.Equal(30,Fixtures.Count(s,Storage(s),"wood"));Assert.Equal(0,Fixtures.Count(s,System(s).CargoInventory,"wood"));
         Assert.Equal(10,s.Engine.Inspect().Inventories.Single(i=>i.Id==Storage(s)).Stock.Single().Reserved);
         Assert.Equal(10,s.Engine.Inspect().Inventories.Single(i=>i.Id==Factory(s).InputId).ReservedCapacity);
-        s.Step();Assert.Equal("FetchingEmpty",System(s).Trip!.State);s.Step();Assert.Equal(new Cell(3,0),System(s).Trip!.Position);
+        s.Step();Assert.Equal("FetchingEmpty",System(s).Trip!.State);Assert.Equal(new Cell(3,0),System(s).Trip!.Position);
         Assert.Equal(30,Fixtures.Count(s,Storage(s),"wood"));Assert.Equal(0,Fixtures.Count(s,Factory(s).InputId,"wood"));
-        s.AdvanceTo(trip.ArrivalTick);Assert.Equal("ReturningInput",System(s).Trip!.State);Assert.Equal(new Cell(5,0),System(s).Trip!.Position);
+        s.AdvanceTo(trip.LoadTick);Assert.Equal("ReturningInput",System(s).Trip!.State);Assert.Equal(new Cell(5,0),System(s).Trip!.Position);
         Assert.Equal(20,Fixtures.Count(s,Storage(s),"wood"));Assert.Equal(10,Fixtures.Count(s,System(s).CargoInventory,"wood"));
         Assert.Equal(10,s.Engine.Inspect().Inventories.Single(i=>i.Id==Storage(s)).ReservedCapacity);
         s.AdvanceTo(trip.EndTick);Assert.Equal(10,Fixtures.Count(s,Factory(s).InputId,"wood"));Assert.Equal(0,Fixtures.Count(s,System(s).CargoInventory,"wood"));
-        Assert.Equal(0,s.Engine.Inspect().Inventories.Sum(i=>i.ReservedCapacity));Assert.Equal(300,Wages(s));
+        Assert.Equal(0,s.Engine.Inspect().Inventories.Sum(i=>i.ReservedCapacity));Assert.Equal(400,Wages(s));
     }
     [Fact]
     public void StopInboundDoesNotStopCommittedTripAndPausedSaveCanResumeIt()
@@ -74,7 +74,7 @@ public class InboundTests
         var s=Prefix(PreparedTick+2);Assert.Equal("Accepted",Input(s,false));var loaded=CheckpointStore.Decode(CheckpointStore.Encode(s));
         long end=System(s).Trip!.EndTick+5;s.AdvanceTo(end);loaded.AdvanceTo(end);
         Assert.Equal(s.Engine.ComputeStateHash(),loaded.Engine.ComputeStateHash());Assert.Equal(1,System(s).CompletedTrips);
-        Assert.Equal(10,Fixtures.Count(s,Factory(s).InputId,"wood"));Assert.Equal(300,Wages(s));Assert.False(System(s).InboundEnabled);
+        Assert.Equal(10,Fixtures.Count(s,Factory(s).InputId,"wood"));Assert.Equal(400,Wages(s));Assert.False(System(s).InboundEnabled);
         Assert.Equal("Accepted",Input(s));Assert.Equal("Accepted",Input(loaded));WaitTrips(s,2);WaitTrips(loaded,2);
         Assert.Equal(s.Engine.ComputeStateHash(),loaded.Engine.ComputeStateHash());Assert.Equal(15,Fixtures.Count(s,Factory(s).InputId,"wood"));
     }
@@ -85,7 +85,7 @@ public class InboundTests
         Fixtures.Command(s,new(ActionKind.SetProductionEnabled,Enterprise:Factory(s).Id,Enabled:false));
         Assert.Equal("Accepted",LandContentFixtures.Reason(s,new(ActionKind.SetLogisticsStorage,Logistics:System(s).Id,Destination:Storage(s),Enabled:false)));
         Assert.True(System(s).InboundEnabled);Assert.Equal(id,System(s).Trip!.Id);WaitTrips(s,1);
-        Assert.Equal(10,Fixtures.Count(s,Factory(s).InputId,"wood"));Assert.Equal(300,Wages(s));Assert.Equal(0,Factory(s).CompletedBatches);
+        Assert.Equal(10,Fixtures.Count(s,Factory(s).InputId,"wood"));Assert.Equal(400,Wages(s));Assert.Equal(0,Factory(s).CompletedBatches);
     }
     [Fact]
     public void PausedProductionRefillFollowsOwnOutput()
@@ -124,16 +124,16 @@ public class InboundTests
     {
         var s=Prefix(InputCommandTick);Assert.Equal("NotAvailable",Input(s,actor:2));Assert.Equal("QuantityFromCapacity",Input(s,quantity:99));Assert.Equal("ItemFromProduction",Input(s,item:"plank"));
         Assert.Equal("Accepted",Input(s));s.Step();long trip=System(s).Trip!.Id;Assert.Equal("Accepted",Input(s));Assert.Equal(trip,System(s).Trip!.Id);
-        WaitTrips(s,2);Assert.Equal(15,Fixtures.Count(s,Factory(s).InputId,"wood"));Assert.Equal(600,Wages(s));
+        WaitTrips(s,2);Assert.Equal(15,Fixtures.Count(s,Factory(s).InputId,"wood"));Assert.Equal(800,Wages(s));
     }
     [Theory]
-    [InlineData(20299,0)] [InlineData(20300,1)]
+    [InlineData(20399,0)] [InlineData(20400,1)]
     public void UpperBudgetIsReservedBeforeDepartureAndZeroFreeCashCannotStrandTruck(long cash,long trips)
     {
         var d=Scenario();d=d with{Participants=d.Participants.Select(p=>p.Id==1?p with{CashMinor=cash}:p).ToArray()};
         var s=Prefix(InputCommandTick,d);Assert.Equal("Accepted",Input(s));s.AdvanceTo(s.Engine.Tick+30);
-        Assert.Equal(trips,System(s).CompletedTrips);Assert.Equal(trips*10,Fixtures.Count(s,Factory(s).InputId,"wood"));Assert.Equal(trips*300,Wages(s));
-        Assert.Equal(trips==1?0:299,s.Engine.Observe(new(1)).Account.AvailableMinor);Assert.Equal(0,s.Engine.Observe(new(1)).Account.ReservedMinor);
+        Assert.Equal(trips,System(s).CompletedTrips);Assert.Equal(trips*10,Fixtures.Count(s,Factory(s).InputId,"wood"));Assert.Equal(trips*400,Wages(s));
+        Assert.Equal(trips==1?0:399,s.Engine.Observe(new(1)).Account.AvailableMinor);Assert.Equal(0,s.Engine.Observe(new(1)).Account.ReservedMinor);
     }
     [Fact]
     public void ReservedWarehouseStockCannotBeTakenDuringEmptyApproach()

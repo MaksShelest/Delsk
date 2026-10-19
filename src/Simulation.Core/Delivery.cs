@@ -10,25 +10,28 @@ public sealed partial class SimulationEngine
         if (d.ClosedTick is not null || Tick > d.DeadlineTick) throw new RuleViolation("ContractClosed");
         RequireIdle(actor);
         RequireActionLocation(actor, c.Action);
-        ReceiveDelivery(index, actor.Inventory, c.Action.Quantity, false, null, c.CommandId);
+        if (c.Action.Quantity <= 0 || c.Action.Quantity > d.UnprovidedQuantity) throw new RuleViolation("InvalidQuantity");
+        BeginTransfer(actor,c,actor.Inventory,d.DestinationInventory?.Value??0,d.ItemId,c.Action.Quantity,"Delivery",d.Id);
     }
     private void ReceiveDelivery(int index, long sourceInventory, long q, bool inTransit,
-        LogisticsState? logistics, string? command = null)
+        LogisticsState? logistics, string? command = null, string? preparedHold = null)
     {
         var d = _deliveryContracts[index]; long supplier = d.Supplier.Value;
-        if (q <= 0 || q > (inTransit ? d.InTransitQuantity : d.UnprovidedQuantity)) throw new RuleViolation("InvalidQuantity");
+        if (q <= 0 || q > (inTransit ? d.InTransitQuantity : preparedHold is not null ? d.PreparedQuantity : d.UnprovidedQuantity)) throw new RuleViolation("InvalidQuantity");
         long delivered = checked(d.DeliveredQuantity + q), payment = checked(q * d.UnitPriceMinor);
         bool complete = delivered == d.Quantity;
         var next = d with { DeliveredQuantity = delivered, PaidMinor = checked(d.PaidMinor + payment),
             InTransitQuantity = inTransit ? checked(d.InTransitQuantity - q) : d.InTransitQuantity,
+            PreparedQuantity = preparedHold is not null ? checked(d.PreparedQuantity-q) : d.PreparedQuantity,
             BondReturnedMinor = complete ? d.BondMinor : 0, Status = complete ? "Fulfilled" : "PartiallyDelivered",
             ClosedTick = complete ? Tick : null };
         long exported = d.Buyer is null ? checked(_flows[d.ItemId].Exported + q) : _flows[d.ItemId].Exported;
         var tx = _economy.Begin(Tick);
         if (logistics is not null) tx.ConsumeReserved(sourceInventory, logistics.Trip!.CargoHold, q);
+        else if(preparedHold is not null) tx.ConsumeReserved(sourceInventory,preparedHold,q);
         else tx.RemoveFreeStock(sourceInventory, d.ItemId, q);
         if (d.DestinationInventory is { } inventory) tx.ReceiveReservedCapacity(inventory.Value, d.CapacityHold, d.ItemId, q);
-        if (logistics is not null) tx.ReleaseCapacity(logistics.Source, logistics.Trip!.ReturnHold);
+        if (logistics is not null) tx.ReleaseCapacityVolume(logistics.Trip!.Freight!.GoodsSource.Value, logistics.Trip.ReturnHold,d.ItemId,q);
         tx.Pay(d.EscrowAccount.Value, _actors[supplier].Account, payment, "DeliveryPayment");
         if (complete && d.BondMinor > 0) tx.Pay(d.BondAccount.Value, _actors[supplier].Account, d.BondMinor, "DeliveryBondReturn");
         tx.Commit(); _deliveryContracts[index] = next; _flows[d.ItemId].Exported = exported;
@@ -39,6 +42,7 @@ public sealed partial class SimulationEngine
         foreach (int index in Enumerable.Range(0, _deliveryContracts.Count).OrderBy(i => _deliveryContracts[i].Id))
         {
             var d = _deliveryContracts[index]; if (d.ClosedTick is not null || Tick < d.DeadlineTick) continue;
+            foreach(var t in _transfers.Values.Where(t=>t.Kind=="Delivery" && t.Contract==d.Id).ToArray()) CancelTransfer(t,"ContractClosed");
             ReleasePreparedLogistics(d.Id); d = _deliveryContracts[index];
             long remainder = d.RemainingQuantity, refund = checked(remainder * d.UnitPriceMinor);
             long fine = DeliveryFine(refund, Delivery.FineBasisPoints), returned = checked(d.BondMinor - fine);

@@ -29,7 +29,7 @@ public class PlayContextTests
         session.CompleteTravelTick();
         var view = PlayerDesk.Read(session.Engine, Human);
         Assert.Equal(new Cell(0, 0), view.Participant.Position);
-        var choice = Assert.Single(PlayContext.At(view, scenario, "ru"));
+        var choice = Assert.Single(PlayContext.At(view, scenario, "ru"),choice=>choice.Command?.Kind==ActionKind.Harvest);
         Assert.Equal("harvest:wood", choice.Key);
         Assert.Contains("×1", choice.Label, StringComparison.Ordinal);
         Assert.Equal(1, choice.Command!.Quantity);

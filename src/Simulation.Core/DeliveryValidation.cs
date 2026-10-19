@@ -88,8 +88,9 @@ public sealed partial class SimulationEngine
                 if (held != checked(d.RemainingQuantity * _items[d.ItemId].UnitVolume))
                     throw new InvalidOperationException("Delivery capacity reservation mismatch");
             }
-            long prepared = _logistics.Values.Where(l => l.Trip?.ContractId == d.Id && l.Trip.State == "Loading").Sum(l => l.Trip!.Quantity);
-            long transit = _logistics.Values.Where(l => l.Trip?.ContractId == d.Id && l.Trip.State == "Outbound").Sum(l => l.Trip!.Quantity);
+            long prepared = _logistics.Values.Where(l=>l.Trip?.ContractId==d.Id).Sum(l=>FreightRemainingSource(l.Trip!)) +
+                _transfers.Values.Where(t=>t.Kind=="Delivery" && t.Contract==d.Id).Sum(t=>t.Remaining);
+            long transit = _logistics.Values.Where(l=>l.Trip?.ContractId==d.Id).Sum(l=>l.Trip!.Freight!.Cargo);
             if (d.PreparedQuantity != (active ? prepared : 0) || d.InTransitQuantity != (active ? transit : 0))
                 throw new InvalidOperationException("Delivery trip quota mismatch");
             ValidateDeliveryLedger(d);

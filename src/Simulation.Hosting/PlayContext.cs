@@ -17,6 +17,21 @@ public static class PlayContext
         var cell = view.Participant.Position;
         var choices = new List<ContextChoice>();
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
+        if(view.Transfers.Length>0)
+            choices.Add(new("transfer:stop",L(language,"Остановить передачу","Stop transfer"),new(ActionKind.StopTransfer)));
+        foreach(var site in view.Resources.Where(r=>r.Position==cell))
+        {
+            string status=$"{site.Stock-site.Reserved}/{site.Capacity}" + (site.Public?L(language," · общая добыча"," · public resource"):
+                site.Owner is {} owner?L(language," · владелец #"," · owner #")+owner.Value:site.Tenant is {} tenant?L(language," · аренда #"," · tenant #")+tenant.Value+" → "+site.LeaseUntil:L(language," · свободно"," · available"));
+            choices.Add(new("resource:info:"+site.ItemId,PlayerText.Item(language,site.ItemId)+" · "+status,null));
+            if(!site.Public && site.Owner is null && site.Tenant is null)
+            {
+                choices.Add(new("resource:buy:"+site.ItemId,L(language,"Купить ресурсную клетку — ","Buy resource site — ")+PlayerText.Money(site.PurchasePriceMinor),
+                    new(ActionKind.BuyResource,Target:cell,ItemId:site.ItemId),view.AvailableCashMinor>=site.PurchasePriceMinor));
+                choices.Add(new("resource:lease:"+site.ItemId,L(language,"Арендовать на ","Lease for ")+site.LeaseTicks+L(language," тиков — "," ticks — ")+PlayerText.Money(site.LeasePriceMinor),
+                    new(ActionKind.LeaseResource,Target:cell,ItemId:site.ItemId),view.AvailableCashMinor>=site.LeasePriceMinor));
+            }
+        }
         if (view.Harvest is { } harvest)
             choices.Add(new("harvest:stop", L(language, "Остановить добычу: ", "Stop harvesting: ") + PlayerText.Item(language, harvest.ItemId),
                 PlayerDesk.StopHarvest(), Details: L(language, "При остановке незавершённый прогресс теряется. Выход из области ресурса также отменяет добычу.",
@@ -114,7 +129,7 @@ public static class PlayContext
         // Preview only; the shared validator remains authoritative when a queued action runs.
         return choices.Select(choice =>
         {
-            bool busy = view.Participant.Busy && choice.Command?.Kind != ActionKind.StopHarvest;
+            bool busy = view.Participant.Busy && choice.Command?.Kind is not (ActionKind.StopHarvest or ActionKind.StopTransfer);
             string reason = busy && choice.Command is not null ? L(language, "Персонаж занят. Дождитесь завершения действия.", "Participant busy. Wait for the current action.") : choice.Details;
             bool enabled = choice.Enabled && (!busy || choice.Command is null);
             if (choice.Command?.Kind is ActionKind.BuyPlot or ActionKind.ReservePlot)
@@ -126,6 +141,12 @@ public static class PlayContext
             }
             if (choice.Command?.Kind is (ActionKind.Harvest or ActionKind.StartHarvesting) && pack.OccupiedVolume + pack.ReservedCapacity + scenario.Items.Single(i => i.Id == choice.Command.ItemId).UnitVolume > pack.Capacity)
             { enabled = false; reason = L(language, "Инвентарь заполнен.", "Inventory full."); }
+            if(choice.Command?.Kind is ActionKind.Harvest or ActionKind.StartHarvesting)
+            {
+                var resource=view.Resources.FirstOrDefault(r=>r.Position==cell && r.ItemId==choice.Command.ItemId);
+                if(resource is not null && (!resource.Public && resource.Owner!=view.Participant.Id && resource.Tenant!=view.Participant.Id || resource.Stock<=resource.Reserved))
+                {enabled=false;reason=PlayerText.Reason(language,resource.Stock<=resource.Reserved?"ResourceDepleted":"NoResourceRights");}
+            }
             return choice with { Enabled = enabled, Details = reason };
         }).ToArray();
     }
@@ -146,6 +167,7 @@ public static class PlayContext
         foreach (var marker in markers)
             lines.Add(marker.Kind switch
             {
+                "resource-depleted" => L(language,"Ресурс исчерпан; запас восстановится.","Resource depleted; stock will regenerate.")+" "+PlayerText.Item(language,marker.Label),
                 "resource" => string.Format(CultureInfo.InvariantCulture, PlayerText.Get(language, "hover.resource"), PlayerText.Item(language, marker.Label)),
                 "equipment" => L(language, "Добывающая техника: ", "Extraction equipment: ") + PlayerText.Item(language, marker.Label) + L(language, " · владелец ", " · owner ") + marker.OwnerId,
                 "truck-home" => L(language, "Грузовик у предприятия · владелец ", "Truck at its enterprise · owner ") + marker.OwnerId,
@@ -157,7 +179,7 @@ public static class PlayContext
                 "production" or "warehouse" or "shop" => BuildingHint(view, marker, language),
                 _ => marker.Kind
             });
-        if (!here && markers.Any(m => m.Kind is "resource" or "plot" or "plot-free" or "plot-own" or "production" or "warehouse" or "shop"))
+        if (!here && markers.Any(m => m.Kind is "resource" or "resource-depleted" or "plot" or "plot-free" or "plot-own" or "production" or "warehouse" or "shop"))
             lines.Add(PlayerText.Get(language, "context.approach"));
         return string.Join("\n", lines);
     }

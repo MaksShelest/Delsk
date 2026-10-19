@@ -49,9 +49,9 @@ public class OwnStorageTests
         Assert.Equal(2, System(s).CompletedTrips); Assert.Null(System(s).Trip); Assert.Equal(0, System(s).ContractId);
         Assert.Equal(Storage(s), System(s).OwnDestination); Assert.Equal("NoDestinationSpace", System(s).ReasonCode);
         Assert.Equal(15, Fixtures.Count(s, Storage(s), "plank")); Assert.Equal(15, Fixtures.Count(s, source, "plank"));
-        Assert.Equal(600, Wages(s)); Assert.Equal(74900, s.Engine.Observe(new(1)).Account.BalanceMinor);
+        Assert.Equal(800, Wages(s)); Assert.Equal(74700, s.Engine.Observe(new(1)).Account.BalanceMinor);
         Assert.Equal(23000, w.Accounts.Single(a => a.Kind == "Treasury").BalanceMinor);
-        Assert.Equal(2100, w.Accounts.Single(a => a.Kind == "WagesSink").BalanceMinor); Assert.Equal(200000, w.Accounts.Sum(a => a.BalanceMinor));
+        Assert.Equal(2300, w.Accounts.Single(a => a.Kind == "WagesSink").BalanceMinor); Assert.Equal(200000, w.Accounts.Sum(a => a.BalanceMinor));
         Assert.Empty(w.DeliveryContracts); Assert.Empty(w.MarketAllocations); Assert.Equal(0, w.ExternalMoneyInMinor);
         Assert.Equal(30, w.Flows.Single(f => f.ItemId == "plank").Produced); Assert.All(w.Flows, f => Assert.Equal(0, f.Exported));
         Assert.Equal(new long[] {10,5}, s.Engine.EventsSince(0).Where(e => e.Type == "LogisticsStorageReceived").Select(e => e.Quantity));
@@ -90,7 +90,7 @@ public class OwnStorageTests
         var s = At(Baseline.Value.Engine.Tick); LandContentFixtures.Move(s, new(5,0));
         Fixtures.Command(s, new(ActionKind.Transfer, Source: Storage(s), Destination: s.Engine.Observe(new(1)).Participant.InventoryId, ItemId: "plank", Quantity: 5));
         WaitTrips(s, 3); s.Step(); Assert.Equal(15, Fixtures.Count(s, Storage(s), "plank"));
-        Assert.Equal(10, Fixtures.Count(s, System(s).SourceInventory, "plank")); Assert.Equal(900, Wages(s));
+        Assert.Equal(10, Fixtures.Count(s, System(s).SourceInventory, "plank")); Assert.Equal(1200, Wages(s));
         Assert.Equal(5, Fixtures.Count(s, s.Engine.Observe(new(1)).Participant.InventoryId, "plank"));
         Assert.Single(s.Engine.EventsSince(0), e => e.Type == "LogisticsStorageSet");
     }
@@ -102,10 +102,10 @@ public class OwnStorageTests
         long end = System(s).Trip!.EndTick + 5; s.AdvanceTo(end); loaded.AdvanceTo(end);
         Assert.Equal(s.Engine.ComputeStateHash(), loaded.Engine.ComputeStateHash()); Assert.Equal(1, System(s).CompletedTrips);
         Assert.Equal(10, Fixtures.Count(s, Storage(s), "plank")); Assert.Equal(20, Fixtures.Count(s, System(s).SourceInventory, "plank"));
-        Assert.Equal(300, Wages(s)); Assert.False(System(s).Enabled);
+        Assert.Equal(400, Wages(s)); Assert.False(System(s).Enabled);
         var paused = CheckpointStore.Decode(CheckpointStore.Encode(s));
         Assert.Equal("Accepted", Route(s)); Assert.Equal("Accepted", Route(paused)); WaitTrips(s,2); WaitTrips(paused,2);
-        Assert.Equal(s.Engine.ComputeStateHash(), paused.Engine.ComputeStateHash()); Assert.Equal(600, Wages(s));
+        Assert.Equal(s.Engine.ComputeStateHash(), paused.Engine.ComputeStateHash()); Assert.Equal(800, Wages(s));
     }
     [Theory]
     [InlineData(BuildingKind.Warehouse)] [InlineData(BuildingKind.Shop)]
@@ -113,7 +113,7 @@ public class OwnStorageTests
     {
         var d = Scenario(); d = d with { BuildingTypes = d.BuildingTypes!.Select(t => t.Id == "warehouse" ? t with { Kind = kind } : t).ToArray(),
             Plots = d.Plots!.Select(p => p.Id == 2 ? p with { ShopParticipantId = kind == BuildingKind.Shop ? 1 : null } : p).ToArray() };
-        var s = At(Baseline.Value.Engine.Tick,d); Assert.Equal(15, Fixtures.Count(s,Storage(s),"plank")); Assert.Equal(600,Wages(s));
+        var s = At(Baseline.Value.Engine.Tick,d); Assert.Equal(15, Fixtures.Count(s,Storage(s),"plank")); Assert.Equal(800,Wages(s));
         Assert.Equal(new ParticipantId(1),s.Engine.Inspect().Inventories.Single(i=>i.Id==Storage(s)).OwnerId);
     }
     [Theory]
@@ -158,13 +158,13 @@ public class OwnStorageTests
         Assert.Equal(15,s.Engine.EventsSince(0).Where(e=>e.Type=="LogisticsStorageReceived").Sum(e=>e.Quantity));
     }
     [Theory]
-    [InlineData(24799,0)] [InlineData(24800,1)]
+    [InlineData(24899,0)] [InlineData(24900,1)]
     public void FullPayrollBudgetIsRequiredAndFundedTripSurvivesZeroFreeCash(long cash,long trips)
     {
         var d = Scenario(); d = d with { Participants = d.Participants.Select(p=>p.Id==1?p with{CashMinor=cash}:p).ToArray() };
-        var s = At(Baseline.Value.Engine.Tick,d); Assert.Equal(trips,System(s).CompletedTrips); Assert.Equal(trips*300,Wages(s));
+        var s = At(Baseline.Value.Engine.Tick,d); Assert.Equal(trips,System(s).CompletedTrips); Assert.Equal(trips*400,Wages(s));
         Assert.Equal(trips*10,Fixtures.Count(s,Storage(s),"plank")); Assert.Equal(0,s.Engine.Observe(new(1)).Account.ReservedMinor);
-        Assert.Equal(trips==1?0:299,s.Engine.Observe(new(1)).Account.AvailableMinor);
+        Assert.Equal(trips==1?0:399,s.Engine.Observe(new(1)).Account.AvailableMinor);
     }
     [Fact]
     public void CargoAndDestinationLimitsUseItemVolumeAndLeaveFractionalSpaceUnused()

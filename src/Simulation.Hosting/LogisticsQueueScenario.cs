@@ -39,10 +39,10 @@ public static partial class ScriptedScenarios
         if (w.DeliveryContracts.Any(d => d.Status != "Fulfilled" || d.FineMinor != 0) ||
             w.DeliveryContracts.Sum(d => d.DeliveredQuantity) != 20 ||
             w.Logistics.Single().Trip is not null ||
-            session.Engine.Observe(owner).Account.BalanceMinor != 133700 ||
-            session.Engine.Ledger().Where(l => l.Reason == "LogisticsWages").Sum(l => l.AmountMinor) != 1800 ||
+            session.Engine.Observe(owner).Account.BalanceMinor != 133300 ||
+            session.Engine.Ledger().Where(l => l.Reason == "LogisticsWages").Sum(l => l.AmountMinor) != 2200 ||
             w.Inventories.Single(i => i.Id == storage.InputId).Stock.Single().Quantity != 10 ||
             w.Accounts.Sum(a => a.ReservedMinor) != 0 || w.Inventories.Sum(i => i.ReservedCapacity) != 0)
-            throw new InvalidOperationException("Logistics queue cycle did not preserve priority, quota or balances");
+            throw new InvalidOperationException($"Logistics queue cycle did not preserve priority, quota or balances; cash={session.Engine.Observe(new(1)).Account.BalanceMinor}; logisticsWages={session.Engine.Ledger().Where(l=>l.Reason=="LogisticsWages").Sum(l=>l.AmountMinor)}");
     }
 }

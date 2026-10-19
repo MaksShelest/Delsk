@@ -247,6 +247,25 @@ internal sealed class EconomyTransaction
     }
     public void ReleaseCapacity(long id, string hold)
     { if (!Inventory(id).CapacityHolds.Remove(hold)) throw new RuleViolation("MissingReservation"); }
+    public void ReserveAdditionalStock(long id,string hold,string item,long quantity)
+    {
+        _=Volume(item,quantity);var inv=Inventory(id);
+        if(inv.Free(item)<quantity)throw new RuleViolation("NoStock");
+        if(inv.Reservations.TryGetValue(hold,out var old))
+        {if(old.Item!=item)throw new RuleViolation("WrongItem");inv.Reservations[hold]=old with {Quantity=checked(old.Quantity+quantity)};}
+        else inv.Reservations.Add(hold,new(item,quantity));
+    }
+    public void ReserveAdditionalCapacity(long id,string hold,string item,long quantity)
+    {
+        long volume=Volume(item,quantity);var inv=Inventory(id);CheckSpace(inv,volume);
+        inv.CapacityHolds[hold]=checked(inv.CapacityHolds.GetValueOrDefault(hold)+volume);
+    }
+    public void ReleaseCapacityVolume(long id,string hold,string item,long quantity)
+    {
+        long volume=Volume(item,quantity);var inv=Inventory(id);
+        if(!inv.CapacityHolds.TryGetValue(hold,out long old)||old<volume)throw new RuleViolation("NoCapacityReserved");
+        if(old==volume)inv.CapacityHolds.Remove(hold);else inv.CapacityHolds[hold]=checked(old-volume);
+    }
     public void ReceiveReservedCapacity(long id, string hold, string item, long quantity)
     {
         long volume = Volume(item, quantity); var inventory = Inventory(id);

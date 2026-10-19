@@ -8,7 +8,10 @@ public sealed record WorldEconomy(long StartingCashMinor, long PersonalInventory
     int LandReservationTicks, int MaxActivePlotReservations, long MaxTicks, ItemDefinition[] Items,
     RecipeDefinition[] Recipes, BuildingTypeDefinition[] BuildingTypes, EquipmentTypeDefinition[] EquipmentTypes,
     LaborSettings Labor, MarketSettings Market, DeliverySettings Delivery, LogisticsSettings Logistics,
-    CapitalDemandSettings CapitalDemand, ElectionSettings Elections, SupportSettings Support, EconomicRules Rules);
+    CapitalDemandSettings CapitalDemand, ElectionSettings Elections, SupportSettings Support, EconomicRules Rules,
+    ResourceTypeBalance[]? Resources = null);
+
+public sealed record ResourceTypeBalance(string ItemId, ResourceSiteRules Private, ResourceSiteRules Public);
 
 /// <summary>One editable balance source; geometry remains in the scenario. Resolved values are saved by Core.</summary>
 public sealed record EconomyProfile(int Version, string Id, WorldEconomy World, JsonElement Npc)
@@ -56,6 +59,16 @@ public sealed record EconomyProfile(int Version, string Id, WorldEconomy World, 
             CapitalDemand = map.CapitalDemand is { } d ? w.CapitalDemand with { Terminal = d.Terminal } : null,
             Support = map.Support is { } s ? w.Support with { TradingPoint = s.TradingPoint } : null
         };
+        if (w.Resources is { } resources)
+        {
+            if (resources.Select(r=>r.ItemId).Distinct().Count()!=resources.Length ||
+                resources.Any(r=>r.Private.Public || !r.Public.Public || r.Private.InitialOwner.HasValue || r.Public.InitialOwner.HasValue || !w.Items.Any(i=>i.Id==r.ItemId)))
+                throw new ArgumentException("Invalid resource balance");
+            resolved=resolved with { ResourceNodes=map.ResourceNodes.Select(n=>n with {
+                Rules=((n.Rules??new()).Public?resources.Single(r=>r.ItemId==n.ItemId).Public:resources.Single(r=>r.ItemId==n.ItemId).Private)
+                    with {InitialOwner=n.Rules?.InitialOwner}
+            }).ToArray() };
+        }
         ScenarioValidation.Validate(resolved); return resolved;
     }
 }

@@ -78,7 +78,7 @@ public sealed partial class SimulationEngine
             .Sum(i => i.Stock.Sum(s => checked(s.Value * _items[s.Key].BasePriceMinor)));
         long wip = _enterprises.Values.Where(e => e.Definition.OwnerId == actor.Value && e.Batch is not null)
             .Sum(e => checked(e.Recipe.InputQuantity * _items[e.Recipe.InputItem].BasePriceMinor));
-        long land = _plots.Values.Where(p => p.Owner == actor.Value).Sum(p => p.Definition.PriceMinor);
+        long land = checked(_plots.Values.Where(p => p.Owner == actor.Value).Sum(p => p.Definition.PriceMinor) + _resources.Values.Where(r=>r.Owner==actor.Value).Sum(r=>r.Rules.PurchasePriceMinor));
         long buildings = _buildings.Values.Where(b => b.Owner == actor.Value).Sum(b => b.Type.Levels.Where(l => l.Level <= b.Level)
             .Sum(l => checked(l.PriceMinor + l.Materials.Sum(m => checked(m.Quantity * _items[m.ItemId].BasePriceMinor)))));
         long equipment = _equipment.Values.Where(e => e.Owner == actor.Value)

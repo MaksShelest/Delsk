@@ -196,37 +196,25 @@ def verify(folder):
             trip = system['trip']; assert trip['position'] == cargo['position']
             job = next(j for j in queue if j['key'] == trip['jobKey'])
             assert job['contractId'] == trip['contractId'] and job['lastServed'] == system['dispatchCount']
-            incoming = trip['inboundSource']['value']
-            if incoming:
-                assert incoming == job['inboundSource']['value'] and trip['contractId'] == 0
-                factory = next(e for e in state['enterprises'] if e['id'] == system['enterpriseId'])
-                assert trip['ownDestination'] == factory['inputId']
-                assert trip['state'] in ['Loading', 'FetchingEmpty', 'ReturningInput']
-                assert inventories[trip['ownDestination']['value']]['reservedCapacity'] >= trip['quantity'] * items[trip['itemId']]
-            else:
-                assert trip['ownDestination']['value'] == job['ownDestination']['value']
-                own = trip['ownDestination']['value']
-            if own and not incoming:
-                assert trip['state'] != 'ReturningCargo'
-                if trip['state'] in ['Loading', 'Outbound']:
-                    assert inventories[own]['reservedCapacity'] >= trip['quantity'] * items[trip['itemId']]
-            q = trip['quantity'] if trip['state'] in ['Outbound','ReturningCargo','ReturningInput'] else 0
-            assert sum(s['quantity'] for s in cargo['stock']) == q
-            assert sum(s['reserved'] for s in cargo['stock']) == q
-            source = inventories[incoming or system['sourceInventory']['value']]
-            if q:
-                assert source['reservedCapacity'] >= q * items[trip['itemId']]
-            if not incoming and not own:
-                contract = next(d for d in contracts if d['id'] == trip['contractId'])
-                if trip['state'] == 'Loading':
-                    assert contract['closedTick'] is None and trip['arrivalTick'] <= contract['deadlineTick']
-                elif trip['state'] == 'ReturningCargo':
-                    assert contract['status'] == 'Expired' and contract['deadlineTick'] < trip['arrivalTick']
-                elif trip['state'] == 'ReturningEmpty':
-                    assert trip['arrivalTick'] <= contract['deadlineTick'] and contract['deliveredQuantity'] >= trip['quantity']
+            f=trip['freight']; assert f is not None
+            assert min(f['loaded'],f['received'],f['returned'],f['cancelled'])>=0
+            assert f['loaded']+f['cancelled']<=trip['quantity']
+            q=f['loaded']-f['received']-f['returned']; assert q>=0
+            assert sum(s['quantity'] for s in cargo['stock'])==q
+            assert sum(s['reserved'] for s in cargo['stock'])==q
+            source=inventories[f['goodsSource']['value']]
+            assert source['ownerId']==system['ownerId'] and source['reservedCapacity']>=q*items[trip['itemId']]
+            if trip['contractId']==0:
+                destination=inventories[f['destination']['value']]
+                assert destination['ownerId']==system['ownerId']
+                assert destination['reservedCapacity']>=(trip['quantity']-f['received']-f['cancelled'])*items[trip['itemId']]
+            elif trip['state'] in ['ReturningCargo','UnloadingReturn'] or f['returned']:
+                contract=next(d for d in contracts if d['id']==trip['contractId']); assert contract['status']=='Expired'
+            assert 0<=f['workRemainder']<items[trip['itemId']]
+            assert 0<=f['lastWorkedTick']<=state['tick'] and trip['preparedTick']<=f['stageStartedTick']<=state['tick']
             assert group['wageMinor'] == trip['committedWageMinor']
             if group['payEffectiveTick'] is not None:
-                assert group['payEffectiveTick'] == trip['endTick'] + 1
+                assert group['payEffectiveTick'] >= max(state['tick']+1,trip['endTick']+1)
             owner = accounts[people[system['ownerId']['value']]]
             assert owner['reservedMinor'] >= trip['wageBudgetMinor'] - trip['wagesPaidMinor'] >= 0
     events = [json.loads(line) for line in (folder/'events.jsonl').read_text(encoding='utf-8').splitlines()]
@@ -234,8 +222,29 @@ def verify(folder):
     for d in contracts:
         active_trips = [l['trip'] for l in systems if l['trip'] and l['trip']['contractId'] == d['id']]
         if d['closedTick'] is None:
-            assert d['preparedQuantity'] == sum(t['quantity'] for t in active_trips if t['state'] == 'Loading')
-            assert d['inTransitQuantity'] == sum(t['quantity'] for t in active_trips if t['state'] == 'Outbound')
+            physical=json.loads((folder/'physical-state.json').read_text())
+            assert d['preparedQuantity'] == sum(t['quantity']-t['freight']['loaded']-t['freight']['cancelled'] for t in active_trips)+sum(t['remaining'] for t in physical['transfers'] if t['kind']=='Delivery' and t['contract']==d['id'])
+            assert d['inTransitQuantity'] == sum(t['freight']['loaded']-t['freight']['received']-t['freight']['returned'] for t in active_trips)
+    physical=json.loads((folder/'physical-state.json').read_text())
+    assert len({(r['position']['x'],r['position']['z'],r['itemId']) for r in physical['resources']})==len(physical['resources'])
+    for site in physical['resources']:
+        assert 0<=site['reserved']<=site['stock']<=site['capacity']
+        coordinate=str(site['position']['x'])+','+str(site['position']['z'])
+        consumed=sum(e['quantity'] for e in events if e['type']=='ResourceConsumed' and e['itemId']==site['itemId'] and e['reasonCode']==coordinate)
+        regenerated=sum(e['quantity'] for e in events if e['type']=='ResourceRegenerated' and e['itemId']==site['itemId'] and e['reasonCode']==coordinate)
+        assert site['stock']==site['capacity']+regenerated-consumed
+        assert not (site['owner'] and site['tenant'])
+        assert not site['public'] or not site['owner'] and not site['tenant']
+        assert (site['tenant'] is None)==(site['leaseUntil'] is None)
+        assert site['leaseUntil'] is None or site['leaseUntil']>state['tick']
+    for process in physical['transfers']:
+        assert 0<=process['completed']<process['quantity'] and process['remaining']==process['quantity']-process['completed']
+        assert 0<=process['workRemainder']<items[process['itemId']]
+        assert process['owner']['value'] in people
+        if process['kind']!='Pickup':
+            assert sum(s['reserved'] for s in inventories[process['source']]['stock'] if s['itemId']==process['itemId'])>=process['remaining']
+        if process['destination'] and process['kind']!='Delivery':
+            assert inventories[process['destination']]['reservedCapacity']>=process['remaining']*items[process['itemId']]
     election_rules = config.get('elections') or {}
     period, base = election_rules.get('periodTicks', 1200), election_rules.get('baseVote', 1)
     elections = state['elections']

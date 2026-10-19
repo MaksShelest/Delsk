@@ -28,7 +28,7 @@ public sealed partial class SimulationEngine
     private readonly Dictionary<string, BuildingTypeDefinition> _buildingTypes = new(StringComparer.Ordinal);
     private readonly Dictionary<long, BuildingState> _buildings = [];
 
-    private static bool IsManagement(ActionKind kind) => kind is ActionKind.StopHarvest or ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.SetVoteChoice or ActionKind.ContinueAfterVictory or ActionKind.SetProductionEnabled or
+    private static bool IsManagement(ActionKind kind) => kind is ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.StopHarvest or ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.SetVoteChoice or ActionKind.ContinueAfterVictory or ActionKind.SetProductionEnabled or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.CancelPlotReservation or ActionKind.Build or
         ActionKind.UpgradeBuilding or ActionKind.SetRecipe or ActionKind.SetWage or ActionKind.BuyEquipment or
         ActionKind.UpgradeEquipment or ActionKind.SetEquipmentMode or ActionKind.CreateSellOffer or
@@ -57,6 +57,7 @@ public sealed partial class SimulationEngine
             foreach (var cell in footprint) _plotsByCell[cell].Building = building.Id;
             if (output.HasValue) AddProductionBuilding(building, level, definition.Staff, definition.Enabled);
         }
+        ApplyBuildingObstacles();
     }
 
     private void AddProductionBuilding(BuildingState b, BuildingLevelDefinition level, int staff, bool enabled)
@@ -151,9 +152,10 @@ public sealed partial class SimulationEngine
         if (level.PriceMinor > 0) tx.Pay(actor.Account, _treasury, level.PriceMinor, "Construction");
         tx.CreateInventory(input, actor.Id, c.Action.Target, level.InputCapacity);
         if (output.HasValue) tx.CreateInventory(output.Value, actor.Id, c.Action.Target, level.OutputCapacity);
+        CheckBuildingAccess(c.Action.Target,type);
         var building = new BuildingState(id, actor.Id, c.Action.Target, type, 1, input, output, footprint);
         tx.Commit();
-        _nextId = next; _buildings.Add(id, building);
+        _nextId = next; _buildings.Add(id, building); ApplyBuildingObstacles();
         foreach (var cell in footprint) _plotsByCell[cell].Building = id;
         foreach (var pair in consumed) _flows[pair.Key].ConstructionInput = pair.Value;
         if (output.HasValue) AddProductionBuilding(building, level, 0, false); // Buying capacity never creates workers.
@@ -245,7 +247,7 @@ public sealed partial class SimulationEngine
         new(b.Id), new(b.Owner), b.Type.Id, b.Type.Kind, b.Level, b.Position, b.Footprint.ToArray(), new(b.Input),
         b.Output.HasValue ? new InventoryId(b.Output.Value) : null)).ToArray();
     private BuildingTypeDefinition[] CopyBuildingCatalog() => _buildingTypes.Values.OrderBy(t => t.Id, StringComparer.Ordinal)
-        .Select(t => t with { Footprint = t.Footprint.ToArray(), Levels = t.Levels.Select(l => l with { Materials = l.Materials.ToArray() }).ToArray() }).ToArray();
+        .Select(t => t with { Walls=t.Walls?.ToArray(), Footprint = t.Footprint.ToArray(), Levels = t.Levels.Select(l => l with { Materials = l.Materials.ToArray() }).ToArray() }).ToArray();
 
     private void ValidateLandInvariants()
     {

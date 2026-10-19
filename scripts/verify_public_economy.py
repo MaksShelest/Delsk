@@ -9,6 +9,7 @@ def verify(folder):
     city = json.loads((folder/'public-economy.json').read_text())
     state = json.loads((folder/'final-state.json').read_text())
     config = json.loads((folder/'scenario.json').read_text())
+    physical = json.loads((folder/'physical-state.json').read_text())
     prices = {i['id']:i['basePriceMinor'] for i in config['items']}
     accounts = {a['id']['value']:a['balanceMinor'] for a in state['accounts']}
     assert city['valuationVersion'] == 'capital-reference-v1'
@@ -32,6 +33,7 @@ def verify(folder):
         stock = sum(s['quantity']*prices[s['itemId']] for i in state['inventories'] if i['ownerId']['value']==actor for s in i['stock'])
         wip = sum(recipes[e['recipeId']]['inputQuantity']*prices[recipes[e['recipeId']]['inputItem']] for e in state['enterprises'] if e['ownerId']['value']==actor and e['batchId'])
         land = sum(p['priceMinor'] for p in state['plots'] if p['ownerId'] and p['ownerId']['value']==actor)
+        land += sum(r['purchasePriceMinor'] for r in physical['resources'] if r['owner'] and r['owner']['value']==actor)
         buildings = sum(l['priceMinor']+sum(m['quantity']*prices[m['itemId']] for m in l['materials']) for b in state['buildings'] if b['ownerId']['value']==actor for l in types[b['typeId']]['levels'] if l['level']<=b['level'])
         equipment = sum(l['priceMinor'] for e in state['equipment'] if e['ownerId']['value']==actor for l in machines[e['typeId']]['levels'] if l['level']<=e['level'])
         for system in state['logistics']:

@@ -13,11 +13,11 @@ public static class ActionPolicy
 {
     public static ActionReach Reach(ActionKind kind) => kind switch
     {
-        ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
+        ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.Build or ActionKind.UpgradeBuilding or
         ActionKind.SetWage or ActionKind.BuyEquipment or ActionKind.UpgradeEquipment or ActionKind.CollectPurchase or
         ActionKind.DeliverContract or ActionKind.BuyLogistics or ActionKind.UpgradeLogistics or ActionKind.SignSupport => ActionReach.AtLocation,
-        ActionKind.MoveTo or ActionKind.CancelCapitalSale or ActionKind.SetTravelHeading or ActionKind.StopHarvest or
+        ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.MoveTo or ActionKind.CancelCapitalSale or ActionKind.SetTravelHeading or ActionKind.StopHarvest or
         ActionKind.SetProductionEnabled or ActionKind.CancelPlotReservation or ActionKind.SetRecipe or ActionKind.SetEquipmentMode or
         ActionKind.CreateSellOffer or ActionKind.SubmitBuyRequest or ActionKind.RaiseBid or ActionKind.WithdrawBid or
         ActionKind.CreateBuyOffer or ActionKind.AcceptDeliveryQuantity or ActionKind.WithdrawSupplyRequest or ActionKind.CancelBuyOffer or
@@ -46,6 +46,7 @@ public sealed partial class SimulationEngine
         if (reach == ActionReach.Remote) return new(reach, [], "Allowed");
         Cell[]? locations = action.Kind switch
         {
+            ActionKind.BuyResource or ActionKind.LeaseResource => _resources.Keys.Any(k=>k.Position==action.Target) ? [action.Target] : null,
             ActionKind.SetWage => WageLocation(actor.Id, action.Group.Value),
             ActionKind.ReservePlot or ActionKind.BuyPlot => _plots.TryGetValue(action.Plot.Value, out var plot) ? [plot.Definition.Position] : null,
             ActionKind.Build => [action.Target],

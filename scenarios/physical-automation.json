@@ -1,0 +1,254 @@
+{
+  "id": "physical-automation-v1",
+  "seed": 42,
+  "mapWidth": 9,
+  "mapHeight": 5,
+  "blockedCells": [],
+  "items": [
+    {
+      "id": "wood",
+      "unitVolume": 1,
+      "basePriceMinor": 500
+    },
+    {
+      "id": "plank",
+      "unitVolume": 1,
+      "basePriceMinor": 3000
+    }
+  ],
+  "recipes": [
+    {
+      "id": "sawmill",
+      "inputItem": "wood",
+      "inputQuantity": 2,
+      "outputItem": "plank",
+      "outputQuantity": 1,
+      "fullStaffTicks": 2,
+      "requiredStaff": 1,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 0
+    }
+  ],
+  "participants": [
+    {
+      "id": 1,
+      "cashMinor": 100000,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 2,
+      "cashMinor": 100000,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    }
+  ],
+  "enterprises": [],
+  "capitalOffers": [
+    {
+      "id": 1,
+      "itemId": "wood",
+      "quantity": 100,
+      "unitPriceMinor": 500,
+      "position": {
+        "x": 8,
+        "z": 0
+      }
+    }
+  ],
+  "resourceNodes": [
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "rules": {
+        "public": false,
+        "capacity": 4,
+        "regenerationQuantity": 0,
+        "initialOwner": 1
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 3
+      },
+      "rules": {
+        "public": false,
+        "capacity": 4,
+        "regenerationQuantity": 0,
+        "initialOwner": 1
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 8,
+        "z": 4
+      },
+      "rules": {
+        "public": true,
+        "capacity": 4,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 20
+      }
+    }
+  ],
+  "population": 2,
+  "maxTicks": 500,
+  "harvestTicksPerUnit": 2,
+  "moveTicksPerCell": 1,
+  "tradeWindowTicks": 5,
+  "plots": [
+    {
+      "id": 1,
+      "position": {
+        "x": 2,
+        "z": 1
+      },
+      "priceMinor": 1,
+      "ownerId": 1
+    },
+    {
+      "id": 2,
+      "position": {
+        "x": 6,
+        "z": 1
+      },
+      "priceMinor": 1,
+      "ownerId": 1
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 7,
+        "z": 1
+      },
+      "priceMinor": 1,
+      "ownerId": 1
+    }
+  ],
+  "buildingTypes": [
+    {
+      "id": "sawmill",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "sawmill",
+          "priceMinor": 1,
+          "materials": [],
+          "inputCapacity": 30,
+          "outputCapacity": 30,
+          "staffCapacity": 1,
+          "wageMinor": 1
+        }
+      ]
+    },
+    {
+      "id": "warehouse",
+      "kind": "Warehouse",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        },
+        {
+          "x": 1,
+          "z": 0
+        }
+      ],
+      "walls": [
+        {
+          "x": 1,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "",
+          "priceMinor": 1,
+          "materials": [],
+          "inputCapacity": 30,
+          "outputCapacity": 0,
+          "staffCapacity": 0,
+          "wageMinor": 0
+        }
+      ]
+    }
+  ],
+  "buildings": [
+    {
+      "id": 1,
+      "ownerId": 1,
+      "position": {
+        "x": 2,
+        "z": 1
+      },
+      "typeId": "sawmill"
+    },
+    {
+      "id": 2,
+      "ownerId": 1,
+      "position": {
+        "x": 6,
+        "z": 1
+      },
+      "typeId": "warehouse"
+    }
+  ],
+  "equipmentTypes": [
+    {
+      "id": "wood-extractor",
+      "itemId": "wood",
+      "levels": [
+        {
+          "level": 1,
+          "priceMinor": 1,
+          "cycleQuantity": 2,
+          "cycleTicks": 2,
+          "storageCapacity": 4,
+          "minimumCrew": 1,
+          "crewCapacity": 1,
+          "wageMinor": 1
+        }
+      ]
+    }
+  ],
+  "logistics": {
+    "purchasePriceMinor": 1,
+    "cargoCapacity": 4,
+    "minimumCrew": 1,
+    "crewCapacity": 1,
+    "wageMinor": 1
+  },
+  "labor": {
+    "stepTicks": 1,
+    "salaryChangeDelayTicks": 1,
+    "mobilityNumerator": 1,
+    "mobilityDenominator": 1,
+    "growthPerPeriod": 0
+  },
+  "economy": {
+    "handling": {
+      "personalVolumePerTick": 1,
+      "workerVolumePerTick": 1
+    }
+  }
+}

@@ -36,8 +36,8 @@ public static partial class ScriptedScenarios
         Wait(session, () => session.Engine.Observe(supplier).OwnLogistics.Single().CompletedTrips == 1);
         session.Step(); var d = session.Engine.Observe(supplier).OwnDeliveryContracts.Single();
         if (d.Status != "Fulfilled" || d.DeliveredQuantity != delivery || d.PaidMinor != delivery * 3000 ||
-            session.Engine.Observe(supplier).Account.BalanceMinor != (upgrade ? 105050 : 108200) || session.Engine.Observe(buyer).Account.BalanceMinor != (upgrade ? 40000 : 70000) ||
-            session.Engine.Ledger().Where(l => l.Reason == "LogisticsWages").Sum(l => l.AmountMinor) != (upgrade ? 450 : 300))
-            throw new InvalidOperationException("Logistics economic cycle differs from S6");
+            session.Engine.Observe(supplier).Account.BalanceMinor != (upgrade ? 104900 : 108100) || session.Engine.Observe(buyer).Account.BalanceMinor != (upgrade ? 40000 : 70000) ||
+            session.Engine.Ledger().Where(l => l.Reason == "LogisticsWages").Sum(l => l.AmountMinor) != (upgrade ? 600 : 400))
+            throw new InvalidOperationException($"Logistics economic cycle differs from S6; cash={session.Engine.Observe(new(1)).Account.BalanceMinor}; logisticsWages={session.Engine.Ledger().Where(l=>l.Reason=="LogisticsWages").Sum(l=>l.AmountMinor)}");
     }
 }

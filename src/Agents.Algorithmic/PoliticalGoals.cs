@@ -62,7 +62,7 @@ public sealed partial class AlgorithmicController
         if(HasObligations(o) || o.Account.AvailableMinor<_state.Settings.CashReserveMinor || _state.Settings.OwnVictoryWeight==0 ||
             o.Elections.NextVotingTick-o.Tick>_state.Settings.PoliticalHorizonTicks || (Int128)2*KnownVotes(o,Actor)>TotalVotes(o) ||
             o.Support.Proposals.Count(p=>p.Candidate==Actor && p.Election==election && p.Status is SupportProposalStatus.Proposed or SupportProposalStatus.AcceptedAwaitingResources)>=2)yield break;
-        var raw=o.Map.ResourceNodes.Where(n=>Reachable(o,n.Position)).OrderBy(n=>Distance(o.Map,o.Participant.Position,n.Position)).ThenBy(n=>n.ItemId,StringComparer.Ordinal).FirstOrDefault();
+        var raw=o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)).Where(n=>Reachable(o,n.Position)).OrderBy(n=>Distance(o.Map,o.Participant.Position,n.Position)).ThenBy(n=>n.ItemId,StringComparer.Ordinal).FirstOrDefault();
         if(raw is null)yield break;
         foreach(var seller in o.Elections.Participants.Where(p=>p!=Actor))
         {
