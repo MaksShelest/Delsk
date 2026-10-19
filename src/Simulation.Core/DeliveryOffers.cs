@@ -9,6 +9,7 @@ public sealed partial class SimulationEngine
     private static long DeliveryFine(long value, int bps) => checked((long)((Int128)value * bps / 10000));
     private void CreateBuyOffer(ActorState actor, CommandEnvelope c)
     {
+        RequireTradingAccess(actor.Id);
         if (c.Action.Quantity <= 0) throw new RuleViolation("InvalidQuantity");
         if (c.Action.UnitPriceMinor <= 0) throw new RuleViolation("InvalidPrice");
         if (!_items.ContainsKey(c.Action.ItemId)) throw new RuleViolation("UnknownItem");
@@ -43,6 +44,7 @@ public sealed partial class SimulationEngine
         var (price, requests) = SupplyTarget(c.Action);
         if (c.Action.BuyOfferId > 0 && _buyOffers[c.Action.BuyOfferId].View.Buyer.Value == actor.Id)
             throw new RuleViolation("OwnOffer");
+        if(c.Action.BuyOfferId>0)RequireTradingAccess(actor.Id,_buyOffers[c.Action.BuyOfferId].View.Buyer.Value);
         if (c.Action.OfferId > 0 && _offers[c.Action.OfferId].Requests.ContainsKey(actor.Id))
             throw new RuleViolation("ExistingCapitalSale");
         if (c.Action.Quantity <= 0) throw new RuleViolation("InvalidQuantity");

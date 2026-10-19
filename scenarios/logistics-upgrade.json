@@ -2,7 +2,7 @@
   "id": "logistics-upgrade-v1",
   "seed": 42,
   "mapWidth": 6,
-  "mapHeight": 3,
+  "mapHeight": 4,
   "blockedCells": [],
   "items": [
     {
@@ -85,6 +85,16 @@
       "priceMinor": 10000,
       "ownerId": 2,
       "shopParticipantId": 2
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 0,
+        "z": 3
+      },
+      "priceMinor": 1,
+      "ownerId": 1,
+      "shopParticipantId": 1
     }
   ],
   "buildingTypes": [
@@ -157,6 +167,15 @@
       "level": 1,
       "staff": 0,
       "enabled": false
+    },
+    {
+      "id": 3,
+      "ownerId": 1,
+      "position": {
+        "x": 0,
+        "z": 3
+      },
+      "typeId": "shop"
     }
   ],
   "labor": {

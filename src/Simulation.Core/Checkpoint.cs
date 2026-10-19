@@ -33,11 +33,11 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
     long[] CompletedJobs, CommandEnvelope[] Commands, CommandResult[] Results, string[] Pending,
     LedgerRecord[] Ledger, SimulationEvent[] Events, ulong MarketRandom,
     SavedMarketOffer[] MarketOffers, MarketAllocationView[] MarketAllocations, SavedBuyOffer[] BuyOffers, DeliveryContractView[] DeliveryContracts, long CapitalCompensation, SavedLogistics[] Logistics, CapitalDemandView? CapitalDemand, ElectionStateView Elections, SupportResearchState Support,
-    int TravelQuantum = 0, CityStageState? CityStage = null, ResearchModification[]? Research = null,bool DeveloperPackage=false, System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources=default, ResourceClaim[]? ResourceClaims=null,TransferOperation[]? Transfers=null);
+    int TravelQuantum = 0, CityStageState? CityStage = null, ResearchModification[]? Research = null,bool DeveloperPackage=false, System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources=default, ResourceClaim[]? ResourceClaims=null,TransferOperation[]? Transfers=null,TradeNegotiation[]? Negotiations=null);
 
 public sealed partial class SimulationEngine
 {
-    public const int CheckpointSchemaVersion = 16;
+    public const int CheckpointSchemaVersion = 17;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
@@ -71,7 +71,7 @@ public sealed partial class SimulationEngine
                     r.Reservation, r.CommandId)).ToArray(), o.SupplyRequests.Values.OrderBy(r => r.Supplier.Value).ToArray(), o.Window)).ToArray(), world.Flows, world.Settlements,
             _completedPersonalJobs.Order().ToArray(), _seenCommands.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(),
             _results.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(), _pending.Select(c => c.CommandId).ToArray(),
-            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum, _cityStage,_researchModifications.ToArray(),IsDeveloperBuild,ResourceSites(),_resourceClaims.Values.OrderBy(c=>c.JobId).ToArray(),_transfers.Values.OrderBy(t=>t.Id).ToArray());
+            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum, _cityStage,_researchModifications.ToArray(),IsDeveloperBuild,ResourceSites(),_resourceClaims.Values.OrderBy(c=>c.JobId).ToArray(),_transfers.Values.OrderBy(t=>t.Id).ToArray(),InspectNegotiations());
         return JsonSerializer.Serialize(saved, SimulationJson.Options);
     }
     private static string MigrateTravel(string json)
@@ -139,6 +139,7 @@ public sealed partial class SimulationEngine
         if (s.CityStage is not { } stage || stage.Stage is < 0 or > 3 || stage.Candidate is < 0 or > 3 || stage.SinceTick < 0 || stage.SinceTick > s.Tick)
             throw new CheckpointException("InvalidCityStage");
         _cityStage = stage;
+        foreach(var n in s.Negotiations??[])_negotiations.Add(n.Id,n);
         Tick = s.Tick; _travelQuantum = s.TravelQuantum; _nextId = s.NextId; _eventSequence = s.EventSequence;
         _allocationRandom.RestoreState(s.AllocationRandom); _commandRandom.RestoreState(s.CommandRandom);
         _laborRandom.RestoreState(s.LaborRandom); _population = s.Population; _unemployed = s.Unemployed;

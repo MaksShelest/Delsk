@@ -2,7 +2,7 @@
   "id": "private-support-v1",
   "seed": 42,
   "mapWidth": 24,
-  "mapHeight": 4,
+  "mapHeight": 5,
   "blockedCells": [],
   "items": [
     {
@@ -67,68 +67,7 @@
       "inventoryCapacity": 20
     }
   ],
-  "enterprises": [
-    {
-      "id": 1,
-      "ownerId": 1,
-      "position": {
-        "x": 10,
-        "z": 0
-      },
-      "recipeId": "sawmill",
-      "inputCapacity": 40,
-      "outputCapacity": 40,
-      "staff": 30,
-      "capacity": 30,
-      "wageMinor": 100,
-      "enabled": false
-    },
-    {
-      "id": 2,
-      "ownerId": 2,
-      "position": {
-        "x": 10,
-        "z": 0
-      },
-      "recipeId": "sawmill",
-      "inputCapacity": 40,
-      "outputCapacity": 40,
-      "staff": 20,
-      "capacity": 20,
-      "wageMinor": 100,
-      "enabled": false
-    },
-    {
-      "id": 3,
-      "ownerId": 3,
-      "position": {
-        "x": 10,
-        "z": 0
-      },
-      "recipeId": "sawmill",
-      "inputCapacity": 40,
-      "outputCapacity": 40,
-      "staff": 10,
-      "capacity": 10,
-      "wageMinor": 100,
-      "enabled": false
-    },
-    {
-      "id": 4,
-      "ownerId": 4,
-      "position": {
-        "x": 10,
-        "z": 0
-      },
-      "recipeId": "sawmill",
-      "inputCapacity": 40,
-      "outputCapacity": 40,
-      "staff": 0,
-      "capacity": 2,
-      "wageMinor": 100,
-      "enabled": false
-    }
-  ],
+  "enterprises": [],
   "capitalOffers": [
     {
       "id": 1,
@@ -184,5 +123,277 @@
       "z": 0
     },
     "sectionCapacity": 80
-  }
+  },
+  "buildingTypes": [
+    {
+      "id": "fixture-shop",
+      "kind": "Shop",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "",
+          "priceMinor": 1,
+          "materials": [],
+          "inputCapacity": 200,
+          "outputCapacity": 0,
+          "staffCapacity": 0,
+          "wageMinor": 0
+        }
+      ]
+    },
+    {
+      "id": "fixture-production-1",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "sawmill",
+          "priceMinor": 1,
+          "materials": [],
+          "inputCapacity": 40,
+          "outputCapacity": 40,
+          "staffCapacity": 30,
+          "wageMinor": 100
+        }
+      ]
+    },
+    {
+      "id": "fixture-production-2",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "sawmill",
+          "priceMinor": 1,
+          "materials": [],
+          "inputCapacity": 40,
+          "outputCapacity": 40,
+          "staffCapacity": 20,
+          "wageMinor": 100
+        }
+      ]
+    },
+    {
+      "id": "fixture-production-3",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "sawmill",
+          "priceMinor": 1,
+          "materials": [],
+          "inputCapacity": 40,
+          "outputCapacity": 40,
+          "staffCapacity": 10,
+          "wageMinor": 100
+        }
+      ]
+    },
+    {
+      "id": "fixture-production-4",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "sawmill",
+          "priceMinor": 1,
+          "materials": [],
+          "inputCapacity": 40,
+          "outputCapacity": 40,
+          "staffCapacity": 2,
+          "wageMinor": 100
+        }
+      ]
+    }
+  ],
+  "buildings": [
+    {
+      "id": 5,
+      "ownerId": 1,
+      "position": {
+        "x": 0,
+        "z": 4
+      },
+      "typeId": "fixture-shop"
+    },
+    {
+      "id": 6,
+      "ownerId": 2,
+      "position": {
+        "x": 1,
+        "z": 4
+      },
+      "typeId": "fixture-shop"
+    },
+    {
+      "id": 7,
+      "ownerId": 3,
+      "position": {
+        "x": 2,
+        "z": 4
+      },
+      "typeId": "fixture-shop"
+    },
+    {
+      "id": 8,
+      "ownerId": 4,
+      "position": {
+        "x": 3,
+        "z": 4
+      },
+      "typeId": "fixture-shop"
+    },
+    {
+      "id": 1,
+      "ownerId": 1,
+      "position": {
+        "x": 10,
+        "z": 0
+      },
+      "typeId": "fixture-production-1",
+      "staff": 30,
+      "enabled": false
+    },
+    {
+      "id": 2,
+      "ownerId": 2,
+      "position": {
+        "x": 11,
+        "z": 0
+      },
+      "typeId": "fixture-production-2",
+      "staff": 20,
+      "enabled": false
+    },
+    {
+      "id": 3,
+      "ownerId": 3,
+      "position": {
+        "x": 12,
+        "z": 0
+      },
+      "typeId": "fixture-production-3",
+      "staff": 10,
+      "enabled": false
+    },
+    {
+      "id": 4,
+      "ownerId": 4,
+      "position": {
+        "x": 13,
+        "z": 0
+      },
+      "typeId": "fixture-production-4",
+      "staff": 0,
+      "enabled": false
+    }
+  ],
+  "plots": [
+    {
+      "id": 1,
+      "position": {
+        "x": 0,
+        "z": 4
+      },
+      "priceMinor": 1,
+      "ownerId": 1,
+      "shopParticipantId": 1
+    },
+    {
+      "id": 2,
+      "position": {
+        "x": 1,
+        "z": 4
+      },
+      "priceMinor": 1,
+      "ownerId": 2,
+      "shopParticipantId": 2
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 2,
+        "z": 4
+      },
+      "priceMinor": 1,
+      "ownerId": 3,
+      "shopParticipantId": 3
+    },
+    {
+      "id": 4,
+      "position": {
+        "x": 3,
+        "z": 4
+      },
+      "priceMinor": 1,
+      "ownerId": 4,
+      "shopParticipantId": 4
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 10,
+        "z": 0
+      },
+      "priceMinor": 1,
+      "ownerId": 1
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 11,
+        "z": 0
+      },
+      "priceMinor": 1,
+      "ownerId": 2
+    },
+    {
+      "id": 7,
+      "position": {
+        "x": 12,
+        "z": 0
+      },
+      "priceMinor": 1,
+      "ownerId": 3
+    },
+    {
+      "id": 8,
+      "position": {
+        "x": 13,
+        "z": 0
+      },
+      "priceMinor": 1,
+      "ownerId": 4
+    }
+  ]
 }

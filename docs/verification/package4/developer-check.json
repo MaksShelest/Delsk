@@ -1,0 +1,5 @@
+{
+  "status": "succeeded",
+  "release_negative_build": "expected rejection",
+  "scope": "Developer variant; ordinary release/client metadata checked separately"
+}

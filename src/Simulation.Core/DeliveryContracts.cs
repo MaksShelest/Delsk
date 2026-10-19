@@ -11,7 +11,7 @@ public record DeliveryContractView(long Id, long BuyOfferId, long CapitalOfferId
     long Quantity, long UnitPriceMinor, AccountId BuyerAccount, AccountId EscrowAccount, AccountId BondAccount,
     long BondMinor, string CapacityHold, long CreatedTick, long DeadlineTick,
     long DeliveredQuantity = 0, long UnfulfilledQuantity = 0, long PaidMinor = 0, long RefundedMinor = 0,
-    long FineMinor = 0, long BondReturnedMinor = 0, string Status = "Active", long? ClosedTick = null, long PreparedQuantity = 0, long InTransitQuantity = 0)
+    long FineMinor = 0, long BondReturnedMinor = 0, string Status = "Active", long? ClosedTick = null, long PreparedQuantity = 0, long InTransitQuantity = 0,long NegotiationId=0)
 {
     public long RemainingQuantity => ClosedTick is null ? checked(Quantity - DeliveredQuantity) : 0;
     public long UnprovidedQuantity => checked(RemainingQuantity - PreparedQuantity - InTransitQuantity);

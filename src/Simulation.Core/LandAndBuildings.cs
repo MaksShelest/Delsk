@@ -28,7 +28,7 @@ public sealed partial class SimulationEngine
     private readonly Dictionary<string, BuildingTypeDefinition> _buildingTypes = new(StringComparer.Ordinal);
     private readonly Dictionary<long, BuildingState> _buildings = [];
 
-    private static bool IsManagement(ActionKind kind) => kind is ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.StopHarvest or ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.SetVoteChoice or ActionKind.ContinueAfterVictory or ActionKind.SetProductionEnabled or
+    private static bool IsManagement(ActionKind kind) => kind is ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.StopHarvest or ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.SetVoteChoice or ActionKind.ContinueAfterVictory or ActionKind.SetProductionEnabled or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.CancelPlotReservation or ActionKind.Build or
         ActionKind.UpgradeBuilding or ActionKind.SetRecipe or ActionKind.SetWage or ActionKind.BuyEquipment or
         ActionKind.UpgradeEquipment or ActionKind.SetEquipmentMode or ActionKind.CreateSellOffer or

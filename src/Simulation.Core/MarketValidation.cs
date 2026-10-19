@@ -9,7 +9,7 @@ public sealed partial class SimulationEngine
         {
             if (o.Id < 1000 || !_actors.ContainsKey(o.Seller) || !_items.ContainsKey(o.Item) ||
                 !_buildings.TryGetValue(o.Shop, out var shop) || shop.Type.Kind != BuildingKind.Shop ||
-                shop.Owner != o.Seller || shop.Input != o.Inventory || o.Quantity <= 0 || o.BasePrice <= 0 ||
+                shop.Owner != o.Seller || !IsTradingSource(o.Seller,o.Inventory) || o.Quantity <= 0 || o.BasePrice <= 0 ||
                 o.CreatedTick < 1 || o.CreatedTick > Tick || !Enum.IsDefined(o.Status) || o.Round < 0 ||
                 o.Round > Market.AuctionRounds || o.Cutoff != checked(o.CreatedTick + _config.TradeWindowTicks +
                     (long)o.Round * Market.AuctionRoundTicks) || o.Allocated < 0 || o.Allocated > o.Quantity ||
@@ -42,11 +42,8 @@ public sealed partial class SimulationEngine
         foreach (var a in _marketAllocations)
         {
             if (!ids.Add(a.Id) || !accounts.Add(a.EscrowAccount.Value) || a.Id < 1000 || a.EscrowAccount.Value < 1000 ||
-                !_marketOffers.TryGetValue(a.OfferId, out var o) || o.Status != MarketOfferStatus.Closed ||
-                a.Seller.Value != o.Seller || a.Buyer == a.Seller || !_actors.ContainsKey(a.Buyer.Value) ||
-                a.SourceInventory.Value != o.Inventory || a.ItemId != o.Item || a.Quantity <= 0 ||
-                a.UnitPriceMinor < o.BasePrice || a.CreatedTick != o.ClosedTick ||
-                a.DeadlineTick != checked(a.CreatedTick + Market.PickupTtlTicks) ||
+                !NegotiatedPickupOrigin(a) || a.Buyer==a.Seller || !_actors.ContainsKey(a.Buyer.Value) || !_items.ContainsKey(a.ItemId) ||
+                a.Quantity<=0 || a.UnitPriceMinor<=0 ||
                 a.CollectedQuantity < 0 || a.ReleasedQuantity < 0 ||
                 checked(a.CollectedQuantity + a.ReleasedQuantity) > a.Quantity ||
                 a.PaidMinor != checked(a.CollectedQuantity * a.UnitPriceMinor) ||

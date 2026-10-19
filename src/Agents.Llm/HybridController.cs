@@ -102,6 +102,7 @@ public sealed partial class HybridController : IController
         if (_state.RequestsInPeriod >= _state.Settings.MaximumRequestsPerPeriod) return fallback;
         var changes = new
         {
+            Negotiations=o.Negotiations.Where(n=>n.Status==NegotiationStatus.Proposed).Select(n=>new {n.Id,n.Current.Version}),
             Support = o.Support.Proposals.Where(p => p.Seller == Actor && p.Status == SupportProposalStatus.Proposed).Select(p => p.Id),
             Prices = o.CapitalPrices.Select(p => new { p.ItemId, Bucket = p.UnitPriceMinor / Math.Max(1, o.Map.Items.Single(i => i.Id == p.ItemId).BasePriceMinor / 5) })
         };

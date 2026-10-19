@@ -2,7 +2,7 @@
   "id": "market-window-v1",
   "seed": 42,
   "mapWidth": 6,
-  "mapHeight": 3,
+  "mapHeight": 4,
   "blockedCells": [],
   "items": [
     {
@@ -77,6 +77,36 @@
       "priceMinor": 10000,
       "ownerId": 1,
       "shopParticipantId": 1
+    },
+    {
+      "id": 2,
+      "position": {
+        "x": 0,
+        "z": 3
+      },
+      "priceMinor": 1,
+      "ownerId": 2,
+      "shopParticipantId": 2
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 1,
+        "z": 3
+      },
+      "priceMinor": 1,
+      "ownerId": 3,
+      "shopParticipantId": 3
+    },
+    {
+      "id": 4,
+      "position": {
+        "x": 2,
+        "z": 3
+      },
+      "priceMinor": 1,
+      "ownerId": 4,
+      "shopParticipantId": 4
     }
   ],
   "buildingTypes": [
@@ -115,6 +145,33 @@
       "level": 1,
       "staff": 0,
       "enabled": false
+    },
+    {
+      "id": 2,
+      "ownerId": 2,
+      "position": {
+        "x": 0,
+        "z": 3
+      },
+      "typeId": "shop"
+    },
+    {
+      "id": 3,
+      "ownerId": 3,
+      "position": {
+        "x": 1,
+        "z": 3
+      },
+      "typeId": "shop"
+    },
+    {
+      "id": 4,
+      "ownerId": 4,
+      "position": {
+        "x": 2,
+        "z": 3
+      },
+      "typeId": "shop"
     }
   ],
   "labor": {

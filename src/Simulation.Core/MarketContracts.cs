@@ -8,7 +8,7 @@ public enum MarketOfferStatus { Collecting, Auction, Closed }
 public record PublicMarketBid(ParticipantId Buyer, long Quantity, long CurrentPriceMinor);
 public record MarketOfferView(long Id, ParticipantId Seller, BuildingId Shop, Cell Position, string ItemId,
     long Quantity, long BasePriceMinor, long CreatedTick, long CutoffTick, int Round,
-    MarketOfferStatus Status, long AllocatedQuantity, long? ClosedTick, ImmutableArray<PublicMarketBid> Bids);
+    MarketOfferStatus Status, long AllocatedQuantity, long? ClosedTick, ImmutableArray<PublicMarketBid> Bids,InventoryId SourceInventory=default);
 public record MarketBidView(long OfferId, ParticipantId Buyer, long Quantity, long CurrentPriceMinor,
     long MaximumPriceMinor, string MoneyHold);
 // Original quantity remains historical; the same claim owns only its uncollected remainder.
@@ -16,7 +16,7 @@ public record MarketAllocationView(long Id, long OfferId, ParticipantId Seller, 
     InventoryId SourceInventory, string ItemId, long Quantity, long UnitPriceMinor,
     AccountId EscrowAccount, string StockHold, long CreatedTick, string Status = "AwaitingPickup",
     long DeadlineTick = 0, long CollectedQuantity = 0, long ReleasedQuantity = 0,
-    long PaidMinor = 0, long FineMinor = 0, long RefundedMinor = 0, long? ClosedTick = null)
+    long PaidMinor = 0, long FineMinor = 0, long RefundedMinor = 0, long? ClosedTick = null,long NegotiationId=0)
 {
     public long RemainingQuantity => checked(Quantity - CollectedQuantity - ReleasedQuantity);
 }

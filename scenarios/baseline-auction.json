@@ -2,7 +2,7 @@
   "id": "baseline-auction-v2",
   "seed": 42,
   "mapWidth": 8,
-  "mapHeight": 3,
+  "mapHeight": 4,
   "blockedCells": [],
   "items": [
     {
@@ -123,6 +123,36 @@
       },
       "priceMinor": 10000,
       "ownerId": 4
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 0,
+        "z": 3
+      },
+      "priceMinor": 1,
+      "ownerId": 1,
+      "shopParticipantId": 1
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 1,
+        "z": 3
+      },
+      "priceMinor": 1,
+      "ownerId": 3,
+      "shopParticipantId": 3
+    },
+    {
+      "id": 7,
+      "position": {
+        "x": 2,
+        "z": 3
+      },
+      "priceMinor": 1,
+      "ownerId": 4,
+      "shopParticipantId": 4
     }
   ],
   "buildingTypes": [
@@ -207,6 +237,33 @@
       "level": 1,
       "staff": 0,
       "enabled": false
+    },
+    {
+      "id": 5,
+      "ownerId": 1,
+      "position": {
+        "x": 0,
+        "z": 3
+      },
+      "typeId": "shop"
+    },
+    {
+      "id": 6,
+      "ownerId": 3,
+      "position": {
+        "x": 1,
+        "z": 3
+      },
+      "typeId": "shop"
+    },
+    {
+      "id": 7,
+      "ownerId": 4,
+      "position": {
+        "x": 2,
+        "z": 3
+      },
+      "typeId": "shop"
     }
   ],
   "labor": {

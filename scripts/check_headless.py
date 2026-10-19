@@ -36,24 +36,24 @@ check('tests', 180, [args.dotnet, 'tests/Simulation.Tests/bin/Release/net10.0/Si
 import xml.etree.ElementTree as ET
 trx=ET.parse(out/'tests.trx').getroot()
 counters=next(e for e in trx.iter() if e.tag.endswith('Counters'))
-if int(counters.attrib['passed']) < 773 or int(counters.attrib['failed']) != 0 or int(counters.attrib.get('notExecuted',0)) != 0:
+if int(counters.attrib['passed']) < 805 or int(counters.attrib['failed']) != 0 or int(counters.attrib.get('notExecuted',0)) != 0:
     raise SystemExit('Incomplete test suite')
 runner = [args.dotnet, 'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll']
 scenarios = {'cycle':'economic-cycle', 'recovery':'zero-cash-recovery', 'development':'land-and-content',
-             'labor':'labor-dynamics', 'equipment':'equipment-cycle', 'autonomous':'autonomous-economy', 'market':'market-window', 'pickup':'pickup-lifecycle', 'delivery':'delivery-lifecycle', 'capital-delivery':'capital-delivery', 'logistics':'logistics-cycle', 'logistics-upgrade':'logistics-upgrade', 'own-storage':'own-storage-cycle', 'inbound':'inbound-cycle', 'own-production':'own-production-cycle', 'logistics-queue':'logistics-queue', 'capital-demand':'capital-demand-cycle', 'autonomous-demand':'autonomous-demand', 'elections':'elections', 'support':'support-cycle','stopped-elections':'stopped-elections','physical-automation':'physical-automation'}
+             'labor':'labor-dynamics', 'equipment':'equipment-cycle', 'autonomous':'autonomous-economy', 'market':'market-window', 'pickup':'pickup-lifecycle', 'delivery':'delivery-lifecycle', 'capital-delivery':'capital-delivery', 'logistics':'logistics-cycle', 'logistics-upgrade':'logistics-upgrade', 'own-storage':'own-storage-cycle', 'inbound':'inbound-cycle', 'own-production':'own-production-cycle', 'logistics-queue':'logistics-queue', 'capital-demand':'capital-demand-cycle', 'autonomous-demand':'autonomous-demand', 'elections':'elections', 'support':'support-cycle','stopped-elections':'stopped-elections','physical-automation':'physical-automation','participant-trade':'participant-trade'}
 for script, scenario in scenarios.items():
     check(script, 300 if script.startswith('autonomous') else 30, [*runner, '--scenario', f'scenarios/{scenario}.json', '--script', 'autonomous' if script == 'autonomous-demand' else script, '--output', out/script])
-for script, tick in [('cycle', 55), ('equipment', 101), ('autonomous', 350), ('market', 44), ('pickup', 47), ('delivery', 37), ('capital-delivery', 3), ('logistics', 69), ('logistics-upgrade', 170), ('own-storage', 170), ('inbound', 78), ('own-production', 170), ('logistics-queue', 185), ('capital-demand', 85), ('autonomous-demand', 350), ('elections', 9), ('support', 18), ('stopped-elections',3),('physical-automation',20)]:
+for script, tick in [('cycle', 55), ('equipment', 101), ('autonomous', 350), ('market', 44), ('pickup', 47), ('delivery', 37), ('capital-delivery', 3), ('logistics', 69), ('logistics-upgrade', 170), ('own-storage', 170), ('inbound', 78), ('own-production', 170), ('logistics-queue', 185), ('capital-demand', 85), ('autonomous-demand', 350), ('elections', 9), ('support', 18), ('stopped-elections',3),('physical-automation',20),('participant-trade',33)]:
     checkpoint = out/f'{script}.save.json'
     check(f'{script}-save', 300 if script.startswith('autonomous') else 30, [*runner, '--scenario', f'scenarios/{scenarios[script]}.json', '--script', 'autonomous' if script == 'autonomous-demand' else script,
         '--output', out/f'{script}-saved', '--checkpoint', checkpoint, '--checkpoint-at', tick])
     check(f'{script}-load', 300 if script.startswith('autonomous') else 30, [*runner, '--load', checkpoint, '--output', out/f'{script}-loaded', *(['--ticks', '1000'] if script.startswith('autonomous') else [])])
-    for name in ['final-state.json', 'ledger.jsonl', 'events.jsonl', 'commands.jsonl', 'metrics.csv', 'labor.csv', 'controllers.json', 'decisions.jsonl', 'agents.csv', 'market.json', 'scenario.json', 'delivery.json', 'logistics.json', 'capital-demand.json', 'elections.json', 'support.json', 'public-events.jsonl', 'model-decisions.jsonl', 'public-economy.json', 'research-modifications.json', 'physical-state.json']:
+    for name in ['final-state.json', 'ledger.jsonl', 'events.jsonl', 'commands.jsonl', 'metrics.csv', 'labor.csv', 'controllers.json', 'decisions.jsonl', 'agents.csv', 'market.json', 'scenario.json', 'delivery.json', 'logistics.json', 'capital-demand.json', 'elections.json', 'support.json', 'public-events.jsonl', 'model-decisions.jsonl', 'public-economy.json', 'research-modifications.json', 'physical-state.json', 'negotiations.json']:
         expected = (out/script/name).read_bytes()
         if any((out/f'{script}-{mode}'/name).read_bytes() != expected for mode in ['saved','loaded']):
             raise SystemExit(f'{script}: checkpoint continuation differs in {name}')
     comparison_pairs+=2
-for script in ['logistics-queue', 'capital-demand', 'elections', 'support','stopped-elections','physical-automation']:
+for script in ['logistics-queue', 'capital-demand', 'elections', 'support','stopped-elections','physical-automation','participant-trade']:
     final_tick = json.loads((out/script/'summary.json').read_text())['tick']
     check(f'{script}-replay', 30, [*runner, '--scenario', f'scenarios/{scenarios[script]}.json', '--script', script,
         '--replay', out/script/'commands.jsonl', '--ticks', final_tick, '--output', out/f'{script}-replayed'])
@@ -92,9 +92,9 @@ if (disabled.get('model') or {}).get('modelDigest') not in (None,):
 check('model-privacy',15,[sys.executable,'scripts/verify_model_results.py',out/'model-safety',out/'model-safety-loaded',out/'model-off'])
 check('late-return-load', 30, [*runner, '--load', out/'late-return.save.json', '--output', out/'late-return-loaded'])
 check('late-return-compare', 15, [sys.executable, 'scripts/verify_checkpoint_exports.py', out/'late-return', out/'late-return-loaded'])
-folders = [out/s for s in scenarios] + [out/f'{s}-{mode}' for s in ['cycle','equipment','autonomous','market','pickup','delivery','capital-delivery','logistics','logistics-upgrade','own-storage','inbound','own-production','logistics-queue','capital-demand','autonomous-demand','elections','support','stopped-elections','physical-automation'] for mode in ['saved','loaded']]
+folders = [out/s for s in scenarios] + [out/f'{s}-{mode}' for s in ['cycle','equipment','autonomous','market','pickup','delivery','capital-delivery','logistics','logistics-upgrade','own-storage','inbound','own-production','logistics-queue','capital-demand','autonomous-demand','elections','support','stopped-elections','physical-automation','participant-trade'] for mode in ['saved','loaded']]
 folders += [out/'late-return-at-expiry', out/'late-return', out/'late-return-loaded']
-folders += [out/'logistics-queue-replayed', out/'capital-demand-replayed', out/'elections-replayed', out/'support-replayed',out/'stopped-elections-replayed',out/'physical-automation-replayed']
+folders += [out/'logistics-queue-replayed', out/'capital-demand-replayed', out/'elections-replayed', out/'support-replayed',out/'stopped-elections-replayed',out/'physical-automation-replayed',out/'participant-trade-replayed']
 folders += [out/f'baseline-{name}{suffix}' for name in baseline_cases for suffix in ['', '-saved','-loaded','-replayed']]
 folders += [out/'model-safety',out/'model-safety-loaded',out/'model-safety-replayed',out/'model-off']
 check('balances', 30, [sys.executable, 'scripts/verify_results.py', *folders])
@@ -117,14 +117,14 @@ folders.append(out/'economy-profile')
 check('economy-profile-balances',30,[sys.executable,'scripts/verify_results.py',out/'economy-profile'])
 public_exports=sorted(p.parent for p in out.rglob("public-economy.json"))
 check("public-economy-audit",30,[sys.executable,"scripts/verify_public_economy.py",*public_exports])
-manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases':{'cycle':55,'equipment':101,'autonomous':350,'market':44,'pickup':47,'delivery':37,'capital-delivery':3,'logistics':69,'logistics-upgrade':170,'own-storage':170,'inbound':78,'own-production':170,'logistics-queue':185,'capital-demand':85,'autonomous-demand':350,'elections':9,'support':18,'stopped-elections':3,'physical-automation':20},
+manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases':{'cycle':55,'equipment':101,'autonomous':350,'market':44,'pickup':47,'delivery':37,'capital-delivery':3,'logistics':69,'logistics-upgrade':170,'own-storage':170,'inbound':78,'own-production':170,'logistics-queue':185,'capital-demand':85,'autonomous-demand':350,'elections':9,'support':18,'stopped-elections':3,'physical-automation':20,'participant-trade':33},
             'comparison':'every exported tick hash, state, ledger, event, command and labor row',
             'controlled_fixture':{'name':'late-return','origin':'test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged','checkpoint_tick':72,'final_tick':80},
             'baseline_cases':{name:{'final_tick':horizon,'checkpoint_tick':cut} for name,(horizon,cut) in baseline_cases.items()},
             'model_safety':{'checkpoint_tick':6,'final_tick':60,'valid':1,'forged_actor':1,'late_reply':1},
             'model_off':'exact world equality with baseline-economy and the same headless timing label',
             'exports':len(folders), 'replays':replays, 'comparison_pairs':comparison_pairs,
-            'scope':'Package3 P37-P42: physical automation, stopped voting S8 and complete regression; Developer/window/platform gates separate',
+            'scope':'Package4 P43-P46: participant trade, stopped voting S8 and complete regression; Developer/window/platform gates separate',
             'author':'Шелестов Максим Евгеньевич'}
 (out/'headless-check.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
 print(f'Headless regression succeeded; results={out}')

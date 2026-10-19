@@ -62,7 +62,7 @@ public sealed partial class AlgorithmicController
                             new(ActionKind.AcceptDeliveryQuantity,OfferId:offer.Id,OfferWindow:offer.Window,Quantity:q));
                 }
             }
-            foreach(var offer in o.BuyOffers.Where(b=>b.Buyer!=Actor && b.Status=="Open" && b.RemainingQuantity>0 && b.CreatedTick<=o.Tick && b.ExpiresAtTick>o.Tick))
+            foreach(var offer in o.BuyOffers.Where(b=>b.Buyer!=Actor && CanTradeWith(o,b.Buyer) && b.Status=="Open" && b.RemainingQuantity>0 && b.CreatedTick<=o.Tick && b.ExpiresAtTick>o.Tick))
             {
                 long available=o.Inventories.Sum(i=>Free(i,offer.ItemId));
                 bool raw=o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)).Any(n=>n.ItemId==offer.ItemId);
@@ -92,6 +92,7 @@ public sealed partial class AlgorithmicController
     {
         foreach(var c in AuctionCandidates(o))yield return c;
         foreach(var p in SupportResponses(o))yield return p;
+        foreach(var n in NegotiationResponses(o))yield return n;
         foreach(var c in LogisticsCandidates(o).Where(c=>c.Steps.Length==1 && c.Steps[0].Action.Kind is ActionKind.QueueLogisticsJob or ActionKind.SetLogisticsEnabled))yield return c;
     }
     private IEnumerable<Candidate> WageCandidates(ControllerObservation o)

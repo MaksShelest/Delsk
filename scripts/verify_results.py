@@ -45,6 +45,8 @@ def verify(folder):
     assert all(0 <= a['reservedMinor'] <= a['balanceMinor'] for a in state['accounts'])
     accounts = {a['id']['value']: a for a in state['accounts']}
     inventories = {i['id']['value']: i for i in state['inventories']}
+    negotiations=json.loads((folder/'negotiations.json').read_text())
+    talks={n['id']:n for n in negotiations}
     allocations = state.get('marketAllocations', [])
     assert len({a['id'] for a in allocations}) == len(allocations)
     assert len({a['escrowAccount']['value'] for a in allocations}) == len(allocations)
@@ -81,7 +83,7 @@ def verify(folder):
     for inv in state['inventories']:
         for stock in inv['stock']:
             claims = sum(a['remainingQuantity'] for a in allocations if a['sourceInventory']['value'] == inv['id']['value'] and a['itemId'] == stock['itemId'])
-            lots = sum(o['quantity'] for o in state.get('marketOffers', []) if o['status'] != 'Closed' and shops[o['shop']['value']] == inv['id']['value'] and o['itemId'] == stock['itemId'])
+            lots = sum(o['quantity'] for o in state.get('marketOffers', []) if o['status'] != 'Closed' and o['sourceInventory']['value'] == inv['id']['value'] and o['itemId'] == stock['itemId'])
             assert claims + lots <= stock['reserved'] <= stock['quantity']
     assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'MarketEscrow') == sum(a['quantity'] * a['unitPriceMinor'] for a in allocations)
     for offer in state.get('marketOffers', []):
@@ -104,7 +106,7 @@ def verify(folder):
         assert d['paidMinor'] == delivered * price and d['refundedMinor'] == unfulfilled * price
         assert d['bondMinor'] == q * price * rate // 10000 and d['fineMinor'] == unfulfilled * price * rate // 10000
         assert d['bondReturnedMinor'] == (0 if active else d['bondMinor'] - d['fineMinor'])
-        assert d['deadlineTick'] == d['createdTick'] + delivery_rules.get('contractTtlTicks', 180)
+        assert d['deadlineTick'] == d['createdTick'] + (talks[d['negotiationId']]['revisions'][-1]['terms']['fulfillmentTicks'] if d.get('negotiationId') else delivery_rules.get('contractTtlTicks', 180))
         if active:
             assert remaining > 0 and unfulfilled == 0 and d['deadlineTick'] > state['tick']
             assert d['status'] == ('Active' if delivered == 0 else 'PartiallyDelivered')
@@ -328,6 +330,28 @@ def verify(folder):
     public=[json.loads(line) for line in (folder/'public-events.jsonl').read_text(encoding='utf-8').splitlines()]
     assert [e['sequence'] for e in public]==list(range(1,len(public)+1))
     assert all(not e['type'].startswith('Support') and e['type']!='VoteChoiceChanged' and 'commandId' not in e and 'support' not in e for e in public)
+    assert len(talks)==len(negotiations)
+    nr=(config.get('economy') or {}).get('negotiations') or {}
+    for n in negotiations:
+        revisions=n['revisions']; t=revisions[-1]['terms']
+        assert 0<len(revisions)<=nr.get('maxVersions',4)
+        assert [r['version'] for r in revisions]==list(range(1,len(revisions)+1))
+        assert n['createdTick']<n['expiresTick']<=n['createdTick']+nr.get('ttlTicks',60)
+        assert all(r['terms']['seller']==t['seller'] and r['terms']['buyer']==t['buyer'] and r['terms']['kind']==t['kind'] for r in revisions)
+        assert all(a['proposedBy']!=b['proposedBy'] for a,b in zip(revisions,revisions[1:]))
+        if n['status']=='Proposed':assert n['closedTick'] is None and n['contractId']==0 and n['expiresTick']>state['tick']
+        else: assert revisions[-1]['tick']<=n['closedTick']<=min(state['tick'],n['expiresTick'])
+        if n['status']=='Expired':assert n['closedTick']==n['expiresTick']
+        if n['status']=='Accepted':
+            if t['kind']=='Support':
+                p=proposals[n['contractId']];assert p['candidate']==t['buyer'] and p['seller']==t['seller'] and p['compensation']==t['compensation']
+            else:
+                contract=next(c for c in (allocations if t['kind']=='Sale' else contracts) if c['id']==n['contractId'])
+                assert contract['negotiationId']==n['id'] and contract['quantity']==t['quantity'] and contract['unitPriceMinor']==t['unitPriceMinor']
+                assert contract['deadlineTick']==contract['createdTick']+t['fulfillmentTicks']
+                assert contract['createdTick']==n['closedTick']
+        else: assert n['contractId']==0
+    assert all('negotiation' not in e and e['type']!='TradeNegotiationChanged' for e in public)
     print(f'{folder}: money, item flows, capacity, population, settlements, elections and private support verified; tick={summary["tick"]}')
 
 if len(sys.argv) < 2:

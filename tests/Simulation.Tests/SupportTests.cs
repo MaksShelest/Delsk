@@ -12,9 +12,9 @@ public class SupportTests
     internal static ScenarioDefinition Scenario(long period = 100)
     {
         var d = Fixtures.Cycle();
-        return d with { Id = "support-test", Population = 100, Elections = new(period), Support = new(new(5,0)),
+        return TradeFixtures.WithShops(d with { Id = "support-test", Population = 100, Elections = new(period), Support = new(new(5,0)),
             Participants = Enumerable.Range(1,4).Select(i=>new ParticipantDefinition(i,100000,new(0,0),20)).ToArray(),
-            Enterprises = new[] {30,20,10,0}.Select((n,i)=>new EnterpriseDefinition(i+1,i+1,new(10,0),"sawmill",40,40,n,Math.Max(2,n),100)).ToArray() };
+            Enterprises = new[] {30,20,10,0}.Select((n,i)=>new EnterpriseDefinition(i+1,i+1,new(10,0),"sawmill",40,40,n,Math.Max(2,n),100)).ToArray() });
     }
     private static GameSession Session(ScenarioDefinition? d = null)=>new(new SimulationEngine(d??Scenario()));
     private static string Execute(GameSession s,GameAction a,long actor=1)=>LandContentFixtures.Reason(s,a,actor);
@@ -104,7 +104,7 @@ public class SupportTests
     [Fact]
     public void CommitmentExecutesWithoutWinnerAndNeverCarriesToNextElection()
     {
-        var d=Scenario() with {Enterprises=[],Population=40};var s=Session(d);Deliver(s);Propose(s);Execute(s,Action(ActionKind.AcceptSupport),2);Execute(s,Action(ActionKind.SignSupport));
+        var original=Scenario();var d=original with {Buildings=original.Buildings!.Select(b=>b with {Staff=0}).ToArray(),Population=40};var s=Session(d);Deliver(s);Propose(s);Execute(s,Action(ActionKind.AcceptSupport),2);Execute(s,Action(ActionKind.SignSupport));
         s.AdvanceTo(100);var first=s.Engine.Inspect().Elections.Results.Single();Assert.Null(first.Winner);Assert.Equal(4,first.TotalWeight);
         Assert.Equal(PoliticalCommitmentStatus.Executed,Assert.Single(s.Engine.InspectSupport().Commitments).Status);
         s.AdvanceTo(200);var second=s.Engine.Inspect().Elections.Results.Last();Assert.All(second.Ballots,b=>Assert.Equal(b.Voter,b.Candidate));

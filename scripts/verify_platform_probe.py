@@ -90,6 +90,11 @@ if args.report:
             report.get('PhysicalRestoredTicks')!=[14,18,25,33,42,76]):
         raise SystemExit('Physical handling/machine movement checkpoint probe was not completed')
     print(f'Physical probe: {len(physical)} checkpoints match runner; partial loading/receipt and machine motion restored')
+if args.report:
+    with (root/'scenarios/platform-trade.checkpoints.csv').open(newline='') as source:trade=list(csv.DictReader(source))
+    if report.get('TradeCheckedTicks')!=len(trade) or report.get('TradeStateHash')!=trade[-1]['state_hash'] or report.get('TradeRestoredTicks')!=[32,33,34,35,38,51,69]:
+        raise SystemExit('Participant trade versions/reservations/privacy probe was not completed')
+    print(f'Participant trade: {len(trade)} hashes match runner; counter/escrow/partial pickup/unsigned/signed restored')
 if args.windows_directory:
     folder = args.windows_directory
     executable = (folder / 'DelskProbe.exe').read_bytes()

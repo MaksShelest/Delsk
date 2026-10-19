@@ -1,0 +1,6 @@
+{
+  "checks": [
+    "Private active claim location4,0, remaining TTL, shared obstacle path, ordinary queued movement/time toggle; actual physical partial collection2/4"
+  ],
+  "failures": []
+}

@@ -16,13 +16,13 @@ public readonly record struct Cell(int X, int Z);
 
 public enum ActionKind { MoveTo, Harvest, Transfer, SetProductionEnabled, SellAvailableToCapital, CancelCapitalSale, SetTravelHeading,
     ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe, SetWage, BuyEquipment, UpgradeEquipment, SetEquipmentMode, CreateSellOffer, SubmitBuyRequest, RaiseBid, WithdrawBid, CollectPurchase, CreateBuyOffer, AcceptDeliveryQuantity, WithdrawSupplyRequest, CancelBuyOffer, DeliverContract, BuyLogistics, SetLogisticsContract, UpgradeLogistics, SetLogisticsStorage, SetLogisticsInbound, SetLogisticsProduction, QueueLogisticsJob, SetLogisticsEnabled, SetVoteChoice, ContinueAfterVictory, ProposeSupport, AcceptSupport, RejectSupport, SignSupport, StartHarvesting, StopHarvest,
-    BuyResource, LeaseResource, StopTransfer, MoveEquipment, SetExtractionRoute, SetTransportRoute }
+    BuyResource, LeaseResource, StopTransfer, MoveEquipment, SetExtractionRoute, SetTransportRoute,ProposeTrade,CounterTrade,AcceptTrade,RejectTrade }
 public enum ResultStatus { Accepted, Rejected }
 public record GameAction(ActionKind Kind, Cell Target = default, string ItemId = "", long Quantity = 0,
     InventoryId Source = default, InventoryId Destination = default, EnterpriseId Enterprise = default,
     bool Enabled = false, long OfferId = 0, PlotId Plot = default, BuildingId Building = default,
     string BuildingTypeId = "", string RecipeId = "", EmploymentGroupId Group = default, long WageMinor = 0, EquipmentId Equipment = default,
-    string EquipmentTypeId = "", int EquipmentLevel = 1, EquipmentMode Mode = EquipmentMode.Personal, long MarketOfferId = 0, long UnitPriceMinor = 0, long MaximumPriceMinor = 0, int MarketRound = 0, long PurchaseId = 0, long BuyOfferId = 0, int OfferWindow = 1, long ContractId = 0, LogisticsId Logistics = default, LogisticsDirection Direction = LogisticsDirection.Output, ElectionId Election = default, ParticipantId Candidate = default, ParticipantId SupportSeller = default, long SupportProposalId = 0, System.Collections.Immutable.ImmutableArray<MaterialCost>? Compensation = null, System.Collections.Immutable.ImmutableArray<Cell>? Stops = null, bool Repeat = false);
+    string EquipmentTypeId = "", int EquipmentLevel = 1, EquipmentMode Mode = EquipmentMode.Personal, long MarketOfferId = 0, long UnitPriceMinor = 0, long MaximumPriceMinor = 0, int MarketRound = 0, long PurchaseId = 0, long BuyOfferId = 0, int OfferWindow = 1, long ContractId = 0, LogisticsId Logistics = default, LogisticsDirection Direction = LogisticsDirection.Output, ElectionId Election = default, ParticipantId Candidate = default, ParticipantId SupportSeller = default, long SupportProposalId = 0, System.Collections.Immutable.ImmutableArray<MaterialCost>? Compensation = null, System.Collections.Immutable.ImmutableArray<Cell>? Stops = null, bool Repeat = false,long NegotiationId=0,int NegotiationVersion=0,TradeTerms? Terms=null);
 public record CommandEnvelope(string CommandId, ParticipantId ActorId, long LocalSequence,
     long IssuedAtTick, long NotBeforeTick, long ExpiresAtTick, GameAction Action)
 {
@@ -31,16 +31,16 @@ public record CommandEnvelope(string CommandId, ParticipantId ActorId, long Loca
         (CommandId, ActorId, LocalSequence, IssuedAtTick, NotBeforeTick, ExpiresAtTick) ==
         (other.CommandId, other.ActorId, other.LocalSequence, other.IssuedAtTick, other.NotBeforeTick, other.ExpiresAtTick) &&
         (ReferenceEquals(Action, other.Action) || (Action is not null && other.Action is not null &&
-            (Action with { Compensation = null, Stops = null }) == (other.Action with { Compensation = null, Stops = null }) &&
+            (Action with { Compensation = null, Stops = null, Terms=null }) == (other.Action with { Compensation = null, Stops = null, Terms=null }) &&
             (Action.Compensation ?? []).SequenceEqual(other.Action.Compensation ?? []) &&
-            (Action.Stops ?? []).SequenceEqual(other.Action.Stops ?? [])));
+            (Action.Stops ?? []).SequenceEqual(other.Action.Stops ?? []) && TradeTerms.Same(Action.Terms,other.Action.Terms)));
     public override int GetHashCode() => HashCode.Combine(CommandId, ActorId, LocalSequence);
 }
 public record CommandResult(string CommandId, ResultStatus Status, string ReasonCode, long AppliedTick);
 public record LedgerRecord(long Tick, AccountId DebitAccount, AccountId CreditAccount, long AmountMinor, string Reason);
 public record SimulationEvent(long Sequence, long Tick, int Phase, string Type,
     ParticipantId? ActorId = null, long EntityId = 0, string ItemId = "", long Quantity = 0,
-    long AmountMinor = 0, string ReasonCode = "", string? CommandId = null, SupportEventData? Support = null);
+    long AmountMinor = 0, string ReasonCode = "", string? CommandId = null, SupportEventData? Support = null,TradeNegotiation? Negotiation=null);
 
 public record ResourceNodeDefinition(string ItemId, Cell Position, ResourceSiteRules? Rules = null);
 public record ItemDefinition(string Id, long UnitVolume, long BasePriceMinor);
@@ -130,6 +130,9 @@ public record ParticipantObservation(long Tick, ParticipantView Participant, Acc
     EmploymentView[] OwnEmploymentGroups, PublicEmploymentView[] LaborMarket, long Population, long Unemployed, EquipmentView[] OwnEquipment, EquipmentTypeDefinition[] EquipmentTypes, MarketOfferView[] MarketOffers, MarketBidView[] OwnMarketBids, MarketAllocationView[] OwnMarketAllocations, MarketSettings MarketRules, BuyOfferView[] BuyOffers, SupplyRequest[] OwnSupplyRequests, DeliveryContractView[] OwnDeliveryContracts, DeliverySettings DeliveryRules, LogisticsView[] OwnLogistics, LogisticsSettings LogisticsRules, System.Collections.Immutable.ImmutableArray<MarketPricePoint> CapitalPrices, System.Collections.Immutable.ImmutableArray<MarketPricePoint> CapitalPriceHistory, ElectionObservation Elections, SupportObservation Support, CityEconomy City)
 {
     public System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources { get; init; } = [];
+    public System.Collections.Immutable.ImmutableArray<TradeNegotiation> Negotiations {get;init;}=[];
+    public NegotiationSettings NegotiationRules {get;init;}=new();
+    public System.Collections.Immutable.ImmutableArray<ParticipantId> TradingParticipants {get;init;}=[];
 }
 
 public static class SimulationJson

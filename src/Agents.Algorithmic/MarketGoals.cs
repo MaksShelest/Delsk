@@ -34,7 +34,7 @@ public sealed partial class AlgorithmicController
             if(o.MarketOffers.Any(m=>m.Seller!=Actor && m.ItemId==posted.ItemId && m.Status==MarketOfferStatus.Collecting && m.BasePriceMinor<=BuyLimit(o,m.ItemId)) ||
                 (o.Tick-posted.CreatedTick>=_state.Settings.BlockedRetryTicks && posted.AllocatedQuantity==0 && posted.CutoffTick is null))
                 yield return One("CancelInputOffer",posted.ItemId,290000,new(ActionKind.CancelBuyOffer,BuyOfferId:posted.Id));
-        foreach(var offer in o.MarketOffers.Where(m=>m.Seller!=Actor && m.Status==MarketOfferStatus.Collecting && m.CreatedTick<=o.Tick && m.CutoffTick>o.Tick))
+        foreach(var offer in o.MarketOffers.Where(m=>m.Seller!=Actor && CanTradeWith(o,m.Seller) && m.Status==MarketOfferStatus.Collecting && m.CreatedTick<=o.Tick && m.CutoffTick>o.Tick))
         {
             long need=Need(o,offer.ItemId);long limit=BuyLimit(o,offer.ItemId);
             long budget=Math.Max(0,o.Account.AvailableMinor-_state.Settings.CashReserveMinor);
@@ -50,7 +50,7 @@ public sealed partial class AlgorithmicController
         foreach(var shop in o.Buildings.Where(b=>b.Kind==BuildingKind.Shop))
         {
             var stock=Inventory(o,shop.InputId);
-            foreach(var item in stock.Stock.Where(s=>s.Quantity>s.Reserved))
+            foreach(var item in stock.Stock.Where(s=>s.Quantity>s.Reserved && !IsProductionInput(o,s.ItemId)))
             {
                 var capital=BestOffer(o,item.ItemId,item.Quantity-item.Reserved,stock.Position);
                 if(capital is not null && !o.BuyOffers.Any(b=>b.Buyer!=Actor && b.Status=="Open" && b.ItemId==item.ItemId))
@@ -68,7 +68,7 @@ public sealed partial class AlgorithmicController
                 yield return One("PublishSellOffer",item.ItemId,160000,new(ActionKind.CreateSellOffer,Building:shop.Id,ItemId:item.ItemId,Quantity:q,UnitPriceMinor:Math.Max(1,price)));
             }
             if(o.MarketOffers.Any(m=>m.Seller==Actor && m.Shop==shop.Id && m.Status!=MarketOfferStatus.Closed))continue;
-            foreach(var node in o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)).Where(n=>o.BuyOffers.Any(b=>b.Buyer!=Actor && b.Status=="Open" && b.ItemId==n.ItemId)))
+            foreach(var node in o.Map.ResourceNodes.Where(n=>AvailableResource(o,n) && !IsProductionInput(o,n.ItemId)).Where(n=>o.BuyOffers.Any(b=>b.Buyer!=Actor && b.Status=="Open" && b.ItemId==n.ItemId)))
             {
                 if(Free(stock,node.ItemId)>0 || carrier.Stock.Any(x=>x.Quantity>0))continue;
                 long q=Math.Min(_state.Settings.MarketLotQuantity,Math.Min(volume,FreeVolume(stock))/Volume(o,node.ItemId));
@@ -78,7 +78,7 @@ public sealed partial class AlgorithmicController
                 yield return new("StockShop",node.ItemId,140000,steps.ToArray());
             }
             foreach(var source in o.Inventories.Where(i=>i.Id!=carrier.Id && i.Id!=stock.Id && !o.Enterprises.Any(e=>e.InputId==i.Id)))
-                foreach(var item in source.Stock.Where(x=>x.Quantity>x.Reserved && o.BuyOffers.Any(b=>b.Buyer!=Actor && b.Status=="Open" && b.ItemId==x.ItemId)))
+                foreach(var item in source.Stock.Where(x=>x.Quantity>x.Reserved && !IsProductionInput(o,x.ItemId) && o.BuyOffers.Any(b=>b.Buyer!=Actor && b.Status=="Open" && b.ItemId==x.ItemId)))
                 {
                     long q=Math.Min(_state.Settings.BatchQuantity,Math.Min(item.Quantity-item.Reserved,Math.Min(volume,FreeVolume(stock))/Volume(o,item.ItemId)));
                     if(q<=0 || Distance(o.Map,source.Position,stock.Position)<0 || !Reachable(o,source.Position))continue;
@@ -87,7 +87,7 @@ public sealed partial class AlgorithmicController
                     yield return new("StockShop",item.ItemId,140000,steps.ToArray());
                 }
         }
-        if(o.Account.AvailableMinor>=_state.Settings.CashReserveMinor)
+        if(o.TradingParticipants.Contains(Actor) && o.Account.AvailableMinor>=_state.Settings.CashReserveMinor)
         foreach(var e in o.Enterprises)
         {
             var r=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);var input=Inventory(o,e.InputId);long q=Math.Min(Need(o,r.InputItem),FreeVolume(input)/Volume(o,r.InputItem));
@@ -112,8 +112,9 @@ public sealed partial class AlgorithmicController
             if(!valid)continue;Move(steps,end,plot.Position);
             if(plot.OwnerId is null)steps.Add(new(new(ActionKind.BuyPlot,Plot:plot.Id)));
             steps.Add(new(new(ActionKind.Build,Target:plot.Position,BuildingTypeId:type.Id)));
-            yield return new("BuildShop",type.Id,30000,steps.ToArray());
+            yield return new("BuildShop",type.Id,180000,steps.ToArray());
         }
     }
+    private static bool IsProductionInput(ControllerObservation o,string item)=>o.Enterprises.Any(e=>o.Map.Recipes.Single(r=>r.Id==e.RecipeId).InputItem==item);
     private long BuyLimit(ControllerObservation o,string item)=>Math.Max(1,checked((long)((Int128)BasePrice(o,item)*_state.Settings.MaximumBuyPriceBasisPoints/10000)));
 }

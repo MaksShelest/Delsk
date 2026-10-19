@@ -2,11 +2,21 @@
 
 Автор проекта и материалов: Шелестов Максим Евгеньевич.
 
-Актуальные версии/статусы — в разделе «Пакет3»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
+Актуальные версии/статусы — в разделе «Пакет4»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
+
+## Пакет4, актуально19.10.2026
+
+- После слитого PR#39 (`5fd27c4`) реализованы только P43–P46, пакет4 по §12.1. Старое «P43–P47» в отчёте пакета3 было ошибкой границы: P47 относится к пакету5 и здесь не начат. Факты — docs/IMPLEMENTATION_REPORT_PACKAGE4.md, процедура — docs/PARTICIPANT_TRADE.md. P33 теперь включает встречные переговоры; P32 сохраняет зависимости от сложностей.
+- World17/Rules participant-trade-1, Session2/Envelope2. World16 явно отклоняется, не мигрируется/не перезаписывается; новый Godot save path. Ordinary profile presentation-economy-v5: shop L1=warehouse L1=200 через config; прежняя география/materials/prices сохраняются. Спецификация0.5 неизменна.
+- Реальная своя лавочка обязательна обеим сторонам новых participant trades/support, бронь/земля не заменяют её. Столица — прежнее исключение; голосование без лавочки. Отмена/выдача/исполнение уже заключённых обязательств продолжаются. Источник лота — собственный building input/output, не machine/cargo/carrier/WIP; public hold защищает от direct double sale.
+- Переговоры — частная версионированная подготовка, не второй контрактный движок. Sale создаёт прежний pickup claim; Purchase/Supply — прежний DeliveryContract; Support — AcceptedAwaitingResources прежнего P20, полный физический SignSupport обязателен. Численные terms только через ordinary validators. Нет ранних holds; TTL60,4 версии,16 активных/сторону (config). Counter не продлевает TTL; accept только reviewed version другой стороны.
+- Pending negotiations имеют отдельный namespace по инициатору и не двигают публичный NextId. Terms/history доступны сторонам и research; не включать их в public events/чужой Observation/debug/error. Source position публикуется до заявки; чужие остатки — нет. Research negotiations.json входит в22 direct/18 world-only comparison files.
+- Buyer guide использует shared BFS/BlockedCells и конкретный claim; несколько рейсов/Stop/expiry не отнимают полученное. Existing supplier-contract truck поддерживает negotiated future delivery, проверяется активный рейс/restore. Buyer-pickup роли у нынешнего транспорта нет; не создавать ради неё новый fleet executor.
+- Подтверждены805 ordinary/811 Developer tests;94 exports/12 replay/63 comparisons, отдельно third-map900/load/replay. Linux Godot проверяет также220 trade hashes и restore32/33/34/35/38/51/69. Длинная партия/Windows EXE/Android/60FPS/новая живая модель остаются отдельными gates.
 
 ## Пакет3, актуально19.10.2026
 
-- После PR#38 реализованы P37–P42; факты/границы — docs/IMPLEMENTATION_REPORT_PACKAGE3.md, процедура — docs/PHYSICAL_AUTOMATION.md. Дальше пакет4 P43–P47 только по заданию. P32/P33 сохраняют зависимости; спецификация0.5 не изменяется.
+- После PR#38 реализованы P37–P42; факты/границы — docs/IMPLEMENTATION_REPORT_PACKAGE3.md, процедура — docs/PHYSICAL_AUTOMATION.md. Историческое указание следующего пакета уточнено разделом «Пакет4». P32/P33 сохраняют зависимости; спецификация0.5 не изменяется.
 - World16/Rules physical-automation-1, Session2/Envelope2. World15 не мигрируется/не перезаписывается. Профиль presentation-economy-v4, ordinary maps one-v2/two-v2/three-v1. Profile меняет баланс ресурсов, не координаты/публичность/initial owner; география явно версионирована в сценарии. Старые карты/сохранённые config не перестраивать.
 - VolumeWork — единая целочисленная работа личного переноса и обработки грузовика. Переносить только завершённые единицы, сохранять remainder/holds; Stop/уход освобождает остаток. Pickup/Delivery платят по фактическому приёму, deadline закрывает незавершённый остаток. Godot рисует подтверждённый прогресс, не выдаёт товар.
 - Freight использует прежние LogisticsState/crew/cargo/queue, а не вторую систему. Handling = worker rate × level × current N, при N0 ждёт; начатое движение сохраняет committed speed. Предварительный бюджет включает обработку/возможный возврат; ставка меняется после фактического конца рейса. Груз/return capacity сохраняются при Stop/expiry/edit. Вход custom route на базу подчинён InboundEnabled, отправка — Enabled, production независимо.

@@ -192,6 +192,7 @@ public sealed partial class SimulationEngine
         }
         ValidateLandInvariants();
         ValidateEquipmentInvariants();
+        ValidateNegotiations();
         ValidateMarketInvariants();
         ValidateDeliveryInvariants();
         ValidateLogisticsInvariants();

@@ -3,9 +3,11 @@
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
 Основание: [спецификация 0.5](requirements/game_specification.md) с уточнением визуального клиента от 17.10.2026, [архитектура](ARCHITECTURE.md), [решения и настройки](DECISIONS.md).
 
-## Текущий следующий этап: пакет4 после пакета3 (19.10.2026)
+## Текущий этап: пакет4 завершён, следующий пакет5 (19.10.2026)
 
-Пакет3 P37–P42 реализован от слитого PR#38 `92f2e34`. Фактические критерии и границы — [IMPLEMENTATION_REPORT_PACKAGE3.md](IMPLEMENTATION_REPORT_PACKAGE3.md), руководство — [PHYSICAL_AUTOMATION.md](PHYSICAL_AUTOMATION.md). World16/Rules physical-automation-1; обычные773/Developer779 tests,90exports/11replay/60comparisons, дополнительно third-map900/load/replay и Linux Godot/UI. Следующий пакет4 P43–P47 только по отдельному заданию; P32/P33 сохраняют зависимости. Исторические отчёты пакетов1/2 и P27 не заменяют аппаратные gates.
+От слитого PR#39 `5fd27c4` реализованы P43–P46. Критерии и ограничения — [IMPLEMENTATION_REPORT_PACKAGE4.md](IMPLEMENTATION_REPORT_PACKAGE4.md), процедура — [PARTICIPANT_TRADE.md](PARTICIPANT_TRADE.md). World17/Rules participant-trade-1;805 ordinary/811 Developer tests,94exports/12replay/63comparisons, third-map900/load/replay, Linux Godot/UI. P33 теперь включает P45; P32 ожидает P51–P53. Следующий пакет5: P47–P50, начиная с P47; P48+ зависит от выбора нового контента владельцем.
+
+Пакет4 строго P43–P46 по §12.1; прежнее «P43–P47» в срезе пакета3 было ошибкой. Пакет3 P37–P42 — [исторический отчёт](IMPLEMENTATION_REPORT_PACKAGE3.md). Аппаратные gates и ограничения полной истории P27 сохраняются.
 
 Исторический срез пакета1: основа — `e8d5640`, слитый PR#36; P00–P27/UI01 не повторяются. По явному заданию пользователя включён [DELSK_NEXT_STAGE_PLAN.md](DELSK_NEXT_STAGE_PLAN.md): P28–P60 продолжают номера, §12.1 определяет пакеты. В том срезе выполнялся только пакет1: P28/P29/P31–P35. Нормативные уточнения, текущие статусы и зависимости — в начале нового плана; код/проверки — [отчёт пакета1](IMPLEMENTATION_REPORT_PACKAGE1.md). P32/P33 не закрываются целиком до P51–P53/P45; новых фабрик/ресурсов/аренды/остановленной стадии выборов нет. Аппаратные Windows/Android/текущая модельные gates P27 сохраняются отдельно.
 

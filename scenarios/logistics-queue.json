@@ -2,7 +2,7 @@
   "id": "logistics-queue-v1",
   "seed": 42,
   "mapWidth": 6,
-  "mapHeight": 3,
+  "mapHeight": 4,
   "blockedCells": [],
   "items": [
     {
@@ -93,6 +93,26 @@
       },
       "priceMinor": 10000,
       "ownerId": 2
+    },
+    {
+      "id": 901,
+      "position": {
+        "x": 0,
+        "z": 3
+      },
+      "priceMinor": 1,
+      "ownerId": 1,
+      "shopParticipantId": 1
+    },
+    {
+      "id": 902,
+      "position": {
+        "x": 1,
+        "z": 3
+      },
+      "priceMinor": 1,
+      "ownerId": 2,
+      "shopParticipantId": 2
     }
   ],
   "buildingTypes": [
@@ -139,6 +159,28 @@
           "wageMinor": 25
         }
       ]
+    },
+    {
+      "id": "fixture-shop",
+      "kind": "Shop",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "",
+          "priceMinor": 1,
+          "materials": [],
+          "inputCapacity": 200,
+          "outputCapacity": 0,
+          "staffCapacity": 0,
+          "wageMinor": 0
+        }
+      ]
     }
   ],
   "buildings": [
@@ -177,6 +219,24 @@
       "level": 1,
       "staff": 0,
       "enabled": false
+    },
+    {
+      "id": 901,
+      "ownerId": 1,
+      "position": {
+        "x": 0,
+        "z": 3
+      },
+      "typeId": "fixture-shop"
+    },
+    {
+      "id": 902,
+      "ownerId": 2,
+      "position": {
+        "x": 1,
+        "z": 3
+      },
+      "typeId": "fixture-shop"
     }
   ],
   "labor": {

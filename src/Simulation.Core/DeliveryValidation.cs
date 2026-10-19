@@ -51,7 +51,7 @@ public sealed partial class SimulationEngine
             if (!ids.Add(d.Id) || d.Id < 1000 || !_actors.ContainsKey(d.Supplier.Value) || !_items.ContainsKey(d.ItemId) ||
                 d.PreparedQuantity < 0 || d.InTransitQuantity < 0 || d.UnprovidedQuantity < 0 ||
                 d.Quantity <= 0 || d.UnitPriceMinor <= 0 || d.CreatedTick < 1 || d.CreatedTick >= Tick + 1 ||
-                d.DeadlineTick != checked(d.CreatedTick + Delivery.ContractTtlTicks) ||
+                (d.NegotiationId==0 ? d.DeadlineTick != checked(d.CreatedTick + Delivery.ContractTtlTicks) : !NegotiatedDeliveryOrigin(d)) ||
                 d.CapacityHold != $"delivery:{d.Id}" || d.DeliveredQuantity < 0 || d.DeliveredQuantity > d.Quantity ||
                 d.BondMinor != DeliveryFine(checked(d.Quantity * d.UnitPriceMinor), Delivery.FineBasisPoints) ||
                 d.PaidMinor != checked(d.DeliveredQuantity * d.UnitPriceMinor) ||
@@ -60,7 +60,9 @@ public sealed partial class SimulationEngine
                 !_economy.Accounts.TryGetValue(d.BondAccount.Value, out var bond) || bond.Kind != "SupplierBond" || bond.Holds.Count != 0 ||
                 escrow.Balance != checked(d.RemainingQuantity * d.UnitPriceMinor) || bond.Balance != (d.ClosedTick is null ? d.BondMinor : 0))
                 throw new InvalidOperationException("Invalid delivery contract");
-            if (d.Buyer is { } buyer)
+            if(d.NegotiationId!=0)
+            {if(!NegotiatedDeliveryOrigin(d))throw new InvalidOperationException("Negotiated delivery reference mismatch");}
+            else if (d.Buyer is { } buyer)
             {
                 if (!_buyOffers.TryGetValue(d.BuyOfferId, out var offer) || d.CapitalOfferId != 0 ||
                     buyer != offer.View.Buyer || buyer == d.Supplier || d.BuyerAccount.Value != _actors[buyer.Value].Account ||

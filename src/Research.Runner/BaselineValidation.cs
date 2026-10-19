@@ -26,7 +26,7 @@ internal static class BaselineValidation
         if(definition.Id.StartsWith("baseline-politics",StringComparison.Ordinal) && w.Tick>=160)
         {
             var support=session.Engine.InspectSupport();
-            Require(support.Proposals.Any(p=>p.Status==SupportProposalStatus.Rejected),"political refusal");
+            Require(session.Engine.InspectNegotiations().Any(p=>p.Status==NegotiationStatus.Rejected) || support.Proposals.Any(p=>p.Status==SupportProposalStatus.Rejected),"political refusal");
             Require(support.Commitments.Any(c=>c.Status==PoliticalCommitmentStatus.Executed),"signed and executed support");
         }
         if(definition.Id.StartsWith("baseline-logistics",StringComparison.Ordinal) && w.Tick>=360)

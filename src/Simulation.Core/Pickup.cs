@@ -7,7 +7,7 @@ public sealed partial class SimulationEngine
         int index = _marketAllocations.FindIndex(a => a.Id == c.Action.PurchaseId && a.Buyer.Value == actor.Id);
         if (index < 0) throw new RuleViolation("NotAvailable");
         var a = _marketAllocations[index];
-        if (a.ClosedTick is not null || Tick > a.DeadlineTick) throw new RuleViolation("PurchaseClosed");
+        if (a.CreatedTick>=Tick || a.ClosedTick is not null || Tick > a.DeadlineTick) throw new RuleViolation("PurchaseClosed");
         RequireIdle(actor);
         RequireActionLocation(actor, c.Action);
         long quantity = c.Action.Quantity;

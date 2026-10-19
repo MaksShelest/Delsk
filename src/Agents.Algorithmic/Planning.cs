@@ -30,6 +30,7 @@ public sealed partial class AlgorithmicController
         foreach(var step in _state.Plan.Skip(_state.NextStep))
         {
             var a=step.Action;
+            if(a.Kind is ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade && !o.Negotiations.Any(n=>n.Id==a.NegotiationId && n.Current.Version==a.NegotiationVersion && n.Status==NegotiationStatus.Proposed && n.ExpiresTick>o.Tick))return false;
             if(a.Kind==ActionKind.DeliverContract && !o.OwnDeliveryContracts.Any(c=>c.Id==a.ContractId && c.Supplier==Actor && c.UnprovidedQuantity>=a.Quantity && c.DeadlineTick>o.Tick))return false;
             if(a.Kind==ActionKind.CollectPurchase && !o.OwnMarketAllocations.Any(c=>c.Id==a.PurchaseId && c.Buyer==Actor && c.RemainingQuantity>=a.Quantity && c.DeadlineTick>o.Tick))return false;
             if(a.Kind is ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.SignSupport && !o.Support.Proposals.Any(p=>p.Id==a.SupportProposalId && p.Election==o.Elections.NextElectionId &&

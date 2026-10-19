@@ -93,6 +93,7 @@ public class DeliveryTests
     {
         var d = Scenario(); d = d with { Participants = [.. d.Participants,
             d.Participants[0] with { Id = 3 }, d.Participants[0] with { Id = 4 }] };
+        d=TradeFixtures.WithShops(d,3,4);
         GameSession Run(bool reverse)
         {
             var s = Session(d); long o = Offer(s, 15);

@@ -119,6 +119,7 @@ public partial class RouteMiniMap(ScenarioDefinition scenario) : Control
     public HashSet<Cell> Allowed=[];
     public HashSet<Cell> Blocked=[];
     public Cell[] Stops=[];
+    public Cell[] Path=[];
     public Cell Current;
     private float CellSize=>Mathf.Min(Size.X/scenario.MapWidth,Size.Y/scenario.MapHeight);
     private Vector2 Origin=>(Size-new Vector2(scenario.MapWidth,scenario.MapHeight)*CellSize)/2;
@@ -136,6 +137,7 @@ public partial class RouteMiniMap(ScenarioDefinition scenario) : Control
             if(Stops.Contains(cell))DrawRect(area,new Color("ead275"),false,2);
             if(Current==cell)DrawCircle(area.GetCenter(),Mathf.Max(2,CellSize/5),Colors.White);
         }
+        for(int i=1;i<Path.Length;i++)DrawLine(Origin+(new Vector2(Path[i-1].X,Path[i-1].Z)+Vector2.One/2)*CellSize,Origin+(new Vector2(Path[i].X,Path[i].Z)+Vector2.One/2)*CellSize,new Color("ead275"),2);
         for(int i=0;i<Stops.Length;i++)
             DrawString(ThemeDB.FallbackFont,Origin+new Vector2(Stops[i].X+.15f,Stops[i].Z+.8f)*CellSize,(i+1).ToString(),fontSize:Mathf.Max(9,(int)CellSize-2),modulate:Colors.Black);
     }
