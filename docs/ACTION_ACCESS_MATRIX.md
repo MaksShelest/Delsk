@@ -1,5 +1,7 @@
 # Покрытие команд и правил доступа — пакет1
 
+Пакет3 добавил обычные `BuyResource`/`LeaseResource` (AtLocation), `StopTransfer`/`MoveEquipment`/`SetExtractionRoute`/`SetTransportRoute` (Remote). Первые требуют местной ресурсной клетки; остальные проверяют своё владение/безопасное состояние/совместимость в Core. UI — контекст ресурса и карточки/редактор маршрута; NPC имеет те же права. Transfer/CollectPurchase/DeliverContract теперь физический процесс с holds/progress/Stop. Build проверяет walls/committed paths до оплаты. Подробности — [PHYSICAL_AUTOMATION.md](PHYSICAL_AUTOMATION.md). Ниже историческая матрица пакета1, не полный актуальный enum.
+
 Пакет2: при активной стадии голосования Core блокирует остальные команды; SetVoteChoice принимается на той же временной границе один раз и соблюдает signed binding. Developer-вмешательства отсутствуют в ActionKind и ordinary binaries; [отдельная процедура](DEVELOPER_TOOLS.md).
 
 Автор: Шелестов Максим Евгеньевич. 19.10.2026.

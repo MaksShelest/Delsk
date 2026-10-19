@@ -72,8 +72,15 @@ public sealed partial class SimulationEngine
         if (actor.Position != before)
         {
             _economy.Inventories[actor.Inventory].Position = actor.Position;
+            int transferPhase=_phase;_phase=9;
+            try { foreach(var t in _transfers.Values.Where(t=>t.Owner.Value==actor.Id).ToArray()) CancelTransfer(t,"LeftTransferLocation"); }
+            finally { _phase=transferPhase; }
+            if (actor.Job is { } movingJob && IsHarvest(movingJob) && _resourceClaims.TryGetValue(movingJob.Id, out var claim) && claim.Position != actor.Position &&
+                _resources.TryGetValue((actor.Position,movingJob.Item), out var nextSite) && nextSite.Definition.ItemId == movingJob.Item &&
+                movingJob.EquipmentId == 0 && ResourceAccess(actor.Id, nextSite) && nextSite.Stock - ResourceReserved(actor.Position,movingJob.Item) >= claim.Quantity)
+                _resourceClaims[movingJob.Id] = claim with { Position = actor.Position };
             if (actor.Job is { } job && IsHarvest(job) &&
-                (!_config.ResourceNodes.Any(n => n.Position == actor.Position && n.ItemId == job.Item) ||
+                (!_resourceClaims.TryGetValue(job.Id, out var activeClaim) || activeClaim.Position != actor.Position ||
                  job.EquipmentId != 0 && _equipment[job.EquipmentId].Position != actor.Position))
             {
                 // Travel happens between committed ticks, including immediately after load.

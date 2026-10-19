@@ -12,6 +12,12 @@ public sealed partial class SimulationEngine
         RequireActionLocation(actor, c.Action);
         long quantity = c.Action.Quantity;
         if (quantity <= 0 || quantity > a.RemainingQuantity) throw new RuleViolation("InvalidQuantity");
+        BeginTransfer(actor,c,a.SourceInventory.Value,actor.Inventory,a.ItemId,quantity,"Pickup",a.Id);
+    }
+    private void CompletePickupTransfer(ActorState actor,TransferOperation transfer,long quantity)
+    {
+        int index=_marketAllocations.FindIndex(a=>a.Id==transfer.Contract);
+        var a=_marketAllocations[index];
         long collected = checked(a.CollectedQuantity + quantity), payment = checked(quantity * a.UnitPriceMinor);
         var next = a with
         {
@@ -21,10 +27,10 @@ public sealed partial class SimulationEngine
         };
         var tx = _economy.Begin(Tick);
         tx.ConsumeReserved(a.SourceInventory.Value, a.StockHold, quantity);
-        tx.AddStock(actor.Inventory, a.ItemId, quantity);
+        tx.ReceiveReservedCapacity(actor.Inventory,transfer.CapacityHold,a.ItemId,quantity);
         tx.Pay(a.EscrowAccount.Value, _actors[a.Seller.Value].Account, payment, "PickupPayment");
         tx.Commit(); _marketAllocations[index] = next;
-        Emit("PurchaseCollected", actor.Id, a.Id, a.ItemId, quantity, payment, next.Status, c.CommandId);
+        Emit("PurchaseCollected", actor.Id, a.Id, a.ItemId, quantity, payment, next.Status, transfer.CommandId);
     }
 
     private static long PickupFine(long value, int basisPoints) => checked((long)((Int128)value * basisPoints / 10000));
@@ -36,6 +42,7 @@ public sealed partial class SimulationEngine
         {
             var a = _marketAllocations[index];
             if (a.ClosedTick is not null || Tick < a.DeadlineTick) continue;
+            foreach(var t in _transfers.Values.Where(t=>t.Kind=="Pickup" && t.Contract==a.Id).ToArray()) CancelTransfer(t,"ContractClosed");
             long remaining = a.RemainingQuantity, value = checked(remaining * a.UnitPriceMinor);
             long fine = PickupFine(value, Market.PickupFineBasisPoints), refund = checked(value - fine);
             var next = a with

@@ -84,6 +84,12 @@ if args.report:
     if report.get('StoppedVotingRestoredTicks') != [3,6] or report.get('StoppedVotingFinalHash') != (root/'scenarios/platform-stopped.final.sha256').read_text().strip():
         raise SystemExit('Stopped voting save/load/final hash probe was not completed')
     print('Stopped voting: frozen boundaries3/6 restored, ballots consumed without economic ticks, final10 hash matches runner')
+    with (root/'scenarios/platform-physical.checkpoints.csv').open(newline='') as source:
+        physical=list(csv.DictReader(source))
+    if (report.get('PhysicalCheckedTicks')!=len(physical) or report.get('PhysicalStateHash')!=physical[-1]['state_hash'] or
+            report.get('PhysicalRestoredTicks')!=[14,18,25,33,42,76]):
+        raise SystemExit('Physical handling/machine movement checkpoint probe was not completed')
+    print(f'Physical probe: {len(physical)} checkpoints match runner; partial loading/receipt and machine motion restored')
 if args.windows_directory:
     folder = args.windows_directory
     executable = (folder / 'DelskProbe.exe').read_bytes()

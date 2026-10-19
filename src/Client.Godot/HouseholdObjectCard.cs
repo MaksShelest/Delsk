@@ -19,9 +19,11 @@ public partial class HouseholdObjectCard : VBoxContainer
     private readonly SpinBox _quantity = new() { MinValue = 1, MaxValue = 1000000, Value = 1, Step = 1, CustomMinimumSize = new(125, 0) };
     private readonly VBoxContainer _actions = new();
     private readonly Dictionary<string, (Button Button, GameAction Action)> _buttons = [];
+    private readonly RouteEditor _routes;
     private PlayerView? _lastView;
     private bool _pending;
     private bool _paused;
+    private string? _activeTransferKey;
     private readonly Dictionary<string, VBoxContainer> _actionGroups = [];
 
     public HouseholdObjectCard(ScenarioDefinition scenario, string language, string kind, long id,
@@ -32,12 +34,14 @@ public partial class HouseholdObjectCard : VBoxContainer
         var amount = new HBoxContainer(); AddChild(amount);
         amount.AddChild(new Label { Text = L("Количество для переноса", "Transfer quantity") }); amount.AddChild(_quantity);
         AddChild(_actions);
+        var routeToggle=new Button{Text=L("Маршруты ▸","Routes ▸"),FocusMode=FocusModeEnum.None};AddChild(routeToggle);
+        _routes=new(scenario,language,kind,id,submit){Visible=false};AddChild(_routes);routeToggle.Pressed+=()=>_routes.Visible=!_routes.Visible;
         _quantity.ValueChanged += _ => { if (_lastView is not null) ShowData(_lastView,_pending,_paused); };
     }
 
     public void ShowData(PlayerView view, bool pending, bool paused)
     {
-        _lastView = view; _pending = pending; _paused = paused;
+        _lastView = view; _pending = pending; _paused = paused;_routes.ShowData(view,pending);
         var actions = new List<(string Key, string Text, GameAction Action, bool Enabled)>();
         long quantity = (long)_quantity.Value;
         void Add(string key, string text, GameAction action, bool enabled = true) => actions.Add((key, text, action, enabled));
@@ -88,10 +92,17 @@ public partial class HouseholdObjectCard : VBoxContainer
             foreach (var item in _scenario.Items)
             {
                 string name = PlayerText.Item(_language, item.Id), destination = InventoryName(view, inventory.Id);
-                Add($"put:{inventory.Id.Value}:{item.Id}", L("Передать ", "Supply ") + name + $" ×{quantity} → " + destination,
-                    PlayerDesk.Transfer(pack.Id.Value, inventory.Id.Value, item.Id, quantity), Free(pack, item.Id) >= quantity && Room(inventory, item, quantity));
-                Add($"take:{inventory.Id.Value}:{item.Id}", L("Забрать ", "Take ") + name + $" ×{quantity} ← " + destination,
-                    PlayerDesk.Transfer(inventory.Id.Value, pack.Id.Value, item.Id, quantity), Free(inventory, item.Id) >= quantity && Room(pack, item, quantity));
+                void TransferChoice(string direction,InventoryView from,InventoryView to,long wanted,string suffix)
+                {
+                    long possible=Math.Min(Free(from,item.Id),Math.Max(0,to.Capacity-to.OccupiedVolume-to.ReservedCapacity)/item.UnitVolume);
+                    long q=Math.Min(wanted,possible);
+                    string amount=suffix=="one"?L("1 ед.: ","1 unit: "):suffix=="all"?L("Всё: ","All: "):L("Выбранное: ","Selected: ");
+                    Add($"{direction}:{inventory.Id.Value}:{item.Id}:{suffix}",amount+(direction=="put"?L("Передать ","Supply "):L("Забрать ","Take "))+name+$" ×{q} "+(direction=="put"?"→ ":"← ")+destination,
+                        PlayerDesk.Transfer(from.Id.Value,to.Id.Value,item.Id,Math.Max(1,q)),q>0);
+                }
+                TransferChoice("put",pack,inventory,quantity,"selected");TransferChoice("take",inventory,pack,quantity,"selected");
+                TransferChoice("put",pack,inventory,1,"one");TransferChoice("take",inventory,pack,1,"one");
+                TransferChoice("put",pack,inventory,long.MaxValue,"all");TransferChoice("take",inventory,pack,long.MaxValue,"all");
             }
         var groups = view.Employment.Where(g => machine is null ? g.Role == EmploymentRole.Production && g.Id.Value == _id ||
             view.Logistics.Any(l => l.EnterpriseId.Value == _id && l.GroupId == g.Id) : g.Id == machine.GroupId).ToArray();
@@ -105,7 +116,19 @@ public partial class HouseholdObjectCard : VBoxContainer
         }
         _delivery.Text = "";
         if (enterprise is not null) LogisticsActions(view, enterprise, Add);
+        if(view.Transfers.Length>0)Add("transfer-stop",L("Остановить передачу","Stop transfer"),new(ActionKind.StopTransfer));
         UpdateActions(actions, pending);
+        if(view.Transfers.Length==0 && !pending)_activeTransferKey=null;
+        foreach(var (key,pair) in _buttons)
+            if(pair.Button is ContextActionButton button)
+            {
+                var action=pair.Action;var process=view.Transfers.FirstOrDefault(t=>t.Source==action.Source.Value && t.Destination==action.Destination.Value && t.ItemId==action.ItemId);
+                long volume=_scenario.Items.Single(i=>i.Id==action.ItemId).UnitVolume;
+                if(process is not null && _activeTransferKey is null && key.EndsWith(":selected",StringComparison.Ordinal))_activeTransferKey=key;
+                bool active=process is not null && _activeTransferKey==key;
+                button.ShowProgress(!active?0:100d*(double)((Int128)process!.Completed*volume+process.WorkRemainder)/(double)((Int128)process.Quantity*volume));
+                if(active)button.ShowCaption(L("Передано ","Transferred ")+process!.Completed+"/"+process.Quantity+" · "+PlayerText.Item(_language,process.ItemId));
+            }
     }
 
     private void LogisticsActions(PlayerView view, EnterpriseView enterprise, System.Action<string, string, GameAction, bool> add)
@@ -116,7 +139,9 @@ public partial class HouseholdObjectCard : VBoxContainer
             add("truck", L("Купить грузовик — ", "Buy truck — ") + PlayerText.Money((_scenario.Logistics ?? new()).PurchasePriceMinor), PlayerDesk.BuyLogistics(_id), true); return;
         }
         _delivery.Text = L("Доставка · уровень ", "Logistics · level ") + system.Level + L(" · вместимость ", " · capacity ") + view.Inventories.Single(i=>i.Id==system.CargoInventory).Capacity + "\n" + (system.Trip is { } trip
-            ? TabletText.Reason(_language, trip.State) + " · " + PlayerText.Item(_language, trip.ItemId) + $" ×{trip.Quantity}" + L(" · завершение через ", " · completes in ") + Math.Max(0, trip.EndTick - view.Tick) + L(" тиков", " ticks")
+            ? TabletText.Reason(_language, system.ReasonCode) + " · " + PlayerText.Item(_language, trip.ItemId) + $" ×{trip.Quantity}" +
+                (trip.Freight is {} freight ? L(" · загружено "," · loaded ")+freight.Loaded+L(", передано ",", delivered ")+freight.Received:"")+
+                L(" · ориентир без ожиданий: ", " · estimate without waits: ") + Math.Max(0, trip.EndTick - view.Tick) + L(" тиков", " ticks")
             : TabletText.Reason(_language, system.ReasonCode)) + "\n" + string.Join("\n", system.Queue.Select(j => (j.Enabled ? "✓ " : "— ") + Route(view, j)));
         add("output", system.Enabled ? L("Остановить отправку", "Stop outbound") : L("Включить отправку", "Enable outbound"), PlayerDesk.Supplies(system.Id.Value, LogisticsDirection.Output, !system.Enabled), true);
         add("inbound", system.InboundEnabled ? L("Остановить подвоз", "Stop inbound") : L("Включить подвоз", "Enable inbound"), PlayerDesk.Supplies(system.Id.Value, LogisticsDirection.Inbound, !system.InboundEnabled), true);
@@ -134,7 +159,7 @@ public partial class HouseholdObjectCard : VBoxContainer
                 new(ActionKind.SetLogisticsContract, Logistics: system.Id, ContractId: contract.Id, Enabled: true), system.Trip is null);
         foreach (var job in system.Queue)
             add("queue:" + job.Key, (job.Enabled ? L("Убрать задание: ", "Disable job: ") : L("Добавить задание: ", "Enable job: ")) + Route(view, job),
-                new(ActionKind.QueueLogisticsJob, Logistics: system.Id, ContractId: job.ContractId, Destination: job.OwnDestination, Source: job.InboundSource, Enabled: !job.Enabled), true);
+                job.Source.Value!=0?new(ActionKind.SetTransportRoute,Logistics:system.Id,Source:job.Source,Destination:job.Destination,ItemId:job.ItemId,Enabled:!job.Enabled):new(ActionKind.QueueLogisticsJob, Logistics: system.Id, ContractId: job.ContractId, Destination: job.OwnDestination, Source: job.InboundSource, Enabled: !job.Enabled), true);
         // Queue additional work independently of the primary route, using Core's normal priorities.
         foreach (var b in view.Buildings.Where(b => b.Kind is BuildingKind.Warehouse or BuildingKind.Shop))
             add("queue-out:" + b.Id.Value, L("В очередь отправки → ", "Queue outbound → ") + InventoryName(view, b.InputId),
@@ -149,8 +174,8 @@ public partial class HouseholdObjectCard : VBoxContainer
         {
             if (!_buttons.TryGetValue(row.Key, out var old))
             {
-                var button = new Button { FocusMode = FocusModeEnum.None, Alignment = HorizontalAlignment.Left, AutowrapMode = TextServer.AutowrapMode.WordSmart };
-                string key = row.Key; button.Pressed += () => _submit(_buttons[key].Action);
+                Button button = row.Action.Kind==ActionKind.Transfer ? new ContextActionButton(row.Text) : new Button { FocusMode = FocusModeEnum.None, Alignment = HorizontalAlignment.Left, AutowrapMode = TextServer.AutowrapMode.WordSmart };
+                string key = row.Key; button.Pressed += () => {var action=_buttons[key].Action;if(action.Kind==ActionKind.Transfer)_activeTransferKey=key;_submit(action);};
                 string section = row.Action.Kind switch
                 {
                     ActionKind.Transfer => L("Запасы и перенос", "Stock and transfers"),
@@ -166,7 +191,7 @@ public partial class HouseholdObjectCard : VBoxContainer
                 }
                 group.AddChild(button); old = (button, row.Action);
             }
-            var access = _access(row.Action); old.Button.Text = row.Text;
+            var access = _access(row.Action); if(old.Button is ContextActionButton transferButton)transferButton.ShowCaption(row.Text);else old.Button.Text = row.Text;
             old.Button.Disabled = pending || !row.Enabled || !access.Allowed;
             old.Button.TooltipText = access.Allowed ? row.Enabled ? "" : L("Проверьте запас, место и безопасное состояние объекта.", "Check stock, capacity and the object's safe state.") : PlayerText.Reason(_language, access.ReasonCode) + " " + string.Join(", ", access.Locations.Select(c => $"({c.X},{c.Z})"));
             _buttons[row.Key] = (old.Button, row.Action);
@@ -179,7 +204,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         var building = view.Buildings.SingleOrDefault(b => b.InputId == id || b.OutputId == id);
         return building is null ? L("Запас #", "Storage #") + id.Value : PlayerText.Building(_language, building.TypeId) + " #" + building.Id.Value + (building.OutputId == id ? L(" · выход", " · output") : L(" · вход", " · input"));
     }
-    private string Route(PlayerView view, LogisticsJobView job) => job.ContractId > 0 ? L("Договор #", "Contract #") + job.ContractId : job.InboundSource.Value > 0 ? L("Подвоз из ", "Collect from ") + InventoryName(view, job.InboundSource) : L("Отправка в ", "Deliver to ") + InventoryName(view, job.OwnDestination);
+    private string Route(PlayerView view, LogisticsJobView job) => job.Source.Value!=0?InventoryName(view,job.Source)+" → "+InventoryName(view,job.Destination)+" · "+PlayerText.Item(_language,job.ItemId):job.ContractId > 0 ? L("Договор #", "Contract #") + job.ContractId : job.InboundSource.Value > 0 ? L("Подвоз из ", "Collect from ") + InventoryName(view, job.InboundSource) : L("Отправка в ", "Deliver to ") + InventoryName(view, job.OwnDestination);
     private string Recipe(string id) { var recipe = _scenario.Recipes.Single(r => r.Id == id); return PlayerText.Item(_language, recipe.InputItem) + $" ×{recipe.InputQuantity} → " + PlayerText.Item(_language, recipe.OutputItem) + $" ×{recipe.OutputQuantity}"; }
     private string Role(EmploymentRole role) => role switch { EmploymentRole.Production => L("Производство", "Production"), EmploymentRole.Extraction => L("Добыча", "Extraction"), _ => L("Доставка", "Logistics") };
     private static long Free(InventoryView stock, string item) => stock.Stock.Where(s => s.ItemId == item).Sum(s => s.Quantity - s.Reserved);

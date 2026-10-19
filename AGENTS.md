@@ -2,7 +2,18 @@
 
 Автор проекта и материалов: Шелестов Максим Евгеньевич.
 
-Актуальные версии/статусы — в разделе «Пакет2»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
+Актуальные версии/статусы — в разделе «Пакет3»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
+
+## Пакет3, актуально19.10.2026
+
+- После PR#38 реализованы P37–P42; факты/границы — docs/IMPLEMENTATION_REPORT_PACKAGE3.md, процедура — docs/PHYSICAL_AUTOMATION.md. Дальше пакет4 P43–P47 только по заданию. P32/P33 сохраняют зависимости; спецификация0.5 не изменяется.
+- World16/Rules physical-automation-1, Session2/Envelope2. World15 не мигрируется/не перезаписывается. Профиль presentation-economy-v4, ordinary maps one-v2/two-v2/three-v1. Profile меняет баланс ресурсов, не координаты/публичность/initial owner; география явно версионирована в сценарии. Старые карты/сохранённые config не перестраивать.
+- VolumeWork — единая целочисленная работа личного переноса и обработки грузовика. Переносить только завершённые единицы, сохранять remainder/holds; Stop/уход освобождает остаток. Pickup/Delivery платят по фактическому приёму, deadline закрывает незавершённый остаток. Godot рисует подтверждённый прогресс, не выдаёт товар.
+- Freight использует прежние LogisticsState/crew/cargo/queue, а не вторую систему. Handling = worker rate × level × current N, при N0 ждёт; начатое движение сохраняет committed speed. Предварительный бюджет включает обработку/возможный возврат; ставка меняется после фактического конца рейса. Груз/return capacity сохраняются при Stop/expiry/edit. Вход custom route на базу подчинён InboundEnabled, отправка — Enabled, production независимо.
+- Natural stock/claim/regen и права сохраняются отдельно от личных товаров. Lease expiry phase0 до работы,1200 — параметр пилота; unfinished job отменяется, готовое остаётся. Public медленнее восстанавливается, ручная скорость та же. Техника только на купленной клетке; оплачивать фактическое движение и добычу, простой бесплатен. Возобновлять добычу при освобождении места, не ждать пустого возвращения грузовика; переезд источника при активном вывозе запрещён.
+- Walls — клетки относительно building footprint, anchor всегда gate. Shared BFS/manual/minimap; unsafe build отклоняется до оплаты, нельзя перекрывать выданный pickup/committed path. При сглаживании клеточного движения не срезать углы.
+- Routes:32 extraction stops,64 jobs; ordinary commands/validators, только свои building/equipment источники, свои совместимые building input получатели. Активный рейс/груз переживает edit. Никаких индивидуальных работников/нового fleet planner/LLM.
+- Research physical-state.json обязателен во всех exports;21 direct/17 world-only comparison files. Независимо проверять природный stock по ResourceConsumed/ResourceRegenerated и bought-resource land в public capital. Ordinary773/Developer779 tests; Linux hash probe включает physical81 ticks и restore14/18/25/33/42/76. Аппаратные Windows/Android/60FPS/длинная история P27 остаются отдельными gates.
 
 ## Пакет2, актуально19.10.2026
 

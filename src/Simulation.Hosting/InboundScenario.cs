@@ -29,10 +29,10 @@ public static partial class ScriptedScenarios
         session.Step();var state=session.Engine.Inspect();
         long Count(InventoryId id,string item)=>state.Inventories.Single(i=>i.Id==id).Stock.SingleOrDefault(s=>s.ItemId==item)?.Quantity??0;
         if(Count(factory.InputId,"wood")!=1||Count(warehouse.InputId,"wood")!=15||Count(warehouse.InputId,"plank")!=7||
-            Count(factory.OutputId,"plank")!=0||session.Engine.Observe(owner).Account.BalanceMinor!=78050||
+            Count(factory.OutputId,"plank")!=0||session.Engine.Observe(owner).Account.BalanceMinor!=77750||
             state.Accounts.Sum(a=>a.BalanceMinor)!=200000||state.EmploymentGroups.Count(g=>g.Role==EmploymentRole.Logistics)!=1||
             state.Accounts.Sum(a=>a.ReservedMinor)!=0||state.Inventories.Sum(i=>i.ReservedCapacity)!=0||
-            session.Engine.Ledger().Where(l=>l.Reason=="LogisticsWages").Sum(l=>l.AmountMinor)!=900)
-            throw new InvalidOperationException("Inbound production output cycle differs from expected balances");
+            session.Engine.Ledger().Where(l=>l.Reason=="LogisticsWages").Sum(l=>l.AmountMinor)!=1200)
+            throw new InvalidOperationException($"Inbound production output cycle differs from expected balances; cash={session.Engine.Observe(new(1)).Account.BalanceMinor}; logisticsWages={session.Engine.Ledger().Where(l=>l.Reason=="LogisticsWages").Sum(l=>l.AmountMinor)}");
     }
 }

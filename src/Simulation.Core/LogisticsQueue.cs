@@ -60,11 +60,11 @@ public sealed partial class SimulationEngine
         bool shortage = enterprise.Enabled && _economy.Inventories[enterprise.Input].Free(enterprise.Recipe.InputItem) < enterprise.Recipe.InputQuantity;
         foreach (var job in l.Queue.OrderBy(j => j.Key, StringComparer.Ordinal))
         {
-            bool input = job.InboundSource.Value != 0;
+            bool input = job.InboundSource.Value != 0 || job.Source.Value!=0 && job.Destination.Value==enterprise.Input;
             if (!job.Enabled || !(input ? l.InboundEnabled : l.Enabled)) continue;
             try
             {
-                var plan = input ? InboundLogisticsPlan(l, job.InboundSource.Value) :
+                var plan = job.Source.Value!=0 ? TransportPlan(l,job) : input ? InboundLogisticsPlan(l, job.InboundSource.Value) :
                     OutputLogisticsPlan(l, job.ContractId, job.OwnDestination.Value) with { OwnDestination = job.OwnDestination.Value, GoodsSource = l.Source };
                 int priority = job.ContractId != 0 ? 0 : input ? (shortage ? 1 : 3) : 2;
                 long deadline = job.ContractId != 0 ? _deliveryContracts[plan.Index].DeadlineTick : long.MaxValue;
@@ -93,6 +93,8 @@ public sealed partial class SimulationEngine
         foreach (var j in l.Queue)
         {
             long contract = j.ContractId, destination = j.OwnDestination.Value, source = j.InboundSource.Value;
+            if(j.Source.Value!=0)
+            {if(!TransportSource(l.Owner,j.Source.Value) || !_buildings.Values.Any(b=>b.Owner==l.Owner && b.Input==j.Destination.Value) || j.Key!=TransportKey(j.Source.Value,j.Destination.Value,j.ItemId) || j.LastServed<0 || j.LastServed>l.DispatchCount)throw new InvalidOperationException("Invalid transport job");continue;}
             if (contract < 0 || destination < 0 || source < 0 || (contract > 0 ? 1 : 0) + (destination > 0 ? 1 : 0) + (source > 0 ? 1 : 0) != 1 ||
                 j.Key != JobKey(contract, destination, source) || j.LastServed < 0 || j.LastServed > l.DispatchCount ||
                 contract != 0 && !_deliveryContracts.Any(d => d.Id == contract && d.Supplier.Value == l.Owner) ||
@@ -100,7 +102,7 @@ public sealed partial class SimulationEngine
                 throw new InvalidOperationException("Invalid queued logistics job");
         }
         if (l.Trip is { } t && !l.Queue.Any(j => j.Key == t.JobKey && j.ContractId == t.ContractId &&
-                j.InboundSource == t.InboundSource && (t.InboundSource.Value != 0 || j.OwnDestination == t.OwnDestination) && j.LastServed == l.DispatchCount))
+                (j.Source.Value!=0 || j.InboundSource == t.InboundSource && (t.InboundSource.Value != 0 || j.OwnDestination == t.OwnDestination)) && j.LastServed == l.DispatchCount))
             throw new InvalidOperationException("Logistics trip has no dispatched queue job");
     }
 }

@@ -86,7 +86,7 @@ public class ElectionTests
     [Fact]
     public void NewEquipmentAfterAnElectionDoesNotRewriteEarlierEmploymentSnapshots()
     {
-        var d=Scenario([0,0]) with {EquipmentTypes=[new("extractor","wood",[new(1,1,2,20,20,1,2,1)])]};
+        var d=Scenario([0,0]) with {ResourceNodes=[new("wood",new(0,0),new(false,InitialOwner:1))],EquipmentTypes=[new("extractor","wood",[new(1,1,2,20,20,1,2,1)])]};
         var s=Session(d); s.AdvanceTo(10); var before=JsonSerializer.Serialize(Result(s));
         Assert.Equal("Accepted",Execute(s,new(ActionKind.BuyEquipment,EquipmentTypeId:"extractor",Target:new(0,0))));
         s.AdvanceTo(20); Assert.Equal(3,Result(s).Employment.Length); Assert.Equal(2,State(s).Results[0].Employment.Length);
@@ -125,7 +125,7 @@ public class ElectionTests
     [Fact]
     public void ProductionExtractionAndOneSharedLogisticsGroupContributeExactlyOnce()
     {
-        var d=Fixtures.Cycle() with {Population=8,Elections=new(60),Labor=new(StepTicks:1,MobilityNumerator:1,MobilityDenominator:1,GrowthPerPeriod:0),
+        var d=Fixtures.Cycle() with {ResourceNodes=[new("wood",new(0,0),new(false,InitialOwner:1))],Population=8,Elections=new(60),Labor=new(StepTicks:1,MobilityNumerator:1,MobilityDenominator:1,GrowthPerPeriod:0),
             Enterprises=[Fixtures.Cycle().Enterprises.Single() with {Position=new(0,0)}],
             Recipes=[Fixtures.Cycle().Recipes.Single() with {FullStaffTicks=3}],
             EquipmentTypes=[new("extractor","wood",[new(1,1,2,1000,2,2,2,1)])],Logistics=new(PurchasePriceMinor:1,WageMinor:1)};

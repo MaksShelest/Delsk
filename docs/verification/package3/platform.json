@@ -1,0 +1,52 @@
+{
+  "Status": "passed",
+  "Failure": null,
+  "Tick": 62,
+  "StateHash": "25b1994c6bf9331bafd1a7e69d190eff4f3dba95b13a9fb344c1c26e22de7f7c",
+  "CheckedTicks": 62,
+  "LifecycleAdapterChecked": true,
+  "CheckpointRestoreChecked": true,
+  "RestoredTicks": [
+    12,
+    34,
+    55,
+    60
+  ],
+  "ElectionCheckedTicks": 40,
+  "ElectionStateHash": "bcd99f78947ba2a9bd518843240613afee78d38745adc112785fa139140783cd",
+  "ElectionRestoredTicks": [
+    9,
+    19,
+    20,
+    21
+  ],
+  "SupportCheckedTicks": 120,
+  "SupportStateHash": "a21cfdcce0d013cc7a1338add2fb9d5fcecf44026214f1366582f45fe0f0baab",
+  "SupportRestoredTicks": [
+    17,
+    18,
+    19,
+    27,
+    99,
+    100
+  ],
+  "StoppedVotingFinalHash": "b3dff08d2b1d6cc259d47078afe4eeacd99723b991dae44c858d46acae94994b",
+  "StoppedVotingRestoredTicks": [
+    3,
+    6
+  ],
+  "PhysicalCheckedTicks": 81,
+  "PhysicalStateHash": "aef605acd08aa8ed9d4b3d38a214d76be395659d5bed0ede1cd05412f8741c17",
+  "PhysicalRestoredTicks": [
+    14,
+    18,
+    25,
+    33,
+    42,
+    76
+  ],
+  "Runtime": "10.0.12",
+  "Platform": "Linux",
+  "GodotVersion": "4.7.2-stable (official)",
+  "Author": "\u0428\u0435\u043B\u0435\u0441\u0442\u043E\u0432 \u041C\u0430\u043A\u0441\u0438\u043C \u0415\u0432\u0433\u0435\u043D\u044C\u0435\u0432\u0438\u0447"
+}

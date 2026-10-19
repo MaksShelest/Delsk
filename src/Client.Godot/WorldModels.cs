@@ -47,6 +47,15 @@ public static class WorldModels
         return root;
     }
 
+    public static Node3D DepletedResource(string item)
+    {
+        var root=new Node3D();
+        if(item=="wood")
+            foreach(float x in new[]{-.25f,0,.25f})Cylinder(root,.09f,.12f,new Color("795438"),new Vector3(x,.06f,0));
+        else Box(root,new Vector3(.85f,.04f,.85f),new Color("98714b"),new Vector3(0,.02f,0));
+        return root;
+    }
+
     public static Node3D Building(string kind, string type)
     {
         if (kind == "production" && type == "sawmill") return Sawmill();

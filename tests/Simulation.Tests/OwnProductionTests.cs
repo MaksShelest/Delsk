@@ -58,9 +58,9 @@ public class OwnProductionTests
         Assert.Equal(14, w.Flows.Single(f => f.ItemId == "plank").RecipeInput);
         Assert.Equal(30, w.Flows.Single(f => f.ItemId == "plank").Produced);
         Assert.Equal(60, w.Flows.Single(f => f.ItemId == "wood").Harvested);
-        Assert.Equal(1200, Wages(s)); Assert.Equal(73600, s.Engine.Observe(new(1)).Account.BalanceMinor);
+        Assert.Equal(1600, Wages(s)); Assert.Equal(73200, s.Engine.Observe(new(1)).Account.BalanceMinor);
         Assert.Equal(23350, w.Accounts.Single(a => a.Kind == "Treasury").BalanceMinor);
-        Assert.Equal(3050, w.Accounts.Single(a => a.Kind == "WagesSink").BalanceMinor);
+        Assert.Equal(3450, w.Accounts.Single(a => a.Kind == "WagesSink").BalanceMinor);
         Assert.Equal(200000, w.Accounts.Sum(a => a.BalanceMinor)); Assert.Equal(0, w.ExternalMoneyInMinor);
         Assert.Empty(w.DeliveryContracts); Assert.Empty(w.MarketAllocations);
         Assert.Single(w.EmploymentGroups, g => g.Role == EmploymentRole.Logistics);
@@ -137,11 +137,11 @@ public class OwnProductionTests
         var loaded = CheckpointStore.Decode(CheckpointStore.Encode(s));
         s.AdvanceTo(t.EndTick + 5); loaded.AdvanceTo(t.EndTick + 5);
         Assert.Equal(s.Engine.ComputeStateHash(), loaded.Engine.ComputeStateHash());
-        Assert.Equal(1, System(s).CompletedTrips); Assert.Equal(300, Wages(s));
+        Assert.Equal(1, System(s).CompletedTrips); Assert.Equal(400, Wages(s));
         Assert.Equal(10, Fixtures.Count(s, Destination(s).InputId, "plank"));
         Assert.Equal("Accepted", LandContentFixtures.Reason(s, new(ActionKind.SetProductionEnabled, Enterprise: Destination(s).Id, Enabled: true)));
         s.AdvanceTo(s.Engine.Tick + 10); Assert.Equal(5, Fixtures.Count(s, Destination(s).OutputId, "crate"));
-        Assert.False(System(s).Enabled); Assert.Equal(1, System(s).CompletedTrips); Assert.Equal(300, Wages(s));
+        Assert.False(System(s).Enabled); Assert.Equal(1, System(s).CompletedTrips); Assert.Equal(400, Wages(s));
     }
     [Fact]
     public void FullPausedProductionWaitsUnpaidThenResumesAfterManualSpaceRelease()
@@ -153,7 +153,7 @@ public class OwnProductionTests
         Assert.Equal("Accepted", LandContentFixtures.Reason(s, new(ActionKind.Transfer, Source: Destination(s).InputId,
             Destination: s.Engine.Observe(new(1)).Participant.InventoryId, ItemId: "plank", Quantity: 5)));
         WaitTrips(s, 3); Assert.Equal(15, Fixtures.Count(s, Destination(s).InputId, "plank"));
-        Assert.Single(s.Engine.EventsSince(0), e => e.Type == "LogisticsProductionSet"); Assert.Equal(900, Wages(s));
+        Assert.Single(s.Engine.EventsSince(0), e => e.Type == "LogisticsProductionSet"); Assert.Equal(1200, Wages(s));
     }
     [Fact]
     public void RecipeChangePreservesCommittedCargoButBlocksNewIncompatibleTripsAndAllowsStop()
@@ -199,7 +199,7 @@ public class OwnProductionTests
         Assert.Equal(ResultStatus.Accepted, s.Engine.Enqueue(new(1), command)!.Status);
         Assert.Equal(t.Id, System(s).Trip!.Id); WaitTrips(s, 2); s.Step();
         Assert.Equal(15, s.Engine.EventsSince(0).Where(e => e.Type == "LogisticsProductionReceived").Sum(e => e.Quantity));
-        Assert.Equal(0, Fixtures.Count(s, other, "plank")); Assert.Equal(600, Wages(s));
+        Assert.Equal(0, Fixtures.Count(s, other, "plank")); Assert.Equal(800, Wages(s));
     }
     [Fact]
     public void TwoSystemsShareFiniteDestinationCapacityWithoutPromisingSameSpace()

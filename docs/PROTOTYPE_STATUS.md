@@ -1,5 +1,7 @@
 # Фактическая готовность Delsk
 
+Текущий срез19.10.2026: пакет3 P37–P42 реализован после PR#38. World16/Rules physical-automation-1, профиль presentation-economy-v4.773 ordinary/779 Developer tests,90exports/11replay/60comparisons; дополнительно third-map900/load/replay и Linux Godot81 physical tick hashes/оконный UI. [Отчёт и честные границы](IMPLEMENTATION_REPORT_PACKAGE3.md). Следующий пакет4 P43–P47, без автоматического перехода. P32/P33, аппаратные gates и ограничения длинной истории остаются открыты. Нижние срезы — история.
+
 Актуально19.10.2026 после пакета2: P36/P54/P55 реализованы, World15/Rules stopped-elections-1. [Отчёт и ограничения](IMPLEMENTATION_REPORT_PACKAGE2.md), [Developer и headless](DEVELOPER_TOOLS.md). P32/P33 по-прежнему имеют зависимости. Следующий пакет3 P37–P42; нижние датированные срезы — история.
 
 Автор: Шелестов Максим Евгеньевич. Актуально18.10.2026, P27.

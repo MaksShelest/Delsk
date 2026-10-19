@@ -73,7 +73,7 @@ public partial class PresentationStage : Node3D
                 mover = new Mover(body, at) { Human = actor.Human };
                 _actors[actor.Id] = mover;
             }
-            Target(mover, at, actor.Human ? 0.1f : 1, snap);
+            Target(mover, at, actor.Human ? 0.1f : 1, snap, !actor.Human);
             int labelRow = frame.Actors.Count(other => other.X == actor.X && other.Z == actor.Z && other.Id < actor.Id);
             foreach (var label in mover.Node.GetChildren().OfType<Label3D>())
             {
@@ -108,7 +108,7 @@ public partial class PresentationStage : Node3D
             }
             var heading = at - mover.To;
             if (heading.LengthSquared() > 0.001f) mover.Node.Rotation = new Vector3(0, Mathf.Atan2(-heading.X, -heading.Z), 0);
-            Target(mover, at, 1, snap);
+            Target(mover, at, 1, snap, true);
         }
         foreach (long id in _trips.Keys.Where(id => !live.Contains(id)).ToArray())
         { _trips[id].Node.QueueFree(); _trips.Remove(id); }
@@ -126,8 +126,14 @@ public partial class PresentationStage : Node3D
         }
     }
 
-    private static void Target(Mover mover, Vector3 at, float duration, bool snap)
+    private static void Target(Mover mover, Vector3 at, float duration, bool snap, bool grid = false)
     {
+        if(grid && !snap && !mover.To.IsEqualApprox(at))
+        {
+            var next=at-mover.To;
+            if(Mathf.Abs(next.X)>.01f && Mathf.Abs(next.Z)>.01f || Mathf.Abs(next.X)+Mathf.Abs(next.Z)>1.01f)snap=true;
+            else if(!mover.Node.Position.IsEqualApprox(mover.To))mover.Node.Position=mover.To;
+        }
         if (snap)
         {
             mover.From = mover.To = mover.Node.Position = at;
@@ -191,7 +197,7 @@ public partial class PresentationStage : Node3D
             Node3D? node = null;
             if (marker.Kind == "equipment") node = WorldModels.Equipment(marker.Label);
             else if (marker.Kind == "truck-home") { node = WorldModels.Truck(false); _parked[marker.EntityId] = node; }
-            else if (marker.Kind == "resource") node = WorldModels.Resource(marker.Label);
+            else if (marker.Kind is "resource" or "resource-depleted") node = marker.Kind=="resource"?WorldModels.Resource(marker.Label):WorldModels.DepletedResource(marker.Label);
             else if (marker.Kind is "production" or "warehouse" or "shop" or "capital") node = WorldModels.Building(marker.Kind, marker.Label);
             else
             {
@@ -202,7 +208,7 @@ public partial class PresentationStage : Node3D
                     "plot-own" => new("88b47a"), "plot-foreign" => new("be9285"), "plot-reserved" => new("dbbb70"),
                     _ => new("bfa17c")
                 };
-                WorldModels.Part(tile, new BoxMesh { Size = new Vector3(marker.Kind == "corridor" ? 1 : 0.91f, 0.035f, marker.Kind == "corridor" ? 1 : 0.91f) }, color, new Vector3(0, 0.025f, 0));
+                WorldModels.Part(tile, new BoxMesh { Size = new Vector3(marker.Kind == "corridor" ? 1 : 0.91f, marker.Kind=="blocked"?0.8f:0.035f, marker.Kind == "corridor" ? 1 : 0.91f) }, color, new Vector3(0, 0.025f, 0));
                 if (marker.Kind == "corridor")
                 {
                     bool horizontal = frame.Markers.Any(m => m.Kind == "corridor" && m.Z == marker.Z && Math.Abs(m.X - marker.X) == 1);

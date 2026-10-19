@@ -96,7 +96,7 @@ public sealed partial class SimulationEngine
         long energy = g.Role == EmploymentRole.Production ? _enterprises[g.Id].Recipe.EnergyPerBatchMinor : 0;
         _ = checked(g.Capacity * c.Action.WageMinor + energy);
         if (g.Role == EmploymentRole.Logistics)
-            _ = checked(g.Capacity * c.Action.WageMinor * Math.Max(2L, 2L * (_config.MapWidth * _config.MapHeight - 1) * Logistics.MoveTicksPerCell));
+            _ = checked(g.Capacity * c.Action.WageMinor * MaximumFreightTicks(_config,_logistics[g.Id].CargoCapacity,_logistics[g.Id].Level));
         long payTick = checked(Tick + 1);
         if (g.Role == EmploymentRole.Logistics && _logistics[g.Id].Trip is { } trip)
             payTick = checked(trip.EndTick + 1);
@@ -110,6 +110,12 @@ public sealed partial class SimulationEngine
     {
         foreach (var g in EmploymentGroups().OrderBy(g => g.Id))
         {
+            if(g.Role==EmploymentRole.Logistics && _logistics[g.Id].Trip is not null)
+            {
+                if(g.PayEffectiveTick<=Tick)g.PayEffectiveTick=checked(Tick+1);
+                if(g.AttractionEffectiveTick<=Tick)g.AttractionEffectiveTick=checked(Tick+1);
+                continue;
+            }
             if (g.PayEffectiveTick is { } pay && pay <= Tick)
             {
                 g.Wage = g.PendingWage!.Value; g.PendingWage = null; g.PayEffectiveTick = null;

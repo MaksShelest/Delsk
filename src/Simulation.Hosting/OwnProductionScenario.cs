@@ -34,10 +34,10 @@ public static partial class ScriptedScenarios
         long Count(InventoryId id, string item) => state.Inventories.Single(i => i.Id == id).Stock.SingleOrDefault(s => s.ItemId == item)?.Quantity ?? 0;
         if (Count(destination.InputId, "plank") != 15 || Count(source.OutputId, "plank") != 1 || Count(destination.OutputId, "crate") != 7 ||
             final.Trip is not null || final.ReasonCode != "NoDestinationSpace" ||
-            session.Engine.Observe(owner).Account.BalanceMinor != 73600 ||
-            session.Engine.Ledger().Where(l => l.Reason == "LogisticsWages").Sum(l => l.AmountMinor) != 1200 ||
+            session.Engine.Observe(owner).Account.BalanceMinor != 73200 ||
+            session.Engine.Ledger().Where(l => l.Reason == "LogisticsWages").Sum(l => l.AmountMinor) != 1600 ||
             state.Accounts.Sum(a => a.BalanceMinor) != 200000 || state.DeliveryContracts.Length != 0 ||
             state.Accounts.Sum(a => a.ReservedMinor) != 0 || state.Inventories.Sum(i => i.ReservedCapacity) != 0)
-            throw new InvalidOperationException("Own production cycle differs from expected physical/budget balances");
+            throw new InvalidOperationException($"Own production cycle differs from expected physical/budget balances; cash={session.Engine.Observe(new(1)).Account.BalanceMinor}; logisticsWages={session.Engine.Ledger().Where(l=>l.Reason=="LogisticsWages").Sum(l=>l.AmountMinor)}");
     }
 }

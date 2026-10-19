@@ -27,7 +27,7 @@ public class EconomyProfileTests
             var map = JsonSerializer.Deserialize<ScenarioDefinition>(Text(name),SimulationJson.Options)!;
             var changed = profile.Apply(map);
             Assert.All(changed.Participants,p=>Assert.Equal(34567,p.CashMinor));
-            Assert.Equal(map.ResourceNodes,changed.ResourceNodes); Assert.Equal(map.CapitalDemand!.Terminal,changed.CapitalDemand!.Terminal);
+            Assert.Equal(map.ResourceNodes.Select(n=>(n.ItemId,n.Position)),changed.ResourceNodes.Select(n=>(n.ItemId,n.Position))); Assert.Contains(changed.ResourceNodes,n=>n.Rules is {Public:true}); Assert.Equal(map.CapitalDemand!.Terminal,changed.CapitalDemand!.Terminal);
             Assert.Equal(6,changed.HarvestTicksPerUnit); Assert.Equal(7,changed.Economy!.PlayerWageStepMinor);
         }
     }

@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "Three actual map previews; third map starts with ordinary profile; language and display controls"
+  ],
+  "display": "X11",
+  "failures": [],
+  "mode": "catalog",
+  "window_size": "(1100, 720)"
+}

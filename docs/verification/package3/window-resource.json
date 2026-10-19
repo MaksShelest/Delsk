@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "Unowned resource shows stock, purchase and lease; ordinary lease command changes rights"
+  ],
+  "display": "X11",
+  "failures": [],
+  "mode": "resource",
+  "window_size": "(1100, 720)"
+}

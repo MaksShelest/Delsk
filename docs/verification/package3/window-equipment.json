@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "Saved extraction route/minimap; all-quantity ordinary command; partial authoritative progress and Stop"
+  ],
+  "display": "X11",
+  "failures": [],
+  "mode": "equipment",
+  "window_size": "(1100, 720)"
+}

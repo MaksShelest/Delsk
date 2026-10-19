@@ -10,7 +10,9 @@ internal sealed class GridMap
     private readonly HashSet<Cell> _blocked;
     public GridMap(ScenarioDefinition scenario)
     { _width = scenario.MapWidth; _height = scenario.MapHeight; _blocked = scenario.BlockedCells.ToHashSet(); }
-    public bool Walkable(Cell c) => c.X >= 0 && c.Z >= 0 && c.X < _width && c.Z < _height && !_blocked.Contains(c);
+    private HashSet<Cell> _buildingWalls = [];
+    public void SetBuildingWalls(IEnumerable<Cell> walls) => _buildingWalls=walls.ToHashSet();
+    public bool Walkable(Cell c) => c.X >= 0 && c.Z >= 0 && c.X < _width && c.Z < _height && !_blocked.Contains(c) && !_buildingWalls.Contains(c);
     public Cell[] FindPath(Cell source, Cell destination)
     {
         if (!Walkable(source) || !Walkable(destination)) throw new RuleViolation("NoPath");
@@ -137,9 +139,10 @@ public static partial class ScenarioValidation
             throw new ArgumentException("Invalid logistics settings");
         if (s.Logistics is { } payroll)
         {
-            try { _ = checked(payroll.CrewCapacity * payroll.WageMinor * Math.Max(2L, 2L * (s.MapWidth * s.MapHeight - 1) * payroll.MoveTicksPerCell)); }
+            try { _ = checked(payroll.CrewCapacity * payroll.WageMinor * SimulationEngine.MaximumFreightTicks(s,payroll.CargoCapacity,1)); }
             catch (OverflowException ex) { throw new ArgumentException("Logistics payroll overflow", ex); }
         }
+        ValidateResourceSettings(s);
         ValidateLaborSettings(s);
         ValidateElectionSettings(s);
         ValidateSupportSettings(s);

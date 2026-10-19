@@ -73,7 +73,8 @@ public static class PlayerDesk
             seen.OwnBuildings, seen.OwnEmploymentGroups, seen.OwnLogistics, seen.LaborMarket, seen.Support, seen.Elections, seen.Plots,
             seen.CapitalOffers, seen.Account.AvailableMinor, engine.HarvestOf(actor), engine.EconomyRules,
             new(seen.MarketOffers, seen.OwnMarketBids, seen.OwnMarketAllocations, seen.MarketRules, engine.PublicShops()),
-            seen.OwnEquipment, seen.OwnDeliveryContracts, seen.BuyOffers, seen.OwnSupplyRequests, seen.City);
+            seen.OwnEquipment, seen.OwnDeliveryContracts, seen.BuyOffers, seen.OwnSupplyRequests, seen.City)
+            { Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells() };
     }
 }
 
@@ -81,7 +82,12 @@ public record PlayerView(long Tick, ParticipantView Participant, long CashMinor,
     EnterpriseView[] Enterprises, BuildingView[] Buildings, EmploymentView[] Employment, LogisticsView[] Logistics,
     PublicEmploymentView[] LaborMarket, SupportObservation Support, ElectionObservation Elections, PlotView[] Plots,
     CapitalOfferView[] CapitalOffers, long AvailableCashMinor, OwnHarvest? Harvest = null, EconomicRules? Economy = null, PlayerMarketView? Market = null, EquipmentView[]? Equipment = null, DeliveryContractView[]? Contracts = null,
-    BuyOfferView[]? BuyOffers = null, SupplyRequest[]? SupplyRequests = null, CityEconomy? City = null);
+    BuyOfferView[]? BuyOffers = null, SupplyRequest[]? SupplyRequests = null, CityEconomy? City = null)
+{
+    public System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources {get;init;}=[];
+    public System.Collections.Immutable.ImmutableArray<TransferOperation> Transfers {get;init;}=[];
+    public System.Collections.Immutable.ImmutableArray<Cell> Blocked {get;init;}=[];
+}
 
 public sealed record PlayerMarketView(MarketOfferView[] Offers, MarketBidView[] Bids, MarketAllocationView[] Allocations,
     MarketSettings Rules, PublicShop[] Shops);
@@ -99,6 +105,19 @@ public static class PlayerText
 
     private static Dictionary<string, string> Ru() => new(StringComparer.Ordinal)
     {
+        ["reason.NoResourceRights"]="Нет права добычи: купите или арендуйте ресурсную клетку.",
+        ["reason.ResourceDepleted"]="Ресурс исчерпан; дождитесь восстановления.",
+        ["reason.ResourceUnavailable"]="Ресурсная клетка недоступна для покупки или аренды.",
+        ["reason.ResourceBusy"]="Ресурс уже занят выполняемой работой.",
+        ["reason.ResourceLeaseExpired"]="Срок аренды истёк; незавершённая добыча отменена.",
+        ["reason.InvalidRoute"]="Проверьте остановки, источник, получателя и товар.",
+        ["reason.RouteWouldBeBlocked"]="Стена пересекает действующий маршрут или занятый объект.",
+        ["reason.AccessWouldBeBlocked"]="Стройка перекроет общий доступ.",
+        ["reason.MovingEquipment"]="Техника переезжает.",
+        ["reason.RouteCompleted"]="Однократный маршрут завершён.",
+        ["reason.Unloading"]="Разгрузка.",
+        ["reason.UnloadingReturn"]="Возврат груза в исходное хранилище.",
+
         ["reason.ElectionInProgress"]="Экономика остановлена до получения всех бюллетеней.",
         ["reason.CommittedVote"]="Подписанная поддержка обязывает голосовать за своего кандидата.",
         ["reason.BallotAlreadyCast"]="Бюллетень уже принят.",
@@ -243,6 +262,19 @@ public static class PlayerText
 
     private static Dictionary<string, string> En() => new(StringComparer.Ordinal)
     {
+        ["reason.NoResourceRights"]="No extraction rights: buy or lease this resource site.",
+        ["reason.ResourceDepleted"]="Resource depleted; wait for regeneration.",
+        ["reason.ResourceUnavailable"]="Resource site unavailable for purchase or lease.",
+        ["reason.ResourceBusy"]="Resource reserved by work in progress.",
+        ["reason.ResourceLeaseExpired"]="Lease expired; unfinished extraction cancelled.",
+        ["reason.InvalidRoute"]="Check stops, source, destination and item.",
+        ["reason.RouteWouldBeBlocked"]="A wall would intersect an active route or occupied object.",
+        ["reason.AccessWouldBeBlocked"]="Construction would block shared access.",
+        ["reason.MovingEquipment"]="Equipment moving.",
+        ["reason.RouteCompleted"]="One-way route completed.",
+        ["reason.Unloading"]="Unloading.",
+        ["reason.UnloadingReturn"]="Unloading returned cargo.",
+
         ["reason.ElectionInProgress"]="The economy is stopped until every ballot is received.",
         ["reason.CommittedVote"]="Signed support binds your ballot to its candidate.",
         ["reason.BallotAlreadyCast"]="Your ballot has already been accepted.",

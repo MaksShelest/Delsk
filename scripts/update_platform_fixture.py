@@ -11,6 +11,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('run_directory', type=Path)
 parser.add_argument('--elections-directory', type=Path, help='Verified 40-tick P19 runner output')
 parser.add_argument('--support-directory', type=Path, help='Verified 120-tick P20 runner output')
+parser.add_argument('--stopped-directory', type=Path, help='Verified stopped-voting runner output')
+parser.add_argument('--physical-directory', type=Path, help='Verified physical-automation runner output')
 args = parser.parse_args()
 summary = json.loads((args.run_directory / 'summary.json').read_text())
 if summary['status'] != 'succeeded' or summary['tick'] != 62:
@@ -43,6 +45,29 @@ if args.elections_directory:
         writer = csv.writer(target, lineterminator='\n')
         writer.writerow(['tick','state_hash'])
         writer.writerows((r['tick'], r['state_hash']) for r in rows)
+
+if args.stopped_directory:
+    directory=args.stopped_directory
+    summary=json.loads((directory/'summary.json').read_text())
+    if summary['status']!='succeeded' or summary['tick']!=10:
+        parser.error('Expected the completed stopped-voting fixture')
+    (root/'scenarios/platform-stopped.commands.jsonl').write_bytes((directory/'commands.jsonl').read_bytes())
+    (root/'scenarios/platform-stopped.final.sha256').write_text(summary['stateHash']+'\n')
+
+if args.physical_directory:
+    directory=args.physical_directory
+    summary=json.loads((directory/'summary.json').read_text())
+    logistics=json.loads((directory/'logistics.json').read_text())['systems']
+    if summary['status']!='succeeded' or not logistics or logistics[0]['completedTrips']<2 or logistics[0]['trip'] is not None:
+        parser.error('Expected completed repeated physical deliveries')
+    with (directory/'metrics.csv').open(newline='') as source:
+        rows=list(csv.DictReader(source))
+    if [int(r['tick']) for r in rows]!=list(range(1,summary['tick']+1)) or rows[-1]['state_hash']!=summary['stateHash']:
+        parser.error('Missing physical checkpoint hashes')
+    (root/'scenarios/platform-physical.commands.jsonl').write_bytes((directory/'commands.jsonl').read_bytes())
+    with (root/'scenarios/platform-physical.checkpoints.csv').open('w',newline='') as target:
+        writer=csv.writer(target,lineterminator='\n');writer.writerow(['tick','state_hash'])
+        writer.writerows((r['tick'],r['state_hash']) for r in rows)
 
 if args.support_directory:
     directory = args.support_directory

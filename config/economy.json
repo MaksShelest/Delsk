@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "id": "presentation-economy-v3",
+  "id": "presentation-economy-v4",
   "world": {
     "startingCashMinor": 20000,
     "personalInventoryCapacity": 20,
@@ -177,6 +177,10 @@
           {
             "x": 0,
             "z": 0
+          },
+          {
+            "x": 1,
+            "z": 0
           }
         ],
         "levels": [
@@ -194,6 +198,12 @@
             "outputCapacity": 0,
             "staffCapacity": 0,
             "wageMinor": 0
+          }
+        ],
+        "walls": [
+          {
+            "x": 1,
+            "z": 0
           }
         ]
       },
@@ -374,8 +384,56 @@
           "population": 80,
           "activeProductions": 6
         }
+      },
+      "handling": {
+        "personalVolumePerTick": 4,
+        "workerVolumePerTick": 4
       }
-    }
+    },
+    "resources": [
+      {
+        "itemId": "wood",
+        "private": {
+          "public": false,
+          "capacity": 200,
+          "regenerationQuantity": 10,
+          "regenerationTicks": 120,
+          "purchasePriceMinor": 10000,
+          "leasePriceMinor": 1000,
+          "leaseTicks": 1200
+        },
+        "public": {
+          "public": true,
+          "capacity": 50,
+          "regenerationQuantity": 2,
+          "regenerationTicks": 120,
+          "purchasePriceMinor": 10000,
+          "leasePriceMinor": 1000,
+          "leaseTicks": 1200
+        }
+      },
+      {
+        "itemId": "grain",
+        "private": {
+          "public": false,
+          "capacity": 200,
+          "regenerationQuantity": 10,
+          "regenerationTicks": 120,
+          "purchasePriceMinor": 10000,
+          "leasePriceMinor": 1000,
+          "leaseTicks": 1200
+        },
+        "public": {
+          "public": true,
+          "capacity": 50,
+          "regenerationQuantity": 2,
+          "regenerationTicks": 120,
+          "purchasePriceMinor": 10000,
+          "leasePriceMinor": 1000,
+          "leaseTicks": 1200
+        }
+      }
+    ]
   },
   "npc": {
     "cashReserveMinor": 3000,

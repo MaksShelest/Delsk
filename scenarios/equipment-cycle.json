@@ -66,6 +66,10 @@
       "position": {
         "x": 0,
         "z": 0
+      },
+      "rules": {
+        "public": false,
+        "initialOwner": 1
       }
     },
     {
@@ -73,6 +77,10 @@
       "position": {
         "x": 0,
         "z": 2
+      },
+      "rules": {
+        "public": false,
+        "initialOwner": 2
       }
     }
   ],

@@ -25,6 +25,7 @@ public sealed partial class SimulationEngine
 
     private void BeginHarvestCycle(ActorState actor, string item, string commandId)
     {
+        RequireResource(actor.Id, actor.Position, item, 1);
         long end = checked(Tick + _config.HarvestTicksPerUnit);
         long nextId = checked(_nextId + 1);
         string hold = $"harvest-loop:{_nextId}";
@@ -32,6 +33,7 @@ public sealed partial class SimulationEngine
         tx.ReserveCapacity(actor.Inventory, hold, item, 1); tx.Commit();
         actor.Job = new(_nextId, "HarvestLoop", Tick, end, [], item, 1, hold, commandId);
         _nextId = nextId;
+        ClaimResource(actor.Job.Id, actor.Position, 1);
         Emit("HarvestStarted", actor.Id, actor.Job.Id, item, 1, reason: "Repeating", command: commandId);
     }
 
@@ -48,6 +50,7 @@ public sealed partial class SimulationEngine
         var tx = _economy.Begin(Tick);
         tx.ReleaseCapacity(actor.Inventory, job.CapacityHold); tx.Commit();
         if (job.EquipmentId != 0) _equipment[job.EquipmentId].PersonalJobId = 0;
+        _resourceClaims.Remove(job.Id);
         actor.Job = null;
         Emit("HarvestCancelled", actor.Id, job.Id, job.Item, job.Quantity, reason: reason, command: job.CommandId);
     }
@@ -59,7 +62,7 @@ public sealed partial class SimulationEngine
         if (Tick == 0) return true;
         int commit = _events.FindLastIndex(e => e.Type == "TickCommitted" && e.Tick == Tick && e.Phase == 9);
         return commit >= 0 && _events.Skip(commit + 1).All(e =>
-            IsResearchEvent(e) || IsElectionControlEvent(e) || e.Tick == Tick && e.Phase == 9 && e.Type == "HarvestCancelled" && e.ReasonCode == "LeftResourceArea" &&
+            IsResearchEvent(e) || IsElectionControlEvent(e) || IsTransferControlEvent(e) || e.Tick == Tick && e.Phase == 9 && e.Type == "HarvestCancelled" && e.ReasonCode == "LeftResourceArea" &&
             e.ActorId is { } actor && _actors.ContainsKey(actor.Value) && e.EntityId >= 1000 && e.Quantity > 0 &&
             e.CommandId is { } id && _seenCommands.TryGetValue(id, out var c) && c.ActorId == actor &&
             c.Action.Kind is ActionKind.Harvest or ActionKind.StartHarvesting && c.Action.ItemId == e.ItemId &&

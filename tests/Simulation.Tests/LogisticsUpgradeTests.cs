@@ -46,10 +46,10 @@ public class LogisticsUpgradeTests
         Assert.Equal(2, system.Level); Assert.Equal(1, system.CompletedTrips); Assert.Null(system.Trip);
         Assert.Equal(20, w.Inventories.Single(i => i.Id == system.CargoInventory).Capacity);
         Assert.Equal(3, Crew(s).Capacity); Assert.Equal(0, Crew(s).Headcount);
-        Assert.Equal(105050, s.Engine.Observe(new(1)).Account.BalanceMinor);
+        Assert.Equal(104900, s.Engine.Observe(new(1)).Account.BalanceMinor);
         Assert.Equal(40000, s.Engine.Observe(new(2)).Account.BalanceMinor);
         Assert.Equal(53000, w.Accounts.Single(a => a.Kind == "Treasury").BalanceMinor);
-        Assert.Equal(1950, w.Accounts.Single(a => a.Kind == "WagesSink").BalanceMinor);
+        Assert.Equal(2100, w.Accounts.Single(a => a.Kind == "WagesSink").BalanceMinor);
         Assert.Equal(200000, w.Accounts.Sum(a => a.BalanceMinor));
         var flow = w.Flows.Single(f => f.ItemId == "plank");
         Assert.Equal(30, flow.Produced); Assert.Equal(10, flow.ConstructionInput);
@@ -60,7 +60,7 @@ public class LogisticsUpgradeTests
         Assert.Single(s.Engine.EventsSince(0), e => e.Type == "LogisticsTripPrepared" && e.Quantity == 20);
         var trip = At(LoadedTick + 1); Assert.Equal(new Cell(3, 0), System(trip).Trip!.Position);
         Assert.Equal(0, trip.Engine.Inspect().DeliveryContracts.Single().DeliveredQuantity);
-        Assert.Equal(450, System(trip).Trip!.WageBudgetMinor);
+        Assert.Equal(675, System(trip).Trip!.WageBudgetMinor);
     }
     [Fact]
     public void UpgradeKeepsIdsWagesPopulationAndHeadcountWithoutCreatingWorkers()
@@ -148,7 +148,10 @@ public class LogisticsUpgradeTests
     [Fact]
     public void LargerCapacityChecksCurrentAndPendingWageBeforeSpending()
     {
-        var s = BeforeUpgrade(); long high = long.MaxValue / (2 * 34);
+        var s = BeforeUpgrade();
+        // Four possible grid legs plus three handling intervals; fits crew2, overflows crew3.
+        long bound=4L*(Scenario().MapWidth*Scenario().MapHeight-1)*(Scenario().Logistics??new()).MoveTicksPerCell+3;
+        long high = long.MaxValue / (2 * bound);
         Assert.Equal("Accepted", LandContentFixtures.Reason(s, new(ActionKind.SetWage, Group: Crew(s).Id, WageMinor: high)));
         var ledger = s.Engine.Ledger();
         Assert.Equal("ArithmeticOverflow", Upgrade(s)); Assert.Equal(ledger, s.Engine.Ledger()); Assert.Equal(1, System(s).Level);

@@ -10,13 +10,14 @@ public record LogisticsSettings(long PurchasePriceMinor = 20000, long CargoCapac
     LogisticsUpgradeDefinition? Upgrade = null);
 public enum LogisticsDirection { Output, Inbound }
 public record LogisticsJobView(string Key, long ContractId, InventoryId OwnDestination, InventoryId InboundSource,
-    bool Enabled, long LastServed);
+    bool Enabled, long LastServed, InventoryId Source=default, InventoryId Destination=default, string ItemId="");
 public record LogisticsTripView(long Id, long ContractId, string ItemId, long Quantity, string State,
     long PreparedTick, long LoadTick, long ArrivalTick, long EndTick, Cell Position,
     ImmutableArray<Cell> Path, int PathIndex, int SegmentTicks, long CommittedWageMinor,
     long WageBudgetMinor, long WagesPaidMinor, string StockHold, string ReturnHold, string WageHold,
     InventoryId OwnDestination = default, InventoryId InboundSource = default, string JobKey = "")
 {
+    public FreightState? Freight { get; init; }
     public string CargoHold => $"logistics-cargo:{Id}";
     public string DestinationHold => $"logistics-destination:{Id}";
 }

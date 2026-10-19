@@ -21,7 +21,7 @@ internal record SavedBatch(long Id, string Hold, long WorkRequired, long WorkDon
 internal record SavedEnterprise(EnterpriseDefinition Definition, long Input, long Output, string RecipeId,
     bool Enabled, string Reason, SavedBatch? Batch, long Completed, long EnergyPaid, EmploymentView Group);
 internal record SavedEquipment(long Id, long Owner, Cell Position, long Storage, string TypeId, int Level,
-    EquipmentMode Mode, string Reason, SavedBatch? Batch, long Completed, long PersonalJobId, EmploymentView Group);
+    EquipmentMode Mode, string Reason, SavedBatch? Batch, long Completed, long PersonalJobId, EmploymentView Group, EquipmentMotion? Motion=null, ExtractionRoute? Route=null, long MovedAtTick=0);
 internal record SavedSale(long ActorId, long InventoryId, long Quantity, string Reservation, string CommandId);
 internal record SavedOffer(long Id, long Remaining, long? Cutoff, SavedSale[] Requests, SupplyRequest[] SupplyRequests, int Window);
 internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, ScenarioDefinition Config, string ConfigHash,
@@ -33,11 +33,11 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
     long[] CompletedJobs, CommandEnvelope[] Commands, CommandResult[] Results, string[] Pending,
     LedgerRecord[] Ledger, SimulationEvent[] Events, ulong MarketRandom,
     SavedMarketOffer[] MarketOffers, MarketAllocationView[] MarketAllocations, SavedBuyOffer[] BuyOffers, DeliveryContractView[] DeliveryContracts, long CapitalCompensation, SavedLogistics[] Logistics, CapitalDemandView? CapitalDemand, ElectionStateView Elections, SupportResearchState Support,
-    int TravelQuantum = 0, CityStageState? CityStage = null, ResearchModification[]? Research = null,bool DeveloperPackage=false);
+    int TravelQuantum = 0, CityStageState? CityStage = null, ResearchModification[]? Research = null,bool DeveloperPackage=false, System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources=default, ResourceClaim[]? ResourceClaims=null,TransferOperation[]? Transfers=null);
 
 public sealed partial class SimulationEngine
 {
-    public const int CheckpointSchemaVersion = 15;
+    public const int CheckpointSchemaVersion = 16;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
@@ -64,14 +64,14 @@ public sealed partial class SimulationEngine
             _enterprises.Values.OrderBy(e => e.Definition.Id).Select(e => new SavedEnterprise(e.Definition, e.Input,
                 e.Output, e.Recipe.Id, e.Enabled, e.Reason, SaveBatch(e.Batch), e.Completed, e.EnergyPaid, e.Group.View())).ToArray(),
             _equipment.Values.OrderBy(e => e.Id).Select(e => new SavedEquipment(e.Id, e.Owner, e.Position, e.Storage,
-                e.Type.Id, e.Level, e.Mode, e.Reason, SaveBatch(e.Batch), e.Completed, e.PersonalJobId, e.Group.View())).ToArray(),
+                e.Type.Id, e.Level, e.Mode, e.Reason, SaveBatch(e.Batch), e.Completed, e.PersonalJobId, e.Group.View(),e.Motion,e.Route,e.MovedAtTick)).ToArray(),
             world.Plots, world.Buildings,
             _offers.Values.OrderBy(o => o.Definition.Id).Select(o => new SavedOffer(o.Definition.Id, o.Remaining, o.Cutoff,
                 o.Requests.Values.OrderBy(r => r.ActorId).Select(r => new SavedSale(r.ActorId, r.InventoryId, r.Quantity,
                     r.Reservation, r.CommandId)).ToArray(), o.SupplyRequests.Values.OrderBy(r => r.Supplier.Value).ToArray(), o.Window)).ToArray(), world.Flows, world.Settlements,
             _completedPersonalJobs.Order().ToArray(), _seenCommands.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(),
             _results.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(), _pending.Select(c => c.CommandId).ToArray(),
-            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum, _cityStage,_researchModifications.ToArray(),IsDeveloperBuild);
+            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum, _cityStage,_researchModifications.ToArray(),IsDeveloperBuild,ResourceSites(),_resourceClaims.Values.OrderBy(c=>c.JobId).ToArray(),_transfers.Values.OrderBy(t=>t.Id).ToArray());
         return JsonSerializer.Serialize(saved, SimulationJson.Options);
     }
     private static string MigrateTravel(string json)
@@ -185,7 +185,7 @@ public sealed partial class SimulationEngine
         {
             var type = (_config.EquipmentTypes ?? []).Single(t => t.Id == v.TypeId);
             var value = new EquipmentState(v.Id, v.Owner, v.Position, v.Storage, type, v.Level)
-                { Mode = v.Mode, Reason = v.Reason, Batch = LoadBatch(v.Batch), Completed = v.Completed, PersonalJobId = v.PersonalJobId };
+                { Mode = v.Mode, Reason = v.Reason, Batch = LoadBatch(v.Batch), Completed = v.Completed, PersonalJobId = v.PersonalJobId, Motion=v.Motion, Route=v.Route,MovedAtTick=v.MovedAtTick };
             LoadGroup(value.Group, v.Group); _equipment.Add(v.Id, value);
         }
         if (s.Plots.Length != _plots.Count) throw new CheckpointException("InvalidPlotCount");
@@ -206,6 +206,7 @@ public sealed partial class SimulationEngine
             _buildings.Add(v.Id.Value, new(v.Id.Value, v.OwnerId.Value, v.Position, type, v.Level,
                 v.InputId.Value, v.OutputId?.Value, v.Footprint.ToArray()));
         }
+        ApplyBuildingObstacles();
         RestoreCapitalDemand(s.CapitalDemand);
         if (s.Offers.Length != _offers.Count) throw new CheckpointException("InvalidOfferCount");
         var seenOffers = new HashSet<long>();
@@ -236,6 +237,8 @@ public sealed partial class SimulationEngine
         RestoreLogistics(s.Logistics);
         RestoreElections(s.Elections);
         RestoreSupport(s.Support);
+        RestoreResources(s.Resources,s.ResourceClaims??[]);
+        _transfers.Clear();foreach(var t in s.Transfers??[])_transfers.Add(t.Id,t);
         _phase = Tick == 0 ? 0 : 9;
     }
 }

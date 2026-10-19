@@ -147,6 +147,7 @@ public sealed partial class SimulationEngine
                 expectedStock.Add((r.InventoryId, r.Reservation), new(o.Definition.ItemId, r.Quantity));
             }
         }
+        AddExpectedTransferHolds(expectedCapacity,expectedStock);
         AddExpectedSupportHolds(expectedStock);
         AddExpectedMarketHolds(expectedStock, expectedMoney);
         AddExpectedDeliveryHolds(expectedCapacity, expectedMoney);

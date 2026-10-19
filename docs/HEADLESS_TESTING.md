@@ -1,5 +1,7 @@
 # Как запускать и проверять экономику без графики
 
+Пакет3, текущий срез19.10.2026: World16/Rules physical-automation-1, Session2/Envelope2. `check_headless.py`:773tests/90exports/11replay/60comparison pairs,21 direct/17 world-only files, включая physical-state.json и независимый natural stock audit. `check_developer.py`:779tests. `check_physical_automation.py`: три ordinary map validations и third-map900 с checkpoint350/load/replay/profile. [Процедура](PHYSICAL_AUTOMATION.md), [доказательства и ограничения](IMPLEMENTATION_REPORT_PACKAGE3.md). Исторические показатели ниже не являются текущими.
+
 Пакет2: World15/Rules stopped-elections-1; current profile требует --human-ballot self, S8 --script stopped-elections --scenario scenarios/stopped-elections.json.734tests/86exports/10replay/57comparisons;20 direct/16 world-only files. Developer gate740tests и replay audit — [процедура](DEVELOPER_TOOLS.md), [отчёт](IMPLEMENTATION_REPORT_PACKAGE2.md). Нижние версии/показатели — датированная история.
 
 > Актуально19.10.2026, пакет1: World14/Rules household-management-1, Session2/Envelope2. Полный gate714tests/82exports/9replay/54comparisons; каждый export включает public-economy.json, direct load сравнивает19файлов, world-only15. check_headless.py вызывает независимый verify_public_economy.py для капитала/труда/города наряду с balance/privacy/invariant checks. [Текущий отчёт](IMPLEMENTATION_REPORT_PACKAGE1.md). Нижеследующие сведения с датами P24/P27 — история; базу брать из актуального origin, не из исторического имени ветки. Примеры runner сохраняют назначение.

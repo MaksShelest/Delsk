@@ -129,6 +129,39 @@
         "x": 0,
         "z": 6
       }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 2,
+        "z": 0
+      },
+      "rules": {
+        "public": false,
+        "purchasePriceMinor": 1000
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 2,
+        "z": 1
+      },
+      "rules": {
+        "public": false,
+        "purchasePriceMinor": 1000
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 2,
+        "z": 2
+      },
+      "rules": {
+        "public": false,
+        "purchasePriceMinor": 1000
+      }
     }
   ],
   "population": 20,

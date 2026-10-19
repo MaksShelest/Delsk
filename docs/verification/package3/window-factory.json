@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "Existing trip retained while ordinary source/item/destination route edited"
+  ],
+  "display": "X11",
+  "failures": [],
+  "mode": "factory",
+  "window_size": "(1100, 720)"
+}

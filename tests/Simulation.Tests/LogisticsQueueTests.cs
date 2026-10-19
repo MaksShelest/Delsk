@@ -53,7 +53,7 @@ public class LogisticsQueueTests
         Assert.All(contracts, d => { Assert.Equal("Fulfilled", d.Status); Assert.Equal(0, d.RemainingQuantity); Assert.Equal(0, d.FineMinor); });
         Assert.Equal(20, Fixtures.Count(s, Receiver(s), "plank")); Assert.Equal(10, Fixtures.Count(s, Storage(s), "plank"));
         Assert.Equal(4, System(s).DispatchCount); Assert.Equal(4, System(s).CompletedTrips);
-        Assert.Equal(133700, s.Engine.Observe(new(1)).Account.BalanceMinor);
+        Assert.Equal(133300, s.Engine.Observe(new(1)).Account.BalanceMinor);
         Assert.Equal(200000, s.Engine.Inspect().Accounts.Sum(a => a.BalanceMinor));
     }
     [Fact]
