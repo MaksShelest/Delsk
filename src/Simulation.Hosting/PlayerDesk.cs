@@ -99,6 +99,17 @@ public static class PlayerText
 
     private static Dictionary<string, string> Ru() => new(StringComparer.Ordinal)
     {
+        ["reason.ProductionNotSafe"] = "Остановите производство и дождитесь завершения начатой партии.",
+        ["reason.EquipmentNotSafe"] = "Остановите технику; начатого цикла быть не должно.",
+        ["reason.EquipmentBusy"] = "Техника занята; завершите текущую работу.",
+        ["reason.LogisticsNotSafe"] = "Выключите оба направления и дождитесь завершения рейса.",
+        ["reason.IncompleteCompensation"] = "Компенсация доставлена не полностью.",
+        ["reason.MaxLevel"] = "Достигнут максимальный уровень здания.",
+        ["reason.MaxEquipmentLevel"] = "Достигнут максимальный уровень техники.",
+        ["reason.RecipeLocked"] = "Этот рецепт ещё не открыт.",
+        ["reason.ContractClosed"] = "Договор уже закрыт или срок истёк.",
+        ["reason.NotAtResourceNode"] = "Подойдите к выбранной ресурсной точке.",
+        ["reason.NoBondMoney"] = "Недостаточно денег для залога.",
         ["title"] = "Delsk — партия",
         ["language"] = "EN",
         ["pause"] = "Пуск / пауза",
@@ -229,6 +240,17 @@ public static class PlayerText
 
     private static Dictionary<string, string> En() => new(StringComparer.Ordinal)
     {
+        ["reason.ProductionNotSafe"] = "Stop production and finish the batch in progress.",
+        ["reason.EquipmentNotSafe"] = "Stop equipment; no cycle may be in progress.",
+        ["reason.EquipmentBusy"] = "Equipment is busy; finish its current work.",
+        ["reason.LogisticsNotSafe"] = "Disable both directions and wait for the trip to finish.",
+        ["reason.IncompleteCompensation"] = "Compensation has not been delivered in full.",
+        ["reason.MaxLevel"] = "The building is at its maximum level.",
+        ["reason.MaxEquipmentLevel"] = "Equipment is at its maximum level.",
+        ["reason.RecipeLocked"] = "This recipe is not unlocked.",
+        ["reason.ContractClosed"] = "The contract is closed or its deadline has expired.",
+        ["reason.NotAtResourceNode"] = "Walk to the selected resource node.",
+        ["reason.NoBondMoney"] = "Not enough money for the collateral.",
         ["title"] = "Delsk — session",
         ["language"] = "RU",
         ["pause"] = "Run / pause",

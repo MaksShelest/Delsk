@@ -65,6 +65,8 @@ public partial class Playfield
         var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Begin }; bar.AddChild(row);
         var menu = new Button { Text = L("Меню", "Menu"), FocusMode = FocusModeEnum.None };
         menu.Pressed += OpenMenu; row.AddChild(menu);
+        var tablet = new Button { Text = L("Планшет", "Tablet"), FocusMode = FocusModeEnum.None };
+        tablet.Pressed += OpenPlayerTablet; row.AddChild(tablet);
         var help = new Button { Text = "?", TooltipText = L("Справка", "Help"), FocusMode = FocusModeEnum.None, CustomMinimumSize = new Vector2(36, 36) };
         help.Pressed += () => OpenHelp(); row.AddChild(help);
         _gameClock = new Label { VerticalAlignment = VerticalAlignment.Center, CustomMinimumSize = new Vector2(185, 0) }; row.AddChild(_gameClock);

@@ -1,0 +1,37 @@
+{
+  "Status": "passed",
+  "Failure": null,
+  "Tick": 62,
+  "StateHash": "80424f2d441c243a892ab33aca7ca4e585d9769f1a92591e760bdd11c43ba568",
+  "CheckedTicks": 62,
+  "LifecycleAdapterChecked": true,
+  "CheckpointRestoreChecked": true,
+  "RestoredTicks": [
+    12,
+    34,
+    55,
+    60
+  ],
+  "ElectionCheckedTicks": 40,
+  "ElectionStateHash": "4c1678fa151ff6d03b28037f52f66cc2655244b1ae7a5a404c9a3947367a16dd",
+  "ElectionRestoredTicks": [
+    9,
+    19,
+    20,
+    21
+  ],
+  "SupportCheckedTicks": 120,
+  "SupportStateHash": "9bf8599e576633026b71b6696d5b361bdd587d561b001c87e7806e3a3012501c",
+  "SupportRestoredTicks": [
+    17,
+    18,
+    19,
+    27,
+    99,
+    100
+  ],
+  "Runtime": "10.0.12",
+  "Platform": "Linux",
+  "GodotVersion": "4.7.2-stable (official)",
+  "Author": "\u0428\u0435\u043B\u0435\u0441\u0442\u043E\u0432 \u041C\u0430\u043A\u0441\u0438\u043C \u0415\u0432\u0433\u0435\u043D\u044C\u0435\u0432\u0438\u0447"
+}

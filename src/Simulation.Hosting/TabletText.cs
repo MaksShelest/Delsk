@@ -6,6 +6,7 @@ public static class TabletText
     {
         var (ru, en) = code switch
         {
+            "PersonalMode" => ("Личный режим", "Personal mode"),
             "Working" => ("Выпускаем продукцию", "Producing goods"),
             "Ready" => ("Готово к работе", "Ready to work"),
             "UserPaused" => ("Остановлено владельцем", "Stopped by owner"),

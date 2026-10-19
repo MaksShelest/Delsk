@@ -62,6 +62,7 @@ public partial class Playfield : Control
 
     private enum Surface { Play, Menu, Debug, Maps }
     private string _mapKey = PlayMaps.First;
+    private string _newMapKey = PlayMaps.First;
     private MapSelectionScreen? _mapSelection;
     private HBoxContainer? _hudGoods;
     private string _hudGoodsKey = "";
@@ -179,7 +180,7 @@ public partial class Playfield : Control
         ?? throw new InvalidOperationException(key));
 
     private void DismissMaps()
-    { _mapSelection?.QueueFree(); _mapSelection = null; }
+    { if (_mapSelection is not null) _newMapKey = _mapSelection.SelectedMap; _mapSelection?.QueueFree(); _mapSelection = null; }
 
     private void ShowMaps()
     {
@@ -189,7 +190,7 @@ public partial class Playfield : Control
         ResetTablet();
         ApplySurface();
         DismissMaps();
-        _mapSelection = new MapSelectionScreen(_language, _session is not null || System.IO.File.Exists(SavePath), ReadMap);
+        _mapSelection = new MapSelectionScreen(_language, _session is not null || System.IO.File.Exists(SavePath), ReadMap, _newMapKey);
         _mapSelection.MapChosen += key =>
         {
             if (_session is null && !System.IO.File.Exists(SavePath)) { BeginMap(key); return; }
@@ -206,13 +207,14 @@ public partial class Playfield : Control
             else { try { Load(); } catch (Exception failure) { _mapSelection.TooltipText = failure.Message; GD.PushWarning(failure.Message); } }
         };
         _mapSelection.LanguageChanged += () => { _language = _language == "ru" ? "en" : "ru"; ShowMaps(); };
+        _mapSelection.DisplaySettingsRequested += ToggleFullscreen;
         _mapSelection.QuitRequested += ExitGame;
         AddChild(_mapSelection);
     }
 
     private void BeginMap(string key)
     {
-        _mapKey = key;
+        _mapKey = key; _newMapKey = key;
         _stage?.ResetMotion();
         DismissMaps();
         Start("economy", false);
@@ -335,6 +337,10 @@ public partial class Playfield : Control
         if (valid is null) { Refresh(); return; }
         choice = valid;
         if (!choice.Enabled) { _feedback = choice.Details; _gain = ""; _trackedId = null; Refresh(); return; }
+        if (choice.Key.StartsWith("object:", StringComparison.Ordinal))
+        {
+            var parts = choice.Key.Split(':'); OpenObjectTablet(parts[1],long.Parse(parts[2],CultureInfo.InvariantCulture)); return;
+        }
         if (choice.Key.StartsWith("card:", StringComparison.Ordinal))
         {
             _selectedEnterprise = long.Parse(choice.Key["card:".Length..], CultureInfo.InvariantCulture);

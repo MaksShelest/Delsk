@@ -15,7 +15,21 @@ public partial class Playfield
         if (_surface != Surface.Play || !_tabletState.OpenMarket(PlayerDesk.Read(_session.Engine,_human),_scenario,shop)) return;
         PrepareTablet();
     }
-    private EnterpriseTablet? _enterpriseTablet;
+    private HouseholdObjectCard? _enterpriseTablet;
+    private PlayerTablet? _playerTablet;
+    private string _objectKind = "building";
+    private int _playerTab;
+    private void OpenPlayerTablet()
+    {
+        if (_surface != Surface.Play) return;
+        _tabletState.OpenPlayer(PlayerDesk.Read(_session.Engine,_human));
+        PrepareTablet();
+    }
+    private void OpenObjectTablet(string kind, long id)
+    {
+        if (!_tabletState.OpenObject(PlayerDesk.Read(_session.Engine,_human),kind,id)) return;
+        _objectKind = kind; PrepareTablet();
+    }
     private VBoxContainer? _tabletPolitics;
     private Control? _bottomChrome;
     private string? _tabletCommand;
@@ -45,9 +59,10 @@ public partial class Playfield
     }
     private void DropTabletPanel()
     {
+        if (_playerTablet is not null) _playerTab = _playerTablet.SelectedTab;
         if (_tabletPanel is not null)
         { _tabletPanel.GetParent()?.RemoveChild(_tabletPanel); _tabletPanel.QueueFree(); }
-        _tabletPanel = null; _capitalTablet = null; _enterpriseTablet = null; _marketTablet = null; _tabletPolitics = null;
+        _playerTablet = null; _tabletPanel = null; _capitalTablet = null; _enterpriseTablet = null; _marketTablet = null; _tabletPolitics = null;
     }
     private void ResetTablet(bool clearPreferences = false)
     {
@@ -59,15 +74,22 @@ public partial class Playfield
         DropTabletPanel();
         if (!_tabletState.IsOpen || _surface != Surface.Play || _playChrome is null) return;
         var view = PlayerDesk.Read(_session.Engine,_human);
-        string title = _tabletState.Kind == TabletKind.Market ? PlayerText.Local(_language,"Рынок участников · лавки","Participant market · shops") : _tabletState.Kind == TabletKind.Capital ? PlayerText.Local(_language,"Биржа · столичные заказы","Exchange · capital orders")
+        string title = _tabletState.Kind == TabletKind.Player ? L("Планшет игрока", "Player tablet") : _tabletState.Kind == TabletKind.Object ? L("Карточка хозяйства", "Holdings card") : _tabletState.Kind == TabletKind.Market ? PlayerText.Local(_language,"Рынок участников · лавки","Participant market · shops") : _tabletState.Kind == TabletKind.Capital ? PlayerText.Local(_language,"Биржа · столичные заказы","Exchange · capital orders")
             : PlayerText.Building(_language,view.Buildings.Single(b => b.Id.Value == _tabletState.EnterpriseId).TypeId) + " #" + _tabletState.EnterpriseId;
         _tabletPanel = new TabletPanel(title,_language);
         _tabletPanel.Closed += CloseTablet;
         _tabletPanel.HelpRequested += () => OpenHelp(_tabletState.Kind switch
-        { TabletKind.Capital => "exchange", TabletKind.Market => "market", _ => "production" });
+        { TabletKind.Player => _playerTablet?.SelectedTab switch { 0 => "holdings", 2 => "politics", _ => "city" },
+            TabletKind.Object when _objectKind == "equipment" => "harvest",
+            TabletKind.Capital => "exchange", TabletKind.Market => "market", _ => "production" });
         _tabletPanel.TimeRunningChanged += running =>
         { StopHeading(); _waitRelease = true; _tabletState.SetTimeRunning(running); ApplyPause(); Refresh(); };
-        if (_tabletState.Kind == TabletKind.Market)
+        if (_tabletState.Kind == TabletKind.Player)
+        {
+            _playerTablet = new PlayerTablet(_scenario,_language,Submit,a => _session.Engine.AccessFor(_human,a));
+            _tabletPanel.Body.AddChild(_playerTablet); _playerTablet.SelectedTab = _playerTab;
+        }
+        else if (_tabletState.Kind == TabletKind.Market)
         {
             _marketTablet = new ParticipantMarketTablet(_scenario,_language,_marketPreferences,_tabletState.EnterpriseId,Submit);
             _tabletPanel.Body.AddChild(_marketTablet);
@@ -79,14 +101,8 @@ public partial class Playfield
         }
         else
         {
-            _enterpriseTablet = new EnterpriseTablet(_scenario,_language,view,_tabletState.EnterpriseId,Submit);
+            _enterpriseTablet = new HouseholdObjectCard(_scenario,_language,_tabletState.Kind == TabletKind.Object ? _objectKind : "building",_tabletState.EnterpriseId,Submit,a => _session.Engine.AccessFor(_human,a));
             _tabletPanel.Body.AddChild(_enterpriseTablet);
-            // Preserve the existing political controls without mixing them into enterprise operations.
-            var politics = new Button { Text = PlayerText.Local(_language,"Политика и поддержка ▸","Politics and support ▸"), FocusMode = FocusModeEnum.None };
-            _tabletPanel.Body.AddChild(politics);
-            _tabletPolitics = new VBoxContainer { Visible = false }; _tabletPanel.Body.AddChild(_tabletPolitics);
-            politics.Pressed += () => { if (_tabletPolitics is not null) _tabletPolitics.Visible = !_tabletPolitics.Visible; };
-            FillPolitics(view,_tabletPolitics);
         }
         _playChrome.AddChild(_tabletPanel);
     }
@@ -97,6 +113,7 @@ public partial class Playfield
         _capitalTablet?.ShowData(view,_session.Engine.CapitalTradingOf(_human),WaitingCommand,_session.Paused);
         _marketTablet?.ShowData(view,WaitingCommand);
         _enterpriseTablet?.ShowData(view,WaitingCommand,_session.Paused);
+        _playerTablet?.ShowData(view,WaitingCommand,_session.Paused);
         string status = WaitingCommand && _tabletState.BlocksTime
             ? PlayerText.Local(_language,"Действие подготовлено — включите время.","Action queued — run time to continue.") : _tabletError;
         if (_tabletCommand is { } command && _session.Engine.Result(command) is { Status: ResultStatus.Rejected } rejected)

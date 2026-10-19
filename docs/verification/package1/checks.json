@@ -1,0 +1,692 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "2026-10-19",
+  "base": "e8d564053d9d9b134d3e8e695f3c48742ef349a2",
+  "branch": "feat/package1-household-management",
+  "sdk": "10.0.401",
+  "runtime": "10.0.12",
+  "godot": "4.7.2-stable mono",
+  "scope": "Package1 P28/P29/P31-P35; dependent difficulty/counteroffers excluded explicitly",
+  "tests": {
+    "total": "714",
+    "executed": "714",
+    "passed": "714",
+    "failed": "0",
+    "error": "0",
+    "timeout": "0",
+    "aborted": "0",
+    "inconclusive": "0",
+    "passedButRunAborted": "0",
+    "notRunnable": "0",
+    "notExecuted": "0",
+    "disconnected": "0",
+    "warning": "0",
+    "completed": "0",
+    "inProgress": "0",
+    "pending": "0"
+  },
+  "checks": {
+    "final-headless-gate": {
+      "command": [
+        "python3",
+        "scripts/check_headless.py",
+        "--dotnet",
+        "/workspace/.tools/dotnet/dotnet",
+        "--output",
+        "/workspace/work/delsk-package1/final-gate"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-19T08:11:43.518385+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 221.855,
+      "finished_at": "2026-10-19T08:15:25.373040+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 8906,
+          "sha256": "aba4ca65b6fec9e05ac3f440fe95db242c6552628bdf67317c89091e2ffa4ea3"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "restore": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "restore",
+        "Delsk.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-19T08:11:43.578278+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.218,
+      "finished_at": "2026-10-19T08:11:44.796221+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 80,
+          "sha256": "40d104602671164ab3958225da3e1c8cabd55f0251d6df6bc911d9d5a24f44ce"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "build": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-19T08:11:44.840428+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.722,
+      "finished_at": "2026-10-19T08:11:51.562057+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 672,
+          "sha256": "ea4ed71fc9388ac4bf574de6c71027fc9c3d009f0506cd97396dba575907c463"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "tests": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-result-trx",
+        "/workspace/work/delsk-package1/final-gate/tests.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-19T08:11:51.592992+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 56.981,
+      "finished_at": "2026-10-19T08:12:48.574316+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 326,
+          "sha256": "f6db90d89a4f379b498b00ab3ee6cde07f6822b4e84c1e82ed299078a1c7bd17"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "public-economy-audit": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "scripts/verify_public_economy.py",
+        "/workspace/work/delsk-package1/final-gate/autonomous",
+        "/workspace/work/delsk-package1/final-gate/autonomous-demand",
+        "/workspace/work/delsk-package1/final-gate/autonomous-demand-loaded",
+        "/workspace/work/delsk-package1/final-gate/autonomous-demand-saved",
+        "/workspace/work/delsk-package1/final-gate/autonomous-loaded",
+        "/workspace/work/delsk-package1/final-gate/autonomous-saved",
+        "/workspace/work/delsk-package1/final-gate/baseline-auction",
+        "/workspace/work/delsk-package1/final-gate/baseline-auction-loaded",
+        "/workspace/work/delsk-package1/final-gate/baseline-auction-replayed",
+        "/workspace/work/delsk-package1/final-gate/baseline-auction-saved",
+        "/workspace/work/delsk-package1/final-gate/baseline-economy",
+        "/workspace/work/delsk-package1/final-gate/baseline-economy-loaded",
+        "/workspace/work/delsk-package1/final-gate/baseline-economy-replayed",
+        "/workspace/work/delsk-package1/final-gate/baseline-economy-saved",
+        "/workspace/work/delsk-package1/final-gate/baseline-logistics",
+        "/workspace/work/delsk-package1/final-gate/baseline-logistics-loaded",
+        "/workspace/work/delsk-package1/final-gate/baseline-logistics-replayed",
+        "/workspace/work/delsk-package1/final-gate/baseline-logistics-saved",
+        "/workspace/work/delsk-package1/final-gate/baseline-politics",
+        "/workspace/work/delsk-package1/final-gate/baseline-politics-loaded",
+        "/workspace/work/delsk-package1/final-gate/baseline-politics-replayed",
+        "/workspace/work/delsk-package1/final-gate/baseline-politics-saved",
+        "/workspace/work/delsk-package1/final-gate/capital-delivery",
+        "/workspace/work/delsk-package1/final-gate/capital-delivery-loaded",
+        "/workspace/work/delsk-package1/final-gate/capital-delivery-saved",
+        "/workspace/work/delsk-package1/final-gate/capital-demand",
+        "/workspace/work/delsk-package1/final-gate/capital-demand-loaded",
+        "/workspace/work/delsk-package1/final-gate/capital-demand-replayed",
+        "/workspace/work/delsk-package1/final-gate/capital-demand-saved",
+        "/workspace/work/delsk-package1/final-gate/cycle",
+        "/workspace/work/delsk-package1/final-gate/cycle-loaded",
+        "/workspace/work/delsk-package1/final-gate/cycle-saved",
+        "/workspace/work/delsk-package1/final-gate/delivery",
+        "/workspace/work/delsk-package1/final-gate/delivery-loaded",
+        "/workspace/work/delsk-package1/final-gate/delivery-saved",
+        "/workspace/work/delsk-package1/final-gate/development",
+        "/workspace/work/delsk-package1/final-gate/economy-profile",
+        "/workspace/work/delsk-package1/final-gate/elections",
+        "/workspace/work/delsk-package1/final-gate/elections-loaded",
+        "/workspace/work/delsk-package1/final-gate/elections-replayed",
+        "/workspace/work/delsk-package1/final-gate/elections-saved",
+        "/workspace/work/delsk-package1/final-gate/equipment",
+        "/workspace/work/delsk-package1/final-gate/equipment-loaded",
+        "/workspace/work/delsk-package1/final-gate/equipment-saved",
+        "/workspace/work/delsk-package1/final-gate/inbound",
+        "/workspace/work/delsk-package1/final-gate/inbound-loaded",
+        "/workspace/work/delsk-package1/final-gate/inbound-saved",
+        "/workspace/work/delsk-package1/final-gate/labor",
+        "/workspace/work/delsk-package1/final-gate/late-return",
+        "/workspace/work/delsk-package1/final-gate/late-return-at-expiry",
+        "/workspace/work/delsk-package1/final-gate/late-return-loaded",
+        "/workspace/work/delsk-package1/final-gate/logistics",
+        "/workspace/work/delsk-package1/final-gate/logistics-loaded",
+        "/workspace/work/delsk-package1/final-gate/logistics-queue",
+        "/workspace/work/delsk-package1/final-gate/logistics-queue-loaded",
+        "/workspace/work/delsk-package1/final-gate/logistics-queue-replayed",
+        "/workspace/work/delsk-package1/final-gate/logistics-queue-saved",
+        "/workspace/work/delsk-package1/final-gate/logistics-saved",
+        "/workspace/work/delsk-package1/final-gate/logistics-upgrade",
+        "/workspace/work/delsk-package1/final-gate/logistics-upgrade-loaded",
+        "/workspace/work/delsk-package1/final-gate/logistics-upgrade-saved",
+        "/workspace/work/delsk-package1/final-gate/market",
+        "/workspace/work/delsk-package1/final-gate/market-loaded",
+        "/workspace/work/delsk-package1/final-gate/market-saved",
+        "/workspace/work/delsk-package1/final-gate/model-off",
+        "/workspace/work/delsk-package1/final-gate/model-safety",
+        "/workspace/work/delsk-package1/final-gate/model-safety-loaded",
+        "/workspace/work/delsk-package1/final-gate/model-safety-replayed",
+        "/workspace/work/delsk-package1/final-gate/own-production",
+        "/workspace/work/delsk-package1/final-gate/own-production-loaded",
+        "/workspace/work/delsk-package1/final-gate/own-production-saved",
+        "/workspace/work/delsk-package1/final-gate/own-storage",
+        "/workspace/work/delsk-package1/final-gate/own-storage-loaded",
+        "/workspace/work/delsk-package1/final-gate/own-storage-saved",
+        "/workspace/work/delsk-package1/final-gate/pickup",
+        "/workspace/work/delsk-package1/final-gate/pickup-loaded",
+        "/workspace/work/delsk-package1/final-gate/pickup-saved",
+        "/workspace/work/delsk-package1/final-gate/recovery",
+        "/workspace/work/delsk-package1/final-gate/support",
+        "/workspace/work/delsk-package1/final-gate/support-loaded",
+        "/workspace/work/delsk-package1/final-gate/support-replayed",
+        "/workspace/work/delsk-package1/final-gate/support-saved"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-19T08:15:24.909006+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.415,
+      "finished_at": "2026-10-19T08:15:25.324249+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 9712,
+          "sha256": "a808c0e466b0717e66015bd25c44a82021a4a61e7dd51a983801885221d3050f"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "balances": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "scripts/verify_results.py",
+        "/workspace/work/delsk-package1/final-gate/cycle",
+        "/workspace/work/delsk-package1/final-gate/recovery",
+        "/workspace/work/delsk-package1/final-gate/development",
+        "/workspace/work/delsk-package1/final-gate/labor",
+        "/workspace/work/delsk-package1/final-gate/equipment",
+        "/workspace/work/delsk-package1/final-gate/autonomous",
+        "/workspace/work/delsk-package1/final-gate/market",
+        "/workspace/work/delsk-package1/final-gate/pickup",
+        "/workspace/work/delsk-package1/final-gate/delivery",
+        "/workspace/work/delsk-package1/final-gate/capital-delivery",
+        "/workspace/work/delsk-package1/final-gate/logistics",
+        "/workspace/work/delsk-package1/final-gate/logistics-upgrade",
+        "/workspace/work/delsk-package1/final-gate/own-storage",
+        "/workspace/work/delsk-package1/final-gate/inbound",
+        "/workspace/work/delsk-package1/final-gate/own-production",
+        "/workspace/work/delsk-package1/final-gate/logistics-queue",
+        "/workspace/work/delsk-package1/final-gate/capital-demand",
+        "/workspace/work/delsk-package1/final-gate/autonomous-demand",
+        "/workspace/work/delsk-package1/final-gate/elections",
+        "/workspace/work/delsk-package1/final-gate/support",
+        "/workspace/work/delsk-package1/final-gate/cycle-saved",
+        "/workspace/work/delsk-package1/final-gate/cycle-loaded",
+        "/workspace/work/delsk-package1/final-gate/equipment-saved",
+        "/workspace/work/delsk-package1/final-gate/equipment-loaded",
+        "/workspace/work/delsk-package1/final-gate/autonomous-saved",
+        "/workspace/work/delsk-package1/final-gate/autonomous-loaded",
+        "/workspace/work/delsk-package1/final-gate/market-saved",
+        "/workspace/work/delsk-package1/final-gate/market-loaded",
+        "/workspace/work/delsk-package1/final-gate/pickup-saved",
+        "/workspace/work/delsk-package1/final-gate/pickup-loaded",
+        "/workspace/work/delsk-package1/final-gate/delivery-saved",
+        "/workspace/work/delsk-package1/final-gate/delivery-loaded",
+        "/workspace/work/delsk-package1/final-gate/capital-delivery-saved",
+        "/workspace/work/delsk-package1/final-gate/capital-delivery-loaded",
+        "/workspace/work/delsk-package1/final-gate/logistics-saved",
+        "/workspace/work/delsk-package1/final-gate/logistics-loaded",
+        "/workspace/work/delsk-package1/final-gate/logistics-upgrade-saved",
+        "/workspace/work/delsk-package1/final-gate/logistics-upgrade-loaded",
+        "/workspace/work/delsk-package1/final-gate/own-storage-saved",
+        "/workspace/work/delsk-package1/final-gate/own-storage-loaded",
+        "/workspace/work/delsk-package1/final-gate/inbound-saved",
+        "/workspace/work/delsk-package1/final-gate/inbound-loaded",
+        "/workspace/work/delsk-package1/final-gate/own-production-saved",
+        "/workspace/work/delsk-package1/final-gate/own-production-loaded",
+        "/workspace/work/delsk-package1/final-gate/logistics-queue-saved",
+        "/workspace/work/delsk-package1/final-gate/logistics-queue-loaded",
+        "/workspace/work/delsk-package1/final-gate/capital-demand-saved",
+        "/workspace/work/delsk-package1/final-gate/capital-demand-loaded",
+        "/workspace/work/delsk-package1/final-gate/autonomous-demand-saved",
+        "/workspace/work/delsk-package1/final-gate/autonomous-demand-loaded",
+        "/workspace/work/delsk-package1/final-gate/elections-saved",
+        "/workspace/work/delsk-package1/final-gate/elections-loaded",
+        "/workspace/work/delsk-package1/final-gate/support-saved",
+        "/workspace/work/delsk-package1/final-gate/support-loaded",
+        "/workspace/work/delsk-package1/final-gate/late-return-at-expiry",
+        "/workspace/work/delsk-package1/final-gate/late-return",
+        "/workspace/work/delsk-package1/final-gate/late-return-loaded",
+        "/workspace/work/delsk-package1/final-gate/logistics-queue-replayed",
+        "/workspace/work/delsk-package1/final-gate/capital-demand-replayed",
+        "/workspace/work/delsk-package1/final-gate/elections-replayed",
+        "/workspace/work/delsk-package1/final-gate/support-replayed",
+        "/workspace/work/delsk-package1/final-gate/baseline-economy",
+        "/workspace/work/delsk-package1/final-gate/baseline-economy-saved",
+        "/workspace/work/delsk-package1/final-gate/baseline-economy-loaded",
+        "/workspace/work/delsk-package1/final-gate/baseline-economy-replayed",
+        "/workspace/work/delsk-package1/final-gate/baseline-auction",
+        "/workspace/work/delsk-package1/final-gate/baseline-auction-saved",
+        "/workspace/work/delsk-package1/final-gate/baseline-auction-loaded",
+        "/workspace/work/delsk-package1/final-gate/baseline-auction-replayed",
+        "/workspace/work/delsk-package1/final-gate/baseline-politics",
+        "/workspace/work/delsk-package1/final-gate/baseline-politics-saved",
+        "/workspace/work/delsk-package1/final-gate/baseline-politics-loaded",
+        "/workspace/work/delsk-package1/final-gate/baseline-politics-replayed",
+        "/workspace/work/delsk-package1/final-gate/baseline-logistics",
+        "/workspace/work/delsk-package1/final-gate/baseline-logistics-saved",
+        "/workspace/work/delsk-package1/final-gate/baseline-logistics-loaded",
+        "/workspace/work/delsk-package1/final-gate/baseline-logistics-replayed",
+        "/workspace/work/delsk-package1/final-gate/model-safety",
+        "/workspace/work/delsk-package1/final-gate/model-safety-loaded",
+        "/workspace/work/delsk-package1/final-gate/model-safety-replayed",
+        "/workspace/work/delsk-package1/final-gate/model-off"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-19T08:15:16.580537+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.371,
+      "finished_at": "2026-10-19T08:15:17.951703+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 13222,
+          "sha256": "483faca4fb0c6e7d2549b58c261a02dd94ff529721230828672abcfb055f783c"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "client-restore": {
+      "command": [
+        "dotnet",
+        "restore",
+        "src/Client.Godot/Delsk.Client.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-18T22:01:04.199885+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.927,
+      "finished_at": "2026-10-18T22:01:06.127365+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 161,
+          "sha256": "7dac7d2b85abc1e55c84303a394800c1d7ee058485f433d229061b059007a027"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "client-final-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.sln",
+        "-c",
+        "Debug",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-19T08:17:55.885566+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 18.591,
+      "finished_at": "2026-10-19T08:18:14.476579+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 478,
+          "sha256": "9b4983e19d9277a7d508fbe9d081ff39477c7dff5d8dafffa6b927c49c2c26e1"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "godot-import": {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-19T08:18:14.521735+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.332,
+      "finished_at": "2026-10-19T08:18:18.854137+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 2286,
+          "sha256": "113f97705f5f1fb262c2894db2d8d4df8e10de5d0d6d7f925395a018093658f7"
+        },
+        "stderr": {
+          "bytes": 165,
+          "sha256": "475b41267bfea105ff533775b3f74f8b2597396bb6d24e5edabbf14cf92e03a3"
+        }
+      }
+    },
+    "godot-smoke": {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--",
+        "--smoke",
+        "--report",
+        "/workspace/work/delsk-package1/platform.json"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-19T08:18:18.894093+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.874,
+      "finished_at": "2026-10-19T08:18:20.767767+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 375,
+          "sha256": "8ce05d3bb2cbdf31c232d551dc42b4dfcb885b439a66ad6bb6300dad5be0b7aa"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "godot-verify": {
+      "command": [
+        "python3",
+        "scripts/verify_platform_probe.py",
+        "--report",
+        "/workspace/work/delsk-package1/platform.json",
+        "--log-prefix",
+        "/workspace/work/delsk-package1/checks/godot-import",
+        "--log-prefix",
+        "/workspace/work/delsk-package1/checks/godot-smoke"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-19T08:18:20.803824+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.064,
+      "finished_at": "2026-10-19T08:18:20.868428+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 233,
+          "sha256": "d0c19f3a46a84573bb2126e95bb8ddef069b6b1713404ce87c9db8de62781b16"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "window-probe-final": {
+      "command": [
+        "python3",
+        "/workspace/work/delsk-package1/run_window.py"
+      ],
+      "timeout_seconds": 85,
+      "started_at": "2026-10-19T08:20:58.726544+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 14.144,
+      "finished_at": "2026-10-19T08:21:12.870396+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 502,
+          "sha256": "6c2daf1724549663d4c43a9fbcecc145cf94aa9e50674498087d1e201c34194d"
+        },
+        "stderr": {
+          "bytes": 171,
+          "sha256": "afb1f5fc2b66a934a3065a96218b0e267afe77f117083274512da2a3a15b1cb7"
+        }
+      }
+    },
+    "ui-fixture-final": {
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "/workspace/work/delsk-package1/ui-fixture/bin/Release/net10.0/Fixture.dll"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-19T08:21:21.926739+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.618,
+      "finished_at": "2026-10-19T08:21:23.545162+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 1292,
+          "sha256": "685ad7bef203a90a02292eb53dc754321def610042b83a26d77e0cbaef4cb165"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "window-business-final": {
+      "command": [
+        "python3",
+        "/workspace/work/delsk-package1/run_window.py",
+        "business"
+      ],
+      "timeout_seconds": 85,
+      "started_at": "2026-10-19T08:21:36.905635+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 18.076,
+      "finished_at": "2026-10-19T08:21:54.982166+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 483,
+          "sha256": "40ea3576548a3b8a437510f789ef3cb8f073f82948ceb6f9f2594ba030b5d483"
+        },
+        "stderr": {
+          "bytes": 171,
+          "sha256": "afb1f5fc2b66a934a3065a96218b0e267afe77f117083274512da2a3a15b1cb7"
+        }
+      }
+    },
+    "final-code-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-19T08:22:03.220715+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 24.978,
+      "finished_at": "2026-10-19T08:22:28.199166+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 672,
+          "sha256": "a154fc62dad0ef6e6595a3b816e3061492c751f1a208d5d727da2fbe2d10c223"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "final-code-tests": {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-result-trx",
+        "/workspace/work/delsk-package1/final-code-tests.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-19T08:22:28.231736+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 51.828,
+      "finished_at": "2026-10-19T08:23:20.059486+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 326,
+          "sha256": "067449334c157814288fefd468a7da0feaddb146850789bffaef96dc22942828"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "pre-push-fetch": {
+      "command": [
+        "git",
+        "fetch",
+        "origin",
+        "--prune"
+      ],
+      "timeout_seconds": 45,
+      "started_at": "2026-10-19T08:25:05.810662+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.468,
+      "finished_at": "2026-10-19T08:25:06.278508+00:00",
+      "logs": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  },
+  "headless_manifest": "headless-check.json",
+  "godot_report": "platform.json",
+  "windows": [
+    "window-report.json",
+    "window-business-report.json"
+  ],
+  "screenshots": {
+    "menu-ru.png": "e06326b96c11bcce50aa75782f292a6083ad5d894f5e88aaf7c537f29d6e54e0",
+    "production-wage-ru.png": "9d2decf470bbf00bf926d5e55058d8902e1eb45819cb35aaceb14da3ef614b40",
+    "equipment-remote-wage-ru.png": "1bd24875654ac420337f644f341b9a6801519d0a411ff6c6562ef3b4f56577b3",
+    "city-labor-ru.png": "8b55ad02073a7968c642ba2b99b200ac2677170b929f919fdb509258bbb6b707",
+    "holdings-en.png": "ca882e1981d4bb20d4a2198dd16a8227b5f410421e603dd9023ba71b4293dc8d"
+  },
+  "changed_source_files_sha256": {
+    "config/economy.json": "c7f2a1c55533424ff7efeed7fc415ef202c6853bc846eb92bd33bc57890e208c",
+    "scenarios/baseline-economy.json": "0c56c2ac78eab3f342de4ab28611e8f6f255ec4793c868aaf1cf1b6a7ab724ec",
+    "scenarios/baseline-politics-controllers.json": "6f3ede8f914e9f92d2dc6ee1fec4d89bfd72a28d5b4d8462d4b5a8c34a29d63a",
+    "scenarios/platform-cycle.checkpoints.csv": "a49d82359515605b13b9c482ee0369caf4db12527df8983f3675c493253813c7",
+    "scenarios/platform-elections.checkpoints.csv": "611bd834009df4a53e320c126dfc2481748a3f0420c5b10885c0be98b48e5b22",
+    "scenarios/platform-support.checkpoints.csv": "e6a5370e89b7b27667852710b0271dcf422b93f576dc6e7473c077e212720575",
+    "scenarios/presentation-map-two.json": "0c6bec8c9003ee11ab02ef1f7196903bce249a8448e900234bebf826a5c027db",
+    "scripts/check_headless.py": "f1c3657b86d452b7fb37dd2a38753a0e1a0f0f8ae344ff4f2034012c56b98c0c",
+    "scripts/verify_checkpoint_exports.py": "1d2568928991fa02e9fba40aa72c0c805935a7c2fc81b86f02ce8a26f16bbde1",
+    "scripts/verify_public_economy.py": "458097ac1dc2253c5e7c9cf693188df1b1b5f69dc3d2497d18afb3b2f9060f61",
+    "src/Agents.Algorithmic/AlgorithmicController.cs": "0caedfe3ccbe17dbe5cea9a55333ff62b2c46b15555dd84512d2a12661c27000",
+    "src/Agents.Algorithmic/ObligationGoals.cs": "4259aa089d189d80f09615ec8edbd37c0697937bda1da5dca662761fbd6f229e",
+    "src/Agents.Algorithmic/Planning.cs": "bc38c5c5202c4f3e3f508f13da620dc5d5a299de78a66f00495995aa7c022f1c",
+    "src/Agents.Llm/ModelPrompt.cs": "3be75e40f26889f9a9cb7c1961979d52e24b1ef82fd96792664d976e9319e6a6",
+    "src/Client.Godot/CurrentDealsPanel.cs": "6109b590ee8f5904ba7157f9d559bcb18b5e9be085ca716b803d7554d8105160",
+    "src/Client.Godot/CurrentDealsPanel.cs.uid": "6372dc7d9e52cb79324ac9fec5913e50b41bd70bc7f03ce5bd3cd5aaca99f3a3",
+    "src/Client.Godot/EnterpriseTablet.cs": null,
+    "src/Client.Godot/EnterpriseTablet.cs.uid": null,
+    "src/Client.Godot/HelpOverlay.cs": "7bd26b5ca0310501cc6d1e804b78407529a0c62b2e8da59e88488d2e934755dd",
+    "src/Client.Godot/HouseholdObjectCard.cs": "75b5aacc7174bc0fd44bd9842adb77f20ced8c0870cc4d62f4e68ecf684e6d42",
+    "src/Client.Godot/HouseholdObjectCard.cs.uid": "e822c68b0ca80180d30a39501e682fd17169a01e18015b3dbf6be997cec57183",
+    "src/Client.Godot/MapSelectionScreen.cs": "b9406fcc6327d2ce7ea8b0bc21fd9ed68018d48548501acf9f003fc25b087a0c",
+    "src/Client.Godot/PlayerTablet.cs": "97929c24e5d59937ca16183319f70edb7e331637ecd7ba397ade35ad6157033f",
+    "src/Client.Godot/PlayerTablet.cs.uid": "5ae354b8d08c1b1067852a5b96758fc1654d742c50e445917745a00cd8c0c78d",
+    "src/Client.Godot/Playfield.Interface.cs": "cdf8f124e2f1a2e7fe34056e1999c7b25b83882cd096e050d3d697417b6fd4ad",
+    "src/Client.Godot/Playfield.Tablets.cs": "e8307e3c23eab37a3da8cd149157885457c0fd79adb71567913ffc2ffb7aa635",
+    "src/Client.Godot/Playfield.cs": "656def197b72c45aada7baa707be32e46d58771192667446740c1ca22032cf5e",
+    "src/Simulation.Core/ActionAccess.cs": "06387478e9be4392da86a9059ba661ef1f2c46805a7b9f4df2ef5b1ee848e564",
+    "src/Simulation.Core/Checkpoint.cs": "7d609b73be5c8a139c61b4677780d052fe48862b2a1c7f726c3a4394f117054f",
+    "src/Simulation.Core/Contracts.cs": "7be480e8013000d87b6c39f4a20c84e830388bea2ef2908a231434650bb895b3",
+    "src/Simulation.Core/ControllerContracts.cs": "0d36935ea268b5c0841f2c4c95fd050e52c539d7872379b3ae3601586819ed75",
+    "src/Simulation.Core/Delivery.cs": "c285c8a7d935995a6a67791682b66a3ec63fbe5d85e568eb580d10933944580a",
+    "src/Simulation.Core/EconomicRules.cs": "86b27bab072416ca7a006e0a4ec1bacec7db90ab71a0107cafcc3f45fb7fa4a1",
+    "src/Simulation.Core/Equipment.cs": "35d84a2460532238bfe35d9f1c61c90d77f510ff3c989d1f9f63feff67a4498c",
+    "src/Simulation.Core/LandAndBuildings.cs": "8d857ed710cb2a67ff86cd948b234ee6aeebe7c2f3af7e59e80791b2263c467d",
+    "src/Simulation.Core/LandAndContentValidation.cs": "10f7259d0511f18fb218df04390b3828c60dcaffc594ee0a7e82f668ed9850e4",
+    "src/Simulation.Core/Logistics.cs": "9cd492f23f649d98192b800ca3cd7092aafa7d4dc74b4f8435aad98ea7ac82d6",
+    "src/Simulation.Core/ManualHarvest.cs": "47d6be8fb138f3038f6bca4cf707340dc2bf5ed38547132189224e89949c7a00",
+    "src/Simulation.Core/Pickup.cs": "756d1f0472aa9d31c65646c0b9e02c2048ec970fbb53faa3cbbd047ea1028cf9",
+    "src/Simulation.Core/ProductionAndTrade.cs": "f684ac551d6f6a1d9999416482edaea9a976eff41e8e01dd8ce2fe74e968b02c",
+    "src/Simulation.Core/PublicEconomy.cs": "f40eb01a37446141e5b4f2933a9a85c7c752f2c03140d2e5ec0e014ddbe49b1f",
+    "src/Simulation.Core/SimulationEngine.cs": "c22aaf5573b6e77c0445169359e2c9b2916a631a3b4260b6b8eee94d6a05ed21",
+    "src/Simulation.Core/Support.cs": "7b8c0ad34d38f99b7593a5cdb34641817c2d621a4b9991e31e46dcbbf9386ef1",
+    "src/Simulation.Core/World.cs": "40b3682c8589833992bc864628d2111559bb1752b363af4f5cb44685e950d10a",
+    "src/Simulation.Hosting/PlayContext.cs": "fa8d3f1dad1bee10ad5ef42dfe595f9330b85a831b77d58539cf9834715a70ec",
+    "src/Simulation.Hosting/PlayerDesk.cs": "e470deb71ac19ada8337244ed3bfe4631dbadbd3f4342bb76d6cdc1e34ad37c7",
+    "src/Simulation.Hosting/RunArtifacts.cs": "3ef4a5955901b1688b64eea3d84b30f98cf2245cb95fc21407f2c5c13819a9f1",
+    "src/Simulation.Hosting/TabletState.cs": "3e7946ba95f3548fdf0d324b6d98d1c970cad1ac647897a412b3e277bcf8093d",
+    "src/Simulation.Hosting/TabletText.cs": "0d25eaecd271c9cf18ce2e2868b5e6b4c0b1cb632d381336a64b02ec399a7bdf",
+    "tests/Simulation.Tests/ControllerTests.cs": "4cf966c77e3d16ee717a9b029353f1215360cb3560928ca27212a71d2a360826",
+    "tests/Simulation.Tests/HouseholdManagementTests.cs": "c6410d8e1041fd935974ef5bd34f2bbb76b700c59df840dfe938630de79f3089",
+    "tests/Simulation.Tests/HybridControllerTests.cs": "b0695c38e5023edbf10474c339453b17cf0b1cef10dc2b83dfd672bbd64d7621",
+    "tests/Simulation.Tests/PlayerDeskTests.cs": "c89d41ffa139073df168b7b73f4fd46f4110f0bb31129572d6be11f7e2887d03",
+    "tests/Simulation.Tests/PresentationMapTests.cs": "b476564fcf3e5046fdd7639f91268ead89c0e24b72111d68012217f1a3953f8c",
+    "tests/Simulation.Tests/SharedShopTests.cs": "5bc0a066da6a1afeb8b0c394962874297c1cde0143b132ab2375046c68cd0d92",
+    "tests/Simulation.Tests/SupportTests.cs": "ac6d667b4a079ec0861faec9a0c0b2455fb1d91f721a384f5e5e5435896868d4"
+  },
+  "source_fingerprint_sha256": "8d84e4dad6ff7b8f856d80f2b70a9dd9cd5eb6d4a48a851e81b7e6384f881a0f",
+  "spec_unchanged_sha256": "e416b331a8353d5f39d8ff042288ad2493d39aae2c506a40ecc3f30de56fd56c",
+  "not_verified": [
+    "Windows EXE/device",
+    "Android/touch/lifecycle on device",
+    "physical fullscreen monitor",
+    "60FPS/hardware performance",
+    "new real local model request",
+    "new long-session memory gate"
+  ],
+  "working_evidence_root": "/workspace/work/delsk-package1"
+}
