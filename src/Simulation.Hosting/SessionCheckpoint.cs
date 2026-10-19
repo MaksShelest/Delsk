@@ -6,7 +6,8 @@ namespace Simulation.Hosting;
 public record RecordedPlaybackState(RecordedCommand[] Commands, long FinalTick, int NextIndex, string Label = "recorded-inputs");
 internal record SavedSession(int SchemaVersion, string SessionId, long Epoch, bool Paused,
     string WorldJson, KeyValuePair<long, long>[] Sequences, RecordedCommand[] Tape, TickSample[] Samples,
-    LaborSample[] LaborSamples, RecordedPlaybackState? Playback, SavedControllers? Controllers = null);
+    LaborSample[] LaborSamples, RecordedPlaybackState? Playback, SavedControllers? Controllers = null,
+    ResearchModification[]? ResearchPlayback=null,int ResearchIndex=0);
 
 public sealed partial class GameSession
 {
@@ -26,13 +27,14 @@ public sealed partial class GameSession
     }
     private void SubmitPlaybackInputs()
     {
+        PumpResearchPlayback();
         if (_playback is not { } p) return;
         int next = p.NextIndex;
         while (next < p.Commands.Length && p.Commands[next].SubmittedAtTick <= Engine.Tick)
         {
             var input = p.Commands[next];
             if (input.SubmittedAtTick < Engine.Tick) throw new InvalidOperationException("Playback input missed its barrier");
-            Submit(input.AuthenticatedActor, input.Command); ++next;
+            Submit(input.AuthenticatedActor, input.Command); ++next;PumpResearchPlayback();
         }
         _playback = p with { NextIndex = next };
     }
@@ -40,7 +42,11 @@ public sealed partial class GameSession
     {
         if (Paused || finalTick < Engine.Tick || finalTick > Engine.Configuration().MaxTicks)
             throw new ArgumentException("Invalid or paused advance horizon");
-        while (Engine.Tick < finalTick) Step();
+        while (Engine.Tick < finalTick)
+        {
+            long prior=Engine.Tick; Step();
+            if (Engine.Tick==prior && Engine.WaitingForBallots) throw new InvalidOperationException("ElectionWaitingForBallots");
+        }
         SubmitPlaybackInputs();
     }
     public CommandResult? SubmitFromEpoch(long epoch, ParticipantId actor, CommandEnvelope command)
@@ -51,7 +57,7 @@ public sealed partial class GameSession
     {
         return JsonSerializer.Serialize(new SavedSession(2, SessionId, SessionEpoch, Paused,
             Engine.CreateCheckpointJson(), _sequences.OrderBy(x => x.Key).ToArray(), CommandTape, Samples,
-            LaborSamples, _playback, SaveControllers()), SimulationJson.Options);
+            LaborSamples, _playback, SaveControllers(),_researchPlayback,_researchIndex), SimulationJson.Options);
     }
     internal static GameSession FromSessionJson(string json, Action? beforeStep = null)
     {
@@ -64,6 +70,10 @@ public sealed partial class GameSession
                 throw new CheckpointException("InvalidSessionIdentity");
             var session = new GameSession(SimulationEngine.FromCheckpointJson(s.WorldJson), s.SessionId, beforeStep)
                 { SessionEpoch = s.Epoch + 1, Paused = s.Paused, _playback = s.Playback };
+            session._researchPlayback=s.ResearchPlayback??[];session._researchIndex=s.ResearchIndex;
+            if(s.ResearchIndex<0 || s.ResearchIndex>session._researchPlayback.Length ||
+                session._researchPlayback.Take(s.ResearchIndex).Any(m=>!session.Engine.ResearchModifications.Contains(m)) ||
+                session._researchPlayback.Skip(s.ResearchIndex).Any(m=>m.Tick<session.Engine.Tick))throw new CheckpointException("InvalidResearchPlayback");
             foreach (var pair in s.Sequences) session._sequences.Add(pair.Key, pair.Value);
             session._tape.AddRange(s.Tape); session._samples.AddRange(s.Samples); session._laborSamples.AddRange(s.LaborSamples);
             long tick = session.Engine.Tick;

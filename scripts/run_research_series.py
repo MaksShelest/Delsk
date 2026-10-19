@@ -137,8 +137,10 @@ def read_export(directory):
     manifest = folder / 'manifest.json'
     if not summary.exists() or not manifest.exists():
         return None
-    return {'summary': json.loads(summary.read_text(encoding='utf-8')),
-            'manifest': json.loads(manifest.read_text(encoding='utf-8'))}
+    metadata=json.loads(manifest.read_text(encoding='utf-8'))
+    if metadata.get('developerBuild') or metadata.get('researchModified') or metadata.get('cleanComparisonEligible') is False:
+        raise ValueError(f'{folder}: Developer/modified sessions are excluded from clean comparisons')
+    return {'summary': json.loads(summary.read_text(encoding='utf-8')), 'manifest': metadata}
 
 
 def cell_from_export(comparison, arm, seed, controllers, exported, replay_export, replay_dir):

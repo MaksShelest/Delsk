@@ -58,7 +58,7 @@ public partial class Playfield : Control
     private int _frameSampleCount;
     private double _worstFrame;
     private int _contextFirst;
-    private string SavePath => ProjectSettings.GlobalizePath($"user://play-{_mode}-{SimulationEngine.RulesVersion}.json");
+    private string SavePath => ProjectSettings.GlobalizePath($"user://play-{_mode}-{SimulationEngine.RulesVersion}{(SimulationEngine.IsDeveloperBuild?"-developer":"")}.json");
 
     private enum Surface { Play, Menu, Debug, Maps }
     private string _mapKey = PlayMaps.First;
@@ -150,6 +150,8 @@ public partial class Playfield : Control
             if (_skipNextFrame) { _skipNextFrame = false; return; }
             if (_waitRelease && !MovementHeld()) _waitRelease = false;
             SampleHeading();
+            DeveloperFrame();
+            if(_session.Engine.WaitingForBallots){_session.PumpVoting();Refresh();return;}
             long prior = _session.Engine.Tick;
             int priorQuantum = _session.Engine.TravelQuantum;
             var priorTravel = _session.Engine.TravelOf(_human);
@@ -293,7 +295,7 @@ public partial class Playfield : Control
     private void ApplyPause()
     {
         if (_session is null) return;
-        bool paused = _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null);
+        bool paused = _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots);
         if (_session.Paused != paused) _scheduler.SetPaused(paused);
     }
 
@@ -439,6 +441,7 @@ public partial class Playfield : Control
     {
         if (_status is null) return;
         var view = PlayerDesk.Read(_session.Engine, _human);
+        RefreshVoting();
         var actor = view.Participant;
         var travelOffset = _session.Engine.TravelOf(_human);
         if (_tabletState.IsOpen && !_tabletState.ValidateLocation(view,_scenario))
@@ -670,6 +673,8 @@ public partial class Playfield : Control
 
     private void BuildChrome()
     {
+        DeveloperReset();
+        if(_votingPanel is not null){RemoveChild(_votingPanel);_votingPanel.QueueFree();_votingPanel=null;}
         DropTabletPanel();
         _playChrome?.QueueFree();
         _panel?.QueueFree();
@@ -779,6 +784,7 @@ public partial class Playfield : Control
         box.AddChild(new Label { Text = T("menu.escape"), AutowrapMode = TextServer.AutowrapMode.WordSmart });
         Button(box, "menu.continue", ContinueGame);
         Button(box, "menu.debug", OpenDebug);
+        DeveloperMenu(box);
         var chooseMap = new Button { Text = PlayerText.Local(_language, "Выбрать карту / новая партия", "Choose map / new game"), FocusMode = FocusModeEnum.None };
         chooseMap.Pressed += ShowMaps;
         box.AddChild(chooseMap);
@@ -951,7 +957,7 @@ public partial class Playfield : Control
 
     private void SampleHeading()
     {
-        if (_surface != Surface.Play || _waitRelease || _suspended || _unfocused || _helpOverlay is not null) return;
+        if (_surface != Surface.Play || _waitRelease || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots) return;
         var heading = TravelHeading.FromKeys(
             Input.IsPhysicalKeyPressed(Key.D), Input.IsPhysicalKeyPressed(Key.A),
             Input.IsPhysicalKeyPressed(Key.S), Input.IsPhysicalKeyPressed(Key.W));

@@ -1,0 +1,4 @@
+<Project>
+  <!-- Evaluated after SDK default Compile items, unlike Directory.Build.props. -->
+  <ItemGroup Condition="'$(DelskDeveloper)' != 'true'"><Compile Remove="Developer/**/*.cs" /></ItemGroup>
+</Project>

@@ -37,6 +37,11 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/run_check.py --name client-build --timeout 180 -- dotnet build src/Client.Godot/Delsk.Client.csproj --no-restore --disable-build-servers '-m:1'
           exit $LASTEXITCODE
+      - name: Verify ordinary client assembly composition
+        shell: pwsh
+        run: |
+          python scripts/run_check.py --name client-metadata --timeout 120 -- dotnet run --project tools/AssemblyAudit -c Release -- src/Client.Godot/.godot/mono/temp/bin/Debug
+          exit $LASTEXITCODE
       - name: Import and replay shared core on Windows
         shell: pwsh
         run: |

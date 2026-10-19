@@ -22,5 +22,5 @@ public sealed record EconomicRules(long PlayerWageStepMinor = 100, int Reservati
 
 public sealed partial class SimulationEngine
 {
-    public EconomicRules EconomyRules => _config.Economy ?? new();
+    public EconomicRules EconomyRules => ResearchWageExponent is { } exponent ? (_config.Economy??new()) with {WageAttractionExponent=exponent} : _config.Economy ?? new();
 }

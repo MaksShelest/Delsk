@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "Godot.SourceGenerators": {
+        "type": "Direct",
+        "requested": "[4.7.2, )",
+        "resolved": "4.7.2",
+        "contentHash": "PeYESFlRxlmeClrPhlMINhVvt2HiKnx2Ux/FYA10rimDevHljji3/jmRZOMo9XDNQsZzPH4uQmDyPgQgzTFvAg=="
+      },
+      "GodotSharp": {
+        "type": "Direct",
+        "requested": "[4.7.2, )",
+        "resolved": "4.7.2",
+        "contentHash": "EPvfayB7b7MrBNdASvy86jRS5AbM9dprkVivcRD80g+ngn2M8KAIrBQH4NhyQL+pwxni0xVnuqhD9AFpZeNQpw=="
+      },
+      "agents.algorithmic": {
+        "type": "Project",
+        "dependencies": {
+          "Simulation.Core": "[1.0.0, )"
+        }
+      },
+      "simulation.core": {
+        "type": "Project"
+      },
+      "simulation.hosting": {
+        "type": "Project",
+        "dependencies": {
+          "Simulation.Core": "[1.0.0, )"
+        }
+      }
+    }
+  }
+}

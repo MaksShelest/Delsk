@@ -1,4 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup><EmbeddedResource Include="../../scenarios/elections.json" LogicalName="Fixture.elections.json" /></ItemGroup>
+  <ItemGroup Condition="'$(DelskDeveloper)' == 'true'"><ProjectReference Include="../../src/Simulation.Developer/Simulation.Developer.csproj" /></ItemGroup>
   <PropertyGroup><IsTestProject>true</IsTestProject><IsPackable>false</IsPackable><OutputType>Exe</OutputType></PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="../../scenarios/land-and-content.json" LogicalName="Fixture.land-content.json" />

@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "Actual ordinary game reached600; human delay froze economy; menu/language preserved stage; legal ballot tallied without next tick; no Developer button"
+  ],
+  "display": "X11",
+  "failures": [],
+  "mode": "ordinary",
+  "window_size": "(1100, 720)"
+}

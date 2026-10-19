@@ -1,5 +1,11 @@
 <Project>
   <PropertyGroup>
+    <DelskDeveloper Condition="'$(DelskDeveloper)' == ''">false</DelskDeveloper>
+    <DefineConstants Condition="'$(DelskDeveloper)' == 'true'">$(DefineConstants);DELSK_DEVELOPER</DefineConstants>
+    <BaseIntermediateOutputPath Condition="'$(DelskDeveloper)' == 'true'">obj/developer/</BaseIntermediateOutputPath>
+    <BaseOutputPath Condition="'$(DelskDeveloper)' == 'true'">bin/developer/</BaseOutputPath>
+    <DefaultItemExcludes>$(DefaultItemExcludes);**/obj/**;**/bin/**</DefaultItemExcludes>
+    <NuGetLockFilePath Condition="'$(DelskDeveloper)' == 'true'">$(MSBuildProjectDirectory)/packages.developer.lock.json</NuGetLockFilePath>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -11,4 +17,7 @@
     <NuGetLockFilePath Condition="'$(RuntimeIdentifier)' != ''">$(MSBuildProjectDirectory)/obj/runtime-locks/$(RuntimeIdentifier).lock.json</NuGetLockFilePath>
     <Authors>Шелестов Максим Евгеньевич</Authors>
   </PropertyGroup>
+  <Target Name="DisallowDeveloperRelease" BeforeTargets="CoreCompile" Condition="'$(DelskDeveloper)' == 'true' and ('$(Configuration)' == 'Release' or '$(Configuration)' == 'ExportRelease')">
+    <Error Text="Developer interventions are forbidden in Release/ExportRelease. Use the isolated Debug Developer package." />
+  </Target>
 </Project>

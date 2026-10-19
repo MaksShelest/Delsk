@@ -40,6 +40,9 @@ public sealed partial class SimulationEngine
     {
         var reach = ActionPolicy.Reach(action.Kind);
         if (!_actors.TryGetValue(participant.Value, out var actor)) return new(reach, [], "NotAvailable");
+        if (WaitingForBallots && action.Kind != ActionKind.SetVoteChoice) return new(reach, [], "ElectionInProgress");
+        if (action.Kind == ActionKind.SetVoteChoice && Elections.PauseForBallots && RequiredCandidate(actor.Id) is { } required && required != action.Candidate)
+            return new(reach, [], "CommittedVote");
         if (reach == ActionReach.Remote) return new(reach, [], "Allowed");
         Cell[]? locations = action.Kind switch
         {

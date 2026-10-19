@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "household-management-1";
+    public const string RulesVersion = "stopped-elections-1";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -113,16 +113,24 @@ public sealed partial class SimulationEngine
             return previous == command ? _results.GetValueOrDefault(command.CommandId)
                 : new(command.CommandId, ResultStatus.Rejected, "CommandIdConflict", Tick);
         if (command.LocalSequence <= 0 || command.IssuedAtTick < 0 || command.IssuedAtTick > Tick ||
-            command.NotBeforeTick <= command.IssuedAtTick || command.ExpiresAtTick < command.NotBeforeTick ||
+            (command.NotBeforeTick <= command.IssuedAtTick && !IsImmediateBallot(command)) || command.ExpiresAtTick < command.NotBeforeTick ||
             command.NotBeforeTick > _config.MaxTicks || !Enum.IsDefined(command.Action.Kind))
             return new(command.CommandId, ResultStatus.Rejected, "InvalidEnvelope", Tick);
+        if (WaitingForBallots && !IsImmediateBallot(command)) return new(command.CommandId, ResultStatus.Rejected, "ElectionInProgress", Tick);
+        if (IsImmediateBallot(command) && (!WaitingForBallots || command.IssuedAtTick != Tick))
+            return new(command.CommandId, ResultStatus.Rejected, "ElectionClosed", Tick);
         if (!_actorSequences.Add((command.ActorId.Value, command.LocalSequence)))
             return new(command.CommandId, ResultStatus.Rejected, "SequenceReused", Tick);
         _seenCommands.Add(command.CommandId, command);
+        if (WaitingForBallots)
+        {
+            _phase = 9; Execute(command); ValidateInvariants(); return _results[command.CommandId];
+        }
         _pending.Add(command); return null;
     }
     public void Step()
     {
+        if (WaitingForBallots) return;
         if (_stepping) throw new InvalidOperationException("Step is not reentrant");
         if (Tick >= _config.MaxTicks) throw new InvalidOperationException("Scenario tick limit reached");
         _stepping = true;
@@ -368,7 +376,7 @@ public sealed partial class SimulationEngine
 
     private object StatePayload() => new
     {
-        World = Inspect(), CityStage = _cityStage, Support = InspectSupport(), CommandRandom = _commandRandom.State, LaborRandom = _laborRandom.State, MarketRandom = _marketRandom.State,
+        World = Inspect(), Research = ResearchModifications, CityStage = _cityStage, Support = InspectSupport(), CommandRandom = _commandRandom.State, LaborRandom = _laborRandom.State, MarketRandom = _marketRandom.State,
         MoneyHolds = _economy.Accounts.OrderBy(x => x.Key).Select(x => new { x.Key, Holds = x.Value.Holds.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray() }).ToArray(),
         InventoryHolds = _economy.Inventories.OrderBy(x => x.Key).Select(x => new { x.Key,
             Stock = x.Value.Reservations.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray(),

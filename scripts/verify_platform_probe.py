@@ -80,6 +80,10 @@ if args.report:
             report.get('SupportRestoredTicks') != [17,18,19,27,99,100]):
         raise SystemExit('Support replay/checkpoint probe was not completed')
     print(f"Support probe: {len(support)} checkpoints match runner; Proposed/Accepted/Signed restore verified")
+if args.report:
+    if report.get('StoppedVotingRestoredTicks') != [3,6] or report.get('StoppedVotingFinalHash') != (root/'scenarios/platform-stopped.final.sha256').read_text().strip():
+        raise SystemExit('Stopped voting save/load/final hash probe was not completed')
+    print('Stopped voting: frozen boundaries3/6 restored, ballots consumed without economic ticks, final10 hash matches runner')
 if args.windows_directory:
     folder = args.windows_directory
     executable = (folder / 'DelskProbe.exe').read_bytes()

@@ -99,6 +99,9 @@ public static class PlayerText
 
     private static Dictionary<string, string> Ru() => new(StringComparer.Ordinal)
     {
+        ["reason.ElectionInProgress"]="Экономика остановлена до получения всех бюллетеней.",
+        ["reason.CommittedVote"]="Подписанная поддержка обязывает голосовать за своего кандидата.",
+        ["reason.BallotAlreadyCast"]="Бюллетень уже принят.",
         ["reason.ProductionNotSafe"] = "Остановите производство и дождитесь завершения начатой партии.",
         ["reason.EquipmentNotSafe"] = "Остановите технику; начатого цикла быть не должно.",
         ["reason.EquipmentBusy"] = "Техника занята; завершите текущую работу.",
@@ -240,6 +243,9 @@ public static class PlayerText
 
     private static Dictionary<string, string> En() => new(StringComparer.Ordinal)
     {
+        ["reason.ElectionInProgress"]="The economy is stopped until every ballot is received.",
+        ["reason.CommittedVote"]="Signed support binds your ballot to its candidate.",
+        ["reason.BallotAlreadyCast"]="Your ballot has already been accepted.",
         ["reason.ProductionNotSafe"] = "Stop production and finish the batch in progress.",
         ["reason.EquipmentNotSafe"] = "Stop equipment; no cycle may be in progress.",
         ["reason.EquipmentBusy"] = "Equipment is busy; finish its current work.",

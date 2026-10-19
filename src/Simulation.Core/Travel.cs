@@ -19,6 +19,7 @@ public sealed partial class SimulationEngine
     /// <summary>Курс применяется сразу и не ждёт фазы команды. Ноль останавливает.</summary>
     public void SetTravelHeading(ParticipantId actor, int x, int z)
     {
+        if (WaitingForBallots) { if (x != 0 || z != 0) throw new InvalidOperationException("ElectionInProgress"); return; }
         if (_stepping) throw new InvalidOperationException("Step is not reentrant");
         if (x is < -1 or > 1 || z is < -1 or > 1) throw new ArgumentOutOfRangeException(nameof(x));
         if (!_actors.TryGetValue(actor.Value, out var state)) throw new ArgumentException("Participant not available");
@@ -30,6 +31,7 @@ public sealed partial class SimulationEngine
     /// <summary>Один квант текущего тика. true означает, что бюджет тика исчерпан и пора вызвать Step.</summary>
     public bool MoveTravelQuantum()
     {
+        if (WaitingForBallots) return false;
         if (_stepping) throw new InvalidOperationException("Step is not reentrant");
         int distance = QuantumDistance();
         if (distance > 0)

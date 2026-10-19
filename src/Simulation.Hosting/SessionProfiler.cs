@@ -17,6 +17,8 @@ public static class SessionProfiler
         var samples = new List<double>();
         while (session.Engine.Tick < finalTick)
         {
+            if(session.Engine.WaitingForBallots)
+            {if(!session.PumpVoting())throw new InvalidOperationException("ProfileWaitingForBallots");continue;}
             long start = Stopwatch.GetTimestamp(); session.Step();
             samples.Add(Stopwatch.GetElapsedTime(start).TotalMilliseconds);
         }

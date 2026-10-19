@@ -2,7 +2,17 @@
 
 Автор проекта и материалов: Шелестов Максим Евгеньевич.
 
-Актуальные версии/статусы пакета1 приведены в следующем разделе «Пакет1»; датированные сведения P00–P27 ниже сохранены как история, не как параллельные текущие правила.
+Актуальные версии/статусы — в разделе «Пакет2»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
+
+## Пакет2, актуально19.10.2026
+
+- P36/P54/P55 реализованы после PR#37. Факты — docs/IMPLEMENTATION_REPORT_PACKAGE2.md, процедура — docs/DEVELOPER_TOOLS.md. Далее пакет3 P37–P42; P32/P33 ещё зависят от сложностей/переговоров. Спецификация0.5 не перезаписывается.
+- Обычный профиль presentation-economy-v3:600 ticks, pauseForBallots=true. Freeze после workforce phase5/expiry7; один commit экономического тика, затем типизированные phase9 control events без нового Step. Публично только awaiting IDs/свой вес/свой required candidate до результата. Один принятый бюллетень, signed binding неизменен, no-winner тоже исполняет договор. Не расходовать бизнес-фазы/PRNG/дедлайны на ожидание. Legacy automatic fixtures сохраняют pauseForBallots=false.
+- Human/NPC используют один SetVoteChoice validator. Headless с новым профилем требует явный --human-ballot self, сохранённый SelfBallotController. Hybrid ballot использует общий bounded runtime, новый poll barrier без нового economic tick; после load pending/ready ballot slot получает fallback нового epoch без HTTP requery. Replay читает принятые входы.
+- World15/Rules stopped-elections-1, Session2/Envelope2; World14 не мигрируется/не перезаписывается. Voting snapshot/submitted, research audit/overrides входят в checkpoint/hash/invariants; research-modifications.json входит в20 direct/16 world-only comparisons.
+- Developer только DelskDeveloper=true, Debug, отдельные obj/bin/locks. Compile Remove находится в Directory.Build.targets после SDK items. Release/ExportRelease с флагом запрещён. Клиент только через изолирующий packager; .gdignore/export filters и metadata audit защищают обычный пакет. Нельзя возвращать DeveloperModify в обычный Core/Hosting/ActionKind.
+- Вмешательства только на безопасной границе, вне voting и travel quantum: target money/total stock, wage exponent1–5; существующие holds/capacity защищены. Audit old/new + input ordinal, replay проверяет старое значение. Developer сохранения маркированы и имеют отдельный путь; чистые comparisons исключают Developer/modified. Не выдавать injection за G/harvest.
+- Developer journal ограничен256 записями/16 feasible candidates и ограниченными текстами, без connection secrets. Полная существующая session history сохраняет известные ограничения P27. Forward budget проверяется между атомарными Step, максимум8 за кадр, stop/cancel на выборе/модели/victory; фокус/help/lifecycle независимы. Не возобновлять forward автоматически после load.
 
 ## Начало задачи
 

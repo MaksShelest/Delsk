@@ -31,9 +31,12 @@ public record ModelDecisionTrace(string DecisionId, long RequestedTick, long App
     string Resolution, string ReasonCode, string RequestJson, string? ResponseJson = null,
     long? LatencyMilliseconds = null, long? PromptTokens = null, long? CompletionTokens = null, string? Model = null);
 public record ControllerDecision(string Goal, string Reason, ImmutableArray<GameAction> Actions, bool Record = true,
-    [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ModelDecisionTrace? ModelTrace = null);
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ModelDecisionTrace? ModelTrace = null,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ImmutableArray<UtilityScore>? Candidates = null, int PlanStep = 0);
+public record UtilityScore(string Goal,string Reason,long Score,int Steps);
 public record ControllerCheckpoint(string Kind, int Version, ParticipantId Actor, string StateJson, ImmutableArray<string> PendingCommandIds);
 public record ControllerSessionContext(string SessionId, long Epoch, long Tick, bool Restored);
+public record BallotDecision(ParticipantId? Candidate, string Reason, ModelDecisionTrace? ModelTrace = null);
 
 /// <summary>Replaceable policy; only the host assigns identity and submits validated commands.</summary>
 public interface IController
@@ -45,6 +48,10 @@ public interface IController
     void BindSession(ControllerSessionContext context) { }
     void BeginDecisionBarrier(long tick) { }
     void EndDecisionBarrier(long tick) { }
+    bool WaitingForModel => false;
+    void BeginBallotBarrier(long barrier) { }
+    void EndBallotBarrier(long barrier, long election) { }
+    BallotDecision DecideBallot(ControllerObservation observation) => new(observation.Elections.Voting?.RequiredCandidate ?? observation.Elections.OwnChoice ?? Actor, "ExplicitSelfBallot");
 }
 
 public sealed partial class SimulationEngine

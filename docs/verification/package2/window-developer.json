@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "Real cash edit audited; forward599→600 stopped for human ballot; cancellation and bounded journal rendered"
+  ],
+  "display": "X11",
+  "failures": [],
+  "mode": "developer",
+  "window_size": "(1100, 720)"
+}
