@@ -14,14 +14,19 @@ public record ControllerSettings(long ActorId, string PreferredInput, int Decisi
     int HarvestCoefficient = 1, int ProductionCoefficient = 1,
     int MaximumBuyPriceBasisPoints = 12500, int SellPriceBasisPoints = 10000,
     long SupportPricePerVoteMinor = 500, int PoliticalHorizonTicks = 180,
-    bool TradeEnabled = true, bool LogisticsEnabled = true, bool PoliticsEnabled = true, long HumanActorId = 1, bool FutureContractsEnabled = true, int MarketLotQuantity = 10, long WageRaiseMinor = 1);
+    bool TradeEnabled = true, bool LogisticsEnabled = true, bool PoliticsEnabled = true, long HumanActorId = 1, bool FutureContractsEnabled = true, int MarketLotQuantity = 10, long WageRaiseMinor = 1,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] NpcDifficulty Difficulty = NpcDifficulty.Legacy);
 public record AutonomousConfiguration(int Version, long HumanActorId, long FinalTick, ControllerSettings[] Npcs);
 public record TrustEntry(long ParticipantId, int Value);
 public record PlanStep(GameAction Action);
 public record BidReview(long OfferId, int Round);
 public record AlgorithmState(ControllerSettings Settings, ulong RandomState, string Goal, string Reason,
     PlanStep[] Plan, int NextStep, string? PendingCommandId, long NextDecisionTick, long NextWageTick,
-    long BlockedUntilTick, string BlockedGoal, long Decisions, long Rejections, TrustEntry[] Trust, BidReview[] BidReviews, PlanStep[] SuspendedPlan, int SuspendedNextStep, string SuspendedGoal, string SuspendedReason, long[] FailedSupport);
+    long BlockedUntilTick, string BlockedGoal, long Decisions, long Rejections, TrustEntry[] Trust, BidReview[] BidReviews, PlanStep[] SuspendedPlan, int SuspendedNextStep, string SuspendedGoal, string SuspendedReason, long[] FailedSupport)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public PolicyProfile? Profile {get;init;}
+}
 
 public sealed partial class AlgorithmicController : IController
 {
@@ -35,19 +40,22 @@ public sealed partial class AlgorithmicController : IController
     {
         ValidateSettings(settings);
         _state = new(settings, seed, "Idle", "Initial", [], 0, null, 0, 0, 0, "", 0, 0,
-            participants.Where(p => p != settings.ActorId).Distinct().Order().Select(p => new TrustEntry(p, 0)).ToArray(), [], [], 0, "", "", []);
+            participants.Where(p => p != settings.ActorId).Distinct().Order().Select(p => new TrustEntry(p, 0)).ToArray(), [], [], 0, "", "", []) {Profile=ResolveProfile(settings.Difficulty)};
     }
-    public ControllerCheckpoint Capture() => new(PolicyKind, 2, Actor,
+    public ControllerCheckpoint Capture() => new(Profile is null?PolicyKind:ModularPolicyKind, Profile is null?2:3, Actor,
         System.Text.Json.JsonSerializer.Serialize(_state, SimulationJson.Options),
         _state.PendingCommandId is { } id ? [id] : []);
     public static AlgorithmicController Restore(ControllerCheckpoint saved)
     {
-        if (saved.Kind != PolicyKind || saved.Version != 2) throw new CheckpointException("UnknownControllerVersion");
+        if (!((saved.Kind == PolicyKind && saved.Version == 2) || (saved.Kind == ModularPolicyKind && saved.Version == 3))) throw new CheckpointException("UnknownControllerVersion");
         try
         {
             var s = System.Text.Json.JsonSerializer.Deserialize<AlgorithmState>(saved.StateJson, SimulationJson.Options)
                 ?? throw new CheckpointException("EmptyControllerState");
             ValidateSettings(s.Settings);
+            if((s.Profile is null)!=(saved.Kind==PolicyKind) ||
+                System.Text.Json.JsonSerializer.Serialize(s.Profile,SimulationJson.Options)!=System.Text.Json.JsonSerializer.Serialize(ResolveProfile(s.Settings.Difficulty),SimulationJson.Options))
+                throw new CheckpointException("UnknownPolicyModuleVersion");
             if (s.Settings.ActorId != saved.Actor.Value || s.NextStep < 0 || s.NextStep > s.Plan.Length ||
                 s.NextDecisionTick < 0 || s.NextWageTick < 0 || s.BlockedUntilTick < 0 || s.Decisions < 0 ||
                 s.Rejections < 0 || s.Rejections > s.Decisions || s.Plan.Length > 100 || s.BidReviews is null || s.BidReviews.Length > 1000 ||
@@ -70,7 +78,7 @@ public sealed partial class AlgorithmicController : IController
     }
     private static void ValidateSettings(ControllerSettings s)
     {
-        if (s.WageRaiseMinor is < 0 or > 10000 || s.ActorId <= 0 || string.IsNullOrWhiteSpace(s.PreferredInput) || s.PreferredInput.Length > 80 ||
+        if (!Enum.IsDefined(s.Difficulty) || s.WageRaiseMinor is < 0 or > 10000 || s.ActorId <= 0 || string.IsNullOrWhiteSpace(s.PreferredInput) || s.PreferredInput.Length > 80 ||
             s.DecisionIntervalTicks is < 1 or > 100 || s.BatchQuantity is < 1 or > 1000 ||
             s.CashReserveMinor is < 0 or > 1_000_000_000 || s.BaseWageMinor is < 1 or > 10000 ||
             s.MaximumWageMinor < s.BaseWageMinor || s.MaximumWageMinor > 10000 ||

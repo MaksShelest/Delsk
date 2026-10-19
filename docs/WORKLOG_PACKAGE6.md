@@ -11,7 +11,9 @@
 - База: слитый PR#41, `66de3a4`, рабочее дерево до начала чистое. Ветка `feat/package6-npc-sawmill`.
 - До изменений: World18/Rules production-recipes-1, Session2/Envelope2;835 ordinary/841 Developer. Полноценный utility-v2, P22 adapter/runtime/fallback уже существуют; не писать второй executor или HTTP runtime.
 - Архив сохранён в `docs/design/sawmill-v1/source.zip`, оригинальный README рядом. Это дизайн с демонстрационными данными, не спецификация экономики. Подключать именные узлы к реальным проекциям/командам; demo.gd/project.godot не импортировать как игровую логику. Шрифт Nunito с OFL обязателен при переносе.
-- Анализ/изменения политики ещё не завершены. Реализация этапов ниже НЕ заявлена готовой.
+- Этап1 P51 реализован: PolicyProfile.cs, общий legacy-v2 / modular-v3 executor, Easy/Medium/Hard, canonical module versions и experience schema1 без фиктивного обучения. Исторические fixtures остаются Legacy и checkpoint2; новые сложности используют checkpoint3. Full Release:841/841,0 failed/skipped; лог checks/p51-suite.*, TRX p51-suite.trx. Проверены exact continuation всех3, reject unknown module version и различие recipe decision Easy/Medium. Hard имеет ETA cost, расширенный forecast — следующий P53.
+- Следующее действие: этап2 P52, заменить legacy wage rules только у Medium/Hard экономической оценкой. P52/P53/P56/планшет ещё не реализованы.
+- Реальная модель в этой среде пока недоступна: ollama/gguf не найдены в workspace, loopback11434/api/tags connection refused (bounded3с). P56 реальную приёмку нельзя объявлять выполненной по историческому Windows P23; программную интеграцию и тестовый runtime реализовать, если модель останется недоступна — оставить точную локальную процедуру.
 
 ## Этапы
 
