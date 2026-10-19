@@ -3,11 +3,11 @@
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
 Основание: [спецификация 0.5](requirements/game_specification.md) с уточнением визуального клиента от 17.10.2026, [архитектура](ARCHITECTURE.md), [решения и настройки](DECISIONS.md).
 
-## Текущий этап: пакет4 завершён, следующий пакет5 (19.10.2026)
+## Текущий этап: пакет5 завершён, следующий пакет6 (20.10.2026, Europe/Samara)
 
-От слитого PR#39 `5fd27c4` реализованы P43–P46. Критерии и ограничения — [IMPLEMENTATION_REPORT_PACKAGE4.md](IMPLEMENTATION_REPORT_PACKAGE4.md), процедура — [PARTICIPANT_TRADE.md](PARTICIPANT_TRADE.md). World17/Rules participant-trade-1;805 ordinary/811 Developer tests,94exports/12replay/63comparisons, third-map900/load/replay, Linux Godot/UI. P33 теперь включает P45; P32 ожидает P51–P53. Следующий пакет5: P47–P50, начиная с P47; P48+ зависит от выбора нового контента владельцем.
+От слитого PR#40 (`7042c91`) выполнены P47–P50 по §12.1 [следующего плана](DELSK_NEXT_STAGE_PLAN.md), вариант C выбран владельцем. [Реализация и gate](IMPLEMENTATION_REPORT_PACKAGE5.md), [процедура/пилотный баланс](PRODUCTION_CHAINS.md).835 ordinary/841 Developer tests,102exports/14replay/69comparisons, Linux Godot/UI, отдельная третья карта900/load/replay. World18/Rules production-recipes-1. Следующий пакет6 — P51–P53, начиная с P51; здесь не начат. Аппаратные gates/ограничения полной истории P27 сохраняются.
 
-Пакет4 строго P43–P46 по §12.1; прежнее «P43–P47» в срезе пакета3 было ошибкой. Пакет3 P37–P42 — [исторический отчёт](IMPLEMENTATION_REPORT_PACKAGE3.md). Аппаратные gates и ограничения полной истории P27 сохраняются.
+Исторический пакет4: P43–P46,805 ordinary/811 Developer tests; [отчёт](IMPLEMENTATION_REPORT_PACKAGE4.md). Указание «P43–P47» в срезе пакета3 было ошибкой границы, исправленной нормативным §12.1.
 
 Исторический срез пакета1: основа — `e8d5640`, слитый PR#36; P00–P27/UI01 не повторяются. По явному заданию пользователя включён [DELSK_NEXT_STAGE_PLAN.md](DELSK_NEXT_STAGE_PLAN.md): P28–P60 продолжают номера, §12.1 определяет пакеты. В том срезе выполнялся только пакет1: P28/P29/P31–P35. Нормативные уточнения, текущие статусы и зависимости — в начале нового плана; код/проверки — [отчёт пакета1](IMPLEMENTATION_REPORT_PACKAGE1.md). P32/P33 не закрываются целиком до P51–P53/P45; новых фабрик/ресурсов/аренды/остановленной стадии выборов нет. Аппаратные Windows/Android/текущая модельные gates P27 сохраняются отдельно.
 

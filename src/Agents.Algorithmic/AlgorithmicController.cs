@@ -55,7 +55,7 @@ public sealed partial class AlgorithmicController
         return Choose(o, DecisionCandidates(o));
     }
     private Candidate[] DecisionCandidates(ControllerObservation o) => Candidates(o).Concat(WageCandidates(o)).Concat(ContractCandidates(o)).Concat(MarketCandidates(o))
-            .Concat(LogisticsCandidates(o)).Concat(PoliticalCandidates(o)).Concat(NegotiationCandidates(o)).Concat(NegotiationResponses(o))
+            .Concat(LogisticsCandidates(o)).Concat(RecipeCandidates(o)).Concat(PoliticalCandidates(o)).Concat(NegotiationCandidates(o)).Concat(NegotiationResponses(o))
             .Where(c => Feasible(c,o) && (!HasObligations(o) || !ExpansionGoal(c.Goal)) &&
                 (o.OwnSupplyRequests.Length==0 || c.Goal is not ("SellCarried" or "SellOutput" or "HarvestForSale")))
             .Select(c => HasObligations(o) && c.Goal is "SupplyProduction" or "ResumeProduction" or "AdjustWage"
@@ -140,17 +140,18 @@ public sealed partial class AlgorithmicController
             {
                 yield return WageCandidate(o, group, targetWage, 100000, recipe.Id);
             }
-            if (!recovery && Free(input, recipe.InputItem) < Math.Max(recipe.InputQuantity, settings.BatchQuantity / 2) && Need(o,recipe.InputItem)>0)
+            foreach(var ingredient in recipe.Ingredients)
+            if (!recovery && Free(input, ingredient.ItemId) < Math.Max(ingredient.Quantity,InputTarget(o,input,recipe,ingredient)/2) && Need(o,ingredient.ItemId)>0)
             {
-                long q = Math.Min(settings.BatchQuantity, Math.Min(freeVolume, FreeVolume(input)) / Volume(o, recipe.InputItem));
-                var steps = Acquire(o, recipe.InputItem, q);
-                if (steps is not null && q >= recipe.InputQuantity)
+                long q = Math.Min(InputTarget(o,input,recipe,ingredient), Math.Min(freeVolume/Volume(o,ingredient.ItemId), InputSpace(o,input,recipe,ingredient.ItemId)));
+                var steps = Acquire(o, ingredient.ItemId, q);
+                if (steps is not null && q >= (recipe.Ingredients.Length==1?ingredient.Quantity:1))
                 {
-                    var last = AcquisitionPosition(o, recipe.InputItem, q);
+                    var last = AcquisitionPosition(o, ingredient.ItemId, q);
                     Move(steps, last, input.Position);
-                    steps.Add(new(new(ActionKind.Transfer, ItemId: recipe.InputItem, Quantity: q, Source: carrier.Id, Destination: input.Id)));
+                    steps.Add(new(new(ActionKind.Transfer, ItemId: ingredient.ItemId, Quantity: q, Source: carrier.Id, Destination: input.Id)));
                     if (Distance(o.Map, last, input.Position) >= 0)
-                        yield return new("SupplyProduction", recipe.InputItem, 80000 * settings.ProductionWeight / 100, steps.ToArray());
+                        yield return new("SupplyProduction", ingredient.ItemId, 80000 * settings.ProductionWeight / 100, steps.ToArray());
                 }
             }
         }
@@ -160,10 +161,9 @@ public sealed partial class AlgorithmicController
         {
             var level = type.Levels.Single(l => l.Level == 1);
             var recipe = o.Map.Recipes.Single(r => r.Id == level.RecipeId);
-            if (recipe.InputItem != settings.PreferredInput) continue;
+            if (!recipe.Uses(settings.PreferredInput)) continue;
             var offer = BestOffer(o, recipe.OutputItem, recipe.OutputQuantity, o.Participant.Position);
-            long inputPrice = o.Map.Items.Single(i => i.Id == recipe.InputItem).BasePriceMinor;
-            long margin = offer is null ? 0 : checked(offer.UnitPriceMinor * recipe.OutputQuantity - inputPrice * recipe.InputQuantity -
+            long margin = offer is null ? 0 : checked(offer.UnitPriceMinor * recipe.OutputQuantity - RecipeInputValue(o,recipe) -
                 recipe.EnergyPerBatchMinor - settings.BaseWageMinor * recipe.RequiredStaff * recipe.FullStaffTicks);
             if (margin <= 0) continue;
             foreach (var plot in o.Plots.Where(p => p.BuildingId is null && !p.IsCorridor && !p.IsShopSite && p.ShopParticipantId is null &&

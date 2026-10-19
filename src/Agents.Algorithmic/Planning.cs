@@ -71,8 +71,8 @@ public sealed partial class AlgorithmicController
     private static long BasePrice(ControllerObservation o,string item)=>o.Map.Items.Single(i=>i.Id==item).BasePriceMinor;
     private long Need(ControllerObservation o,string item)
     {
-        long need=o.Enterprises.Where(e=>o.Map.Recipes.Single(r=>r.Id==e.RecipeId).InputItem==item).Sum(e=>{
-            var r=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);return Math.Max(0,Math.Max(r.InputQuantity,_state.Settings.BatchQuantity/2)-Free(Inventory(o,e.InputId),item));});
+        long need=o.Enterprises.Where(e=>o.Map.Recipes.Single(r=>r.Id==e.RecipeId).Uses(item)).Sum(e=>{
+            var r=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);var ingredient=r.Ingredients.Single(i=>i.ItemId==item);return Math.Max(0,Math.Max(ingredient.Quantity,InputTarget(o,Inventory(o,e.InputId),r,ingredient)/2)-Free(Inventory(o,e.InputId),item));});
         need=checked(need+o.OwnDeliveryContracts.Where(c=>c.Supplier==Actor && c.ClosedTick is null && c.ItemId==item).Sum(c=>c.UnprovidedQuantity));
         long incoming=o.OwnMarketAllocations.Where(c=>c.Buyer==Actor && c.ItemId==item).Sum(c=>c.RemainingQuantity)+
             o.OwnMarketBids.Where(b=>o.MarketOffers.Any(m=>m.Id==b.OfferId && m.ItemId==item)).Sum(b=>b.Quantity);

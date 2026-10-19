@@ -34,4 +34,11 @@
   <ItemGroup><EmbeddedResource Include="../../scenarios/physical-automation.json" LogicalName="Fixture.physical-automation.json" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/presentation-map-one-v2.json" LogicalName="Fixture.presentation-map-one-v2.json" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/presentation-map-two-v2.json" LogicalName="Fixture.presentation-map-two-v2.json" /></ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="../../scenarios/presentation-map-one-v3.json" LogicalName="Fixture.presentation-map-one-v3.json" />
+    <EmbeddedResource Include="../../scenarios/presentation-map-two-v3.json" LogicalName="Fixture.presentation-map-two-v3.json" />
+    <EmbeddedResource Include="../../scenarios/presentation-map-three-v2.json" LogicalName="Fixture.presentation-map-three-v2.json" />
+  </ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/food-chain.json" LogicalName="Fixture.food-chain.json" /></ItemGroup>
 </Project>

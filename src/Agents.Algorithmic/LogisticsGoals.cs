@@ -46,13 +46,16 @@ public sealed partial class AlgorithmicController
                     yield return One("ConfigureOutput",destination.Id.ToString(),200000,new(ActionKind.QueueLogisticsJob,Logistics:system.Id,Destination:destination.InputId,Enabled:true));
                 else if(!system.Enabled)yield return One("ConfigureOutput","Enable",190000,new(ActionKind.SetLogisticsEnabled,Logistics:system.Id,Direction:LogisticsDirection.Output,Enabled:true));
             }
-            if(Free(input,r.InputItem)>=_state.Settings.BatchQuantity)continue;
-            var source=o.Buildings.Where(b=>b.Kind is BuildingKind.Warehouse or BuildingKind.Shop && Free(Inventory(o,b.InputId),r.InputItem)>0 &&
+            foreach(var ingredient in r.Ingredients)
+            {
+            if(Free(input,ingredient.ItemId)>=InputTarget(o,input,r,ingredient))continue;
+            var source=o.Buildings.Where(b=>b.Kind is BuildingKind.Warehouse or BuildingKind.Shop && Free(Inventory(o,b.InputId),ingredient.ItemId)>0 &&
                 Distance(o.Map,input.Position,b.Position)>=0).OrderBy(b=>Distance(o.Map,input.Position,b.Position)).ThenBy(b=>b.Id.Value).FirstOrDefault();
             if(source is null)continue;
             if(!system.Queue.Any(j=>j.InboundSource==source.InputId && j.Enabled))
                 yield return One("ConfigureInbound",source.Id.ToString(),210000,new(ActionKind.QueueLogisticsJob,Logistics:system.Id,Source:source.InputId,Enabled:true));
             else if(!system.InboundEnabled)yield return One("ConfigureInbound","Enable",205000,new(ActionKind.SetLogisticsEnabled,Logistics:system.Id,Direction:LogisticsDirection.Inbound,Enabled:true));
+            }
         }
     }
 }

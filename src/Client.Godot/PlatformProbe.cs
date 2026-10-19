@@ -76,6 +76,7 @@ public partial class PlatformProbe : Control
                 CheckStoppedElections();
                 CheckPhysicalAutomation();
                 CheckParticipantTrade();
+                CheckFoodChain();
                 // No wall-clock sleep; the same 62 ticks and physical paths remain intact.
                 while (!_finished) StepOne();
                 GetTree().Quit(0);
@@ -316,6 +317,7 @@ public partial class PlatformProbe : Control
             SupportCheckedTicks = _supportCheckedTicks, SupportStateHash = _supportHash, SupportRestoredTicks = _supportRestoredTicks.ToArray(),
             StoppedVotingFinalHash=_stoppedHash,StoppedVotingRestoredTicks=_stoppedRestoredTicks.ToArray(),
             PhysicalCheckedTicks=_physicalCheckedTicks,PhysicalStateHash=_physicalHash,PhysicalRestoredTicks=_physicalRestoredTicks.ToArray(),
+            FoodCheckedTicks=_foodCheckedTicks,FoodStateHash=_foodHash,FoodRestoredTicks=_foodRestoredTicks.ToArray(),
             TradeCheckedTicks=_tradeCheckedTicks,TradeStateHash=_tradeHash,TradeRestoredTicks=_tradeRestoredTicks.ToArray(),
             Runtime = System.Environment.Version.ToString(), Platform = OS.GetName(),
             GodotVersion = Engine.GetVersionInfo()["string"].AsString(),

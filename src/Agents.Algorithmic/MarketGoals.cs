@@ -10,25 +10,29 @@ public sealed partial class AlgorithmicController
         foreach(var e in o.Enterprises)
         {
             var recipe=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);var input=Inventory(o,e.InputId);
-            long missing=Math.Min(FreeVolume(input)/Volume(o,recipe.InputItem),Math.Max(0,_state.Settings.BatchQuantity-Free(input,recipe.InputItem)));
-            long q=Math.Min(missing,Free(carrier,recipe.InputItem));
+            foreach(var ingredient in recipe.Ingredients)
+            {
+            long missing=Math.Min(InputSpace(o,input,recipe,ingredient.ItemId),Math.Max(0,InputTarget(o,input,recipe,ingredient)-Free(input,ingredient.ItemId)));
+            long q=Math.Min(missing,Free(carrier,ingredient.ItemId));
             if(q>0){var steps=new List<PlanStep>();Move(steps,o.Participant.Position,input.Position);
-                steps.Add(new(new(ActionKind.Transfer,Source:carrier.Id,Destination:input.Id,ItemId:recipe.InputItem,Quantity:q)));
+                steps.Add(new(new(ActionKind.Transfer,Source:carrier.Id,Destination:input.Id,ItemId:ingredient.ItemId,Quantity:q)));
                 yield return new("SupplyProduction","CarriedInputs",420000*_state.Settings.ProductionWeight/100,steps.ToArray());}
             if(q==0 && missing>0 && volume>0)
             {
-                var source=o.Inventories.Where(i=>i.Id!=carrier.Id && i.Id!=input.Id && !o.Enterprises.Any(x=>x.InputId==i.Id) && Free(i,recipe.InputItem)>0 && Reachable(o,i.Position))
+                var source=o.Inventories.Where(i=>i.Id!=carrier.Id && i.Id!=input.Id && !o.Enterprises.Any(x=>x.InputId==i.Id) && Free(i,ingredient.ItemId)>0 && Reachable(o,i.Position))
                     .OrderBy(i=>Distance(o.Map,o.Participant.Position,i.Position)).ThenBy(i=>i.Id.Value).FirstOrDefault();
                 if(source is not null && !o.OwnLogistics.Any(l=>l.EnterpriseId==e.Id && l.InboundEnabled && l.Queue.Any(j=>j.Enabled && j.InboundSource==source.Id)))
                 {
-                    q=Math.Min(missing,Math.Min(Free(source,recipe.InputItem),volume/Volume(o,recipe.InputItem)));
+                    q=Math.Min(missing,Math.Min(Free(source,ingredient.ItemId),volume/Volume(o,ingredient.ItemId)));
                     if(q>0){var steps=new List<PlanStep>();Move(steps,o.Participant.Position,source.Position);
-                        steps.Add(new(new(ActionKind.Transfer,Source:source.Id,Destination:carrier.Id,ItemId:recipe.InputItem,Quantity:q)));
-                        Move(steps,source.Position,input.Position);steps.Add(new(new(ActionKind.Transfer,Source:carrier.Id,Destination:input.Id,ItemId:recipe.InputItem,Quantity:q)));
+                        steps.Add(new(new(ActionKind.Transfer,Source:source.Id,Destination:carrier.Id,ItemId:ingredient.ItemId,Quantity:q)));
+                        Move(steps,source.Position,input.Position);steps.Add(new(new(ActionKind.Transfer,Source:carrier.Id,Destination:input.Id,ItemId:ingredient.ItemId,Quantity:q)));
                         yield return new("SupplyProduction","StoredInputs",130000*_state.Settings.ProductionWeight/100,steps.ToArray());}
                 }
             }
         }
+        }
+
         if(!_state.Settings.TradeEnabled)yield break;
         foreach(var posted in o.BuyOffers.Where(b=>b.Buyer==Actor && b.Status=="Open"))
             if(o.MarketOffers.Any(m=>m.Seller!=Actor && m.ItemId==posted.ItemId && m.Status==MarketOfferStatus.Collecting && m.BasePriceMinor<=BuyLimit(o,m.ItemId)) ||
@@ -90,10 +94,13 @@ public sealed partial class AlgorithmicController
         if(o.TradingParticipants.Contains(Actor) && o.Account.AvailableMinor>=_state.Settings.CashReserveMinor)
         foreach(var e in o.Enterprises)
         {
-            var r=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);var input=Inventory(o,e.InputId);long q=Math.Min(Need(o,r.InputItem),FreeVolume(input)/Volume(o,r.InputItem));
-            if(q<=0 || !o.Buildings.Any(b=>b.InputId==input.Id) || o.BuyOffers.Any(b=>b.Buyer==Actor && b.ItemId==r.InputItem && (b.Status=="Open" || o.Tick-(b.ExpiresAtTick-o.DeliveryRules.OfferTtlTicks)<_state.Settings.BlockedRetryTicks*2)))continue;
-            long price=BasePrice(o,r.InputItem);q=Math.Min(q,Math.Max(0,o.Account.AvailableMinor-_state.Settings.CashReserveMinor)/price);
-            if(q>0)yield return One("PostInputOffer",r.InputItem,105000,new(ActionKind.CreateBuyOffer,Destination:input.Id,ItemId:r.InputItem,Quantity:q,UnitPriceMinor:price));
+            var r=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);var input=Inventory(o,e.InputId);
+            foreach(var ingredient in r.Ingredients)
+            {long q=Math.Min(Need(o,ingredient.ItemId),InputSpace(o,input,r,ingredient.ItemId));
+            if(q<=0 || !o.Buildings.Any(b=>b.InputId==input.Id) || o.BuyOffers.Any(b=>b.Buyer==Actor && b.ItemId==ingredient.ItemId && (b.Status=="Open" || o.Tick-(b.ExpiresAtTick-o.DeliveryRules.OfferTtlTicks)<_state.Settings.BlockedRetryTicks*2)))continue;
+            long price=BasePrice(o,ingredient.ItemId);q=Math.Min(q,Math.Max(0,o.Account.AvailableMinor-_state.Settings.CashReserveMinor)/price);
+            if(q>0)yield return One("PostInputOffer",ingredient.ItemId,105000,new(ActionKind.CreateBuyOffer,Destination:input.Id,ItemId:ingredient.ItemId,Quantity:q,UnitPriceMinor:price));
+        }
         }
         if(o.Buildings.All(b=>b.Kind!=BuildingKind.Shop) && o.Enterprises.Length>0 && carrier.Stock.All(s=>s.Quantity==0))
         foreach(var type in o.BuildingTypes.Where(t=>t.Kind==BuildingKind.Shop && t.Footprint.Length==1))
@@ -115,6 +122,6 @@ public sealed partial class AlgorithmicController
             yield return new("BuildShop",type.Id,180000,steps.ToArray());
         }
     }
-    private static bool IsProductionInput(ControllerObservation o,string item)=>o.Enterprises.Any(e=>o.Map.Recipes.Single(r=>r.Id==e.RecipeId).InputItem==item);
+    private static bool IsProductionInput(ControllerObservation o,string item)=>o.Enterprises.Any(e=>o.Map.Recipes.Single(r=>r.Id==e.RecipeId).Uses(item));
     private long BuyLimit(ControllerObservation o,string item)=>Math.Max(1,checked((long)((Int128)BasePrice(o,item)*_state.Settings.MaximumBuyPriceBasisPoints/10000)));
 }

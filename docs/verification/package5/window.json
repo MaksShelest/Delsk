@@ -1,0 +1,7 @@
+{
+  "checks": [
+    "Rendered loaded food-chain map and distinct factories",
+    "RU/EN confectionery card lists all three inputs and output"
+  ],
+  "failures": []
+}

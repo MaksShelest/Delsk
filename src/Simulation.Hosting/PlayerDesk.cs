@@ -230,6 +230,7 @@ public static class PlayerText
         ["item.grain"] = "зерно",
         ["item.plank"] = "доски",
         ["item.bread"] = "хлеб",
+        ["item.milk"] = "молочное сырьё", ["item.beet"] = "свёкла", ["item.cheese"] = "сыр", ["item.sugar"] = "сахар", ["item.pastry"] = "выпечка",
         ["context.hint"] = "Подойдите к объекту. Стрелки выбирают действие, Enter подтверждает одно.",
         ["context.harvest"] = "Добыть",
         ["context.buy"] = "Купить участок за {0}",
@@ -393,6 +394,7 @@ public static class PlayerText
         ["item.grain"] = "grain",
         ["item.plank"] = "planks",
         ["item.bread"] = "bread",
+        ["item.milk"] = "dairy supplies", ["item.beet"] = "beet", ["item.cheese"] = "cheese", ["item.sugar"] = "sugar", ["item.pastry"] = "pastry",
         ["context.hint"] = "Walk up to an object. Arrows choose an action, Enter confirms one.",
         ["context.harvest"] = "Harvest",
         ["context.buy"] = "Buy plot for {0}",
@@ -444,6 +446,9 @@ public static class PlayerText
     {
         "sawmill" => Local(language, "Лесопилка", "Sawmill"),
         "bakery" => Local(language, "Пекарня", "Bakery"),
+        "dairy" => Local(language, "Сыроварня", "Dairy"),
+        "sugar-factory" => Local(language, "Сахарный завод", "Sugar factory"),
+        "confectionery" => Local(language, "Кондитерская фабрика", "Confectionery"),
         "warehouse" => Local(language, "Склад", "Warehouse"),
         "shop" => Local(language, "Лавочка", "Shop"),
         _ => type

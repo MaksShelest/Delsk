@@ -54,7 +54,7 @@ public sealed partial class AlgorithmicController
                     if(waiting+o.Map.TradeWindowTicks+3+(long)distance*o.LogisticsRules.MoveTicksPerCell>o.DeliveryRules.ContractTtlTicks)continue;
                     long payroll=checked(crew.Capacity*(crew.PendingWageMinor??crew.WageMinor)*Math.Max(2L,2L*distance*o.LogisticsRules.MoveTicksPerCell));
                     long bond=checked((long)((Int128)q*offer.UnitPriceMinor*o.DeliveryRules.FineBasisPoints/10000));
-                    long unitCost=checked((recipe.InputQuantity*BasePrice(o,recipe.InputItem)+recipe.EnergyPerBatchMinor+
+                    long unitCost=checked((RecipeInputValue(o,recipe)+recipe.EnergyPerBatchMinor+
                         recipe.RequiredStaff*_state.Settings.BaseWageMinor*recipe.FullStaffTicks)/recipe.OutputQuantity);
                     long net=checked(q*(offer.UnitPriceMinor-unitCost)-payroll);
                     if(net>0 && checked(payroll+bond)<=o.Account.AvailableMinor)

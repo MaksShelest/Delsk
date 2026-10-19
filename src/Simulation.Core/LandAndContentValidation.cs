@@ -62,16 +62,22 @@ public static partial class ScenarioValidation
                         (previous is not null && (level.InputCapacity < previous.InputCapacity ||
                             level.OutputCapacity < previous.OutputCapacity || level.StaffCapacity < previous.StaffCapacity)))
                         throw new ArgumentException("Invalid building level/costs");
+                    if(!level.AdditionalRecipeIds.IsDefault && (level.AdditionalRecipeIds.Length>8 || level.AdditionalRecipeIds.Any(id=>id is null || !recipes.ContainsKey(id)) ||
+                        level.UnlockedRecipes.Distinct(StringComparer.Ordinal).Count()!=1+level.AdditionalRecipeIds.Length))throw new ArgumentException("Invalid additional recipes");
                     if (type.Kind == BuildingKind.Production)
                     {
-                        if (!recipes.TryGetValue(level.RecipeId, out var recipe) || level.StaffCapacity < recipe.RequiredStaff ||
-                            level.OutputCapacity <= 0 || checked(recipe.InputQuantity * items[recipe.InputItem].UnitVolume) > level.InputCapacity ||
-                            checked(recipe.OutputQuantity * items[recipe.OutputItem].UnitVolume) > level.OutputCapacity)
-                            throw new ArgumentException("Building recipe cannot fit its level");
-                        _ = checked((long)recipe.RequiredStaff * level.WorkRateMultiplier);
-                        _ = checked(recipe.FullStaffTicks * level.StaffCapacity);
+                        foreach(var recipeId in type.Levels.Where(l=>l.Level<=level.Level).SelectMany(l=>l.UnlockedRecipes).Distinct(StringComparer.Ordinal))
+                        {
+                            if(!recipes.TryGetValue(recipeId,out var recipe) || level.StaffCapacity<recipe.RequiredStaff || level.OutputCapacity<=0 ||
+                                recipe.Ingredients.Aggregate(0L,(total,i)=>checked(total+checked(i.Quantity*items[i.ItemId].UnitVolume)))>level.InputCapacity ||
+                                checked(recipe.OutputQuantity*items[recipe.OutputItem].UnitVolume)>level.OutputCapacity)
+                                throw new ArgumentException("Building recipe cannot fit its level");
+                            _=checked((long)recipe.RequiredStaff*level.WorkRateMultiplier);_=checked(recipe.FullStaffTicks*level.StaffCapacity);
+                            _=checked(level.StaffCapacity*level.WageMinor+recipe.EnergyPerBatchMinor);
+                        }
+                        if(!recipes.ContainsKey(level.RecipeId))throw new ArgumentException("Missing default recipe");
                     }
-                    else if (level.RecipeId != "" || level.StaffCapacity != 0 || level.WageMinor != 0 ||
+                    else if (!level.AdditionalRecipeIds.IsDefaultOrEmpty || level.RecipeId != "" || level.StaffCapacity != 0 || level.WageMinor != 0 ||
                         level.OutputCapacity != 0 || level.WorkRateMultiplier != 1)
                         throw new ArgumentException("Storage cannot create production or employment");
                     long materialVolume = level.Materials.Aggregate(0L, (n, m) => checked(n + checked(m.Quantity * items[m.ItemId].UnitVolume)));

@@ -12,12 +12,12 @@ public static partial class ScriptedScenarios
             var actor = new ParticipantId(p.Id);
             var enterprise = definition.Enterprises.Single(e => e.OwnerId == p.Id);
             var recipe = definition.Recipes.Single(r => r.Id == enterprise.RecipeId);
-            Move(session, actor, definition.ResourceNodes.Single(n => n.ItemId == recipe.InputItem).Position);
-            Execute(session, actor, new(ActionKind.Harvest, ItemId: recipe.InputItem, Quantity: 2));
+            Move(session, actor, definition.ResourceNodes.Single(n => n.ItemId == recipe.Ingredients.Single().ItemId).Position);
+            Execute(session, actor, new(ActionKind.Harvest, ItemId: recipe.Ingredients.Single().ItemId, Quantity: 2));
             Wait(session, () => !session.Engine.Observe(actor).Participant.Busy);
             Move(session, actor, enterprise.Position);
             var o = session.Engine.Observe(actor);
-            Execute(session, actor, new(ActionKind.Transfer, ItemId: recipe.InputItem, Quantity: 2,
+            Execute(session, actor, new(ActionKind.Transfer, ItemId: recipe.Ingredients.Single().ItemId, Quantity: 2,
                 Source: o.Participant.InventoryId, Destination: o.OwnEnterprises.Single().InputId));
         }
         foreach (var e in definition.Enterprises.OrderBy(e => e.Id))

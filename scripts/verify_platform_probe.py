@@ -95,6 +95,11 @@ if args.report:
     if report.get('TradeCheckedTicks')!=len(trade) or report.get('TradeStateHash')!=trade[-1]['state_hash'] or report.get('TradeRestoredTicks')!=[32,33,34,35,38,51,69]:
         raise SystemExit('Participant trade versions/reservations/privacy probe was not completed')
     print(f'Participant trade: {len(trade)} hashes match runner; counter/escrow/partial pickup/unsigned/signed restored')
+if args.report:
+    with (root/'scenarios/platform-food.checkpoints.csv').open(newline='') as source:food=list(csv.DictReader(source))
+    if report.get('FoodCheckedTicks')!=len(food) or report.get('FoodStateHash')!=food[-1]['state_hash'] or report.get('FoodRestoredTicks')!=[340,405,414,561,562,584]:
+        raise SystemExit('Food-chain WIP/purchased input/alternative recipe probe was not completed')
+    print(f'Food-chain: {len(food)} hashes match runner; ingredient pickup, triple-input WIP and recipe upgrade restored')
 if args.windows_directory:
     folder = args.windows_directory
     executable = (folder / 'DelskProbe.exe').read_bytes()

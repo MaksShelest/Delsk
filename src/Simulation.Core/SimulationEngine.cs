@@ -5,7 +5,7 @@ namespace Simulation.Core;
 /// <summary>Authoritative single-thread simulation. No renderer, files, model or wall clock.</summary>
 public sealed partial class SimulationEngine
 {
-    public const string RulesVersion = "participant-trade-1";
+    public const string RulesVersion = "production-recipes-1";
     private readonly ScenarioDefinition _config;
     private readonly GridMap _map;
     private readonly Dictionary<string, ItemDefinition> _items;
@@ -356,7 +356,7 @@ public sealed partial class SimulationEngine
             _enterprises.Values.OrderBy(e => e.Definition.Id).Select(e => new EnterpriseView(new(e.Definition.Id), new(e.Definition.OwnerId),
                 new(e.Input), new(e.Output), e.Enabled, e.Group.Headcount, e.Reason, e.Batch?.Id ?? 0,
                 e.Batch?.WorkDone ?? 0, e.Batch?.WorkRequired ?? 0, e.Completed, e.EnergyPaid,
-                e.Recipe.Id, e.Definition.Level, e.Definition.Capacity, e.Definition.WorkRateMultiplier)).ToArray(),
+                e.Recipe.Id, e.Definition.Level, e.Definition.Capacity, e.Definition.WorkRateMultiplier) {BatchRecipeId=e.Batch?.RecipeId??"",BatchInputs=e.Batch is {} batch?batch.Inputs:[]}).ToArray(),
             _flows.Values.OrderBy(f => f.Id, StringComparer.Ordinal).Select(f => new FlowView(f.Id, f.Initial, f.Harvested,
                 f.RecipeInput, f.Produced, f.Exported, f.ConstructionInput)).ToArray(),
             _offers.Values.OrderBy(o => o.Definition.Id).Select(o => new CapitalOfferView(o.Definition.Id, o.Definition.ItemId,

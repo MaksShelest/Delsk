@@ -545,7 +545,7 @@ public partial class Playfield : Control
             if (enterprise.Staff == 0) work.AddChild(new Label { Text = PlayerText.Local(_language, "Для найма включите работу, внесите сырьё и обеспечьте зарплату. Найм постепенный.", "Enable production, supply inputs and afford wages. Hiring is gradual."), AutowrapMode = TextServer.AutowrapMode.WordSmart });
             Button(work, enterprise.Enabled ? "work.stop" : "work.start", () => Offer(PlayerDesk.Work(enterprise.Id.Value, !enterprise.Enabled)));
             var recipe = _scenario.Recipes.Single(r => r.Id == enterprise.RecipeId);
-            Button(work, "transfer.input", () => Offer(PlayerDesk.Transfer(view.Participant.InventoryId.Value, enterprise.InputId.Value, recipe.InputItem, 1)));
+            foreach(var ingredient in recipe.Ingredients)Button(work, "transfer.input", () => Offer(PlayerDesk.Transfer(view.Participant.InventoryId.Value, enterprise.InputId.Value, ingredient.ItemId, 1)));
             foreach (var stock in view.Inventories.Single(i => i.Id == enterprise.OutputId).Stock.Where(s => s.Quantity > s.Reserved))
             {
                 var take = new Button { Text = PlayerText.Local(_language, "Забрать ", "Take ") + PlayerText.Item(_language, stock.ItemId) + " ×1", FocusMode = FocusModeEnum.None };
@@ -718,6 +718,7 @@ public partial class Playfield : Control
             ("player", "", "Вы", "You"), ("npc", "2", "Участник NPC 2", "NPC participant 2"),
             ("npc", "3", "Участник NPC 3", "NPC participant 3"), ("npc", "4", "Участник NPC 4", "NPC participant 4"),
             ("resource", "wood", "Древесина", "Wood"), ("resource", "grain", "Зерно", "Grain"),
+            ("resource", "milk", "Приём молочного сырья", "Dairy collection"), ("resource", "beet", "Свёкла", "Beet"),
             ("plot-free", "", "Свободный участок", "Free plot"), ("plot-own", "", "Ваш участок", "Your plot"),
             ("plot-foreign", "", "Чужой участок", "Other participant's plot"), ("plot-reserved", "", "Бронь", "Reserved plot"),
             ("shop-plot", "", "Место лавочки", "Assigned shop site"), ("corridor", "", "Проход", "Protected passage"),

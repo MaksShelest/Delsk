@@ -14,6 +14,7 @@ parser.add_argument('--support-directory', type=Path, help='Verified 120-tick P2
 parser.add_argument('--stopped-directory', type=Path, help='Verified stopped-voting runner output')
 parser.add_argument('--physical-directory', type=Path, help='Verified physical-automation runner output')
 parser.add_argument('--trade-directory',type=Path,help='Verified participant-trade runner output')
+parser.add_argument('--food-directory',type=Path,help='Verified physical food-chain output')
 args = parser.parse_args()
 summary = json.loads((args.run_directory / 'summary.json').read_text())
 if summary['status'] != 'succeeded' or summary['tick'] != 62:
@@ -98,3 +99,16 @@ if args.trade_directory:
     (root/'scenarios/platform-trade.commands.jsonl').write_bytes((directory/'commands.jsonl').read_bytes())
     with (root/'scenarios/platform-trade.checkpoints.csv').open('w',newline='')as target:
         writer=csv.writer(target,lineterminator='\n');writer.writerow(['tick','state_hash']);writer.writerows((r['tick'],r['state_hash'])for r in rows)
+
+if args.food_directory:
+    directory=args.food_directory
+    summary=json.loads((directory/'summary.json').read_text())
+    state=json.loads((directory/'final-state.json').read_text())
+    if summary['status']!='succeeded' or next(f for f in state['flows'] if f['itemId']=='pastry')['exported']!=2:
+        parser.error('Expected completed food-chain production/purchase/sale fixture')
+    with (directory/'metrics.csv').open(newline='') as source: rows=list(csv.DictReader(source))
+    if [int(row['tick']) for row in rows]!=list(range(1,summary['tick']+1)) or rows[-1]['state_hash']!=summary['stateHash']:
+        parser.error('Missing food-chain checkpoint hashes')
+    (root/'scenarios/platform-food.commands.jsonl').write_bytes((directory/'commands.jsonl').read_bytes())
+    with (root/'scenarios/platform-food.checkpoints.csv').open('w',newline='') as target:
+        writer=csv.writer(target,lineterminator='\n');writer.writerow(['tick','state_hash']);writer.writerows((row['tick'],row['state_hash']) for row in rows)

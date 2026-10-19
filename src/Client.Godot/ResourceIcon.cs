@@ -26,6 +26,16 @@ public partial class ResourceIcon : Control
                 DrawLine(center + new Vector2(-4,-3), center + new Vector2(-1,3), new Color("f5d49d"), 2);
                 DrawLine(center + new Vector2(2,-3), center + new Vector2(5,3), new Color("f5d49d"), 2);
                 break;
+            case "milk":
+                DrawRect(new(center-new Vector2(6,7),new Vector2(12,15)),new Color("e1efef"));DrawRect(new(center-new Vector2(4,10),new Vector2(8,3)),new Color("6aa5c0"));break;
+            case "beet":
+                DrawCircle(center+new Vector2(0,3),7,new Color("ab4c78"));DrawLine(center,center+new Vector2(-4,-9),new Color("62a347"),3);DrawLine(center,center+new Vector2(4,-8),new Color("62a347"),3);break;
+            case "cheese":
+                DrawColoredPolygon([center+new Vector2(-10,7),center+new Vector2(10,7),center+new Vector2(7,-8)],new Color("edc64e"));DrawCircle(center+new Vector2(3,3),2,new Color("b88a32"));break;
+            case "sugar":
+                DrawRect(new(center-new Vector2(8,9),new Vector2(16,18)),new Color("f0eedf"));DrawLine(center+new Vector2(-8,2),center+new Vector2(8,2),new Color("6da0c6"),4);break;
+            case "pastry":
+                DrawRect(new(center-new Vector2(9,1),new Vector2(18,9)),new Color("cf9b52"));DrawRect(new(center-new Vector2(9,5),new Vector2(18,5)),new Color("f4e5d0"));DrawCircle(center-new Vector2(0,6),3,new Color("b74c72"));break;
             default: DrawCircle(center, 5, Colors.White); break;
         }
     }

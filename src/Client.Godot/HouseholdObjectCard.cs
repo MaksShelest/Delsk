@@ -75,13 +75,14 @@ public partial class HouseholdObjectCard : VBoxContainer
             if (enterprise is not null)
             {
                 var recipe = _scenario.Recipes.Single(r => r.Id == enterprise.RecipeId);
-                _heading.Text += "\n" + PlayerText.Item(_language, recipe.InputItem) + $" ×{recipe.InputQuantity} → " + PlayerText.Item(_language, recipe.OutputItem) + $" ×{recipe.OutputQuantity}" +
+                _heading.Text += "\n" + string.Join(" + ",recipe.Ingredients.Select(i=>PlayerText.Item(_language,i.ItemId)+" ×"+i.Quantity))+" → "+PlayerText.Item(_language,recipe.OutputItem)+" ×"+recipe.OutputQuantity +
                     L(" · энергия/партия ", " · energy/batch ") + PlayerText.Money(recipe.EnergyPerBatchMinor) + "\n" + TabletText.Reason(_language, enterprise.ReasonCode);
                 var progress = TabletProgress.Production(enterprise); _progress.MaxValue = progress.Total; _progress.Value = progress.Done;
                 Add("work", enterprise.Enabled ? L("Остановить производство", "Stop production") : L("Включить производство", "Start production"), PlayerDesk.Work(_id, !enterprise.Enabled));
                 if (building is not null)
-                    foreach (var level in _scenario.BuildingTypes!.Single(t => t.Id == building.TypeId).Levels.Where(l => l.Level <= building.Level && l.RecipeId != enterprise.RecipeId))
-                        Add("recipe:" + level.RecipeId, L("Рецепт: ", "Recipe: ") + Recipe(level.RecipeId), new(ActionKind.SetRecipe, Enterprise: new(building.Id.Value), RecipeId: level.RecipeId), !enterprise.Enabled && enterprise.BatchId == 0);
+                    foreach (var recipeId in _scenario.BuildingTypes!.Single(t => t.Id == building.TypeId).Levels.Where(l => l.Level <= building.Level)
+                        .SelectMany(l=>l.UnlockedRecipes).Distinct(StringComparer.Ordinal).Where(id=>id!=enterprise.RecipeId))
+                        Add("recipe:" + recipeId, L("Рецепт: ", "Recipe: ") + Recipe(recipeId), new(ActionKind.SetRecipe, Enterprise: new(building.Id.Value), RecipeId: recipeId), !enterprise.Enabled && enterprise.BatchId == 0);
             }
             if (building is not null && _scenario.BuildingTypes!.Single(t => t.Id == building.TypeId).Levels.FirstOrDefault(l => l.Level == building.Level + 1) is { } upgrade)
                 Add("upgrade", L("Улучшить здание — ", "Upgrade building — ") + PlayerText.Money(upgrade.PriceMinor) + " + " + string.Join(", ", upgrade.Materials.Select(m => PlayerText.Item(_language, m.ItemId) + " ×" + m.Quantity)),
@@ -150,7 +151,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         foreach (var b in view.Buildings.Where(b => b.Id.Value != _id))
         {
             bool production = b.Kind == BuildingKind.Production;
-            if (!production || _scenario.Recipes.Single(r => r.Id == view.Enterprises.Single(e => e.Id.Value == b.Id.Value).RecipeId).InputItem == _scenario.Recipes.Single(r => r.Id == enterprise.RecipeId).OutputItem)
+            if (!production || _scenario.Recipes.Single(r => r.Id == view.Enterprises.Single(e => e.Id.Value == b.Id.Value).RecipeId).Uses(_scenario.Recipes.Single(r => r.Id == enterprise.RecipeId).OutputItem))
                 add("route-out:" + b.Id.Value, L("Отправлять → ", "Deliver → ") + InventoryName(view, b.InputId), new(production ? ActionKind.SetLogisticsProduction : ActionKind.SetLogisticsStorage, Logistics: system.Id, Destination: b.InputId, Enabled: true), system.Trip is null);
             if (!production) add("route-in:" + b.Id.Value, L("Подвозить ← ", "Collect ← ") + InventoryName(view, b.InputId), PlayerDesk.FetchInput(system.Id.Value, b.InputId.Value, true), system.Trip is null);
         }
@@ -205,7 +206,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         return building is null ? L("Запас #", "Storage #") + id.Value : PlayerText.Building(_language, building.TypeId) + " #" + building.Id.Value + (building.OutputId == id ? L(" · выход", " · output") : L(" · вход", " · input"));
     }
     private string Route(PlayerView view, LogisticsJobView job) => job.Source.Value!=0?InventoryName(view,job.Source)+" → "+InventoryName(view,job.Destination)+" · "+PlayerText.Item(_language,job.ItemId):job.ContractId > 0 ? L("Договор #", "Contract #") + job.ContractId : job.InboundSource.Value > 0 ? L("Подвоз из ", "Collect from ") + InventoryName(view, job.InboundSource) : L("Отправка в ", "Deliver to ") + InventoryName(view, job.OwnDestination);
-    private string Recipe(string id) { var recipe = _scenario.Recipes.Single(r => r.Id == id); return PlayerText.Item(_language, recipe.InputItem) + $" ×{recipe.InputQuantity} → " + PlayerText.Item(_language, recipe.OutputItem) + $" ×{recipe.OutputQuantity}"; }
+    private string Recipe(string id) { var recipe = _scenario.Recipes.Single(r => r.Id == id); return string.Join(" + ",recipe.Ingredients.Select(i=>PlayerText.Item(_language,i.ItemId)+" ×"+i.Quantity))+" → "+PlayerText.Item(_language,recipe.OutputItem)+" ×"+recipe.OutputQuantity; }
     private string Role(EmploymentRole role) => role switch { EmploymentRole.Production => L("Производство", "Production"), EmploymentRole.Extraction => L("Добыча", "Extraction"), _ => L("Доставка", "Logistics") };
     private static long Free(InventoryView stock, string item) => stock.Stock.Where(s => s.ItemId == item).Sum(s => s.Quantity - s.Reserved);
     private static bool Room(InventoryView stock, ItemDefinition item, long q) => (Int128)stock.OccupiedVolume + stock.ReservedCapacity + (Int128)q * item.UnitVolume <= stock.Capacity;

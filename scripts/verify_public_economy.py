@@ -31,7 +31,7 @@ def verify(folder):
         cash += sum(accounts[d['escrowAccount']['value']] for d in state['deliveryContracts'] if d['buyer'] and d['buyer']['value']==actor)
         cash += sum(accounts[d['bondAccount']['value']] for d in state['deliveryContracts'] if d['supplier']['value']==actor)
         stock = sum(s['quantity']*prices[s['itemId']] for i in state['inventories'] if i['ownerId']['value']==actor for s in i['stock'])
-        wip = sum(recipes[e['recipeId']]['inputQuantity']*prices[recipes[e['recipeId']]['inputItem']] for e in state['enterprises'] if e['ownerId']['value']==actor and e['batchId'])
+        wip = sum(sum(i['quantity']*prices[i['itemId']] for i in e['batchInputs']) for e in state['enterprises'] if e['ownerId']['value']==actor and e['batchId'])
         land = sum(p['priceMinor'] for p in state['plots'] if p['ownerId'] and p['ownerId']['value']==actor)
         land += sum(r['purchasePriceMinor'] for r in physical['resources'] if r['owner'] and r['owner']['value']==actor)
         buildings = sum(l['priceMinor']+sum(m['quantity']*prices[m['itemId']] for m in l['materials']) for b in state['buildings'] if b['ownerId']['value']==actor for l in types[b['typeId']]['levels'] if l['level']<=b['level'])
