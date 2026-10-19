@@ -135,7 +135,7 @@ public sealed partial class AlgorithmicController
                 targetWage = Math.Min(settings.MaximumWageMinor, Math.Max(targetWage, checked(competitor + settings.WageRaiseMinor)));
             }
             long announced = group.PendingWageMinor ?? group.WageMinor;
-            if (!recovery && announced != targetWage && o.Tick >= _state.NextWageTick &&
+            if (_state.Settings.Difficulty<NpcDifficulty.Medium && !recovery && announced != targetWage && o.Tick >= _state.NextWageTick &&
                 cash >= checked(targetWage * group.Capacity * settings.WageReviewTicks))
             {
                 yield return WageCandidate(o, group, targetWage, 100000, recipe.Id);

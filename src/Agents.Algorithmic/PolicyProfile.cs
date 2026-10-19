@@ -14,7 +14,7 @@ public sealed partial class AlgorithmicController
     public const string ModularPolicyKind="utility-modular-v3";
     public PolicyProfile? Profile=>_state.Profile;
     private static PolicyProfile? ResolveProfile(NpcDifficulty difficulty)=>difficulty==NpcDifficulty.Legacy?null:
-        new(1,difficulty,[new("executor",1),new("simple",1),..(difficulty>=NpcDifficulty.Medium?new PolicyModule[]{new("economics",1)}:[]),
+        new(1,difficulty,[new("executor",1),new("simple",1),..(difficulty>=NpcDifficulty.Medium?new PolicyModule[]{new("economics",2)}:[]),
             ..(difficulty==NpcDifficulty.Hard?new PolicyModule[]{new("planning",1)}:[])],1);
     private bool SimplePolicy=>_state.Settings.Difficulty==NpcDifficulty.Easy;
     private static bool SimpleGoal(Candidate c)=>c.Steps.Length<=8 && c.Goal is not

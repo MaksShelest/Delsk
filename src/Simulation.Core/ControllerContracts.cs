@@ -20,6 +20,7 @@ public record ControllerEquipmentType(string Id, string ItemId, ImmutableArray<E
 public record ControllerMap(int Width, int Height, ImmutableArray<Cell> BlockedCells,
     ImmutableArray<ResourceNodeDefinition> ResourceNodes, ImmutableArray<ItemDefinition> Items,
     ImmutableArray<RecipeDefinition> Recipes, int MoveTicksPerCell, int HarvestTicksPerUnit, int TradeWindowTicks);
+public record ControllerEconomics(LaborSettings Labor,HandlingRules Handling,int WageExponent);
 public record ControllerObservation(long Tick, ParticipantView Participant, AccountView Account,
     ImmutableArray<ControllerInventory> Inventories, ImmutableArray<EnterpriseView> Enterprises,
     ImmutableArray<CapitalOfferView> CapitalOffers, ImmutableArray<PlotView> Plots,
@@ -32,6 +33,8 @@ public record ControllerObservation(long Tick, ParticipantView Participant, Acco
     ImmutableArray<DeliveryContractView> OwnDeliveryContracts, DeliverySettings DeliveryRules, ImmutableArray<LogisticsView> OwnLogistics, LogisticsSettings LogisticsRules,
     ImmutableArray<MarketPricePoint> CapitalPrices, ImmutableArray<MarketPricePoint> CapitalPriceHistory, ElectionObservation Elections, SupportObservation Support, CityEconomy City)
 {
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public ControllerEconomics? Economics {get;init;}
     public System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources { get; init; } = [];
     public System.Collections.Immutable.ImmutableArray<TradeNegotiation> Negotiations {get;init;}=[];
     public NegotiationSettings NegotiationRules {get;init;}=new();
@@ -83,6 +86,6 @@ public sealed partial class SimulationEngine
             o.EquipmentTypes.Select(t => new ControllerEquipmentType(t.Id, t.ItemId, [.. t.Levels])).ToImmutableArray(),
             new(_config.MapWidth, _config.MapHeight, BlockedCells(), [.. _config.ResourceNodes],
                 [.. _config.Items], [.. _config.Recipes], _config.MoveTicksPerCell,
-                _config.HarvestTicksPerUnit, _config.TradeWindowTicks), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules, o.CapitalPrices, o.CapitalPriceHistory, o.Elections, o.Support, o.City) { Resources = o.Resources,Negotiations=o.Negotiations,NegotiationRules=o.NegotiationRules,TradingParticipants=o.TradingParticipants };
+                _config.HarvestTicksPerUnit, _config.TradeWindowTicks), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules, o.CapitalPrices, o.CapitalPriceHistory, o.Elections, o.Support, o.City) { Economics=new(Labor,EconomyRules.Handling??new(),EconomyRules.WageAttractionExponent),Resources = o.Resources,Negotiations=o.Negotiations,NegotiationRules=o.NegotiationRules,TradingParticipants=o.TradingParticipants };
     }
 }
