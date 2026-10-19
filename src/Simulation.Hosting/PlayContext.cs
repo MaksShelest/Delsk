@@ -23,7 +23,8 @@ public static class PlayContext
         {
             string status=$"{site.Stock-site.Reserved}/{site.Capacity}" + (site.Public?L(language," · общая добыча"," · public resource"):
                 site.Owner is {} owner?L(language," · владелец #"," · owner #")+owner.Value:site.Tenant is {} tenant?L(language," · аренда #"," · tenant #")+tenant.Value+" → "+site.LeaseUntil:L(language," · свободно"," · available"));
-            choices.Add(new("resource:info:"+site.ItemId,PlayerText.Item(language,site.ItemId)+" · "+status,null));
+            choices.Add(new("resource:info:"+site.ItemId,PlayerText.Item(language,site.ItemId)+" · "+status,null,
+                Details:L(language,"Восстановление +","Regeneration +")+site.RegenerationQuantity+" / "+site.RegenerationTicks+L(language," тиков."," ticks.")));
             if(!site.Public && site.Owner is null && site.Tenant is null)
             {
                 choices.Add(new("resource:buy:"+site.ItemId,L(language,"Купить ресурсную клетку — ","Buy resource site — ")+PlayerText.Money(site.PurchasePriceMinor),

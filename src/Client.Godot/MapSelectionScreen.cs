@@ -43,7 +43,7 @@ public partial class MapSelectionScreen : ColorRect
         dialog.GetOkButton().Text = L("Отмена", "Cancel");
         var scroll = new ScrollContainer(); dialog.AddChild(scroll);
         var list = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill }; scroll.AddChild(list);
-        foreach (string key in new[] { PlayMaps.First, PlayMaps.Second })
+        foreach (string key in new[] { PlayMaps.First, PlayMaps.Second, PlayMaps.Third })
         {
             string choice = key;
             list.AddChild(new Label { Text = PlayMaps.Name(key, _language) });

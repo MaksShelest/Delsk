@@ -1,0 +1,25 @@
+{
+  "status": "succeeded",
+  "mapsValidated": 3,
+  "exports": 4,
+  "comparisonPairs": 3,
+  "checkpointTick": 350,
+  "finalTick": 900,
+  "stateHash": "1fad76d0521af342357e56368aa993e159ee6f51a0862c32e466aba959ad7a69",
+  "profile": {
+    "measuredTicks": 900,
+    "averageTickMs": 7.583260000000004,
+    "medianTickMs": 6.1371,
+    "p95TickMs": 13.7045,
+    "maximumTickMs": 375.1085,
+    "saveBytes": 3565865,
+    "encodeMs": 269.6438,
+    "decodeMs": 525.5022,
+    "workingSetBytes": 441233408,
+    "checkpointHashMatches": true,
+    "scope": "Hosted headless Step including controllers, invariants and sample/hash; includes JIT; save/load measured separately; no rendering or device claim"
+  },
+  "acceptedCommands": 156,
+  "rejectedCommands": 10,
+  "scope": "Ordinary third map; three baseline NPCs; explicit human self ballot; no live model or rendering claim"
+}

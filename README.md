@@ -2,7 +2,9 @@
 
 # Delsk
 
-Пакет2: [результат и проверки](docs/IMPLEMENTATION_REPORT_PACKAGE2.md), [Developer-сборка и голосование](docs/DEVELOPER_TOOLS.md). P36/P54/P55; следующий пакет3 — по сохранённому плану.
+Пакет3 P37–P42: [результат/проверки/границы](docs/IMPLEMENTATION_REPORT_PACKAGE3.md), [ресурсы, погрузка и маршруты](docs/PHYSICAL_AUTOMATION.md). Три карты, конечные ресурсы/права, движущаяся техника;773 ordinary/779 Developer tests и Linux gates. Дальше пакет4 P43–P47 по отдельному заданию.
+
+Пакет2: [результат и проверки](docs/IMPLEMENTATION_REPORT_PACKAGE2.md), [Developer-сборка и голосование](docs/DEVELOPER_TOOLS.md). P36/P54/P55; исторический срез пакета2.
 
 Исследовательская экономическая игра с автономными NPC.
 Автор: Шелестов Максим Евгеньевич.

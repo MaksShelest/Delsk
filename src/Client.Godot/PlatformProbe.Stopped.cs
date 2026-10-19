@@ -17,7 +17,7 @@ public partial class PlatformProbe
             if(!session.Engine.WaitingForBallots)continue;
             string hash=session.Engine.ComputeStateHash();session.Engine.Step();session.Engine.MoveTravelQuantum();
             if(session.Engine.ComputeStateHash()!=hash)throw new InvalidOperationException("Godot advanced frozen election economy");
-            string path=ProjectSettings.GlobalizePath("user://platform-stopped.json");CheckpointStore.Save(session,path);
+            string path=ProjectSettings.GlobalizePath($"user://platform-stopped-{SimulationEngine.RulesVersion}.json");CheckpointStore.Save(session,path);
             var loaded=CheckpointStore.Load(path).Session;
             if(loaded.Engine.ComputeStateHash()!=hash || !loaded.Engine.WaitingForBallots)throw new InvalidOperationException("Godot lost waiting election snapshot");
             _stoppedRestoredTicks.Add(session.Engine.Tick);session=loaded;long tick=session.Engine.Tick;session.Step();

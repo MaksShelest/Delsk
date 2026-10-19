@@ -5,6 +5,7 @@ public partial class ContextActionButton : Button
 {
     private readonly Label _caption;
     private double _progress;
+    private double _targetProgress;
     private readonly StyleBoxFlat _fill = new() { BgColor = new Color(0.34f, 0.66f, 0.48f, 0.64f),
         CornerRadiusTopLeft = 5, CornerRadiusBottomLeft = 5, CornerRadiusTopRight = 5, CornerRadiusBottomRight = 5 };
     public ContextActionButton(string caption)
@@ -19,10 +20,16 @@ public partial class ContextActionButton : Button
         _caption.OffsetLeft = 12; _caption.OffsetRight = -12;
         AddChild(_caption);
     }
+    public void ShowCaption(string text)=>_caption.Text=text;
     public void ShowProgress(double value)
     {
-        _progress = System.Math.Clamp(value, 0, 100);
-        QueueRedraw();
+        _targetProgress = System.Math.Clamp(value, 0, 100);
+        if(_targetProgress==0){_progress=0;QueueRedraw();}
+    }
+    public override void _Process(double delta)
+    {
+        double next=Mathf.MoveToward(_progress,_targetProgress,delta*160);
+        if(next!=_progress){_progress=next;QueueRedraw();}
     }
     public override void _Draw()
     {

@@ -38,6 +38,9 @@ public static class MapSymbols
             case "shop-plot":
                 canvas.DrawRect(area, new Color(0.46f, 0.36f, 0.55f));
                 break;
+            case "resource-depleted":
+                canvas.DrawCircle(center,cell*.13f,new Color("795438"));
+                break;
             case "resource":
                 if (label == "grain")
                     canvas.DrawColoredPolygon(Diamond(center, cell * 0.22f), new Color(0.9f, 0.78f, 0.2f));

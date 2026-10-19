@@ -34,4 +34,12 @@
     <EmbeddedResource Include="../../scenarios/platform-stopped.commands.jsonl" LogicalName="Fixture.stopped.commands.jsonl" />
     <EmbeddedResource Include="../../scenarios/platform-stopped.final.sha256" LogicalName="Fixture.stopped.final.sha256" />
   </ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/presentation-map-three.json" LogicalName="Play.presentation-map-three.json" /></ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/physical-automation.json" LogicalName="Fixture.physical-automation.json" /></ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../../scenarios/platform-physical.commands.jsonl" LogicalName="Fixture.physical.commands.jsonl" />
+    <EmbeddedResource Include="../../scenarios/platform-physical.checkpoints.csv" LogicalName="Fixture.physical.checkpoints.csv" />
+  </ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/presentation-map-one-v2.json" LogicalName="Play.presentation-map-one-v2.json" /></ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/presentation-map-two-v2.json" LogicalName="Play.presentation-map-two-v2.json" /></ItemGroup>
 </Project>
