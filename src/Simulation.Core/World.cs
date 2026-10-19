@@ -67,9 +67,11 @@ internal sealed class PersonalJob(long id, string kind, long startTick, long com
     public string CommandId { get; } = commandId;
     public long EquipmentId { get; } = equipmentId;
 }
-internal sealed class BatchState(long id, string hold, long required)
+internal sealed class BatchState(long id, string hold, long required, string recipeId="", System.Collections.Immutable.ImmutableArray<MaterialCost> inputs=default)
 {
     public long Id { get; } = id;
+    public string RecipeId {get;}=recipeId;
+    public System.Collections.Immutable.ImmutableArray<MaterialCost> Inputs {get;}=inputs.IsDefault?[]:inputs;
     public string Hold { get; } = hold;
     public long WorkRequired { get; } = required;
     public long WorkDone { get; set; }
@@ -154,9 +156,11 @@ public static partial class ScenarioValidation
             throw new ArgumentException("Invalid item catalog");
         ValidateLogisticsUpgrade(s);
         var items = s.Items.ToDictionary(i => i.Id, StringComparer.Ordinal);
-        if (s.Recipes.Select(r => r.Id).Distinct().Count() != s.Recipes.Length || s.Recipes.Any(r =>
-            string.IsNullOrWhiteSpace(r.Id) || !items.ContainsKey(r.InputItem) || !items.ContainsKey(r.OutputItem) ||
-            r.InputQuantity <= 0 || r.OutputQuantity <= 0 || r.FullStaffTicks <= 0 ||
+        if (s.Recipes.Any(r=>r is null) || s.Recipes.Select(r => r.Id).Distinct().Count() != s.Recipes.Length || s.Recipes.Any(r =>
+            string.IsNullOrWhiteSpace(r.Id) || r.Id.Length>50 || !items.ContainsKey(r.OutputItem) ||
+            (r.Inputs.IsDefault ? string.IsNullOrEmpty(r.InputItem) || r.InputQuantity<=0 : r.InputItem!="" || r.InputQuantity!=0) ||
+            r.Ingredients.Length is <1 or >8 || r.Ingredients.Any(i=>i is null || i.ItemId is null || !items.ContainsKey(i.ItemId) || i.Quantity<=0) ||
+            r.Ingredients.Select(i=>i.ItemId).Distinct(StringComparer.Ordinal).Count()!=r.Ingredients.Length || r.OutputQuantity <= 0 || r.FullStaffTicks <= 0 ||
             r.RequiredStaff <= 0 || r.MinimumStaff < 1 || r.MinimumStaff > r.RequiredStaff || r.EnergyPerBatchMinor < 0))
             throw new ArgumentException("Invalid recipe catalog");
         if (s.Participants.Select(p => p.Id).Distinct().Count() != s.Participants.Length ||
@@ -164,12 +168,21 @@ public static partial class ScenarioValidation
             throw new ArgumentException("Invalid participants");
         if (s.ResourceNodes.Any(n => !items.ContainsKey(n.ItemId) || !map.Walkable(n.Position)))
             throw new ArgumentException("Invalid resource nodes");
+        try
+        {
+            foreach(var r in s.Recipes)
+            {
+                _=r.Ingredients.Aggregate(0L,(sum,i)=>checked(sum+checked(i.Quantity*items[i.ItemId].UnitVolume)));
+                _=r.Ingredients.Aggregate(0L,(sum,i)=>checked(sum+checked(i.Quantity*items[i.ItemId].BasePriceMinor)));
+            }
+        }
+        catch(OverflowException ex){throw new ArgumentException("Recipe arithmetic overflow",ex);}
         var actors = s.Participants.Select(x => x.Id).ToHashSet();
         var recipes = s.Recipes.ToDictionary(r => r.Id, StringComparer.Ordinal);
         ValidateLandAndContent(s, map, items, recipes, actors);
         if (s.Enterprises.Select(e => e.Id).Distinct().Count() != s.Enterprises.Length || s.Enterprises.Any(e =>
             !ValidId(e.Id) || !actors.Contains(e.OwnerId) || !map.Walkable(e.Position) || !recipes.ContainsKey(e.RecipeId) ||
-            e.InputCapacity <= 0 || e.OutputCapacity <= 0 || e.Staff < 0 || e.Staff > e.Capacity ||
+            e.InputCapacity <= 0 || (!recipes[e.RecipeId].Inputs.IsDefault && recipes[e.RecipeId].Ingredients.Sum(i=>i.Quantity*items[i.ItemId].UnitVolume)>e.InputCapacity) || e.OutputCapacity <= 0 || e.Staff < 0 || e.Staff > e.Capacity ||
             e.Capacity < recipes[e.RecipeId].RequiredStaff || e.WageMinor < 0 || e.Level != 1 ||
             e.WorkRateMultiplier != 1 || e.BuildingTypeId != ""))
             throw new ArgumentException("Invalid enterprises");
@@ -189,7 +202,7 @@ public static partial class ScenarioValidation
             foreach (var r in s.Recipes)
             {
                 _ = checked(r.FullStaffTicks * r.RequiredStaff);
-                _ = checked(r.InputQuantity * items[r.InputItem].UnitVolume);
+                _ = r.Ingredients.Aggregate(0L,(total,i)=>checked(total+checked(i.Quantity*items[i.ItemId].UnitVolume)));
                 _ = checked(r.OutputQuantity * items[r.OutputItem].UnitVolume);
             }
             foreach (var e in s.Enterprises) _ = checked(e.Capacity * e.WageMinor + recipes[e.RecipeId].EnergyPerBatchMinor);

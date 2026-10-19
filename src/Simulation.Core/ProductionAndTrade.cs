@@ -20,8 +20,7 @@ public sealed partial class SimulationEngine
             long energy = checked(nextEnergy - (e.Batch?.EnergyPaid ?? 0));
             long wage = checked(e.Group.Headcount * e.Group.Wage);
             long newTotalEnergy = checked(e.EnergyPaid + energy);
-            long newConsumed = starting ? checked(_flows[e.Recipe.InputItem].RecipeInput + e.Recipe.InputQuantity)
-                : _flows[e.Recipe.InputItem].RecipeInput;
+            var consumed = starting ? e.Recipe.Ingredients.ToDictionary(i=>i.ItemId,i=>checked(_flows[i.ItemId].RecipeInput+i.Quantity),StringComparer.Ordinal) : null;
             bool complete = nextWork == required;
             long newProduced = complete ? checked(_flows[e.Recipe.OutputItem].Produced + e.Recipe.OutputQuantity)
                 : _flows[e.Recipe.OutputItem].Produced;
@@ -29,7 +28,7 @@ public sealed partial class SimulationEngine
             var tx = _economy.Begin(Tick);
             if (starting)
             {
-                tx.RemoveFreeStock(e.Input, e.Recipe.InputItem, e.Recipe.InputQuantity);
+                foreach(var ingredient in e.Recipe.Ingredients)tx.RemoveFreeStock(e.Input,ingredient.ItemId,ingredient.Quantity);
                 tx.ReserveCapacity(e.Output, hold, e.Recipe.OutputItem, e.Recipe.OutputQuantity);
             }
             var actor = _actors[e.Definition.OwnerId];
@@ -43,9 +42,12 @@ public sealed partial class SimulationEngine
             tx.Commit();
             if (starting)
             {
-                ++_nextId; e.Batch = new(id, hold, required);
-                _flows[e.Recipe.InputItem].RecipeInput = newConsumed;
-                Emit("ProductionBatchStarted", actor.Id, id, e.Recipe.InputItem, e.Recipe.InputQuantity);
+                ++_nextId; e.Batch = new(id, hold, required,e.Recipe.Id,e.Recipe.Ingredients);
+                foreach(var ingredient in e.Recipe.Ingredients)
+                {
+                    _flows[ingredient.ItemId].RecipeInput = consumed![ingredient.ItemId];
+                    Emit("ProductionBatchStarted",actor.Id,id,ingredient.ItemId,ingredient.Quantity);
+                }
             }
             e.Batch!.WorkDone = nextWork; e.Batch.EnergyPaid = nextEnergy;
             e.EnergyPaid = newTotalEnergy; e.Reason = "Working";
@@ -176,7 +178,8 @@ public sealed partial class SimulationEngine
         foreach (var e in _enterprises.Values)
         {
             if (e.Batch is { } batch && (batch.WorkDone < 0 || batch.WorkDone >= batch.WorkRequired ||
-                !_economy.Inventories[e.Output].CapacityHolds.ContainsKey(batch.Hold)))
+                !_economy.Inventories[e.Output].CapacityHolds.ContainsKey(batch.Hold) || batch.RecipeId!=e.Recipe.Id ||
+                batch.Inputs.IsDefault || !batch.Inputs.SequenceEqual(e.Recipe.Ingredients)))
                 throw new InvalidOperationException("Invalid work in progress");
         }
         foreach (var offer in _offers.Values)

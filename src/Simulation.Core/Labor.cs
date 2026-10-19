@@ -146,7 +146,7 @@ public sealed partial class SimulationEngine
         if (!e.Enabled) return "UserPaused";
         if ((e.Group.PendingWage ?? e.Group.Wage) <= 0 || e.Group.AttractionWage <= 0) return "NoPaidOffer";
         if (e.Batch is not null) return "Ready"; // WIP already owns its inputs and output hold.
-        if (_economy.Inventories[e.Input].Free(e.Recipe.InputItem) < e.Recipe.InputQuantity) return "NoInputs";
+        if (e.Recipe.Ingredients.Any(i=>_economy.Inventories[e.Input].Free(i.ItemId)<i.Quantity)) return "NoInputs";
         var output = _economy.Inventories[e.Output];
         long free = checked(output.Capacity - output.Occupied(_items) - output.Incoming);
         return free < checked(e.Recipe.OutputQuantity * _items[e.Recipe.OutputItem].UnitVolume) ? "NoOutputSpace" : "Ready";

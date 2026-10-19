@@ -83,7 +83,7 @@ public sealed partial class SimulationEngine
             if (e.Batch is { } batch)
             {
                 int full = e.Definition.BuildingTypeId == "" ? e.Recipe.RequiredStaff : e.Group.Capacity;
-                if (batch.WorkRequired != checked(e.Recipe.FullStaffTicks * full) || batch.WorkDone <= 0 ||
+                if (batch.RecipeId!=e.Recipe.Id || batch.Inputs.IsDefault || !batch.Inputs.SequenceEqual(e.Recipe.Ingredients) || batch.WorkRequired != checked(e.Recipe.FullStaffTicks * full) || batch.WorkDone <= 0 ||
                     batch.EnergyPaid != checked((long)((Int128)e.Recipe.EnergyPerBatchMinor * batch.WorkDone / batch.WorkRequired)))
                     throw new CheckpointException("InvalidProductionProgress");
             }

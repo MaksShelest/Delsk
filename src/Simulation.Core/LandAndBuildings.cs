@@ -227,7 +227,7 @@ public sealed partial class SimulationEngine
             throw new RuleViolation("NotAvailable");
         if (e.Enabled || e.Batch is not null) throw new RuleViolation("ProductionNotSafe");
         bool unlocked = _buildings.TryGetValue(e.Definition.Id, out var b)
-            ? b.Type.Levels.Any(l => l.Level <= b.Level && l.RecipeId == c.Action.RecipeId)
+            ? b.Type.Levels.Any(l => l.Level <= b.Level && l.UnlockedRecipes.Contains(c.Action.RecipeId,StringComparer.Ordinal))
             : c.Action.RecipeId == e.Recipe.Id;
         if (!unlocked) throw new RuleViolation("RecipeLocked");
         var recipe = _config.Recipes.Single(r => r.Id == c.Action.RecipeId);

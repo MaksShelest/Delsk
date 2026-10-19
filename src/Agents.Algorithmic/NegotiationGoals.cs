@@ -49,14 +49,16 @@ public sealed partial class AlgorithmicController
         foreach(var e in o.Enterprises)
         {
             var recipe=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);var input=Inventory(o,e.InputId);
-            long price=BasePrice(o,recipe.InputItem),q=Math.Min(Need(o,recipe.InputItem),Math.Min(FreeVolume(input)/Volume(o,recipe.InputItem),Math.Max(0,o.Account.AvailableMinor-_state.Settings.CashReserveMinor)/price));
-            if(q<=0 || o.BuyOffers.Any(b=>b.Buyer==Actor && b.Status=="Open" && b.ItemId==recipe.InputItem) ||
-                o.Negotiations.Any(n=>n.Current.Terms.Buyer==Actor && n.Current.Terms.ItemId==recipe.InputItem &&
+            foreach(var ingredient in recipe.Ingredients)
+            {long price=BasePrice(o,ingredient.ItemId),q=Math.Min(Need(o,ingredient.ItemId),Math.Min(InputSpace(o,input,recipe,ingredient.ItemId),Math.Max(0,o.Account.AvailableMinor-_state.Settings.CashReserveMinor)/price));
+            if(q<=0 || o.BuyOffers.Any(b=>b.Buyer==Actor && b.Status=="Open" && b.ItemId==ingredient.ItemId) ||
+                o.Negotiations.Any(n=>n.Current.Terms.Buyer==Actor && n.Current.Terms.ItemId==ingredient.ItemId &&
                     (n.Status==NegotiationStatus.Proposed || o.Tick-(n.ClosedTick??n.CreatedTick)<_state.Settings.BlockedRetryTicks*2)))continue;
-            var seller=o.City.Participants.Where(p=>p.Actor!=Actor && CanTradeWith(o,p.Actor) && p.PreferenceItem==recipe.InputItem).OrderBy(p=>p.Actor.Value).FirstOrDefault();
+            var seller=o.City.Participants.Where(p=>p.Actor!=Actor && CanTradeWith(o,p.Actor) && p.PreferenceItem==ingredient.ItemId).OrderBy(p=>p.Actor.Value).FirstOrDefault();
             if(seller is null)continue;
-            yield return One("NegotiateInputs",recipe.InputItem,106000,new(ActionKind.ProposeTrade,Terms:new(TradeKind.Purchase,seller.Actor,Actor,
-                recipe.InputItem,q,price,Destination:input.Id,FulfillmentTicks:o.DeliveryRules.ContractTtlTicks)));
+            yield return One("NegotiateInputs",ingredient.ItemId,106000,new(ActionKind.ProposeTrade,Terms:new(TradeKind.Purchase,seller.Actor,Actor,
+                ingredient.ItemId,q,price,Destination:input.Id,FulfillmentTicks:o.DeliveryRules.ContractTtlTicks)));
+        }
         }
     }
 }

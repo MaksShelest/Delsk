@@ -44,8 +44,15 @@ public record SimulationEvent(long Sequence, long Tick, int Phase, string Type,
 
 public record ResourceNodeDefinition(string ItemId, Cell Position, ResourceSiteRules? Rules = null);
 public record ItemDefinition(string Id, long UnitVolume, long BasePriceMinor);
-public record RecipeDefinition(string Id, string InputItem, long InputQuantity, string OutputItem,
-    long OutputQuantity, long FullStaffTicks, int RequiredStaff, int MinimumStaff, long EnergyPerBatchMinor);
+public record RecipeDefinition(string Id, string InputItem = "", long InputQuantity = 0, string OutputItem = "",
+    long OutputQuantity = 0, long FullStaffTicks = 0, int RequiredStaff = 0, int MinimumStaff = 0, long EnergyPerBatchMinor = 0,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] System.Collections.Immutable.ImmutableArray<MaterialCost> Inputs = default)
+{
+    // Legacy scenario syntax remains readable; every runtime consumer uses the same ingredient list.
+    [System.Text.Json.Serialization.JsonIgnore]
+    public System.Collections.Immutable.ImmutableArray<MaterialCost> Ingredients => Inputs.IsDefault ? [new(InputItem,InputQuantity)] : Inputs;
+    public bool Uses(string item) => Ingredients.Any(i=>i.ItemId==item);
+}
 public record ParticipantDefinition(long Id, long CashMinor, Cell Position, long InventoryCapacity, string PublicPreferenceItem = "");
 public record EnterpriseDefinition(long Id, long OwnerId, Cell Position, string RecipeId,
     long InputCapacity, long OutputCapacity, int Staff, int Capacity, long WageMinor, bool Enabled = false,
@@ -56,7 +63,12 @@ public record PlotDefinition(long Id, Cell Position, long PriceMinor, bool IsCor
     long? OwnerId = null, long? ShopParticipantId = null,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] bool IsShopSite = false);
 public record BuildingLevelDefinition(int Level, string RecipeId, long PriceMinor, MaterialCost[] Materials,
-    long InputCapacity, long OutputCapacity, int StaffCapacity, long WageMinor, int WorkRateMultiplier = 1);
+    long InputCapacity, long OutputCapacity, int StaffCapacity, long WageMinor, int WorkRateMultiplier = 1,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] System.Collections.Immutable.ImmutableArray<string> AdditionalRecipeIds = default)
+{
+    [System.Text.Json.Serialization.JsonIgnore]
+    public IEnumerable<string> UnlockedRecipes => RecipeId.Length==0 ? [] : new[]{RecipeId}.Concat(AdditionalRecipeIds.IsDefault?[]:AdditionalRecipeIds);
+}
 public record BuildingTypeDefinition(string Id, BuildingKind Kind, Cell[] Footprint, BuildingLevelDefinition[] Levels, Cell[]? Walls = null);
 public record BuildingDefinition(long Id, long OwnerId, Cell Position, string TypeId, int Level = 1,
     int Staff = 0, bool Enabled = false);
@@ -92,7 +104,11 @@ public record ParticipantView(ParticipantId Id, AccountId AccountId, InventoryId
 public record EnterpriseView(EnterpriseId Id, ParticipantId OwnerId, InventoryId InputId,
     InventoryId OutputId, bool Enabled, int Staff, string ReasonCode, long BatchId, long WorkDone,
     long WorkRequired, long CompletedBatches, long EnergyPaidMinor, string RecipeId, int Level, int StaffCapacity,
-    int WorkRateMultiplier);
+    int WorkRateMultiplier)
+{
+    public string BatchRecipeId {get;init;}="";
+    public System.Collections.Immutable.ImmutableArray<MaterialCost> BatchInputs {get;init;}=[];
+}
 public record PlotView(PlotId Id, Cell Position, long PriceMinor, bool IsCorridor, ParticipantId? OwnerId,
     ParticipantId? ReservedBy, long? ReservationUntilTick, BuildingId? BuildingId, ParticipantId? ShopParticipantId,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] bool IsShopSite = false);

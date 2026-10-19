@@ -10,16 +10,16 @@ public static partial class ScriptedScenarios
         ParticipantId actor = new(definition.Participants[0].Id);
         var enterprise = definition.Enterprises.First(e => e.OwnerId == actor.Value);
         var recipe = definition.Recipes.Single(r => r.Id == enterprise.RecipeId);
-        var node = definition.ResourceNodes.First(n => n.ItemId == recipe.InputItem);
+        var node = definition.ResourceNodes.First(n => n.ItemId == recipe.Ingredients.Single().ItemId);
         var offer = definition.CapitalOffers.First(o => o.ItemId == recipe.OutputItem);
         const long batches = 5;
         Move(session, actor, node.Position);
-        Execute(session, actor, new(ActionKind.Harvest, ItemId: recipe.InputItem, Quantity: checked(batches * recipe.InputQuantity)));
+        Execute(session, actor, new(ActionKind.Harvest, ItemId: recipe.Ingredients.Single().ItemId, Quantity: checked(batches * recipe.Ingredients.Single().Quantity)));
         Wait(session, () => !session.Engine.Observe(actor).Participant.Busy);
         Move(session, actor, enterprise.Position);
         var observed = session.Engine.Observe(actor);
         var e = observed.OwnEnterprises.Single(e => e.Id.Value == enterprise.Id);
-        Execute(session, actor, new(ActionKind.Transfer, ItemId: recipe.InputItem, Quantity: checked(batches * recipe.InputQuantity),
+        Execute(session, actor, new(ActionKind.Transfer, ItemId: recipe.Ingredients.Single().ItemId, Quantity: checked(batches * recipe.Ingredients.Single().Quantity),
             Source: observed.Participant.InventoryId, Destination: e.InputId));
         Execute(session, actor, new(ActionKind.SetProductionEnabled, Enterprise: e.Id, Enabled: true));
         Wait(session, () => session.Engine.Observe(actor).OwnEnterprises.Single(x => x.Id == e.Id).CompletedBatches == batches);

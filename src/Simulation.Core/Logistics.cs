@@ -81,7 +81,7 @@ public sealed partial class SimulationEngine
         if (c.Action.ItemId != "" || c.Action.ContractId != 0) throw new RuleViolation("ItemFromProduction");
         if (l.Trip is { InboundSource.Value: 0 } && (l.Contract != 0 || l.Destination != c.Action.Destination.Value))
             throw new RuleViolation("LogisticsBusy");
-        if (production && c.Action.Enabled && destination!.Recipe.InputItem != _enterprises[l.Enterprise].Recipe.OutputItem)
+        if (production && c.Action.Enabled && !destination!.Recipe.Uses(_enterprises[l.Enterprise].Recipe.OutputItem))
             throw new RuleViolation("IncompatibleRecipe");
         ReplacePrimaryOutput(l, 0, c.Action.Destination.Value, c.Action.Enabled);
         l.Contract = 0; l.Destination = c.Action.Destination.Value; l.Enabled = c.Action.Enabled;
@@ -98,7 +98,7 @@ public sealed partial class SimulationEngine
             var destination = _economy.Inventories[target];
             string item = _enterprises[l.Enterprise].Recipe.OutputItem;
             // Recipe edits affect future trips; a prepared trip keeps its item and capacity hold.
-            if (OwnProductionDestination(l, target) is { } production && production.Recipe.InputItem != item)
+            if (OwnProductionDestination(l, target) is { } production && !production.Recipe.Uses(item))
                 throw new RuleViolation("IncompatibleRecipe");
             long volume = _items[item].UnitVolume;
             if (l.CargoCapacity < volume) throw new RuleViolation("NoCargoSpace");

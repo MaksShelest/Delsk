@@ -17,7 +17,8 @@ internal record SavedJob(long Id, string Kind, long StartTick, long CompletionTi
 internal record SavedActor(long Id, long Account, long Inventory, Cell Position, SavedJob? Job,
     int OffsetX = SimulationEngine.TravelCenter, int OffsetZ = SimulationEngine.TravelCenter,
     int HeadingX = 0, int HeadingZ = 0, int FacingX = 0, int FacingZ = -1);
-internal record SavedBatch(long Id, string Hold, long WorkRequired, long WorkDone, long EnergyPaid);
+internal record SavedBatch(long Id, string Hold, long WorkRequired, long WorkDone, long EnergyPaid, string RecipeId="",
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] System.Collections.Immutable.ImmutableArray<MaterialCost> Inputs=default);
 internal record SavedEnterprise(EnterpriseDefinition Definition, long Input, long Output, string RecipeId,
     bool Enabled, string Reason, SavedBatch? Batch, long Completed, long EnergyPaid, EmploymentView Group);
 internal record SavedEquipment(long Id, long Owner, Cell Position, long Storage, string TypeId, int Level,
@@ -37,7 +38,7 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
 
 public sealed partial class SimulationEngine
 {
-    public const int CheckpointSchemaVersion = 17;
+    public const int CheckpointSchemaVersion = 18;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
@@ -94,8 +95,8 @@ public sealed partial class SimulationEngine
         => values.OrderBy(x => x.Key, StringComparer.Ordinal).ToArray();
     private static SavedJob? SaveJob(PersonalJob? j) => j is null ? null : new(j.Id, j.Kind, j.StartTick,
         j.CompletionTick, j.Path.ToArray(), j.PathIndex, j.SegmentTicks, j.Item, j.Quantity, j.CapacityHold, j.CommandId, j.EquipmentId);
-    private static SavedBatch? SaveBatch(BatchState? b) => b is null ? null : new(b.Id, b.Hold, b.WorkRequired, b.WorkDone, b.EnergyPaid);
-    private static BatchState? LoadBatch(SavedBatch? b) => b is null ? null : new(b.Id, b.Hold, b.WorkRequired)
+    private static SavedBatch? SaveBatch(BatchState? b) => b is null ? null : new(b.Id, b.Hold, b.WorkRequired, b.WorkDone, b.EnergyPaid,b.RecipeId,b.Inputs);
+    private static BatchState? LoadBatch(SavedBatch? b) => b is null ? null : new(b.Id, b.Hold, b.WorkRequired,b.RecipeId,b.Inputs)
         { WorkDone = b.WorkDone, EnergyPaid = b.EnergyPaid };
     private static void LoadGroup(EmploymentGroup g, EmploymentView v)
     {
