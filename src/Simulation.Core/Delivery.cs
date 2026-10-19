@@ -9,7 +9,7 @@ public sealed partial class SimulationEngine
         var d = _deliveryContracts[index];
         if (d.ClosedTick is not null || Tick > d.DeadlineTick) throw new RuleViolation("ContractClosed");
         RequireIdle(actor);
-        if (actor.Position != d.Position) throw new RuleViolation("NotAtLocation");
+        RequireActionLocation(actor, c.Action);
         ReceiveDelivery(index, actor.Inventory, c.Action.Quantity, false, null, c.CommandId);
     }
     private void ReceiveDelivery(int index, long sourceInventory, long q, bool inTransit,

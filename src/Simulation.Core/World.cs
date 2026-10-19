@@ -157,7 +157,7 @@ public static partial class ScenarioValidation
             r.RequiredStaff <= 0 || r.MinimumStaff < 1 || r.MinimumStaff > r.RequiredStaff || r.EnergyPerBatchMinor < 0))
             throw new ArgumentException("Invalid recipe catalog");
         if (s.Participants.Select(p => p.Id).Distinct().Count() != s.Participants.Length ||
-            s.Participants.Any(p => !ValidId(p.Id) || p.CashMinor < 0 || p.InventoryCapacity <= 0 || !map.Walkable(p.Position)))
+            s.Participants.Any(p => !ValidId(p.Id) || p.CashMinor < 0 || p.PublicPreferenceItem is null || p.PublicPreferenceItem.Length > 50 || (p.PublicPreferenceItem.Length > 0 && !s.Items.Any(i=>i.Id==p.PublicPreferenceItem)) || p.InventoryCapacity <= 0 || !map.Walkable(p.Position)))
             throw new ArgumentException("Invalid participants");
         if (s.ResourceNodes.Any(n => !items.ContainsKey(n.ItemId) || !map.Walkable(n.Position)))
             throw new ArgumentException("Invalid resource nodes");

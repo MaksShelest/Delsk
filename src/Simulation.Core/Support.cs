@@ -105,7 +105,7 @@ public sealed partial class SimulationEngine
         if (p.Status != SupportProposalStatus.AcceptedAwaitingResources || p.Election != _nextElection || Tick > p.ExpiryTick ||
             _politicalCommitments.Values.Any(x => x.Seller == p.Seller && x.Election == p.Election)) throw new RuleViolation("NotAvailable");
         RequireIdle(actor);
-        if (actor.Position != _config.Support!.TradingPoint) throw new RuleViolation("NotAtLocation");
+        RequireActionLocation(actor, c.Action);
         if (!p.Reserved.SequenceEqual(p.Compensation)) throw new RuleViolation("IncompleteCompensation");
         var commitment = new PoliticalCommitment(p.Id, p.Seller, p.Candidate, p.Election, p.Source, p.Destination,
             p.Compensation, Tick, PoliticalCommitmentStatus.Active);

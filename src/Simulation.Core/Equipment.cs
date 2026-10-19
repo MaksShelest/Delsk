@@ -36,7 +36,8 @@ public sealed partial class SimulationEngine
             ?? throw new RuleViolation("NotAvailable");
         var level = type.Levels.SingleOrDefault(l => l.Level == c.Action.EquipmentLevel)
             ?? throw new RuleViolation("EquipmentLevelUnavailable");
-        if (actor.Position != c.Action.Target || !_config.ResourceNodes.Any(n => n.ItemId == type.ItemId && n.Position == actor.Position))
+        RequireActionLocation(actor, c.Action, "NotAtResourceNode");
+        if (!_config.ResourceNodes.Any(n => n.ItemId == type.ItemId && n.Position == actor.Position))
             throw new RuleViolation("NotAtResourceNode");
         long id = _nextId, storage = checked(_nextId + 1), nextId = checked(_nextId + 2);
         var equipment = new EquipmentState(id, actor.Id, actor.Position, storage, type, level.Level);
@@ -49,7 +50,7 @@ public sealed partial class SimulationEngine
     private void UpgradeEquipment(ActorState actor, CommandEnvelope c)
     {
         var e = OwnEquipment(actor, c.Action.Equipment); RequireIdle(actor);
-        if (actor.Position != e.Position) throw new RuleViolation("NotAtLocation");
+        RequireActionLocation(actor, c.Action);
         if (e.Mode != EquipmentMode.Off || e.Batch is not null || e.PersonalJobId != 0)
             throw new RuleViolation("EquipmentNotSafe");
         var level = e.Type.Levels.SingleOrDefault(l => l.Level == e.Level + 1)
@@ -77,7 +78,7 @@ public sealed partial class SimulationEngine
         var e = OwnEquipment(actor, c.Action.Equipment);
         if (e.Mode != EquipmentMode.Personal || e.Batch is not null || e.PersonalJobId != 0)
             throw new RuleViolation("EquipmentBusy");
-        if (actor.Position != e.Position) throw new RuleViolation("NotAtLocation");
+        RequireActionLocation(actor, c.Action);
         if (c.Action.ItemId != e.Type.ItemId) throw new RuleViolation("WrongItem");
         var level = e.Characteristics;
         long cycles = checked((c.Action.Quantity - 1) / level.CycleQuantity + 1);

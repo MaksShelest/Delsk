@@ -54,7 +54,8 @@ public class HybridControllerTests
         foreach (bool relevant in new[] { true, false })
         {
             var adapter = new TestModelAdapter((r, _) => Task.FromResult(new ModelReply(ModelTestFixtures.Intent(r))));
-            var (s, _, runtime) = ModelTestFixtures.Session(adapter); using var owner = runtime;
+            var d = Fixtures.Cycle(); d = d with { Enterprises = d.Enterprises.Select(e=>e with {Position=new(0,0)}).ToArray() };
+            var (s, _, runtime) = ModelTestFixtures.Session(adapter, scenario:d); using var owner = runtime;
             s.Step(); await ModelTestFixtures.Completed(runtime, adapter);
             if (relevant) s.Send(new(1), new(ActionKind.SetWage, Group: new(1), WageMinor: 150));
             else s.Send(new(2), new(ActionKind.Harvest, ItemId: "wood", Quantity: 1));

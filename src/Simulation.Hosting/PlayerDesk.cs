@@ -8,19 +8,9 @@ namespace Simulation.Hosting;
 /// </summary>
 public static class PlayerDesk
 {
-    public const long WageStepMinor = 100;
-    public static readonly ActionKind[] Allowed =
-    [
-        ActionKind.MoveTo, ActionKind.Harvest, ActionKind.StartHarvesting, ActionKind.StopHarvest, ActionKind.Transfer,
-        ActionKind.SetProductionEnabled, ActionKind.SetWage,
-        ActionKind.BuyLogistics, ActionKind.SetLogisticsEnabled,
-        ActionKind.SetLogisticsStorage, ActionKind.SetLogisticsInbound,
-        ActionKind.AcceptSupport, ActionKind.RejectSupport, ActionKind.SetVoteChoice,
-        ActionKind.ReservePlot, ActionKind.BuyPlot, ActionKind.Build,
-        ActionKind.SellAvailableToCapital, ActionKind.CancelCapitalSale,
-        ActionKind.CreateSellOffer, ActionKind.SubmitBuyRequest, ActionKind.RaiseBid, ActionKind.WithdrawBid, ActionKind.CollectPurchase,
-        ActionKind.CancelPlotReservation
-    ];
+    public const long WageStepMinor = 5;
+    // SetTravelHeading uses the existing authenticated travel-input path, not the command inbox.
+    public static readonly ActionKind[] Allowed = Enum.GetValues<ActionKind>().Where(k => k != ActionKind.SetTravelHeading).ToArray();
 
     public static GameAction Check(GameAction action)
     {
@@ -82,14 +72,16 @@ public static class PlayerDesk
         return new(seen.Tick, seen.Participant, seen.Account.BalanceMinor, seen.OwnInventories, seen.OwnEnterprises,
             seen.OwnBuildings, seen.OwnEmploymentGroups, seen.OwnLogistics, seen.LaborMarket, seen.Support, seen.Elections, seen.Plots,
             seen.CapitalOffers, seen.Account.AvailableMinor, engine.HarvestOf(actor), engine.EconomyRules,
-            new(seen.MarketOffers, seen.OwnMarketBids, seen.OwnMarketAllocations, seen.MarketRules, engine.PublicShops()));
+            new(seen.MarketOffers, seen.OwnMarketBids, seen.OwnMarketAllocations, seen.MarketRules, engine.PublicShops()),
+            seen.OwnEquipment, seen.OwnDeliveryContracts, seen.BuyOffers, seen.OwnSupplyRequests, seen.City);
     }
 }
 
 public record PlayerView(long Tick, ParticipantView Participant, long CashMinor, InventoryView[] Inventories,
     EnterpriseView[] Enterprises, BuildingView[] Buildings, EmploymentView[] Employment, LogisticsView[] Logistics,
     PublicEmploymentView[] LaborMarket, SupportObservation Support, ElectionObservation Elections, PlotView[] Plots,
-    CapitalOfferView[] CapitalOffers, long AvailableCashMinor, OwnHarvest? Harvest = null, EconomicRules? Economy = null, PlayerMarketView? Market = null);
+    CapitalOfferView[] CapitalOffers, long AvailableCashMinor, OwnHarvest? Harvest = null, EconomicRules? Economy = null, PlayerMarketView? Market = null, EquipmentView[]? Equipment = null, DeliveryContractView[]? Contracts = null,
+    BuyOfferView[]? BuyOffers = null, SupplyRequest[]? SupplyRequests = null, CityEconomy? City = null);
 
 public sealed record PlayerMarketView(MarketOfferView[] Offers, MarketBidView[] Bids, MarketAllocationView[] Allocations,
     MarketSettings Rules, PublicShop[] Shops);

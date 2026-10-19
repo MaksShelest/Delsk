@@ -13,7 +13,7 @@ public class SharedShopTests
     [Fact]
     public void AnyParticipantCanChooseAnySiteAndBuyOnlyOneOwnedOrReserved()
     {
-        var s=Session();var sites=Sites(s);Assert.Equal(4,sites.Length);Assert.All(sites,p=>Assert.Null(p.ShopParticipantId));
+        var s=Session();var sites=Sites(s);Assert.Equal(5,sites.Length);Assert.All(sites,p=>Assert.Null(p.ShopParticipantId));
         LandContentFixtures.Move(s,sites[^1].Position);
         Assert.Equal("Accepted",LandContentFixtures.Reason(s,PlayerDesk.ReservePlot(sites[^1].Id)));
         LandContentFixtures.Move(s,sites[0].Position);

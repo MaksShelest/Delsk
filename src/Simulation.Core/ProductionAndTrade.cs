@@ -71,7 +71,7 @@ public sealed partial class SimulationEngine
             throw new RuleViolation("ExistingDeliveryRequest");
         if (!_offers.TryGetValue(c.Action.OfferId, out var offer) || offer.Remaining <= 0 || offer.CreatedTick >= Tick || offer.ExpiresAtTick < Tick)
             throw new RuleViolation("NotAvailable");
-        if (actor.Position != offer.Definition.Position) throw new RuleViolation("NotAtLocation");
+        RequireActionLocation(actor, c.Action);
         if (c.Action.Quantity <= 0) throw new RuleViolation("InvalidQuantity");
         if (c.Action.ItemId != offer.Definition.ItemId) throw new RuleViolation("WrongItem");
         // A per-actor request may exceed the remaining order: allocation happens only at closing.

@@ -11,7 +11,7 @@ public sealed partial class SimulationEngine
         RequireIdle(actor);
         if (!_enterprises.TryGetValue(c.Action.Enterprise.Value, out var enterprise) || enterprise.Definition.OwnerId != actor.Id)
             throw new RuleViolation("NotAvailable");
-        if (actor.Position != enterprise.Definition.Position) throw new RuleViolation("NotAtLocation");
+        RequireActionLocation(actor, c.Action);
         if (_logistics.Values.Any(l => l.Enterprise == enterprise.Definition.Id)) throw new RuleViolation("LogisticsAlreadyOwned");
         long id = _nextId, cargo = checked(id + 1), next = checked(id + 2);
         var system = new LogisticsState(id, actor.Id, enterprise.Definition.Id, enterprise.Output, cargo, Logistics);
@@ -39,7 +39,7 @@ public sealed partial class SimulationEngine
             throw new RuleViolation("NotAvailable");
         RequireIdle(actor);
         var enterprise = _enterprises[l.Enterprise];
-        if (actor.Position != enterprise.Definition.Position) throw new RuleViolation("NotAtLocation");
+        RequireActionLocation(actor, c.Action);
         if (l.Enabled || l.InboundEnabled || l.Trip is not null) throw new RuleViolation("LogisticsNotSafe");
         var upgrade = Logistics.Upgrade;
         if (l.Level != 1 || upgrade is null) throw new RuleViolation("MaxLogisticsLevel");

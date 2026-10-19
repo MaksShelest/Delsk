@@ -40,7 +40,7 @@ for script, tick in [('cycle', 55), ('equipment', 101), ('autonomous', 350), ('m
     check(f'{script}-save', 300 if script.startswith('autonomous') else 30, [*runner, '--scenario', f'scenarios/{scenarios[script]}.json', '--script', 'autonomous' if script == 'autonomous-demand' else script,
         '--output', out/f'{script}-saved', '--checkpoint', checkpoint, '--checkpoint-at', tick])
     check(f'{script}-load', 300 if script.startswith('autonomous') else 30, [*runner, '--load', checkpoint, '--output', out/f'{script}-loaded', *(['--ticks', '1000'] if script.startswith('autonomous') else [])])
-    for name in ['final-state.json', 'ledger.jsonl', 'events.jsonl', 'commands.jsonl', 'metrics.csv', 'labor.csv', 'controllers.json', 'decisions.jsonl', 'agents.csv', 'market.json', 'scenario.json', 'delivery.json', 'logistics.json', 'capital-demand.json', 'elections.json', 'support.json', 'public-events.jsonl', 'model-decisions.jsonl']:
+    for name in ['final-state.json', 'ledger.jsonl', 'events.jsonl', 'commands.jsonl', 'metrics.csv', 'labor.csv', 'controllers.json', 'decisions.jsonl', 'agents.csv', 'market.json', 'scenario.json', 'delivery.json', 'logistics.json', 'capital-demand.json', 'elections.json', 'support.json', 'public-events.jsonl', 'model-decisions.jsonl', 'public-economy.json']:
         expected = (out/script/name).read_bytes()
         if any((out/f'{script}-{mode}'/name).read_bytes() != expected for mode in ['saved','loaded']):
             raise SystemExit(f'{script}: checkpoint continuation differs in {name}')
@@ -106,6 +106,8 @@ if profile_state['enterprises'] or not profile_measure['checkpointHashMatches'] 
     raise SystemExit('Research profile/measurement path did not apply its independent economic treatment')
 folders.append(out/'economy-profile')
 check('economy-profile-balances',30,[sys.executable,'scripts/verify_results.py',out/'economy-profile'])
+public_exports=sorted(p.parent for p in out.rglob("public-economy.json"))
+check("public-economy-audit",30,[sys.executable,"scripts/verify_public_economy.py",*public_exports])
 manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases':{'cycle':55,'equipment':101,'autonomous':350,'market':44,'pickup':47,'delivery':37,'capital-delivery':3,'logistics':69,'logistics-upgrade':170,'own-storage':170,'inbound':78,'own-production':170,'logistics-queue':185,'capital-demand':85,'autonomous-demand':350,'elections':9,'support':18},
             'comparison':'every exported tick hash, state, ledger, event, command and labor row',
             'controlled_fixture':{'name':'late-return','origin':'test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged','checkpoint_tick':72,'final_tick':80},
@@ -113,7 +115,7 @@ manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases
             'model_safety':{'checkpoint_tick':6,'final_tick':60,'valid':1,'forged_actor':1,'late_reply':1},
             'model_off':'exact world equality with baseline-economy and the same headless timing label',
             'exports':len(folders), 'replays':9, 'comparison_pairs':54,
-            'scope':'P00-P26.6 play HUD and context actions; live Ollama series is separate evidence; windowed and device checks are separate',
+            'scope':'Package1 P28/P29/P31-P35, public capital/labor, presence and baseline; windowed/device checks separate',
             'author':'Шелестов Максим Евгеньевич'}
 (out/'headless-check.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
 print(f'Headless regression succeeded; results={out}')

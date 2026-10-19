@@ -140,8 +140,9 @@ public class SupportTests
     {
         var s=Session();Deliver(s);var control=CheckpointStore.Decode(CheckpointStore.Encode(s));
         Propose(s);control.Step();Execute(s,Action(ActionKind.AcceptSupport),2);control.Step();Execute(s,Action(ActionKind.SignSupport));control.Step();
-        Assert.Equal(JsonSerializer.Serialize(control.Engine.ObserveController(new(3))),JsonSerializer.Serialize(s.Engine.ObserveController(new(3))));
+        Assert.Equal(JsonSerializer.Serialize(control.Engine.ObserveController(new(3)) with { City = null! }),JsonSerializer.Serialize(s.Engine.ObserveController(new(3)) with { City = null! }));
         Assert.Equal(control.Engine.PublicEventsSince(0),s.Engine.PublicEventsSince(0));
+        Assert.Equal(control.Engine.PublicEconomy().CapitalMinor,s.Engine.PublicEconomy().CapitalMinor);
         Assert.Single(s.Engine.ObserveController(new(1)).Support.Proposals);Assert.Single(s.Engine.ObserveController(new(2)).Support.Commitments);
         Assert.Empty(s.Engine.ObserveController(new(3)).Support.Proposals);Assert.Empty(s.Engine.Observe(new(4)).Support.Commitments);
         // Unrelated secret proposals must not advance this observer's ID namespace.

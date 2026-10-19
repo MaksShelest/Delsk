@@ -74,7 +74,7 @@ public sealed partial class SimulationEngine
         if (plot.Definition.IsCorridor) throw new RuleViolation("ProtectedCorridor");
         if (plot.Definition.ShopParticipantId.HasValue && plot.Definition.ShopParticipantId != actor.Id)
             throw new RuleViolation("NotAvailable");
-        if (actor.Position != plot.Definition.Position) throw new RuleViolation("NotAtLocation");
+        RequireActionLocation(actor, new(ActionKind.BuyPlot, Plot: id));
         if (plot.Definition.IsShopSite && _plots.Values.Any(p => p.Definition.IsShopSite && p != plot && (p.Owner == actor.Id || p.ReservedBy == actor.Id)))
             throw new RuleViolation("ShopSiteLimit");
         return plot;
@@ -128,7 +128,7 @@ public sealed partial class SimulationEngine
     {
         RequireIdle(actor);
         if (!_buildingTypes.TryGetValue(c.Action.BuildingTypeId, out var type)) throw new RuleViolation("UnknownBuildingType");
-        if (actor.Position != c.Action.Target) throw new RuleViolation("NotAtLocation");
+        RequireActionLocation(actor, c.Action);
         var footprint = ScenarioValidation.FootprintCells(c.Action.Target, type);
         foreach (var cell in footprint)
         {
@@ -179,6 +179,7 @@ public sealed partial class SimulationEngine
     private void UpgradeBuilding(ActorState actor, CommandEnvelope c)
     {
         var b = OwnBuilding(actor, c.Action.Building);
+        RequireActionLocation(actor, c.Action);
         var level = b.Type.Levels.SingleOrDefault(l => l.Level == checked(b.Level + 1)) ?? throw new RuleViolation("MaxLevel");
         var consumed = PrepareMaterialFlows(level.Materials);
         var tx = _economy.Begin(Tick);

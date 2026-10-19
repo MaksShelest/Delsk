@@ -19,8 +19,7 @@ public sealed partial class SimulationEngine
         RequireIdle(actor);
         if (command.Action.Quantity != 1 || command.Action.Equipment.Value != 0)
             throw new RuleViolation("InvalidQuantity");
-        if (!_config.ResourceNodes.Any(n => n.ItemId == command.Action.ItemId && n.Position == actor.Position))
-            throw new RuleViolation("NoResourceNode");
+        RequireActionLocation(actor, command.Action, "NoResourceNode");
         BeginHarvestCycle(actor, command.Action.ItemId, command.CommandId);
     }
 
