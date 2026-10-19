@@ -10,7 +10,7 @@ namespace Simulation.Tests;
 
 public class ProductionRecipeTests
 {
-    // Synthetic regression components, not the unselected ordinary P48 content.
+    // Synthetic regression ingredients keep the P47 mechanism independent of content balance.
     internal static ScenarioDefinition Scenario(int components=2,long capacity=12,long output=10)=>Fixtures.Cycle() with {
         Id="multi-input-regression",MaxTicks=2000,Population=2,
         Items=[new("wood",1,500),new("input-b",2,700),new("input-c",1,900),new("plank",1,3000)],
@@ -134,25 +134,28 @@ public class ProductionRecipeTests
         Assert.False(s.Engine.Observe(new(1)).OwnEmploymentGroups.Single().Ready);Assert.Equal(0,Factory(s).Staff);
         Supply(s,"input-b",1);s.AdvanceTo(s.Engine.Tick+20);Assert.Equal(1,Factory(s).CompletedBatches);
     }
-    [Fact]
-    public void SharedInboundQueueBalancesTwoIngredientsAndRestoresExistingTruck()
+    [Theory] [InlineData(2)] [InlineData(3)]
+    public void SharedInboundQueueBalancesAllIngredientsAndRestoresExistingTruck(int components)
     {
         var d=LandScenario(capacity:5) with {Population=4,Labor=new(StepTicks:1,MobilityNumerator:1,MobilityDenominator:1,GrowthPerPeriod:0)};
+        if(components==3)d=d with {Recipes=[d.Recipes[0] with {Inputs=Scenario(3).Recipes[0].Ingredients},d.Recipes[1]],
+            Buildings=[..d.Buildings!,new(4,1,new(6,2),"store")],Plots=[..d.Plots!,new(4,new(6,2),1,OwnerId:1)]};
+        var sources=new List<(string,long,long)>{("wood",8,2),("input-b",4,3)};if(components==3)sources.Add(("input-c",4,4));
         var s=new GameSession(new(d));
-        foreach(var (item,q,id) in new[]{("wood",8L,2L),("input-b",4L,3L)})
+        foreach(var (item,q,id) in sources)
         {
             var node=d.ResourceNodes.Single(n=>n.ItemId==item);LandContentFixtures.Move(s,node.Position);Do(s,new(ActionKind.Harvest,ItemId:item,Quantity:q));Fixtures.UntilIdle(s);
             var b=s.Engine.Observe(new(1)).OwnBuildings.Single(b=>b.Id.Value==id);LandContentFixtures.Move(s,b.Position);
             Do(s,new(ActionKind.Transfer,Source:s.Engine.Observe(new(1)).Participant.InventoryId,Destination:b.InputId,ItemId:item,Quantity:q));
         }
         LandContentFixtures.Move(s,new(4,0));Assert.Equal("Accepted",Do(s,new(ActionKind.BuyLogistics,Enterprise:new(1))));var l=s.Engine.Observe(new(1)).OwnLogistics.Single();
-        foreach(long id in new[]{2L,3L})Assert.Equal("Accepted",Do(s,new(ActionKind.QueueLogisticsJob,Logistics:l.Id,Source:s.Engine.Observe(new(1)).OwnBuildings.Single(b=>b.Id.Value==id).InputId,Enabled:true)));
+        foreach(long id in sources.Select(x=>x.Item3))Assert.Equal("Accepted",Do(s,new(ActionKind.QueueLogisticsJob,Logistics:l.Id,Source:s.Engine.Observe(new(1)).OwnBuildings.Single(b=>b.Id.Value==id).InputId,Enabled:true)));
         Do(s,new(ActionKind.SetLogisticsEnabled,Logistics:l.Id,Direction:LogisticsDirection.Inbound,Enabled:true));
         Do(s,new(ActionKind.SetLogisticsStorage,Logistics:l.Id,Destination:s.Engine.Observe(new(1)).OwnBuildings.Single(b=>b.Id.Value==2).InputId,Enabled:true));
         Do(s,new(ActionKind.SetProductionEnabled,Enterprise:new(1),Enabled:true));
         for(int i=0;s.Engine.Observe(new(1)).OwnLogistics.Single().Trip is null;i++){Assert.True(i<40);s.Step();}
         var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));s.AdvanceTo(250);copy.AdvanceTo(250);
-        Assert.Equal(4,Factory(s).CompletedBatches);Assert.True(s.Engine.Observe(new(1)).OwnLogistics.Single().CompletedTrips>=8);
+        Assert.Equal(4,Factory(s).CompletedBatches);Assert.True(s.Engine.Observe(new(1)).OwnLogistics.Single().CompletedTrips>=4*components);
         Assert.Equal(4,s.Engine.Inspect().Flows.Single(f=>f.ItemId=="input-b").RecipeInput);
         Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());Assert.Equal(s.Engine.ComputeStateHash(),GameSession.Replay(d,s.CommandTape,250).Engine.ComputeStateHash());
     }
@@ -170,4 +173,32 @@ public class ProductionRecipeTests
         var other=new GameSession(new(expensive));var candidate=new AlgorithmicController(new(1,"wood",ExpansionWeight:0,TradeEnabled:false,LogisticsEnabled:false,PoliticsEnabled:false,BaseWageMinor:10),42,[1,2]);
         Assert.DoesNotContain(candidate.Decide(other.Engine.ObserveController(new(1)),[]).Actions,a=>a.Kind==ActionKind.SetRecipe);
     }
+    [Fact]
+    public void ExplicitInboundRouteCannotFillSharedInputWithOneIngredient()
+    {
+        var d=LandScenario(capacity:4) with {Population=4,Labor=new(StepTicks:1,MobilityNumerator:1,MobilityDenominator:1,GrowthPerPeriod:0)};
+        var s=Fixtures.Session(d);LandContentFixtures.Move(s,new(0,0));Assert.Equal("Accepted",Do(s,new(ActionKind.Harvest,ItemId:"wood",Quantity:8)));Fixtures.UntilIdle(s);
+        var source=s.Engine.Observe(new(1)).OwnBuildings.Single(b=>b.Id.Value==2);LandContentFixtures.Move(s,source.Position);
+        Assert.Equal("Accepted",Do(s,new(ActionKind.Transfer,Source:s.Engine.Observe(new(1)).Participant.InventoryId,Destination:source.InputId,ItemId:"wood",Quantity:8)));Fixtures.UntilIdle(s);
+        LandContentFixtures.Move(s,new(4,0));Do(s,new(ActionKind.BuyLogistics,Enterprise:new(1)));var truck=s.Engine.Observe(new(1)).OwnLogistics.Single();
+        Assert.Equal("Accepted",Do(s,new(ActionKind.SetTransportRoute,Logistics:truck.Id,Source:source.InputId,Destination:Factory(s).InputId,ItemId:"wood",Enabled:true)));
+        for(int i=0;s.Engine.Observe(new(1)).OwnLogistics.Single().Trip is null;i++){Assert.True(i<40);s.Step();}
+        var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));s.AdvanceTo(130);copy.AdvanceTo(130);
+        Assert.Equal(2,Fixtures.Count(s,Factory(s).InputId,"wood"));Assert.Equal(1,s.Engine.Observe(new(1)).OwnLogistics.Single().CompletedTrips);
+        Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());Assert.Equal(s.Engine.ComputeStateHash(),GameSession.Replay(d,s.CommandTape,130).Engine.ComputeStateHash());
+    }
+
+    [Fact]
+    public void RecipeSelectionUsesRoundedWorkingTicksOfTheActualBuildingLevel()
+    {
+        var d=LandScenario();d=d with {Items=d.Items.Select(i=>i.Id=="input-c"?i with {BasePriceMinor=800}:i).ToArray(),
+            Recipes=[d.Recipes[0] with {FullStaffTicks=5},d.Recipes[1] with {OutputQuantity=1}],
+            BuildingTypes=d.BuildingTypes!.Select(t=>t.Kind==BuildingKind.Production?t with {Levels=t.Levels.Select(l=>l.Level==2?l with {WorkRateMultiplier=2}:l).ToArray()}:t).ToArray(),
+            Buildings=d.Buildings!.Select(b=>b.Id==1?b with {Level=2}:b).ToArray()};
+        var s=Fixtures.Session(d);var policy=new AlgorithmicController(new(1,"wood",ExpansionWeight:0,TradeEnabled:false,LogisticsEnabled:false,PoliticsEnabled:false,BaseWageMinor:10),42,[1,2]);
+        var action=Assert.Single(policy.Decide(s.Engine.ObserveController(new(1)),[]).Actions);
+        // 1180 / ceil(5/2) < 880 / ceil(4/2); the ratio of raw durations gives the wrong choice.
+        Assert.Equal(ActionKind.SetRecipe,action.Kind);Assert.Equal("alternative",action.RecipeId);
+    }
+
 }

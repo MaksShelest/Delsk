@@ -40,7 +40,7 @@ public static class PlayContext
         else
         foreach (var node in scenario.ResourceNodes.Where(n => n.Position == cell).OrderBy(n => n.ItemId, StringComparer.Ordinal))
             choices.Add(new("harvest:" + node.ItemId,
-                (tablets ? L(language, "Добывать", "Harvest") : PlayerText.Get(language, "context.harvest")) + " " + PlayerText.Item(language, node.ItemId) + (tablets ? "" : " ×1"),
+                (node.ItemId=="milk" ? L(language,"Забирать поставки", "Collect supplies") : tablets ? L(language, "Добывать", "Harvest") : PlayerText.Get(language, "context.harvest")) + " " + PlayerText.Item(language, node.ItemId) + (tablets ? "" : " ×1"),
                 tablets ? PlayerDesk.StartHarvesting(node.ItemId) : PlayerDesk.Harvest(node.ItemId, 1),
                 Details: tablets ? L(language, "Повторяется по одной единице до остановки, ухода или заполнения инвентаря.",
                     "Repeats one unit at a time until stopped, leaving the area or inventory full.") : ""));

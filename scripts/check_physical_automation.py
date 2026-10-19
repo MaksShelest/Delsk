@@ -17,10 +17,10 @@ def check(name,timeout,command):
     subprocess.run([sys.executable,str(root/'scripts/run_check.py'),'--name',name,'--timeout',str(timeout),
         '--log-directory',str(out/'checks'),'--',*map(str,command)],cwd=root,check=True)
 
-for name in ['one-v2','two-v2','three']:
+for name in ['one-v2','two-v2','three','one-v3','two-v3','three-v2']:
     check('map-'+name,30,[*runner,'--scenario',f'scenarios/presentation-map-{name}.json',
         '--economy','config/economy.json','--validate-only','true','--output',out/('validation-'+name)])
-common=[*runner,'--script','baseline','--scenario','scenarios/presentation-map-three.json',
+common=[*runner,'--script','baseline','--scenario','scenarios/presentation-map-three-v2.json',
     '--controllers','scenarios/baseline-controllers.json','--economy','config/economy.json','--human-ballot','self','--ticks',900]
 check('third-map',300,[*common,'--profile','true','--output',out/'continuous'])
 check('third-map-save',300,[*common,'--checkpoint',out/'third-map.save.json','--checkpoint-at',350,'--output',out/'saved'])
@@ -36,7 +36,7 @@ profile=json.loads((out/'continuous/profile.json').read_text())
 summary=json.loads((out/'continuous/summary.json').read_text())
 assert profile['checkpointHashMatches'] is True and summary['tick']==900
 (out/'physical-check.json').write_text(json.dumps({
-    'status':'succeeded','mapsValidated':3,'exports':4,'comparisonPairs':3,'checkpointTick':350,'finalTick':900,
+    'status':'succeeded','mapsValidated':6,'exports':4,'comparisonPairs':3,'checkpointTick':350,'finalTick':900,
     'stateHash':summary['stateHash'],'profile':profile,
     'acceptedCommands':sum(e['type']=='CommandAccepted' for e in events),
     'rejectedCommands':summary['controllerRejections'],

@@ -33,7 +33,7 @@ public sealed partial class SimulationEngine
         if(_equipment.Values.Any(e=>e.Storage==job.Source.Value && e.Motion is not null))throw new RuleViolation("EquipmentBusy");
         var source=_economy.Inventories[job.Source.Value];var destination=_economy.Inventories[job.Destination.Value];long volume=_items[job.ItemId].UnitVolume;
         long free=checked(destination.Capacity-destination.Occupied(_items)-destination.Incoming);
-        long quantity=Math.Min(source.Free(job.ItemId),Math.Min(l.CargoCapacity/volume,free/volume));
+        long quantity=Math.Min(source.Free(job.ItemId),Math.Min(l.CargoCapacity/volume,ProductionInputRoom(destination.Id,job.ItemId,free)/volume));
         if(quantity<=0)throw new RuleViolation(free<volume?"NoDestinationSpace":"NoStock");
         var path=_map.FindPath(source.Position,destination.Position);
         return new(-1,job.ItemId,path,quantity,Math.Max(1,(path.Length-1L)*Logistics.MoveTicksPerCell),

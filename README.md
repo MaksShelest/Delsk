@@ -1,6 +1,8 @@
-> Актуальная дорожная карта19.10.2026: [P28–P60 и пакеты](docs/DELSK_NEXT_STAGE_PLAN.md). Пакет1 — [результат/проверки/ограничения](docs/IMPLEMENTATION_REPORT_PACKAGE1.md), [матрица команд](docs/ACTION_ACCESS_MATRIX.md). Исторические этапы ниже не являются текущим статусом нового пакета.
+> Актуальная дорожная карта20.10.2026: [P28–P60 и пакеты](docs/DELSK_NEXT_STAGE_PLAN.md). Пакет1 — [результат/проверки/ограничения](docs/IMPLEMENTATION_REPORT_PACKAGE1.md), [матрица команд](docs/ACTION_ACCESS_MATRIX.md). Исторические этапы ниже не являются текущим статусом нового пакета.
 
 # Delsk
+
+Пакет5 P47–P50, выбранный вариант C: [результат и проверки](docs/IMPLEMENTATION_REPORT_PACKAGE5.md), [рецепты/цепочка/баланс](docs/PRODUCTION_CHAINS.md). Атомарные многокомпонентные рецепты, молочное сырьё/свёкла, сыр/сахар/выпечка.835 ordinary/841 Developer tests;102exports/14replay/69comparisons, Linux Godot/RU/EN. Следующий пакет6 P51–P53, с P51. Ниже — исторические срезы.
 
 Пакет4 P43–P46: [результат и проверки](docs/IMPLEMENTATION_REPORT_PACKAGE4.md), [лавочки, переговоры и получение](docs/PARTICIPANT_TRADE.md).805 ordinary/811 Developer tests, полный runner/load/replay/privacy gate, Linux Godot/UI. Дальше пакет5 с P47; P48+ требует выбора контента владельцем.
 

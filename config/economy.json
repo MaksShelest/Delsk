@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "id": "presentation-economy-v5",
+  "id": "presentation-economy-v6",
   "world": {
     "startingCashMinor": 20000,
     "personalInventoryCapacity": 20,
@@ -33,6 +33,31 @@
         "id": "bread",
         "unitVolume": 1,
         "basePriceMinor": 1000
+      },
+      {
+        "id": "milk",
+        "unitVolume": 2,
+        "basePriceMinor": 500
+      },
+      {
+        "id": "beet",
+        "unitVolume": 1,
+        "basePriceMinor": 300
+      },
+      {
+        "id": "cheese",
+        "unitVolume": 1,
+        "basePriceMinor": 1800
+      },
+      {
+        "id": "sugar",
+        "unitVolume": 1,
+        "basePriceMinor": 1500
+      },
+      {
+        "id": "pastry",
+        "unitVolume": 1,
+        "basePriceMinor": 6500
       }
     ],
     "recipes": [
@@ -79,6 +104,112 @@
         "requiredStaff": 4,
         "minimumStaff": 1,
         "energyPerBatchMinor": 25
+      },
+      {
+        "id": "dairy-1",
+        "inputs": [
+          {
+            "itemId": "milk",
+            "quantity": 2
+          }
+        ],
+        "outputItem": "cheese",
+        "outputQuantity": 1,
+        "fullStaffTicks": 4,
+        "requiredStaff": 2,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 60
+      },
+      {
+        "id": "dairy-2",
+        "inputs": [
+          {
+            "itemId": "milk",
+            "quantity": 3
+          }
+        ],
+        "outputItem": "cheese",
+        "outputQuantity": 2,
+        "fullStaffTicks": 6,
+        "requiredStaff": 4,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 90
+      },
+      {
+        "id": "sugar-1",
+        "inputs": [
+          {
+            "itemId": "beet",
+            "quantity": 3
+          }
+        ],
+        "outputItem": "sugar",
+        "outputQuantity": 1,
+        "fullStaffTicks": 4,
+        "requiredStaff": 2,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 50
+      },
+      {
+        "id": "sugar-2",
+        "inputs": [
+          {
+            "itemId": "beet",
+            "quantity": 5
+          }
+        ],
+        "outputItem": "sugar",
+        "outputQuantity": 2,
+        "fullStaffTicks": 6,
+        "requiredStaff": 4,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 90
+      },
+      {
+        "id": "confectionery-1",
+        "inputs": [
+          {
+            "itemId": "grain",
+            "quantity": 2
+          },
+          {
+            "itemId": "sugar",
+            "quantity": 1
+          },
+          {
+            "itemId": "milk",
+            "quantity": 1
+          }
+        ],
+        "outputItem": "pastry",
+        "outputQuantity": 1,
+        "fullStaffTicks": 8,
+        "requiredStaff": 4,
+        "minimumStaff": 2,
+        "energyPerBatchMinor": 200
+      },
+      {
+        "id": "confectionery-2",
+        "inputs": [
+          {
+            "itemId": "grain",
+            "quantity": 3
+          },
+          {
+            "itemId": "sugar",
+            "quantity": 2
+          },
+          {
+            "itemId": "milk",
+            "quantity": 2
+          }
+        ],
+        "outputItem": "pastry",
+        "outputQuantity": 2,
+        "fullStaffTicks": 10,
+        "requiredStaff": 6,
+        "minimumStaff": 2,
+        "energyPerBatchMinor": 300
       }
     ],
     "buildingTypes": [
@@ -233,6 +364,154 @@
             "wageMinor": 0
           }
         ]
+      },
+      {
+        "id": "dairy",
+        "kind": "Production",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "dairy-1",
+            "additionalRecipeIds": [],
+            "priceMinor": 18000,
+            "materials": [
+              {
+                "itemId": "wood",
+                "quantity": 12
+              }
+            ],
+            "inputCapacity": 80,
+            "outputCapacity": 40,
+            "staffCapacity": 2,
+            "wageMinor": 20,
+            "workRateMultiplier": 1
+          },
+          {
+            "level": 2,
+            "recipeId": "dairy-1",
+            "additionalRecipeIds": [
+              "dairy-2"
+            ],
+            "priceMinor": 28000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 8
+              }
+            ],
+            "inputCapacity": 160,
+            "outputCapacity": 80,
+            "staffCapacity": 4,
+            "wageMinor": 20,
+            "workRateMultiplier": 2
+          }
+        ]
+      },
+      {
+        "id": "sugar-factory",
+        "kind": "Production",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "sugar-1",
+            "additionalRecipeIds": [],
+            "priceMinor": 18000,
+            "materials": [
+              {
+                "itemId": "wood",
+                "quantity": 12
+              }
+            ],
+            "inputCapacity": 80,
+            "outputCapacity": 40,
+            "staffCapacity": 2,
+            "wageMinor": 20,
+            "workRateMultiplier": 1
+          },
+          {
+            "level": 2,
+            "recipeId": "sugar-1",
+            "additionalRecipeIds": [
+              "sugar-2"
+            ],
+            "priceMinor": 28000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 8
+              }
+            ],
+            "inputCapacity": 160,
+            "outputCapacity": 80,
+            "staffCapacity": 4,
+            "wageMinor": 20,
+            "workRateMultiplier": 2
+          }
+        ]
+      },
+      {
+        "id": "confectionery",
+        "kind": "Production",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "confectionery-1",
+            "additionalRecipeIds": [],
+            "priceMinor": 60000,
+            "materials": [
+              {
+                "itemId": "wood",
+                "quantity": 10
+              },
+              {
+                "itemId": "plank",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 120,
+            "outputCapacity": 40,
+            "staffCapacity": 4,
+            "wageMinor": 20,
+            "workRateMultiplier": 1
+          },
+          {
+            "level": 2,
+            "recipeId": "confectionery-1",
+            "additionalRecipeIds": [
+              "confectionery-2"
+            ],
+            "priceMinor": 90000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 20
+              }
+            ],
+            "inputCapacity": 240,
+            "outputCapacity": 80,
+            "staffCapacity": 6,
+            "wageMinor": 20,
+            "workRateMultiplier": 2
+          }
+        ]
       }
     ],
     "equipmentTypes": [
@@ -335,7 +614,7 @@
         "z": 3
       },
       "periodTicks": 60,
-      "bootstrapBaseBudgetMinor": 20000,
+      "bootstrapBaseBudgetMinor": 60000,
       "demandNumerator": 11,
       "demandDenominator": 10,
       "commonWaveTicks": 600,
@@ -419,6 +698,48 @@
       },
       {
         "itemId": "grain",
+        "private": {
+          "public": false,
+          "capacity": 200,
+          "regenerationQuantity": 10,
+          "regenerationTicks": 120,
+          "purchasePriceMinor": 10000,
+          "leasePriceMinor": 1000,
+          "leaseTicks": 1200
+        },
+        "public": {
+          "public": true,
+          "capacity": 50,
+          "regenerationQuantity": 2,
+          "regenerationTicks": 120,
+          "purchasePriceMinor": 10000,
+          "leasePriceMinor": 1000,
+          "leaseTicks": 1200
+        }
+      },
+      {
+        "itemId": "milk",
+        "private": {
+          "public": false,
+          "capacity": 200,
+          "regenerationQuantity": 10,
+          "regenerationTicks": 120,
+          "purchasePriceMinor": 10000,
+          "leasePriceMinor": 1000,
+          "leaseTicks": 1200
+        },
+        "public": {
+          "public": true,
+          "capacity": 50,
+          "regenerationQuantity": 2,
+          "regenerationTicks": 120,
+          "purchasePriceMinor": 10000,
+          "leasePriceMinor": 1000,
+          "leaseTicks": 1200
+        }
+      },
+      {
+        "itemId": "beet",
         "private": {
           "public": false,
           "capacity": 200,

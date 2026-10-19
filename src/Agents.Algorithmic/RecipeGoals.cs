@@ -13,13 +13,14 @@ public sealed partial class AlgorithmicController
             var current=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);
             var offer=BestOffer(o,current.OutputItem,current.OutputQuantity,Inventory(o,e.OutputId).Position);if(offer is null)continue;
             var group=o.EmploymentGroups.Single(g=>g.Id.Value==e.Id.Value);
+            long Duration(RecipeDefinition r)=>checked((r.FullStaffTicks+e.WorkRateMultiplier-1)/e.WorkRateMultiplier);
             long Net(RecipeDefinition r)=>checked(r.OutputQuantity*offer.UnitPriceMinor-RecipeInputValue(o,r)-r.EnergyPerBatchMinor-
-                e.StaffCapacity*group.WageMinor*((r.FullStaffTicks+e.WorkRateMultiplier-1)/e.WorkRateMultiplier));
+                e.StaffCapacity*group.WageMinor*Duration(r));
             var best=current;
             foreach(string id in o.BuildingTypes.Single(t=>t.Id==b.TypeId).Levels.Where(l=>l.Level<=b.Level).SelectMany(l=>l.UnlockedRecipes).Distinct(StringComparer.Ordinal))
             {
                 var r=o.Map.Recipes.Single(r=>r.Id==id);if(r.OutputItem!=current.OutputItem || Net(r)<=0)continue;
-                if((Int128)Net(r)*best.FullStaffTicks>(Int128)Net(best)*r.FullStaffTicks)best=r;
+                if((Int128)Net(r)*Duration(best)>(Int128)Net(best)*Duration(r))best=r;
             }
             if(best.Id==current.Id)continue;
             var steps=new List<PlanStep>();

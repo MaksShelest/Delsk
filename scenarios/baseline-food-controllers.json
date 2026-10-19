@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "humanActorId": 1,
+  "finalTick": 900,
+  "npcs": [
+    {
+      "actorId": 2,
+      "preferredInput": "beet",
+      "decisionIntervalTicks": 1,
+      "expansionWeight": 0,
+      "tradeEnabled": true,
+      "logisticsEnabled": false,
+      "politicsEnabled": false,
+      "futureContractsEnabled": true,
+      "batchQuantity": 6,
+      "blockedRetryTicks": 20,
+      "productionWeight": 200,
+      "cashWeight": 40
+    },
+    {
+      "actorId": 3,
+      "preferredInput": "milk",
+      "decisionIntervalTicks": 1,
+      "expansionWeight": 0,
+      "tradeEnabled": true,
+      "logisticsEnabled": false,
+      "politicsEnabled": false,
+      "futureContractsEnabled": true,
+      "batchQuantity": 6,
+      "blockedRetryTicks": 20,
+      "productionWeight": 200,
+      "cashWeight": 40
+    },
+    {
+      "actorId": 4,
+      "preferredInput": "grain",
+      "decisionIntervalTicks": 1,
+      "expansionWeight": 0,
+      "tradeEnabled": true,
+      "logisticsEnabled": false,
+      "politicsEnabled": false,
+      "futureContractsEnabled": true,
+      "batchQuantity": 6,
+      "blockedRetryTicks": 20,
+      "productionWeight": 200,
+      "cashWeight": 40
+    }
+  ]
+}

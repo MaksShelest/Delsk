@@ -1,0 +1,2128 @@
+{
+  "id": "presentation-map-three-v2",
+  "seed": 42,
+  "mapWidth": 25,
+  "mapHeight": 21,
+  "blockedCells": [],
+  "items": [
+    {
+      "id": "wood",
+      "unitVolume": 1,
+      "basePriceMinor": 500
+    },
+    {
+      "id": "grain",
+      "unitVolume": 1,
+      "basePriceMinor": 300
+    },
+    {
+      "id": "plank",
+      "unitVolume": 1,
+      "basePriceMinor": 1500
+    },
+    {
+      "id": "bread",
+      "unitVolume": 1,
+      "basePriceMinor": 1000
+    },
+    {
+      "id": "milk",
+      "unitVolume": 2,
+      "basePriceMinor": 500
+    },
+    {
+      "id": "beet",
+      "unitVolume": 1,
+      "basePriceMinor": 300
+    },
+    {
+      "id": "cheese",
+      "unitVolume": 1,
+      "basePriceMinor": 1800
+    },
+    {
+      "id": "sugar",
+      "unitVolume": 1,
+      "basePriceMinor": 1500
+    },
+    {
+      "id": "pastry",
+      "unitVolume": 1,
+      "basePriceMinor": 6500
+    }
+  ],
+  "recipes": [
+    {
+      "id": "sawmill-1",
+      "inputItem": "wood",
+      "inputQuantity": 2,
+      "outputItem": "plank",
+      "outputQuantity": 1,
+      "fullStaffTicks": 4,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 50
+    },
+    {
+      "id": "sawmill-2",
+      "inputItem": "wood",
+      "inputQuantity": 2,
+      "outputItem": "plank",
+      "outputQuantity": 1,
+      "fullStaffTicks": 4,
+      "requiredStaff": 4,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 50
+    },
+    {
+      "id": "bakery-1",
+      "inputItem": "grain",
+      "inputQuantity": 2,
+      "outputItem": "bread",
+      "outputQuantity": 1,
+      "fullStaffTicks": 3,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 25
+    },
+    {
+      "id": "bakery-2",
+      "inputItem": "grain",
+      "inputQuantity": 2,
+      "outputItem": "bread",
+      "outputQuantity": 1,
+      "fullStaffTicks": 3,
+      "requiredStaff": 4,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 25
+    },
+    {
+      "id": "dairy-1",
+      "inputs": [
+        {
+          "itemId": "milk",
+          "quantity": 2
+        }
+      ],
+      "outputItem": "cheese",
+      "outputQuantity": 1,
+      "fullStaffTicks": 4,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 60
+    },
+    {
+      "id": "dairy-2",
+      "inputs": [
+        {
+          "itemId": "milk",
+          "quantity": 3
+        }
+      ],
+      "outputItem": "cheese",
+      "outputQuantity": 2,
+      "fullStaffTicks": 6,
+      "requiredStaff": 4,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 90
+    },
+    {
+      "id": "sugar-1",
+      "inputs": [
+        {
+          "itemId": "beet",
+          "quantity": 3
+        }
+      ],
+      "outputItem": "sugar",
+      "outputQuantity": 1,
+      "fullStaffTicks": 4,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 50
+    },
+    {
+      "id": "sugar-2",
+      "inputs": [
+        {
+          "itemId": "beet",
+          "quantity": 5
+        }
+      ],
+      "outputItem": "sugar",
+      "outputQuantity": 2,
+      "fullStaffTicks": 6,
+      "requiredStaff": 4,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 90
+    },
+    {
+      "id": "confectionery-1",
+      "inputs": [
+        {
+          "itemId": "grain",
+          "quantity": 2
+        },
+        {
+          "itemId": "sugar",
+          "quantity": 1
+        },
+        {
+          "itemId": "milk",
+          "quantity": 1
+        }
+      ],
+      "outputItem": "pastry",
+      "outputQuantity": 1,
+      "fullStaffTicks": 8,
+      "requiredStaff": 4,
+      "minimumStaff": 2,
+      "energyPerBatchMinor": 200
+    },
+    {
+      "id": "confectionery-2",
+      "inputs": [
+        {
+          "itemId": "grain",
+          "quantity": 3
+        },
+        {
+          "itemId": "sugar",
+          "quantity": 2
+        },
+        {
+          "itemId": "milk",
+          "quantity": 2
+        }
+      ],
+      "outputItem": "pastry",
+      "outputQuantity": 2,
+      "fullStaffTicks": 10,
+      "requiredStaff": 6,
+      "minimumStaff": 2,
+      "energyPerBatchMinor": 300
+    }
+  ],
+  "participants": [
+    {
+      "id": 1,
+      "cashMinor": 20000,
+      "position": {
+        "x": 11,
+        "z": 17
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 2,
+      "cashMinor": 20000,
+      "position": {
+        "x": 13,
+        "z": 17
+      },
+      "inventoryCapacity": 20,
+      "publicPreferenceItem": "wood"
+    },
+    {
+      "id": 3,
+      "cashMinor": 20000,
+      "position": {
+        "x": 11,
+        "z": 16
+      },
+      "inventoryCapacity": 20,
+      "publicPreferenceItem": "grain"
+    },
+    {
+      "id": 4,
+      "cashMinor": 20000,
+      "position": {
+        "x": 13,
+        "z": 16
+      },
+      "inventoryCapacity": 20,
+      "publicPreferenceItem": "wood"
+    }
+  ],
+  "enterprises": [],
+  "capitalOffers": [],
+  "resourceNodes": [
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 4,
+        "z": 3
+      },
+      "rules": {
+        "public": false,
+        "capacity": 200,
+        "regenerationQuantity": 10,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 4,
+        "z": 4
+      },
+      "rules": {
+        "public": false,
+        "capacity": 200,
+        "regenerationQuantity": 10,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 4,
+        "z": 5
+      },
+      "rules": {
+        "public": false,
+        "capacity": 200,
+        "regenerationQuantity": 10,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 4,
+        "z": 7
+      },
+      "rules": {
+        "public": false,
+        "capacity": 200,
+        "regenerationQuantity": 10,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 4,
+        "z": 8
+      },
+      "rules": {
+        "public": false,
+        "capacity": 200,
+        "regenerationQuantity": 10,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 4,
+        "z": 9
+      },
+      "rules": {
+        "public": false,
+        "capacity": 200,
+        "regenerationQuantity": 10,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "rules": {
+        "public": true,
+        "capacity": 50,
+        "regenerationQuantity": 2,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 1
+      },
+      "rules": {
+        "public": true,
+        "capacity": 50,
+        "regenerationQuantity": 2,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 20,
+        "z": 3
+      },
+      "rules": {
+        "public": false,
+        "capacity": 200,
+        "regenerationQuantity": 10,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 20,
+        "z": 4
+      },
+      "rules": {
+        "public": false,
+        "capacity": 200,
+        "regenerationQuantity": 10,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 20,
+        "z": 5
+      },
+      "rules": {
+        "public": false,
+        "capacity": 200,
+        "regenerationQuantity": 10,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 20,
+        "z": 7
+      },
+      "rules": {
+        "public": false,
+        "capacity": 200,
+        "regenerationQuantity": 10,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 20,
+        "z": 8
+      },
+      "rules": {
+        "public": false,
+        "capacity": 200,
+        "regenerationQuantity": 10,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 20,
+        "z": 9
+      },
+      "rules": {
+        "public": false,
+        "capacity": 200,
+        "regenerationQuantity": 10,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 24,
+        "z": 0
+      },
+      "rules": {
+        "public": true,
+        "capacity": 50,
+        "regenerationQuantity": 2,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 24,
+        "z": 1
+      },
+      "rules": {
+        "public": true,
+        "capacity": 50,
+        "regenerationQuantity": 2,
+        "regenerationTicks": 120,
+        "purchasePriceMinor": 10000,
+        "leasePriceMinor": 1000,
+        "leaseTicks": 1200
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 1,
+        "z": 0
+      },
+      "rules": {
+        "public": true
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 1,
+        "z": 1
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 0,
+        "z": 2
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 23,
+        "z": 2
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 0,
+        "z": 3
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 23,
+        "z": 0
+      },
+      "rules": {
+        "public": true
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 23,
+        "z": 1
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 1,
+        "z": 2
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 24,
+        "z": 2
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 1,
+        "z": 3
+      },
+      "rules": {
+        "public": false
+      }
+    }
+  ],
+  "population": 20,
+  "maxTicks": 5000,
+  "plots": [
+    {
+      "id": 1,
+      "position": {
+        "x": 8,
+        "z": 3
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 2,
+      "position": {
+        "x": 9,
+        "z": 3
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 8,
+        "z": 4
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 4,
+      "position": {
+        "x": 9,
+        "z": 4
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 8,
+        "z": 5
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 9,
+        "z": 5
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 7,
+      "position": {
+        "x": 8,
+        "z": 7
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 8,
+      "position": {
+        "x": 9,
+        "z": 7
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 9,
+      "position": {
+        "x": 8,
+        "z": 8
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 10,
+      "position": {
+        "x": 9,
+        "z": 8
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 11,
+      "position": {
+        "x": 8,
+        "z": 9
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 12,
+      "position": {
+        "x": 9,
+        "z": 9
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 13,
+      "position": {
+        "x": 8,
+        "z": 11
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 14,
+      "position": {
+        "x": 9,
+        "z": 11
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 15,
+      "position": {
+        "x": 8,
+        "z": 12
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 16,
+      "position": {
+        "x": 9,
+        "z": 12
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 17,
+      "position": {
+        "x": 8,
+        "z": 13
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 18,
+      "position": {
+        "x": 9,
+        "z": 13
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 19,
+      "position": {
+        "x": 15,
+        "z": 3
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 20,
+      "position": {
+        "x": 16,
+        "z": 3
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 21,
+      "position": {
+        "x": 15,
+        "z": 4
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 22,
+      "position": {
+        "x": 16,
+        "z": 4
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 23,
+      "position": {
+        "x": 15,
+        "z": 5
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 24,
+      "position": {
+        "x": 16,
+        "z": 5
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 25,
+      "position": {
+        "x": 15,
+        "z": 7
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 26,
+      "position": {
+        "x": 16,
+        "z": 7
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 27,
+      "position": {
+        "x": 15,
+        "z": 8
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 28,
+      "position": {
+        "x": 16,
+        "z": 8
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 29,
+      "position": {
+        "x": 15,
+        "z": 9
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 30,
+      "position": {
+        "x": 16,
+        "z": 9
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 31,
+      "position": {
+        "x": 15,
+        "z": 11
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 32,
+      "position": {
+        "x": 16,
+        "z": 11
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 33,
+      "position": {
+        "x": 15,
+        "z": 12
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 34,
+      "position": {
+        "x": 16,
+        "z": 12
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 35,
+      "position": {
+        "x": 15,
+        "z": 13
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 36,
+      "position": {
+        "x": 16,
+        "z": 13
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 37,
+      "position": {
+        "x": 8,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isShopSite": true
+    },
+    {
+      "id": 38,
+      "position": {
+        "x": 9,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isShopSite": true
+    },
+    {
+      "id": 39,
+      "position": {
+        "x": 10,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isShopSite": true
+    },
+    {
+      "id": 40,
+      "position": {
+        "x": 11,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isShopSite": true
+    },
+    {
+      "id": 41,
+      "position": {
+        "x": 13,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isShopSite": true
+    },
+    {
+      "id": 42,
+      "position": {
+        "x": 14,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isShopSite": true
+    },
+    {
+      "id": 43,
+      "position": {
+        "x": 15,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isShopSite": true
+    },
+    {
+      "id": 44,
+      "position": {
+        "x": 16,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isShopSite": true
+    },
+    {
+      "id": 45,
+      "position": {
+        "x": 6,
+        "z": 0
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 46,
+      "position": {
+        "x": 12,
+        "z": 0
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 47,
+      "position": {
+        "x": 18,
+        "z": 0
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 48,
+      "position": {
+        "x": 6,
+        "z": 1
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 49,
+      "position": {
+        "x": 12,
+        "z": 1
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 50,
+      "position": {
+        "x": 18,
+        "z": 1
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 51,
+      "position": {
+        "x": 6,
+        "z": 2
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 52,
+      "position": {
+        "x": 12,
+        "z": 2
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 53,
+      "position": {
+        "x": 18,
+        "z": 2
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 54,
+      "position": {
+        "x": 6,
+        "z": 3
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 55,
+      "position": {
+        "x": 12,
+        "z": 3
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 56,
+      "position": {
+        "x": 18,
+        "z": 3
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 57,
+      "position": {
+        "x": 6,
+        "z": 4
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 58,
+      "position": {
+        "x": 12,
+        "z": 4
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 59,
+      "position": {
+        "x": 18,
+        "z": 4
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 60,
+      "position": {
+        "x": 6,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 61,
+      "position": {
+        "x": 12,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 62,
+      "position": {
+        "x": 18,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 63,
+      "position": {
+        "x": 6,
+        "z": 6
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 64,
+      "position": {
+        "x": 12,
+        "z": 6
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 65,
+      "position": {
+        "x": 18,
+        "z": 6
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 66,
+      "position": {
+        "x": 6,
+        "z": 7
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 67,
+      "position": {
+        "x": 12,
+        "z": 7
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 68,
+      "position": {
+        "x": 18,
+        "z": 7
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 69,
+      "position": {
+        "x": 6,
+        "z": 8
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 70,
+      "position": {
+        "x": 12,
+        "z": 8
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 71,
+      "position": {
+        "x": 18,
+        "z": 8
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 72,
+      "position": {
+        "x": 6,
+        "z": 9
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 73,
+      "position": {
+        "x": 12,
+        "z": 9
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 74,
+      "position": {
+        "x": 18,
+        "z": 9
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 75,
+      "position": {
+        "x": 6,
+        "z": 10
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 76,
+      "position": {
+        "x": 12,
+        "z": 10
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 77,
+      "position": {
+        "x": 18,
+        "z": 10
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 78,
+      "position": {
+        "x": 6,
+        "z": 11
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 79,
+      "position": {
+        "x": 12,
+        "z": 11
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 80,
+      "position": {
+        "x": 18,
+        "z": 11
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 81,
+      "position": {
+        "x": 6,
+        "z": 12
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 82,
+      "position": {
+        "x": 12,
+        "z": 12
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 83,
+      "position": {
+        "x": 18,
+        "z": 12
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 84,
+      "position": {
+        "x": 6,
+        "z": 13
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 85,
+      "position": {
+        "x": 12,
+        "z": 13
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 86,
+      "position": {
+        "x": 18,
+        "z": 13
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 87,
+      "position": {
+        "x": 6,
+        "z": 14
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 88,
+      "position": {
+        "x": 12,
+        "z": 14
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 89,
+      "position": {
+        "x": 18,
+        "z": 14
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 90,
+      "position": {
+        "x": 6,
+        "z": 15
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 91,
+      "position": {
+        "x": 12,
+        "z": 15
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 92,
+      "position": {
+        "x": 18,
+        "z": 15
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 93,
+      "position": {
+        "x": 6,
+        "z": 16
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 94,
+      "position": {
+        "x": 12,
+        "z": 16
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 95,
+      "position": {
+        "x": 18,
+        "z": 16
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 96,
+      "position": {
+        "x": 6,
+        "z": 17
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 97,
+      "position": {
+        "x": 12,
+        "z": 17
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 98,
+      "position": {
+        "x": 18,
+        "z": 17
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 99,
+      "position": {
+        "x": 6,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 100,
+      "position": {
+        "x": 12,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 101,
+      "position": {
+        "x": 18,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 102,
+      "position": {
+        "x": 6,
+        "z": 19
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 103,
+      "position": {
+        "x": 12,
+        "z": 19
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 104,
+      "position": {
+        "x": 18,
+        "z": 19
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 105,
+      "position": {
+        "x": 6,
+        "z": 20
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 106,
+      "position": {
+        "x": 12,
+        "z": 20
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 107,
+      "position": {
+        "x": 18,
+        "z": 20
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 108,
+      "position": {
+        "x": 0,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 109,
+      "position": {
+        "x": 1,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 110,
+      "position": {
+        "x": 2,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 111,
+      "position": {
+        "x": 3,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 112,
+      "position": {
+        "x": 4,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 113,
+      "position": {
+        "x": 5,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 114,
+      "position": {
+        "x": 7,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 115,
+      "position": {
+        "x": 8,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 116,
+      "position": {
+        "x": 9,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 117,
+      "position": {
+        "x": 10,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 118,
+      "position": {
+        "x": 11,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 119,
+      "position": {
+        "x": 13,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 120,
+      "position": {
+        "x": 14,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 121,
+      "position": {
+        "x": 15,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 122,
+      "position": {
+        "x": 16,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 123,
+      "position": {
+        "x": 17,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 124,
+      "position": {
+        "x": 19,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 125,
+      "position": {
+        "x": 20,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 126,
+      "position": {
+        "x": 21,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 127,
+      "position": {
+        "x": 22,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 128,
+      "position": {
+        "x": 23,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 129,
+      "position": {
+        "x": 24,
+        "z": 18
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    }
+  ],
+  "buildingTypes": [
+    {
+      "id": "sawmill",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "sawmill-1",
+          "priceMinor": 15000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 40,
+          "outputCapacity": 40,
+          "staffCapacity": 2,
+          "wageMinor": 20,
+          "workRateMultiplier": 1
+        },
+        {
+          "level": 2,
+          "recipeId": "sawmill-2",
+          "priceMinor": 20000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 80,
+          "outputCapacity": 80,
+          "staffCapacity": 4,
+          "wageMinor": 20,
+          "workRateMultiplier": 2
+        }
+      ]
+    },
+    {
+      "id": "bakery",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "bakery-1",
+          "priceMinor": 15000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 40,
+          "outputCapacity": 40,
+          "staffCapacity": 2,
+          "wageMinor": 20,
+          "workRateMultiplier": 1
+        },
+        {
+          "level": 2,
+          "recipeId": "bakery-2",
+          "priceMinor": 20000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 80,
+          "outputCapacity": 80,
+          "staffCapacity": 4,
+          "wageMinor": 20,
+          "workRateMultiplier": 2
+        }
+      ]
+    },
+    {
+      "id": "warehouse",
+      "kind": "Warehouse",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        },
+        {
+          "x": 1,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "",
+          "priceMinor": 10000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 200,
+          "outputCapacity": 0,
+          "staffCapacity": 0,
+          "wageMinor": 0
+        }
+      ],
+      "walls": [
+        {
+          "x": 1,
+          "z": 0
+        }
+      ]
+    },
+    {
+      "id": "shop",
+      "kind": "Shop",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "",
+          "priceMinor": 10000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 200,
+          "outputCapacity": 0,
+          "staffCapacity": 0,
+          "wageMinor": 0
+        }
+      ]
+    },
+    {
+      "id": "dairy",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "dairy-1",
+          "additionalRecipeIds": [],
+          "priceMinor": 18000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 12
+            }
+          ],
+          "inputCapacity": 80,
+          "outputCapacity": 40,
+          "staffCapacity": 2,
+          "wageMinor": 20,
+          "workRateMultiplier": 1
+        },
+        {
+          "level": 2,
+          "recipeId": "dairy-1",
+          "additionalRecipeIds": [
+            "dairy-2"
+          ],
+          "priceMinor": 28000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 8
+            }
+          ],
+          "inputCapacity": 160,
+          "outputCapacity": 80,
+          "staffCapacity": 4,
+          "wageMinor": 20,
+          "workRateMultiplier": 2
+        }
+      ]
+    },
+    {
+      "id": "sugar-factory",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "sugar-1",
+          "additionalRecipeIds": [],
+          "priceMinor": 18000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 12
+            }
+          ],
+          "inputCapacity": 80,
+          "outputCapacity": 40,
+          "staffCapacity": 2,
+          "wageMinor": 20,
+          "workRateMultiplier": 1
+        },
+        {
+          "level": 2,
+          "recipeId": "sugar-1",
+          "additionalRecipeIds": [
+            "sugar-2"
+          ],
+          "priceMinor": 28000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 8
+            }
+          ],
+          "inputCapacity": 160,
+          "outputCapacity": 80,
+          "staffCapacity": 4,
+          "wageMinor": 20,
+          "workRateMultiplier": 2
+        }
+      ]
+    },
+    {
+      "id": "confectionery",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "confectionery-1",
+          "additionalRecipeIds": [],
+          "priceMinor": 60000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 20
+            },
+            {
+              "itemId": "plank",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 120,
+          "outputCapacity": 40,
+          "staffCapacity": 4,
+          "wageMinor": 20,
+          "workRateMultiplier": 1
+        },
+        {
+          "level": 2,
+          "recipeId": "confectionery-1",
+          "additionalRecipeIds": [
+            "confectionery-2"
+          ],
+          "priceMinor": 90000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 20
+            }
+          ],
+          "inputCapacity": 240,
+          "outputCapacity": 80,
+          "staffCapacity": 6,
+          "wageMinor": 20,
+          "workRateMultiplier": 2
+        }
+      ]
+    }
+  ],
+  "buildings": [],
+  "landReservationTicks": 120,
+  "maxActivePlotReservations": 4,
+  "labor": {
+    "stepTicks": 10,
+    "salaryChangeDelayTicks": 20,
+    "mobilityNumerator": 1,
+    "mobilityDenominator": 10,
+    "growthPeriodTicks": 120,
+    "growthPerPeriod": 1
+  },
+  "equipmentTypes": [
+    {
+      "id": "wood-extractor",
+      "itemId": "wood",
+      "levels": [
+        {
+          "level": 1,
+          "priceMinor": 15000,
+          "cycleQuantity": 2,
+          "cycleTicks": 2,
+          "storageCapacity": 20,
+          "minimumCrew": 2,
+          "crewCapacity": 2,
+          "wageMinor": 25
+        },
+        {
+          "level": 2,
+          "priceMinor": 60000,
+          "cycleQuantity": 6,
+          "cycleTicks": 2,
+          "storageCapacity": 40,
+          "minimumCrew": 5,
+          "crewCapacity": 5,
+          "wageMinor": 25
+        }
+      ]
+    },
+    {
+      "id": "grain-extractor",
+      "itemId": "grain",
+      "levels": [
+        {
+          "level": 1,
+          "priceMinor": 15000,
+          "cycleQuantity": 2,
+          "cycleTicks": 2,
+          "storageCapacity": 20,
+          "minimumCrew": 2,
+          "crewCapacity": 2,
+          "wageMinor": 25
+        },
+        {
+          "level": 2,
+          "priceMinor": 60000,
+          "cycleQuantity": 6,
+          "cycleTicks": 2,
+          "storageCapacity": 40,
+          "minimumCrew": 5,
+          "crewCapacity": 5,
+          "wageMinor": 25
+        }
+      ]
+    }
+  ],
+  "capitalDemand": {
+    "terminal": {
+      "x": 12,
+      "z": 18
+    },
+    "periodTicks": 60,
+    "bootstrapBaseBudgetMinor": 20000,
+    "demandNumerator": 11,
+    "demandDenominator": 10,
+    "commonWaveTicks": 600,
+    "itemWaveTicks": 240,
+    "orderTtlTicks": 180,
+    "priceScaleBasisPoints": 10000
+  },
+  "support": {
+    "tradingPoint": {
+      "x": 12,
+      "z": 18
+    },
+    "sectionCapacity": 80
+  },
+  "elections": {
+    "periodTicks": 600,
+    "baseVote": 1
+  }
+}

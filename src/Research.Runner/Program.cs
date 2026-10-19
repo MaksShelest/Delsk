@@ -17,7 +17,7 @@ try
             or "--research-modifications"
 #endif
             ))
-            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--economy config/economy.json] [--validate-only true] [--profile true] [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|stopped-elections|physical-automation|participant-trade|support|baseline|hybrid|model-safety] [--mode headless|paced] [--model-mode off|ollama --model-config PATH] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
+            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--economy config/economy.json] [--validate-only true] [--profile true] [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|stopped-elections|physical-automation|participant-trade|food-chain|support|baseline|hybrid|model-safety] [--mode headless|paced] [--model-mode off|ollama --model-config PATH] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
         if (!options.TryAdd(args[i], args[i + 1])) throw new ArgumentException("Duplicate argument");
     }
     foreach (string flag in new[] { "--profile", "--validate-only" })
@@ -31,7 +31,7 @@ try
     string directory = options.GetValueOrDefault("--output", "artifacts/cycle");
     string script = options.GetValueOrDefault("--script", "cycle");
     string mode = options.GetValueOrDefault("--mode", "headless");
-    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market" or "pickup" or "delivery" or "capital-delivery" or "logistics" or "logistics-upgrade" or "own-storage" or "inbound" or "own-production" or "logistics-queue" or "capital-demand" or "elections" or "stopped-elections" or "physical-automation" or "participant-trade" or "support" or "baseline" or "hybrid" or "model-safety") || mode is not ("headless" or "paced"))
+    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market" or "pickup" or "delivery" or "capital-delivery" or "logistics" or "logistics-upgrade" or "own-storage" or "inbound" or "own-production" or "logistics-queue" or "capital-demand" or "elections" or "stopped-elections" or "physical-automation" or "participant-trade" or "food-chain" or "support" or "baseline" or "hybrid" or "model-safety") || mode is not ("headless" or "paced"))
         throw new ArgumentException("Invalid script or mode");
     if (options.ContainsKey("--controllers") && (script is not ("autonomous" or "baseline" or "hybrid" or "model-safety") || options.ContainsKey("--load") || options.ContainsKey("--replay")))
         throw new ArgumentException("--controllers applies only to a new autonomous run");
@@ -183,6 +183,7 @@ try
         else if (script == "own-production") ScriptedScenarios.OwnProductionCycle(s, d);
         else if (script == "logistics-queue") ScriptedScenarios.LogisticsQueueCycle(s, d);
         else if (script == "support") ScriptedScenarios.SupportCycle(s, d);
+        else if(script=="food-chain")ScriptedScenarios.FoodChain(s,d);
         else if(script=="participant-trade")ScriptedScenarios.ParticipantTrade(s,d);
         else if(script=="physical-automation")ScriptedScenarios.PhysicalAutomation(s,d);
         else if (script == "stopped-elections") ScriptedScenarios.StoppedElections(s,d);

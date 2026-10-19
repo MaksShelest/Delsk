@@ -33,6 +33,19 @@ public static class WorldModels
                 Cylinder(root, 0.2f, 0.45f, new Color("57955b"), at + new Vector3(0, 0.92f, 0), 0);
             }
         }
+        else if(item=="milk")
+        {
+            Box(root,new(.88f,.08f,.8f),new("879d9d"),new(0,.04f,0));
+            foreach(float x in new[]{-.34f,.34f})Box(root,new(.045f,.7f,.045f),new("6298ab"),new(x,.4f,0));
+            Box(root,new(.9f,.06f,.8f),new("70b4c9"),new(0,.78f,0));
+            foreach(float x in new[]{-.2f,0,.2f}){Cylinder(root,.08f,.3f,new("e5f0ed"),new(x,.23f,.12f));Cylinder(root,.06f,.035f,new("6799ad"),new(x,.4f,.12f));}
+        }
+        else if(item=="beet")
+        {
+            Box(root,new(.85f,.045f,.85f),new("8d6852"),new(0,.02f,0));
+            foreach(float x in new[]{-.25f,0,.25f})foreach(float z in new[]{-.25f,0,.25f})
+            {Round(root,.075f,new("9c486d"),new(x,.08f,z));Cylinder(root,.025f,.2f,new("5b9f48"),new(x,.22f,z),.06f);}
+        }
         else
         {
             Box(root, new Vector3(0.85f, 0.045f, 0.85f), new Color("a77b48"), new Vector3(0, 0.02f, 0));
@@ -52,6 +65,7 @@ public static class WorldModels
         var root=new Node3D();
         if(item=="wood")
             foreach(float x in new[]{-.25f,0,.25f})Cylinder(root,.09f,.12f,new Color("795438"),new Vector3(x,.06f,0));
+        else if(item=="milk")Box(root,new(.88f,.08f,.8f),new("879d9d"),new(0,.04f,0));
         else Box(root,new Vector3(.85f,.04f,.85f),new Color("98714b"),new Vector3(0,.02f,0));
         return root;
     }
@@ -60,6 +74,7 @@ public static class WorldModels
     {
         if (kind == "production" && type == "sawmill") return Sawmill();
         if (kind == "production" && type == "bakery") return Bakery();
+        if(kind=="production" && type is "dairy" or "sugar-factory" or "confectionery")return FoodFactory(type);
         var root = new Node3D();
         Color wall = kind switch { "warehouse" => new("8aabba"), "shop" => new("d4b8cb"), "capital" => new("dfd4b7"), _ => new("d1b486") };
         Color roof = kind switch { "warehouse" => new("4e7182"), "shop" => new("91608d"), "capital" => new("587987"), _ => new("a85e48") };
@@ -87,6 +102,34 @@ public static class WorldModels
                 var log = Part(root, new CylinderMesh { TopRadius = 0.065f, BottomRadius = 0.065f, Height = 0.4f, RadialSegments = 8 }, new Color("ac8655"), new Vector3(-0.44f, 0.12f + i * 0.09f, 0.12f));
                 log.RotationDegrees = new Vector3(90, 0, 0);
             }
+        return root;
+    }
+
+    private static Node3D FoodFactory(string type)
+    {
+        var root=new Node3D();
+        Box(root,new(.95f,.08f,.9f),new("8d9794"),new(0,.04f,0));
+        if(type=="dairy")
+        {
+            Box(root,new(.45f,.45f,.72f),new("deeeec"),new(.2f,.3f,0));
+            Box(root,new(.5f,.06f,.8f),new("598fa8"),new(.2f,.55f,0));
+            foreach(float z in new[]{-.22f,.22f}){Cylinder(root,.15f,.55f,new("b5d0d4"),new(-.26f,.35f,z));Cylinder(root,.15f,.12f,new("6799ad"),new(-.26f,.68f,z),0);}
+            Box(root,new(.35f,.1f,.15f),new("ebc84c"),new(.18f,.18f,.4f));
+        }
+        else if(type=="sugar-factory")
+        {
+            Box(root,new(.6f,.45f,.65f),new("cfad98"),new(-.15f,.3f,0));
+            foreach(float z in new[]{-.2f,.2f}){Cylinder(root,.14f,.75f,new("dedcc9"),new(.28f,.46f,z));Cylinder(root,.14f,.15f,new("ab9280"),new(.28f,.9f,z),0);}
+            foreach(float x in new[]{-.3f,-.1f,.1f})Round(root,.08f,new("9c486d"),new(x,.16f,.39f));
+        }
+        else
+        {
+            Box(root,new(.86f,.6f,.73f),new("e0b6b4"),new(0,.37f,0));
+            Box(root,new(.94f,.08f,.84f),new("95567c"),new(0,.72f,0));
+            Cylinder(root,.07f,.55f,new("aa8177"),new(-.28f,.91f,-.17f));
+            Box(root,new(.7f,.06f,.3f),new("787f87"),new(0,.23f,.44f));
+            foreach(float x in new[]{-.22f,0,.22f}){Box(root,new(.14f,.1f,.12f),new("d1a458"),new(x,.31f,.44f));Box(root,new(.14f,.025f,.12f),new("fbebd4"),new(x,.37f,.44f));}
+        }
         return root;
     }
 

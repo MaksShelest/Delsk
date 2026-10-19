@@ -47,4 +47,15 @@
     <EmbeddedResource Include="../../scenarios/platform-trade.commands.jsonl" LogicalName="Fixture.trade.commands.jsonl" />
     <EmbeddedResource Include="../../scenarios/platform-trade.checkpoints.csv" LogicalName="Fixture.trade.checkpoints.csv" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="../../scenarios/presentation-map-one-v3.json" LogicalName="Play.presentation-map-one-v3.json" />
+    <EmbeddedResource Include="../../scenarios/presentation-map-two-v3.json" LogicalName="Play.presentation-map-two-v3.json" />
+    <EmbeddedResource Include="../../scenarios/presentation-map-three-v2.json" LogicalName="Play.presentation-map-three-v2.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../../scenarios/food-chain.json" LogicalName="Fixture.food.json" />
+    <EmbeddedResource Include="../../scenarios/platform-food.commands.jsonl" LogicalName="Fixture.food.commands.jsonl" />
+    <EmbeddedResource Include="../../scenarios/platform-food.checkpoints.csv" LogicalName="Fixture.food.checkpoints.csv" />
+  </ItemGroup>
 </Project>

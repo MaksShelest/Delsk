@@ -89,6 +89,18 @@ def verify(folder):
     for offer in state.get('marketOffers', []):
         assert sum(a['quantity'] for a in allocations if a['offerId'] == offer['id']) == offer['allocatedQuantity'] <= offer['quantity']
     config = json.loads((folder/'scenario.json').read_text(encoding='utf-8'))
+    recipes = {r['id']:r for r in config['recipes']}
+    def ingredients(r):
+        return r.get('inputs', [{'itemId':r.get('inputItem'), 'quantity':r.get('inputQuantity')}])
+    for e in state['enterprises']:
+        if e['batchId']:
+            assert e['batchRecipeId'] == e['recipeId']
+            assert e['batchInputs'] == ingredients(recipes[e['batchRecipeId']])
+        else:
+            assert e['batchRecipeId'] == '' and e['batchInputs'] == []
+    starts = [json.loads(line) for line in (folder/'events.jsonl').read_text().splitlines() if json.loads(line)['type']=='ProductionBatchStarted']
+    for flow in summary['flows']:
+        assert flow['recipeInput'] == sum(e['quantity'] for e in starts if e['itemId']==flow['itemId'])
     delivery_rules = config.get('delivery') or {}
     rate = delivery_rules.get('fineBasisPoints', 500)
     contracts = state.get('deliveryContracts', [])

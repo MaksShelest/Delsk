@@ -718,6 +718,7 @@ public partial class Playfield : Control
             ("player", "", "Вы", "You"), ("npc", "2", "Участник NPC 2", "NPC participant 2"),
             ("npc", "3", "Участник NPC 3", "NPC participant 3"), ("npc", "4", "Участник NPC 4", "NPC participant 4"),
             ("resource", "wood", "Древесина", "Wood"), ("resource", "grain", "Зерно", "Grain"),
+            ("resource", "milk", "Приём молочного сырья", "Dairy collection"), ("resource", "beet", "Свёкла", "Beet"),
             ("plot-free", "", "Свободный участок", "Free plot"), ("plot-own", "", "Ваш участок", "Your plot"),
             ("plot-foreign", "", "Чужой участок", "Other participant's plot"), ("plot-reserved", "", "Бронь", "Reserved plot"),
             ("shop-plot", "", "Место лавочки", "Assigned shop site"), ("corridor", "", "Проход", "Protected passage"),

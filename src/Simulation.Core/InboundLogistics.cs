@@ -19,6 +19,15 @@ public sealed partial class SimulationEngine
         l.InboundSource = c.Action.Source.Value; l.InboundEnabled = c.Action.Enabled;
         Emit("LogisticsInboundSet", actor.Id, l.Id, reason: c.Action.Enabled ? "Waiting" : "UserPaused", command: c.CommandId);
     }
+    // Keep one feasible complete kit in a shared input, including all already admitted cargo.
+    private long ProductionInputRoom(long input,string item,long free)
+    {
+        var e=_enterprises.Values.SingleOrDefault(e=>e.Input==input);
+        if(e is null || e.Recipe.Ingredients.Length==1)return free;
+        var destination=_economy.Inventories[input];
+        long missing=e.Recipe.Ingredients.Where(i=>i.ItemId!=item).Sum(i=>checked(Math.Max(0,i.Quantity-destination.Free(i.ItemId)-IncomingIngredient(input,i.ItemId))*_items[i.ItemId].UnitVolume));
+        return Math.Max(0,free-missing);
+    }
     private long IncomingIngredient(long destination,string item)=>_logistics.Values.Where(l=>l.Trip is {} t && t.ItemId==item &&
         (t.Freight?.Destination.Value??t.OwnDestination.Value)==destination).Sum(l=>Math.Max(0,l.Trip!.Quantity-(l.Trip.Freight?.Received??0)-(l.Trip.Freight?.Cancelled??0)));
     private LogisticsPlanData InboundLogisticsPlan(LogisticsState l, long origin)
@@ -37,11 +46,7 @@ public sealed partial class SimulationEngine
         long free = checked(destination.Capacity - destination.Occupied(_items) - destination.Incoming);
         if (free < volume) throw new RuleViolation("NoDestinationSpace");
         long quantity = Math.Min(source.Free(item), Math.Min(l.CargoCapacity / volume, free / volume));
-        if(e.Recipe.Ingredients.Length>1)
-        {
-            long protectedVolume=e.Recipe.Ingredients.Where(i=>i.ItemId!=item).Sum(i=>checked(Math.Max(0,i.Quantity-destination.Free(i.ItemId)-IncomingIngredient(e.Input,i.ItemId))*_items[i.ItemId].UnitVolume));
-            quantity=Math.Min(quantity,Math.Max(0,free-protectedVolume)/volume);
-        }
+        quantity=Math.Min(quantity,ProductionInputRoom(e.Input,item,free)/volume);
         if (quantity <= 0) throw new RuleViolation("NoStock");
         var path = _map.FindPath(_economy.Inventories[l.Source].Position, source.Position);
         long leg = Math.Max(1, checked((path.Length - 1L) * Logistics.MoveTicksPerCell));

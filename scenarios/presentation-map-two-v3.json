@@ -1,0 +1,1244 @@
+{
+  "id": "presentation-map-two-v3",
+  "seed": 42,
+  "mapWidth": 16,
+  "mapHeight": 13,
+  "blockedCells": [],
+  "items": [
+    {
+      "id": "wood",
+      "unitVolume": 1,
+      "basePriceMinor": 500
+    },
+    {
+      "id": "grain",
+      "unitVolume": 1,
+      "basePriceMinor": 300
+    },
+    {
+      "id": "plank",
+      "unitVolume": 1,
+      "basePriceMinor": 1500
+    },
+    {
+      "id": "bread",
+      "unitVolume": 1,
+      "basePriceMinor": 1000
+    },
+    {
+      "id": "milk",
+      "unitVolume": 2,
+      "basePriceMinor": 500
+    },
+    {
+      "id": "beet",
+      "unitVolume": 1,
+      "basePriceMinor": 300
+    },
+    {
+      "id": "cheese",
+      "unitVolume": 1,
+      "basePriceMinor": 1800
+    },
+    {
+      "id": "sugar",
+      "unitVolume": 1,
+      "basePriceMinor": 1500
+    },
+    {
+      "id": "pastry",
+      "unitVolume": 1,
+      "basePriceMinor": 6500
+    }
+  ],
+  "recipes": [
+    {
+      "id": "sawmill-1",
+      "inputItem": "wood",
+      "inputQuantity": 2,
+      "outputItem": "plank",
+      "outputQuantity": 1,
+      "fullStaffTicks": 4,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 50
+    },
+    {
+      "id": "sawmill-2",
+      "inputItem": "wood",
+      "inputQuantity": 2,
+      "outputItem": "plank",
+      "outputQuantity": 1,
+      "fullStaffTicks": 4,
+      "requiredStaff": 4,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 50
+    },
+    {
+      "id": "bakery-1",
+      "inputItem": "grain",
+      "inputQuantity": 2,
+      "outputItem": "bread",
+      "outputQuantity": 1,
+      "fullStaffTicks": 3,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 25
+    },
+    {
+      "id": "bakery-2",
+      "inputItem": "grain",
+      "inputQuantity": 2,
+      "outputItem": "bread",
+      "outputQuantity": 1,
+      "fullStaffTicks": 3,
+      "requiredStaff": 4,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 25
+    },
+    {
+      "id": "dairy-1",
+      "inputs": [
+        {
+          "itemId": "milk",
+          "quantity": 2
+        }
+      ],
+      "outputItem": "cheese",
+      "outputQuantity": 1,
+      "fullStaffTicks": 4,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 60
+    },
+    {
+      "id": "dairy-2",
+      "inputs": [
+        {
+          "itemId": "milk",
+          "quantity": 3
+        }
+      ],
+      "outputItem": "cheese",
+      "outputQuantity": 2,
+      "fullStaffTicks": 6,
+      "requiredStaff": 4,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 90
+    },
+    {
+      "id": "sugar-1",
+      "inputs": [
+        {
+          "itemId": "beet",
+          "quantity": 3
+        }
+      ],
+      "outputItem": "sugar",
+      "outputQuantity": 1,
+      "fullStaffTicks": 4,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 50
+    },
+    {
+      "id": "sugar-2",
+      "inputs": [
+        {
+          "itemId": "beet",
+          "quantity": 5
+        }
+      ],
+      "outputItem": "sugar",
+      "outputQuantity": 2,
+      "fullStaffTicks": 6,
+      "requiredStaff": 4,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 90
+    },
+    {
+      "id": "confectionery-1",
+      "inputs": [
+        {
+          "itemId": "grain",
+          "quantity": 2
+        },
+        {
+          "itemId": "sugar",
+          "quantity": 1
+        },
+        {
+          "itemId": "milk",
+          "quantity": 1
+        }
+      ],
+      "outputItem": "pastry",
+      "outputQuantity": 1,
+      "fullStaffTicks": 8,
+      "requiredStaff": 4,
+      "minimumStaff": 2,
+      "energyPerBatchMinor": 200
+    },
+    {
+      "id": "confectionery-2",
+      "inputs": [
+        {
+          "itemId": "grain",
+          "quantity": 3
+        },
+        {
+          "itemId": "sugar",
+          "quantity": 2
+        },
+        {
+          "itemId": "milk",
+          "quantity": 2
+        }
+      ],
+      "outputItem": "pastry",
+      "outputQuantity": 2,
+      "fullStaffTicks": 10,
+      "requiredStaff": 6,
+      "minimumStaff": 2,
+      "energyPerBatchMinor": 300
+    }
+  ],
+  "participants": [
+    {
+      "id": 1,
+      "cashMinor": 20000,
+      "position": {
+        "x": 0,
+        "z": 5
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 2,
+      "cashMinor": 20000,
+      "position": {
+        "x": 1,
+        "z": 5
+      },
+      "inventoryCapacity": 20,
+      "publicPreferenceItem": "wood"
+    },
+    {
+      "id": 3,
+      "cashMinor": 20000,
+      "position": {
+        "x": 2,
+        "z": 5
+      },
+      "inventoryCapacity": 20,
+      "publicPreferenceItem": "grain"
+    },
+    {
+      "id": 4,
+      "cashMinor": 20000,
+      "position": {
+        "x": 3,
+        "z": 5
+      },
+      "inventoryCapacity": 20,
+      "publicPreferenceItem": "wood"
+    }
+  ],
+  "enterprises": [],
+  "capitalOffers": [],
+  "resourceNodes": [
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 2
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 3
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 1,
+        "z": 2
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 1,
+        "z": 3
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 2,
+        "z": 2
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 2,
+        "z": 3
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 0,
+        "z": 7
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 0,
+        "z": 8
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 1,
+        "z": 7
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 1,
+        "z": 8
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 2,
+        "z": 7
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 2,
+        "z": 8
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 12
+      },
+      "rules": {
+        "public": true,
+        "capacity": 50,
+        "regenerationQuantity": 2,
+        "regenerationTicks": 120
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 1,
+        "z": 12
+      },
+      "rules": {
+        "public": true,
+        "capacity": 50,
+        "regenerationQuantity": 2,
+        "regenerationTicks": 120
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "rules": {
+        "public": true
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 14,
+        "z": 0
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 0,
+        "z": 1
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 14,
+        "z": 1
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 14,
+        "z": 2
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 1,
+        "z": 0
+      },
+      "rules": {
+        "public": true
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 15,
+        "z": 0
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 1,
+        "z": 1
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 15,
+        "z": 1
+      },
+      "rules": {
+        "public": false
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 15,
+        "z": 2
+      },
+      "rules": {
+        "public": false
+      }
+    }
+  ],
+  "population": 20,
+  "maxTicks": 5000,
+  "plots": [
+    {
+      "id": 1,
+      "position": {
+        "x": 4,
+        "z": 1
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 2,
+      "position": {
+        "x": 6,
+        "z": 1
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 8,
+        "z": 1
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 4,
+      "position": {
+        "x": 4,
+        "z": 3
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 6,
+        "z": 3
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 8,
+        "z": 3
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 7,
+      "position": {
+        "x": 4,
+        "z": 7
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 8,
+      "position": {
+        "x": 6,
+        "z": 7
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 9,
+      "position": {
+        "x": 8,
+        "z": 7
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 10,
+      "position": {
+        "x": 4,
+        "z": 9
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 11,
+      "position": {
+        "x": 6,
+        "z": 9
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 12,
+      "position": {
+        "x": 8,
+        "z": 9
+      },
+      "priceMinor": 10000
+    },
+    {
+      "id": 13,
+      "position": {
+        "x": 12,
+        "z": 2
+      },
+      "priceMinor": 10000,
+      "isShopSite": true
+    },
+    {
+      "id": 14,
+      "position": {
+        "x": 12,
+        "z": 4
+      },
+      "priceMinor": 10000,
+      "isShopSite": true
+    },
+    {
+      "id": 15,
+      "position": {
+        "x": 12,
+        "z": 6
+      },
+      "priceMinor": 10000,
+      "isShopSite": true
+    },
+    {
+      "id": 16,
+      "position": {
+        "x": 12,
+        "z": 8
+      },
+      "priceMinor": 10000,
+      "isShopSite": true
+    },
+    {
+      "id": 17,
+      "position": {
+        "x": 0,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 18,
+      "position": {
+        "x": 1,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 19,
+      "position": {
+        "x": 2,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 20,
+      "position": {
+        "x": 3,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 21,
+      "position": {
+        "x": 4,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 22,
+      "position": {
+        "x": 5,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 23,
+      "position": {
+        "x": 6,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 24,
+      "position": {
+        "x": 7,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 25,
+      "position": {
+        "x": 8,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 26,
+      "position": {
+        "x": 9,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 27,
+      "position": {
+        "x": 10,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 28,
+      "position": {
+        "x": 11,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 29,
+      "position": {
+        "x": 12,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 30,
+      "position": {
+        "x": 13,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 31,
+      "position": {
+        "x": 14,
+        "z": 5
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 32,
+      "position": {
+        "x": 11,
+        "z": 1
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 33,
+      "position": {
+        "x": 11,
+        "z": 2
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 34,
+      "position": {
+        "x": 11,
+        "z": 3
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 35,
+      "position": {
+        "x": 11,
+        "z": 4
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 36,
+      "position": {
+        "x": 11,
+        "z": 6
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 37,
+      "position": {
+        "x": 11,
+        "z": 7
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 38,
+      "position": {
+        "x": 11,
+        "z": 8
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 39,
+      "position": {
+        "x": 11,
+        "z": 9
+      },
+      "priceMinor": 0,
+      "isCorridor": true
+    },
+    {
+      "id": 40,
+      "position": {
+        "x": 12,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null,
+      "isShopSite": true
+    }
+  ],
+  "buildingTypes": [
+    {
+      "id": "sawmill",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "sawmill-1",
+          "priceMinor": 15000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 40,
+          "outputCapacity": 40,
+          "staffCapacity": 2,
+          "wageMinor": 20,
+          "workRateMultiplier": 1
+        },
+        {
+          "level": 2,
+          "recipeId": "sawmill-2",
+          "priceMinor": 20000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 80,
+          "outputCapacity": 80,
+          "staffCapacity": 4,
+          "wageMinor": 20,
+          "workRateMultiplier": 2
+        }
+      ]
+    },
+    {
+      "id": "bakery",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "bakery-1",
+          "priceMinor": 15000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 40,
+          "outputCapacity": 40,
+          "staffCapacity": 2,
+          "wageMinor": 20,
+          "workRateMultiplier": 1
+        },
+        {
+          "level": 2,
+          "recipeId": "bakery-2",
+          "priceMinor": 20000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 80,
+          "outputCapacity": 80,
+          "staffCapacity": 4,
+          "wageMinor": 20,
+          "workRateMultiplier": 2
+        }
+      ]
+    },
+    {
+      "id": "warehouse",
+      "kind": "Warehouse",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        },
+        {
+          "x": 1,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "",
+          "priceMinor": 10000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 200,
+          "outputCapacity": 0,
+          "staffCapacity": 0,
+          "wageMinor": 0
+        }
+      ],
+      "walls": [
+        {
+          "x": 1,
+          "z": 0
+        }
+      ]
+    },
+    {
+      "id": "shop",
+      "kind": "Shop",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "",
+          "priceMinor": 10000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 200,
+          "outputCapacity": 0,
+          "staffCapacity": 0,
+          "wageMinor": 0
+        }
+      ]
+    },
+    {
+      "id": "dairy",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "dairy-1",
+          "additionalRecipeIds": [],
+          "priceMinor": 18000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 12
+            }
+          ],
+          "inputCapacity": 80,
+          "outputCapacity": 40,
+          "staffCapacity": 2,
+          "wageMinor": 20,
+          "workRateMultiplier": 1
+        },
+        {
+          "level": 2,
+          "recipeId": "dairy-1",
+          "additionalRecipeIds": [
+            "dairy-2"
+          ],
+          "priceMinor": 28000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 8
+            }
+          ],
+          "inputCapacity": 160,
+          "outputCapacity": 80,
+          "staffCapacity": 4,
+          "wageMinor": 20,
+          "workRateMultiplier": 2
+        }
+      ]
+    },
+    {
+      "id": "sugar-factory",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "sugar-1",
+          "additionalRecipeIds": [],
+          "priceMinor": 18000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 12
+            }
+          ],
+          "inputCapacity": 80,
+          "outputCapacity": 40,
+          "staffCapacity": 2,
+          "wageMinor": 20,
+          "workRateMultiplier": 1
+        },
+        {
+          "level": 2,
+          "recipeId": "sugar-1",
+          "additionalRecipeIds": [
+            "sugar-2"
+          ],
+          "priceMinor": 28000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 8
+            }
+          ],
+          "inputCapacity": 160,
+          "outputCapacity": 80,
+          "staffCapacity": 4,
+          "wageMinor": 20,
+          "workRateMultiplier": 2
+        }
+      ]
+    },
+    {
+      "id": "confectionery",
+      "kind": "Production",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "confectionery-1",
+          "additionalRecipeIds": [],
+          "priceMinor": 60000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 20
+            },
+            {
+              "itemId": "plank",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 120,
+          "outputCapacity": 40,
+          "staffCapacity": 4,
+          "wageMinor": 20,
+          "workRateMultiplier": 1
+        },
+        {
+          "level": 2,
+          "recipeId": "confectionery-1",
+          "additionalRecipeIds": [
+            "confectionery-2"
+          ],
+          "priceMinor": 90000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 20
+            }
+          ],
+          "inputCapacity": 240,
+          "outputCapacity": 80,
+          "staffCapacity": 6,
+          "wageMinor": 20,
+          "workRateMultiplier": 2
+        }
+      ]
+    }
+  ],
+  "buildings": [],
+  "landReservationTicks": 120,
+  "maxActivePlotReservations": 4,
+  "labor": {
+    "stepTicks": 10,
+    "salaryChangeDelayTicks": 20,
+    "mobilityNumerator": 1,
+    "mobilityDenominator": 10,
+    "growthPeriodTicks": 120,
+    "growthPerPeriod": 1
+  },
+  "equipmentTypes": [
+    {
+      "id": "wood-extractor",
+      "itemId": "wood",
+      "levels": [
+        {
+          "level": 1,
+          "priceMinor": 15000,
+          "cycleQuantity": 2,
+          "cycleTicks": 2,
+          "storageCapacity": 20,
+          "minimumCrew": 2,
+          "crewCapacity": 2,
+          "wageMinor": 25
+        },
+        {
+          "level": 2,
+          "priceMinor": 60000,
+          "cycleQuantity": 6,
+          "cycleTicks": 2,
+          "storageCapacity": 40,
+          "minimumCrew": 5,
+          "crewCapacity": 5,
+          "wageMinor": 25
+        }
+      ]
+    },
+    {
+      "id": "grain-extractor",
+      "itemId": "grain",
+      "levels": [
+        {
+          "level": 1,
+          "priceMinor": 15000,
+          "cycleQuantity": 2,
+          "cycleTicks": 2,
+          "storageCapacity": 20,
+          "minimumCrew": 2,
+          "crewCapacity": 2,
+          "wageMinor": 25
+        },
+        {
+          "level": 2,
+          "priceMinor": 60000,
+          "cycleQuantity": 6,
+          "cycleTicks": 2,
+          "storageCapacity": 40,
+          "minimumCrew": 5,
+          "crewCapacity": 5,
+          "wageMinor": 25
+        }
+      ]
+    }
+  ],
+  "capitalDemand": {
+    "terminal": {
+      "x": 15,
+      "z": 5
+    },
+    "periodTicks": 60,
+    "bootstrapBaseBudgetMinor": 20000,
+    "demandNumerator": 11,
+    "demandDenominator": 10,
+    "commonWaveTicks": 600,
+    "itemWaveTicks": 240,
+    "orderTtlTicks": 180,
+    "priceScaleBasisPoints": 10000
+  },
+  "support": {
+    "tradingPoint": {
+      "x": 15,
+      "z": 5
+    },
+    "sectionCapacity": 80
+  },
+  "elections": {
+    "periodTicks": 600,
+    "baseVote": 1
+  }
+}
