@@ -7,7 +7,7 @@ using Simulation.Core;
 namespace Simulation.Hosting;
 
 public record ControllerTurn(long Tick, ParticipantId Actor, ControllerObservation Observation,
-    ImmutableArray<CommandResult> Feedback, ControllerDecision Decision, ImmutableArray<string> CommandIds);
+    ImmutableArray<CommandResult> Feedback, ControllerDecision Decision, ImmutableArray<string> CommandIds, bool Voting = false);
 public record ControllerSample(long Tick, long ActorId, long CashMinor, long StockBaseValueMinor,
     long StockUnits, int Headcount, int Enterprises, int Equipment, bool Busy, string Goal, string Reason);
 internal record SavedControllers(ControllerCheckpoint[] States, KeyValuePair<long, string[]>[] Awaiting,
@@ -20,7 +20,32 @@ public sealed partial class GameSession
     private readonly Dictionary<long, List<string>> _controllerAwaiting = [];
     private readonly List<ControllerTurn> _controllerTurns = [];
     private readonly List<ControllerSample> _controllerSamples = [];
+    private long _ballotBarrier;
+    public bool PumpVoting()
+    {
+        if (!Engine.WaitingForBallots) return true;
+        if (_unrestoredControllers.Length > 0) throw new InvalidOperationException("RestoreControllers required");
+        long barrier = ++_ballotBarrier;
+        foreach (var c in _controllers) c.BeginBallotBarrier(barrier);
+        var observations = _controllers.Select(c=>Engine.ObserveController(c.Actor)).ToArray();
+        var decisions = _controllers.Select((c,i)=>observations[i].Elections.Voting!.Awaiting.Contains(c.Actor) ? c.DecideBallot(observations[i]) : null).ToArray();
+        long election = observations.FirstOrDefault()?.Elections.Voting?.Election.Value ?? 0;
+        foreach (var c in _controllers) c.EndBallotBarrier(barrier,election);
+        for (int i=0;i<_controllers.Length;i++)
+        {
+            if (decisions[i] is not { } decision) continue;
+            var actions = decision.Candidate is { } candidate ? ImmutableArray.Create(new GameAction(ActionKind.SetVoteChoice,
+                Election: observations[i].Elections.Voting!.Election, Candidate: candidate)) : [];
+            var ids=actions.Select(a=>Send(_controllers[i].Actor,a)).ToImmutableArray();
+            if (ids.Length>0 || decision.ModelTrace is not null)
+                RecordTurn(new(Engine.Tick,_controllers[i].Actor,observations[i],[],new("Ballot",decision.Reason,actions,ModelTrace:decision.ModelTrace),ids,true));
+        }
+        return !Engine.WaitingForBallots;
+    }
     public bool HasControllers => _controllers.Length > 0 || _unrestoredControllers.Length > 0;
+    public bool WaitingForModel => _controllers.Any(c=>c.WaitingForModel);
+    public event Action<ControllerTurn>? ControllerDecided;
+    private void RecordTurn(ControllerTurn turn) { _controllerTurns.Add(turn);ControllerDecided?.Invoke(turn); }
     public ControllerCheckpoint[] ControllerStates => _unrestoredControllers.Length > 0 ? _unrestoredControllers.ToArray() :
         _controllers.OrderBy(c => c.Actor.Value).Select(c => c.Capture()).ToArray();
     public ControllerTurn[] ControllerTurns => _controllerTurns.ToArray();
@@ -78,7 +103,7 @@ public sealed partial class GameSession
                 _controllerAwaiting[_controllers[i].Actor.Value].Add(id); _controllers[i].CommandSubmitted(id);
             }
             if (decisions[i].Record || feedback[i].Length > 0 || ids.Count > 0)
-                _controllerTurns.Add(new(Engine.Tick, _controllers[i].Actor, observations[i], feedback[i], decisions[i], ids.ToImmutable()));
+                RecordTurn(new(Engine.Tick, _controllers[i].Actor, observations[i], feedback[i], decisions[i], ids.ToImmutable()));
         }
     }
     private void SampleControllers(WorldView world)
@@ -119,7 +144,7 @@ public sealed partial class GameSession
             saved.Awaiting.Any(p => !ids.Contains(p.Key) || p.Value.Distinct().Count() != p.Value.Length ||
                 p.Value.Any(id => !_tape.Any(t => t.AuthenticatedActor.Value == p.Key && t.Command.CommandId == id))) ||
             saved.Turns.Where((t, i) => i > 0 && t.Tick < saved.Turns[i - 1].Tick).Any() ||
-            saved.Turns.Any(t => !ids.Contains(t.Actor.Value) || t.Tick < 0 || t.Tick >= Engine.Tick ||
+            saved.Turns.Any(t => !ids.Contains(t.Actor.Value) || t.Tick < 0 || t.Tick > Engine.Tick || (t.Tick == Engine.Tick && !t.Voting) ||
                 t.Observation.Tick != t.Tick || t.Observation.Participant.Id != t.Actor ||
                 t.CommandIds.Any(id => !_tape.Any(c => c.AuthenticatedActor == t.Actor && c.SubmittedAtTick == t.Tick && c.Command.CommandId == id))) ||
             saved.Samples.GroupBy(s => s.ActorId).Any(g => g.Count() != Engine.Tick ||

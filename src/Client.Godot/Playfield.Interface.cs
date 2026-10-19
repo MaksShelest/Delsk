@@ -137,13 +137,14 @@ public partial class Playfield
         if (!_session.Paused) _harvestVisual = Mathf.MoveToward(_harvestVisual, target, delta * 160);
         foreach (var button in _harvestButtons) button.ShowProgress(_harvestVisual);
         if (_noticeSeconds > 0) _noticeSeconds = Math.Max(0, _noticeSeconds - delta);
+        if(_noticeSeconds==0)_electionNotice="";
         if (_playNotice is not null) _playNotice.Visible = _noticeSeconds > 0 && !_tabletState.IsOpen && _helpOverlay is null;
     }
     private void UpdatePlayNotice()
     {
         if (_playNotice is null) return;
         bool rejected = _trackedId is not null && _session.Engine.Result(_trackedId)?.Status == ResultStatus.Rejected;
-        string value = rejected ? _feedback : _gain;
+        string value = _electionNotice.Length>0 ? _electionNotice : rejected ? _feedback : _gain;
         if (value.Contains(L("Незавершённый прогресс", "Unfinished progress"), StringComparison.Ordinal)) value = "";
         if (value != _noticeValue) { _noticeValue = value; _noticeSeconds = value.Length == 0 ? 0 : 3.5; }
         _playNotice.Text = value;

@@ -10,10 +10,10 @@ namespace Agents.Llm;
 public record DecisionSlot(ModelRequest Request, string Status = "Pending", ModelReply? Reply = null, bool Interrupted = false);
 public record HybridState(HybridSettings Settings, ControllerCheckpoint Baseline, long NextDecisionNumber = 1,
     long NextEligibleTick = 0, long BudgetPeriod = 0, int RequestsInPeriod = 0, string LastTrigger = "",
-    string Memory = "", long ResolvedDecisions = 0, DecisionSlot? Slot = null);
+    string Memory = "", long ResolvedDecisions = 0, DecisionSlot? Slot = null, DecisionSlot? BallotSlot = null);
 
 /// <summary>Model choice is optional; the existing algorithm executes all plans and fallbacks.</summary>
-public sealed class HybridController : IController
+public sealed partial class HybridController : IController
 {
     public const string PolicyKind = "hybrid-plan-v1";
     private readonly ModelRuntime _runtime;
@@ -21,6 +21,7 @@ public sealed class HybridController : IController
     private HybridState _state;
     private ControllerSessionContext? _context;
     public ParticipantId Actor => _baseline.Actor;
+    public bool WaitingForModel => new[]{_state.Slot,_state.BallotSlot}.Any(s=>s is {Interrupted:false,Reply:null} && !_runtime.HasReply(s.Request));
     public HybridController(AlgorithmicController baseline, ModelRuntime runtime, HybridSettings? settings = null)
     {
         var config = settings ?? new(); config.Validate(); _baseline = baseline; _runtime = runtime;
@@ -30,6 +31,12 @@ public sealed class HybridController : IController
     {
         if (context.Epoch < 1 || context.Tick < 0) throw new ArgumentException("Invalid session context");
         _context = context; _runtime.Bind(context.SessionId, context.Epoch);
+        if(context.Restored && _state.BallotSlot is { } ballot)
+        {
+            if(ballot.Request.RequestedTick!=context.Tick || ballot.Request.SessionId!=context.SessionId || ballot.Request.SessionEpoch>=context.Epoch)
+                throw new CheckpointException("InvalidBallotSlotTime");
+            _state=_state with {BallotSlot=ballot with {Interrupted=true}};
+        }
         if (context.Restored && _state.Slot is { } slot)
         {
             if (slot.Request.ApplyTick <= context.Tick || slot.Request.RequestedTick > context.Tick ||
@@ -65,6 +72,7 @@ public sealed class HybridController : IController
                     slot.Reply?.Text?.Length > 4096 || r.DecisionId != $"{r.SessionId}:model:{r.ActorId}:{state.NextDecisionNumber - 1}")
                     throw new CheckpointException("InvalidDecisionSlot");
             }
+            ValidateBallotSlot(state,baseline.Actor);
             return new(baseline, runtime, state.Settings) { _state = state };
         }
         catch (CheckpointException) { throw; }

@@ -8,6 +8,7 @@ import sys
 def verify(folder):
     folder = Path(folder)
     summary = json.loads((folder/'summary.json').read_text(encoding='utf-8'))
+    modifications = json.loads((folder/'research-modifications.json').read_text()) if (folder/'research-modifications.json').exists() else []
     if summary['status'] != 'succeeded':
         raise ValueError(f'{folder}: runner did not succeed')
     money = sum(account['balanceMinor'] for account in summary['accounts'])
@@ -33,7 +34,7 @@ def verify(folder):
         assert int(sample['population']) == int(sample['unemployed']) + employed[tick]
     for flow in summary['flows']:
         physical = sum(stock['quantity'] for inventory in state['inventories'] for stock in inventory['stock'] if stock['itemId']==flow['itemId'])
-        assert physical == flow['initial']+flow['harvested']+flow['produced']-flow['recipeInput']-flow['exported']-flow.get('constructionInput',0)
+        assert physical == flow['initial']+flow['harvested']+flow['produced']+sum(m['newValue']-m['oldValue'] for m in modifications if m['kind']=='Stock' and m['item']==flow['itemId'])-flow['recipeInput']-flow['exported']-flow.get('constructionInput',0)
     for inv in state['inventories']:
         assert inv['occupiedVolume']+inv['reservedCapacity'] <= inv['capacity']
         assert all(0 <= item['reserved'] <= item['quantity'] for item in inv['stock'])
@@ -262,7 +263,7 @@ def verify(folder):
         winner = next((candidate for candidate, weight in tally.items() if 2 * weight > result['totalWeight']), None)
         assert (result['winner']['value'] if result['winner'] else None) == winner
         ballots = [e for e in events if e['type'] == 'ElectionBallot' and e['entityId'] == index]
-        assert len(ballots) == len(people) and all(e['tick'] == tick and e['phase'] == 8 for e in ballots)
+        assert len(ballots) == len(people) and all(e['tick'] == tick and e['phase'] == (9 if election_rules.get('pauseForBallots') else 8) for e in ballots)
         assert [(e['actorId']['value'], int(e['reasonCode']), e['quantity']) for e in ballots] == [(b['voter']['value'], b['candidate']['value'], b['weight']) for b in result['ballots']]
         if winner is not None: winners.append((index, winner, tick))
     if winners:
@@ -274,7 +275,7 @@ def verify(folder):
         assert (elections['mode'] == 'Sandbox') == (elections['sandboxStartedAtTick'] is not None)
     else:
         assert elections['firstVictory'] is None and elections['mode'] == 'Competitive'
-        assert len(elections['results']) == state['tick'] // period
+        assert len(elections['results']) == state['tick'] // period - bool(elections.get('voting'))
         assert elections['nextElectionId']['value'] == len(elections['results']) + 1
         assert elections['nextVotingTick'] == (len(elections['results']) + 1) * period
     support = json.loads((folder/'support.json').read_text(encoding='utf-8'))

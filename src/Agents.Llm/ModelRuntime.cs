@@ -22,6 +22,12 @@ public sealed class ModelRuntime : IDisposable
     private Work? _active;
     private string? _session;
     private long _epoch, _frozenTick = -1, _pumpedTick = -1;
+    private long _ballotFrozen=-1,_ballotPumped=-1;
+    public int BallotWaitMilliseconds => checked((_settings.QueueCapacity+2)*_settings.TimeoutMilliseconds);
+    public void FreezeBallots(long barrier)
+    { lock(_gate) { if(_ballotFrozen==barrier)return;_ballotFrozen=barrier;_frozen=new(_ready); } }
+    public void PumpBallots(long barrier,long election)
+    { lock(_gate) { if(_ballotPumped==barrier)return;_ballotPumped=barrier;_pumpedTick=-1;Pump(checked(election*30)); } }
     private bool _disposed;
     public bool Enabled { get; }
     public ModelRuntime(ILocalModelAdapter adapter, IEnumerable<long> actors, ModelRuntimeSettings? settings = null, bool enabled = true)
@@ -31,6 +37,7 @@ public sealed class ModelRuntime : IDisposable
         if (_actors.Length is < 1 or > 64 || _actors.Any(a => a <= 0)) throw new ArgumentException("Invalid runtime actors");
     }
     public int ActiveRequests { get { lock (_gate) return _active is null ? 0 : 1; } }
+    public bool HasReply(ModelRequest r) {lock(_gate)return r.SessionEpoch==_epoch && r.SessionId==_session && _ready.ContainsKey(r.ActorId);}
     public int WaitingRequests { get { lock (_gate) return _waiting.Count; } }
     public void Bind(string session, long epoch)
     {
@@ -42,6 +49,7 @@ public sealed class ModelRuntime : IDisposable
             _session = session; _epoch = epoch;
             foreach (var work in _pending.Values) CancelWork(work);
             _pending.Clear(); _waiting.Clear(); _ready.Clear(); _frozen.Clear(); _frozenTick = _pumpedTick = -1;
+            _ballotFrozen=_ballotPumped=-1;
             // An adapter that ignores cancellation still occupies the single physical slot.
         }
     }

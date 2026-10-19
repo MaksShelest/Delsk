@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "id": "presentation-economy-v2",
+  "id": "presentation-economy-v3",
   "world": {
     "startingCashMinor": 20000,
     "personalInventoryCapacity": 20,
@@ -335,7 +335,8 @@
     },
     "elections": {
       "periodTicks": 600,
-      "baseVote": 1
+      "baseVote": 1,
+      "pauseForBallots": true
     },
     "support": {
       "tradingPoint": {

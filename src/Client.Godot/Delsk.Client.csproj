@@ -3,7 +3,12 @@
     <TargetFramework>net10.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <AssemblyName>Delsk.Client</AssemblyName>
+    <NuGetLockFilePath Condition="'$(Configuration)' == 'ExportRelease' and '$(DelskDeveloper)' != 'true' and '$(RuntimeIdentifier)' == ''">$(MSBuildProjectDirectory)/packages.release.lock.json</NuGetLockFilePath>
   </PropertyGroup>
+  <ItemGroup Condition="'$(DelskDeveloper)' == 'true'"><ProjectReference Include="../Simulation.Developer/Simulation.Developer.csproj" /></ItemGroup>
+  <Target Name="RequireIsolatedDeveloperPackage" BeforeTargets="PrepareForBuild" Condition="'$(DelskDeveloper)' == 'true'">
+    <Error Condition="'$(DelskDeveloperPackage)' != 'true'" Text="Use scripts/build_developer_client.py for an isolated Developer client package." />
+  </Target>
   <ItemGroup>
     <ProjectReference Include="../Simulation.Hosting/Simulation.Hosting.csproj" />
     <ProjectReference Include="../Agents.Algorithmic/Agents.Algorithmic.csproj" />
@@ -24,4 +29,9 @@
   </ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/presentation-map-two.json" LogicalName="Play.presentation-map-two.json" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../config/economy.json" LogicalName="Play.economy.json" /></ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../../scenarios/stopped-elections.json" LogicalName="Fixture.stopped.json" />
+    <EmbeddedResource Include="../../scenarios/platform-stopped.commands.jsonl" LogicalName="Fixture.stopped.commands.jsonl" />
+    <EmbeddedResource Include="../../scenarios/platform-stopped.final.sha256" LogicalName="Fixture.stopped.final.sha256" />
+  </ItemGroup>
 </Project>

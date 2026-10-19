@@ -31,6 +31,8 @@ public partial class PlatformProbe : Control
     private int _supportCheckedTicks;
     private string? _supportHash;
     private readonly List<long> _supportRestoredTicks = [];
+    private readonly List<long> _stoppedRestoredTicks=[];
+    private string? _stoppedHash;
     private string SavePath => ProjectSettings.GlobalizePath($"user://platform-checkpoint-{SimulationEngine.RulesVersion}.json");
     private string _reportPath = DefaultReportPath;
 
@@ -71,6 +73,7 @@ public partial class PlatformProbe : Control
                 CheckLifecycle();
                 CheckElections();
                 CheckSupport();
+                CheckStoppedElections();
                 // No wall-clock sleep; the same 62 ticks and physical paths remain intact.
                 while (!_finished) StepOne();
                 GetTree().Quit(0);
@@ -309,6 +312,7 @@ public partial class PlatformProbe : Control
             ElectionCheckedTicks = _electionCheckedTicks, ElectionStateHash = _electionHash,
             ElectionRestoredTicks = _electionRestoredTicks.ToArray(),
             SupportCheckedTicks = _supportCheckedTicks, SupportStateHash = _supportHash, SupportRestoredTicks = _supportRestoredTicks.ToArray(),
+            StoppedVotingFinalHash=_stoppedHash,StoppedVotingRestoredTicks=_stoppedRestoredTicks.ToArray(),
             Runtime = System.Environment.Version.ToString(), Platform = OS.GetName(),
             GodotVersion = Engine.GetVersionInfo()["string"].AsString(),
             Author = "Шелестов Максим Евгеньевич"

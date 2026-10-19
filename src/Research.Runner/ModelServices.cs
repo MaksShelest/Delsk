@@ -46,7 +46,7 @@ internal sealed class ModelServices : IDisposable
         Setup(options, config.Npcs.Select(p => p.ActorId).ToArray(), safety);
         var policy = _config.Policy ?? new();
         if (_mode == "off") policy = policy with { Enabled = false };
-        return AutonomousRun.Configure(session, definition, controllers, c => new HybridController(c, _runtime!, policy), economics);
+        return AutonomousRun.Configure(session, definition, controllers, c => new HybridController(c, _runtime!, policy), economics, options.GetValueOrDefault("--human-ballot")=="self");
     }
     public void Restore(GameSession session, Dictionary<string, string> options)
     {
@@ -54,7 +54,7 @@ internal sealed class ModelServices : IDisposable
         if (actors.Length == 0 && (options.ContainsKey("--model-mode") || options.ContainsKey("--model-config")))
             throw new ArgumentException("The checkpoint has no hybrid controllers");
         if (actors.Length > 0) Setup(options, actors, false);
-        session.RestoreControllers(c => c.Kind == HybridController.PolicyKind ? HybridController.Restore(c, _runtime!) : AlgorithmicController.Restore(c));
+        session.RestoreControllers(c => c.Kind == HybridController.PolicyKind ? HybridController.Restore(c, _runtime!) : c.Kind==SelfBallotController.Kind ? SelfBallotController.Restore(c) : AlgorithmicController.Restore(c));
     }
     public async Task RunSafety(GameSession session, long finalTick)
     {

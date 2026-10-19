@@ -27,7 +27,7 @@ public sealed partial class SimulationEngine
         if (_firstVictory is null)
         {
             if (_electionMode != ElectionMode.Competitive || _sandboxStartedAtTick.HasValue || victoryResult is not null ||
-                _electionResults.Count != Tick / period || _nextElection != new ElectionId(_electionResults.Count + 1L) ||
+                _electionResults.Count != Tick / period - (WaitingForBallots ? 1 : 0) || _nextElection != new ElectionId(_electionResults.Count + 1L) ||
                 _nextVotingTick != checked((_electionResults.Count + 1L) * period))
                 throw new InvalidOperationException("Invalid election schedule");
         }
@@ -40,6 +40,17 @@ public sealed partial class SimulationEngine
 
         if (_voteChoices.Any(c => !_actors.ContainsKey(c.Key) || !_actors.ContainsKey(c.Value)))
             throw new InvalidOperationException("Invalid vote choice reference");
+        int resultPhase = Elections.PauseForBallots ? 9 : 8;
+        if (_voting is { } voting && (!Elections.PauseForBallots || voting.Election != _nextElection || voting.Tick != Tick ||
+            voting.Tick != _nextVotingTick || voting.Population != _population || voting.Unemployed != _unemployed ||
+            !voting.Employment.SequenceEqual(EmploymentGroups().OrderBy(g=>g.Id).Select(g=>new ElectionEmployment(new(g.Id),new(g.Owner),g.Role,g.Headcount))) ||
+            voting.Submitted.IsDefault || voting.Submitted.Length >= _actors.Count ||
+            voting.Submitted.Select(v=>v.Voter).Distinct().Count()!=voting.Submitted.Length ||
+            voting.Submitted.Any(v=>!_actors.ContainsKey(v.Voter.Value) || !_actors.ContainsKey(v.Candidate.Value) || _voteChoices.GetValueOrDefault(v.Voter.Value)!=v.Candidate.Value) ||
+            !voting.Submitted.Select(v=>v.Voter.Value).Order().SequenceEqual(_events.Where(e=>e.Type=="BallotSubmitted" && e.EntityId==voting.Election.Value).Select(e=>e.ActorId!.Value.Value).Order())))
+            throw new InvalidOperationException("Invalid frozen voting snapshot");
+        if (_events.Count(e=>e.Type=="VotingOpened") != (Elections.PauseForBallots ? _electionResults.Count + (WaitingForBallots?1:0) : 0))
+            throw new InvalidOperationException("Invalid voting stage journal");
         // Reconstruct numeric employment from the committed journal, not from another copy of Staff.
         // This also validates old ballots after later hiring, construction and new purchases.
         var known = EmploymentGroups().ToDictionary(g => g.Id);
@@ -81,12 +92,19 @@ public sealed partial class SimulationEngine
                 r.Winner != r.Tally.Where(t => (Int128)2 * t.Weight > r.TotalWeight).Select(t => (ParticipantId?)t.Candidate).SingleOrDefault())
                 throw new InvalidOperationException("Invalid strict majority or total election weight");
             var ballotEvents = _events.Where(e => e.Type == "ElectionBallot" && e.EntityId == r.Id.Value).ToArray();
-            if (ballotEvents.Length != actors.Length || ballotEvents.Where((e, index) => e.Phase != 8 || e.Tick != r.VotingTick ||
+            if(Elections.PauseForBallots)
+            {
+                var submitted=_events.Where(e=>e.Type=="BallotSubmitted" && e.EntityId==r.Id.Value).ToArray();
+                if(!submitted.Select(e=>e.ActorId!.Value.Value).Order().SequenceEqual(actors) || submitted.Any(e=>e.Tick!=r.VotingTick || e.Phase!=9 ||
+                    e.CommandId is not { } command || !_seenCommands.TryGetValue(command,out var input) || !IsImmediateBallot(input) || input.Action.Election!=r.Id ||
+                    input.Action.Candidate!=r.Ballots.Single(b=>b.Voter==e.ActorId).Candidate))throw new InvalidOperationException("Invalid submitted ballot journal");
+            }
+            if (ballotEvents.Length != actors.Length || ballotEvents.Where((e, index) => e.Phase != resultPhase || e.Tick != r.VotingTick ||
                 e.ActorId != r.Ballots[index].Voter || e.Quantity != r.Ballots[index].Weight ||
                 e.ReasonCode != r.Ballots[index].Candidate.Value.ToString(CultureInfo.InvariantCulture)).Any())
                 throw new InvalidOperationException("Election journal ballot mismatch");
             var completed = _events.SingleOrDefault(e => e.Type == "ElectionCompleted" && e.EntityId == r.Id.Value);
-            if (completed is null || completed.Tick != r.VotingTick || completed.Phase != 8 || completed.Quantity != r.TotalWeight ||
+            if (completed is null || completed.Tick != r.VotingTick || completed.Phase != resultPhase || completed.Quantity != r.TotalWeight ||
                 completed.ReasonCode != (r.Winner?.Value.ToString(CultureInfo.InvariantCulture) ?? "NoMajority"))
                 throw new InvalidOperationException("Election journal result mismatch");
         }
@@ -102,7 +120,7 @@ public sealed partial class SimulationEngine
         if (_firstVictory is { } first)
         {
             var won = _events.Single(e => e.Type == "FirstVictory");
-            if (won.ActorId != first.Winner || won.EntityId != first.Election.Value || won.Tick != first.Tick || won.Phase != 8)
+            if (won.ActorId != first.Winner || won.EntityId != first.Election.Value || won.Tick != first.Tick || won.Phase != resultPhase)
                 throw new InvalidOperationException("First victory journal mismatch");
         }
         if (_sandboxStartedAtTick is { } started)

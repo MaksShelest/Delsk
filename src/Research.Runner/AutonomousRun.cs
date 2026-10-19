@@ -5,12 +5,13 @@ using Simulation.Hosting;
 
 internal static class AutonomousRun
 {
-    public static long Configure(GameSession session, ScenarioDefinition scenario, string path, Func<AlgorithmicController, IController>? decorate = null, EconomyProfile? economics = null)
+    public static long Configure(GameSession session, ScenarioDefinition scenario, string path, Func<AlgorithmicController, IController>? decorate = null, EconomyProfile? economics = null, bool selfBallots = false)
     {
         var config = ReadConfiguration(scenario, path);
         if (economics is not null) config = config with { Npcs = config.Npcs.Select(n => AlgorithmicController.WithEconomy(n, economics.Npc)).ToArray() };
         session.AttachControllers(config.Npcs.Select(n => new AlgorithmicController(n with { HumanActorId=config.HumanActorId }, AlgorithmicController.RuntimeSeed(scenario.Seed, n.ActorId), scenario.Participants.Select(p => p.Id)))
-            .Select(c => decorate is null ? c : decorate(c)));
+            .Select(c => decorate is null ? (IController)c : decorate(c))
+            .Concat(selfBallots ? [new SelfBallotController(new(config.HumanActorId))] : Array.Empty<IController>()));
         return config.FinalTick;
     }
     public static AutonomousConfiguration ReadConfiguration(ScenarioDefinition scenario, string path)

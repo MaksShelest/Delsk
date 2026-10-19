@@ -50,7 +50,7 @@ public sealed partial class AlgorithmicController
         if (!PlanRelevant(o) || (HasObligations(o) && !ObligationGoal(_state.Goal)))
             _state = _state with { Plan = [], NextStep = 0, NextDecisionTick = o.Tick };
         if (_state.NextStep < _state.Plan.Length)
-            return new(_state.Goal, _state.Reason, [_state.Plan[_state.NextStep].Action]);
+            return new(_state.Goal, _state.Reason, [_state.Plan[_state.NextStep].Action],PlanStep:_state.NextStep);
         if (!completed && o.Tick < _state.NextDecisionTick) return Wait("DecisionInterval");
         return Choose(o, DecisionCandidates(o));
     }
@@ -70,11 +70,19 @@ public sealed partial class AlgorithmicController
         if (ranked.Length == 0)
         {
             _state = _state with { Goal = "Idle", Reason = "NoFeasibleGoal", Plan = [], NextStep = 0 };
-            return new(_state.Goal,_state.Reason,[]);
+            return new(_state.Goal,_state.Reason,[]
+#if DELSK_DEVELOPER
+                ,Candidates:ImmutableArray<UtilityScore>.Empty
+#endif
+            );
         }
         var chosen=ranked[0].Candidate;
         _state = _state with { Goal=chosen.Goal,Reason=chosen.Reason,Plan=chosen.Steps,NextStep=0 };
-        return new(chosen.Goal,chosen.Reason,[chosen.Steps[0].Action]);
+        return new(chosen.Goal,chosen.Reason,[chosen.Steps[0].Action]
+#if DELSK_DEVELOPER
+            ,Candidates:ranked.Take(16).Select(r=>new UtilityScore(r.Candidate.Goal,r.Candidate.Reason,r.Candidate.Score,r.Candidate.Steps.Length)).ToImmutableArray()
+#endif
+        );
     }
     private ControllerDecision Wait(string reason) => new(_state.Goal, reason, [], Record: false);
     private IEnumerable<Candidate> Candidates(ControllerObservation o)

@@ -21,6 +21,10 @@ jobs:
           DELSK_COMMIT: ${{ github.sha }}
           DOTNET_PROCESSOR_COUNT: '2'
         run: python scripts/run_check.py --name headless --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --output artifacts/headless
+      - name: Bounded Developer tests and forbidden Release gate
+        env:
+          DOTNET_PROCESSOR_COUNT: '2'
+        run: python scripts/run_check.py --name developer --timeout 600 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --output artifacts/developer
       - uses: actions/upload-artifact@v4
         if: always()
         with:

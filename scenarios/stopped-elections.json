@@ -1,0 +1,182 @@
+{
+  "id": "stopped-elections-s8",
+  "seed": 42,
+  "mapWidth": 24,
+  "mapHeight": 4,
+  "blockedCells": [],
+  "items": [
+    {
+      "id": "wood",
+      "unitVolume": 1,
+      "basePriceMinor": 500
+    },
+    {
+      "id": "plank",
+      "unitVolume": 1,
+      "basePriceMinor": 3000
+    }
+  ],
+  "recipes": [
+    {
+      "id": "sawmill",
+      "inputItem": "wood",
+      "inputQuantity": 2,
+      "outputItem": "plank",
+      "outputQuantity": 1,
+      "fullStaffTicks": 2,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 100
+    }
+  ],
+  "participants": [
+    {
+      "id": 1,
+      "cashMinor": 100000,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 2,
+      "cashMinor": 100000,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 3,
+      "cashMinor": 100000,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 4,
+      "cashMinor": 100000,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    }
+  ],
+  "enterprises": [
+    {
+      "id": 1,
+      "ownerId": 1,
+      "position": {
+        "x": 10,
+        "z": 0
+      },
+      "recipeId": "sawmill",
+      "inputCapacity": 40,
+      "outputCapacity": 40,
+      "staff": 30,
+      "capacity": 30,
+      "wageMinor": 100,
+      "enabled": false
+    },
+    {
+      "id": 2,
+      "ownerId": 2,
+      "position": {
+        "x": 10,
+        "z": 0
+      },
+      "recipeId": "sawmill",
+      "inputCapacity": 40,
+      "outputCapacity": 40,
+      "staff": 20,
+      "capacity": 20,
+      "wageMinor": 100,
+      "enabled": false
+    },
+    {
+      "id": 3,
+      "ownerId": 3,
+      "position": {
+        "x": 10,
+        "z": 0
+      },
+      "recipeId": "sawmill",
+      "inputCapacity": 40,
+      "outputCapacity": 40,
+      "staff": 10,
+      "capacity": 10,
+      "wageMinor": 100,
+      "enabled": false
+    },
+    {
+      "id": 4,
+      "ownerId": 4,
+      "position": {
+        "x": 10,
+        "z": 0
+      },
+      "recipeId": "sawmill",
+      "inputCapacity": 40,
+      "outputCapacity": 40,
+      "staff": 0,
+      "capacity": 2,
+      "wageMinor": 100,
+      "enabled": false
+    }
+  ],
+  "capitalOffers": [
+    {
+      "id": 1,
+      "itemId": "wood",
+      "quantity": 20,
+      "unitPriceMinor": 500,
+      "position": {
+        "x": 20,
+        "z": 0
+      }
+    },
+    {
+      "id": 2,
+      "itemId": "plank",
+      "quantity": 5,
+      "unitPriceMinor": 3000,
+      "position": {
+        "x": 20,
+        "z": 0
+      }
+    }
+  ],
+  "resourceNodes": [
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 0
+      }
+    }
+  ],
+  "harvestTicksPerUnit": 2,
+  "moveTicksPerCell": 1,
+  "tradeWindowTicks": 5,
+  "maxCommandsPerActorTick": 8,
+  "population": 100,
+  "maxTicks": 30,
+  "labor": {
+    "stepTicks": 10000,
+    "salaryChangeDelayTicks": 20,
+    "mobilityNumerator": 1,
+    "mobilityDenominator": 10,
+    "growthPeriodTicks": 120,
+    "growthPerPeriod": 0
+  },
+  "elections": {
+    "periodTicks": 3,
+    "baseVote": 1,
+    "pauseForBallots": true
+  }
+}

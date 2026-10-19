@@ -59,7 +59,7 @@ public sealed partial class SimulationEngine
         if (Tick == 0) return true;
         int commit = _events.FindLastIndex(e => e.Type == "TickCommitted" && e.Tick == Tick && e.Phase == 9);
         return commit >= 0 && _events.Skip(commit + 1).All(e =>
-            e.Tick == Tick && e.Phase == 9 && e.Type == "HarvestCancelled" && e.ReasonCode == "LeftResourceArea" &&
+            IsResearchEvent(e) || IsElectionControlEvent(e) || e.Tick == Tick && e.Phase == 9 && e.Type == "HarvestCancelled" && e.ReasonCode == "LeftResourceArea" &&
             e.ActorId is { } actor && _actors.ContainsKey(actor.Value) && e.EntityId >= 1000 && e.Quantity > 0 &&
             e.CommandId is { } id && _seenCommands.TryGetValue(id, out var c) && c.ActorId == actor &&
             c.Action.Kind is ActionKind.Harvest or ActionKind.StartHarvesting && c.Action.ItemId == e.ItemId &&

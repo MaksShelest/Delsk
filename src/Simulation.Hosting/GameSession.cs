@@ -29,11 +29,12 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(delayTicks);
         ArgumentOutOfRangeException.ThrowIfNegative(ttlTicks);
         long sequence = checked(_sequences.GetValueOrDefault(actor.Value) + 1);
-        long notBefore = checked(Engine.Tick + delayTicks);
+        bool ballot = Engine.WaitingForBallots && action.Kind == ActionKind.SetVoteChoice;
+        long notBefore = ballot ? Engine.Tick : checked(Engine.Tick + delayTicks);
         var envelope = new CommandEnvelope($"{SessionId}:{actor.Value}:{sequence}", actor, sequence,
-            Engine.Tick, notBefore, checked(notBefore + ttlTicks), action);
+            Engine.Tick, notBefore, ballot ? notBefore : checked(notBefore + ttlTicks), action);
         var immediate = Submit(actor, envelope);
-        if (immediate is { Status: ResultStatus.Rejected })
+        if (immediate is { Status: ResultStatus.Rejected } && Engine.Result(envelope.CommandId) is null)
             throw new InvalidOperationException($"Submission rejected: {immediate.ReasonCode}");
         return envelope.CommandId;
     }
@@ -41,10 +42,14 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
     {
         _tape.Add(new(Engine.Tick, actor, command));
         _sequences[actor.Value] = Math.Max(_sequences.GetValueOrDefault(actor.Value), command.LocalSequence);
-        return Engine.Enqueue(actor, command);
+        var result = Engine.Enqueue(actor, command);
+        if (result is not null && _samples.Count > 0 && _samples[^1].Tick == Engine.Tick)
+            _samples[^1] = _samples[^1] with { StateHash = Engine.ComputeStateHash() };
+        return result;
     }
     public void Step()
     {
+        if (Engine.WaitingForBallots) { SubmitPlaybackInputs(); PumpVoting(); return; }
         if (Paused) return;
         beforeStep?.Invoke();
         SubmitPlaybackInputs();
@@ -75,7 +80,9 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
 
     public void AdvanceTravelQuantum()
     {
+        if (Engine.WaitingForBallots) { PumpVoting(); return; }
         if (Paused) return;
+        PumpResearchPlayback();
         ApplyHeadingPlayback();
         if (Engine.MoveTravelQuantum()) Step();
     }
@@ -116,24 +123,29 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
                 throw new InvalidOperationException("Playback input missed its barrier");
             Engine.SetTravelHeading(input.AuthenticatedActor, input.Command.Action.Target.X, input.Command.Action.Target.Z);
             _tape.Add(input);
+            PumpResearchPlayback();
             _sequences[input.AuthenticatedActor.Value] = Math.Max(
                 _sequences.GetValueOrDefault(input.AuthenticatedActor.Value), input.Command.LocalSequence);
             _headingPlaybackIndex++;
         }
     }
 
-    public static GameSession Replay(ScenarioDefinition definition, RecordedCommand[] tape, long finalTick)
+    public static GameSession Replay(ScenarioDefinition definition, RecordedCommand[] tape, long finalTick,ResearchModification[]? modifications=null)
     {
         if (finalTick < 0 || finalTick > definition.MaxTicks || tape.Any(x => x.SubmittedAtTick < 0 || x.SubmittedAtTick > finalTick))
             throw new ArgumentException("Invalid replay horizon");
         var session = new GameSession(new SimulationEngine(definition), "replay");
+        session._researchPlayback=modifications??[];
         bool travel = tape.Any(x => x.Command.Action.Kind == ActionKind.SetTravelHeading);
         session.ConfigurePlayback(travel ? tape.Where(x => x.Command.Action.Kind != ActionKind.SetTravelHeading).ToArray() : tape, finalTick);
         if (travel) session.UseHeadingPlayback(tape);
         while (session.Engine.Tick < finalTick)
         {
+            long prior = session.Engine.Tick;
             if (travel) session.AdvanceTravelQuantum();
             else session.Step();
+            if (session.Engine.Tick == prior && session.Engine.WaitingForBallots)
+                throw new InvalidOperationException("Replay requires recorded ballots at the frozen boundary");
         }
         session.SubmitPlaybackInputs(); // Preserve inputs submitted at the final published barrier.
         if (travel) session.ApplyHeadingPlayback();
@@ -163,10 +175,12 @@ public sealed class TickScheduler
     public void AdvanceElapsed(TimeSpan elapsed)
     {
         if (elapsed.Ticks < 0) throw new ArgumentException("Elapsed time cannot be negative");
+        if (_session.Engine.WaitingForBallots) { _accumulator=0; _session.PumpVoting(); return; }
         if (_session.Paused) { _accumulator = 0; return; }
         _accumulator = checked(_accumulator + elapsed.Ticks);
         while (_accumulator >= _quantumDuration)
-        { _session.AdvanceTravelQuantum(); _accumulator -= _quantumDuration; }
+        { _session.AdvanceTravelQuantum(); _accumulator -= _quantumDuration;
+          if (_session.Engine.WaitingForBallots) { _accumulator=0; break; } }
     }
     public void SetPaused(bool paused)
     { _accumulator = 0; _session.SetPaused(paused); }
