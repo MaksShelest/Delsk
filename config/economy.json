@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "id": "presentation-economy-v4",
+  "id": "presentation-economy-v5",
   "world": {
     "startingCashMinor": 20000,
     "personalInventoryCapacity": 20,
@@ -227,7 +227,7 @@
                 "quantity": 10
               }
             ],
-            "inputCapacity": 80,
+            "inputCapacity": 200,
             "outputCapacity": 0,
             "staffCapacity": 0,
             "wageMinor": 0
@@ -388,6 +388,11 @@
       "handling": {
         "personalVolumePerTick": 4,
         "workerVolumePerTick": 4
+      },
+      "negotiations": {
+        "ttlTicks": 60,
+        "maxVersions": 4,
+        "maxActivePerParticipant": 16
       }
     },
     "resources": [

@@ -12,13 +12,16 @@ public sealed partial class SimulationEngine
     {
         var shop = OwnBuilding(actor, c.Action.Building);
         if (shop.Type.Kind != BuildingKind.Shop) throw new RuleViolation("NotAShop");
+        RequireTradingAccess(actor.Id);
+        long source=c.Action.Source.Value==0?shop.Input:c.Action.Source.Value;
+        if(!IsTradingSource(actor.Id,source))throw new RuleViolation("NotAvailable");
         if (c.Action.Quantity <= 0) throw new RuleViolation("InvalidQuantity");
         if (c.Action.UnitPriceMinor <= 0) throw new RuleViolation("InvalidPrice");
         _ = checked(c.Action.Quantity * c.Action.UnitPriceMinor);
         long id = _nextId, next = checked(id + 1);
-        var offer = new MarketOfferState(id, actor.Id, shop.Id, shop.Input, c.Action.ItemId,
+        var offer = new MarketOfferState(id, actor.Id, shop.Id, source, c.Action.ItemId,
             c.Action.Quantity, c.Action.UnitPriceMinor, Tick, checked(Tick + _config.TradeWindowTicks));
-        var tx = _economy.Begin(Tick); tx.ReserveStock(shop.Input, offer.StockHold, offer.Item, offer.Quantity); tx.Commit();
+        var tx = _economy.Begin(Tick); tx.ReserveStock(source, offer.StockHold, offer.Item, offer.Quantity); tx.Commit();
         _marketOffers.Add(id, offer); _nextId = next;
         Emit("MarketOfferPublished", actor.Id, id, offer.Item, offer.Quantity, offer.BasePrice, command: c.CommandId);
     }
@@ -33,6 +36,7 @@ public sealed partial class SimulationEngine
     {
         var o = OpenMarketOffer(c.Action.MarketOfferId);
         if (o.Seller == actor.Id) throw new RuleViolation("OwnOffer");
+        RequireTradingAccess(actor.Id,o.Seller);
         if (o.Status != MarketOfferStatus.Collecting) throw new RuleViolation("MarketAlreadyInAuction");
         if (c.Action.MarketRound != 0) throw new RuleViolation("StaleMarketRound");
         if (c.Action.Quantity <= 0) throw new RuleViolation("InvalidQuantity");
@@ -52,6 +56,7 @@ public sealed partial class SimulationEngine
         if (o.Status != MarketOfferStatus.Auction) throw new RuleViolation("MarketNotInAuction");
         if (c.Action.MarketRound != o.Round) throw new RuleViolation("StaleMarketRound");
         if (!o.Bids.TryGetValue(actor.Id, out var previous)) throw new RuleViolation("NotAvailable");
+        RequireTradingAccess(actor.Id,o.Seller);
         if (c.Action.UnitPriceMinor <= previous.CurrentPriceMinor ||
             c.Action.UnitPriceMinor - previous.CurrentPriceMinor < Market.MinimumRaiseMinor)
             throw new RuleViolation("RaiseTooSmall");
@@ -124,9 +129,9 @@ public sealed partial class SimulationEngine
         Emit("MarketWindowClosed", entity: o.Id, item: o.Item, quantity: o.Allocated);
     }
     private MarketOfferView[] MarketOfferViews() => _marketOffers.Values.OrderBy(o => o.Id).Select(o =>
-        new MarketOfferView(o.Id, new(o.Seller), new(o.Shop), _buildings[o.Shop].Position, o.Item, o.Quantity, o.BasePrice,
+        new MarketOfferView(o.Id, new(o.Seller), new(o.Shop), _economy.Inventories[o.Inventory].Position, o.Item, o.Quantity, o.BasePrice,
             o.CreatedTick, o.Cutoff, o.Round, o.Status, o.Allocated, o.ClosedTick,
-            o.Bids.Values.OrderBy(b => b.Buyer.Value).Select(b => new PublicMarketBid(b.Buyer, b.Quantity, b.CurrentPriceMinor)).ToImmutableArray())).ToArray();
+            o.Bids.Values.OrderBy(b => b.Buyer.Value).Select(b => new PublicMarketBid(b.Buyer, b.Quantity, b.CurrentPriceMinor)).ToImmutableArray(),new(o.Inventory))).ToArray();
     private MarketBidView[] MarketBidViews() => _marketOffers.Values.OrderBy(o => o.Id).SelectMany(o =>
         o.Bids.Values.OrderBy(b => b.Buyer.Value)).ToArray();
     private SavedMarketOffer[] SaveMarketOffers() => _marketOffers.Values.OrderBy(o => o.Id).Select(o =>

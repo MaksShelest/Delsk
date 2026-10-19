@@ -29,6 +29,7 @@ public static class ModelPrompt
             CurrentPrices = o.CapitalPrices.Take(8), Recipes = o.Map.Recipes.Take(4),
             Contracts = o.OwnDeliveryContracts.Where(c => c.ClosedTick is null).Take(4),
             Support = o.Support.Proposals.Where(p => p.Election == o.Elections.NextElectionId).Take(4),
+            Negotiations=o.Negotiations.Where(n=>n.Status==NegotiationStatus.Proposed).Take(4).Select(n=>new {n.Id,n.ExpiresTick,n.Current}),
             Election = new { o.Elections.NextElectionId, o.Elections.NextVotingTick },
             Options = options.Select(p => new { p.Id, p.Goal, p.Reason, Steps = p.Actions.Take(12).Select(Describe) })
         };
@@ -57,6 +58,8 @@ public static class ModelPrompt
         Number("contract", a.ContractId); Number("purchase", a.PurchaseId); Number("wage", a.WageMinor);
         Number("enterprise", a.Enterprise.Value); Number("group", a.Group.Value); Number("support", a.SupportProposalId);
         Number("seller", a.SupportSeller.Value); Number("election", a.Election.Value); Number("source", a.Source.Value); Number("destination", a.Destination.Value);
+        Number("negotiation",a.NegotiationId);Number("negotiationVersion",a.NegotiationVersion);
+        if(a.Terms is {} trade)d.Add("terms",trade);
         if (a.Compensation is { } terms) d.Add("compensation", terms);
         return d;
     }

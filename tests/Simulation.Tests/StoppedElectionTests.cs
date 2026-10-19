@@ -99,7 +99,7 @@ public class StoppedElectionTests
     [InlineData(2,true)] [InlineData(4,false)]
     public void SignedSupportLocksTheBallotAndExecutesEvenWithoutAWinner(long seller,bool winner)
     {
-        var d=Definition() with {Elections=new(20,1,true),Support=new(new(0,0),80),ResourceNodes=[new("wood",new(0,0))]};
+        var d=TradeFixtures.WithShops(Definition() with {Elections=new(20,1,true),Support=new(new(0,0),80),ResourceNodes=[new("wood",new(0,0))]});
         var s=new GameSession(new(d));ParticipantId buyer=new(1),voter=new(seller);
         void Execute(ParticipantId actor,GameAction action){string id=s.Send(actor,action);s.Step();Assert.Equal(ResultStatus.Accepted,s.Engine.Result(id)!.Status);}
         Execute(buyer,new(ActionKind.Harvest,ItemId:"wood",Quantity:2));

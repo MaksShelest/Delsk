@@ -55,7 +55,7 @@ public sealed partial class AlgorithmicController
         return Choose(o, DecisionCandidates(o));
     }
     private Candidate[] DecisionCandidates(ControllerObservation o) => Candidates(o).Concat(WageCandidates(o)).Concat(ContractCandidates(o)).Concat(MarketCandidates(o))
-            .Concat(LogisticsCandidates(o)).Concat(PoliticalCandidates(o))
+            .Concat(LogisticsCandidates(o)).Concat(PoliticalCandidates(o)).Concat(NegotiationCandidates(o)).Concat(NegotiationResponses(o))
             .Where(c => Feasible(c,o) && (!HasObligations(o) || !ExpansionGoal(c.Goal)) &&
                 (o.OwnSupplyRequests.Length==0 || c.Goal is not ("SellCarried" or "SellOutput" or "HarvestForSale")))
             .Select(c => HasObligations(o) && c.Goal is "SupplyProduction" or "ResumeProduction" or "AdjustWage"

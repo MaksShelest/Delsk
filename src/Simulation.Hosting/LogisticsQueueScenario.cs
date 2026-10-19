@@ -9,7 +9,7 @@ public static partial class ScriptedScenarios
         ParticipantId owner = new(1), buyer = new(2);
         var factory = session.Engine.Observe(owner).OwnEnterprises.Single();
         var storage = session.Engine.Observe(owner).OwnBuildings.Single(b => b.Kind == BuildingKind.Warehouse);
-        var receiver = session.Engine.Observe(buyer).OwnBuildings.Single();
+        var receiver = session.Engine.Observe(buyer).OwnBuildings.Single(b=>b.Id.Value==3);
         Move(session, owner, definition.ResourceNodes.Single().Position);
         Execute(session, owner, new(ActionKind.Harvest, ItemId: "wood", Quantity: 60));
         Wait(session, () => !session.Engine.Observe(owner).Participant.Busy);

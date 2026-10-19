@@ -31,9 +31,9 @@ public sealed partial class SimulationEngine
             CommandId: command, Support: new(proposal, _politicalCommitments.GetValueOrDefault(proposal.Id))));
     /// <summary>Public journal: no private command IDs, raw sequence gaps, choices or support terms.</summary>
     public PublicSimulationEvent[] PublicEventsSince(long afterSequence)
-        => _events.Where(e => e.Support is null && e.Type != "VoteChoiceChanged" &&
+        => _events.Where(e => e.Support is null && e.Negotiation is null && e.Type != "VoteChoiceChanged" &&
                 !(e.CommandId is { } id && _seenCommands.TryGetValue(id, out var c) &&
-                  (IsSupportAction(c.Action.Kind) || c.Action.Kind == ActionKind.SetVoteChoice)))
+                  (IsSupportAction(c.Action.Kind) || IsNegotiationAction(c.Action.Kind) || c.Action.Kind == ActionKind.SetVoteChoice)))
             .Select((e, i) => new PublicSimulationEvent(i + 1L, e.Tick, e.Phase, e.Type, e.ActorId,
                 e.EntityId, e.ItemId, e.Quantity, e.AmountMinor, e.ReasonCode)).Where(e => e.Sequence > afterSequence).ToArray();
     private void ProposeSupport(ActorState actor, CommandEnvelope c)
@@ -43,6 +43,7 @@ public sealed partial class SimulationEngine
             (c.Action.Candidate.Value != 0 && c.Action.Candidate.Value != actor.Id) ||
             (c.Action.Source.Value != 0 && c.Action.Source.Value != _supportSections[actor.Id]) ||
             (c.Action.Destination.Value != 0 && c.Action.Destination.Value != destination)) throw new RuleViolation("NotAvailable");
+        RequireTradingAccess(actor.Id,c.Action.SupportSeller.Value);
         var terms = c.Action.Compensation ?? [];
         if (terms.IsDefaultOrEmpty || terms.Length > 8 || terms.Any(m => m is null || string.IsNullOrWhiteSpace(m.ItemId) || m.Quantity <= 0 || !_items.ContainsKey(m.ItemId)) ||
             terms.Select(m => m.ItemId).Distinct(StringComparer.Ordinal).Count() != terms.Length)
@@ -69,6 +70,7 @@ public sealed partial class SimulationEngine
         var p = AvailableSupport(actor, c.Action.SupportProposalId);
         if (p.Seller.Value != actor.Id || p.Status != SupportProposalStatus.Proposed || p.Election != _nextElection || Tick > p.ExpiryTick)
             throw new RuleViolation("NotAvailable");
+        RequireTradingAccess(actor.Id,p.Candidate.Value);
         p = p with { Status = SupportProposalStatus.AcceptedAwaitingResources, AcceptedTick = Tick };
         _supportProposals[p.Id] = p; EmitSupport("SupportAccepted", p, actor.Id, c.CommandId);
     }
@@ -104,6 +106,7 @@ public sealed partial class SimulationEngine
         var p = AvailableSupport(actor, c.Action.SupportProposalId);
         if (p.Status != SupportProposalStatus.AcceptedAwaitingResources || p.Election != _nextElection || Tick > p.ExpiryTick ||
             _politicalCommitments.Values.Any(x => x.Seller == p.Seller && x.Election == p.Election)) throw new RuleViolation("NotAvailable");
+        RequireTradingAccess(actor.Id,p.Seller.Value==actor.Id?p.Candidate.Value:p.Seller.Value);
         RequireIdle(actor);
         RequireActionLocation(actor, c.Action);
         if (!p.Reserved.SequenceEqual(p.Compensation)) throw new RuleViolation("IncompleteCompensation");

@@ -7,7 +7,7 @@ public sealed partial class SimulationEngine
         int index = _deliveryContracts.FindIndex(d => d.Id == c.Action.ContractId && d.Supplier.Value == actor.Id);
         if (index < 0) throw new RuleViolation("NotAvailable");
         var d = _deliveryContracts[index];
-        if (d.ClosedTick is not null || Tick > d.DeadlineTick) throw new RuleViolation("ContractClosed");
+        if (d.CreatedTick>=Tick || d.ClosedTick is not null || Tick > d.DeadlineTick) throw new RuleViolation("ContractClosed");
         RequireIdle(actor);
         RequireActionLocation(actor, c.Action);
         if (c.Action.Quantity <= 0 || c.Action.Quantity > d.UnprovidedQuantity) throw new RuleViolation("InvalidQuantity");

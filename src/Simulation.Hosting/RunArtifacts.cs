@@ -28,7 +28,7 @@ public static class RunArtifacts
             Controllers = session.ControllerStates, ControllerStateHash = session.ComputeControllerStateHash(), Model = modelMetadata, RuntimeVersion = Environment.Version.ToString(),
             Commit = Environment.GetEnvironmentVariable("DELSK_COMMIT"), TickSeconds = 1,
             MapId = definition.Id, Difficulty = (string?)null, DifficultyReason = "P51-P53 not implemented; recorded controller settings define the baseline",
-            Stage = "Package3", DeveloperBuild=SimulationEngine.IsDeveloperBuild, ResearchModified=session.Engine.ResearchModified,
+            Stage = "Package4", DeveloperBuild=SimulationEngine.IsDeveloperBuild, ResearchModified=session.Engine.ResearchModified,
             CleanComparisonEligible=!SimulationEngine.IsDeveloperBuild && !session.Engine.ResearchModified,
             Author = "Шелестов Максим Евгеньевич"
         });
@@ -47,6 +47,7 @@ public static class RunArtifacts
         WriteJson("capital-demand.json", state.CapitalDemand!);
         WriteJson("elections.json", state.Elections);
         WriteJson("support.json", session.Engine.InspectSupport());
+        WriteJson("negotiations.json", session.Engine.InspectNegotiations());
         WriteLines("public-events.jsonl", session.Engine.PublicEventsSince(0));
         WriteJson("delivery.json", new { state.BuyOffers, state.SupplyRequests, Contracts = state.DeliveryContracts });
         WriteJson("market.json", new { Offers = state.MarketOffers, Bids = state.MarketBids, Allocations = state.MarketAllocations });

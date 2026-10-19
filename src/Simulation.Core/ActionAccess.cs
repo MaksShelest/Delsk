@@ -17,7 +17,7 @@ public static class ActionPolicy
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.Build or ActionKind.UpgradeBuilding or
         ActionKind.SetWage or ActionKind.BuyEquipment or ActionKind.UpgradeEquipment or ActionKind.CollectPurchase or
         ActionKind.DeliverContract or ActionKind.BuyLogistics or ActionKind.UpgradeLogistics or ActionKind.SignSupport => ActionReach.AtLocation,
-        ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.MoveTo or ActionKind.CancelCapitalSale or ActionKind.SetTravelHeading or ActionKind.StopHarvest or
+        ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.MoveTo or ActionKind.CancelCapitalSale or ActionKind.SetTravelHeading or ActionKind.StopHarvest or
         ActionKind.SetProductionEnabled or ActionKind.CancelPlotReservation or ActionKind.SetRecipe or ActionKind.SetEquipmentMode or
         ActionKind.CreateSellOffer or ActionKind.SubmitBuyRequest or ActionKind.RaiseBid or ActionKind.WithdrawBid or
         ActionKind.CreateBuyOffer or ActionKind.AcceptDeliveryQuantity or ActionKind.WithdrawSupplyRequest or ActionKind.CancelBuyOffer or
@@ -43,6 +43,7 @@ public sealed partial class SimulationEngine
         if (WaitingForBallots && action.Kind != ActionKind.SetVoteChoice) return new(reach, [], "ElectionInProgress");
         if (action.Kind == ActionKind.SetVoteChoice && Elections.PauseForBallots && RequiredCandidate(actor.Id) is { } required && required != action.Candidate)
             return new(reach, [], "CommittedVote");
+        if((NewTradingAction(action.Kind) || action.Kind==ActionKind.AcceptDeliveryQuantity && action.BuyOfferId>0) && !HasTradingAccess(participant))return new(reach,[],"ShopRequired");
         if (reach == ActionReach.Remote) return new(reach, [], "Allowed");
         Cell[]? locations = action.Kind switch
         {

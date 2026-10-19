@@ -240,7 +240,7 @@ public class HouseholdManagementTests
         var s = Fixtures.Session(d);
         s.AttachControllers(controllers.Npcs.Select(n => new AlgorithmicController(n, AlgorithmicController.RuntimeSeed(d.Seed,n.ActorId), d.Participants.Select(p=>p.Id))));
         s.AdvanceTo(160);
-        Assert.Contains(s.Engine.InspectSupport().Proposals,p=>p.Status==SupportProposalStatus.Rejected);
+        Assert.Contains(s.Engine.InspectNegotiations(),n=>n.Current.Terms.Kind==TradeKind.Support && n.Status==NegotiationStatus.Rejected);
         Assert.Contains(s.Engine.InspectSupport().Commitments,c=>c.Status==PoliticalCommitmentStatus.Executed);
         Assert.DoesNotContain(s.ControllerTurns.SelectMany(t=>t.Feedback),r=>r.ReasonCode=="NotAtLocation");
     }

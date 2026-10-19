@@ -56,7 +56,7 @@ public class MarketTests
         Assert.All(allocations, a => Assert.Equal("AwaitingPickup", a.Status));
         Assert.Equal(15, w.Inventories.Single(i => i.Id == allocations[0].SourceInventory).Stock.Single().Quantity);
         Assert.Equal(15, w.Inventories.Single(i => i.Id == allocations[0].SourceInventory).Stock.Single().Reserved);
-        Assert.All(new long[] { 2, 3, 4 }, id => Assert.Empty(s.Engine.Observe(new(id)).OwnInventories.Single().Stock));
+        Assert.All(new long[] { 2, 3, 4 }, id => Assert.Empty(s.Engine.Observe(new(id)).OwnInventories.Single(i=>i.Id==s.Engine.Observe(new(id)).Participant.InventoryId).Stock));
         Assert.Equal(40000, w.Accounts.Sum(a => a.BalanceMinor));
         Assert.All(w.Accounts, a => Assert.Equal(0, a.ReservedMinor));
     }

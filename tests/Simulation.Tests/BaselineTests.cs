@@ -65,10 +65,10 @@ public class BaselineTests
     public void AutonomousPoliticsAcceptsRejectsDeliversAndExecutesOnlyItsOwnBlocks()
     {
         var s=Politics.Value;var politics=s.Engine.InspectSupport();
-        Assert.Contains(politics.Proposals,p=>p.Status==SupportProposalStatus.Rejected);
+        Assert.Contains(s.Engine.InspectNegotiations(),n=>n.Current.Terms.Kind==TradeKind.Support && n.Status==NegotiationStatus.Rejected);
         Assert.Contains(politics.Commitments,c=>c.Status==PoliticalCommitmentStatus.Executed);
-        Assert.Contains(s.CommandTape,c=>c.Command.Action.Kind==ActionKind.AcceptSupport);
-        Assert.Contains(s.CommandTape,c=>c.Command.Action.Kind==ActionKind.RejectSupport);
+        Assert.Contains(s.CommandTape,c=>c.Command.Action.Kind==ActionKind.AcceptTrade && c.Command.Action.NegotiationId>0);
+        Assert.Contains(s.CommandTape,c=>c.Command.Action.Kind==ActionKind.RejectTrade && c.Command.Action.NegotiationId>0);
         Assert.Contains(s.CommandTape,c=>c.Command.Action.Kind==ActionKind.SignSupport);
         Assert.All(s.CommandTape.Where(c=>c.Command.Action.Kind==ActionKind.SignSupport).GroupBy(c=>(c.AuthenticatedActor,c.Command.Action.SupportProposalId)),g=>Assert.Single(g));
         foreach(var result in s.Engine.Inspect().Elections.Results)

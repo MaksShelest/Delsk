@@ -54,7 +54,7 @@ public class SharedShopTests
         Fixtures.Command(s,PlayerDesk.Bid(lot,2,7777),2);
         var buyer=PlayerDesk.Read(s.Engine,new(2));var other=PlayerDesk.Read(s.Engine,new(3));
         Assert.Single(buyer.Market!.Bids);Assert.Empty(other.Market!.Bids);Assert.DoesNotContain(other.Inventories,i=>i.OwnerId==new ParticipantId(1));
-        Assert.Single(other.Market.Shops);Assert.Equal(shop.Position,other.Market.Shops.Single().Position);
+        Assert.Equal(shop.Position,Assert.Single(other.Market.Shops,s=>s.Id==shop.Id).Position);
         var tablet=new TabletState();Assert.False(tablet.OpenMarket(buyer,map,shop.Id.Value));
         Fixtures.Command(s,PlayerDesk.Move(2,0),2);Fixtures.UntilIdle(s,2);
         Assert.True(tablet.OpenMarket(PlayerDesk.Read(s.Engine,new(2)),map,shop.Id.Value));Assert.True(tablet.BlocksTime);

@@ -84,11 +84,11 @@ public static partial class ScriptedScenarios
         const long wood = 20, product = 10, delivery = 10;
         ParticipantId supplier = new(1), buyer = new(2);
         var factory = session.Engine.Observe(supplier).OwnEnterprises.Single();
-        var shop = session.Engine.Observe(buyer).OwnBuildings.Single();
+        var shop = session.Engine.Observe(buyer).OwnBuildings.Single(b=>b.Kind==BuildingKind.Shop);
         Move(session, supplier, definition.ResourceNodes.Single().Position);
         Execute(session, supplier, new(ActionKind.Harvest, ItemId: "wood", Quantity: wood));
         Wait(session, () => !session.Engine.Observe(supplier).Participant.Busy);
-        Move(session, supplier, session.Engine.Observe(supplier).OwnBuildings.Single().Position);
+        Move(session, supplier, session.Engine.Observe(supplier).OwnBuildings.Single(b=>b.Kind==BuildingKind.Production).Position);
         Execute(session, supplier, new(ActionKind.BuyLogistics, Enterprise: factory.Id));
         Execute(session, buyer, new(ActionKind.CreateBuyOffer, Destination: shop.InputId, ItemId: "plank", Quantity: delivery, UnitPriceMinor: 3000));
         long offer = session.Engine.Observe(buyer).BuyOffers.Single().Id;

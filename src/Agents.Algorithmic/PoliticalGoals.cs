@@ -29,7 +29,7 @@ public sealed partial class AlgorithmicController
         if(!_state.Settings.PoliticsEnabled || o.Support.Rules is null)yield break;
         foreach(var p in o.Support.Proposals.Where(p=>p.Seller==Actor && p.Status==SupportProposalStatus.Proposed && p.Election==o.Elections.NextElectionId))
         {
-            bool accept=AcceptableSupport(o,p);
+            bool accept=CanTradeWith(o,p.Candidate) && AcceptableSupport(o,p);
             yield return One(accept?"AcceptSupport":"RejectSupport",accept?"CompensationAndRisk":"OwnVictoryOrPrice",850000,
                 new(accept?ActionKind.AcceptSupport:ActionKind.RejectSupport,SupportProposalId:p.Id));
         }
@@ -64,9 +64,10 @@ public sealed partial class AlgorithmicController
             o.Support.Proposals.Count(p=>p.Candidate==Actor && p.Election==election && p.Status is SupportProposalStatus.Proposed or SupportProposalStatus.AcceptedAwaitingResources)>=2)yield break;
         var raw=o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)).Where(n=>Reachable(o,n.Position)).OrderBy(n=>Distance(o.Map,o.Participant.Position,n.Position)).ThenBy(n=>n.ItemId,StringComparer.Ordinal).FirstOrDefault();
         if(raw is null)yield break;
-        foreach(var seller in o.Elections.Participants.Where(p=>p!=Actor))
+        foreach(var seller in o.Elections.Participants.Where(p=>p!=Actor && CanTradeWith(o,p)))
         {
-            if(o.Support.Proposals.Any(p=>p.Candidate==Actor && p.Seller==seller && p.Election==election) ||
+            if(o.Negotiations.Any(n=>n.Current.Terms.Kind==TradeKind.Support && n.Current.Terms.Buyer==Actor && n.Current.Terms.Seller==seller && n.Current.Terms.Election==election) ||
+                o.Support.Proposals.Any(p=>p.Candidate==Actor && p.Seller==seller && p.Election==election) ||
                 o.Support.Commitments.Any(c=>c.Candidate==Actor && c.Seller==seller && c.Election==election))continue;
             long value=checked((long)((Int128)VoteWeight(o,seller)*_state.Settings.SupportPricePerVoteMinor*6/5));
             long q=checked((value-1)/BasePrice(o,raw.ItemId)+1);
@@ -76,7 +77,7 @@ public sealed partial class AlgorithmicController
             long trips=checked((q*Volume(o,raw.ItemId)+Carrier(o).Capacity-1)/Carrier(o).Capacity);
             if(PlanTicks(o,estimate)*trips+6>o.Elections.NextVotingTick-o.Tick)continue;
             yield return One("BuySupport",seller.Value.ToString(System.Globalization.CultureInfo.InvariantCulture),220000+VoteWeight(o,Actor)*1000+VoteWeight(o,seller),
-                new(ActionKind.ProposeSupport,SupportSeller:seller,Election:election,Compensation:[new(raw.ItemId,q)]));
+                new(ActionKind.ProposeTrade,Terms:new(TradeKind.Support,seller,Actor,Election:election,Compensation:[new(raw.ItemId,q)])));
         }
     }
 }

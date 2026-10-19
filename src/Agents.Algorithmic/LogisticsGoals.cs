@@ -22,7 +22,7 @@ public sealed partial class AlgorithmicController
                     (Free(output,r.OutputItem)>=r.OutputQuantity || e.CompletedBatches>0) && (contract is not null || destination is not null))
                 {
                     var steps=new List<PlanStep>();Move(steps,o.Participant.Position,output.Position);steps.Add(new(new(ActionKind.BuyLogistics,Enterprise:e.Id)));
-                    yield return new("BuyLogistics",e.Id.Value.ToString(System.Globalization.CultureInfo.InvariantCulture),115000*_state.Settings.ExpansionWeight/100,steps.ToArray());
+                    yield return new("BuyLogistics",e.Id.Value.ToString(System.Globalization.CultureInfo.InvariantCulture),240000*_state.Settings.ExpansionWeight/100,steps.ToArray());
                 }
                 continue;
             }

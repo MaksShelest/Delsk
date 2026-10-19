@@ -56,8 +56,8 @@ public static class PlayerDesk
     public static GameAction Sell(long offer, string item, long quantity) => Check(new(ActionKind.SellAvailableToCapital,
         OfferId: offer, ItemId: item, Quantity: quantity));
     public static GameAction CancelSale(long offer) => Check(new(ActionKind.CancelCapitalSale, OfferId: offer));
-    public static GameAction PublishLot(long shop, string item, long quantity, long price) => Check(new(ActionKind.CreateSellOffer,
-        Building: new(shop), ItemId: item, Quantity: quantity, UnitPriceMinor: price));
+    public static GameAction PublishLot(long shop, string item, long quantity, long price,long source=0) => Check(new(ActionKind.CreateSellOffer,
+        Building: new(shop),Source:new(source), ItemId: item, Quantity: quantity, UnitPriceMinor: price));
     public static GameAction Bid(long offer, long quantity, long maximum) => Check(new(ActionKind.SubmitBuyRequest,
         MarketOfferId: offer, Quantity: quantity, MaximumPriceMinor: maximum));
     public static GameAction RaiseBid(long offer, int round, long price) => Check(new(ActionKind.RaiseBid,
@@ -74,7 +74,7 @@ public static class PlayerDesk
             seen.CapitalOffers, seen.Account.AvailableMinor, engine.HarvestOf(actor), engine.EconomyRules,
             new(seen.MarketOffers, seen.OwnMarketBids, seen.OwnMarketAllocations, seen.MarketRules, engine.PublicShops()),
             seen.OwnEquipment, seen.OwnDeliveryContracts, seen.BuyOffers, seen.OwnSupplyRequests, seen.City)
-            { Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells() };
+            { Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))] };
     }
 }
 
@@ -87,6 +87,9 @@ public record PlayerView(long Tick, ParticipantView Participant, long CashMinor,
     public System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources {get;init;}=[];
     public System.Collections.Immutable.ImmutableArray<TransferOperation> Transfers {get;init;}=[];
     public System.Collections.Immutable.ImmutableArray<Cell> Blocked {get;init;}=[];
+    public System.Collections.Immutable.ImmutableArray<TradeNegotiation> Negotiations {get;init;}=[];
+    public System.Collections.Immutable.ImmutableArray<ParticipantId> TradingParticipants {get;init;}=[];
+    public System.Collections.Immutable.ImmutableArray<PurchaseGuide> PurchaseGuides {get;init;}=[];
 }
 
 public sealed record PlayerMarketView(MarketOfferView[] Offers, MarketBidView[] Bids, MarketAllocationView[] Allocations,
@@ -105,6 +108,12 @@ public static class PlayerText
 
     private static Dictionary<string, string> Ru() => new(StringComparer.Ordinal)
     {
+        ["reason.ShopRequired"]="Для сделки обоим участникам нужна построенная лавочка.",
+        ["reason.InvalidTradeTerms"]="Проверьте стороны, источник, получателя и числовые условия.",
+        ["reason.StaleNegotiationVersion"]="Версия условий устарела. Откройте последнюю версию.",
+        ["reason.NegotiationClosed"]="Переговоры уже завершены или срок истёк.",
+        ["reason.AwaitingCounterparty"]="Ожидается ответ другой стороны.",
+        ["reason.NegotiationRoundLimit"]="Достигнут предел встречных предложений.",
         ["reason.NoResourceRights"]="Нет права добычи: купите или арендуйте ресурсную клетку.",
         ["reason.ResourceDepleted"]="Ресурс исчерпан; дождитесь восстановления.",
         ["reason.ResourceUnavailable"]="Ресурсная клетка недоступна для покупки или аренды.",
@@ -262,6 +271,12 @@ public static class PlayerText
 
     private static Dictionary<string, string> En() => new(StringComparer.Ordinal)
     {
+        ["reason.ShopRequired"]="Both parties need a built shop to trade.",
+        ["reason.InvalidTradeTerms"]="Check parties, source, destination and numeric terms.",
+        ["reason.StaleNegotiationVersion"]="Terms are stale. Open the latest version.",
+        ["reason.NegotiationClosed"]="Negotiation is closed or expired.",
+        ["reason.AwaitingCounterparty"]="Awaiting the other party.",
+        ["reason.NegotiationRoundLimit"]="Counteroffer limit reached.",
         ["reason.NoResourceRights"]="No extraction rights: buy or lease this resource site.",
         ["reason.ResourceDepleted"]="Resource depleted; wait for regeneration.",
         ["reason.ResourceUnavailable"]="Resource site unavailable for purchase or lease.",

@@ -188,4 +188,26 @@ public class LogisticsTests
     [InlineData(0, 10, 2)] [InlineData(20000, 0, 2)] [InlineData(20000, 10, 0)]
     public void InvalidTransportSettingsFailBeforeCreatingWorld(long price, long capacity, int crew)
         => Assert.Throws<ArgumentException>(() => new SimulationEngine(Scenario() with { Logistics = new(PurchasePriceMinor: price, CargoCapacity: capacity, MinimumCrew: crew, CrewCapacity: crew) }));
+
+    [Fact]
+    public void NegotiatedFutureContractUsesExistingSupplierTruckAndRestoresActiveTrip()
+    {
+        var d=Scenario();var s=new GameSession(new(d));
+        Assert.Equal("Accepted",Reason(s,new(ActionKind.Harvest,ItemId:"wood",Quantity:8)));Fixtures.UntilIdle(s);
+        LandContentFixtures.Move(s,new(2,0));Assert.Equal("Accepted",Reason(s,new(ActionKind.BuyLogistics,Enterprise:new(1))));
+        var destination=s.Engine.Observe(new(2)).OwnBuildings.Single(b=>b.Kind==BuildingKind.Shop).InputId;
+        Assert.Equal("Accepted",Reason(s,new(ActionKind.ProposeTrade,Terms:new(TradeKind.Purchase,new(1),new(2),"plank",4,3000,Destination:destination,FulfillmentTicks:180)),2));
+        var n=s.Engine.InspectNegotiations().Single();Assert.Equal("Accepted",Reason(s,new(ActionKind.AcceptTrade,NegotiationId:n.Id,NegotiationVersion:1)));
+        var factory=s.Engine.Observe(new(1)).OwnEnterprises.Single();
+        Assert.Equal("Accepted",Reason(s,new(ActionKind.Transfer,Source:s.Engine.Observe(new(1)).Participant.InventoryId,Destination:factory.InputId,ItemId:"wood",Quantity:8)));
+        Assert.Equal("Accepted",Reason(s,new(ActionKind.SetProductionEnabled,Enterprise:factory.Id,Enabled:true)));
+        while(s.Engine.Observe(new(1)).OwnEnterprises.Single().CompletedBatches<4){Assert.True(s.Engine.Tick<150);s.Step();}
+        Assert.Equal("Accepted",Reason(s,new(ActionKind.SetProductionEnabled,Enterprise:factory.Id,Enabled:false)));
+        Assert.Equal("Accepted",Reason(s,new(ActionKind.SetLogisticsContract,Logistics:System(s).Id,ContractId:Contract(s).Id,Enabled:true)));
+        while(System(s).Trip is null){Assert.True(s.Engine.Tick<150);s.Step();}
+        var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));
+        while(System(s).CompletedTrips<1){Assert.True(s.Engine.Tick<180);s.Step();copy.Step();}
+        Assert.Equal("Fulfilled",Contract(s).Status);Assert.Equal(4,Contract(s).DeliveredQuantity);
+        Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());Assert.Equal(s.Engine.ComputeStateHash(),GameSession.Replay(d,s.CommandTape,s.Engine.Tick).Engine.ComputeStateHash());
+    }
 }

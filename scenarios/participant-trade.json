@@ -1,0 +1,244 @@
+{
+  "id": "participant-trade-v1",
+  "seed": 42,
+  "mapWidth": 12,
+  "mapHeight": 4,
+  "blockedCells": [],
+  "items": [
+    {
+      "id": "wood",
+      "unitVolume": 1,
+      "basePriceMinor": 500
+    },
+    {
+      "id": "plank",
+      "unitVolume": 1,
+      "basePriceMinor": 3000
+    }
+  ],
+  "recipes": [
+    {
+      "id": "sawmill",
+      "inputItem": "wood",
+      "inputQuantity": 2,
+      "outputItem": "plank",
+      "outputQuantity": 1,
+      "fullStaffTicks": 2,
+      "requiredStaff": 2,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 100
+    }
+  ],
+  "participants": [
+    {
+      "id": 1,
+      "cashMinor": 100000,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 2,
+      "cashMinor": 100000,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    },
+    {
+      "id": 3,
+      "cashMinor": 100000,
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "inventoryCapacity": 20
+    }
+  ],
+  "enterprises": [],
+  "capitalOffers": [],
+  "resourceNodes": [
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 0
+      }
+    }
+  ],
+  "harvestTicksPerUnit": 1,
+  "moveTicksPerCell": 1,
+  "tradeWindowTicks": 5,
+  "maxCommandsPerActorTick": 8,
+  "population": 0,
+  "maxTicks": 300,
+  "labor": {
+    "stepTicks": 10000,
+    "salaryChangeDelayTicks": 20,
+    "mobilityNumerator": 1,
+    "mobilityDenominator": 10,
+    "growthPeriodTicks": 120,
+    "growthPerPeriod": 0
+  },
+  "elections": {
+    "periodTicks": 200
+  },
+  "support": {
+    "tradingPoint": {
+      "x": 5,
+      "z": 0
+    }
+  },
+  "economy": {
+    "handling": {
+      "personalVolumePerTick": 1,
+      "workerVolumePerTick": 1
+    }
+  },
+  "buildingTypes": [
+    {
+      "id": "warehouse",
+      "kind": "Warehouse",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "",
+          "materials": [],
+          "inputCapacity": 200,
+          "outputCapacity": 0,
+          "staffCapacity": 0,
+          "wageMinor": 0,
+          "priceMinor": 1
+        }
+      ]
+    },
+    {
+      "id": "fixture-shop",
+      "kind": "Shop",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "",
+          "materials": [],
+          "inputCapacity": 200,
+          "outputCapacity": 0,
+          "staffCapacity": 0,
+          "wageMinor": 0,
+          "priceMinor": 1
+        }
+      ]
+    }
+  ],
+  "plots": [
+    {
+      "id": 1,
+      "position": {
+        "x": 2,
+        "z": 0
+      },
+      "priceMinor": 1,
+      "ownerId": 1
+    },
+    {
+      "id": 2,
+      "position": {
+        "x": 4,
+        "z": 0
+      },
+      "priceMinor": 1,
+      "ownerId": 2
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 0,
+        "z": 3
+      },
+      "priceMinor": 1,
+      "ownerId": 1,
+      "shopParticipantId": 1
+    },
+    {
+      "id": 4,
+      "position": {
+        "x": 1,
+        "z": 3
+      },
+      "priceMinor": 1,
+      "ownerId": 2,
+      "shopParticipantId": 2
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 2,
+        "z": 3
+      },
+      "priceMinor": 1,
+      "ownerId": 3,
+      "shopParticipantId": 3
+    }
+  ],
+  "buildings": [
+    {
+      "id": 1,
+      "ownerId": 1,
+      "position": {
+        "x": 2,
+        "z": 0
+      },
+      "typeId": "warehouse"
+    },
+    {
+      "id": 2,
+      "ownerId": 2,
+      "position": {
+        "x": 4,
+        "z": 0
+      },
+      "typeId": "warehouse"
+    },
+    {
+      "id": 3,
+      "ownerId": 1,
+      "position": {
+        "x": 0,
+        "z": 3
+      },
+      "typeId": "fixture-shop"
+    },
+    {
+      "id": 4,
+      "ownerId": 2,
+      "position": {
+        "x": 1,
+        "z": 3
+      },
+      "typeId": "fixture-shop"
+    },
+    {
+      "id": 5,
+      "ownerId": 3,
+      "position": {
+        "x": 2,
+        "z": 3
+      },
+      "typeId": "fixture-shop"
+    }
+  ]
+}
