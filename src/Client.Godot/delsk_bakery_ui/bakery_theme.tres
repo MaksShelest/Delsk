@@ -1,0 +1,55 @@
+[gd_resource type="Theme" load_steps=10 format=3]
+
+[ext_resource type="FontFile" path="res://delsk_sawmill_ui/assets/fonts/Nunito-Medium.ttf" id="1"]
+
+[ext_resource type="Texture2D" path="res://delsk_bakery_ui/assets/icons/toggle_on.svg" id="on"]
+
+[ext_resource type="Texture2D" path="res://delsk_bakery_ui/assets/icons/toggle_off.svg" id="off"]
+
+[sub_resource type="StyleBoxFlat" id="Tip"]
+bg_color = Color(0.15, 0.25, 0.20, 1)
+content_margin_left = 14.0
+content_margin_right = 14.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+
+[sub_resource type="ImageTexture" id="Unused"]
+
+[sub_resource type="StyleBoxFlat" id="Focus"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.74, 0.53, 0.22, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
+
+[sub_resource type="StyleBoxEmpty" id="Empty"]
+
+[sub_resource type="StyleBoxFlat" id="CheckBG"]
+bg_color = Color(0,0,0,0)
+
+[sub_resource type="StyleBoxEmpty" id="CheckFocus"]
+
+[resource]
+default_font = ExtResource("1")
+default_font_size = 20
+Button/styles/focus = SubResource("Focus")
+CheckButton/styles/normal = SubResource("Empty")
+CheckButton/styles/hover = SubResource("CheckBG")
+CheckButton/styles/pressed = SubResource("Empty")
+CheckButton/styles/focus = SubResource("CheckFocus")
+TooltipPanel/styles/panel = SubResource("Tip")
+TooltipLabel/colors/font_color = Color(1, 0.98, 0.93, 1)
+TooltipLabel/font_sizes/font_size = 17
+CheckButton/icons/checked = ExtResource("on")
+CheckButton/icons/unchecked = ExtResource("off")
+CheckButton/icons/checked_disabled = ExtResource("on")
+CheckButton/icons/unchecked_disabled = ExtResource("off")

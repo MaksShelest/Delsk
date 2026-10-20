@@ -2,11 +2,11 @@
 """Actual Godot desktop/compact interaction probe; build/import client first. Шелестов Максим Евгеньевич."""
 import argparse,base64,gzip,json,os,shutil,socket,subprocess,sys,time
 from pathlib import Path
-p=argparse.ArgumentParser();p.add_argument('--godot',required=True);p.add_argument('--xvfb',default='Xvfb');p.add_argument('--output',type=Path,required=True);p.add_argument('--display',type=int,default=95);p.add_argument('--mode',choices=['sawmill','model-errors'],default='sawmill');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--godot',required=True);p.add_argument('--xvfb',default='Xvfb');p.add_argument('--output',type=Path,required=True);p.add_argument('--display',type=int,default=95);p.add_argument('--mode',choices=['sawmill','bakery','model-errors'],default='sawmill');a=p.parse_args()
 root=Path(__file__).resolve().parents[1];out=a.output.resolve();out.mkdir(parents=True,exist_ok=True)
 def check(name,timeout,command):
  subprocess.run([sys.executable,str(root/'scripts/run_check.py'),'--name',name,'--timeout',str(timeout),'--log-directory',str(out/'checks'),'--',*map(str,command)],cwd=root,check=True)
-scenario=json.loads((root/'scenarios/land-and-content.json').read_text());scenario['id']='ui-sawmill-v1';scenario['participants'][0]['position']={'x':4,'z':0}
+scenario=json.loads((root/'scenarios/land-and-content.json').read_text());scenario['id']='ui-sawmill-v1';scenario['participants'][0]['position']={'x':4,'z':4 if a.mode=='bakery' else 0}
 (out/'scenario.json').write_text(json.dumps(scenario));config=json.loads((root/'scenarios/baseline-controllers.json').read_text());config['npcs']=[dict(config['npcs'][0],actorId=2)];config['finalTick']=1
 (out/'controllers.json').write_text(json.dumps(config))
 save=out/'ui.save.json'
@@ -15,7 +15,7 @@ env=os.environ.copy();env.update(DISPLAY=f'127.0.0.1:{a.display}.0',LIBGL_ALWAYS
 userdata=Path(env['XDG_DATA_HOME'])/'godot/app_userdata/Delsk';userdata.mkdir(parents=True,exist_ok=True)
 destination=userdata/'play-economy-production-recipes-1.json'
 http=None;requests=0
-if a.mode=='sawmill':shutil.copyfile(save,destination)
+if a.mode in ('sawmill','bakery'):shutil.copyfile(save,destination)
 else:
  destination.unlink(missing_ok=True)
  from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
@@ -37,7 +37,7 @@ with (out/'xvfb.log').open('w') as log:
    try:
     with socket.create_connection(('127.0.0.1',6000+a.display),timeout=.1):break
    except OSError:time.sleep(.1)
-  subprocess.run([sys.executable,str(root/'scripts/run_check.py'),'--name','window','--timeout','70','--log-directory',str(out/'checks'),'--',a.godot,'--path',str(root/'src/Client.Godot'),'--script',str(root/('tests/Client.Probes/'+('sawmill' if a.mode=='sawmill' else 'model-errors')+'.gd')),'--rendering-method','gl_compatibility','--audio-driver','Dummy','--','--windowed','--output',str(out)],cwd=root,env=env,check=True)
+  subprocess.run([sys.executable,str(root/'scripts/run_check.py'),'--name','window','--timeout','70','--log-directory',str(out/'checks'),'--',a.godot,'--path',str(root/'src/Client.Godot'),'--script',str(root/('tests/Client.Probes/'+a.mode+'.gd')),'--rendering-method','gl_compatibility','--audio-driver','Dummy','--','--windowed','--output',str(out)],cwd=root,env=env,check=True)
  finally:
   server.terminate()
   try:server.wait(timeout=5)

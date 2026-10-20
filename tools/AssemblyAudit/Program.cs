@@ -13,7 +13,7 @@ foreach(string name in new[]{"Delsk.Client","Simulation.Core","Simulation.Hostin
     foreach(var handle in metadata.TypeDefinitions)
     {
         var type=metadata.GetTypeDefinition(handle);string typeName=metadata.GetString(type.Name),ns=metadata.GetString(type.Namespace);
-        if(typeName is "DeveloperPanel" or "DeveloperTools" or "DecisionLogEntry" || ns=="Simulation.Developer")throw new InvalidOperationException(name+": Developer screen/type");
+        if(typeName is "DeveloperPanel" or "DeveloperTools" or "DecisionLogEntry" or "VisualModelsProbe" || ns=="Simulation.Developer")throw new InvalidOperationException(name+": Developer screen/type");
         foreach(var method in type.GetMethods())
             if(metadata.GetString(metadata.GetMethodDefinition(method).Name) is "DeveloperModify" or "ApplyResearchPlayback" or "DeveloperMenu" or "DeveloperFrame" or "ConfigureResearchPlayback")
                 throw new InvalidOperationException(name+": intervention entry point");

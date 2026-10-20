@@ -76,5 +76,5 @@ public partial class Playfield
                 _feedback=L("Модель: применён алгоритмический fallback · ","Model: algorithmic fallback applied · ")+trace.ReasonCode;
         };
     }
-    public override void _ExitTree()=>DisposeModel();
+    public override void _ExitTree(){DisposeModel();DisposeFeedback();}
 }

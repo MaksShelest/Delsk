@@ -76,6 +76,7 @@ public partial class Playfield : Control
             GetTree().CallDeferred(SceneTree.MethodName.ChangeSceneToFile, "res://PlatformProbe.tscn");
             return;
         }
+        InitializeFeedback();
         Input.MouseMode = Input.MouseModeEnum.Visible;
         Engine.MaxFps = 60;
         Theme = PresentationTheme.Create();
@@ -149,7 +150,8 @@ public partial class Playfield : Control
             }
             if (_skipNextFrame) { _skipNextFrame = false; return; }
             if (_waitRelease && !MovementHeld()) _waitRelease = false;
-            if(ModelFrame()){AnimateInterface(delta);return;}
+            bool modelWaiting=ModelFrame();AdvanceFeedback(delta);
+            if(modelWaiting){AnimateInterface(delta);return;}
             SampleHeading();
             DeveloperFrame();
             if(_session.Engine.WaitingForBallots){_session.PumpVoting();Refresh();return;}
@@ -212,6 +214,7 @@ public partial class Playfield : Control
         };
         _mapSelection.LanguageChanged += () => { _language = _language == "ru" ? "en" : "ru"; ShowMaps(); };
         _mapSelection.DisplaySettingsRequested += ToggleFullscreen;
+        _mapSelection.FeedbackSettingsRequested += OpenFeedbackSettings;
         _mapSelection.QuitRequested += ExitGame;
         AddChild(_mapSelection);
     }
@@ -298,6 +301,7 @@ public partial class Playfield : Control
         if (_session is null) return;
         bool paused = _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots || ModelBarrier);
         if (_session.Paused != paused) _scheduler.SetPaused(paused);
+        FeedbackPause();
     }
 
     private void StepOne()
@@ -477,7 +481,7 @@ public partial class Playfield : Control
             _tooltip.Text = PlayContext.Hover(frame, view, hx, hz, _language);
             _tooltip.Visible = _hoverX.HasValue && _hoverZ.HasValue && !_tabletState.IsOpen && _helpOverlay is null && frame.Markers.Any(m => m.X == hx && m.Z == hz);
         }
-        PollHarvest();
+        PollHarvest(view);
         _feedback = Describe(view);
         _status.Text = $"{T(paused ? "paused" : "running")}  {T("tick")}: {_session.Engine.Tick}\n" +
             $"{T("position")}: ({actor.Position.X}, {actor.Position.Z}) +({travelOffset.OffsetX}, {travelOffset.OffsetZ})  {T("busy")}: {T(actor.Busy ? "yes" : "no")}\n" +
@@ -791,6 +795,7 @@ public partial class Playfield : Control
         chooseMap.Pressed += ShowMaps;
         box.AddChild(chooseMap);
         Button(box, "language", ChangeLanguage);
+        var feedbackSettings=new Button{Text=L("Реплики и звук","Speech and audio"),FocusMode=FocusModeEnum.None};feedbackSettings.Pressed+=OpenFeedbackSettings;box.AddChild(feedbackSettings);
         var display = new Button { Text = L("Полный экран / окно", "Fullscreen / window"), FocusMode = FocusModeEnum.None };
         display.Pressed += ToggleFullscreen; box.AddChild(display);
         var handbook = new Button { Text = L("Справка", "Help"), FocusMode = FocusModeEnum.None };
@@ -903,11 +908,14 @@ public partial class Playfield : Control
     {
         var events = _session.Engine.PublicEventsSince(0);
         _publicCursor = events.Length == 0 ? 0 : events[^1].Sequence;
+        _effects.Reset(_publicCursor);_effects.Advance(0,true);
     }
 
-    private void PollHarvest()
+    private void PollHarvest(PlayerView view)
     {
         var events = _session.Engine.PublicEventsSince(_publicCursor);
+        _effects.ObserveLabor(view.LaborMarket,_human.Value,_feedbackPreferences);
+        _effects.Consume(events,_human.Value,_feedbackPreferences);
         if (events.Length == 0) return;
         _publicCursor = events[^1].Sequence;
         if (PlayerText.OwnHarvest(events, _human.Value, _language) is { } gain) _gain = gain;

@@ -12,6 +12,7 @@ public partial class MapSelectionScreen : ColorRect
     public event System.Action? LanguageChanged;
     public event System.Action? QuitRequested;
     public event System.Action? DisplaySettingsRequested;
+    public event System.Action? FeedbackSettingsRequested;
     public string SelectedMap { get; private set; }
     public NpcDifficulty Difficulty {get;private set;}=NpcDifficulty.Medium;
     public LocalGameModel? ModelConfiguration {get;private set;}
@@ -32,6 +33,7 @@ public partial class MapSelectionScreen : ColorRect
         AddButton(column, L("Начать", "Start"), () => MapChosen?.Invoke(SelectedMap));
         if (canContinue) AddButton(column, L("Продолжить", "Continue"), () => Continued?.Invoke());
         AddButton(column, L("Настройки экрана", "Display settings"), () => DisplaySettingsRequested?.Invoke());
+        AddButton(column,L("Реплики и звук","Speech and audio"),()=>FeedbackSettingsRequested?.Invoke());
         AddButton(column, L("English", "Русский"), () => LanguageChanged?.Invoke());
         AddButton(column, L("Выйти из игры", "Quit"), () => QuitRequested?.Invoke());
     }

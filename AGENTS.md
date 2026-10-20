@@ -2,7 +2,15 @@
 
 Автор проекта и материалов: Шелестов Максим Евгеньевич.
 
-Актуальные версии/статусы — в разделе «Пакет6»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
+Актуальные версии/статусы — в разделе «Пакет7»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
+
+## Пакет7, актуально20.10.2026 (Europe/Samara)
+
+- От слитого PR#42 (`853b993`) реализован пакет7 **P30/P57** и архивный планшет пекарни. Владелец явно разрешил следующий пакет; нормативный §12.1 допускает визуальный пакет раньше. Не подменять им открытые real-model P56/Hard efficacy/P27 gates. Факты — docs/IMPLEMENTATION_REPORT_PACKAGE7.md; восстановление этапов — docs/WORKLOG_PACKAGE7.md. Следующий пакет8 P58–P60, здесь не начинался.
+- World18/Rules production-recipes-1/Session2/Envelope2 и controller policies прежние. PresentationMarker.Level/Footprint/Walls/Warehouse — UI-only. Чужие goods/capacity не покидают projection; собственные piles используют physical quantity, не future capacity holds. Форма PresentationFrame не меняет World hash/save. Площадка не добавляет collision authority; anchor/walls прежние.24 piles/4 layers max; stock cache отдельно от static geometry. Модели только существующих L1/L2, shop purple, без process bars.
+- P57: только PublicSimulationEvent/PublicEmploymentView; никаких чужих reasons/terms/контроллерных планов в речи.2 simultaneous/3.2s lifetime/8s actor cooldown, приоритет важной реплики, cosmetic clock/hash без World PRNG. Подписи на разных высотах; tablet/menu/help/pause/focus скрывают/сбрасывают эффекты. SFX2-player pool/схлопывание batch, ambience + optional music0% default. user://feedback.cfg вне simulation; три громкости/speech toggle. WAV собственные процедурные/CC0, LICENSE и генератор сохранять. Dummy audio pass не равен динамикам устройства.
+- ProductionTabletPresenter заменяет имя SawmillTabletPresenter и обслуживает sawmill/bakery. Те же HouseholdObjectCard buttons/access; Bakery Grain/Bread paths, Upgrade CostPlanks — доски. Общие Help/Close/Time и прежние routes. Нестандартный/многокомпонентный рецепт — полная generic карточка; ширина<980 compact. Не возвращать demo.gd/примерные значения. Шрифты архивов идентичны, reuse existing Nunito/OFL; source bakery zip сохранён в docs/design/bakery-v1.
+- 879 ordinary/885 Developer tests;102exports/14replay/69pairs, Linux hashes1132+stopped10/35 restores, actual bakery/sawmill RU/EN/compact/preferences и audio-state/window probes. Gallery — специально подготовленные visual DTOs, не работа NPC. tests/Client.Probes/VisualModelsProbe.cs компилировать только в изолированном stage, запрещён в ordinary audit/PCK. scripts/check_visual_models.py и scripts/check_sawmill_ui.py --mode bakery воспроизводят проверки. Windows/Android/hardware60FPS/real model не объявлять пройденными.
 
 ## Пакет6, актуально20.10.2026 (Europe/Samara)
 

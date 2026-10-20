@@ -21,7 +21,7 @@ public partial class HouseholdObjectCard : VBoxContainer
     private readonly Dictionary<string, (Button Button, GameAction Action)> _buttons = [];
     private readonly RouteEditor _routes;
     private readonly VBoxContainer _details=new();
-    private SawmillTabletPresenter? _sawmill;
+    private ProductionTabletPresenter? _productionTablet;
     private Button? _detailsToggle;
     private bool _expanded;
     private PlayerView? _lastView;
@@ -124,14 +124,17 @@ public partial class HouseholdObjectCard : VBoxContainer
         if (enterprise is not null) LogisticsActions(view, enterprise, Add);
         if(view.Transfers.Length>0)Add("transfer-stop",L("Остановить передачу","Stop transfer"),new(ActionKind.StopTransfer));
         UpdateActions(actions, pending);
-        _showSawmill=building?.TypeId=="sawmill" && enterprise is not null;
-        if(_showSawmill && _sawmill is null)
+        var artworkRecipe=enterprise is null?null:_scenario.Recipes.Single(r=>r.Id==enterprise.RecipeId);
+        _showProductionTablet=artworkRecipe is not null && artworkRecipe.Ingredients.Length==1 &&
+            (building?.TypeId=="sawmill" && artworkRecipe.Ingredients[0].ItemId=="wood" && artworkRecipe.OutputItem=="plank" ||
+             building?.TypeId=="bakery" && artworkRecipe.Ingredients[0].ItemId=="grain" && artworkRecipe.OutputItem=="bread");
+        if(_showProductionTablet && _productionTablet is null)
         {
-            _sawmill=new(_scenario,_language,_id,RevealLogistics);AddChild(_sawmill);MoveChild(_sawmill,0);
+            _productionTablet=new(_scenario,_language,_id,RevealLogistics,building!.TypeId);AddChild(_productionTablet);MoveChild(_productionTablet,0);
             _detailsToggle=new Button{Text=L("Подробности · перенос, маршруты, транспорт","Details · transfers, routes, transport"),FocusMode=FocusModeEnum.None};AddChild(_detailsToggle);MoveChild(_detailsToggle,1);
             _detailsToggle.Pressed+=()=>{_expanded=!_expanded;LayoutCard();};
         }
-        if(_showSawmill)_sawmill!.ShowData(view,paused,_buttons);LayoutCard();
+        if(_showProductionTablet)_productionTablet!.ShowData(view,paused,_buttons);LayoutCard();
         if(view.Transfers.Length==0 && !pending)_activeTransferKey=null;
         foreach(var (key,pair) in _buttons)
             if(pair.Button is ContextActionButton button)
@@ -151,11 +154,11 @@ public partial class HouseholdObjectCard : VBoxContainer
         if(_actionGroups.TryGetValue(L("Доставка","Logistics"),out var group))group.Visible=true;
         LayoutCard();
     }
-    private bool _showSawmill;
+    private bool _showProductionTablet;
     private void LayoutCard()
     {
-        bool artwork=_showSawmill && Size.X>=980;
-        if(_sawmill is not null)_sawmill.Visible=artwork;
+        bool artwork=_showProductionTablet && Size.X>=980;
+        if(_productionTablet is not null)_productionTablet.Visible=artwork;
         if(_detailsToggle is not null)_detailsToggle.Visible=artwork;
         _details.Visible=!artwork || _expanded;
     }

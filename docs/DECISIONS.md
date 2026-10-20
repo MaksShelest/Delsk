@@ -551,3 +551,12 @@ P47 расширяет прежний производственный испо�
 Выбран `pause-at-decision-v1` для обычного гибрида с apply/TTL2, одним runtime и максимум одним явным retry. Экономика ждёт на host barrier, сеть работает вне UI/Core.Step, уже admitted очередь продолжает обслуживаться; retry не обходит capacity. Ошибка допускает retry/cancel/algorithmic continuation с trace, save/load прерывает pending slots без requery, replay не зависит от модели. Configuration manifest хранится в HybridState. Это отдельный timing-policy от runner tick deadline, режимы не смешиваются молча. Ollama/веса в текущей среде отсутствуют, P56 полностью не закрыт; процедура LOCAL_MODEL_GAME.md обязательна перед утверждением реального inference.
 
 Архив sawmill-v1 используется как artwork/named scene, не набор экономических правил. Все действия делегируются общей own-only карточке/валидатору, общий clock остаётся один. При карточке<980 применяется читаемый compact view. Источник и лицензия Nunito/OFL сохранены, license включён в экспорт. Факты/границы — IMPLEMENTATION_REPORT_PACKAGE6.md; recovery по стадиям — WORKLOG_PACKAGE6.md. P57+ не начинался.
+
+
+## 46. Пакет7: оформление и архивная пекарня (20.10.2026)
+
+По новому заданию владельца выполнены P30/P57 и подключена сцена BakeryTablet; §12.1 допускает визуальный пакет раньше. Прежние P56/Hard/device gates не переобозначаются закрытыми. Отчёт IMPLEMENTATION_REPORT_PACKAGE7.md, восстановление WORKLOG_PACKAGE7.md.
+
+Склад отображает физические собственные остатки и фактическую геометрию, не чужие private inventory или обещанные будущие поступления. Rendering bounded/cached, только реальные уровни. Косметические speech/audio отделены от Core/контроллеров/PRNG; canned RU/EN из публичных фактов, ограниченные время/частота/приоритет/количество. Оригинальные процедурные WAV имеют CC0/provenance, фон/эффекты/музыка регулируются отдельно, музыка по умолчанию выключена. Preferences — user config, не checkpoint.
+
+Избежать второго UI-исполнителя: обобщён прежний SawmillTabletPresenter в ProductionTabletPresenter. Bakery asset paths сопоставлены именованным узлам, all actions/доступ/резервы прежние; числа демонстрационного архива не становятся правилами игры. Nunito/OFL reuse по совпадающим SHA, без дублей. Generic fallback сохраняет полный список ингредиентов для нестандартного рецепта. Графическая галерея является тестовым набором DTO, не экономическим результатом NPC. Ordinary build/PCK не включает галерею/Developer.

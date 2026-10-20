@@ -5,7 +5,13 @@ namespace Simulation.Hosting;
 public readonly record struct PresentationPoint(float X, float Z);
 public record PresentationActor(long Id, bool Human, int X, int Z, bool Busy,
     int OffsetX = SimulationEngine.TravelCenter, int OffsetZ = SimulationEngine.TravelCenter, int FacingX = 0, int FacingZ = -1);
-public record PresentationMarker(string Kind, int X, int Z, string Label, long EntityId, long OwnerId);
+public record PresentationMarker(string Kind, int X, int Z, string Label, long EntityId, long OwnerId)
+{
+    public int Level {get;init;}=1;
+    public Cell[] Footprint {get;init;}=[];
+    public Cell[] Walls {get;init;}=[];
+    public WarehouseVisual? Warehouse {get;init;}
+}
 public record PresentationTrip(long LogisticsId, long OwnerId, string ItemId, string State, int X, int Z, bool Loaded = false);
 public record PresentationFrame(long Tick, int MapWidth, int MapHeight, PresentationActor[] Actors,
     PresentationMarker[] Markers, PresentationTrip[] Trips);
@@ -48,8 +54,19 @@ public static class Presentation
         foreach (var node in scenario.ResourceNodes)
             markers.Add(new(engine.ResourceSites().Single(r=>r.Position==node.Position && r.ItemId==node.ItemId).Stock==0 ? "resource-depleted" : "resource", node.Position.X, node.Position.Z, node.ItemId, 0, 0));
         foreach (var building in world.Buildings.OrderBy(b => b.Id.Value))
-            markers.Add(new(building.Kind.ToString().ToLowerInvariant(), building.Position.X, building.Position.Z,
-                building.TypeId, building.Id.Value, building.OwnerId.Value));
+        {
+            var type=scenario.BuildingTypes!.Single(t=>t.Id==building.TypeId);
+            WarehouseVisual? warehouse=null;
+            if(building.Kind==BuildingKind.Warehouse)
+            {
+                // Inspect is internal to this projection. Foreign inventory values never leave it.
+                bool known=building.OwnerId.Value==humanId;
+                var stock=known?world.Inventories.Single(i=>i.Id==building.InputId):null;
+                warehouse=new(known,stock?.Capacity??0,stock is null?[]:stock.Stock.Where(s=>s.Quantity>0).Select(s=>new VisibleStock(s.ItemId,checked(s.Quantity*scenario.Items.Single(i=>i.Id==s.ItemId).UnitVolume))).ToArray());
+            }
+            markers.Add(new(building.Kind.ToString().ToLowerInvariant(),building.Position.X,building.Position.Z,building.TypeId,building.Id.Value,building.OwnerId.Value)
+                {Level=building.Level,Footprint=[..type.Footprint],Walls=[..type.Walls??[]],Warehouse=warehouse});
+        }
         foreach (var group in world.CapitalOffers.Where(o => o.RemainingQuantity > 0).GroupBy(o => o.Position))
         {
             string label = string.Join(", ", group.OrderBy(o => o.ItemId, StringComparer.Ordinal).Select(o => $"{o.ItemId} {o.RemainingQuantity}"));
@@ -63,7 +80,7 @@ public static class Presentation
         foreach (var equipment in world.Equipment.OrderBy(e => e.Id.Value))
         {
             string item = scenario.EquipmentTypes!.Single(t => t.Id == equipment.TypeId).ItemId;
-            markers.Add(new("equipment", equipment.Position.X, equipment.Position.Z, item, equipment.Id.Value, equipment.OwnerId.Value));
+            markers.Add(new("equipment", equipment.Position.X, equipment.Position.Z, item, equipment.Id.Value, equipment.OwnerId.Value){Level=equipment.Level});
         }
         foreach (var logistics in world.Logistics.OrderBy(l => l.Id.Value))
         {
