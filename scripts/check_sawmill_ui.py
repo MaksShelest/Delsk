@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Actual Godot desktop/compact interaction probe; build/import client first. Шелестов Максим Евгеньевич."""
-import argparse,base64,gzip,json,os,shutil,socket,subprocess,sys,time
+import argparse,base64,gzip,json,os,shutil,socket,subprocess,sys,time,signal
 from pathlib import Path
-p=argparse.ArgumentParser();p.add_argument('--godot',required=True);p.add_argument('--xvfb',default='Xvfb');p.add_argument('--output',type=Path,required=True);p.add_argument('--display',type=int,default=95);p.add_argument('--mode',choices=['sawmill','bakery','tablets-host','model-errors'],default='sawmill');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--godot',required=True);p.add_argument('--xvfb',default='Xvfb');p.add_argument('--output',type=Path,required=True);p.add_argument('--display',type=int,default=95);p.add_argument('--window-manager',default='xfwm4',help='EWMH window manager used by fullscreen probe');p.add_argument('--mode',choices=['sawmill','bakery','tablets-host','fullscreen','model-errors'],default='sawmill');a=p.parse_args()
 root=Path(__file__).resolve().parents[1];out=a.output.resolve();out.mkdir(parents=True,exist_ok=True)
 def check(name,timeout,command):
  subprocess.run([sys.executable,str(root/'scripts/run_check.py'),'--name',name,'--timeout',str(timeout),'--log-directory',str(out/'checks'),'--',*map(str,command)],cwd=root,check=True)
@@ -15,7 +15,7 @@ env=os.environ.copy();env.update(DISPLAY=f'127.0.0.1:{a.display}.0',LIBGL_ALWAYS
 userdata=Path(env['XDG_DATA_HOME'])/'godot/app_userdata/Delsk';userdata.mkdir(parents=True,exist_ok=True)
 destination=userdata/'play-economy-production-recipes-1.json'
 http=None;requests=0
-if a.mode in ('sawmill','bakery','tablets-host'):shutil.copyfile(save,destination)
+if a.mode in ('sawmill','bakery','tablets-host','fullscreen'):shutil.copyfile(save,destination)
 else:
  destination.unlink(missing_ok=True)
  from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
@@ -31,14 +31,30 @@ else:
  http=ThreadingHTTPServer(('127.0.0.1',11434),ErrorModel);threading.Thread(target=http.serve_forever,daemon=True).start()
 (userdata/'display.cfg').write_text('[display]\nfullscreen=false\n')
 with (out/'xvfb.log').open('w') as log:
+ manager=None;manager_log=None
  server=subprocess.Popen([a.xvfb,f':{a.display}','-screen','0','1440x1024x24','-nolisten','unix','-listen','tcp','-ac'],env=env,stdout=log,stderr=log)
  try:
   for _ in range(50):
    try:
     with socket.create_connection(('127.0.0.1',6000+a.display),timeout=.1):break
    except OSError:time.sleep(.1)
-  subprocess.run([sys.executable,str(root/'scripts/run_check.py'),'--name','window','--timeout','70','--log-directory',str(out/'checks'),'--',a.godot,'--path',str(root/'src/Client.Godot'),'--script',str(root/('tests/Client.Probes/'+a.mode+'.gd')),'--rendering-method','gl_compatibility','--audio-driver','Dummy','--','--windowed','--output',str(out)],cwd=root,env=env,check=True)
+  if a.mode=='fullscreen':
+   manager_log=(out/'window-manager.log').open('w')
+   manager=subprocess.Popen(['dbus-run-session','--',a.window_manager,'--compositor=off','--sm-client-disable'],env=env,stdout=manager_log,stderr=subprocess.STDOUT,start_new_session=True)
+   for _ in range(50):
+    if manager.poll() is not None:raise RuntimeError('Window manager failed; see window-manager.log')
+    ready=subprocess.run(['xprop','-root','_NET_SUPPORTING_WM_CHECK'],env=env,capture_output=True,text=True,timeout=2)
+    if 'window id #' in ready.stdout:break
+    time.sleep(.1)
+   else:raise RuntimeError('Window manager not ready')
+  subprocess.run([sys.executable,str(root/'scripts/run_check.py'),'--name','window','--timeout','70','--log-directory',str(out/'checks'),'--',a.godot,'--path',str(root/'src/Client.Godot'),'--script',str(root/('tests/Client.Probes/'+a.mode+'.gd')),'--rendering-method','gl_compatibility','--audio-driver','Dummy','--',*(['--windowed'] if a.mode!='fullscreen' else []),'--output',str(out)],cwd=root,env=env,check=True)
  finally:
+  if manager is not None:
+   try:os.killpg(manager.pid,signal.SIGTERM)
+   except ProcessLookupError:pass
+   try:manager.wait(timeout=5)
+   except subprocess.TimeoutExpired:os.killpg(manager.pid,signal.SIGKILL);manager.wait(timeout=5)
+  if manager_log is not None:manager_log.close()
   server.terminate()
   try:server.wait(timeout=5)
   except subprocess.TimeoutExpired:server.kill();server.wait(timeout=5)

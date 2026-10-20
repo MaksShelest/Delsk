@@ -15,6 +15,8 @@ if a.reuse_stage:
   rel=f.relative_to(root/'src/Client.Godot')
   if f.is_file() and not any(c in ('.godot','bin','obj') for c in rel.parts) and f.name not in ('project.godot','export_presets.cfg'):
    (project/rel).parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(f,project/rel)
+if a.reuse_stage:
+ (project/'project.godot').write_text((root/'src/Client.Godot/project.godot').read_text(encoding='utf-8').replace('config/name="Delsk"','config/name="Delsk Developer"'),encoding='utf-8')
 for source in (root/'tests/Client.Probes').glob('TabletDesignProbe*.cs'):
  (project/source.name).write_text(source.read_text(encoding='utf-8'),encoding='utf-8')
 (project/'TabletDesignProbe.tscn').write_text('[gd_scene load_steps=2 format=3]\n[ext_resource type="Script" path="res://TabletDesignProbe.cs" id="1"]\n[node name="Tablets" type="Control"]\nlayout_mode=3\nanchors_preset=15\nanchor_right=1.0\nanchor_bottom=1.0\nscript=ExtResource("1")\n',encoding='utf-8')

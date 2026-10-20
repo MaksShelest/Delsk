@@ -58,3 +58,17 @@ Native probe компилируется только в isolated stage; `--reuse
 Не проверены Windows EXE на устройстве, Android/touch/lifecycle, аппаратные FPS/динамики и пользовательская визуальная приёмка. PCK с preset Windows Probe не является запуском Windows EXE. Существующие пробелы real-model/Hard efficacy/длинной истории из пакета8 не закрываются оформлением планшетов. PR45 остаётся отдельным draft.
 
 Рекомендуется ограниченная визуальная приёмка этих экранов на машине разработчика и целевом размере окна; затем отдельное решение по PR45/F04 и прежним открытым аппаратным gates. Этапы и контекст продолжения — [WORKLOG_TABLETS_V1.md](WORKLOG_TABLETS_V1.md).
+
+## Продолжение21.10.2026: Alt+Enter и заполнение экрана
+
+По дополнительному запросу владельца реализован глобальный Alt+Enter, включая Enter цифрового блока. Он использует прежний ToggleFullscreen и `user://display.cfg`; обрабатывается в `_Input` до GUI и контекстного подтверждения. Key release и autorepeat не вызывают нового переключения. Работает на выборе карты, в игре, меню, планшете и справке, включая сфокусированное поле ввода. Из обычного и ExclusiveFullscreen возвращает окно; headless/embedded editor исключены.
+
+`canvas_items` сохранён, aspect изменён с default keep на **expand**: изображение заполняет весь экран при разных пропорциях, без letterbox и неравномерной деформации текста. Геометрия планшетов адаптируется к viewport. Экономика/пауза/доступ не менялись.
+
+Реально повторены Debug/ExportRelease restore/build, ordinary assembly audit, import, оба smoke/hash gates (по1132hashes/35restores),17HUD/Developer checks, PCK export/inspection и проверка Godot logs.21tablet groups RU/EN и5host+4sawmill+6bakery groups снова прошли.12Python/880ordinary/886Developer и102exports/14replay/69pairs выше относятся к предшествующему полному gate; в этом узком продолжении повторно весь Core suite не запускался.
+
+Новый `fullscreen.gd` прошёл7групп на **реальном Linux X11 window manager**: вход/выход, клавиатура и focused field, plain Enter/echo/release guards, сохранение обоих режимов после перезапуска host, открытые планшеты/Help/Menu и RU/EN, неизменность paused world, заполнение всего1440×1024 экрана и окон1280×720/1000×800/800×600. Проверяется преобразованный viewport rect и фактический размер fullscreen, а не только mode flag. [Отчёт/команды](verification/tablets-v1/fullscreen-summary.json), [скриншот](verification/tablets-v1/fullscreen-player-en.png).
+
+Для воспроизведения: прежний `check_sawmill_ui.py` с `--mode fullscreen`, внешним timeout110 и теми же Godot/Xvfb/output arguments; дополнительно нужны `xfwm4`, `dbus-run-session` и `xprop` (`--window-manager /path/to/xfwm4` при необходимости). Они запускаются изолированно и завершаются вместе с probe. Без window manager Xvfb не подтверждает физический fullscreen — первоначальный неуспех в таком окружении не засчитан. У `check_tablet_design.py --reuse-stage` исправлена синхронизация project.godot с сохранением Developer app name, чтобы проверять актуальный stretch setting.
+
+Windows/Android и аппаратная визуальная приёмка остаются открыты. Изменения отправлены в тот же [PR#47](https://github.com/MaksShelest/Delsk/pull/47), без автоматического слияния; основная переработка планшетов была ранее опубликована коммитами39aabaf/3ce8f94/b71c22a/0a1ea34.

@@ -50,7 +50,8 @@ public partial class Playfield
     }
     private void ToggleFullscreen()
     {
-        bool fullscreen = DisplayServer.WindowGetMode() != DisplayServer.WindowMode.Fullscreen;
+        if (DisplayServer.GetName() == "headless" || Engine.IsEmbeddedInEditor()) return;
+        bool fullscreen = DisplayServer.WindowGetMode() is not (DisplayServer.WindowMode.Fullscreen or DisplayServer.WindowMode.ExclusiveFullscreen);
         DisplayServer.WindowSetMode(fullscreen ? DisplayServer.WindowMode.Fullscreen : DisplayServer.WindowMode.Windowed);
         var config = new ConfigFile(); config.SetValue("display", "fullscreen", fullscreen);
         if (config.Save("user://display.cfg") != Error.Ok) _feedback = L("Не удалось сохранить режим экрана.", "Could not save display mode.");
