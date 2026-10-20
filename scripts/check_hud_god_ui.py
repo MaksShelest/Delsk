@@ -10,17 +10,26 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--godot", required=True)
 parser.add_argument("--output", type=Path, required=True)
 args = parser.parse_args()
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 root = Path(__file__).resolve().parents[1]
 output = args.output.resolve()
 output.mkdir(parents=True, exist_ok=True)
 
 
 def check(name, timeout, command):
-    subprocess.run(
+    result = subprocess.run(
         [sys.executable, str(root / "scripts/run_check.py"), "--name", name,
          "--timeout", str(timeout), "--log-directory", str(output / "checks"), "--", *map(str, command)],
-        cwd=root, check=True,
+        cwd=root, check=False,
     )
+    if result.returncode:
+        logs = list((output / "checks").glob(f"{name}.*.log"))
+        logs += list((output / "client/checks").glob("*.log"))
+        for log in sorted(logs):
+            print(f"--- {log.name} ---")
+            print(log.read_text(encoding="utf-8", errors="replace")[-8000:])
+        raise SystemExit(result.returncode)
 
 
 check("hud-god-stage", 420, [sys.executable, root / "scripts/build_developer_client.py", "--output", output / "client"])
