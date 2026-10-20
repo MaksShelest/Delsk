@@ -18,6 +18,7 @@ public partial class PresentationStage : Node3D
         public bool Loaded;
     }
     private readonly System.Collections.Generic.Dictionary<long, Mover> _actors = new();
+    private readonly Dictionary<long,Label3D> _speechLabels=[];
     private readonly System.Collections.Generic.Dictionary<long, Mover> _trips = new();
     private readonly System.Collections.Generic.List<Node3D> _staticNodes = new();
     private string _staticKey = "";
@@ -88,7 +89,7 @@ public partial class PresentationStage : Node3D
                 mover.Node.Rotation = new Vector3(0, Mathf.Atan2(-actor.FacingX, -actor.FacingZ), 0);
         }
         foreach (long id in _actors.Keys.Where(id => !liveActors.Contains(id)).ToArray())
-        { _actors[id].Node.QueueFree(); _actors.Remove(id); }
+        { _actors[id].Node.QueueFree(); _actors.Remove(id);_speechLabels.Remove(id); }
         var live = new System.Collections.Generic.HashSet<long>();
         foreach (var trip in frame.Trips)
         {
@@ -127,6 +128,19 @@ public partial class PresentationStage : Node3D
             var center = new Vector3(frame.MapWidth / 2f - 0.5f, 0, frame.MapHeight / 2f - 0.5f);
             _camera.Position = center + new Vector3(0, span * 0.8f, span * 0.7f);
             _camera.LookAt(center, Vector3.Up);
+        }
+    }
+
+    public void ShowSpeech(IReadOnlyList<SpeechCue> cues,string language,bool visible)
+    {
+        foreach(var pair in _speechLabels)pair.Value.Visible=false;
+        if(!visible)return;
+        foreach(var cue in cues)
+        {
+            if(!_actors.TryGetValue(cue.Actor,out var actor))continue;
+            if(!_speechLabels.TryGetValue(cue.Actor,out var label))
+            {label=new Label3D{FontSize=28,PixelSize=.006f,Position=new(0,1.38f,0),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,OutlineSize=5,Modulate=new("fff4ce"),NoDepthTest=true};actor.Node.AddChild(label);_speechLabels[cue.Actor]=label;}
+            label.Text=PresentationEffects.Text(cue,language);label.Visible=true;
         }
     }
 
