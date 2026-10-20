@@ -51,6 +51,11 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/verify_platform_probe.py --report artifacts/platform-probe.json --log-prefix artifacts/checks/godot-import --log-prefix artifacts/checks/godot-smoke
           exit $LASTEXITCODE
+      - name: Verify HUD and Developer god mode
+        shell: pwsh
+        run: |
+          python scripts/check_hud_god_ui.py --godot "$env:DELSK_GODOT" --output artifacts/hud-god-ui
+          exit $LASTEXITCODE
       - uses: actions/upload-artifact@v4
         if: always()
         with:
