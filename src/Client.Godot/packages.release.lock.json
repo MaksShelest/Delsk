@@ -20,6 +20,13 @@
           "Simulation.Core": "[1.0.0, )"
         }
       },
+      "agents.llm": {
+        "type": "Project",
+        "dependencies": {
+          "Agents.Algorithmic": "[1.0.0, )",
+          "Simulation.Core": "[1.0.0, )"
+        }
+      },
       "simulation.core": {
         "type": "Project"
       },

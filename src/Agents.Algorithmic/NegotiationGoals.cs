@@ -15,7 +15,7 @@ public sealed partial class AlgorithmicController
                 if(t.Kind==TradeKind.Support && _state.Settings.PoliticsEnabled)
                 {
                     accept=!buyer && AcceptableSupport(o,new(0,t.Buyer,t.Seller,t.Election,default,o.Support.OwnSection,t.Compensation,[],n.CreatedTick,n.ExpiresTick,SupportProposalStatus.Proposed));
-                    if(buyer)accept=!HasObligations(o) && _state.Settings.OwnVictoryWeight>0 && t.Compensation.Sum(m=>checked(m.Quantity*BasePrice(o,m.ItemId)))<=checked(VoteWeight(o,t.Seller)*_state.Settings.SupportPricePerVoteMinor*2);
+                    if(buyer)accept=t.Compensation.Sum(m=>checked(m.Quantity*BasePrice(o,m.ItemId)))<=PoliticalBudgetRemaining(o,n.Id) && !HasObligations(o) && _state.Settings.OwnVictoryWeight>0 && t.Compensation.Sum(m=>checked(m.Quantity*BasePrice(o,m.ItemId)))<=checked(VoteWeight(o,t.Seller)*_state.Settings.SupportPricePerVoteMinor*2);
                 }
                 else if(t.Kind!=TradeKind.Support && _state.Settings.TradeEnabled)
                 {

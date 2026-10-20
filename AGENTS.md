@@ -2,7 +2,15 @@
 
 Автор проекта и материалов: Шелестов Максим Евгеньевич.
 
-Актуальные версии/статусы — в разделе «Пакет5»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
+Актуальные версии/статусы — в разделе «Пакет6»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
+
+## Пакет6, актуально20.10.2026 (Europe/Samara)
+
+- От слитого PR#41 (`66de3a4`) реализованы P51/P52, программный P53/P56 и планшет лесопилки из архива. Нормативный пакет6 по §12.1 включает P56. Полная приёмка открыта: текущей реальной модели нет; paired600 не доказал преимущество Hard. Факты — docs/IMPLEMENTATION_REPORT_PACKAGE6.md, восстановление по этапам — docs/WORKLOG_PACKAGE6.md. До новых пакетов завершить реальные/сравнительные gates; не выдавать HTTP503/tags/исторический P23 за новый inference.
+- World18/Rules production-recipes-1, Session2/Envelope2 прежние. Legacy utility-v2/checkpoint2 совместим; Easy/Medium/Hard — modular-v3/checkpoint3 с canonical executor1/simple1/economics2/planning2, experience schema1 без обучения. Неизвестные версии reject. Сложность выбирается только для новой партии; load/continue восстанавливают exact saved policy.
+- Один прежний executor и обычные валидаторы. HiringEconomics/forecast читают только ControllerObservation, не WorldState/future prices/PRNG/чужие секреты. Политический лимит отдельно от бизнеса, signed exposure один раз. Hard defaults12 candidates/depth2/horizon120/evaluations32, disjoint continuation, только первый plan исполняется и пересматривается; не обещать оптимум.
+- P56: один runtime; LocalGameModel сохраняет composition manifest в HybridState. Host barrier в TickScheduler через предикат; ProgressWaiting только публикует replies без Core.Step/экономического времени. Retry1/slot сохраняется в trace.RetryCount; queue budget не обходить. UserFallback разрешает слот один раз, отключение модели сохраняется. Load pending/ready=Interrupted без HTTP requery, replay без модели. Никаких prompts/secret terms в public UI/debug feedback. Точная процедура — docs/LOCAL_MODEL_GAME.md.
+- Планшет: только supplied assets/scene+OFL, не demo.gd/фиктивные цифры. SawmillTabletPresenter делегирует HouseholdObjectCard buttons/access; общие Help/Close/Time, independent production/inbound/outbound. Ширина<980 — компактная старая карточка с реальными controls. scripts/check_sawmill_ui.py --mode sawmill/model-errors воспроизводит оконные gates через Godot/Xvfb; model-errors занимает localhost11434 и даёт HTTP503, не реальную модель.
 
 ## Пакет5, актуально20.10.2026 (Europe/Samara)
 

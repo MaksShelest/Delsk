@@ -4,6 +4,14 @@ namespace Agents.Algorithmic;
 
 public sealed partial class AlgorithmicController
 {
+    public long PoliticalBudgetRemaining(ControllerObservation o,long exceptNegotiation=0)
+    {
+        if(_state.Settings.Difficulty<NpcDifficulty.Medium)return long.MaxValue;
+        long Value(System.Collections.Immutable.ImmutableArray<MaterialCost> items)=>items.Sum(m=>checked(m.Quantity*BasePrice(o,m.ItemId)));
+        long used=o.Support.Proposals.Where(p=>p.Candidate==Actor && p.Election==o.Elections.NextElectionId && p.Status is not (SupportProposalStatus.Rejected or SupportProposalStatus.Expired)).Sum(p=>Value(p.Compensation));
+        used=checked(used+o.Negotiations.Where(n=>n.Id!=exceptNegotiation && n.Status==NegotiationStatus.Proposed && n.Current.Terms.Kind==TradeKind.Support && n.Current.Terms.Buyer==Actor && n.Current.Terms.Election==o.Elections.NextElectionId).Sum(n=>Value(n.Current.Terms.Compensation)));
+        return Math.Max(0,_state.Settings.PoliticalBudgetMinor-used);
+    }
     private long VoteWeight(ControllerObservation o,ParticipantId actor)=>checked(o.Elections.Rules.BaseVote+o.LaborMarket.Where(g=>g.OwnerId==actor).Sum(g=>(long)g.Headcount));
     private long TotalVotes(ControllerObservation o)=>checked(o.Elections.Rules.BaseVote*o.Elections.Participants.Length+o.LaborMarket.Sum(g=>(long)g.Headcount));
     private long KnownVotes(ControllerObservation o,ParticipantId candidate)
@@ -71,6 +79,7 @@ public sealed partial class AlgorithmicController
                 o.Support.Commitments.Any(c=>c.Candidate==Actor && c.Seller==seller && c.Election==election))continue;
             long value=checked((long)((Int128)VoteWeight(o,seller)*_state.Settings.SupportPricePerVoteMinor*6/5));
             long q=checked((value-1)/BasePrice(o,raw.ItemId)+1);
+            if(q*BasePrice(o,raw.ItemId)>PoliticalBudgetRemaining(o))continue;
             if(q*Volume(o,raw.ItemId)>rules.SectionCapacity)continue;
             var estimate=Fetch(o,raw.ItemId,Math.Min(q,_state.Settings.BatchQuantity),out var end);if(estimate is null)continue;
             Move(estimate,end,rules.TradingPoint);estimate.Add(new(new(ActionKind.Transfer,Quantity:q)));

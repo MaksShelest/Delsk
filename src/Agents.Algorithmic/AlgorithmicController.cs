@@ -6,7 +6,7 @@ namespace Agents.Algorithmic;
 /// <summary>Bounded utility selection and sequential plan executor, using only the allowlist.</summary>
 public sealed partial class AlgorithmicController
 {
-    private sealed record Candidate(string Goal, string Reason, long Score, PlanStep[] Steps);
+    private sealed record Candidate(string Goal, string Reason, long Score, PlanStep[] Steps,StrategyAssessment? Assessment=null);
     public ControllerDecision Decide(ControllerObservation o, ImmutableArray<CommandResult> ownResults)
     {
         if (o.Participant.Id != Actor) throw new ArgumentException("Observation actor mismatch");
@@ -54,12 +54,12 @@ public sealed partial class AlgorithmicController
         if (!completed && o.Tick < _state.NextDecisionTick) return Wait("DecisionInterval");
         return Choose(o, DecisionCandidates(o));
     }
-    private Candidate[] DecisionCandidates(ControllerObservation o) => Candidates(o).Concat(WageCandidates(o)).Concat(ContractCandidates(o)).Concat(MarketCandidates(o))
+    private Candidate[] DecisionCandidates(ControllerObservation o) => StrategicCandidates(o,Candidates(o).Concat(WageCandidates(o)).Concat(ContractCandidates(o)).Concat(MarketCandidates(o))
             .Concat(LogisticsCandidates(o)).Concat(RecipeCandidates(o)).Concat(PoliticalCandidates(o)).Concat(NegotiationCandidates(o)).Concat(NegotiationResponses(o))
-            .Where(c => Feasible(c,o) && (!HasObligations(o) || !ExpansionGoal(c.Goal)) &&
+            .Where(c => (!SimplePolicy || SimpleGoal(c) || HasObligations(o)) && Feasible(c,o) && (!HasObligations(o) || !ExpansionGoal(c.Goal)) &&
                 (o.OwnSupplyRequests.Length==0 || c.Goal is not ("SellCarried" or "SellOutput" or "HarvestForSale")))
             .Select(c => HasObligations(o) && c.Goal is "SupplyProduction" or "ResumeProduction" or "AdjustWage"
-                ? c with { Score = c.Score + 300000 } : c).ToArray();
+                ? c with { Score = c.Score + 300000 } : c).ToArray());
     private bool Feasible(Candidate c, ControllerObservation o) => c.Steps.Length > 0 && c.Score > 0 && (!ExpansionGoal(c.Goal) || _state.Settings.ExpansionWeight>0) &&
         !(c.Goal == _state.BlockedGoal && o.Tick < _state.BlockedUntilTick);
     private ControllerDecision Choose(ControllerObservation o, Candidate[] candidates)
@@ -77,8 +77,9 @@ public sealed partial class AlgorithmicController
             );
         }
         var chosen=ranked[0].Candidate;
+        if(_state.Settings.Difficulty==NpcDifficulty.Hard)_state=_state with {StrategyTrace=candidates.Where(c=>c.Assessment is not null).Select(c=>c.Assessment!).ToArray()};
         _state = _state with { Goal=chosen.Goal,Reason=chosen.Reason,Plan=chosen.Steps,NextStep=0 };
-        return new(chosen.Goal,chosen.Reason,[chosen.Steps[0].Action]
+        return new(chosen.Goal,Explain(chosen),[chosen.Steps[0].Action]
 #if DELSK_DEVELOPER
             ,Candidates:ranked.Take(16).Select(r=>new UtilityScore(r.Candidate.Goal,r.Candidate.Reason,r.Candidate.Score,r.Candidate.Steps.Length)).ToImmutableArray()
 #endif
@@ -135,7 +136,7 @@ public sealed partial class AlgorithmicController
                 targetWage = Math.Min(settings.MaximumWageMinor, Math.Max(targetWage, checked(competitor + settings.WageRaiseMinor)));
             }
             long announced = group.PendingWageMinor ?? group.WageMinor;
-            if (!recovery && announced != targetWage && o.Tick >= _state.NextWageTick &&
+            if (_state.Settings.Difficulty<NpcDifficulty.Medium && !recovery && announced != targetWage && o.Tick >= _state.NextWageTick &&
                 cash >= checked(targetWage * group.Capacity * settings.WageReviewTicks))
             {
                 yield return WageCandidate(o, group, targetWage, 100000, recipe.Id);

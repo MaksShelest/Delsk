@@ -23,6 +23,21 @@ public sealed class OllamaAdapter : ILocalModelAdapter, IDisposable
         _settings = settings; _endpoint = new(uri, "api/chat");
         _http = new(handler ?? new HttpClientHandler { AllowAutoRedirect = false, UseProxy = false }) { Timeout = Timeout.InfiniteTimeSpan };
     }
+    public async Task<string> CheckAvailabilityAsync(CancellationToken token)
+    {
+        try
+        {
+            using var response=await _http.GetAsync(new Uri(_endpoint,"tags"),HttpCompletionOption.ResponseHeadersRead,token).ConfigureAwait(false);
+            if(response.StatusCode!=HttpStatusCode.OK)return "RuntimeUnavailable";
+            using var stream=await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
+            using var buffer=new MemoryStream();var bytes=new byte[4096];int n;
+            while((n=await stream.ReadAsync(bytes,token).ConfigureAwait(false))>0){if(buffer.Length+n>65536)return "InvalidModelList";buffer.Write(bytes,0,n);}
+            using var json=JsonDocument.Parse(buffer.ToArray(),new JsonDocumentOptions{MaxDepth=16});
+            return json.RootElement.GetProperty("models").EnumerateArray().Any(m=>m.GetProperty("name").GetString()==_settings.Model)?"Available":"ModelMissing";
+        }
+        catch(OperationCanceledException){return "AvailabilityTimeout";}
+        catch(Exception e) when(e is HttpRequestException or IOException or JsonException or KeyNotFoundException or InvalidOperationException){return "RuntimeUnavailable";}
+    }
     public async Task<ModelReply> CompleteAsync(ModelRequest request, CancellationToken cancellationToken)
     {
         var watch = Stopwatch.StartNew();

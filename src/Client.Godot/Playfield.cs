@@ -149,6 +149,7 @@ public partial class Playfield : Control
             }
             if (_skipNextFrame) { _skipNextFrame = false; return; }
             if (_waitRelease && !MovementHeld()) _waitRelease = false;
+            if(ModelFrame()){AnimateInterface(delta);return;}
             SampleHeading();
             DeveloperFrame();
             if(_session.Engine.WaitingForBallots){_session.PumpVoting();Refresh();return;}
@@ -182,7 +183,7 @@ public partial class Playfield : Control
         ?? throw new InvalidOperationException(key));
 
     private void DismissMaps()
-    { if (_mapSelection is not null) _newMapKey = _mapSelection.SelectedMap; _mapSelection?.QueueFree(); _mapSelection = null; }
+    { if (_mapSelection is not null) {_newMapKey = _mapSelection.SelectedMap;_newDifficulty=_mapSelection.Difficulty;_newModel=_mapSelection.ModelConfiguration;} _mapSelection?.QueueFree(); _mapSelection = null; }
 
     private void ShowMaps()
     {
@@ -192,9 +193,10 @@ public partial class Playfield : Control
         ResetTablet();
         ApplySurface();
         DismissMaps();
-        _mapSelection = new MapSelectionScreen(_language, _session is not null || System.IO.File.Exists(SavePath), ReadMap, _newMapKey);
+        _mapSelection = new MapSelectionScreen(_language, _session is not null || System.IO.File.Exists(SavePath), ReadMap, _newMapKey,_newDifficulty,_newModel);
         _mapSelection.MapChosen += key =>
         {
+            try{_mapSelection.ModelConfiguration?.Validate();}catch(ArgumentException){_mapSelection.TooltipText=L("Проверьте имя модели и настройки.","Check model name and settings.");return;}
             if (_session is null && !System.IO.File.Exists(SavePath)) { BeginMap(key); return; }
             var confirm = new ConfirmationDialog { DialogText = PlayerText.Local(_language,
                 "Начать новую партию? Текущая партия будет заменена.", "Start a new game? The current game will be replaced.") };
@@ -226,6 +228,7 @@ public partial class Playfield : Control
 
     private void Start(string mode, bool hold)
     {
+        DisposeModel();
         DismissHelp();
         ResetTablet(true);
         _mode = mode;
@@ -246,7 +249,7 @@ public partial class Playfield : Control
                 ?? throw new InvalidOperationException("Play.logistics-cycle.json");
             _human = new(1);
             _session = new GameSession(new SimulationEngine(_scenario));
-            _scheduler = new TickScheduler(_session);
+            _scheduler = new TickScheduler(_session,controllerBarrier:()=>ModelBarrier);
             _feedback = "";
             _cardsSignature = "";
             try { ScriptedScenarios.PrepareVisibleTrip(_session, _scenario); }
@@ -271,14 +274,12 @@ public partial class Playfield : Control
         }
         _human = new(config.HumanActorId);
         _session = new GameSession(new SimulationEngine(_scenario));
-        _session.AttachControllers(config.Npcs.Select(n => new AlgorithmicController(
-            n with { HumanActorId = config.HumanActorId },
-            AlgorithmicController.RuntimeSeed(_scenario.Seed, n.ActorId),
-            _scenario.Participants.Select(p => p.Id))));
-        _scheduler = new TickScheduler(_session);
+        AttachGameControllers(config,mode=="economy");
+        _scheduler = new TickScheduler(_session,controllerBarrier:()=>ModelBarrier);
         _feedback = hold ? T("new.session") + " " + T(mode) : "";
         _cardsSignature = "";
         _surface = hold ? Surface.Menu : Surface.Play;
+        ObserveModelFallbacks();
         CatchPublicCursor();
         ApplyPause();
         CallDeferred(nameof(RebuildChrome));
@@ -295,7 +296,7 @@ public partial class Playfield : Control
     private void ApplyPause()
     {
         if (_session is null) return;
-        bool paused = _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots);
+        bool paused = _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots || ModelBarrier);
         if (_session.Paused != paused) _scheduler.SetPaused(paused);
     }
 
@@ -871,12 +872,14 @@ public partial class Playfield : Control
         DismissHelp();
         ResetTablet(true);
         _stage?.ResetMotion();
+        DisposeModel();
         _session = loaded.Session;
         _scenario = _session.Engine.Configuration();
         _mapKey = PlayMaps.KeyForScenario(_scenario.Id);
         _human = new(1);
-        _session.RestoreControllers(AlgorithmicController.Restore);
-        _scheduler = new TickScheduler(_session);
+        RestoreGameControllers();
+        ObserveModelFallbacks();
+        _scheduler = new TickScheduler(_session,controllerBarrier:()=>ModelBarrier);
         _pending = null;
         _trackedId = null;
         _trackedKind = null;

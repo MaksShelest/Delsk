@@ -98,6 +98,8 @@ public sealed partial class AlgorithmicController
     private IEnumerable<Candidate> WageCandidates(ControllerObservation o)
     {
         if(o.Tick<_state.NextWageTick || o.Account.AvailableMinor<_state.Settings.CashReserveMinor)yield break;
+        if(_state.Settings.Difficulty>=NpcDifficulty.Medium)
+        {foreach(var candidate in EconomicWages(o))yield return candidate;yield break;}
         foreach(var group in o.EmploymentGroups.Where(g=>g.Ready && g.Headcount<g.Capacity))
         {
             long announced=group.PendingWageMinor??group.WageMinor;

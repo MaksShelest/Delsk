@@ -11,7 +11,7 @@ public sealed partial class AlgorithmicController
         var merged = JsonSerializer.SerializeToNode(actor, SimulationJson.Options)!.AsObject();
         foreach (var field in economics.EnumerateObject())
         {
-            if (field.Name is "actorId" or "preferredInput" or "humanActorId" || !merged.ContainsKey(field.Name))
+            if (field.Name is "actorId" or "preferredInput" or "humanActorId" or "difficulty" || !merged.ContainsKey(field.Name))
                 throw new ArgumentException("Unknown or identity field in economy.npc: " + field.Name);
             merged[field.Name] = JsonNode.Parse(field.Value.GetRawText());
         }

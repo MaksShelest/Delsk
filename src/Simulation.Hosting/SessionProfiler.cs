@@ -22,6 +22,9 @@ public static class SessionProfiler
             long start = Stopwatch.GetTimestamp(); session.Step();
             samples.Add(Stopwatch.GetElapsedTime(start).TotalMilliseconds);
         }
+        // Match the ordinary runner at a horizon that lands exactly on a voting barrier.
+        if(session.Engine.WaitingForBallots && !session.PumpVoting())throw new InvalidOperationException("ProfileWaitingForBallots");
+        session.AdvanceTo(finalTick);
         long beforeSave = Stopwatch.GetTimestamp(); string save = CheckpointStore.Encode(session);
         double encode = Stopwatch.GetElapsedTime(beforeSave).TotalMilliseconds;
         long beforeLoad = Stopwatch.GetTimestamp(); var loaded = CheckpointStore.Decode(save);
