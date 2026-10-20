@@ -12,6 +12,7 @@ func nodes(n):
 func buttons(text):return nodes(root).filter(func(n):return n is Button and n.is_visible_in_tree() and (n.text==text or n.get_children().any(func(c):return c is Label and c.text==text)))
 func press(text):
     var found=buttons(text)
+    if found.is_empty() and text=="×":found=nodes(root).filter(func(n):return n is Button and n.name=="Close" and n.is_visible_in_tree())
     if found.is_empty():failures.append("Missing button "+text);return
     if found[0].disabled:failures.append("Disabled button "+text);return
     found[0].emit_signal("pressed")

@@ -1,0 +1,11 @@
+{
+  "checks": [
+    "Actual loaded bakery PlayerView, zero stock, no transport",
+    "Commands queued on pause then executed by world tick",
+    "Buy transport projection",
+    "RU/EN desktop and narrow compact view",
+    "Independent inbound and pending wage",
+    "Speech mute and three volumes persist across scene restart"
+  ],
+  "failures": []
+}

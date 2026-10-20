@@ -2,7 +2,7 @@
 """Actual Godot desktop/compact interaction probe; build/import client first. Шелестов Максим Евгеньевич."""
 import argparse,base64,gzip,json,os,shutil,socket,subprocess,sys,time
 from pathlib import Path
-p=argparse.ArgumentParser();p.add_argument('--godot',required=True);p.add_argument('--xvfb',default='Xvfb');p.add_argument('--output',type=Path,required=True);p.add_argument('--display',type=int,default=95);p.add_argument('--mode',choices=['sawmill','bakery','model-errors'],default='sawmill');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--godot',required=True);p.add_argument('--xvfb',default='Xvfb');p.add_argument('--output',type=Path,required=True);p.add_argument('--display',type=int,default=95);p.add_argument('--mode',choices=['sawmill','bakery','tablets-host','model-errors'],default='sawmill');a=p.parse_args()
 root=Path(__file__).resolve().parents[1];out=a.output.resolve();out.mkdir(parents=True,exist_ok=True)
 def check(name,timeout,command):
  subprocess.run([sys.executable,str(root/'scripts/run_check.py'),'--name',name,'--timeout',str(timeout),'--log-directory',str(out/'checks'),'--',*map(str,command)],cwd=root,check=True)
@@ -15,7 +15,7 @@ env=os.environ.copy();env.update(DISPLAY=f'127.0.0.1:{a.display}.0',LIBGL_ALWAYS
 userdata=Path(env['XDG_DATA_HOME'])/'godot/app_userdata/Delsk';userdata.mkdir(parents=True,exist_ok=True)
 destination=userdata/'play-economy-production-recipes-1.json'
 http=None;requests=0
-if a.mode in ('sawmill','bakery'):shutil.copyfile(save,destination)
+if a.mode in ('sawmill','bakery','tablets-host'):shutil.copyfile(save,destination)
 else:
  destination.unlink(missing_ok=True)
  from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
@@ -43,6 +43,7 @@ with (out/'xvfb.log').open('w') as log:
   try:server.wait(timeout=5)
   except subprocess.TimeoutExpired:server.kill();server.wait(timeout=5)
   if http:http.shutdown();http.server_close()
+check('verify',20,[sys.executable,root/'scripts/verify_platform_probe.py','--log-prefix',out/'checks/window'])
 assert not json.loads((out/'window.json').read_text())['failures']
 if a.mode=='model-errors':
  state=json.loads(gzip.decompress(base64.b64decode(json.loads(destination.read_text())['payloadJson'])))

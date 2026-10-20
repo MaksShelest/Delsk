@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "Actual artwork Help and Close handlers",
+    "Help freezes and restores paused/running world",
+    "All four player tabs route contextual help",
+    "Menu pauses running tablet",
+    "Language switch, compact host and preserved inventory HUD"
+  ],
+  "failures": []
+}

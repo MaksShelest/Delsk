@@ -39,3 +39,11 @@ ProbePages лежит отдельным partial tests/Client.Probes/TabletDesig
 PR45 дополнительно fetched read-only как origin/pr45-review:4квартала только geometry/catalog/resource+targeted tests/docs, ни одной части F04 editor нет. Ветка45 не merge/cherry-pick. PR46наbase77d включает bb3f288 UTF8 staging fix, правила/HUD/godmode сохраняем.
 
 Перед этапом3: связывание header events теперь bound к конкретному TabletPanel, а не mutable playfield field (избегает позднего resize старой карточки). RecipeCards добавлены в дерево даже при generic view — нет orphan Node у warehouses/equipment. Эти узкие lifetime fixes требуют общей host/regression проверки. Следующий этап: current repo client build/import +старые sawmill/bakery real Playfield probes, HUD/God17checks, ordinary/Developer tests/audit/platform hashes/PCK, затем reports/PR. Не считать user device/real-model/Hard/history gates закрытыми.
+
+## Этап3 — итог проверок и передача
+
+Все gates зелёные: engine-gate491s (headless345.7s,880ordinary/886Developer,102exports/14replay/69pairs), client-gate128.5s (Debug/ExportRelease/audit/17HUDchecks/ordinary+Developer1132hashes×2/35restores×2), screens-final51.6s21groups с live recipe locks, host5groups+sawmill4+bakery6.12Python/syntax. PCK повторён после исправления include_filter новой лицензии, pack inspection exit0, no Developer/probes/demo. Исходная спецификация SHA прежняя.
+
+Host probe сначала ошибочно искал текст × у иконочного Close, требовал видимость пустого HUD и отмечал expected absence как failure — исправлен тестовый поиск, приложение не обходится. Фактические Help callbacks/Close/paused→running restore/Menu pause/RUEN800 работают. Старые probes обновлены для иконочного Close, добавлен проверяющий Godot error logs шаг. Таблица gates/маленькие отчёты/5actualscreenshots сохранены docs/verification/tablets-v1; большой scratch в /workspace/work/delsk-tablets-v1 не коммитить.
+
+Далее только review diff, commit, bounded push и один PR без merge. Не начинать F04/баланс/другой пакет. До публикации PR URL ещё нет. Отчёт IMPLEMENTATION_REPORT_TABLETS_V1.md описывает literal3scene import/native adaptation, реальные проверки, команды и открытые hardware/realmodel/Hard/history gates. На commit включить generated .uid/.svg.import как принято в репозитории, не .godot/obj/bin. После PR записать URL/HEAD и пушнуть короткую передачу.

@@ -43,6 +43,13 @@ public partial class TabletDesignProbe : Control
                     Check(Named<Label>(art,"InputSugar").Text==recipe.Ingredients.Single(i=>i.ItemId=="sugar").Quantity.ToString(),"Wrong sugar quantity");
                     Check(Named<Label>(art,"InputCapacity").Text.Contains('/'),"Shared input capacity missing");
                 }
+                Named<Button>(art,"Recipes").EmitSignal(BaseButton.SignalName.Pressed);await Frames();
+                var comparison=All(card).OfType<Button>().Where(x=>x.IsVisibleInTree() && new[]{"Текущий рецепт","Current recipe","Откроется после улучшения","Unlocks after upgrade","Выбрать рецепт","Choose recipe"}.Contains(x.Text)).ToArray();
+                Check(comparison.Length==d.BuildingTypes!.Single(t=>t.Id==type).Levels.SelectMany(l=>l.UnlockedRecipes).Distinct().Count(),"Recipe comparison lost catalogue entries");
+                Check(comparison.Count(x=>x.Text==(language=="ru"?"Текущий рецепт":"Current recipe") && x.Disabled)==1,"Current recipe must remain disabled");
+                foreach(var locked in comparison.Where(x=>x.Text==(language=="ru"?"Откроется после улучшения":"Unlocks after upgrade")))
+                {Check(locked.Disabled,"Locked recipe is selectable");locked.EmitSignal(BaseButton.SignalName.Pressed);Check(command is null,"Locked recipe bypassed validator");}
+                await Capture(type+"-"+language+"-recipes");Named<Button>(art,"Recipes").EmitSignal(BaseButton.SignalName.Pressed);
                 long tick=s.Engine.Tick;bool enabled=e.Enabled;
                 Named<Button>(art,"PauseProduction").EmitSignal(BaseButton.SignalName.Pressed);Refresh();
                 Check(s.Engine.Tick==tick && s.Engine.Observe(actor).OwnEnterprises.Single(e=>e.Id.Value==b.Id.Value).Enabled==enabled,"Paused click advanced production");
