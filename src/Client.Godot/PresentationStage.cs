@@ -21,6 +21,9 @@ public partial class PresentationStage : Node3D
     private readonly System.Collections.Generic.Dictionary<long, Mover> _trips = new();
     private readonly System.Collections.Generic.List<Node3D> _staticNodes = new();
     private string _staticKey = "";
+    private readonly Dictionary<long,(string Key,Node3D Node)> _stocks=[];
+    public int StaticBuildCount {get;private set;}
+    public int StockBuildCount {get;private set;}
     private bool _frozen = true;
     private bool _follow;
     private readonly System.Collections.Generic.Dictionary<long, Node3D> _parked = new();
@@ -53,12 +56,13 @@ public partial class PresentationStage : Node3D
         _frozen = frozen;
         _follow = followHuman;
         string staticKey = frame.MapWidth + "x" + frame.MapHeight + "|" + string.Join(",", frame.Markers.Select(m =>
-            $"{m.Kind}:{m.X}:{m.Z}:{(m.Kind == "capital" ? "" : m.Label)}:{(m.Kind == "capital" ? 0 : m.EntityId)}:{m.OwnerId}"));
+            $"{m.Kind}:{m.X}:{m.Z}:{(m.Kind == "capital" ? "" : m.Label)}:{(m.Kind == "capital" ? 0 : m.EntityId)}:{m.OwnerId}:{m.Level}:{string.Join(";",m.Footprint)}:{string.Join(";",m.Walls)}"));
         if (_staticKey != staticKey)
         {
             _staticKey = staticKey;
             RebuildStatic(frame);
         }
+        ShowWarehouseStock(frame);
         var liveActors = new System.Collections.Generic.HashSet<long>();
         foreach (var actor in frame.Actors)
         {
@@ -126,6 +130,17 @@ public partial class PresentationStage : Node3D
         }
     }
 
+    private void ShowWarehouseStock(PresentationFrame frame)
+    {
+        foreach(var marker in frame.Markers.Where(m=>m.Warehouse is not null))
+        {
+            var piles=WarehouseVisuals.Layout(marker.Warehouse!);string key=string.Join(";",piles.Select(p=>$"{p.ItemId}:{p.Slot}:{p.Layers}"));
+            if(_stocks.TryGetValue(marker.EntityId,out var old) && old.Key==key)continue;
+            if(old.Node is not null){RemoveChild(old.Node);old.Node.QueueFree();}
+            var node=WorldModels.WarehouseStock(marker,piles);node.Position=new(marker.X,.045f,marker.Z);AddChild(node);_stocks[marker.EntityId]=(key,node);StockBuildCount++;
+        }
+    }
+
     private static void Target(Mover mover, Vector3 at, float duration, bool snap, bool grid = false)
     {
         if(grid && !snap && !mover.To.IsEqualApprox(at))
@@ -179,6 +194,8 @@ public partial class PresentationStage : Node3D
 
     private void RebuildStatic(PresentationFrame frame)
     {
+        StaticBuildCount++;
+        foreach(var stock in _stocks.Values)stock.Node.QueueFree();_stocks.Clear();
         foreach (var node in _staticNodes) node.QueueFree();
         _staticNodes.Clear();
         _parked.Clear();
@@ -195,10 +212,11 @@ public partial class PresentationStage : Node3D
         foreach (var marker in frame.Markers)
         {
             Node3D? node = null;
-            if (marker.Kind == "equipment") node = WorldModels.Equipment(marker.Label);
+            if (marker.Kind == "equipment") node = WorldModels.Equipment(marker.Label,marker.Level);
             else if (marker.Kind == "truck-home") { node = WorldModels.Truck(false); _parked[marker.EntityId] = node; }
             else if (marker.Kind is "resource" or "resource-depleted") node = marker.Kind=="resource"?WorldModels.Resource(marker.Label):WorldModels.DepletedResource(marker.Label);
-            else if (marker.Kind is "production" or "warehouse" or "shop" or "capital") node = WorldModels.Building(marker.Kind, marker.Label);
+            else if(marker.Kind=="warehouse")node=WorldModels.Warehouse(marker);
+            else if (marker.Kind is "production" or "shop" or "capital") node = WorldModels.Building(marker.Kind, marker.Label,marker.Level);
             else
             {
                 var tile = new Node3D();

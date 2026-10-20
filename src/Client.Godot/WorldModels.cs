@@ -1,7 +1,7 @@
 using Godot;
 
 /// <summary>Small code-native models. They have no gameplay state or collision authority.</summary>
-public static class WorldModels
+public static partial class WorldModels
 {
     private static readonly System.Collections.Generic.Dictionary<Color, StandardMaterial3D> Materials = new();
     public static MeshInstance3D Part(Node3D root, Mesh mesh, Color color, Vector3 position)
@@ -18,7 +18,7 @@ public static class WorldModels
     private static void Box(Node3D root, Vector3 size, Color color, Vector3 at) => Part(root, new BoxMesh { Size = size }, color, at);
     private static void Round(Node3D root, float radius, Color color, Vector3 at) => Part(root,
         new SphereMesh { Radius = radius, Height = radius * 2, RadialSegments = 8, Rings = 4 }, color, at);
-    private static void Cylinder(Node3D root, float radius, float height, Color color, Vector3 at, float? top = null) => Part(root,
+    private static MeshInstance3D Cylinder(Node3D root, float radius, float height, Color color, Vector3 at, float? top = null) => Part(root,
         new CylinderMesh { TopRadius = top ?? radius, BottomRadius = radius, Height = height, RadialSegments = 8 }, color, at);
 
     public static Node3D Resource(string item)
@@ -70,7 +70,18 @@ public static class WorldModels
         return root;
     }
 
-    public static Node3D Building(string kind, string type)
+    public static Node3D Building(string kind,string type,int level=1)
+    {
+        var root=BaseBuilding(kind,type);
+        if(level>1 && kind=="production")
+        {
+            Box(root,new(.55f,.28f,.5f),new("d9c3a3"),new(.12f,1.02f,0));
+            Box(root,new(.7f,.08f,.65f),new(type=="bakery"?"b5794d":"627d70"),new(.12f,1.2f,0));
+            Cylinder(root,.045f,.52f,new("78706a"),new(-.24f,1.24f,-.18f));
+        }
+        return root;
+    }
+    private static Node3D BaseBuilding(string kind, string type)
     {
         if (kind == "production" && type == "sawmill") return Sawmill();
         if (kind == "production" && type == "bakery") return Bakery();
@@ -201,7 +212,7 @@ public static class WorldModels
         if(loaded) Box(root,new Vector3(0.3f,0.24f,0.36f),new Color("d5b263"),new Vector3(0,0.37f,0.1f));
         return root;
     }
-    public static Node3D Equipment(string item)
+    public static Node3D Equipment(string item,int level=1)
     {
         var root=Truck(false);
         Box(root,new Vector3(0.36f,0.19f,0.4f),new Color("d4af4d"),new Vector3(0,0.42f,0.08f));
@@ -211,6 +222,12 @@ public static class WorldModels
             Box(root,new Vector3(0.46f,0.06f,0.06f),new Color("c49b43"),new Vector3(-0.06f,0.99f,0.15f));
         }
         else Box(root,new Vector3(0.68f,0.12f,0.2f),new Color("e2bf57"),new Vector3(0,0.16f,-0.42f));
+        if(level>1)
+        {
+            Box(root,new(.46f,.2f,.52f),new("cf8a46"),new(0,.66f,.04f));
+            Box(root,new(.12f,.13f,.2f),new("5a6b72"),new(-.3f,.35f,.04f));
+            Box(root,new(.12f,.13f,.2f),new("5a6b72"),new(.3f,.35f,.04f));
+        }
         return root;
     }
 }
