@@ -31,4 +31,4 @@ World18/Rules production-recipes-1/Session2/Envelope2 прежние. Испра
 
 Следующий небольшой шаг — разобрать Hard goal-ranking на обычных seed42/43, отдельно сопоставив добычу/маржинальный выпуск/занятость/дорогу и текущие обязательства; затем повторить контрольные парные серии на новых seed. До релиза также обязательны измеренная работа с ростом истории и реальные Windows/Android/model gates. Никакого заявления о полном завершении P28–P60.
 
-Коммиты этапов: `f6e4611` (recovery), `a5c2cfe` (P58), `13a24c6` (P59). Итоговый commit/PR добавляются после gate и публикации; автоматически не merge.
+Коммиты этапов: `f6e4611` (recovery), `a5c2cfe` (P58), `13a24c6` (P59). Итоговый code/evidence commit **`f61ad2abac6c479b4fff71bb22bde1c162fd38bb`**. Ветка отправлена. PR **[#44](https://github.com/MaksShelest/Delsk/pull/44)** открыт к feat/economic-cycle-p00-p05; не merge. Последующая запись ссылки — только documentation commit.
