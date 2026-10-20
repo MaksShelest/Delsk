@@ -10,12 +10,12 @@ public static class TabletDesign
     {
         var t=(Theme)GD.Load<Theme>("res://tablets_v1/theme.tres").Duplicate(true);
         t.DefaultFontSize=18;
-        foreach(string type in new[]{"Label","Button","CheckButton","OptionButton","LineEdit","SpinBox","ItemList","RichTextLabel","TabContainer","TabBar"})
+        foreach(string type in new[]{"Label","Button","CheckButton","CheckBox","OptionButton","LineEdit","SpinBox","ItemList","RichTextLabel","TabContainer","TabBar"})
         {
             t.SetColor("font_color",type,Ink);t.SetColor("font_hover_color",type,Ink);t.SetColor("font_focus_color",type,Ink);
             t.SetColor("font_pressed_color",type,new("fffbee"));t.SetColor("font_disabled_color",type,Muted);
         }
-        t.SetColor("default_color","RichTextLabel",Ink);t.SetColor("font_pressed_color","CheckButton",Ink);
+        t.SetColor("default_color","RichTextLabel",Ink);t.SetColor("font_pressed_color","CheckButton",Ink);t.SetColor("font_pressed_color","CheckBox",Ink);
         t.SetColor("font_color","PopupMenu",Ink);t.SetColor("font_hover_color","PopupMenu",Ink);t.SetStylebox("panel","PopupMenu",Card());
         t.SetStylebox("panel","PanelContainer",Card());
         foreach(string type in new[]{"Button","OptionButton"})
@@ -32,6 +32,9 @@ public static class TabletDesign
             t.SetStylebox("tab_selected",type,Box("2b7b57",12,12));t.SetStylebox("tab_unselected",type,Box("f4f4e9",12,12));
             t.SetStylebox("tab_hovered",type,Box("e2ebd5",12,12));t.SetColor("font_selected_color",type,new("fffbee"));t.SetColor("font_unselected_color",type,Ink);
         }
+        t.SetIcon("arrow","OptionButton",GD.Load<Texture2D>("res://tablets_v1/assets/icons/down.svg"));
+        t.SetIcon("updown","SpinBox",GD.Load<Texture2D>("res://tablets_v1/assets/icons/stepper.svg"));
+        t.SetStylebox("slider","HSlider",Box("dce5cd",4,0));t.SetStylebox("grabber_area","HSlider",Box("7da568",4,0));t.SetStylebox("grabber_area_highlight","HSlider",Box("2b7b57",4,0));
         t.SetStylebox("background","ProgressBar",Box("dce5cd",5,0));t.SetStylebox("fill","ProgressBar",Box("7da568",5,0));t.SetColor("font_color","ProgressBar",Ink);
         t.SetConstant("separation","VBoxContainer",12);t.SetConstant("separation","HBoxContainer",12);
         t.SetConstant("h_separation","HFlowContainer",10);t.SetConstant("v_separation","HFlowContainer",10);
@@ -48,8 +51,9 @@ public static class TabletDesign
     {var l=new Label{Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart};l.AddThemeFontSizeOverride("font_size",size);l.AddThemeFontOverride("font",GD.Load<Font>("res://delsk_sawmill_ui/assets/fonts/Nunito-ExtraBold.ttf"));return l;}
     public static TextureRect Art(string key,Vector2 size)
     {
-        key=key switch{"wood"=>"logs","plank"=>"boards","sugar-factory"=>"sugar_factory",_=>key};
+        key=key switch{"wood"=>"logs","plank"=>"boards","shop"=>"market","sugar-factory"=>"sugar_factory",_=>key};
         string path=key is "dairy" or "sugar_factory" or "confectionery" or "bakery"?"res://tablets_v1/assets/"+key+".svg":"res://tablets_v1/assets/icons/"+key+".svg";
+        if(key=="sawmill")path="res://delsk_sawmill_ui/assets/sawmill.svg";
         if(!ResourceLoader.Exists(path))path="res://tablets_v1/assets/icons/home.svg";
         return new(){Texture=GD.Load<Texture2D>(path),CustomMinimumSize=size,ExpandMode=TextureRect.ExpandModeEnum.IgnoreSize,StretchMode=TextureRect.StretchModeEnum.KeepAspectCentered,MouseFilter=Control.MouseFilterEnum.Ignore};
     }
@@ -58,6 +62,7 @@ public static class TabletDesign
         foreach(Node child in root.GetChildren())
         {
             if(child is OptionButton select){select.FitToLongestItem=false;select.ClipText=true;select.CustomMinimumSize=new(150,40);select.SizeFlagsHorizontal=Control.SizeFlags.ExpandFill;}
+            if(child is Button button && child is not OptionButton && child is not CheckButton && button.Text.Length>42)button.AutowrapMode=TextServer.AutowrapMode.WordSmart;
             CompactInputs(child);
         }
     }

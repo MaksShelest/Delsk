@@ -8,6 +8,7 @@ public partial class Playfield
     private readonly CapitalTablePreferences _capitalPreferences = new();
     private TabletPanel? _tabletPanel;
     private CapitalTablet? _capitalTablet;
+    private ExchangeTablet? _exchangeTablet;
     private ParticipantMarketTablet? _marketTablet;
     private readonly CapitalTablePreferences _marketPreferences = new();
     private void OpenMarketTablet(long shop)
@@ -62,7 +63,7 @@ public partial class Playfield
         if (_playerTablet is not null) _playerTab = _playerTablet.SelectedTab;
         if (_tabletPanel is not null)
         { _tabletPanel.GetParent()?.RemoveChild(_tabletPanel); _tabletPanel.QueueFree(); }
-        _playerTablet = null; _tabletPanel = null; _capitalTablet = null; _enterpriseTablet = null; _marketTablet = null; _tabletPolitics = null;
+        _exchangeTablet=null;_playerTablet = null; _tabletPanel = null; _capitalTablet = null; _enterpriseTablet = null; _marketTablet = null; _tabletPolitics = null;
     }
     private void ResetTablet(bool clearPreferences = false)
     {
@@ -76,40 +77,40 @@ public partial class Playfield
         var view = PlayerDesk.Read(_session.Engine,_human);
         string title = _tabletState.Kind == TabletKind.Player ? L("Планшет игрока", "Player tablet") : _tabletState.Kind == TabletKind.Object ? L("Карточка хозяйства", "Holdings card") : _tabletState.Kind == TabletKind.Market ? PlayerText.Local(_language,"Рынок участников · лавки","Participant market · shops") : _tabletState.Kind == TabletKind.Capital ? PlayerText.Local(_language,"Биржа · столичные заказы","Exchange · capital orders")
             : PlayerText.Building(_language,view.Buildings.Single(b => b.Id.Value == _tabletState.EnterpriseId).TypeId) + " #" + _tabletState.EnterpriseId;
-        _tabletPanel = new TabletPanel(title,_language);
+        _tabletPanel = new TabletPanel(title,_language,_tabletState.Kind==TabletKind.Player?"home":_tabletState.Kind is TabletKind.Capital or TabletKind.Market?"market":"warehouse");
         _tabletPanel.Closed += CloseTablet;
         _tabletPanel.HelpRequested += () => OpenHelp(_tabletState.Kind switch
         { TabletKind.Player => _playerTablet?.SelectedTab switch { 0 => "holdings", 2 => "politics", _ => "city" },
             TabletKind.Object when _objectKind == "equipment" => "harvest",
-            TabletKind.Capital => "exchange", TabletKind.Market => "market", _ => "production" });
+            TabletKind.Capital or TabletKind.Market => _exchangeTablet?.SelectedPage==0?"exchange":"market", _ => "production" });
         _tabletPanel.TimeRunningChanged += running =>
         { StopHeading(); _waitRelease = true; _tabletState.SetTimeRunning(running); ApplyPause(); Refresh(); };
         if (_tabletState.Kind == TabletKind.Player)
         {
             _playerTablet = new PlayerTablet(_scenario,_language,Submit,a => _session.Engine.AccessFor(_human,a));
+            _playerTablet.HelpRequested+=()=>OpenHelp("production");
             _tabletPanel.Body.AddChild(_playerTablet); _playerTablet.SelectedTab = _playerTab;
         }
-        else if (_tabletState.Kind == TabletKind.Market)
+        else if (_tabletState.Kind is TabletKind.Market or TabletKind.Capital)
         {
-            _marketTablet = new ParticipantMarketTablet(_scenario,_language,_marketPreferences,_tabletState.EnterpriseId,Submit);
-            _tabletPanel.Body.AddChild(_marketTablet);
-        }
-        else if (_tabletState.Kind == TabletKind.Capital)
-        {
-            _capitalTablet = new CapitalTablet(_scenario,_language,_capitalPreferences,Submit);
-            _tabletPanel.Body.AddChild(_capitalTablet);
+            long shop=view.Buildings.FirstOrDefault(b=>b.Kind==BuildingKind.Shop)?.Id.Value??0;
+            _exchangeTablet=new(_scenario,_language,_capitalPreferences,_marketPreferences,shop,Submit,_tabletState.Kind==TabletKind.Market,a=>_session.Engine.AccessFor(_human,a));
+            _capitalTablet=_exchangeTablet.Capital;_marketTablet=_exchangeTablet.Market;_tabletPanel.Body.AddChild(_exchangeTablet);
         }
         else
         {
             _enterpriseTablet = new HouseholdObjectCard(_scenario,_language,_tabletState.Kind == TabletKind.Object ? _objectKind : "building",_tabletState.EnterpriseId,Submit,a => _session.Engine.AccessFor(_human,a));
+            _enterpriseTablet.ArtworkHeaderChanged+=_tabletPanel.UseArtworkHeader;
+            _enterpriseTablet.HelpRequested+=_tabletPanel.RequestHelp;_enterpriseTablet.CloseRequested+=_tabletPanel.RequestClose;
             _tabletPanel.Body.AddChild(_enterpriseTablet);
         }
-        _playChrome.AddChild(_tabletPanel);
+        TabletDesign.CompactInputs(_tabletPanel);_playChrome.AddChild(_tabletPanel);
     }
     private void RefreshTablet(PlayerView view)
     {
         if (!_tabletState.IsOpen || _surface != Surface.Play) return;
         if (_tabletPanel is null) RebuildTablet();
+        _exchangeTablet?.ShowHeader(view);
         _capitalTablet?.ShowData(view,_session.Engine.CapitalTradingOf(_human),WaitingCommand,_session.Paused);
         _marketTablet?.ShowData(view,WaitingCommand);
         _enterpriseTablet?.ShowData(view,WaitingCommand,_session.Paused);

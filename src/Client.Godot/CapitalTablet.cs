@@ -27,6 +27,8 @@ public partial class CapitalTablet : VBoxContainer
     private readonly VBoxContainer _results;
     private readonly Label _history;
     private readonly Label _summary;
+    private readonly HFlowContainer _pageButtons;
+    public void ShowPage(bool history){_pageButtons.Visible=false;_orders.Visible=!history;_results.Visible=history;}
     private readonly Dictionary<long, OfferRow> _offers = [];
     private string _key = "";
     private int _historyCount = -1;
@@ -37,13 +39,13 @@ public partial class CapitalTablet : VBoxContainer
     public CapitalTablet(ScenarioDefinition scenario, string language, CapitalTablePreferences preferences, System.Action<GameAction> submit)
     {
         _scenario = scenario; _language = language; _preferences = preferences; _submit = submit;
-        var pages = new HBoxContainer(); AddChild(pages);
+        var pages = TabletDesign.Flow();_pageButtons=pages; AddChild(pages);
         var orders = Action(pages, L("Предложения", "Offers")); var history = Action(pages, L("История", "History"));
         _orders = new VBoxContainer(); AddChild(_orders);
         _results = new VBoxContainer { Visible = false }; AddChild(_results);
         orders.Pressed += () => { _orders.Visible = true; _results.Visible = false; };
         history.Pressed += () => { _orders.Visible = false; _results.Visible = true; };
-        var filters = new HBoxContainer(); _orders.AddChild(filters);
+        var filters = TabletDesign.Flow(); _orders.AddChild(filters);
         var goods = new OptionButton { FocusMode = FocusModeEnum.None };
         var ids = new[] { "" }.Concat(scenario.Items.Select(i => i.Id).OrderBy(id => id, StringComparer.Ordinal)).ToArray();
         foreach (string id in ids) goods.AddItem(id.Length == 0 ? L("Все товары", "All goods") : PlayerText.Item(language, id));
@@ -55,7 +57,8 @@ public partial class CapitalTablet : VBoxContainer
         sort.ItemSelected += index => { preferences.HighestPriceFirst = index == 0; RefreshRows(); }; filters.AddChild(sort);
         _summary = new Label { SizeFlagsHorizontal = SizeFlags.ExpandFill, HorizontalAlignment = HorizontalAlignment.Right }; filters.AddChild(_summary);
         _rows = new VBoxContainer(); _orders.AddChild(_rows);
-        _history = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart }; _results.AddChild(_history);
+        _history = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart }; _results.AddChild(TabletDesign.Wrap(_history));
+        TabletDesign.CompactInputs(this);
     }
     public void ShowData(PlayerView view, OwnCapitalTrading trading, bool pending, bool paused)
     { _view = view; _trading = trading; _pending = pending; RefreshRows(); }
@@ -74,7 +77,7 @@ public partial class CapitalTablet : VBoxContainer
             foreach (var offer in offers) AddOffer(offer);
         }
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
-        _summary.Text = L("Предложений: ", "Offers: ") + offers.Length;
+        _summary.Text = L("Предложений: ", "Offers: ") + offers.Length+L(" · рюкзак "," · backpack ")+$"{pack.OccupiedVolume}/{pack.Capacity}";
         foreach (var offer in offers)
         {
             var row = _offers[offer.Id]; row.Offer = offer;
@@ -109,18 +112,16 @@ public partial class CapitalTablet : VBoxContainer
     private void AddOffer(CapitalOfferView offer)
     {
         var panel = new PanelContainer(); _rows.AddChild(panel);
-        panel.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color("30494d"),
-            CornerRadiusTopLeft = 6, CornerRadiusTopRight = 6, CornerRadiusBottomLeft = 6, CornerRadiusBottomRight = 6,
-            ContentMarginLeft = 12, ContentMarginRight = 12, ContentMarginTop = 12, ContentMarginBottom = 12 });
-        var row = new HBoxContainer(); panel.AddChild(row);
-        row.AddChild(new ResourceIcon { Item = offer.ItemId, CustomMinimumSize = new Vector2(34, 34) });
+        panel.AddThemeStyleboxOverride("panel",TabletDesign.Card());
+        var row = new TabletColumns{Breakpoint=980}; panel.AddChild(row);
+        row.AddChild(TabletDesign.Art(offer.ItemId,new(56,56)));
         var terms = new Label { SizeFlagsHorizontal = SizeFlags.ExpandFill, CustomMinimumSize = new Vector2(280, 0), AutowrapMode = TextServer.AutowrapMode.WordSmart }; row.AddChild(terms);
         var timing = new VBoxContainer { CustomMinimumSize = new Vector2(190, 0) }; row.AddChild(timing);
         var deadline = new Label(); timing.AddChild(deadline);
         var window = new VBoxContainer(); timing.AddChild(window);
         var bar = new ProgressBar { ShowPercentage = false, CustomMinimumSize = new Vector2(175, 10) }; window.AddChild(bar);
         var left = new Label(); window.AddChild(left);
-        var actions = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.End }; row.AddChild(actions);
+        var actions = TabletDesign.Flow(); row.AddChild(actions);
         var one = Action(actions, L("Продать 1", "Sell 1")); var all = Action(actions, ""); var cancel = Action(actions, L("Отменить", "Cancel"));
         var model = new OfferRow { Offer = offer, Terms = terms, Deadline = deadline, Window = bar, WindowText = left, WindowBox = window, One = one, All = all, Cancel = cancel };
         one.Pressed += () => _submit(PlayerDesk.Sell(model.Offer.Id, model.Offer.ItemId, 1));

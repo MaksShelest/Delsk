@@ -2,7 +2,7 @@ using Godot;
 using Simulation.Core;
 using Simulation.Hosting;
 
-/// <summary>Existing fixed offers/contracts only. P45 counteroffers are intentionally absent.</summary>
+/// <summary>Fixed offers/contracts/support. Versioned counteroffers stay in TradeNegotiationPanel.</summary>
 public partial class CurrentDealsPanel : VBoxContainer
 {
     private readonly string _language;

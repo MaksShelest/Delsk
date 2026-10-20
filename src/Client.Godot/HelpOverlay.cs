@@ -8,35 +8,68 @@ public partial class HelpOverlay : ColorRect
     private readonly string _language;
     private readonly RichTextLabel _body;
     private readonly OptionButton _topics;
+    private readonly VBoxContainer _brief=new();
+    private readonly List<Button> _navigation=[];
+    private readonly PanelContainer _sidebar;
+    private readonly Button _rules;
+    private bool _full;
     private static readonly string[] Keys = ["basics", "harvest", "land", "exchange", "market", "production", "workers", "logistics", "politics", "holdings", "city"];
     public HelpOverlay(string language, string topic)
     {
-        _language = language;
-        Color = new Color(0.04f, 0.08f, 0.09f, 0.88f);
-        MouseFilter = MouseFilterEnum.Stop;
-        SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        var panel = new PanelContainer(); panel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        panel.OffsetLeft = 32; panel.OffsetRight = -32; panel.OffsetTop = 72; panel.OffsetBottom = -32;
-        panel.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color("293f44"),
-            CornerRadiusTopLeft = 10, CornerRadiusTopRight = 10, CornerRadiusBottomLeft = 10, CornerRadiusBottomRight = 10,
-            ContentMarginLeft = 24, ContentMarginRight = 24, ContentMarginTop = 18, ContentMarginBottom = 18 });
-        AddChild(panel);
-        var column = new VBoxContainer(); panel.AddChild(column);
-        var header = new HBoxContainer(); column.AddChild(header);
-        var title = new Label { Text = L("Справка", "Help"), SizeFlagsHorizontal = SizeFlags.ExpandFill };
-        title.AddThemeFontSizeOverride("font_size", 24); header.AddChild(title);
-        header.AddChild(new Label { Text = L("Мир на паузе", "World paused") });
-        var close = new Button { Text = "×", CustomMinimumSize = new Vector2(40, 36), FocusMode = FocusModeEnum.None };
-        close.Pressed += () => Closed?.Invoke(); header.AddChild(close);
-        _topics = new OptionButton { FocusMode = FocusModeEnum.None };
-        foreach (string key in Keys) _topics.AddItem(Title(key));
-        _topics.Selected = System.Math.Max(0, System.Array.IndexOf(Keys, topic));
-        _topics.ItemSelected += _ => ShowTopic(); column.AddChild(_topics);
-        _body = new RichTextLabel { BbcodeEnabled = true, ScrollActive = true, SizeFlagsVertical = SizeFlags.ExpandFill };
-        _body.AddThemeFontSizeOverride("normal_font_size", 18); column.AddChild(_body);
-        ShowTopic();
+        Name="HelpTablet";_language=language;Theme=TabletDesign.Theme;
+        Color=new Color(.12f,.25f,.20f,.94f);MouseFilter=MouseFilterEnum.Stop;SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        var panel=new PanelContainer();panel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);panel.OffsetTop=66;panel.OffsetBottom=-18;panel.OffsetLeft=32;panel.OffsetRight=-32;
+        panel.AddThemeStyleboxOverride("panel",TabletDesign.Box("f7f3e8",28,22));AddChild(panel);
+        var column=new VBoxContainer();panel.AddChild(column);var header=new HBoxContainer();column.AddChild(header);
+        header.AddChild(TabletDesign.Art("book",new(56,56)));var title=TabletDesign.Heading(L("Справка","Help"),28);title.SizeFlagsHorizontal=SizeFlags.ExpandFill;header.AddChild(title);
+        var close=new Button{Name="HelpClose",Text="×",CustomMinimumSize=new(44,44),FocusMode=FocusModeEnum.None};close.Pressed+=()=>Closed?.Invoke();header.AddChild(close);column.AddChild(new HSeparator());
+        _topics=new OptionButton{Name="HelpTopics",FocusMode=FocusModeEnum.None};foreach(string key in Keys)_topics.AddItem(Title(key));
+        _topics.Selected=Math.Max(0,Array.IndexOf(Keys,topic));_topics.ItemSelected+=_=>ShowTopic();column.AddChild(_topics);
+        var columns=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill};column.AddChild(columns);
+        var nav=new VBoxContainer();var navScroll=new ScrollContainer{CustomMinimumSize=new(240,0),HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled,SizeFlagsVertical=SizeFlags.ExpandFill};navScroll.AddChild(nav);
+        _sidebar=TabletDesign.Wrap(navScroll,true);_sidebar.SizeFlagsHorizontal=SizeFlags.ShrinkBegin;columns.AddChild(_sidebar);
+        for(int i=0;i<Keys.Length;i++)
+        {
+            int index=i;var b=new Button{Text=Title(Keys[i]),ToggleMode=true,FocusMode=FocusModeEnum.None,CustomMinimumSize=new(230,44)};
+            b.AddThemeFontSizeOverride("font_size",16);b.Pressed+=()=>{_topics.Select(index);ShowTopic();};nav.AddChild(b);_navigation.Add(b);
+        }
+        var content=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill,SizeFlagsVertical=SizeFlags.ExpandFill};columns.AddChild(content);
+        var scroll=new ScrollContainer{SizeFlagsVertical=SizeFlags.ExpandFill,HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};content.AddChild(scroll);_brief.SizeFlagsHorizontal=SizeFlags.ExpandFill;scroll.AddChild(_brief);
+        _body=new RichTextLabel{Name="HelpFullText",BbcodeEnabled=true,ScrollActive=true,SizeFlagsVertical=SizeFlags.ExpandFill,Visible=false};_body.AddThemeFontSizeOverride("normal_font_size",18);content.AddChild(_body);
+        _rules=new Button{Name="HelpRules",Text=L("Полные правила ›","Full rules ›"),FocusMode=FocusModeEnum.None};_rules.Pressed+=()=>{_full=!_full;ShowTopic();};content.AddChild(_rules);
+        column.AddChild(new HSeparator());column.AddChild(new Label{Text=L("Справка останавливает мир. Закройте её, чтобы вернуться к прежнему режиму времени.","Help pauses the world. Close it to return to the previous time mode."),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        Resized+=()=>{bool wide=Size.X>=1080;_sidebar.Visible=wide;_topics.Visible=!wide;};ShowTopic();
     }
-    private void ShowTopic() => _body.Text = "[b]" + Title(Keys[_topics.Selected]) + "[/b]\n\n" + Text(Keys[_topics.Selected]);
+    private void ShowTopic()
+    {
+        string key=Keys[_topics.Selected];_body.Text="[b]"+Title(key)+"[/b]\n\n"+Text(key);
+        foreach(var pair in _navigation.Select((b,i)=>(b,i)))pair.b.SetPressedNoSignal(pair.i==_topics.Selected);
+        _body.Visible=_full;((Control)_brief.GetParent()).Visible=!_full;
+        _rules.Text=_full?L("Краткие шаги ‹","Quick steps ‹"):L("Полные правила ›","Full rules ›");
+        foreach(Node n in _brief.GetChildren()){_brief.RemoveChild(n);n.QueueFree();}
+        var heading=new HBoxContainer();heading.AddChild(TabletDesign.Art(Icon(key),new(62,62)));var text=TabletDesign.Heading(Title(key),25);text.SizeFlagsHorizontal=SizeFlags.ExpandFill;heading.AddChild(text);_brief.AddChild(TabletDesign.Wrap(heading,true));
+        string[] steps=Steps(key);
+        for(int i=0;i<steps.Length;i++)
+        {
+            var row=new HBoxContainer();row.AddChild(TabletDesign.Art(i==1?"check":Icon(key),new(38,38)));
+            var label=new Label{Text=(i+1)+". "+steps[i],AutowrapMode=TextServer.AutowrapMode.WordSmart,SizeFlagsHorizontal=SizeFlags.ExpandFill};row.AddChild(label);_brief.AddChild(TabletDesign.Wrap(row));
+        }
+    }
+    private static string Icon(string key)=>key switch{"harvest"=>"bag","land"=>"home","exchange" or "market"=>"market","production"=>"warehouse","workers"=>"people","logistics"=>"truck","politics"=>"vote","city"=>"city","holdings"=>"home",_=>"clock"};
+    private string[] Steps(string key)=>key switch
+    {
+        "harvest"=>[L("Подойдите к ресурсу и начните добычу.","Visit a resource and start harvesting."),L("Товар появится после полного цикла; уход отменяет незавершённую работу.","Goods arrive after a complete cycle; leaving cancels unfinished work."),L("Следите за объёмом рюкзака и доступностью источника.","Watch backpack volume and resource availability.")],
+        "land"=>[L("Выберите отмеченный свободный участок.","Select a designated available plot."),L("Бронь оплачивается отдельно; для стройки нужна собственная земля.","Reservation costs extra; building requires owned land."),L("Принесите материалы и проверьте проходы, прежде чем строить.","Bring materials and check access before building.")],
+        "exchange"=>[L("Принесите свободный товар к столице.","Bring available goods to the capital."),L("Продажа подаёт заявку; расчёт происходит после торгов.","Selling submits a request; settlement follows the trading window."),L("При общем дефиците принят может быть только остаток спроса.","When demand is scarce, only part of your request may settle.")],
+        "market"=>[L("Постройте лавочку для торговли с участниками.","Build a shop to trade with participants."),L("Выберите лот, количество и свой предел цены.","Choose a lot, quantity and your price limit."),L("Оплаченную покупку нужно забрать физически до срока.","Physically collect paid purchases before the deadline.")],
+        "production"=>[L("Проверьте все входы рецепта и свободный выходной склад.","Check every recipe input and output space."),L("Держите работников и деньги для фактической работы.","Provide workers and funds for actual work."),L("Производство, подвоз и отправка включаются независимо.","Production, inbound and outbound operate independently.")],
+        "workers"=>[L("Численность меняется постепенно по рынку труда.","Headcount changes gradually through the labor market."),L("Новая ставка начинает действовать с задержкой.","New wage rates take effect after a delay."),L("Во время простоя зарплата не списывается, люди постепенно уходят.","Idle work is unpaid; workers gradually leave.")],
+        "logistics"=>[L("Купите транспорт и настройте источники и получателей.","Buy transport and configure sources and destinations."),L("Проверьте груз, экипаж, свободное место и срок.","Check cargo, crew, capacity and deadline."),L("Остановка направления сохраняет активный рейс и его груз.","Disabling a direction preserves its active trip and cargo.")],
+        "politics"=>[L("Для победы нужно строго больше половины голосов.","Victory requires strictly more than half the votes."),L("Вес блока зависит от текущей численности на выборах.","Voting weight depends on current workforce at the election."),L("Поддержка связывает голос только после полной передачи компенсации.","Support binds a vote only after full physical compensation.")],
+        "holdings"=>[L("Откройте своё хозяйство в планшете игрока.","Open My holdings in the player tablet."),L("Сведения доступны дистанционно; местные действия требуют подхода.","View remotely; local actions require visiting the object."),L("Подробности содержат перенос, маршруты и действующие обязательства.","Details contain transfers, routes and active obligations.")],
+        "city"=>[L("Рейтинг использует фиксированную справочную оценку.","Rankings use fixed reference valuations."),L("Чужие запасы и приватные условия не раскрываются.","Foreign stock and private terms remain hidden."),L("Оплата занятых, вакансии и объявленные ставки — разные показатели.","Current pay, vacancies and announced rates are distinct measures.")],
+        _=>[L("Двигайтесь WASD или экранными кнопками.","Move using WASD or on-screen controls."),L("Подтверждайте действие кнопкой, Enter или Space.","Confirm actions with a button, Enter or Space."),L("Планшет открывается на паузе; включите время для исполнения команд.","Tablets open paused; run time to execute queued commands.")]
+    };
     private string Title(string key) => key switch
     {
         "holdings" => L("Моё хозяйство", "My holdings"),
@@ -54,7 +87,7 @@ public partial class HelpOverlay : ColorRect
     private string Text(string key) => key switch
     {
         "holdings" => L("Планшет доступен из любой точки: хозяйство, участники, действующие предложения и город. При движении глобальный планшет остаётся открытым. Локальная карточка закрывается после ухода от объекта.\n\nВ карточках раскрывайте работу/улучшения, перенос, работников и доставку. Зарплата меняется только у базы своей группы; подойдите к объекту. Покупка грузовика, улучшения и перенос тоже проверяют присутствие в Core. Удалённый просмотр не отменяет этих правил.\n\nПоставки, производство и отправка независимы; начатый рейс завершается после остановки. Команда на паузе ждёт обычного тика. Сложности NPC и встречные переговоры появятся позднее.", "The tablet is available anywhere: holdings, participants, existing agreements and city. It remains open while moving; a local card closes when you leave its object.\n\nExpand work/upgrades, transfers, workforce and logistics in a card. Change wages only at the group's base. Truck purchases, upgrades and transfers also check presence in Core. Remote viewing does not waive these rules.\n\nProduction, inbound and outbound are independent; started trips finish after stopping. A queued command waits for a normal tick. NPC difficulty levels and counteroffers arrive later."),
-        "city" => L("Капитал = деньги с однократным учётом резервов + запасы + вложенное сырьё WIP + справочная стоимость земли, построек и техники − признанные долги. Товары оцениваются по базовым ценам сохранённого профиля, не по цене объявления. Работники не являются имуществом.\n\nДо физической выдачи товар оценивается у продавца, денежный escrow — у покупателя; после выдачи соответствующие части переходят одновременно. Груз и возвратное место не считаются вторым товаром. Аренда пока не реализована и не капитализируется.\n\nКапитал города включает участников и казну; внешний бюджет столицы и агрегированные расходы на зарплату не являются активами жителей. Стадия города подтверждается после устойчивого прохождения порогов профиля (обычно 30 тиков), бонусов нет.\n\nСредняя ставка занятых взвешена по численности и действующей оплате. Среднее вакансий — по доступным обеспеченным местам и действующей ставке привлечения. Pending показывается отдельно. Простой не платится, хотя ставка группы остаётся известной.", "Capital = money with reserves counted once + stock + WIP material inputs + reference land, building and equipment values minus recognised debt. Goods use saved-profile base prices, not offer prices. Workers are not property.\n\nBefore physical collection, goods remain valued for the seller and escrow for the buyer; corresponding portions transfer on collection. Cargo and return capacity do not create extra stock. Resource leases are not implemented or capitalised yet.\n\nCity capital includes participants and treasury; the external capital budget and aggregated wage expenses are not citizens' assets. City stages require sustained profile thresholds (normally 30 ticks), with no bonuses.\n\nEmployed wage is weighted by headcount and current pay. Vacancy wage is weighted by affordable ready vacancies and effective attraction wage. Pending rates are separate. Idle work is unpaid although its rate remains public."),
+        "city" => L("Капитал = деньги с однократным учётом резервов + запасы + вложенное сырьё WIP + справочная стоимость земли, построек и техники − признанные долги. Товары оцениваются по базовым ценам сохранённого профиля, не по цене объявления. Работники не являются имуществом.\n\nДо физической выдачи товар оценивается у продавца, денежный escrow — у покупателя; после выдачи соответствующие части переходят одновременно. Груз и возвратное место не считаются вторым товаром. Арендная плата не становится собственностью; купленные ресурсные права учитываются по принятой конвенции.\n\nКапитал города включает участников и казну; внешний бюджет столицы и агрегированные расходы на зарплату не являются активами жителей. Стадия города подтверждается после устойчивого прохождения порогов профиля (обычно 30 тиков), бонусов нет.\n\nСредняя ставка занятых взвешена по численности и действующей оплате. Среднее вакансий — по доступным обеспеченным местам и действующей ставке привлечения. Pending показывается отдельно. Простой не платится, хотя ставка группы остаётся известной.", "Capital = money with reserves counted once + stock + WIP material inputs + reference land, building and equipment values minus recognised debt. Goods use saved-profile base prices, not offer prices. Workers are not property.\n\nBefore physical collection, goods remain valued for the seller and escrow for the buyer; corresponding portions transfer on collection. Cargo and return capacity do not create extra stock. Lease payments are expenses; purchased resource rights follow the capital valuation convention.\n\nCity capital includes participants and treasury; the external capital budget and aggregated wage expenses are not citizens' assets. City stages require sustained profile thresholds (normally 30 ticks), with no bonuses.\n\nEmployed wage is weighted by headcount and current pay. Vacancy wage is weighted by affordable ready vacancies and effective attraction wage. Pending rates are separate. Idle work is unpaid although its rate remains public."),
         "harvest" => L("Молочное сырьё забирают в фермерском приёмном пункте: это поставки, без симуляции животных и порчи. Свёклу собирают с поля. Сыроварня: молочное сырьё → сыр; сахарный завод: свёкла → сахар; кондитерская: зерно + сахар + молочное сырьё → выпечка.\n\nВстаньте на клетку ресурса и нажмите «Добывать». Добыча повторяется, пока вы не остановите её, не уйдёте или не заполните инвентарь.\n\nЗаполнение кнопки показывает текущий цикл. Товар появляется только после завершения цикла. При уходе незавершённая работа теряется, уже добытое остаётся.\n\nСверху показаны ваши ресурсы и занятый объём рюкзака. У разных товаров может быть разный объём.", "Dairy supplies come from farmer collection depots; livestock and spoilage are not simulated. Beet grows in fields. Dairy: milk → cheese; sugar factory: beet → sugar; confectionery: grain + sugar + milk → pastry.\n\nStand on a resource cell and press Harvest. Cycles repeat until stopped, you leave, or your inventory fills.\n\nThe button fill shows the current cycle. Goods are awarded only when it completes. Leaving discards unfinished work; collected goods remain.\n\nThe top bar shows resources and used backpack volume. Items may have different unit volumes."),
         "land" => L("Купить или забронировать можно только отмеченный участок. Дороги и проходы не продаются.\n\nБронь временно защищает участок и оплачивается отдельно от покупки. Плата за бронь не возвращается. Для строительства нужны собственная свободная площадь, деньги и материалы в рюкзаке.\n\nМеста лавок общие. Каждый участник может купить или забронировать не больше одного такого места.", "Only designated plots can be bought or reserved. Roads and passages are protected.\n\nA reservation temporarily protects a plot and costs extra; the fee is not refunded. Construction requires owned free land, money and materials in your backpack.\n\nShop sites are shared. Each participant may own or reserve at most one site."),
         "exchange" => L("Столица покупает товары, которые вы принесли к бирже. Цена указана за одну единицу. «Доступно» — товар, которым вы сейчас можете распорядиться.\n\nНажатие «Продать» подаёт заявку. До завершения торгов товар удерживается для неё и не может быть обещан второй раз. Если спроса не хватает всем, принятый объём может оказаться меньше заявки.\n\nПеревод товара и денег происходит при закрытии торгового окна. На паузе можно подготовить действие, затем включить время. Результаты доступны на вкладке «История». Оставшийся срок заказа и время до расчёта — разные сроки.", "The capital buys goods brought to the exchange. Prices are per unit. Available stock excludes goods already committed.\n\nSell submits a request. Goods are held until the trading window closes and cannot be promised twice. If demand is insufficient, the accepted quantity may be lower than requested.\n\nGoods and money transfer at closing. You can prepare an action while paused, then run time. Results appear in History. Order expiry and time to settlement are separate deadlines."),

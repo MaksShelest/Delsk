@@ -58,6 +58,7 @@ public partial class TabletDesignProbe : Control
                 s.Engine.ValidateInvariants();RemoveChild(panel);panel.QueueFree();await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);
                 _checks.Add(type+"-"+language+"-live/pending/compact");
             }
+            await CheckPages(s,d);
             System.IO.File.WriteAllText(_output+"/tablets-check.json",JsonSerializer.Serialize(new{status="succeeded",checks=_checks,scope="Actual native controls and command-driven prepared world; not target-device or long-game acceptance"}));
             GD.Print("DELSK_TABLETS_PASS");GetTree().Quit(0);
         }

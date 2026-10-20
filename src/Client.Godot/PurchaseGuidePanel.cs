@@ -20,7 +20,7 @@ public partial class PurchaseGuidePanel : VBoxContainer
     {
         _scenario=scenario;_language=language;_submit=submit;
         AddChild(new Label{Text=L("Активные покупки и путь получения","Active purchases and pickup route")});AddChild(_purchase);AddChild(_details);
-        _map=new(scenario){CustomMinimumSize=new(520,210)};AddChild(_map);AddChild(_quantity);
+        _map=new(scenario){CustomMinimumSize=new(0,210),SizeFlagsHorizontal=SizeFlags.ExpandFill};AddChild(_map);AddChild(_quantity);
         _walk.Text=L("Подойти к точке выдачи","Walk to pickup point");_collect.Text=L("Получить выбранное количество","Collect selected quantity");
         _all.Text=L("Получить всё по вместимости","Collect all that fits");_stop.Text=L("Остановить передачу","Stop transfer");
         foreach(var b in new[]{_walk,_collect,_all,_stop})AddChild(b);

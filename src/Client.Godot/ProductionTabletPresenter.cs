@@ -5,6 +5,7 @@ using Simulation.Hosting;
 /// <summary>The supplied artwork is a view over the same household actions, not a second economy.</summary>
 public partial class ProductionTabletPresenter : Control
 {
+    public event System.Action? RecipesRequested;
     public event System.Action? HelpRequested;
     public event System.Action? CloseRequested;
     private readonly bool _bakery;
@@ -26,7 +27,7 @@ public partial class ProductionTabletPresenter : Control
         _panel=_scene.GetNode<Control>("Panel");_panel.Position=Vector2.Zero;
         if(_newArt)AddNoTransport();
         if(_pastry)_panel.GetNode("Production").AddChild(new Label{Name="OutputName",Visible=false});
-        if(_newArt)Node<Button>("Production/Recipes").Pressed+=()=>_details();
+        if(_newArt)Node<Button>("Production/Recipes").Pressed+=()=>RecipesRequested?.Invoke();
         foreach(Node child in _scene.GetChildren())if(child!=_panel && child is CanvasItem item)item.Visible=false;
         // The outer TabletPanel supplies the shared help, close and global clock controls.
         Node<Control>("TimeToggle").Visible=false;Node<Control>("PauseState").Visible=false;

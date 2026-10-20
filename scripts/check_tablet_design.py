@@ -15,9 +15,11 @@ if a.reuse_stage:
   rel=f.relative_to(root/'src/Client.Godot')
   if f.is_file() and not any(c in ('.godot','bin','obj') for c in rel.parts) and f.name not in ('project.godot','export_presets.cfg'):
    (project/rel).parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(f,project/rel)
-(project/'TabletDesignProbe.cs').write_text((root/'tests/Client.Probes/TabletDesignProbe.cs').read_text(encoding='utf-8'),encoding='utf-8')
+for source in (root/'tests/Client.Probes').glob('TabletDesignProbe*.cs'):
+ (project/source.name).write_text(source.read_text(encoding='utf-8'),encoding='utf-8')
 (project/'TabletDesignProbe.tscn').write_text('[gd_scene load_steps=2 format=3]\n[ext_resource type="Script" path="res://TabletDesignProbe.cs" id="1"]\n[node name="Tablets" type="Control"]\nlayout_mode=3\nanchors_preset=15\nanchor_right=1.0\nanchor_bottom=1.0\nscript=ExtResource("1")\n',encoding='utf-8')
-shutil.copyfile(root/'scenarios/food-chain.json',out/'food-chain.json')
+for name in ['food-chain','participant-trade','market-window','economic-cycle']:
+ shutil.copyfile(root/f'scenarios/{name}.json',out/f'{name}.json')
 check('build',180,['dotnet','build',project/'Delsk.Client.csproj','-c','Debug','-p:DelskDeveloper=true','-p:DelskDeveloperPackage=true','--no-restore','--disable-build-servers','-m:1'])
 check('import',120,[a.godot,'--headless','--path',project,'--editor','--import'])
 env=os.environ.copy();env.update(DISPLAY='127.0.0.1:96.0',LIBGL_ALWAYS_SOFTWARE='1',XDG_DATA_HOME=str(out/'data'))
@@ -28,7 +30,7 @@ with (out/'xvfb.log').open('w') as log:
    try:
     with socket.create_connection(('127.0.0.1',6096),timeout=.1):break
    except OSError:time.sleep(.1)
-  check('window',110,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','res://TabletDesignProbe.tscn','--','--output',out],env)
+  check('window',180,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','res://TabletDesignProbe.tscn','--','--output',out],env)
  finally:
   server.terminate()
   try:server.wait(timeout=5)

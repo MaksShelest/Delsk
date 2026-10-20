@@ -42,7 +42,7 @@ public partial class TradeNegotiationPanel : VBoxContainer
         _threads.ItemSelected+=_=>LoadSelected();_kind.ItemSelected+=_=>Update();_source.ItemSelected+=_=>Update();
     }
     private void Row(string name,Control value)
-    {var row=new HBoxContainer();row.AddChild(new Label{Text=name,CustomMinimumSize=new(215,0)});value.SizeFlagsHorizontal=SizeFlags.ExpandFill;row.AddChild(value);AddChild(row);}
+    {var row=new TabletColumns{Breakpoint=650};row.AddChild(new Label{Text=name,CustomMinimumSize=new(215,0)});value.SizeFlagsHorizontal=SizeFlags.ExpandFill;row.AddChild(value);AddChild(row);}
     public void ShowData(PlayerView view,bool pending)
     {
         _view=view;_pending=pending;
