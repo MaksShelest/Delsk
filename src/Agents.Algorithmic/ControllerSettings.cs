@@ -17,7 +17,8 @@ public record ControllerSettings(long ActorId, string PreferredInput, int Decisi
     bool TradeEnabled = true, bool LogisticsEnabled = true, bool PoliticsEnabled = true, long HumanActorId = 1, bool FutureContractsEnabled = true, int MarketLotQuantity = 10, long WageRaiseMinor = 1,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] NpcDifficulty Difficulty = NpcDifficulty.Legacy,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long PoliticalBudgetMinor=0,
-    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] PlanningLimits? Planning=null);
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] PlanningLimits? Planning=null,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] bool? NegotiationsEnabled=null);
 public record AutonomousConfiguration(int Version, long HumanActorId, long FinalTick, ControllerSettings[] Npcs);
 public record TrustEntry(long ParticipantId, int Value);
 public record PlanStep(GameAction Action);

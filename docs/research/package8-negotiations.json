@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "id": "negotiations-paired",
+  "scenario": "scenarios/presentation-map-one-v3.json",
+  "economy": "config/economy.json",
+  "controllers": "scenarios/baseline-controllers.json",
+  "ticks": 600,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "repetitions": 1,
+  "mode": "algorithmic",
+  "factors": [
+    {
+      "path": "npc.negotiationsEnabled",
+      "values": [
+        true,
+        false
+      ]
+    }
+  ]
+}
