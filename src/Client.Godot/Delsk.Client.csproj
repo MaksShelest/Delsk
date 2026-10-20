@@ -59,4 +59,5 @@
     <EmbeddedResource Include="../../scenarios/platform-food.commands.jsonl" LogicalName="Fixture.food.commands.jsonl" />
     <EmbeddedResource Include="../../scenarios/platform-food.checkpoints.csv" LogicalName="Fixture.food.checkpoints.csv" />
   </ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../scenarios/four-corners-v1.json" LogicalName="Play.four-corners-v1.json" /></ItemGroup>
 </Project>
