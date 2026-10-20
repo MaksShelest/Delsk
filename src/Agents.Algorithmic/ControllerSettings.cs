@@ -16,7 +16,8 @@ public record ControllerSettings(long ActorId, string PreferredInput, int Decisi
     long SupportPricePerVoteMinor = 500, int PoliticalHorizonTicks = 180,
     bool TradeEnabled = true, bool LogisticsEnabled = true, bool PoliticsEnabled = true, long HumanActorId = 1, bool FutureContractsEnabled = true, int MarketLotQuantity = 10, long WageRaiseMinor = 1,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] NpcDifficulty Difficulty = NpcDifficulty.Legacy,
-    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long PoliticalBudgetMinor=0);
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long PoliticalBudgetMinor=0,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] PlanningLimits? Planning=null);
 public record AutonomousConfiguration(int Version, long HumanActorId, long FinalTick, ControllerSettings[] Npcs);
 public record TrustEntry(long ParticipantId, int Value);
 public record PlanStep(GameAction Action);
@@ -27,6 +28,8 @@ public record AlgorithmState(ControllerSettings Settings, ulong RandomState, str
 {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public PolicyProfile? Profile {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public StrategyAssessment[]? StrategyTrace {get;init;}
 }
 
 public sealed partial class AlgorithmicController : IController
@@ -54,6 +57,8 @@ public sealed partial class AlgorithmicController : IController
             var s = System.Text.Json.JsonSerializer.Deserialize<AlgorithmState>(saved.StateJson, SimulationJson.Options)
                 ?? throw new CheckpointException("EmptyControllerState");
             ValidateSettings(s.Settings);
+            if(s.StrategyTrace is {} trace && (s.Settings.Difficulty!=NpcDifficulty.Hard || trace.Length>(s.Settings.Planning??new()).MaxCandidates ||
+                trace.Any(t=>t is null || t.Eta<0 || t.Evaluations<0 || t.Evaluations>(s.Settings.Planning??new()).MaxEvaluations || t.CapitalMinor<0 || t.ExecutionReserveMinor<0 || t.RiskMinor<0 || t.Continuations<0 || t.Continuations>=(s.Settings.Planning??new()).Depth || t.Reason is null || t.Reason.Length>256)))throw new CheckpointException("InvalidStrategyTrace");
             if((s.Profile is null)!=(saved.Kind==PolicyKind) ||
                 System.Text.Json.JsonSerializer.Serialize(s.Profile,SimulationJson.Options)!=System.Text.Json.JsonSerializer.Serialize(ResolveProfile(s.Settings.Difficulty),SimulationJson.Options))
                 throw new CheckpointException("UnknownPolicyModuleVersion");
@@ -79,6 +84,7 @@ public sealed partial class AlgorithmicController : IController
     }
     private static void ValidateSettings(ControllerSettings s)
     {
+        s.Planning?.Validate();
         if (s.PoliticalBudgetMinor is <0 or >1_000_000_000 || !Enum.IsDefined(s.Difficulty) || s.WageRaiseMinor is < 0 or > 10000 || s.ActorId <= 0 || string.IsNullOrWhiteSpace(s.PreferredInput) || s.PreferredInput.Length > 80 ||
             s.DecisionIntervalTicks is < 1 or > 100 || s.BatchQuantity is < 1 or > 1000 ||
             s.CashReserveMinor is < 0 or > 1_000_000_000 || s.BaseWageMinor is < 1 or > 10000 ||
