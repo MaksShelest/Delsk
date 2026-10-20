@@ -23,7 +23,7 @@ public sealed partial class HybridController
             _runtime.Cancel(economic.Request);_state=_state with {Slot=null};
             return new(null,"EconomicDecisionSuspended",Trace(economic.Request,"FallbackResolved","ElectionBoundary"));
         }
-        if(!_state.Settings.Enabled || !_runtime.Enabled || voting.RequiredCandidate.HasValue)
+        if(_state.BallotSlot is null && (!_state.Settings.Enabled || !_runtime.Enabled || voting.RequiredCandidate.HasValue))
             return new(fallback,voting.RequiredCandidate.HasValue?"CommittedVote":"ExplicitAlgorithmicBallot");
         if(_state.BallotSlot is not { } slot)
         {
@@ -46,7 +46,7 @@ public sealed partial class HybridController
         ModelReply? reply=slot.Reply??_runtime.Read(r);
         if(!slot.Interrupted && reply is null && (_ballotWatch?.ElapsedMilliseconds??long.MaxValue)<_runtime.BallotWaitMilliseconds)
             return new(null,"BallotModelPending");
-        string reason=slot.Interrupted?"SessionRestored":reply?.Outcome??"DecisionDeadline";
+        string reason=slot.Interrupted?slot.InterruptionReason??"SessionRestored":reply?.Outcome??"DecisionDeadline";
         ParticipantId selected=fallback;bool applied=false;
         if(reason=="Completed" && StrictIntentParser.TryParse(reply!.Text,r,out var intent,out reason))
         {

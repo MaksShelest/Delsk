@@ -2,15 +2,19 @@ using System.Collections.Immutable;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Agents.Algorithmic;
 using Simulation.Core;
 
 namespace Agents.Llm;
 
-public record DecisionSlot(ModelRequest Request, string Status = "Pending", ModelReply? Reply = null, bool Interrupted = false);
+public record DecisionSlot(ModelRequest Request, string Status = "Pending", ModelReply? Reply = null, bool Interrupted = false,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] int Retries=0,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] string? InterruptionReason=null);
 public record HybridState(HybridSettings Settings, ControllerCheckpoint Baseline, long NextDecisionNumber = 1,
     long NextEligibleTick = 0, long BudgetPeriod = 0, int RequestsInPeriod = 0, string LastTrigger = "",
-    string Memory = "", long ResolvedDecisions = 0, DecisionSlot? Slot = null, DecisionSlot? BallotSlot = null);
+    string Memory = "", long ResolvedDecisions = 0, DecisionSlot? Slot = null, DecisionSlot? BallotSlot = null,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] LocalGameModel? GameModel=null);
 
 /// <summary>Model choice is optional; the existing algorithm executes all plans and fallbacks.</summary>
 public sealed partial class HybridController : IController
@@ -22,10 +26,10 @@ public sealed partial class HybridController : IController
     private ControllerSessionContext? _context;
     public ParticipantId Actor => _baseline.Actor;
     public bool WaitingForModel => new[]{_state.Slot,_state.BallotSlot}.Any(s=>s is {Interrupted:false,Reply:null} && !_runtime.HasReply(s.Request));
-    public HybridController(AlgorithmicController baseline, ModelRuntime runtime, HybridSettings? settings = null)
+    public HybridController(AlgorithmicController baseline, ModelRuntime runtime, HybridSettings? settings = null, LocalGameModel? gameModel=null)
     {
-        var config = settings ?? new(); config.Validate(); _baseline = baseline; _runtime = runtime;
-        _state = new(config, baseline.Capture());
+        var config = settings ?? gameModel?.Policy ?? new(); config.Validate(); gameModel?.Validate(); _baseline = baseline; _runtime = runtime;
+        _state = new(config, baseline.Capture(),GameModel:gameModel);
     }
     public void BindSession(ControllerSessionContext context)
     {
@@ -55,7 +59,10 @@ public sealed partial class HybridController : IController
         try
         {
             var state = JsonSerializer.Deserialize<HybridState>(checkpoint.StateJson, SimulationJson.Options)!;
-            state.Settings.Validate(); var baseline = AlgorithmicController.Restore(state.Baseline);
+            state.Settings.Validate(); state.GameModel?.Validate();
+            if(state.GameModel is {} gm && (state.Settings with {Enabled=gm.Policy.Enabled}) != gm.Policy)throw new CheckpointException("ModelPolicyMismatch");
+            if(new[]{state.Slot,state.BallotSlot}.Any(s=>s is not null && (s.Retries is <0 or >1 || s.InterruptionReason is not (null or "UserFallback") || s.InterruptionReason is not null && !s.Interrupted)))throw new CheckpointException("InvalidModelRetry");
+            var baseline = AlgorithmicController.Restore(state.Baseline);
             if (baseline.Actor != checkpoint.Actor || !checkpoint.PendingCommandIds.SequenceEqual(state.Baseline.PendingCommandIds) ||
                 state.NextDecisionNumber < 1 || state.NextEligibleTick < 0 || state.BudgetPeriod < 0 || state.RequestsInPeriod < 0 ||
                 state.RequestsInPeriod > state.Settings.MaximumRequestsPerPeriod || state.LastTrigger.Length > 160 || state.Memory.Length > 200 || state.ResolvedDecisions < 0)
@@ -84,7 +91,6 @@ public sealed partial class HybridController : IController
     {
         if (o.Participant.Id != Actor) throw new ArgumentException("Observation actor mismatch");
         var context = _context ?? throw new InvalidOperationException("BindSession required");
-        if (!_state.Settings.Enabled) return _baseline.Decide(o, ownResults);
         if (_state.Slot is { } pending)
         {
             if (!pending.Interrupted && pending.Reply is null && _runtime.Read(pending.Request) is { } reply)
@@ -94,6 +100,7 @@ public sealed partial class HybridController : IController
                     : new("ModelPending", "DecisionSlotPending", [], Record: false);
             return Resolve(o, ownResults, pending, context);
         }
+        if (!_state.Settings.Enabled) return _baseline.Decide(o, ownResults);
         var fallback = _baseline.Decide(o, ownResults);
         if (!_runtime.Enabled) return fallback;
         if (o.Tick < _state.NextEligibleTick || o.Participant.Busy || fallback.Actions.Length == 0) return fallback;
@@ -128,7 +135,7 @@ public sealed partial class HybridController : IController
     private ControllerDecision Resolve(ControllerObservation o, ImmutableArray<CommandResult> results, DecisionSlot slot, ControllerSessionContext context)
     {
         var r = slot.Request; var fallback = _baseline.Decide(o, results);
-        string reason = slot.Interrupted ? "SessionRestored" : o.Tick + 1 != r.ApplyTick ? "ApplyTickMissed" :
+        string reason = slot.Interrupted ? slot.InterruptionReason??"SessionRestored" : o.Tick + 1 != r.ApplyTick ? "ApplyTickMissed" :
             o.Tick + 1 > r.ExpiresTick ? "DecisionExpired" : r.SessionEpoch != context.Epoch ? "StaleSessionEpoch" :
             slot.Reply?.Outcome ?? "DecisionDeadline";
         var decision = fallback.Actions.Length == 0 ? new ControllerDecision("Hold", "NoFeasibleFallback", []) : fallback;

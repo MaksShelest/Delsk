@@ -160,9 +160,10 @@ public sealed class TickScheduler
     private readonly long _tickDuration;
     private readonly long _quantumDuration;
     private long _accumulator;
-    public TickScheduler(GameSession session, TimeSpan? tickDuration = null)
+    private readonly Func<bool>? _controllerBarrier;
+    public TickScheduler(GameSession session, TimeSpan? tickDuration = null, Func<bool>? controllerBarrier=null)
     {
-        _session = session; _tickDuration = (tickDuration ?? TimeSpan.FromSeconds(1)).Ticks;
+        _session = session; _controllerBarrier=controllerBarrier; _tickDuration = (tickDuration ?? TimeSpan.FromSeconds(1)).Ticks;
         if (_tickDuration <= 0 || _tickDuration % SimulationEngine.TravelQuantaPerTick != 0)
             throw new ArgumentException("Tick duration must be positive and divide into equal travel quanta");
         _quantumDuration = _tickDuration / SimulationEngine.TravelQuantaPerTick;
@@ -176,11 +177,11 @@ public sealed class TickScheduler
     {
         if (elapsed.Ticks < 0) throw new ArgumentException("Elapsed time cannot be negative");
         if (_session.Engine.WaitingForBallots) { _accumulator=0; _session.PumpVoting(); return; }
-        if (_session.Paused) { _accumulator = 0; return; }
+        if (_session.Paused || _controllerBarrier?.Invoke()==true) { _accumulator = 0; return; }
         _accumulator = checked(_accumulator + elapsed.Ticks);
         while (_accumulator >= _quantumDuration)
         { _session.AdvanceTravelQuantum(); _accumulator -= _quantumDuration;
-          if (_session.Engine.WaitingForBallots) { _accumulator=0; break; } }
+          if (_session.Engine.WaitingForBallots || _controllerBarrier?.Invoke()==true) { _accumulator=0; break; } }
     }
     public void SetPaused(bool paused)
     { _accumulator = 0; _session.SetPaused(paused); }

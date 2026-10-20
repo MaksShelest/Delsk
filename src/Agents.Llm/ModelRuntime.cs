@@ -64,6 +64,26 @@ public sealed class ModelRuntime : IDisposable
             return true;
         }
     }
+    public ModelReply? Peek(ModelRequest request)
+    {lock(_gate)return _pending.TryGetValue(request.ActorId,out var w) && w.Request==request ? _ready.GetValueOrDefault(request.ActorId):null;}
+    public bool Retry(ModelRequest request)
+    {
+        lock(_gate)
+        {
+            if(!_pending.TryGetValue(request.ActorId,out var w) || w.Request!=request || !_ready.ContainsKey(request.ActorId))return false;
+            Cancel(request);return Enqueue(request);
+        }
+    }
+    // The host may drain an already admitted queue while economic time is stopped.
+    // This publishes replies only; Freeze/Read still delimit authoritative decisions.
+    public void ProgressWaiting()
+    {
+        lock(_gate)
+        {
+            if(_disposed || _active is not null || _waiting.Count==0)return;
+            var work=_waiting[0];_waiting.RemoveAt(0);_active=work;work.Started=true;_ = Task.Run(()=>ExecuteAsync(work));
+        }
+    }
     public void Freeze(long tick)
     {
         lock (_gate)
