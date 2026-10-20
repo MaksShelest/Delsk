@@ -20,6 +20,10 @@ public partial class HouseholdObjectCard : VBoxContainer
     private readonly VBoxContainer _actions = new();
     private readonly Dictionary<string, (Button Button, GameAction Action)> _buttons = [];
     private readonly RouteEditor _routes;
+    private readonly VBoxContainer _details=new();
+    private SawmillTabletPresenter? _sawmill;
+    private Button? _detailsToggle;
+    private bool _expanded;
     private PlayerView? _lastView;
     private bool _pending;
     private bool _paused;
@@ -30,12 +34,13 @@ public partial class HouseholdObjectCard : VBoxContainer
         System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access)
     {
         _scenario = scenario; _language = language; _kind = kind; _id = id; _submit = submit; _access = access;
-        AddChild(_heading); AddChild(_progress); AddChild(_stock); AddChild(_workers); AddChild(_delivery);
-        var amount = new HBoxContainer(); AddChild(amount);
+        AddChild(_details);_details.AddChild(_heading);_details.AddChild(_progress);_details.AddChild(_stock);_details.AddChild(_workers);_details.AddChild(_delivery);
+        var amount = new HBoxContainer(); _details.AddChild(amount);
         amount.AddChild(new Label { Text = L("Количество для переноса", "Transfer quantity") }); amount.AddChild(_quantity);
-        AddChild(_actions);
-        var routeToggle=new Button{Text=L("Маршруты ▸","Routes ▸"),FocusMode=FocusModeEnum.None};AddChild(routeToggle);
-        _routes=new(scenario,language,kind,id,submit){Visible=false};AddChild(_routes);routeToggle.Pressed+=()=>_routes.Visible=!_routes.Visible;
+        _details.AddChild(_actions);
+        var routeToggle=new Button{Text=L("Маршруты ▸","Routes ▸"),FocusMode=FocusModeEnum.None};_details.AddChild(routeToggle);
+        _routes=new(scenario,language,kind,id,submit){Visible=false};_details.AddChild(_routes);routeToggle.Pressed+=()=>_routes.Visible=!_routes.Visible;
+        Resized+=LayoutCard;
         _quantity.ValueChanged += _ => { if (_lastView is not null) ShowData(_lastView,_pending,_paused); };
     }
 
@@ -119,6 +124,14 @@ public partial class HouseholdObjectCard : VBoxContainer
         if (enterprise is not null) LogisticsActions(view, enterprise, Add);
         if(view.Transfers.Length>0)Add("transfer-stop",L("Остановить передачу","Stop transfer"),new(ActionKind.StopTransfer));
         UpdateActions(actions, pending);
+        _showSawmill=building?.TypeId=="sawmill" && enterprise is not null;
+        if(_showSawmill && _sawmill is null)
+        {
+            _sawmill=new(_scenario,_language,_id,RevealLogistics);AddChild(_sawmill);MoveChild(_sawmill,0);
+            _detailsToggle=new Button{Text=L("Подробности · перенос, маршруты, транспорт","Details · transfers, routes, transport"),FocusMode=FocusModeEnum.None};AddChild(_detailsToggle);MoveChild(_detailsToggle,1);
+            _detailsToggle.Pressed+=()=>{_expanded=!_expanded;LayoutCard();};
+        }
+        if(_showSawmill)_sawmill!.ShowData(view,paused,_buttons);LayoutCard();
         if(view.Transfers.Length==0 && !pending)_activeTransferKey=null;
         foreach(var (key,pair) in _buttons)
             if(pair.Button is ContextActionButton button)
@@ -130,6 +143,21 @@ public partial class HouseholdObjectCard : VBoxContainer
                 button.ShowProgress(!active?0:100d*(double)((Int128)process!.Completed*volume+process.WorkRemainder)/(double)((Int128)process.Quantity*volume));
                 if(active)button.ShowCaption(L("Передано ","Transferred ")+process!.Completed+"/"+process.Quantity+" · "+PlayerText.Item(_language,process.ItemId));
             }
+    }
+
+    private void RevealLogistics()
+    {
+        _expanded=true;_routes.Visible=true;
+        if(_actionGroups.TryGetValue(L("Доставка","Logistics"),out var group))group.Visible=true;
+        LayoutCard();
+    }
+    private bool _showSawmill;
+    private void LayoutCard()
+    {
+        bool artwork=_showSawmill && Size.X>=980;
+        if(_sawmill is not null)_sawmill.Visible=artwork;
+        if(_detailsToggle is not null)_detailsToggle.Visible=artwork;
+        _details.Visible=!artwork || _expanded;
     }
 
     private void LogisticsActions(PlayerView view, EnterpriseView enterprise, System.Action<string, string, GameAction, bool> add)

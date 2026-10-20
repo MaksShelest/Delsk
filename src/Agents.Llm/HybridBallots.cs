@@ -57,7 +57,7 @@ public sealed partial class HybridController
             else reason="StaleBallot";
         }
         _runtime.Cancel(r);_state=_state with {BallotSlot=null,ResolvedDecisions=checked(_state.ResolvedDecisions+1)};_ballotWatch=null;
-        return new(selected,applied?"ModelBallot":"AlgorithmicBallotFallback",Trace(r,applied?"ModelResolved":"FallbackResolved",reason,reply));
+        return new(selected,applied?"ModelBallot":"AlgorithmicBallotFallback",Trace(r,applied?"ModelResolved":"FallbackResolved",reason,reply) with {RetryCount=slot.Retries});
     }
     private static void ValidateBallotSlot(HybridState state,ParticipantId actor)
     {

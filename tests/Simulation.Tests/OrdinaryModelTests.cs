@@ -42,6 +42,18 @@ public sealed class OrdinaryModelTests
         Assert.Equal(3,adapter.Calls.Count);Assert.All(requests,r=>Assert.NotNull(runtime.Peek(r)));
     }
     [Fact]
+    public async Task RetryingQueueFullCannotBypassTheRuntimeQueueBudget()
+    {
+        var adapter=new TestModelAdapter((_,_)=>Task.FromResult(new ModelReply("{}")));
+        using var runtime=new ModelRuntime(adapter,[1,2,3],new(0,1000));runtime.Bind("s1",1);
+        var requests=new[]{ModelTestFixtures.Request(1),ModelTestFixtures.Request(2),ModelTestFixtures.Request(3)};
+        foreach(var request in requests)Assert.True(runtime.Enqueue(request));runtime.Pump(0);
+        await ModelTestFixtures.Completed(runtime,adapter);
+        Assert.Equal("QueueFull",runtime.Peek(requests[1])!.Outcome);
+        Assert.True(runtime.Retry(requests[1]));Assert.False(runtime.Retry(requests[2]));Assert.Equal(1,runtime.WaitingRequests);
+        runtime.ProgressWaiting();await ModelTestFixtures.Completed(runtime,adapter,2);Assert.True(runtime.HasReply(requests[1]));
+    }
+    [Fact]
     public async Task RetryIsExplicitBoundedAndUserFallbackIsSavedAndRecordedOnce()
     {
         int calls=0;var adapter=new TestModelAdapter((r,_)=>Task.FromResult(Interlocked.Increment(ref calls)==1?new ModelReply(null,"ModelUnavailable"):new ModelReply("{}")));
@@ -49,7 +61,7 @@ public sealed class OrdinaryModelTests
         Assert.Equal("ModelUnavailable",c.WaitingFailure);Assert.True(c.RetryWaiting());r.ProgressWaiting();await ModelTestFixtures.Completed(r,adapter,2);
         Assert.False(c.RetryWaiting());c.ContinueAlgorithmically();Assert.False(s.WaitingForModel);
         s.Step();var trace=Assert.Single(s.ControllerTurns,t=>t.Decision.ModelTrace?.Resolution=="FallbackResolved").Decision.ModelTrace!;
-        Assert.Equal("UserFallback",trace.ReasonCode);
+        Assert.Equal("UserFallback",trace.ReasonCode);Assert.Equal(1,trace.RetryCount);
         var state=JsonSerializer.Deserialize<HybridState>(c.Capture().StateJson,SimulationJson.Options)!;
         Assert.False(state.Settings.Enabled);Assert.Equal(LocalGameModel.Default.Adapter,state.GameModel!.Adapter);
         var loaded=CheckpointStore.Decode(CheckpointStore.Encode(s));loaded.RestoreControllers(cp=>HybridController.Restore(cp,r));

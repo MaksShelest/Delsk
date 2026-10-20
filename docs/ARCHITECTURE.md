@@ -1,6 +1,6 @@
 # Архитектура Delsk
 
-Текущий срез пакета3 — §36 ниже; [отчёт](IMPLEMENTATION_REPORT_PACKAGE3.md). Пакет2/прежние описания сохраняются как датированная история.
+Текущий срез пакета6 — последний раздел ниже; [отчёт и границы](IMPLEMENTATION_REPORT_PACKAGE6.md). Прежние описания сохраняются как датированная история.
 
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
 Статус18.10.2026: спецификация0.5. Программный объём P00–P26.6 A/B/C и облачная часть P27 реализованы; Windows EXE/Android и текущая живая демонстрация Gate D остаются открыты. Измеренные ограничения длинной истории — IMPLEMENTATION_REPORT_P27.md.
@@ -765,3 +765,12 @@ NavigatePurchase — read-only запрос покупателя: конкрет
 - В публичном рейтинге только прежний общий капитал; новые WIP вложения не раскрываются третьим участникам. ControllerBuildingLevel получает только публичный каталог открываемых рецептов, не WorldState. Выбор рецепта между партиями оценивает все материалы и округлённое число рабочих тиков уровня; план исполняется теми же pause/select/resume валидаторами.
 - Контент C: milk/beet → cheese/sugar и grain+sugar+milk → pastry. Молочное сырьё — поставки через конечный пополняемый приёмный пункт P38, без животных/порчи. Существующие машины сохраняют тип. Новые модели/значки не создают товар.
 - World18/Rules production-recipes-1, Session2/Envelope2. Прежняя схема явно отклоняется, не мигрируется/не перезаписывается. Обычные карты one-v3/two-v3/three-v2, профиль presentation-economy-v6; старые файлы географии сохраняются. Значения config и границы баланса: [PRODUCTION_CHAINS.md](PRODUCTION_CHAINS.md).
+
+
+## Пакет6: модульные контроллеры и модель в Godot (20.10.2026)
+
+World18/Rules production-recipes-1 не меняются. PolicyProfile/Settings/AlgorithmState принадлежат Agents.Algorithmic, не Core economy. Legacy2 сохраняет прежнюю сериализацию; modular3 фиксирует Difficulty, точные версии модулей и experience schema. HiringEconomics/StrategicPlanning — чистая оценка allowlisted ControllerObservation. Публичные Economics содержат только Labor/Handling/WageExponent. Нет чтения WorldState, будущих рынков/PRNG, clone-world search или привилегированных команд. Forecast ограничен configuration budget, trace/цель сохраняются, исполнение — общий прежний executor. Проверять не только bounds, но reserve/disjoint resources, replay/order independence, finite demand, whole-workforce wage, own-input opportunity cost.
+
+LocalGameModel в Agents.Llm — сохранённый manifest конкретной клиентской композиции, не HTTP в Hosting/Core. Клиент создаёт один ModelRuntime и отдельные HybridController, восстанавливает exact metadata. TickScheduler принимает optional host predicate для остановки дальнейших quanta и сброса catch-up остатка. UI остаётся отзывчивым; между кадрами ProgressWaiting обслуживает уже admitted очередь, Freeze/Read по-прежнему определяют барьер решений. Retry ограничен одной попыткой/slot и runtime queue capacity, старый Work/callback не заменяет новый. Trace.RetryCount сохраняет попытку,0 опущен для legacy JSON. UserFallback/SessionRestored не разрешают одну компенсацию/команду дважды и не повторяют HTTP. Replay только командный.
+
+SawmillTabletPresenter — view над HouseholdObjectCard actions/AccessFor; сами кнопки сцены не считают экономику. Статусы/рецепты/цены/резервы только real PlayerView/catalog; prototype Demo.gd не копируется. Общие TabletPanel pause/help/close и независимые production/inbound/outbound остаются. Узкий viewport использует читаемый compact presenter. OFL сохраняется в source и PCK. Сценарии: проверять actual render/commands queued on pause/no transport purchase/RU-EN/compact, плюс обычные Core инварианты труда/логистики. Реальная модель и эффективность Hard — отдельные незакрытые acceptance gates, см. отчёт.

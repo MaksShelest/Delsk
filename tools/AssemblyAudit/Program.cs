@@ -4,7 +4,7 @@ using System.Reflection.PortableExecutable;
 if(args.Length!=1 || !Directory.Exists(args[0]))throw new ArgumentException("AssemblyAudit DIRECTORY");
 string folder=Path.GetFullPath(args[0]);int checkedFiles=0;
 if(File.Exists(Path.Combine(folder,"Simulation.Developer.dll")))throw new InvalidOperationException("Developer assembly in ordinary package");
-foreach(string name in new[]{"Delsk.Client","Simulation.Core","Simulation.Hosting","Agents.Algorithmic"})
+foreach(string name in new[]{"Delsk.Client","Simulation.Core","Simulation.Hosting","Agents.Algorithmic","Agents.Llm"})
 {
     string path=Path.Combine(folder,name+".dll");if(!File.Exists(path))throw new FileNotFoundException(path);
     using var stream=File.OpenRead(path);using var pe=new PEReader(stream);var metadata=pe.GetMetadataReader();

@@ -3,9 +3,11 @@
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
 Основание: [спецификация 0.5](requirements/game_specification.md) с уточнением визуального клиента от 17.10.2026, [архитектура](ARCHITECTURE.md), [решения и настройки](DECISIONS.md).
 
-## Текущий этап: пакет5 завершён, следующий пакет6 (20.10.2026, Europe/Samara)
+## Текущий этап: пакет6 — программная реализация и открытые gates (20.10.2026, Europe/Samara)
 
-От слитого PR#40 (`7042c91`) выполнены P47–P50 по §12.1 [следующего плана](DELSK_NEXT_STAGE_PLAN.md), вариант C выбран владельцем. [Реализация и gate](IMPLEMENTATION_REPORT_PACKAGE5.md), [процедура/пилотный баланс](PRODUCTION_CHAINS.md).835 ordinary/841 Developer tests,102exports/14replay/69comparisons, Linux Godot/UI, отдельная третья карта900/load/replay. World18/Rules production-recipes-1. Следующий пакет6 — P51–P53, начиная с P51; здесь не начат. Аппаратные gates/ограничения полной истории P27 сохраняются.
+База — слитый PR#41 (`66de3a4`). P51/P52 реализованы; P53 bounded planning и paired-series выполнены, преимущество Hard не доказано. P56 Godot/runtime/retry/fallback/save-load реализован, **реальная модель не проверена**. Архивный планшет лесопилки интегрирован. [Полный отчёт и границы](IMPLEMENTATION_REPORT_PACKAGE6.md), [точка продолжения по этапам](WORKLOG_PACKAGE6.md), [реальный model gate](LOCAL_MODEL_GAME.md). World18/Rules production-recipes-1 прежние;868 ordinary/874 Developer, полный runner/save-load/replay/privacy и Linux Godot. Следующий шаг — закрыть реальные/сравнительные gates пакета6, затем пакет7. Не объявлять пакет6 принятым по наличию кода.
+
+Исторический пакет5: P47–P50, C,835 ordinary/841 Developer; [отчёт](IMPLEMENTATION_REPORT_PACKAGE5.md). Сокращённое прежнее «пакет6 P51–P53» пропускало P56 из нормативного §12.1.
 
 Исторический пакет4: P43–P46,805 ordinary/811 Developer tests; [отчёт](IMPLEMENTATION_REPORT_PACKAGE4.md). Указание «P43–P47» в срезе пакета3 было ошибкой границы, исправленной нормативным §12.1.
 

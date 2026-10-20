@@ -36,7 +36,7 @@ check('tests', 180, [args.dotnet, 'tests/Simulation.Tests/bin/Release/net10.0/Si
 import xml.etree.ElementTree as ET
 trx=ET.parse(out/'tests.trx').getroot()
 counters=next(e for e in trx.iter() if e.tag.endswith('Counters'))
-if int(counters.attrib['passed']) < 835 or int(counters.attrib['failed']) != 0 or int(counters.attrib.get('notExecuted',0)) != 0:
+if int(counters.attrib['passed']) < 868 or int(counters.attrib['failed']) != 0 or int(counters.attrib.get('notExecuted',0)) != 0:
     raise SystemExit('Incomplete test suite')
 runner = [args.dotnet, 'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll']
 scenarios = {'cycle':'economic-cycle', 'recovery':'zero-cash-recovery', 'development':'land-and-content',

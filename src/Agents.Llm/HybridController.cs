@@ -28,7 +28,9 @@ public sealed partial class HybridController : IController
     public bool WaitingForModel => new[]{_state.Slot,_state.BallotSlot}.Any(s=>s is {Interrupted:false,Reply:null} && !_runtime.HasReply(s.Request));
     public HybridController(AlgorithmicController baseline, ModelRuntime runtime, HybridSettings? settings = null, LocalGameModel? gameModel=null)
     {
-        var config = settings ?? gameModel?.Policy ?? new(); config.Validate(); gameModel?.Validate(); _baseline = baseline; _runtime = runtime;
+        var config = settings ?? gameModel?.Policy ?? new(); config.Validate(); gameModel?.Validate();
+        if(gameModel is not null && config!=gameModel.Policy)throw new ArgumentException("Model policy mismatch");
+        _baseline = baseline; _runtime = runtime;
         _state = new(config, baseline.Capture(),GameModel:gameModel);
     }
     public void BindSession(ControllerSessionContext context)
@@ -148,7 +150,7 @@ public sealed partial class HybridController : IController
         }
         _runtime.Cancel(r);
         _state = _state with { Slot = null, ResolvedDecisions = checked(_state.ResolvedDecisions + 1), Memory = "Last executed goal: " + decision.Goal };
-        return decision with { Record = true, ModelTrace = Trace(r, applied ? "ModelResolved" : "FallbackResolved", applied ? "Accepted" : reason, slot.Reply) };
+        return decision with { Record = true, ModelTrace = Trace(r, applied ? "ModelResolved" : "FallbackResolved", applied ? "Accepted" : reason, slot.Reply) with {RetryCount=slot.Retries} };
     }
     private static ModelDecisionTrace Trace(ModelRequest r, string resolution, string reason, ModelReply? reply = null)
         => new(r.DecisionId, r.RequestedTick, r.ApplyTick, r.SessionEpoch, resolution, reason,

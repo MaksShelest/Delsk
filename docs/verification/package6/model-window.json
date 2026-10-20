@@ -1,0 +1,4 @@
+{
+  "failures": [],
+  "fixture": "HTTP tags succeeds; inference returns503, no real model"
+}

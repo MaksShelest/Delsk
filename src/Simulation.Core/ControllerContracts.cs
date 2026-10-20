@@ -42,7 +42,11 @@ public record ControllerObservation(long Tick, ParticipantView Participant, Acco
 }
 public record ModelDecisionTrace(string DecisionId, long RequestedTick, long ApplyTick, long SessionEpoch,
     string Resolution, string ReasonCode, string RequestJson, string? ResponseJson = null,
-    long? LatencyMilliseconds = null, long? PromptTokens = null, long? CompletionTokens = null, string? Model = null);
+    long? LatencyMilliseconds = null, long? PromptTokens = null, long? CompletionTokens = null, string? Model = null)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
+    public int RetryCount {get;init;}
+}
 public record ControllerDecision(string Goal, string Reason, ImmutableArray<GameAction> Actions, bool Record = true,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ModelDecisionTrace? ModelTrace = null,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ImmutableArray<UtilityScore>? Candidates = null, int PlanStep = 0);

@@ -70,7 +70,8 @@ public sealed class ModelRuntime : IDisposable
     {
         lock(_gate)
         {
-            if(!_pending.TryGetValue(request.ActorId,out var w) || w.Request!=request || !_ready.ContainsKey(request.ActorId))return false;
+            if(!_pending.TryGetValue(request.ActorId,out var w) || w.Request!=request || !_ready.ContainsKey(request.ActorId) ||
+                _waiting.Count>=_settings.QueueCapacity+(_active is null?1:0))return false;
             Cancel(request);return Enqueue(request);
         }
     }
