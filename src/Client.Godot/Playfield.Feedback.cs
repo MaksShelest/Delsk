@@ -5,6 +5,7 @@ public partial class Playfield
 {
     private readonly PresentationEffects _effects=new();
     private FeedbackAudio? _feedbackAudio;
+    private bool _feedbackBound;
     private FeedbackPreferences _feedbackPreferences=new();
     private void InitializeFeedback()
     {
@@ -14,7 +15,7 @@ public partial class Playfield
             try{var p=new FeedbackPreferences(file.GetValue("feedback","speech",true).AsBool(),file.GetValue("feedback","effects",65).AsInt32(),file.GetValue("feedback","ambience",20).AsInt32(),file.GetValue("feedback","music",0).AsInt32());p.Validate();_feedbackPreferences=p;}
             catch(ArgumentException){_feedbackPreferences=new();}
         }
-        _feedbackAudio=new();AddChild(_feedbackAudio);_feedbackAudio.Apply(_feedbackPreferences);GetTree().NodeAdded+=BindFeedbackButton;
+        _feedbackAudio=new();AddChild(_feedbackAudio);_feedbackAudio.Apply(_feedbackPreferences);GetTree().NodeAdded+=BindFeedbackButton;_feedbackBound=true;
     }
     private void BindFeedbackButton(Node node)
     {
@@ -54,5 +55,5 @@ public partial class Playfield
         column.AddChild(new Label{Text=L("0% — выключено. Настройки не меняют симуляцию.","0% disables a channel. Settings do not change simulation."),AutowrapMode=TextServer.AutowrapMode.WordSmart});
         dialog.Confirmed+=()=>dialog.QueueFree();dialog.Canceled+=()=>dialog.QueueFree();AddChild(dialog);dialog.PopupCentered();
     }
-    private void DisposeFeedback(){GetTree().NodeAdded-=BindFeedbackButton;}
+    private void DisposeFeedback(){if(!_feedbackBound)return;GetTree().NodeAdded-=BindFeedbackButton;_feedbackBound=false;}
 }

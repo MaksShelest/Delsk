@@ -3,9 +3,11 @@
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
 Основание: [спецификация 0.5](requirements/game_specification.md) с уточнением визуального клиента от 17.10.2026, [архитектура](ARCHITECTURE.md), [решения и настройки](DECISIONS.md).
 
-## Текущий этап: пакет6 — программная реализация и открытые gates (20.10.2026, Europe/Samara)
+## Текущий этап: пакет7 реализован в Linux-среде (20.10.2026, Europe/Samara)
 
-База — слитый PR#41 (`66de3a4`). P51/P52 реализованы; P53 bounded planning и paired-series выполнены, преимущество Hard не доказано. P56 Godot/runtime/retry/fallback/save-load реализован, **реальная модель не проверена**. Архивный планшет лесопилки интегрирован. [Полный отчёт и границы](IMPLEMENTATION_REPORT_PACKAGE6.md), [точка продолжения по этапам](WORKLOG_PACKAGE6.md), [реальный model gate](LOCAL_MODEL_GAME.md). World18/Rules production-recipes-1 прежние;868 ordinary/874 Developer, полный runner/save-load/replay/privacy и Linux Godot. Следующий шаг — закрыть реальные/сравнительные gates пакета6, затем пакет7. Не объявлять пакет6 принятым по наличию кода.
+После слитого PR#42 (`853b993`) реализованы P30/P57 по нормативному пакету7 и планшет пекарни из архива владельца. [Отчёт/gates](IMPLEMENTATION_REPORT_PACKAGE7.md), [восстановление по этапам](WORKLOG_PACKAGE7.md).879 ordinary/885 Developer tests, runner/save/load/replay/privacy, ordinary+Developer Godot hash и actual render/audio-state проверки. World18/Rules и checkpoint прежние. Далее пакет8 **P58–P60**; текущий real-model P56, comparative Hard и hardware/long-history gates остаются открытыми, эта итерация их не закрывает.
+
+Исторический пакет6: P51/P52 и программные P53/P56,868/874 tests, архивная лесопилка; [отчёт и ограничения](IMPLEMENTATION_REPORT_PACKAGE6.md). Преимущество Hard не доказано, реальная модель недоступна. Пользователь явно разрешил пакет7; §12.1 допускает его выполнение раньше, без ложного закрытия предыдущих gates.
 
 Исторический пакет5: P47–P50, C,835 ordinary/841 Developer; [отчёт](IMPLEMENTATION_REPORT_PACKAGE5.md). Сокращённое прежнее «пакет6 P51–P53» пропускало P56 из нормативного §12.1.
 

@@ -481,7 +481,7 @@ public partial class Playfield : Control
             _tooltip.Text = PlayContext.Hover(frame, view, hx, hz, _language);
             _tooltip.Visible = _hoverX.HasValue && _hoverZ.HasValue && !_tabletState.IsOpen && _helpOverlay is null && frame.Markers.Any(m => m.X == hx && m.Z == hz);
         }
-        PollHarvest();
+        PollHarvest(view);
         _feedback = Describe(view);
         _status.Text = $"{T(paused ? "paused" : "running")}  {T("tick")}: {_session.Engine.Tick}\n" +
             $"{T("position")}: ({actor.Position.X}, {actor.Position.Z}) +({travelOffset.OffsetX}, {travelOffset.OffsetZ})  {T("busy")}: {T(actor.Busy ? "yes" : "no")}\n" +
@@ -911,10 +911,10 @@ public partial class Playfield : Control
         _effects.Reset(_publicCursor);_effects.Advance(0,true);
     }
 
-    private void PollHarvest()
+    private void PollHarvest(PlayerView view)
     {
         var events = _session.Engine.PublicEventsSince(_publicCursor);
-        _effects.ObserveLabor(_session.Engine.Observe(_human).LaborMarket,_human.Value,_feedbackPreferences);
+        _effects.ObserveLabor(view.LaborMarket,_human.Value,_feedbackPreferences);
         _effects.Consume(events,_human.Value,_feedbackPreferences);
         if (events.Length == 0) return;
         _publicCursor = events[^1].Sequence;

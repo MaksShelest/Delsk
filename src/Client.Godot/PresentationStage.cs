@@ -135,11 +135,13 @@ public partial class PresentationStage : Node3D
     {
         foreach(var pair in _speechLabels)pair.Value.Visible=false;
         if(!visible)return;
+        int row=0;
         foreach(var cue in cues)
         {
             if(!_actors.TryGetValue(cue.Actor,out var actor))continue;
             if(!_speechLabels.TryGetValue(cue.Actor,out var label))
             {label=new Label3D{FontSize=28,PixelSize=.006f,Position=new(0,1.38f,0),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,OutlineSize=5,Modulate=new("fff4ce"),NoDepthTest=true};actor.Node.AddChild(label);_speechLabels[cue.Actor]=label;}
+            label.Position=new(0,1.38f+.28f*row++,0);
             label.Text=PresentationEffects.Text(cue,language);label.Visible=true;
         }
     }
@@ -223,8 +225,10 @@ public partial class PresentationStage : Node3D
                 new Color(0.48f + shade, 0.62f + shade, 0.39f + shade), new Vector3(x, -0.005f, z));
         }
         AddStatic(ground);
+        var yardCells=frame.Markers.Where(m=>m.Kind=="warehouse").SelectMany(m=>m.Walls.Select(w=>new Simulation.Core.Cell(m.X+w.X,m.Z+w.Z))).ToHashSet();
         foreach (var marker in frame.Markers)
         {
+            if(marker.Kind=="blocked" && yardCells.Contains(new(marker.X,marker.Z)))continue;
             Node3D? node = null;
             if (marker.Kind == "equipment") node = WorldModels.Equipment(marker.Label,marker.Level);
             else if (marker.Kind == "truck-home") { node = WorldModels.Truck(false); _parked[marker.EntityId] = node; }

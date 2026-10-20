@@ -3,8 +3,9 @@ using Simulation.Core;
 using Simulation.Hosting;
 
 /// <summary>The supplied artwork is a view over the same household actions, not a second economy.</summary>
-public partial class SawmillTabletPresenter : Control
+public partial class ProductionTabletPresenter : Control
 {
+    private readonly bool _bakery;
     private readonly Control _scene;
     private readonly Control _panel;
     private readonly string _language;
@@ -12,11 +13,12 @@ public partial class SawmillTabletPresenter : Control
     private readonly long _id;
     private readonly System.Action _details;
     private readonly Dictionary<string,Button> _actions=[];
-    public SawmillTabletPresenter(ScenarioDefinition scenario,string language,long id,System.Action details)
+    public ProductionTabletPresenter(ScenarioDefinition scenario,string language,long id,System.Action details,string type)
     {
+        _bakery=type=="bakery";
         _scenario=scenario;_language=language;_id=id;_details=details;
         MouseFilter=MouseFilterEnum.Pass;
-        _scene=GD.Load<PackedScene>("res://delsk_sawmill_ui/SawmillTablet.tscn").Instantiate<Control>();AddChild(_scene);
+        _scene=GD.Load<PackedScene>(_bakery?"res://delsk_bakery_ui/BakeryTablet.tscn":"res://delsk_sawmill_ui/SawmillTablet.tscn").Instantiate<Control>();AddChild(_scene);
         _scene.SetAnchorsAndOffsetsPreset(LayoutPreset.TopLeft);_scene.Size=new(1280,924);
         _panel=_scene.GetNode<Control>("Panel");_panel.Position=Vector2.Zero;
         foreach(Node child in _scene.GetChildren())if(child!=_panel && child is CanvasItem item)item.Visible=false;
@@ -25,7 +27,7 @@ public partial class SawmillTabletPresenter : Control
         foreach(string path in new[]{"Delivery/DeliverySettings","Delivery/Source","Delivery/Destination"})Node<Button>(path).Pressed+=()=>_details();
         foreach(var pair in new[]{("Production/PauseProduction","work"),("Workers/WageMinus","wage-:"+id),("Workers/WagePlus","wage+:"+id),("Upgrade/UpgradeProduction","upgrade"),("Delivery/SupplyToggle","inbound"),("Delivery/SendToggle","output"),("Delivery/NoTransport/BuyTransport","truck")})Bind(pair.Item1,pair.Item2);
         Resized+=ResizeArtwork;
-        Text("Title",L("Лесопилка","Sawmill"));Text("Production/Heading",L("Производство","Production"));Text("Workers/Heading",L("Работники","Workers"));
+        Text("Title",PlayerText.Building(_language,type));Text("Production/Heading",L("Производство","Production"));Text("Workers/Heading",L("Работники","Workers"));
         Text("Workers/WageLabel",L("Зарплата","Wage"));Text("Workers/WageUnit",L("за тик","per tick"));Text("Stock/Heading",L("Склад","Stock"));
         Text("Delivery/Heading",L("Доставка","Logistics"));Text("Delivery/SupplyTitle",L("Подвоз сырья","Inbound supplies"));Text("Delivery/SendTitle",L("Отправка продукции","Outbound goods"));
         Text("Upgrade/Title",L("Улучшение производства","Production upgrade"));Text("Delivery/NoTransport/Title",L("Транспорт не приобретён","No transport purchased"));
@@ -36,7 +38,8 @@ public partial class SawmillTabletPresenter : Control
         foreach(var button in Descendants(_panel).OfType<Button>()){button.FocusMode=FocusModeEnum.None;button.ClipText=true;}
     }
     private static IEnumerable<Node> Descendants(Node n){foreach(Node child in n.GetChildren()){yield return child;foreach(var nested in Descendants(child))yield return nested;}}
-    private T Node<T>(string path) where T:Node=>_panel.GetNode<T>(path);
+    private T Node<T>(string path) where T:Node
+    {if(_bakery && path.StartsWith("Stock/",StringComparison.Ordinal))path=path.Replace("Wood","Grain",StringComparison.Ordinal).Replace("Plank","Bread",StringComparison.Ordinal);return _panel.GetNode<T>(path);}
     private void Text(string path,string value){var label=Node<Label>(path);label.Text=value;label.TooltipText=value;}
     private void Bind(string path,string key)
     {

@@ -36,7 +36,7 @@ check('tests', 180, [args.dotnet, 'tests/Simulation.Tests/bin/Release/net10.0/Si
 import xml.etree.ElementTree as ET
 trx=ET.parse(out/'tests.trx').getroot()
 counters=next(e for e in trx.iter() if e.tag.endswith('Counters'))
-if int(counters.attrib['passed']) < 868 or int(counters.attrib['failed']) != 0 or int(counters.attrib.get('notExecuted',0)) != 0:
+if int(counters.attrib['passed']) < 879 or int(counters.attrib['failed']) != 0 or int(counters.attrib.get('notExecuted',0)) != 0:
     raise SystemExit('Incomplete test suite')
 runner = [args.dotnet, 'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll']
 scenarios = {'cycle':'economic-cycle', 'recovery':'zero-cash-recovery', 'development':'land-and-content',
@@ -124,7 +124,7 @@ manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases
             'model_safety':{'checkpoint_tick':6,'final_tick':60,'valid':1,'forged_actor':1,'late_reply':1},
             'model_off':'exact world equality with baseline-economy and the same headless timing label',
             'exports':len(folders), 'replays':replays, 'comparison_pairs':comparison_pairs,
-            'scope':'Package5 P47-P50: multi-input production and food chain C, stopped voting S8 and complete regression; Developer/window/platform gates separate',
+            'scope':'Package7 P30/P57 and full previous economic/controller regression; bakery/render/audio gates separate; Developer/window/platform gates separate',
             'author':'Шелестов Максим Евгеньевич'}
 (out/'headless-check.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
 print(f'Headless regression succeeded; results={out}')

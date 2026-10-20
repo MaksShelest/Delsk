@@ -1,6 +1,6 @@
 # Архитектура Delsk
 
-Текущий срез пакета6 — последний раздел ниже; [отчёт и границы](IMPLEMENTATION_REPORT_PACKAGE6.md). Прежние описания сохраняются как датированная история.
+Текущий срез пакета7 — последний раздел ниже; [отчёт и границы](IMPLEMENTATION_REPORT_PACKAGE7.md). Прежние описания сохраняются как датированная история.
 
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
 Статус18.10.2026: спецификация0.5. Программный объём P00–P26.6 A/B/C и облачная часть P27 реализованы; Windows EXE/Android и текущая живая демонстрация Gate D остаются открыты. Измеренные ограничения длинной истории — IMPLEMENTATION_REPORT_P27.md.
@@ -774,3 +774,12 @@ World18/Rules production-recipes-1 не меняются. PolicyProfile/Settings
 LocalGameModel в Agents.Llm — сохранённый manifest конкретной клиентской композиции, не HTTP в Hosting/Core. Клиент создаёт один ModelRuntime и отдельные HybridController, восстанавливает exact metadata. TickScheduler принимает optional host predicate для остановки дальнейших quanta и сброса catch-up остатка. UI остаётся отзывчивым; между кадрами ProgressWaiting обслуживает уже admitted очередь, Freeze/Read по-прежнему определяют барьер решений. Retry ограничен одной попыткой/slot и runtime queue capacity, старый Work/callback не заменяет новый. Trace.RetryCount сохраняет попытку,0 опущен для legacy JSON. UserFallback/SessionRestored не разрешают одну компенсацию/команду дважды и не повторяют HTTP. Replay только командный.
 
 SawmillTabletPresenter — view над HouseholdObjectCard actions/AccessFor; сами кнопки сцены не считают экономику. Статусы/рецепты/цены/резервы только real PlayerView/catalog; prototype Demo.gd не копируется. Общие TabletPanel pause/help/close и независимые production/inbound/outbound остаются. Узкий viewport использует читаемый compact presenter. OFL сохраняется в source и PCK. Сценарии: проверять actual render/commands queued on pause/no transport purchase/RU-EN/compact, плюс обычные Core инварианты труда/логистики. Реальная модель и эффективность Hard — отдельные незакрытые acceptance gates, см. отчёт.
+
+
+## Пакет7: визуальная проекция и ограниченные эффекты (20.10.2026)
+
+P30 расширяет только Hosting Presentation: actual level/relative catalog footprint/walls и own-only physical warehouse goods. Inspect внутри projection не даёт права публиковать чужой inventory; foreign Known=false/empty goods/capacity0. Future receipt hold не рисуется товаром. WarehouseVisuals ограничивает24 piles/4 layers и сохраняет смешанные типы. Stage отделяет static key от stock key: не пересоздавать карту/модели на каждом кадре/единице переноса. Визуальное ограждение заменяет серый blocked mesh внутри площадки, не меняет Core geometry/path. Существующие L1/L2 имеют разные силуэты, fictional levels не вводятся.
+
+P57 PresentationEffects не хранится в World/Controller, читает только публичные события/текущий публичный workforce. Private support/negotiation не превращаются в текст, варианты имеют отдельный cosmetic hash; нет чтения будущего/World RNG/LLM. Presentation clock ограничивает время, очередь и burst независимо от числа Step; cover/pause/focus очищают эффекты, reset journal cursor не воспроизводит старую историю после load. Речь имеет приоритеты/cooldown/2 simultaneous с разной высотой. FeedbackAudio владеет bounded pool и собственными audio resources, корректно освобождает их, loop pause/resume без offline catch-up. Сохранённые volume/speech preferences — пользовательский ConfigFile, не экономическое состояние. Удалять NodeAdded subscription только если она была создана (smoke bypass _Ready).
+
+ProductionTabletPresenter — общий адаптер supplied sawmill/bakery scenes к прежним actions/access. Шрифты идентичны, reuse OFL. Demo.gd не исполняется. При иных/multi-input рецептах generic card показывает полные требования; compact<980 сохраняет действия. Тесты: physical/private stock и save/replay; FX burst/priority/expiry/no-world-change; actual Godot waveform/pause, render cache, RU/EN bakery и preference restart. VisualModelsProbe существует только в изолированном test stage; ordinary metadata/PCK его не содержат. Форматы World18/Session2/Envelope2 прежние.

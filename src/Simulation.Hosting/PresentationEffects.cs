@@ -46,7 +46,7 @@ public sealed class PresentationEffects
             {OfferSound(FeedbackSound.Trade);if(e.ActorId is {} a && a.Value!=human)candidates.Add((a.Value,SpeechTopic.Trade,2,e.Sequence));}
             if(e.Type=="HarvestStarted" && e.ActorId is {} gather && gather.Value!=human)candidates.Add((gather.Value,SpeechTopic.Gather,1,e.Sequence));
             if(e.Type is "HarvestCompleted" or "ProductionCompleted")OfferSound(FeedbackSound.Harvest);
-            if(e.Type is "ElectionTallied" or "VictoryDeclared" || e.Type=="CommandRejected" && e.ActorId?.Value==human)OfferSound(FeedbackSound.Important);
+            if(e.Type is "ElectionCompleted" or "FirstVictory" || e.Type=="CommandRejected" && e.ActorId?.Value==human)OfferSound(FeedbackSound.Important);
         }
         if(settings.Speech)
             foreach(var c in candidates.OrderByDescending(c=>c.Priority).ThenByDescending(c=>c.Sequence))OfferSpeech(c.Actor,c.Topic,c.Priority,c.Sequence);

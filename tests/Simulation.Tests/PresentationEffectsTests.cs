@@ -17,6 +17,7 @@ public class PresentationEffectsTests
         effects.Consume([Event(1001,"BuildingConstructed",2)],1,new());Assert.Contains(effects.Speech,c=>c.Actor==2 && c.Topic==SpeechTopic.Build);
         effects.Consume([Event(1001,"BuildingConstructed",2)],1,new());Assert.Empty(effects.TakeSounds());
         Assert.All(effects.Speech,c=>Assert.DoesNotContain("secret",PresentationEffects.Text(c,"en")));
+        effects.Advance(.25,false);effects.Consume([Event(1002,"ElectionCompleted",1)],1,new());Assert.Contains(FeedbackSound.Important,effects.TakeSounds());
     }
     [Fact]
     public void PauseCoverAndCooldownDropOldEffectsInsteadOfBurstingOnResume()
