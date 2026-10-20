@@ -126,7 +126,7 @@ def expand(plan, workspace):
     fields(plan, ['version', 'id', 'scenario', 'economy', 'controllers', 'ticks', 'seeds',
                   'repetitions', 'mode', 'modelConfig', 'factors', 'composition', 'timeoutSeconds', 'profile'],
            ['version', 'id', 'scenario', 'economy', 'controllers', 'ticks', 'seeds', 'repetitions', 'mode', 'factors'])
-    if type(plan['version']) is not int or plan['version'] != 1 or not re.fullmatch(r'[a-zA-Z0-9_-]{1,64}', str(plan['id'])):
+    if type(plan['version']) is not int or plan['version'] != 1 or not isinstance(plan['id'],str) or not re.fullmatch(r'[a-zA-Z0-9_-]{1,64}', str(plan['id'])):
         raise ValueError('Invalid plan version/id')
     if not integer(plan['ticks'], 1, 10000) or not integer(plan['repetitions'], 1, 500):
         raise ValueError('Use ticks1..10000, repetitions1..500')

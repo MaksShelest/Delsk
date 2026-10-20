@@ -1,0 +1,34 @@
+# Пакет8 — лаборатория, исследования и передача
+
+Автор: Шелестов Максим Евгеньевич.20.10.2026, Europe/Samara.
+
+База — актуальный слитый PR#43 (`370673e`), рабочее дерево было чистым. Проверены история/код/тесты/нормативные документы. Отдельная ветка `feat/package8-research-acceptance`. До начала уже работали пакеты1–7: физическая экономика/ресурсы/права/торговля/переговоры/общие рецепты, численные выборы, модульные NPC, optional model runtime, изолированный Developer, складские модели, звук и архивные планшеты. Дальше была очередь P58–P60. Существовавшие ограничения Hard/реальной модели/устройств/истории не объявлялись закрытыми.
+
+## Реализация и статус
+
+- **P58 закрыт программной приёмкой.** Настоящий локальный browser UI над прежним runner, без второй симуляции/Godot. Профили, список факторов/значения/ranges, seed/repetitions/composition/difficulty/algorithmic/real hybrid, предвалидация каждой комбинации C#, сохранённые snapshots/хеши, атомарная очередь/один file-lock owner, ошибки/recovery/явный retry в новый attempt, пауза между bounded runs, полный набор исходных JSON/CSV/JSONL, summary JSON/CSV и выбранные paired comparisons. Ни одной правки глобального config/economy.json. [Процедура](RESEARCH_LAB.md).
+- Независимый NPC negotiation factor сохраняет trade/politics и использует прежний прямой ProposeSupport при отключённом протоколе. Null не меняет прежнюю сериализацию. Тест обнаружил и помог исправить отдельный ProposeTrade в PoliticalGoals; это не обход запрета в Core. validate-only теперь проверяет настоящие controller/model settings без Step/inference.
+- **P59 выполнен частично, полностью не закрыт.**18 реальных прогонов с независимыми денежными/товарными/публичными сверками, строгими парами/разбросом/сырыми SHA. Добавлено необязательное Hosting-профилирование controller/Core/sampling/CPU/allocations/memory/encode/decode, не влияющее на world/hash/save. Отдельно измерен реальный Godot gallery render/cache. [Результаты и отрицательные выводы](RESEARCH_RESULTS_PACKAGE8.md): Hard хуже Medium; negotiation ordinary pilot не активировал механизм; все3NPC восстановились из cash0 без shop; история5000 требует save58.6MB/decode15.7s/peak4.95GB. Универсальный баланс/ROI/Hard superiority/длинная история/target GPU ещё открыты. Экономика не перенастраивалась на малой выборке.
+- **P60: software/Linux gates и передача; полная приёмка открыта.** Актуальная Windows EXE/Android-device проверка, аппаратные FPS/звук/VRAM, реальный P56 в этой среде не выполнены. Fresh localhost11434 отказал в соединении. HTTP503 UI-fixture и старый Windows P23 не называются текущим inference. Контейнер полной истории не заменялся потерей журнала, схему hash не меняли. Процедуры устройств — P27_LOCAL_ACCEPTANCE.md и LOCAL_MODEL_GAME.md.
+
+World18/Rules production-recipes-1/Session2/Envelope2 прежние. Исправлена устаревшая строка manifest «P51–P53 not implemented»: актуальные policy/settings/module versions уже записываются по каждому controller; ложная глобальная сложность не выводится. Stage=Package8.
+
+## Реально выполненные проверки
+
+- Bounded locked restore/build: **880/880 ordinary и886/886 Developer**,0failed/skipped.12/12Python queue/factor/metrics tests. Дополнены meaningful negotiation-toggle/direct-support/restore и profiler determinism tests. Это варианты одного suite, не1766 независимых функций.
+- Полный final headless:24scripted+5baseline, **102exports/14replay/69continuation pairs**, S7/model-off equality/денежные/товарные/кадровые/privacy-инварианты. P58 до профилирования также прошёл отдельный полный gate.
+- Actual Chromium UI: отклонение пустого seed и конфликтного profile до очереди, C# validation, start/pause/resume, persisted recovery, CSV download/selected comparison. Отсутствующий/неверный token и чужой Host/Origin дают403. UI→прямой CLI полные экспорты совпали, save59/load/replay120 совпали штатными verifiers. Финальный браузерный gate выполнен после изменений frontend.
+- **18actual research runs +36 независимых money/public checks**; paired samples/spread/exact inputs/export SHA.5000ticks direct checkpoint world/controller hash equality. ROI/Hard/неактивный механизм и memory limits отдельно в P59-отчёте.
+- Godot Linux4.7.2/.NET10.0.12: ordinary и isolated Developer — **1132tick hashes + stopped voting final10,35file restores** в каждом. Проверены stopped voting/поддержка/physical/trade/food и lifecycle adapter без catch-up. Ordinary-profile headless0→1200 пересекает реальные выборы с явной self-ballot политикой; это не выдаётся за ручную600-second игровую сессию.
+- Client Debug/ExportRelease:0warnings/errors; ordinary assembly audit **5DLL**, нет Developer/VisualModelsProbe/reference/resources. Developer Release build отвергается как ожидается. PCK реально открыт отдельным Godot и проверен: обе архивные сцены/лицензии/аудио присутствуют, Developer/obj/test-gallery отсутствуют. Exporter сообщил известную EditorSettings/shutdown_adb notice; штатный log verifier допускает только эту конкретную строку, иных Godot errors нет.
+- Actual window UI: лесопилка/пекарня RU/EN/800×600, queues на pause, transport, независимые inbound/output/production, pending wage,3volumes/speech persist across scene restart. HTTP503 model-errors:3retry/3UserFallback, не real inference. Dummy audio: настоящие WAV/loading/pool/pause/focus/resume без leak, не проверка физических динамиков. Новый gallery profile —60отрисованных кадров, cache100 без rebuild; не hardware60FPS.
+
+Компактные отчёты, source/check/log SHA и команды — [verification/package8/gate-summary.json](verification/package8/gate-summary.json). Исходные большие журналы/builds/кеши/модельные веса не коммитились. Все новые build/test/runner/probe checks использовали hard timeout; stdout/stderr/exit сохранены. После финальных тестов изменены только отчёты и guard/minimum-test metadata. Глобальный economy и неизменяемая спецификация проверены отдельно.
+
+## Итог всего плана и оставшиеся шаги
+
+[Сводка ВСЕХ8пакетов](NEXT_STAGE_SUMMARY.md) отдельно перечисляет результат каждого, неполную приёмку, отличия от первоначального замысла и дополнительные задачи. Пакет8 не начинает P61/UI/реальную LLM-интеграцию заново. Дополнительные архивные планшеты были отдельными просьбами владельца; вариант C выбран им явно, а A/B не являются незавершёнными обещаниями.
+
+Следующий небольшой шаг — разобрать Hard goal-ranking на обычных seed42/43, отдельно сопоставив добычу/маржинальный выпуск/занятость/дорогу и текущие обязательства; затем повторить контрольные парные серии на новых seed. До релиза также обязательны измеренная работа с ростом истории и реальные Windows/Android/model gates. Никакого заявления о полном завершении P28–P60.
+
+Коммиты этапов: `f6e4611` (recovery), `a5c2cfe` (P58), `13a24c6` (P59). Итоговый commit/PR добавляются после gate и публикации; автоматически не merge.

@@ -37,7 +37,7 @@ class LabTests(unittest.TestCase):
             with self.subTest(factor=factor),self.assertRaises(ValueError):values(factor)
 
     def test_invalid_plan_and_composition_fail_before_any_execution(self):
-        for change in [dict(seeds=[42,42]),dict(ticks=True),dict(repetitions=0),dict(modelConfig='x'),
+        for change in [dict(id=1),dict(seeds=[42,42]),dict(ticks=True),dict(repetitions=0),dict(modelConfig='x'),
                        dict(mode='hybrid'),dict(composition=[dict(actorId=2,preferredInput='wood')]),
                        dict(factors=self.plan['factors']*2),dict(seeds=[-1]),dict(unknown=0)]:
             with self.subTest(change=change),self.assertRaises((ValueError,TypeError)):

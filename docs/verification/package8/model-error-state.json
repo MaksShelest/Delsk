@@ -1,0 +1,8 @@
+{
+  "status": "succeeded",
+  "fixture": "HTTP503; not a real model",
+  "requests": 6,
+  "recordedUserFallbacks": 3,
+  "recordedRetries": 3,
+  "worldTick": 2
+}

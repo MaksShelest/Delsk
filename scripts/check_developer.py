@@ -13,7 +13,7 @@ check('developer-build',180,[a.dotnet,'build','Delsk.sln','-c','Debug','-p:Delsk
 check('developer-tests',180,[a.dotnet,'tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll','-noColor','-noLogo','-parallelMode','none','-result-trx',str(out/'tests.trx')])
 import xml.etree.ElementTree as ET
 counters=next(e for e in ET.parse(out/'tests.trx').iter() if e.tag.endswith('Counters')).attrib
-assert int(counters['passed'])>=885 and int(counters['failed'])==0 and int(counters.get('notExecuted',0))==0
+assert int(counters['passed'])>=886 and int(counters['failed'])==0 and int(counters.get('notExecuted',0))==0
 check('forbidden-developer-release',60,[a.dotnet,'build','src/Simulation.Core/Simulation.Core.csproj','-c','Release','-p:DelskDeveloper=true','--no-restore','--disable-build-servers','-m:1'],1)
 assert 'forbidden in Release' in (out/'checks/forbidden-developer-release.stdout.log').read_text()
 (out/'developer-check.json').write_text(json.dumps({'status':'succeeded','release_negative_build':'expected rejection','scope':'Developer variant; ordinary release/client metadata checked separately'},indent=2)+'\n')

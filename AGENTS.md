@@ -2,7 +2,15 @@
 
 Автор проекта и материалов: Шелестов Максим Евгеньевич.
 
-Актуальные версии/статусы — в разделе «Пакет7»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
+Актуальные версии/статусы — в разделе «Пакет8»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
+
+## Пакет8, актуально20.10.2026 (Europe/Samara)
+
+- База — слитый PR#43 (`370673e`). P58 программно закрыт: stdlib loopback research UI/CLI над прежним runner, validated snapshots/отдельные profiles, atomic queue/file lock/recovery/attempts, pause между bounded jobs, исходные JSON/CSV/JSONL и paired summaries. Не включать в ordinary client и не добавлять вторую симуляцию. Процедура RESEARCH_LAB.md, контекст WORKLOG_PACKAGE8.md.
+- NegotiationsEnabled null сохраняет прежние settings/hash; false выключает NPC negotiation protocol, не trade/politics, BuySupport идёт прежним прямым ProposeSupport. Это policy factor, не запрет команд Core. Сохранять exact checkpoint; не делать общего politics-off вместо negotiations-off.
+- Hosting-only optional StepMeasured/SessionProfiler измеряют controller/Core/sampling, CPU/allocations/memory/encode/decode; не входят в save/PRNG/hash. World18/production-recipes-1/Session2/Envelope2 прежние. Никакого удаления истории/нового режима бюджета/сдвига fixed-price G ради benchmark. Manifest stagePackage8, настройки/версии сложности по каждому controller.
+- P59 не закрыт полностью:18 actual runs/paired1200+long5000, independent balances; Hard−Medium capital−91938/−48677/0, negotiation pilot inactive0/0, recovery всех3NPC с cash0 без shop. Длинная история save58.6MB/decode15.7s/peak4.95GB. RESEARCH_RESULTS_PACKAGE8.md хранит отрицательные результаты/определения метрик; cash operating result не accrued profit. Не выдавать3seed/подготовленную food-fixture за универсальный баланс/ROI.
+- P60 software/Linux gates:880 ordinary/886Developer/12Python,102exports/14replay/69pairs,1132Linux hashes и35restores; evidence в IMPLEMENTATION_REPORT_PACKAGE8.md. Windows EXE/Android-device/hardwareFPS/audio/реальный P56/Hard efficacy остаются открытыми. Весь P28–P60 **не завершён**. Сводка всех8пакетов, отклонений и дополнительных задач — NEXT_STAGE_SUMMARY.md. Следующий шаг — закрывать перечисленные gates, не новый произвольный P61.
 
 ## Пакет7, актуально20.10.2026 (Europe/Samara)
 

@@ -1,9 +1,11 @@
 # План реализации Delsk в облаке
 
+Актуально после пакета8: P58 software готов; P59/P60 полностью не закрыты из-за подтверждённых Hard/history/balance и реальных model/device gates. [Общая сводка P28–P60](NEXT_STAGE_SUMMARY.md), [отчёт8](IMPLEMENTATION_REPORT_PACKAGE8.md). Нумерацию исторических P00–P27 и исходного next-stage плана не менять; весь этап не объявлять завершённым.
+
 Автор: Шелестов Максим Евгеньевич. Дата: 13.10.2026.
 Основание: [спецификация 0.5](requirements/game_specification.md) с уточнением визуального клиента от 17.10.2026, [архитектура](ARCHITECTURE.md), [решения и настройки](DECISIONS.md).
 
-## Текущий этап: пакет7 реализован в Linux-среде (20.10.2026, Europe/Samara)
+## Исторический срез перед пакетом8: пакет7 реализован в Linux-среде (20.10.2026, Europe/Samara)
 
 После слитого PR#42 (`853b993`) реализованы P30/P57 по нормативному пакету7 и планшет пекарни из архива владельца. [Отчёт/gates](IMPLEMENTATION_REPORT_PACKAGE7.md), [восстановление по этапам](WORKLOG_PACKAGE7.md).879 ordinary/885 Developer tests, runner/save/load/replay/privacy, ordinary+Developer Godot hash и actual render/audio-state проверки. World18/Rules и checkpoint прежние. Далее пакет8 **P58–P60**; текущий real-model P56, comparative Hard и hardware/long-history gates остаются открытыми, эта итерация их не закрывает.
 

@@ -1,5 +1,9 @@
 # Фактическая готовность Delsk
 
+Актуально20.10.2026, пакет8 от слитого PR#43: World18/production-recipes-1/Session2/Envelope2. [Весь план по пакетам](NEXT_STAGE_SUMMARY.md), [новая лаборатория](RESEARCH_LAB.md), [измерения/отрицательные результаты](RESEARCH_RESULTS_PACKAGE8.md), [gate и передача](IMPLEMENTATION_REPORT_PACKAGE8.md). P58 программно закрыт. P59/P60 целиком не закрыты: Hard не показал выигрыша, full-history5000 требует значительной памяти/времени; долгосрочный ROI, реальная модель/WindowsEXE/Android-device не проверены. Следующий шаг закрывает эти gates, не добавляет новый пакет.
+
+Исторические срезы ниже сохраняют состояние на свою дату. Уточнение границ: пакет4=P43–P46, пакет5=P47–P50, пакет6=P51–P53/P56.
+
 Текущий срез19.10.2026: пакет3 P37–P42 реализован после PR#38. World16/Rules physical-automation-1, профиль presentation-economy-v4.773 ordinary/779 Developer tests,90exports/11replay/60comparisons; дополнительно third-map900/load/replay и Linux Godot81 physical tick hashes/оконный UI. [Отчёт и честные границы](IMPLEMENTATION_REPORT_PACKAGE3.md). Следующий пакет4 P43–P47, без автоматического перехода. P32/P33, аппаратные gates и ограничения длинной истории остаются открыты. Нижние срезы — история.
 
 Актуально19.10.2026 после пакета2: P36/P54/P55 реализованы, World15/Rules stopped-elections-1. [Отчёт и ограничения](IMPLEMENTATION_REPORT_PACKAGE2.md), [Developer и headless](DEVELOPER_TOOLS.md). P32/P33 по-прежнему имеют зависимости. Следующий пакет3 P37–P42; нижние датированные срезы — история.

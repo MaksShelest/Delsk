@@ -21,7 +21,10 @@ try:
   page=browser.new_page(viewport=dict(width=1380,height=1000))
   page.goto(f'http://127.0.0.1:{server.server_port}/')
   page.wait_for_function("() => document.getElementById('plan').value.length>0")
-  page.locator('#ticks').fill('120');page.locator('#seeds').fill('42')
+  page.locator('#ticks').fill('120');page.locator('#seeds').fill('42,')
+  page.locator('#queue').click();page.wait_for_function("() => document.getElementById('error').textContent.includes('каждый seed')")
+  assert not lab.series
+  page.locator('#seeds').fill('42')
   bad=copy.deepcopy(plan);bad['factors']=[dict(path='npc.maximumWageMinor',values=[1])]
   page.locator('#plan').fill(json.dumps(bad));page.locator('#queue').click()
   page.wait_for_function("() => document.getElementById('error').textContent.includes('Runner rejected')")
@@ -41,8 +44,11 @@ try:
   page.locator('td details summary').first.click()
   with page.expect_download() as download:page.get_by_text('metrics.csv',exact=True).first.click()
   download.value.save_as(out/'downloaded-metrics.csv')
-  denied=page.evaluate("async()=>({noToken:(await fetch('/api/state')).status,foreignOrigin:(await fetch('/api/state',{headers:{'X-Lab-Token':'wrong'}})).status})")
-  assert denied==dict(noToken=403,foreignOrigin=403)
+  denied=page.evaluate("async()=>({noToken:(await fetch('/api/state')).status,invalidToken:(await fetch('/api/state',{headers:{'X-Lab-Token':'wrong'}})).status})")
+  auth=page.evaluate('token')
+  denied['foreignOrigin']=page.request.get(f'http://127.0.0.1:{server.server_port}/api/state',headers={'X-Lab-Token':auth,'Origin':'https://outside.invalid'}).status
+  denied['foreignHost']=page.request.get(f'http://127.0.0.1:{server.server_port}/api/state',headers={'X-Lab-Token':auth,'Host':'outside.invalid'}).status
+  assert denied==dict(noToken=403,invalidToken=403,foreignOrigin=403,foreignHost=403)
   page.screenshot(path=str(out/'laboratory.png'),full_page=True)
   browser.close()
  s=lab.series[0];job=s['jobs'][0];base=out/'lab'/job['result'];cmd=job['command'].copy()

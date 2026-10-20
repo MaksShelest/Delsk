@@ -2,7 +2,7 @@
 
 Автор: Шелестов Максим Евгеньевич.20.10.2026, Europe/Samara.
 
-Симуляция: настоящий Research.Runner, World18/production-recipes-1. Входы — docs/research/package8-{difficulties,negotiations,recovery,long-history}.json; исходный профиль не изменён. Каждый arm проходит C# preflight, каждый run независимые verify_results/verify_public_economy. Точные input/export SHA, команды, seed, полный набор метрик и разброс — [research-study.json](verification/package8/research-study.json). Это ограниченный исследовательский пилот, не доказательство универсального баланса.
+Симуляция: настоящий Research.Runner, World18/production-recipes-1. Входы — docs/research/package8-{difficulties,negotiations,recovery,long-history}.json; исходный профиль не изменён. Каждый arm проходит C# preflight, каждый run независимые verify_results/verify_public_economy. Серии выполнены после a5c2cfe с рабочими изменениями profiling, затем зафиксированными13a24c6; runner manifest содержит базовый commit, а не фиктивный будущий commit. Метаданные Stage исправлены после этих замеров, без изменения World/hash. Точные input/export SHA, команды, seed, полный набор метрик и разброс — [research-study.json](verification/package8/research-study.json). Это ограниченный исследовательский пилот, не доказательство универсального баланса.
 
 ## Экономика и механизм
 
