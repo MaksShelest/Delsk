@@ -4,6 +4,12 @@
 
 Актуальные версии/статусы — в разделе «Пакет8»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
 
+## HUD и режим бога, 20.10.2026
+
+- Developer-кнопка «Режим бога» находится в Debug; прежний вход из меню сохранён. Все реализации/поля/транзакции только в Developer/**/*.cs, optional partial hooks исчезают из ordinary сборки. Не включать God-mode в обычный Debug/Release. AssemblyAudit проверяет новые entrypoints и исключение тестового HudGodProbe.
+- Деньги вводятся в монетах с шагом0.01, Core получает exact minor; stock — абсолютное общее количество выбранного item/inventory. Резервы/вместимость/границы тика защищены прежним Core API. Escape/Close закрывают окно без выхода из Debug и отменяют advance. Изолированный build_developer_client.py обязателен.
+- ResourceInventoryHud: только положительный physical backpack stock, включая reserved physical goods; цепочки по2строки, fallback новых товаров. Не суммировать чужие/складские запасы в HUD. Процедура native controls probe — scripts/check_hud_god_ui.py; headless не означает оконную/hardware приёмку. Инструкции в docs/DEVELOPER_TOOLS.md.
+
 ## Пакет8, актуально20.10.2026 (Europe/Samara)
 
 - База — слитый PR#43 (`370673e`). P58 программно закрыт: stdlib loopback research UI/CLI над прежним runner, validated snapshots/отдельные profiles, atomic queue/file lock/recovery/attempts, pause между bounded jobs, исходные JSON/CSV/JSONL и paired summaries. Не включать в ordinary client и не добавлять вторую симуляцию. Процедура RESEARCH_LAB.md, контекст WORKLOG_PACKAGE8.md.

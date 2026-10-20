@@ -31,6 +31,8 @@ public partial class Playfield
         _votingPanel.ShowData(_human,election);ApplyPause();
     }
     partial void DeveloperMenu(VBoxContainer menu);
+    partial void DeveloperDebug(HBoxContainer toolbar);
+    partial void DeveloperInput(InputEventKey key, ref bool handled);
     partial void DeveloperFrame();
     partial void DeveloperReset();
 }

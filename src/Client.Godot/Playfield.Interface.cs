@@ -72,8 +72,8 @@ public partial class Playfield
         _gameClock = new Label { VerticalAlignment = VerticalAlignment.Center, CustomMinimumSize = new Vector2(185, 0) }; row.AddChild(_gameClock);
         row.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill });
         _playInventory = new Label { VerticalAlignment = VerticalAlignment.Center }; row.AddChild(_playInventory);
-        row.AddChild(new VSeparator());
-        _hudGoods = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.End }; row.AddChild(_hudGoods); _hudGoodsKey = "";
+        _hudGoods = new ResourceInventoryHud { Name = "InventoryHud", Alignment = BoxContainer.AlignmentMode.End };
+        row.AddChild(_hudGoods);
         _playNotice = new Label { HorizontalAlignment = HorizontalAlignment.Center, MouseFilter = MouseFilterEnum.Ignore,
             AutowrapMode = TextServer.AutowrapMode.WordSmart };
         _playNotice.SetAnchorsAndOffsetsPreset(LayoutPreset.TopWide);

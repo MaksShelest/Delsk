@@ -64,8 +64,7 @@ public partial class Playfield : Control
     private string _mapKey = PlayMaps.First;
     private string _newMapKey = PlayMaps.First;
     private MapSelectionScreen? _mapSelection;
-    private HBoxContainer? _hudGoods;
-    private string _hudGoodsKey = "";
+    private ResourceInventoryHud? _hudGoods;
 
     public override void _Ready()
     {
@@ -101,6 +100,9 @@ public partial class Playfield : Control
             if (key.Pressed && !key.Echo && key.Keycode == Key.Escape) CloseHelp();
             GetViewport().SetInputAsHandled(); return;
         }
+        bool developerHandled = false;
+        DeveloperInput(key, ref developerHandled);
+        if (developerHandled) { GetViewport().SetInputAsHandled(); return; }
         if (!key.Pressed)
         {
             if (_waitRelease && !MovementHeld()) _waitRelease = false;
@@ -504,21 +506,7 @@ public partial class Playfield : Control
     private string HudStock(PlayerView view, InventoryView pack) =>
         $"{T("money")} {PlayerText.Money(view.CashMinor)} · {T("inventory.capacity")} {pack.OccupiedVolume}/{pack.Capacity}";
 
-    private void UpdateHudGoods(InventoryView pack)
-    {
-        if (_hudGoods is null) return;
-        var ids = _scenario.Items.Select(i => i.Id).Concat(pack.Stock.Select(s => s.ItemId)).Distinct(StringComparer.Ordinal).OrderBy(i => i, StringComparer.Ordinal).ToArray();
-        string key = _language + "|" + string.Join(";", ids.Select(id => id + ":" + pack.Stock.Where(s => s.ItemId == id).Sum(s => s.Quantity)));
-        if (key == _hudGoodsKey) return;
-        _hudGoodsKey = key;
-        foreach (Node child in _hudGoods.GetChildren()) { _hudGoods.RemoveChild(child); child.QueueFree(); }
-        foreach (string id in ids)
-        {
-            var icon = new ResourceIcon { Item = id, CustomMinimumSize = new Vector2(24, 24), TooltipText = PlayerText.Item(_language, id) };
-            _hudGoods.AddChild(icon);
-            _hudGoods.AddChild(new Label { Text = pack.Stock.Where(s => s.ItemId == id).Sum(s => s.Quantity).ToString(CultureInfo.InvariantCulture), TooltipText = PlayerText.Item(_language, id) });
-        }
-    }
+    private void UpdateHudGoods(InventoryView pack) => _hudGoods?.ShowInventory(pack, _language);
 
     private static string CardSignature(PlayerView view) =>
         string.Join(";", view.Enterprises.Select(e => $"{e.Id.Value}:{e.Enabled}:{e.ReasonCode}:{e.RecipeId}")) + "|" +
@@ -701,6 +689,7 @@ public partial class Playfield : Control
         split.AddChild(mapColumn);
         var mapToolbar = new HBoxContainer();
         mapColumn.AddChild(mapToolbar);
+        DeveloperDebug(mapToolbar);
         mapToolbar.AddChild(new Label { Text = PlayerText.Local(_language, "Карта · пошаговый режим · " + PlayMaps.Name(_mapKey, _language), "Map · step mode · " + PlayMaps.Name(_mapKey, _language)), SizeFlagsHorizontal = SizeFlags.ExpandFill });
         var legendToggle = new Button { Text = PlayerText.Local(_language, "Легенда ▸", "Legend ▸"), FocusMode = FocusModeEnum.None };
         mapToolbar.AddChild(legendToggle);
