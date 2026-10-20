@@ -11,3 +11,13 @@
 3. Реальные Godot probes: состояния stock/reservations/WIP/pending wage/no truck/independent directions, market/negotiations/access, RU/EN1440/1280/800 и узкие окна; normal+Developer gates/audit/hash/runner по риску. Обновить docs, commits/push/один PR без merge.
 
 Scratch /workspace/work/delsk-tablets-v1 (env.sh готов). Godot4.7.2/.NET10.0.401, только bounded scripts/run_check.py. Не считать static DTO screenshot живой экономической приёмкой; новые вмешательства/тестовые классы только isolated stage и вне ordinary audit/PCK. По завершении каждого этапа дополнять этот файл результатом/командами/оставшимся. Старые Hard/model/device/history gates остаются открытыми.
+
+## Этап1 — общий каркас и производства
+
+Подключены scoped TabletDesign/TabletColumns, SVG+theme архива, reuse3идентичных Nunito/OFL без дублей. ProductionTabletPresenter расширен на dairy/sugar-factory/confectionery; исходные3сцены адаптированы/узлы именованы; demo.gd/данные не подключены. Все реальные actions по-прежнему HouseholdObjectCard/AccessFor/Send. Multi-input stock показывает каждый компонент, free/reserved отдельно и общий input volume; recipe L2, pending wage/no-truck/current crew/production independent отлогистики. При нестандартном recipe или ширине<980 — native подробная карточка, без потери команд.
+
+Общий TabletPanel светлый, родной clock/feedback footer, не меняет TabletState. В production режиме внутренние Help/Close маршрутизируются в прежний общий host; общий заголовок скрывается, чтобы убрать дубль. В компактном режиме возвращается. HUD и Developer theme глобально не менялись.
+
+Client Debug restore/build exit0. scripts/check_tablet_design.py: новый TabletDesignProbe только isolated stage. Реальный command-driven FoodChain построил/произвёл/продал товары;3производства×RU/EN×1440/800 проверены нативными контролами/скриншотами. На паузе click не меняет tick/enabled до Step; pending buttons disabled; фактическое переключение и pending wage подтверждены. Все invariants/log checks exit0 (production-layout-final). Первоначально исправлено имя свойства в test probe и выявленные при просмотре clipping/NoTransport layout/двойной заголовок. Старые failed scratch сохранены.
+
+Этап2 уже начат в рабочем дереве: HelpOverlay краткие шаги/full text и PlayerTablet overview/cards/foldouts пока не проверены. Не считать их готовыми; далее объединить5страниц биржи поверх прежних Capital/ParticipantMarket и провести расширенный живой probe. Не включать в этап1 commit незаконченные экранные файлы.

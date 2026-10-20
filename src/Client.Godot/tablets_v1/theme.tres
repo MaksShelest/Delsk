@@ -1,0 +1,88 @@
+[gd_resource type="Theme" load_steps=12 format=3]
+
+[ext_resource type="FontFile" path="res://delsk_sawmill_ui/assets/fonts/Nunito-Medium.ttf" id="1"]
+
+[ext_resource type="Texture2D" path="res://tablets_v1/assets/icons/toggle_on.svg" id="on"]
+
+[ext_resource type="Texture2D" path="res://tablets_v1/assets/icons/toggle_off.svg" id="off"]
+
+[sub_resource type="StyleBoxFlat" id="Tip"]
+bg_color = Color(0.15, 0.25, 0.20, 1)
+content_margin_left = 14.0
+content_margin_right = 14.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+
+[sub_resource type="ImageTexture" id="Unused"]
+
+[sub_resource type="StyleBoxFlat" id="Focus"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.74, 0.53, 0.22, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
+
+[sub_resource type="StyleBoxEmpty" id="Empty"]
+
+[sub_resource type="StyleBoxFlat" id="CheckBG"]
+bg_color = Color(0,0,0,0)
+
+[sub_resource type="StyleBoxEmpty" id="CheckFocus"]
+
+[sub_resource type="StyleBoxFlat" id="Input"]
+bg_color = Color(0.95686, 0.95686, 0.91373, 1)
+border_color = Color(0.84, 0.88, 0.81, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_left = 12
+corner_radius_bottom_right = 12
+content_margin_left = 16.0
+content_margin_right = 16.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+[sub_resource type="StyleBoxFlat" id="InputHover"]
+bg_color = Color(0.86, 0.91, 0.82, 1)
+[resource]
+default_font = ExtResource("1")
+default_font_size = 20
+Button/styles/focus = SubResource("Focus")
+CheckButton/styles/normal = SubResource("Empty")
+CheckButton/styles/hover = SubResource("CheckBG")
+CheckButton/styles/pressed = SubResource("Empty")
+CheckButton/styles/focus = SubResource("CheckFocus")
+TooltipPanel/styles/panel = SubResource("Tip")
+TooltipLabel/colors/font_color = Color(1, 0.98, 0.93, 1)
+TooltipLabel/font_sizes/font_size = 17
+CheckButton/icons/checked = ExtResource("on")
+CheckButton/icons/unchecked = ExtResource("off")
+CheckButton/icons/checked_disabled = ExtResource("on")
+CheckButton/icons/unchecked_disabled = ExtResource("off")
+Label/colors/font_color = Color(0.1451, 0.2471, 0.2118, 1)
+CheckBox/colors/font_color = Color(0.1451, 0.2471, 0.2118, 1)
+CheckBox/colors/font_disabled_color = Color(0.4667, 0.5098, 0.4667, 1)
+LineEdit/colors/font_color = Color(0.1451, 0.2471, 0.2118, 1)
+LineEdit/colors/font_uneditable_color = Color(0.4667, 0.5098, 0.4667, 1)
+LineEdit/colors/caret_color = Color(0.1765, 0.4745, 0.3412, 1)
+LineEdit/colors/selection_color = Color(0.7, 0.8, 0.65, 1)
+LineEdit/styles/normal = SubResource("Input")
+LineEdit/styles/read_only = SubResource("Input")
+LineEdit/styles/focus = SubResource("Focus")
+OptionButton/colors/font_disabled_color = Color(0.4667, 0.5098, 0.4667, 1)
+PopupMenu/colors/font_color = Color(0.1451, 0.2471, 0.2118, 1)
+PopupMenu/colors/font_hover_color = Color(0.1451, 0.2471, 0.2118, 1)
+PopupMenu/styles/panel = SubResource("Input")
+PopupMenu/styles/hover = SubResource("InputHover")
+OptionButton/styles/disabled = SubResource("Input")
