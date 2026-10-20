@@ -1,0 +1,392 @@
+{
+  "status": "succeeded",
+  "scope": "Available software/Linux gates only; P59/P60 and the whole next-stage plan remain open at documented balance/history/real-model/device limits",
+  "base": "370673e",
+  "p58": "a5c2cfe",
+  "p59": "13a24c6",
+  "ordinaryTests": 880,
+  "developerTests": 886,
+  "pythonTests": 12,
+  "skipped": 0,
+  "exports": 102,
+  "replays": 14,
+  "comparisonPairs": 69,
+  "researchRuns": 18,
+  "independentResearchChecks": 36,
+  "linuxTickHashes": 1132,
+  "checkpointFileRestores": 35,
+  "world": 18,
+  "rules": "production-recipes-1",
+  "session": 2,
+  "envelope": 2,
+  "negativeDeveloperRelease": {
+    "command": [
+      "dotnet",
+      "build",
+      "src/Simulation.Core/Simulation.Core.csproj",
+      "-c",
+      "Release",
+      "-p:DelskDeveloper=true",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 60,
+    "started_at": "2026-10-20T10:21:55.227970+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 0.72,
+    "finished_at": "2026-10-20T10:21:55.947779+00:00"
+  },
+  "specificationSha256": "e416b331a8353d5f39d8ff042288ad2493d39aae2c506a40ecc3f30de56fd56c",
+  "sourceSha256": {
+    "scripts/check_developer.py": "68d815ccc1bccf45971160e21d03987084c8c9b4ded24a99ff116bbd2d866731",
+    "scripts/check_headless.py": "c80aea8e73d3700e9fb7e0d79f82867b8ba97e7b3ec4b432741468b92fcf9873",
+    "scripts/check_research_lab.py": "5c584c91dbfc5297a48f85fcbee05bef1e4a1e2070d90f677e9b3869c1810de6",
+    "scripts/research_lab.html": "cccdc9de1f01ed616c61f18ad08bb65f943aef89afdb4d0687da9c8aca0cc91c",
+    "scripts/research_lab.py": "07a60537b360d1a99c89c352f33a6680e0feda81c1dbffe497ca31db150d7a59",
+    "scripts/research_lab_server.py": "36583d82446bc1067f764dbc9069ba362f30762c111556140c4883bba5300162",
+    "scripts/research_metrics.py": "c8a7720062216512055c17cbf9938f6d4ef761d6a7f6bd969817961634de69fd",
+    "scripts/summarize_lab.py": "0d899bf718412daedb5335d33aa112b601fbfee0ce80ebea1f726beb48b755e1",
+    "src/Agents.Algorithmic/ControllerSettings.cs": "e23348aa000b2835bd17021b7a8e11dbcb0b1d5a509552a2d0b75beac85d9087",
+    "src/Agents.Algorithmic/NegotiationGoals.cs": "51c4e32d1789748873abf10c1c646ebc9417807c6b445d0e27486c2e258572ee",
+    "src/Agents.Algorithmic/PoliticalGoals.cs": "9b763bd62eac7e30ce1c6380d08ce9b5f592db69e18acdf6edf541e9ca42a7ef",
+    "src/Research.Runner/Program.cs": "b629bd7f7ea9b72568d92489965eed0d99052d0bbb2f75d3dc780292b4f360f9",
+    "src/Simulation.Hosting/GameSession.cs": "1fcccb7e7dcb148080f52522421f37b09ae5fa137cfcf427d1e68060e2e9987f",
+    "src/Simulation.Hosting/RunArtifacts.cs": "00a9fb982f845e83653055d1c77218e8cc5dae6fef608d21732f864aea7b2f8d",
+    "src/Simulation.Hosting/SessionProfiler.cs": "ae9d0ccc0776b4bf4b79edc2b449be5db6918d0ed9997c1232d688d2b81ab1c8",
+    "tests/Client.Probes/VisualModelsProbe.cs": "437e873130345c5b33b0b59cdd5af63689f0f08f022e62a454bcdc79d40e43a0",
+    "tests/Research.Lab/test_lab.py": "f48397eb742d60dc1285666da552faaf92fc012aea94dcee3e043ee07a902135",
+    "tests/Research.Lab/test_metrics.py": "64e3e8303f099a7502dcf07f5996ae8dee8a555dc70ba5173f5ddd2f1b927521",
+    "tests/Simulation.Tests/EconomyProfileTests.cs": "5a4535f34e178d6b90e6cf1bf9e379733dafdc3451f1f6c8a44fcb2847aa047d",
+    "tests/Simulation.Tests/NegotiationPolicyTests.cs": "6aa2b7ae1c784bd1fb120cd5d66288f21b79eccadf22253984216547551e66e6"
+  },
+  "checks": {
+    "final-engine": {
+      "command": [
+        "bash",
+        "/workspace/work/delsk-package8/final-engine.sh"
+      ],
+      "timeout_seconds": 1320,
+      "started_at": "2026-10-20T10:13:38.103078+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 497.908,
+      "finished_at": "2026-10-20T10:21:56.011237+00:00",
+      "stdoutSha256": "43c9a697af49cdabd06793bbb616f1b2c3451b8dc5bd5a2ce9459ef18e87ca44",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "final-headless": {
+      "command": [
+        "python3",
+        "scripts/check_headless.py",
+        "--output",
+        "/workspace/work/delsk-package8/headless"
+      ],
+      "timeout_seconds": 900,
+      "started_at": "2026-10-20T10:13:38.140888+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 361.439,
+      "finished_at": "2026-10-20T10:19:39.579945+00:00",
+      "stdoutSha256": "79c9854b7ba0cb3120eac126e45cceb8daf2419b5c614a7206cf6444da32c9c4",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "final-developer": {
+      "command": [
+        "python3",
+        "scripts/check_developer.py",
+        "--output",
+        "/workspace/work/delsk-package8/developer"
+      ],
+      "timeout_seconds": 420,
+      "started_at": "2026-10-20T10:19:39.612935+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 136.348,
+      "finished_at": "2026-10-20T10:21:55.961448+00:00",
+      "stdoutSha256": "267192c0a1659ab0d724793feb08c274a2fe2b7f04d14d4d205d83b810ed7b99",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "final-client": {
+      "command": [
+        "bash",
+        "/workspace/work/delsk-package8/final-client.sh"
+      ],
+      "timeout_seconds": 1200,
+      "started_at": "2026-10-20T10:15:32.656102+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 109.264,
+      "finished_at": "2026-10-20T10:17:21.919824+00:00",
+      "stdoutSha256": "f89bc2991034a6a52242037605bc781beb8df59acef4ca0fdcfad7290ae242db",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "final-ui": {
+      "command": [
+        "bash",
+        "/workspace/work/delsk-package8/final-ui.sh"
+      ],
+      "timeout_seconds": 420,
+      "started_at": "2026-10-20T10:18:03.904537+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 74.867,
+      "finished_at": "2026-10-20T10:19:18.772010+00:00",
+      "stdoutSha256": "6663ed2539c161df8236b1bf652a6ef83130ff032bdd729f195a98a158fad46a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "lab-delivery": {
+      "command": [
+        "python3",
+        "scripts/check_research_lab.py",
+        "--output",
+        "/workspace/work/delsk-package8/lab-delivery"
+      ],
+      "timeout_seconds": 220,
+      "started_at": "2026-10-20T10:21:30.444199+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 13.622,
+      "finished_at": "2026-10-20T10:21:44.066554+00:00",
+      "stdoutSha256": "f73bf19f2b88fd91012784f42b1d6429fb4b582b16e6650a0538533f4b555b65",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "research-unit-delivery": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Research.Lab",
+        "-v"
+      ],
+      "timeout_seconds": 45,
+      "started_at": "2026-10-20T10:22:29.605450+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.265,
+      "finished_at": "2026-10-20T10:22:29.870535+00:00",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "159d3777eae6ded41867a5756aedc7b719e054b427d57f67e097be1c624ac403"
+    },
+    "study-verifiers": {
+      "command": [
+        "python3",
+        "scripts/summarize_lab.py",
+        "--lab",
+        "/workspace/work/delsk-package8/study-difficulties",
+        "--lab",
+        "/workspace/work/delsk-package8/study-negotiations",
+        "--lab",
+        "/workspace/work/delsk-package8/study-recovery",
+        "--lab",
+        "/workspace/work/delsk-package8/study-long-history",
+        "--output",
+        "/workspace/work/delsk-package8/study-verified"
+      ],
+      "timeout_seconds": 150,
+      "started_at": "2026-10-20T10:12:04.327853+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.408,
+      "finished_at": "2026-10-20T10:12:10.735944+00:00",
+      "stdoutSha256": "d645332ff71ce50a56f23ece1f3ede65eb20dedf65fc1692011edaebbe6d8a84",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "p59-pilots": {
+      "command": [
+        "bash",
+        "-c",
+        "set -e; for case in difficulties negotiations recovery; do python3 scripts/research_lab.py --output /workspace/work/delsk-package8/study-$case --plan docs/research/package8-$case.json --run; done"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-20T10:07:53.569853+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 160.145,
+      "finished_at": "2026-10-20T10:10:33.714966+00:00",
+      "stdoutSha256": "afac1f2dd0f7ae2ad128f9f9ec2d3b3600f2efc450f2474ff1d9d6c1c51ad69e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "long-history": {
+      "command": [
+        "bash",
+        "/workspace/work/delsk-package8/run-long.sh"
+      ],
+      "timeout_seconds": 420,
+      "started_at": "2026-10-20T10:09:52.308449+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 86.441,
+      "finished_at": "2026-10-20T10:11:18.749194+00:00",
+      "stdoutSha256": "b6dece7b7a3266947c4ed586f913650187ed145a84f2a234c0777fbe6122fc13",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "godot-render-profile": {
+      "command": [
+        "python3",
+        "scripts/check_visual_models.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--xvfb",
+        "/workspace/work/delsk-package1/ui-tools/root/usr/bin/Xvfb",
+        "--output",
+        "/workspace/work/delsk-package8/models"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-20T10:12:11.886023+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 49.692,
+      "finished_at": "2026-10-20T10:13:01.578139+00:00",
+      "stdoutSha256": "9974b4081334a80ff7fbecf49bdf4b3acc31745348ae1f94290f7a337a1753ad",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "assembly-audit": {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "src/Client.Godot/.godot/mono/temp/bin/ExportRelease"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-20T10:16:14.257144+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.855,
+      "finished_at": "2026-10-20T10:16:18.112230+00:00",
+      "stdoutSha256": "262804564b13738fbfad0d51aa81b86c4fa85674c089685438493158b6716824",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "client-debug": {
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.sln",
+        "-c",
+        "Debug",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-20T10:15:34.357977+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 30.811,
+      "finished_at": "2026-10-20T10:16:05.169108+00:00",
+      "stdoutSha256": "56b8ae5ba41d015514ba4d940751a1733d9afd6587c7c2c98361d557bcbe98fa",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "client-release": {
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.sln",
+        "-c",
+        "ExportRelease",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-20T10:16:06.839305+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 7.381,
+      "finished_at": "2026-10-20T10:16:14.220129+00:00",
+      "stdoutSha256": "6c7f80818198d0fb35b64040c34e9e9922c57e241846366fc5aa327c5aca003b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ordinary-smoke-verify": {
+      "command": [
+        "python3",
+        "scripts/verify_platform_probe.py",
+        "--report",
+        "/workspace/work/delsk-package8/platform.json",
+        "--log-prefix",
+        "/workspace/work/delsk-package8/checks/ordinary-smoke"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-20T10:16:30.213552+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.064,
+      "finished_at": "2026-10-20T10:16:30.277841+00:00",
+      "stdoutSha256": "8881413a597778c38a6309c267b8c9ed9dae720ce3be3e443a84a5b1bf7e9b14",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "developer-smoke-verify": {
+      "command": [
+        "python3",
+        "scripts/verify_platform_probe.py",
+        "--report",
+        "/workspace/work/delsk-package8/developer-platform.json",
+        "--log-prefix",
+        "/workspace/work/delsk-package8/checks/developer-smoke"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-20T10:16:50.086591+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.069,
+      "finished_at": "2026-10-20T10:16:50.155804+00:00",
+      "stdoutSha256": "8881413a597778c38a6309c267b8c9ed9dae720ce3be3e443a84a5b1bf7e9b14",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pck-logs": {
+      "command": [
+        "python3",
+        "scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/delsk-package8/checks/release-pack",
+        "--log-prefix",
+        "/workspace/work/delsk-package8/checks/pck-inspection"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-20T10:18:04.536772+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-20T10:18:04.601613+00:00",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "window-logs": {
+      "command": [
+        "python3",
+        "scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/delsk-package8/bakery/checks/window",
+        "--log-prefix",
+        "/workspace/work/delsk-package8/sawmill/checks/window",
+        "--log-prefix",
+        "/workspace/work/delsk-package8/model-errors/checks/window",
+        "--log-prefix",
+        "/workspace/work/delsk-package8/checks/feedback-audio",
+        "--log-prefix",
+        "/workspace/work/delsk-package8/models/checks/render"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-20T10:19:18.664142+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-20T10:19:18.729121+00:00",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "evidenceSha256": {
+    "bakery-en.png": "61b412f058aeedbfaf8d1f87f5d655184abdeababb6b98473bd320d7f647629b",
+    "bakery-window.json": "2262041e9008de42018e721c15feb56f2219f3efee00b6c876f16aa992b84044",
+    "developer-check.json": "aceccc939c7dedc76b3254cde0e612faa410fcc74d03b825d8423283f10b41d0",
+    "developer-platform.json": "ea8db85ad1a447861c5a0dd39393a912060c7a6b0f1bfbf6aef51f73c40eb16d",
+    "headless-check.json": "ab4ffa1a90a69d5ff0de3c97e022834aed3fe29e3c335404fce88176efa72716",
+    "lab-gate.json": "b6bc50992c60c9bf4cd9fbee7f96db030f86fa0ee71f8066d7f3a5c13fba140f",
+    "laboratory.png": "3b80452ad35f9f5953f2f4858427567b159dc553758c96085f497a83b4111279",
+    "model-availability.json": "234b633f4778d0fd224d10dcda494dab4c833da8dfed106348029821324c10a9",
+    "model-error-state.json": "3e11fca4a226379e09f63df6fcfda2e65d5c55acff90da336c5bb578653dfc6d",
+    "pack-inspection.json": "a779cb2f252da91d396277c4b5feba86e1f7580607dc3403aa5e714e68c27a45",
+    "platform.json": "ea8db85ad1a447861c5a0dd39393a912060c7a6b0f1bfbf6aef51f73c40eb16d",
+    "render-profile.json": "0a849893a0267a0d7c975d349bc232f23d5b4fcd43c1cfc4ffa01bf0e6fc6379",
+    "research-study.json": "d7b11ffd4ed6e64dc826ceb711a541bf8dcd1e7d03f9d67145d9e02672be4aa0",
+    "sawmill-window.json": "6e85a58fff525142247bc08ae90125014f90ea14ac68f3fc1f1e730ca26fed3f"
+  },
+  "open": [
+    "Hard superiority and goal ranking",
+    "long-history memory/save/load and disk IO",
+    "factory/lease/purchase ROI and broad balance",
+    "real local model in ordinary game",
+    "Windows EXE on target",
+    "Android on device",
+    "hardware FPS/GPU/audio"
+  ]
+}

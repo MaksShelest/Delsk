@@ -86,7 +86,9 @@ public sealed partial class AlgorithmicController
             long trips=checked((q*Volume(o,raw.ItemId)+Carrier(o).Capacity-1)/Carrier(o).Capacity);
             if(PlanTicks(o,estimate)*trips+6>o.Elections.NextVotingTick-o.Tick)continue;
             yield return One("BuySupport",seller.Value.ToString(System.Globalization.CultureInfo.InvariantCulture),220000+VoteWeight(o,Actor)*1000+VoteWeight(o,seller),
-                new(ActionKind.ProposeTrade,Terms:new(TradeKind.Support,seller,Actor,Election:election,Compensation:[new(raw.ItemId,q)])));
+                _state.Settings.NegotiationsEnabled == false
+                    ? new(ActionKind.ProposeSupport,SupportSeller:seller,Election:election,Compensation:[new(raw.ItemId,q)])
+                    : new(ActionKind.ProposeTrade,Terms:new(TradeKind.Support,seller,Actor,Election:election,Compensation:[new(raw.ItemId,q)])));
         }
     }
 }

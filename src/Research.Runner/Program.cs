@@ -83,8 +83,9 @@ try
         if (economics is not null) definition = economics.Apply(definition);
         if (options.GetValueOrDefault("--validate-only", "false") == "true")
         {
-            foreach (var n in AutonomousRun.ReadConfiguration(definition, options.GetValueOrDefault("--controllers", "scenarios/baseline-controllers.json")).Npcs)
-                AlgorithmicController.WithEconomy(n, economics?.Npc ?? JsonSerializer.SerializeToElement(new { }));
+            var validationSession = new GameSession(new SimulationEngine(definition));
+            if (script == "hybrid") models.Configure(validationSession, definition, options.GetValueOrDefault("--controllers", "scenarios/baseline-controllers.json"), options, false, economics);
+            else AutonomousRun.Configure(validationSession, definition, options.GetValueOrDefault("--controllers", "scenarios/baseline-controllers.json"), economics: economics);
             Console.WriteLine($"Economy/scenario valid: {economics?.Id ?? definition.Id}"); return 0;
         }
         if (options.TryGetValue("--seed", out string? seed)) definition = definition with { Seed = ulong.Parse(seed, CultureInfo.InvariantCulture) };

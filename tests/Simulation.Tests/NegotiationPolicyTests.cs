@@ -25,6 +25,21 @@ public class NegotiationPolicyTests
         Do(s,new(ActionKind.ProposeTrade,Terms:new(TradeKind.Sale,new(1),new(2),"wood",2,price,source)));return s;
     }
     private static AlgorithmicController Policy(long actor=2,int victory=0)=>new(new(actor,"wood",ExpansionWeight:0,MaximumBuyPriceBasisPoints:10000,OwnVictoryWeight:victory,SupportPricePerVoteMinor:2000),42,[1,2,3]);
+    [Fact]
+    public void NegotiationFactorPreservesTradePoliticsAndLegacyDefaultsAndSurvivesRestore()
+    {
+        var settings = new ControllerSettings(2,"wood",NegotiationsEnabled:false);
+        Assert.True(settings.TradeEnabled); Assert.True(settings.PoliticsEnabled); Assert.True(settings.FutureContractsEnabled);
+        var policy = new AlgorithmicController(settings,42,[1,2,3]);
+        var restored = AlgorithmicController.Restore(policy.Capture());
+        var observation = Proposed(900).Engine.ObserveController(new(2));
+        Assert.DoesNotContain(restored.ModelOptions(observation), p=>p.Goal.Contains("Negotiation",StringComparison.Ordinal));
+        Assert.DoesNotContain(restored.Decide(observation,[]).Actions,a=>a.Kind is ActionKind.AcceptTrade or ActionKind.CounterTrade or ActionKind.ProposeTrade or ActionKind.RejectTrade);
+        Assert.Contains(AlgorithmicController.Restore(policy.Capture()).Decide(observation,[]).Actions,a=>a.Kind==ActionKind.ProposeSupport);
+        Assert.Contains("\"negotiationsEnabled\":false",restored.Capture().StateJson);
+        Assert.DoesNotContain("negotiationsEnabled",Policy().Capture().StateJson);
+        Assert.Contains(Policy().ModelOptions(observation),p=>p.Goal=="CounterNegotiation");
+    }
     [Theory] [InlineData(500,ActionKind.AcceptTrade)] [InlineData(900,ActionKind.CounterTrade)]
     public void BaselineNegotiatesPriceAndKeepsReviewedVersionWithoutLlm(long price,ActionKind expected)
     {

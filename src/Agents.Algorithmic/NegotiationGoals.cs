@@ -7,6 +7,7 @@ public sealed partial class AlgorithmicController
     private bool CanTradeWith(ControllerObservation o,ParticipantId other) => o.TradingParticipants.Contains(Actor) && o.TradingParticipants.Contains(other);
     private IEnumerable<Candidate> NegotiationResponses(ControllerObservation o)
     {
+        if (_state.Settings.NegotiationsEnabled == false) yield break;
         foreach(var n in o.Negotiations.Where(n=>n.Status==NegotiationStatus.Proposed && n.ExpiresTick>o.Tick && n.Current.ProposedBy!=Actor))
         {
             var t=n.Current.Terms;bool buyer=t.Buyer==Actor,accept=false,canCounter=false;long price=t.UnitPriceMinor;
@@ -45,6 +46,7 @@ public sealed partial class AlgorithmicController
     }
     private IEnumerable<Candidate> NegotiationCandidates(ControllerObservation o)
     {
+        if (_state.Settings.NegotiationsEnabled == false) yield break;
         if(!_state.Settings.TradeEnabled || !_state.Settings.FutureContractsEnabled || !o.TradingParticipants.Contains(Actor) || HasObligations(o))yield break;
         foreach(var e in o.Enterprises)
         {

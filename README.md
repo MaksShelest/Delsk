@@ -1,3 +1,5 @@
+> Текущий итог пакета8: [сводка всех8пакетов, пробелы и дополнения](docs/NEXT_STAGE_SUMMARY.md), [результат и gates](docs/IMPLEMENTATION_REPORT_PACKAGE8.md), [исследовательская лаборатория](docs/RESEARCH_LAB.md). P58 software готов; P59/P60 полностью не закрыты: Hard/длинная история/ROI, текущая реальная модель и аппаратные Windows/Android остаются открытыми. Датированные срезы ниже — история.
+
 > Актуальная дорожная карта20.10.2026: [P28–P60 и пакеты](docs/DELSK_NEXT_STAGE_PLAN.md). Пакет1 — [результат/проверки/ограничения](docs/IMPLEMENTATION_REPORT_PACKAGE1.md), [матрица команд](docs/ACTION_ACCESS_MATRIX.md). Исторические этапы ниже не являются текущим статусом нового пакета.
 
 # Delsk

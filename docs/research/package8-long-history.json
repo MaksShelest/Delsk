@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "id": "long-history-5000",
+  "scenario": "scenarios/presentation-map-one-v3.json",
+  "economy": "config/economy.json",
+  "controllers": "scenarios/baseline-controllers.json",
+  "ticks": 5000,
+  "seeds": [
+    42
+  ],
+  "repetitions": 1,
+  "mode": "algorithmic",
+  "factors": [
+    {
+      "path": "npc.difficulty",
+      "values": [
+        "Medium"
+      ]
+    }
+  ],
+  "profile": true,
+  "timeoutSeconds": 360
+}
