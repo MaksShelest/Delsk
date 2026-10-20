@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "id": "negotiations-paired",
+  "id": "negotiations-pilot",
   "scenario": "scenarios/presentation-map-one-v3.json",
   "economy": "config/economy.json",
   "controllers": "scenarios/baseline-controllers.json",
-  "ticks": 600,
+  "ticks": 1200,
   "seeds": [
     42,
     43,
@@ -20,5 +20,7 @@
         false
       ]
     }
-  ]
+  ],
+  "profile": true,
+  "timeoutSeconds": 240
 }

@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "id": "difficulty-pilot",
+  "scenario": "scenarios/presentation-map-one-v3.json",
+  "economy": "config/economy.json",
+  "controllers": "scenarios/baseline-controllers.json",
+  "ticks": 1200,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "repetitions": 1,
+  "mode": "algorithmic",
+  "factors": [
+    {
+      "path": "npc.difficulty",
+      "values": [
+        "Easy",
+        "Medium",
+        "Hard"
+      ]
+    }
+  ],
+  "profile": true,
+  "timeoutSeconds": 240
+}

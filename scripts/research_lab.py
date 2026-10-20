@@ -124,7 +124,7 @@ def scalar(document, path, value):
 
 def expand(plan, workspace):
     fields(plan, ['version', 'id', 'scenario', 'economy', 'controllers', 'ticks', 'seeds',
-                  'repetitions', 'mode', 'modelConfig', 'factors', 'composition', 'timeoutSeconds'],
+                  'repetitions', 'mode', 'modelConfig', 'factors', 'composition', 'timeoutSeconds', 'profile'],
            ['version', 'id', 'scenario', 'economy', 'controllers', 'ticks', 'seeds', 'repetitions', 'mode', 'factors'])
     if type(plan['version']) is not int or plan['version'] != 1 or not re.fullmatch(r'[a-zA-Z0-9_-]{1,64}', str(plan['id'])):
         raise ValueError('Invalid plan version/id')
@@ -135,6 +135,8 @@ def expand(plan, workspace):
         raise ValueError('Use distinct uint64 seeds')
     if plan['mode'] not in ('algorithmic', 'hybrid') or (plan['mode'] == 'hybrid') != ('modelConfig' in plan):
         raise ValueError('Hybrid requires explicit real modelConfig; algorithmic forbids it')
+    if type(plan.get('profile',False)) is not bool or plan.get('profile',False) and plan['mode']!='algorithmic':
+        raise ValueError('Step profiling requires an algorithmic run')
     if not integer(plan.get('timeoutSeconds', 180), 1, 900):
         raise ValueError('Use timeoutSeconds1..900')
     if not isinstance(plan['factors'], list) or len(plan['factors']) > 6:
@@ -188,6 +190,7 @@ def command(folder, job, output):
                          str(path/'controllers.json'), 'ollama', str(folder/'inputs/model.json'))
     # Reuse the common runner CLI, without rebuilding per cell.
     cmd = ['dotnet', str(ROOT/'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll'), *cmd[cmd.index('--')+1:]]
+    if job.get('profile'):cmd += ['--profile','true']
     return [*cmd, '--economy', str(path/'economy.json'), '--human-ballot', 'self']
 
 
@@ -249,7 +252,7 @@ class Lab:
             shutil.copytree(stage/'checks', folder/'validation') if (stage/'checks').exists() else None
         write(folder/'plan.json', plan)
         jobs = [dict(id=f"{arm['id']}-s{seed}-r{repeat}", arm=arm['id'], factors=arm['factors'],
-                     seed=seed, repeat=repeat, ticks=plan['ticks'], mode=plan['mode'], status='queued', attempt=0)
+                     seed=seed, repeat=repeat, ticks=plan['ticks'], mode=plan['mode'], profile=plan.get('profile',False), status='queued', attempt=0)
                 for arm in arms for seed in plan['seeds'] for repeat in range(plan['repetitions'])]
         s = dict(id=key, plan=plan, jobs=jobs, commit=self.commit,
                  inputs={str(p.relative_to(folder)): digest(p) for p in sorted((folder/'inputs').rglob('*.json'))})

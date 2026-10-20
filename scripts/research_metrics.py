@@ -16,7 +16,8 @@ def measure(directory):
         raise ValueError('Incomplete/Developer/intervened exports cannot enter clean comparisons')
     city, state, scenario = load('public-economy.json'), load('final-state.json'), load('scenario.json')
     prices = {i['id']: i['basePriceMinor'] for i in scenario['items']}
-    labor = list(csv.DictReader((folder/'labor.csv').open(encoding='utf-8', newline='')))
+    with (folder/'labor.csv').open(encoding='utf-8', newline='') as stream:
+        labor = list(csv.DictReader(stream))
     traces = model_counts(folder)
     result = dict(stateHash=summary['stateHash'], ticks=summary['tick'],
         capitalMinor=city['capitalMinor'], cashMinor=sum(a['balanceMinor'] for a in state['accounts'] if a['kind']=='Participant'),
@@ -32,6 +33,26 @@ def measure(directory):
         negotiations=len(load('negotiations.json')), modelRequests=traces['requested'], fallback=traces['fallbackResolved'],
         modelLatencyP50Ms=quantile(traces['latencies'], .5) if traces['latencies'] else None,
         modelLatencyP95Ms=quantile(traces['latencies'], .95) if traces['latencies'] else None)
+    # Realized operating cash result; capex/escrow deposits/returns and unsold stock are not revenue.
+    participant_accounts = {p['accountId']['value'] for p in state['participants']}
+    revenue = costs = 0
+    with (folder/'ledger.jsonl').open(encoding='utf-8') as stream:
+        for line in stream:
+            row = json.loads(line)
+            if row['reason'] in ('CapitalSettlement','DeliveryPayment','PickupPayment') and row['creditAccount']['value'] in participant_accounts:
+                revenue += row['amountMinor']
+            if row['reason'] in ('Wages','LogisticsWages','EquipmentTravelWages','Energy','ResourceLease') and row['debitAccount']['value'] in participant_accounts:
+                costs += row['amountMinor']
+    # Actual payments, not funding/holds. Internal payments cancel in the city aggregate.
+    buyers = {p['id']['value'] for p in state['participants']}
+    purchases = sum(a['paidMinor'] for a in state['marketAllocations'] if a['buyer']['value'] in buyers)
+    purchases += sum(c['paidMinor'] for c in state['deliveryContracts'] if c['buyer']['value'] in buyers)
+    fines = sum(c['fineMinor'] for c in state['deliveryContracts']) + sum(a['fineMinor'] for a in state['marketAllocations'])
+    profit = revenue-purchases-costs-fines
+    result.update(realizedRevenueMinor=revenue,operatingCashProfitMinor=profit,
+                  operatingCashMargin=profit/revenue if revenue else None,
+                  profitDefinition='Realized trade receipts minus actual input purchases/payroll/energy/lease/fines; excludes capex, unsold stock, depreciation and opportunity costs. Not accrual net profit.')
     if (folder/'profile.json').exists():
-        result.update(load('profile.json'))
+        profile=load('profile.json');result.update(profile)
+        result['capitalChangeMinor']=profile['finalCapitalMinor']-profile['initialCapitalMinor']
     return result

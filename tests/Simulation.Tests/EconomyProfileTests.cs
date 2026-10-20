@@ -94,6 +94,8 @@ public class EconomyProfileTests
         ordinary.AdvanceTo(10);
         Assert.Equal(ordinary.Engine.ComputeStateHash(),measured.Engine.ComputeStateHash());
         Assert.Equal(10,profile.MeasuredTicks);Assert.True(profile.CheckpointHashMatches);Assert.True(profile.SaveBytes>0);Assert.True(profile.MaximumTickMs>=profile.MedianTickMs);
+        Assert.NotNull(profile.AverageStages);Assert.NotNull(profile.P95Stages);
+        Assert.True(profile.AverageStages.CoreMs>0);Assert.True(profile.AllocatedBytes>0);Assert.True(profile.CpuMs>=0);
     }
     [Fact]
     public void CompressedEnvelopeRetainsHistoryAndReadsUncompressedCurrentSchema()

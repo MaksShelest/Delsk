@@ -20,6 +20,7 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
     public string SessionId { get; } = sessionId;
     public long SessionEpoch { get; private set; } = 1;
     public event Action<GameSession>? TickCompleted;
+    internal event Action<StepTiming>? StepMeasured;
     public bool Paused { get; private set; }
     public RecordedCommand[] CommandTape => _tape.ToArray();
     public TickSample[] Samples => _samples.ToArray();
@@ -53,8 +54,12 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
         if (Paused) return;
         beforeStep?.Invoke();
         SubmitPlaybackInputs();
+        bool measured = StepMeasured is not null;
+        long start = measured ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
         SubmitControllerInputs();
+        long coreStart = measured ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
         Engine.Step();
+        long sampleStart = measured ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
         var state = Engine.Inspect();
         var actor = state.Participants[0];
         _samples.Add(new(state.Tick, state.Accounts.Single(a => a.Id == actor.AccountId).BalanceMinor,
@@ -65,6 +70,10 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
         _laborSamples.Add(new(state.Tick, state.EmploymentGroups));
         SampleControllers(state);
         TickCompleted?.Invoke(this);
+        if (measured) StepMeasured?.Invoke(new(
+            System.Diagnostics.Stopwatch.GetElapsedTime(start,coreStart).TotalMilliseconds,
+            System.Diagnostics.Stopwatch.GetElapsedTime(coreStart,sampleStart).TotalMilliseconds,
+            System.Diagnostics.Stopwatch.GetElapsedTime(sampleStart).TotalMilliseconds));
     }
     public void SetPaused(bool paused) => Paused = paused;
     public void SetTravelHeading(ParticipantId actor, int x, int z)

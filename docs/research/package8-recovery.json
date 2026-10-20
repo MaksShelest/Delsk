@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "id": "zero-cash-pilot",
+  "scenario": "scenarios/presentation-map-one-v3.json",
+  "economy": "config/economy.json",
+  "controllers": "scenarios/baseline-controllers.json",
+  "ticks": 1200,
+  "seeds": [
+    42,
+    43
+  ],
+  "repetitions": 1,
+  "mode": "algorithmic",
+  "factors": [
+    {
+      "path": "world.startingCashMinor",
+      "values": [
+        0
+      ]
+    },
+    {
+      "path": "npc.cashReserveMinor",
+      "values": [
+        0
+      ]
+    }
+  ],
+  "profile": true,
+  "timeoutSeconds": 240
+}
