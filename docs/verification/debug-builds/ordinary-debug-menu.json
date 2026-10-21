@@ -1,0 +1,8 @@
+{
+  "checks": [
+    "Actual menu visibility RU/EN",
+    "Ordinary Debug explanation and no intervention controls"
+  ],
+  "expectDebugUi": true,
+  "failures": []
+}

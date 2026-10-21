@@ -51,6 +51,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/verify_platform_probe.py --report artifacts/platform-probe.json --log-prefix artifacts/checks/godot-import --log-prefix artifacts/checks/godot-smoke
           exit $LASTEXITCODE
+      - name: Release excludes the Debug menu
+        shell: pwsh
+        run: |
+          python scripts/run_check.py --name release-ui-restore --timeout 180 -- dotnet restore src/Client.Godot/Delsk.Client.csproj -p:Configuration=ExportRelease --locked-mode --disable-parallel '-m:1'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/run_check.py --name release-ui-build --timeout 180 -- dotnet build src/Client.Godot/Delsk.Client.csproj -c ExportRelease --no-restore --disable-build-servers '-m:1'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/run_check.py --name release-ui-audit --timeout 120 -- dotnet run --project tools/AssemblyAudit -c Release -- src/Client.Godot/.godot/mono/temp/bin/ExportRelease --no-debug-ui
+          exit $LASTEXITCODE
       - name: Verify HUD and Developer god mode
         shell: pwsh
         run: |

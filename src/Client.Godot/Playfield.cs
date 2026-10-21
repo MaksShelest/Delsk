@@ -695,6 +695,11 @@ public partial class Playfield : Control
         _panel.AddChild(split);
         var mapColumn = new VBoxContainer { CustomMinimumSize = new Vector2(0, 230), SizeFlagsVertical = SizeFlags.ExpandFill };
         split.AddChild(mapColumn);
+#if DEBUG && !DELSK_DEVELOPER
+        mapColumn.AddChild(new Label { Name = "DebugBuildHint", AutowrapMode = TextServer.AutowrapMode.WordSmart,
+            Text = L("Обычный Debug. Деньги и ресурсы можно менять в Developer-сборке — см. docs/DEVELOPER_TOOLS.md.",
+                "Ordinary Debug. Money and stock editing requires the Developer build — see docs/DEVELOPER_TOOLS.md.") });
+#endif
         var mapToolbar = new HBoxContainer();
         mapColumn.AddChild(mapToolbar);
         DeveloperDebug(mapToolbar);
@@ -786,7 +791,9 @@ public partial class Playfield : Control
         box.AddChild(new Label { Text = T("menu.title") + " · " + PlayMaps.Name(_mapKey, _language), HorizontalAlignment = HorizontalAlignment.Center });
         box.AddChild(new Label { Text = T("menu.escape"), AutowrapMode = TextServer.AutowrapMode.WordSmart });
         Button(box, "menu.continue", ContinueGame);
+#if DEBUG
         Button(box, "menu.debug", OpenDebug);
+#endif
         DeveloperMenu(box);
         var chooseMap = new Button { Text = PlayerText.Local(_language, "Выбрать карту / новая партия", "Choose map / new game"), FocusMode = FocusModeEnum.None };
         chooseMap.Pressed += ShowMaps;
@@ -824,6 +831,7 @@ public partial class Playfield : Control
         Refresh();
     }
 
+#if DEBUG
     private void OpenDebug()
     {
         _surface = Surface.Debug;
@@ -834,6 +842,7 @@ public partial class Playfield : Control
         ApplySurface();
         Refresh();
     }
+#endif
 
     private void ContinueGame()
     {
