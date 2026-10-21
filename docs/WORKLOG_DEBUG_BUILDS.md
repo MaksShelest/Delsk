@@ -13,3 +13,5 @@
 Новый lock сгенерирован реальным NuGet ExportDebug restore, не вручную. Smoke и проверки logs прошли. Полный WinEXE export/run не запускать без matching templates, не считать пройденным. Проверен вывод DLL ExportDebug. CI расширен release metadata step и повторным probe этих DLL.
 
 Далее краткий evidence, diff review, commit/push и отдельный PR без merge. Пользователю дать точную команду --export-windows с путём GodotMono_console.exe, путь windows/DelskDeveloper.exe и Menu→Debug→God mode, итоговые значения/выбор хранилища/capacity. Не запускать следующие пакеты экономики.
+
+Опубликовано: PR https://github.com/MaksShelest/Delsk/pull/48 открыт без merge. Веткаfix/debug-developer-builds, implementation4d5f7ab. Локальные gates зелёные; user Windows EXE/новый GitHub CI отдельно. Продолжение этой задачи — только приёмка Developer EXE на машине пользователя по DEVELOPER_TOOLS.md, не новые пакеты.

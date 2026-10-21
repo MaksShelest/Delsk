@@ -24,3 +24,5 @@
 ## Ограничения
 
 Matching Windows .NET export templates в текущем окружении не установлены; полный --export-windows и запуск .exe на Windows не проверялись. Managed ExportDebug и настоящий UI из этих assemblies проверены в Linux Godot. Не выдавать это за Windows hardware acceptance. Вместимость не увеличивается: для большого запаса выбрать подходящий склад; ввод задаёт итоговое общее количество, не добавку. Деньги вводятся в монетах.
+
+[PR#48](https://github.com/MaksShelest/Delsk/pull/48), ветка `fix/debug-developer-builds`, реализация `4d5f7ab`; отправлено без автоматического merge.
