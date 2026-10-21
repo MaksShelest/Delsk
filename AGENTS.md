@@ -13,6 +13,12 @@
 
 - Дополнение21.10.2026: глобальный Alt+Enter/Alt+KpEnter в Playfield._Input до GUI/context, release/echo не переключают; прежние ToggleFullscreen/display.cfg, headless/embedded guard. canvas_items aspect expand обязателен для заполнения без letterbox. scripts/check_sawmill_ui.py --mode fullscreen требует Xvfb+xfwm4/dbus-run-session/xprop; проверяет actual window rect/persistence/paused world. Результаты отдельно fullscreen-summary.json, прежние unit/runner counts не называть повторным запуском.
 
+## Debug/Developer/Release,21.10.2026 (Europe/Samara)
+
+- По уточнению владельца: menu.debug/OpenDebug только DEBUG (Debug/ExportDebug), Release/ExportRelease не имеют входа. Ordinary Debug содержит понятную build hint, без intervention API. Developer остаётся отдельной изолированной Debug-сборкой, не включать cheats обычному клиенту.
+- build_developer_client.py закрепляет DelskDeveloper/DelskDeveloperPackage только в staged Directory.Build.props; это обязательно для последующего Godot ExportDebug без CLI flags. --export-windows/--godot использует --export-debug; matching Mono templates нужны локально. Отдельный packages.developer.export.lock.json, ordinary ExportDebug reuse release lock (без Editor references). Не менять global/root props ради кнопки.
+- check_hud_god_ui.py проверяет17nativecontrols в Debug и повторно actual ExportDebug assemblies без ручных flags; binary swap выполняется только в isolated stage. AssemblyAudit --no-debug-ui проверяет Release entrypoint; Release UI проверен на RU/EN. Отчёт IMPLEMENTATION_REPORT_DEBUG_BUILDS.md/WORKLOG_DEBUG_BUILDS.md; путь для пользователя DEVELOPER_TOOLS.md.
+
 ## HUD и режим бога, 20.10.2026
 
 - Developer-кнопка «Режим бога» находится в Debug; прежний вход из меню сохранён. Все реализации/поля/транзакции только в Developer/**/*.cs, optional partial hooks исчезают из ordinary сборки. Не включать God-mode в обычный Debug/Release. AssemblyAudit проверяет новые entrypoints и исключение тестового HudGodProbe.

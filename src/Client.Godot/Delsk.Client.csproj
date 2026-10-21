@@ -3,7 +3,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <AssemblyName>Delsk.Client</AssemblyName>
-    <NuGetLockFilePath Condition="'$(Configuration)' == 'ExportRelease' and '$(DelskDeveloper)' != 'true' and '$(RuntimeIdentifier)' == ''">$(MSBuildProjectDirectory)/packages.release.lock.json</NuGetLockFilePath>
+    <NuGetLockFilePath Condition="('$(Configuration)' == 'ExportRelease' or '$(Configuration)' == 'ExportDebug') and '$(DelskDeveloper)' != 'true' and '$(RuntimeIdentifier)' == ''">$(MSBuildProjectDirectory)/packages.release.lock.json</NuGetLockFilePath>
+    <NuGetLockFilePath Condition="'$(Configuration)' == 'ExportDebug' and '$(DelskDeveloper)' == 'true' and '$(RuntimeIdentifier)' == ''">$(MSBuildProjectDirectory)/packages.developer.export.lock.json</NuGetLockFilePath>
   </PropertyGroup>
   <ItemGroup Condition="'$(DelskDeveloper)' == 'true'"><ProjectReference Include="../Simulation.Developer/Simulation.Developer.csproj" /></ItemGroup>
   <Target Name="RequireIsolatedDeveloperPackage" BeforeTargets="PrepareForBuild" Condition="'$(DelskDeveloper)' == 'true'">

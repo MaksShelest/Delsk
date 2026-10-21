@@ -1,0 +1,8 @@
+{
+  "checks": [
+    "Actual menu visibility RU/EN",
+    "Release has no Debug menu"
+  ],
+  "expectDebugUi": false,
+  "failures": []
+}

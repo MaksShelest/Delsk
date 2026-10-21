@@ -2,6 +2,7 @@
 """Native HUD and God-mode checks in an isolated Developer client. Шелестов Максим Евгеньевич."""
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -51,3 +52,25 @@ report = json.loads((output / "hud-god-check.json").read_text(encoding="utf-8"))
 if report.get("status") != "succeeded" or len(report.get("checks", [])) < 17:
     raise SystemExit("Incomplete HUD/God-mode report")
 print("Native HUD and God-mode checks passed:", len(report["checks"]))
+
+# Godot export invokes ExportDebug without DelskDeveloper command-line properties.
+# Verify that exact build and execute its assemblies in a fresh engine process.
+check("hud-god-export-restore", 180, ["dotnet", "restore", project / "Delsk.Client.csproj",
+      "-p:Configuration=ExportDebug", "--locked-mode", "--disable-parallel", "-m:1"])
+check("hud-god-export-build", 180, ["dotnet", "build", project / "Delsk.Client.csproj", "-c", "ExportDebug",
+      "--no-restore", "--disable-build-servers", "-m:1"])
+export_bin = project / ".godot/mono/temp/bin/ExportDebug"
+if not (export_bin / "Simulation.Developer.dll").is_file():
+    raise SystemExit("ExportDebug silently lost Developer support")
+shutil.rmtree(project / ".godot/mono/temp/bin/Debug")
+shutil.copytree(export_bin, project / ".godot/mono/temp/bin/Debug")
+export_output = output / "export-debug"
+export_output.mkdir(exist_ok=True)
+check("hud-god-export-controls", 60, [args.godot, "--headless", "--audio-driver", "Dummy", "--path", project,
+      "res://HudGodProbe.tscn", "--", "--output", export_output, "--windowed"])
+export_report = json.loads((export_output / "hud-god-check.json").read_text(encoding="utf-8"))
+if export_report.get("status") != "succeeded" or len(export_report.get("checks", [])) < 17:
+    raise SystemExit("Incomplete ExportDebug HUD/God-mode report")
+check("hud-god-export-logs", 30, [sys.executable, root / "scripts/verify_platform_probe.py",
+      "--log-prefix", output / "checks/hud-god-controls", "--log-prefix", output / "checks/hud-god-export-controls"])
+print("ExportDebug without CLI Developer flags retained all", len(export_report["checks"]), "native checks")

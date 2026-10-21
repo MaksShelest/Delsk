@@ -7,6 +7,8 @@ p=argparse.ArgumentParser()
 p.add_argument('--output',type=Path,required=True)
 p.add_argument('--dotnet',default='dotnet')
 p.add_argument('--refresh-locks',action='store_true')
+p.add_argument('--export-windows',action='store_true',help='Export a Windows Developer EXE using the staged project (debug export only)')
+p.add_argument('--godot',default='godot',help='Godot 4.7.2 Mono executable for --export-windows')
 a=p.parse_args()
 root=Path(__file__).resolve().parents[1];out=a.output.resolve();stage=out/'source'
 if stage==root or root.is_relative_to(stage) or stage.is_relative_to(root/'src'):
@@ -22,6 +24,11 @@ for name in sorted(names):
     if not src.is_file() or not (name.startswith(('src/','config/','scenarios/')) or name in ('Directory.Build.props','Directory.Build.targets','global.json')):continue
     dest=stage/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(src,dest)
 project=stage/'src/Client.Godot/Delsk.Client.csproj'
+# Godot invokes MSBuild again for ExportDebug without our command-line properties.
+# Keep the flavour in this isolated tree so a later editor/export cannot silently drop it.
+props=stage/'Directory.Build.props'
+props.write_text(props.read_text(encoding='utf-8').replace('<PropertyGroup>',
+    '<PropertyGroup>\n    <DelskDeveloper>true</DelskDeveloper>\n    <DelskDeveloperPackage>true</DelskDeveloperPackage>',1),encoding='utf-8')
 godot_project=project.parent/'project.godot'
 godot_project.write_text(godot_project.read_text(encoding='utf-8').replace('config/name="Delsk"','config/name="Delsk Developer"'),encoding='utf-8')
 for label,command in [('restore',[a.dotnet,'restore',str(project),'-p:DelskDeveloper=true','-p:DelskDeveloperPackage=true','--disable-parallel','-m:1',*([] if a.refresh_locks else ['--locked-mode'])]),
@@ -29,3 +36,17 @@ for label,command in [('restore',[a.dotnet,'restore',str(project),'-p:DelskDevel
     r=subprocess.run([sys.executable,str(root/'scripts/run_check.py'),'--name','developer-client-'+label,'--timeout','180','--log-directory',str(out/'checks'),'--',*command],cwd=stage)
     if r.returncode:raise SystemExit(r.returncode)
 print('Developer project:',project.parent)
+print('Build flavour: Developer; Debug/ExportDebug only. Menu -> Debug -> God mode.')
+if a.export_windows:
+    windows=out/'windows';windows.mkdir(parents=True,exist_ok=True)
+    for label,limit,command in [
+        ('import',180,[a.godot,'--headless','--path',str(project.parent),'--editor','--import']),
+        ('export',240,[a.godot,'--headless','--path',str(project.parent),'--export-debug','Windows Probe',str(windows/'DelskDeveloper.exe')])]:
+        name='developer-windows-'+label
+        result=subprocess.run([sys.executable,str(root/'scripts/run_check.py'),'--name',name,'--timeout',str(limit),
+            '--log-directory',str(out/'checks'),'--',*command],cwd=stage)
+        if result.returncode:raise SystemExit(result.returncode)
+        subprocess.run([sys.executable,str(root/'scripts/verify_platform_probe.py'),'--log-prefix',str(out/'checks'/name)],check=True)
+    if not (windows/'DelskDeveloper.exe').is_file():raise SystemExit('Godot did not produce DelskDeveloper.exe')
+    print('Windows Developer package:',windows)
+    print('Keep the EXE, PCK and data directory together. Do not use --export-release for this project.')

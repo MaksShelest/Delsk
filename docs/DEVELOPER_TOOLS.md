@@ -1,8 +1,35 @@
 # Developer-сборка и остановленные выборы
 
-Автор: Шелестов Максим Евгеньевич. 19.10.2026.
+Автор: Шелестов Максим Евгеньевич. Актуализировано21.10.2026 (Europe/Samara).
 
-Обычные Debug/Release не содержат API вмешательства и Developer-экрана. Технический Debug с обычными командами остаётся; он не даёт дополнительных прав. `DelskDeveloper=true` включает отдельный проект Simulation.Developer и условные Core/Hosting методы. Release/ExportRelease с этим флагом запрещены сборкой. Backend Developer имеет отдельные obj/bin и lock-файлы.
+Обычные Debug/Release не содержат API вмешательства и Developer-экрана. Технический Debug с обычными командами доступен только в Debug/ExportDebug; он не даёт дополнительных прав. В Release/ExportRelease пункта Debug нет. `DelskDeveloper=true` включает отдельный проект Simulation.Developer и условные Core/Hosting методы. Release/ExportRelease с этим флагом запрещены сборкой. Backend Developer имеет отдельные obj/bin и lock-файлы.
+
+## Почему в Debug .exe нет кнопки «Режим бога»
+
+Надпись **Debug** при экспорте Godot означает конфигурацию ExportDebug, а не включение DelskDeveloper. 2D-карта/«Один тик» — обычный технический Debug. Дополнительные поля денег и товаров уже реализованы, но требуют отдельной Developer-сборки.
+
+| Сборка | Debug в меню | Режим бога |
+|---|---|---|
+| Обычная Debug / ExportDebug | Да, с пояснением | Нет |
+| Developer Debug / ExportDebug | Да | Да |
+| Обычная Release / ExportRelease | Нет | Нет |
+| Developer + Release / ExportRelease | Сборка запрещена | — |
+
+**Нужный маршрут: Меню → Debug-режим → «Режим бога»**, кнопка в верхней строке рядом с картой. Либо Меню → «Разработчик · режим бога и журнал». Затем участник «Вы», поле «Деньги, монет» или выбор «Хранилище»/«Ресурс» и «Количество, шт.», соответствующая кнопка «Применить».
+
+## Windows .exe с режимом бога
+
+Нужны Python3, .NET SDK10.0.401, Godot4.7.2 **.NET/Mono** и matching Windows .NET export templates (Редактор → Управление шаблонами экспорта). Из корня репозитория, заменив путь к Godot на свой:
+
+```powershell
+python scripts/build_developer_client.py --output artifacts/developer-client --export-windows --godot "C:\Godot\Godot_v4.7.2-stable_mono_win64_console.exe"
+```
+
+Запустить `artifacts/developer-client/windows/DelskDeveloper.exe`. Хранить вместе всю папку `windows`, включая PCK и DLL/data-каталоги. Новая партия/загрузки выполняются именно в **Delsk Developer**, а не в прежнем обычном .exe. Сохранения Developer отделены от обычных; исходную партию инструмент не перезаписывает.
+
+Packager закрепляет Developer-флаги в **собственном staged** Directory.Build.props, поэтому повторная сборка из редактора и Godot ExportDebug сохраняют кнопку. Оригинальный репозиторий остаётся ordinary. Экспорт вручную возможен только из `artifacts/developer-client/source/src/Client.Godot`, с **Export With Debug / --export-debug** и preset Windows Probe. Экспорт оригинального проекта не включает режим бога. ExportRelease staged Developer-проекта ожидаемо отклоняется; для обычного релиза экспортировать оригинальный проект.
+
+Новые проверки разделения: [отчёт](IMPLEMENTATION_REPORT_DEBUG_BUILDS.md). Полный экспорт/запуск Windows .exe в текущей Linux-среде не проверен; проверены managed ExportDebug без ручных флагов и настоящие controls из этих assemblies.
 
 ## Изолированный клиент
 

@@ -799,3 +799,7 @@ TabletDesign задаёт scoped visual tokens и native адаптивные к
 ExchangeTablet объединяет CapitalTablet/ParticipantMarketTablet без второго trading engine. MyOffers использует own shop, location хранится прежним TabletState; новые доступные remote forms проверяют прежний AccessFor. PlayerTablet/HelpOverlay показывают собственные/двусторонние проекции и публичные показатели. Ни демонстрационный world, ни новая read model с foreign secrets не вводятся. Материалы/тесты/границы — IMPLEMENTATION_REPORT_TABLETS_V1.md.
 
 Дополнение21.10.2026: глобальный Alt+Enter обрабатывается Playfield._Input до GUI/context и вызывает прежний ToggleFullscreen/display.cfg. Повтор/отпускание игнорируются, headless/embedded excluded. Canvas_items aspect expand заполняет viewport без letterbox; это только display policy, не ход времени или World state. Native window gate и метаданные — IMPLEMENTATION_REPORT_TABLETS_V1.md.
+
+## Границы Debug и экспортируемого Developer,21.10.2026
+
+menu.debug и OpenDebug ограничены DEBUG (Debug/ExportDebug); в Release/ExportRelease точки входа нет. Обычный Debug сообщает о Developer-сборке, но не содержит intervention API. Изолированный packager закрепляет собственные DelskDeveloper/DelskDeveloperPackage в stage props, чтобы следующий Godot ExportDebug сохранил backend/панель без внешних флагов. Root props/экономика/паузы прежние. ExportDebug имеет отдельный Developer lock без GodotSharpEditor; ordinary экспорт использует release lock. Developer Release запрещён прежним MSBuild guard.
