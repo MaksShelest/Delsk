@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "configuration": "ExportDebug",
+  "developer": true,
+  "exe_bytes": 103297536,
+  "exe_sha256": "4ec2d40f41c1c954673fa4f6274bab4c1700d048b5bba24ecfc11eef1829d2b0",
+  "managed_path": "/workspace/work/delsk-standard-debug-export/windows/data_Delsk.Client_windows_x86_64",
+  "managed_client_sha256": "087a47315af73dc19737da2b1052dce743b48930e488cde4f38418f8631b3597"
+}

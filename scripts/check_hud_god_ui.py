@@ -55,6 +55,8 @@ print("Native HUD and God-mode checks passed:", len(report["checks"]))
 
 # Godot export invokes ExportDebug without DelskDeveloper command-line properties.
 # Verify that exact build and execute its assemblies in a fresh engine process.
+# Drop the packager's forced flags: test the original project's standard defaults.
+shutil.copyfile(root / "Directory.Build.props", project.parents[1] / "Directory.Build.props")
 check("hud-god-export-restore", 180, ["dotnet", "restore", project / "Delsk.Client.csproj",
       "-p:Configuration=ExportDebug", "--locked-mode", "--disable-parallel", "-m:1"])
 check("hud-god-export-build", 180, ["dotnet", "build", project / "Delsk.Client.csproj", "-c", "ExportDebug",
@@ -73,4 +75,4 @@ if export_report.get("status") != "succeeded" or len(export_report.get("checks",
     raise SystemExit("Incomplete ExportDebug HUD/God-mode report")
 check("hud-god-export-logs", 30, [sys.executable, root / "scripts/verify_platform_probe.py",
       "--log-prefix", output / "checks/hud-god-controls", "--log-prefix", output / "checks/hud-god-export-controls"])
-print("ExportDebug without CLI Developer flags retained all", len(export_report["checks"]), "native checks")
+print("Standard ExportDebug with original props and no CLI Developer flags passed all", len(export_report["checks"]), "native checks")

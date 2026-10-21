@@ -1,0 +1,466 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "21.10.2026 Europe/Samara",
+  "base": "9b825ea",
+  "branch": "feat/standard-godot-debug-export",
+  "status": "succeeded",
+  "default_workflow": "Original Godot project: Export With Debug checked => Developer ExportDebug; unchecked => ordinary ExportRelease",
+  "native_debug_checks": 17,
+  "native_source_default_export_debug_checks": 17,
+  "cleanup_preservation_groups": 4,
+  "source_props_sha256": "de702b4ea994d768f45dcf51a0a801596c2f5d137a96caffb3041147fe81d57b",
+  "native_export_debug_dll_sha256": "5f794258ff5a9e6580818f96421e1ae629c157aafdbd9f0ea9cd8197f96e87ba",
+  "windows_exe_exports": [
+    "ExportDebug",
+    "ExportRelease to same destination after debug"
+  ],
+  "tick_hashes": 1132,
+  "file_restores": 35,
+  "stopped_final_tick": 10,
+  "gates": [
+    {
+      "name": "standard-god-controls",
+      "command": [
+        "python3",
+        "scripts/check_hud_god_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/delsk-standard-debug-export/hud-god"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-21T08:07:48.073624+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 63.841,
+      "finished_at": "2026-10-21T08:08:51.914579+00:00"
+    },
+    {
+      "name": "standard-build-gate",
+      "command": [
+        "bash",
+        "/workspace/work/delsk-standard-debug-export/gate.sh"
+      ],
+      "timeout_seconds": 1000,
+      "started_at": "2026-10-21T08:10:03.616536+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 95.466,
+      "finished_at": "2026-10-21T08:11:39.082081+00:00"
+    },
+    {
+      "name": "export-debug-restore",
+      "command": [
+        "dotnet",
+        "restore",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "-p:Configuration=ExportDebug",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-21T08:10:03.644080+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.427,
+      "finished_at": "2026-10-21T08:10:05.070645+00:00"
+    },
+    {
+      "name": "export-debug-build",
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "-c",
+        "ExportDebug",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-21T08:10:05.101749+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 22.617,
+      "finished_at": "2026-10-21T08:10:27.718922+00:00"
+    },
+    {
+      "name": "windows-debug-publish",
+      "command": [
+        "dotnet",
+        "publish",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "-c",
+        "ExportDebug",
+        "-r",
+        "win-x64",
+        "--self-contained",
+        "true",
+        "-p:GodotTargetPlatform=windows",
+        "--disable-build-servers",
+        "-m:1",
+        "-o",
+        "/workspace/work/delsk-standard-debug-export/windows-debug-managed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-21T08:10:27.752014+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 7.465,
+      "finished_at": "2026-10-21T08:10:35.216822+00:00"
+    },
+    {
+      "name": "export-release-restore",
+      "command": [
+        "dotnet",
+        "restore",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "-p:Configuration=ExportRelease",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-21T08:10:35.250278+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.376,
+      "finished_at": "2026-10-21T08:10:36.626300+00:00"
+    },
+    {
+      "name": "export-release-build",
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "-c",
+        "ExportRelease",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-21T08:10:36.656499+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 20.318,
+      "finished_at": "2026-10-21T08:10:56.974706+00:00"
+    },
+    {
+      "name": "export-release-audit",
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "src/Client.Godot/.godot/mono/temp/bin/ExportRelease",
+        "--no-debug-ui"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-21T08:10:57.022664+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.184,
+      "finished_at": "2026-10-21T08:11:00.206485+00:00"
+    },
+    {
+      "name": "windows-release-publish",
+      "command": [
+        "dotnet",
+        "publish",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "-c",
+        "ExportRelease",
+        "-r",
+        "win-x64",
+        "--self-contained",
+        "true",
+        "-p:GodotTargetPlatform=windows",
+        "--disable-build-servers",
+        "-m:1",
+        "-o",
+        "/workspace/work/delsk-standard-debug-export/windows-release-managed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-21T08:11:00.240961+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.883,
+      "finished_at": "2026-10-21T08:11:07.124214+00:00"
+    },
+    {
+      "name": "windows-release-audit",
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/delsk-standard-debug-export/windows-release-managed",
+        "--no-debug-ui"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-21T08:11:07.155752+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.523,
+      "finished_at": "2026-10-21T08:11:08.678326+00:00"
+    },
+    {
+      "name": "editor-debug-restore",
+      "command": [
+        "dotnet",
+        "restore",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-21T08:11:08.707676+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.418,
+      "finished_at": "2026-10-21T08:11:10.125852+00:00"
+    },
+    {
+      "name": "editor-debug-build",
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "-c",
+        "Debug",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-21T08:11:10.159972+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 20.05,
+      "finished_at": "2026-10-21T08:11:30.210320+00:00"
+    },
+    {
+      "name": "editor-debug-audit",
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-21T08:11:30.252474+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.568,
+      "finished_at": "2026-10-21T08:11:31.820285+00:00"
+    },
+    {
+      "name": "smoke",
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--",
+        "--smoke",
+        "--report",
+        "/workspace/work/delsk-standard-debug-export/platform.json"
+      ],
+      "timeout_seconds": 90,
+      "started_at": "2026-10-21T08:11:31.853436+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 7.107,
+      "finished_at": "2026-10-21T08:11:38.960114+00:00"
+    },
+    {
+      "name": "smoke-verify",
+      "command": [
+        "python3",
+        "scripts/verify_platform_probe.py",
+        "--report",
+        "/workspace/work/delsk-standard-debug-export/platform.json",
+        "--log-prefix",
+        "/workspace/work/delsk-standard-debug-export/checks/smoke"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-21T08:11:39.000092+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.064,
+      "finished_at": "2026-10-21T08:11:39.064627+00:00"
+    },
+    {
+      "name": "cleanup-boundary",
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--script",
+        "/workspace/Delsk/tests/Client.Probes/export-cleanup.gd",
+        "--",
+        "--output",
+        "/workspace/work/delsk-standard-debug-export/cleanup-fixtures",
+        "--debug-deps",
+        "/workspace/work/delsk-standard-debug-export/windows-debug-managed/Delsk.Client.deps.json",
+        "--release-deps",
+        "/workspace/work/delsk-standard-debug-export/windows-release-managed/Delsk.Client.deps.json"
+      ],
+      "timeout_seconds": 45,
+      "started_at": "2026-10-21T08:30:47.259165+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.366,
+      "finished_at": "2026-10-21T08:30:47.624984+00:00"
+    },
+    {
+      "name": "standard-export-gate",
+      "command": [
+        "bash",
+        "/workspace/work/delsk-standard-debug-export/export-gate.sh"
+      ],
+      "timeout_seconds": 700,
+      "started_at": "2026-10-21T08:30:47.701253+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 16.565,
+      "finished_at": "2026-10-21T08:31:04.266736+00:00"
+    },
+    {
+      "name": "import",
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--editor",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-21T08:30:47.729364+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.475,
+      "finished_at": "2026-10-21T08:30:51.204300+00:00"
+    },
+    {
+      "name": "standard-windows-debug",
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--export-debug",
+        "Windows Probe",
+        "/workspace/work/delsk-standard-debug-export/windows/Delsk.exe"
+      ],
+      "timeout_seconds": 240,
+      "started_at": "2026-10-21T08:30:51.240156+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.493,
+      "finished_at": "2026-10-21T08:30:56.733293+00:00"
+    },
+    {
+      "name": "debug-export-logs",
+      "command": [
+        "python3",
+        "scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/delsk-standard-debug-export/checks/standard-windows-debug",
+        "--log-prefix",
+        "/workspace/work/delsk-standard-debug-export/checks/import"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-21T08:30:56.763291+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-21T08:30:56.795449+00:00"
+    },
+    {
+      "name": "standard-windows-release",
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--export-release",
+        "Windows Probe",
+        "/workspace/work/delsk-standard-debug-export/windows/Delsk.exe"
+      ],
+      "timeout_seconds": 240,
+      "started_at": "2026-10-21T08:30:57.004252+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.492,
+      "finished_at": "2026-10-21T08:31:02.495942+00:00"
+    },
+    {
+      "name": "release-export-logs",
+      "command": [
+        "python3",
+        "scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/delsk-standard-debug-export/checks/standard-windows-release"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-21T08:31:02.528724+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-21T08:31:02.560844+00:00"
+    },
+    {
+      "name": "actual-release-package-audit",
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/delsk-standard-debug-export/windows/data_Delsk.Client_windows_x86_64",
+        "--no-debug-ui"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-21T08:31:02.653838+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.473,
+      "finished_at": "2026-10-21T08:31:04.126861+00:00"
+    },
+    {
+      "name": "release-pck",
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/delsk-tablets-v1/pack-inspection",
+        "--script",
+        "/workspace/Delsk/tests/Client.Probes/tablet-pack.gd",
+        "--",
+        "--pack",
+        "/workspace/work/delsk-standard-debug-export/windows/Delsk.pck",
+        "--report",
+        "/workspace/work/delsk-standard-debug-export/pack-inspection.json"
+      ],
+      "timeout_seconds": 45,
+      "started_at": "2026-10-21T08:32:50.484329+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.365,
+      "finished_at": "2026-10-21T08:32:50.849641+00:00"
+    },
+    {
+      "name": "python-syntax",
+      "command": [
+        "python3",
+        "-m",
+        "py_compile",
+        "scripts/check_hud_god_ui.py"
+      ],
+      "timeout_seconds": 20,
+      "started_at": "2026-10-21T08:32:50.916516+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-21T08:32:50.948828+00:00"
+    }
+  ],
+  "limits": [
+    "Windows EXE exported and package audited on Linux; no Windows desktop run/hardware acceptance",
+    "Core unit/full runner suite not repeated; simulation logic unchanged",
+    "Windows CI result not yet observed"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "version": "4.7.2.stable.mono",
+  "archive_bytes": 1202598411,
+  "transferred": 155923,
+  "templates": [
+    {
+      "name": "windows_debug_x86_64_console.exe",
+      "bytes": 188928,
+      "sha256": "f78703ba3a05dd51a3464f8c90d4c72f54f95d5a8669993e7a5c3ce522b30c52"
+    },
+    {
+      "name": "windows_debug_x86_64.exe",
+      "bytes": 103418880,
+      "sha256": "4526aac3ac47c65de66f99f715f56b35a2e2e4446fcb23e6d280a830cd97fdea"
+    },
+    {
+      "name": "windows_release_x86_64_console.exe",
+      "bytes": 188928,
+      "sha256": "7895a7873947deaff6c8c859c1f77be051023413035048e2db74ceba07a65017"
+    },
+    {
+      "name": "windows_release_x86_64.exe",
+      "bytes": 109513728,
+      "sha256": "16e0ec3cfd398b938f514de95ff2474b532b5061ada78f92226dba3f7584d55d"
+    }
+  ]
+}

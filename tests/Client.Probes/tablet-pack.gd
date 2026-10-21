@@ -15,7 +15,7 @@ func _initialize():
     if not ProjectSettings.load_resource_pack(pack):
         print("PACK_INSPECTION failed to load");quit(1);return
     var files=walk("res://")
-    var forbidden=files.filter(func(p):return "developer/" in p.to_lower() or "simulation.developer" in p.to_lower() or "visualmodelsprobe" in p.to_lower() or "tabletdesignprobe" in p.to_lower() or "hudgodprobe" in p.to_lower() or "source.zip" in p.to_lower() or "demo.gd" in p.to_lower() or "/obj/" in p.to_lower())
+    var forbidden=files.filter(func(p):return "addons/delsk_export/" in p.to_lower() or "release_files.gd" in p.to_lower() or "release_cleanup.gd" in p.to_lower() or "developer/" in p.to_lower() or "simulation.developer" in p.to_lower() or "visualmodelsprobe" in p.to_lower() or "tabletdesignprobe" in p.to_lower() or "hudgodprobe" in p.to_lower() or "source.zip" in p.to_lower() or "demo.gd" in p.to_lower() or "/obj/" in p.to_lower())
     var license_present=FileAccess.file_exists("res://delsk_sawmill_ui/assets/fonts/OFL.txt")
     var sawmill_present=ResourceLoader.exists("res://delsk_sawmill_ui/SawmillTablet.tscn")
     var bakery_present=ResourceLoader.exists("res://delsk_bakery_ui/BakeryTablet.tscn")

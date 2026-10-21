@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "old debug dependency manifest preserved",
+    "invalid or unrelated manifest preserved",
+    "incomplete bundle preserved",
+    "only stale Developer DLL/PDB removed from own release bundle"
+  ],
+  "failures": [],
+  "status": "passed"
+}

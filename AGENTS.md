@@ -13,11 +13,12 @@
 
 - Дополнение21.10.2026: глобальный Alt+Enter/Alt+KpEnter в Playfield._Input до GUI/context, release/echo не переключают; прежние ToggleFullscreen/display.cfg, headless/embedded guard. canvas_items aspect expand обязателен для заполнения без letterbox. scripts/check_sawmill_ui.py --mode fullscreen требует Xvfb+xfwm4/dbus-run-session/xprop; проверяет actual window rect/persistence/paused world. Результаты отдельно fullscreen-summary.json, прежние unit/runner counts не называть повторным запуском.
 
-## Debug/Developer/Release,21.10.2026 (Europe/Samara)
+## Стандартный экспорт Godot,21.10.2026 (Europe/Samara)
 
-- По уточнению владельца: menu.debug/OpenDebug только DEBUG (Debug/ExportDebug), Release/ExportRelease не имеют входа. Ordinary Debug содержит понятную build hint, без intervention API. Developer остаётся отдельной изолированной Debug-сборкой, не включать cheats обычному клиенту.
-- build_developer_client.py закрепляет DelskDeveloper/DelskDeveloperPackage только в staged Directory.Build.props; это обязательно для последующего Godot ExportDebug без CLI flags. --export-windows/--godot использует --export-debug; matching Mono templates нужны локально. Отдельный packages.developer.export.lock.json, ordinary ExportDebug reuse release lock (без Editor references). Не менять global/root props ради кнопки.
-- check_hud_god_ui.py проверяет17nativecontrols в Debug и повторно actual ExportDebug assemblies без ручных flags; binary swap выполняется только в isolated stage. AssemblyAudit --no-debug-ui проверяет Release entrypoint; Release UI проверен на RU/EN. Отчёт IMPLEMENTATION_REPORT_DEBUG_BUILDS.md/WORKLOG_DEBUG_BUILDS.md; путь для пользователя DEVELOPER_TOOLS.md.
+- Владелец явно заменил stage-only правило: обычная галочка Export With Debug оригинального project.godot должна включать God mode без Python. Root Directory.Build.props по умолчанию включает DelskDeveloper при Configuration=ExportDebug, до fallbackfalse. Это одинаково для Core/Hosting/всех references. Debug editor/runner и Release остаются обычными; guard на stage действует для явного Developer Debug, но не для ExportDebug. Release с явно принудительным Developer всё ещё запрещён.
+- Основной проект src/Client.Godot/project.godot: галочка→Debug/God; без галочки→нет Debug/God/API. Optional packager сохранён для CI/автоматизации, не требовать его от пользователя. Не возвращать прежнее требование DelskDeveloperPackage для стандартного ExportDebug. Новое правило supersedes историческое решение50 и отчёт PR48.
+- Стандартный .NET exporter оставляет DLL при debug→release в одной папке: addon addons/delsk_export удаляет только известные Simulation.Developer.dll/.pdb из own Windows managed bundle после подтверждения Client+deps и отсутствия Developer в libraries. Debug/failed release/соседние файлы сохраняются; addon исключён изPCK. Не заменять узкий guard рекурсивной очисткой выходной папки.
+- check_hud_god_ui.py сбрасывает forced stage props перед ExportDebug:17nativechecks именно source defaults без CLIflags. Отчёт/восстановление IMPLEMENTATION_REPORT_STANDARD_DEBUG_EXPORT.md/WORKLOG_STANDARD_DEBUG_EXPORT.md. Явные сохранения/аудит/пауза/приватность прежние; аппаратный Windows запуск не приравнивать к успешному экспорту EXE.
 
 ## HUD и режим бога, 20.10.2026
 

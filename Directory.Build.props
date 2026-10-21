@@ -1,5 +1,8 @@
 <Project>
   <PropertyGroup>
+    <!-- Godot's "Export With Debug" publishes ExportDebug. Apply the same flavour
+         to every project in that graph, including Core/Hosting and its references. -->
+    <DelskDeveloper Condition="'$(DelskDeveloper)' == '' and '$(Configuration)' == 'ExportDebug'">true</DelskDeveloper>
     <DelskDeveloper Condition="'$(DelskDeveloper)' == ''">false</DelskDeveloper>
     <DefineConstants Condition="'$(DelskDeveloper)' == 'true'">$(DefineConstants);DELSK_DEVELOPER</DefineConstants>
     <BaseIntermediateOutputPath Condition="'$(DelskDeveloper)' == 'true'">obj/developer/</BaseIntermediateOutputPath>
@@ -18,6 +21,6 @@
     <Authors>Шелестов Максим Евгеньевич</Authors>
   </PropertyGroup>
   <Target Name="DisallowDeveloperRelease" BeforeTargets="CoreCompile" Condition="'$(DelskDeveloper)' == 'true' and ('$(Configuration)' == 'Release' or '$(Configuration)' == 'ExportRelease')">
-    <Error Text="Developer interventions are forbidden in Release/ExportRelease. Use the isolated Debug Developer package." />
+    <Error Text="Developer interventions are forbidden in Release/ExportRelease. Use a debug export (ExportDebug) or the isolated Debug Developer package." />
   </Target>
 </Project>

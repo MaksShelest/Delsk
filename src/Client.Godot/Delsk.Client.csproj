@@ -7,7 +7,7 @@
     <NuGetLockFilePath Condition="'$(Configuration)' == 'ExportDebug' and '$(DelskDeveloper)' == 'true' and '$(RuntimeIdentifier)' == ''">$(MSBuildProjectDirectory)/packages.developer.export.lock.json</NuGetLockFilePath>
   </PropertyGroup>
   <ItemGroup Condition="'$(DelskDeveloper)' == 'true'"><ProjectReference Include="../Simulation.Developer/Simulation.Developer.csproj" /></ItemGroup>
-  <Target Name="RequireIsolatedDeveloperPackage" BeforeTargets="PrepareForBuild" Condition="'$(DelskDeveloper)' == 'true'">
+  <Target Name="RequireIsolatedDeveloperPackage" BeforeTargets="PrepareForBuild" Condition="'$(DelskDeveloper)' == 'true' and '$(Configuration)' != 'ExportDebug'">
     <Error Condition="'$(DelskDeveloperPackage)' != 'true'" Text="Use scripts/build_developer_client.py for an isolated Developer client package." />
   </Target>
   <ItemGroup>

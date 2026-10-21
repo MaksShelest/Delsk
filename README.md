@@ -1,4 +1,4 @@
-> Debug .exe и режим бога: [как собрать Developer .exe и найти поля денег/ресурсов](docs/DEVELOPER_TOOLS.md). Обычный Debug и Developer различаются; Release не показывает Debug-меню.
+> Экспорт в Godot: **Export With Debug включена → Debug и режим бога; выключена → Release без них**. Для основного project.godot Python-команда не нужна. [Пошаговая инструкция](docs/DEVELOPER_TOOLS.md).
 
 > Переработка планшетов после PR#46: [реализация, проверки и ограничения](docs/IMPLEMENTATION_REPORT_TABLETS_V1.md). Пять производств, биржа, четыре раздела игрока и справка RU/EN на живых данных. PR#45 остаётся отдельным draft; экономические версии и открытые аппаратные gates прежние.
 

@@ -1,3 +1,5 @@
+> Исторический отчёт PR48. Текущий стандартный экспорт с галочкой Godot описан в [IMPLEMENTATION_REPORT_STANDARD_DEBUG_EXPORT.md](IMPLEMENTATION_REPORT_STANDARD_DEBUG_EXPORT.md); обязательный stage для ExportDebug отменён последующим запросом владельца.
+
 # Debug/Developer/Release ·21.10.2026
 
 Автор: Шелестов Максим Евгеньевич. Europe/Samara. Базаa621431 (слитый PR47), веткаfix/debug-developer-builds. Перед началом дерево чистое, история/AGENTS/Developer-код и документация проверены.

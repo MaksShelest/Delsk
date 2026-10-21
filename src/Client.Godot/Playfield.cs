@@ -697,8 +697,8 @@ public partial class Playfield : Control
         split.AddChild(mapColumn);
 #if DEBUG && !DELSK_DEVELOPER
         mapColumn.AddChild(new Label { Name = "DebugBuildHint", AutowrapMode = TextServer.AutowrapMode.WordSmart,
-            Text = L("Обычный Debug. Деньги и ресурсы можно менять в Developer-сборке — см. docs/DEVELOPER_TOOLS.md.",
-                "Ordinary Debug. Money and stock editing requires the Developer build — see docs/DEVELOPER_TOOLS.md.") });
+            Text = L("Для режима бога экспортируйте проект с галочкой «Экспорт с отладкой» (Export With Debug).",
+                "For god mode, export the project with Export With Debug checked.") });
 #endif
         var mapToolbar = new HBoxContainer();
         mapColumn.AddChild(mapToolbar);
