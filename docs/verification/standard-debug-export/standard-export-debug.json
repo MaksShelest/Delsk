@@ -1,0 +1,25 @@
+{
+  "status": "succeeded",
+  "platform": "Linux",
+  "display": "headless",
+  "checks": [
+    "debug-entry",
+    "human-default",
+    "coin-conversion",
+    "stock-edit",
+    "capacity-rejection-atomic",
+    "actor-switch",
+    "empty-hidden",
+    "zero-filter",
+    "chain-pairs",
+    "reserved-physical-stock",
+    "hud-cache",
+    "54px-height",
+    "new-and-unknown-stock",
+    "localized-tooltip",
+    "escape-cancel",
+    "close-keeps-debug-pause",
+    "invariants"
+  ],
+  "scope": "Native headless Godot controls and real Developer transactions; no screenshot, hardware FPS or visual acceptance claim"
+}

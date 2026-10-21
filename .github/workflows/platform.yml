@@ -65,6 +65,13 @@ jobs:
         run: |
           python scripts/check_hud_god_ui.py --godot "$env:DELSK_GODOT" --output artifacts/hud-god-ui
           exit $LASTEXITCODE
+      - name: Preserve files at the release cleanup boundary
+        shell: pwsh
+        run: |
+          python scripts/run_check.py --name export-cleanup --timeout 45 -- $env:DELSK_GODOT --headless --path src/Client.Godot --script "$env:GITHUB_WORKSPACE/tests/Client.Probes/export-cleanup.gd" -- --output "$env:GITHUB_WORKSPACE/artifacts/export-cleanup" --debug-deps "$env:GITHUB_WORKSPACE/artifacts/hud-god-ui/client/source/src/Client.Godot/.godot/mono/temp/bin/ExportDebug/Delsk.Client.deps.json" --release-deps "$env:GITHUB_WORKSPACE/src/Client.Godot/.godot/mono/temp/bin/ExportRelease/Delsk.Client.deps.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/verify_platform_probe.py --log-prefix artifacts/checks/export-cleanup
+          exit $LASTEXITCODE
       - uses: actions/upload-artifact@v4
         if: always()
         with:

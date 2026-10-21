@@ -803,3 +803,7 @@ ExchangeTablet объединяет CapitalTablet/ParticipantMarketTablet без
 ## Границы Debug и экспортируемого Developer,21.10.2026
 
 menu.debug и OpenDebug ограничены DEBUG (Debug/ExportDebug); в Release/ExportRelease точки входа нет. Обычный Debug сообщает о Developer-сборке, но не содержит intervention API. Изолированный packager закрепляет собственные DelskDeveloper/DelskDeveloperPackage в stage props, чтобы следующий Godot ExportDebug сохранил backend/панель без внешних флагов. Root props/экономика/паузы прежние. ExportDebug имеет отдельный Developer lock без GodotSharpEditor; ordinary экспорт использует release lock. Developer Release запрещён прежним MSBuild guard.
+
+## Стандартная галочка экспорта,21.10.2026
+
+По новому явному требованию владельца оригинальный Godot ExportDebug выбирает DelskDeveloper=true через ранний root props default (до fallbackfalse) во всём графе references. Для этой конфигурации отдельный stage/Package flag не нужен. Editor Debug остаётся обычным, ExportRelease обычный по умолчанию и без Developer API. Разделение obj/bin/locks сохраняется; явный Developer Release запрещён. Малый editor-only GDScript addon убирает два известных устаревших Developer файла из own Windows managed bundle после release с подтверждённым manifest; debug/ошибочный export/чужие файлы защищены. Runtime/симуляция/пауза/сохранения не меняются.

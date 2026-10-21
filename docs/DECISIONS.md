@@ -580,3 +580,9 @@ P47 расширяет прежний производственный испо�
 ## 50. Debug UI и экспорт Developer (21.10.2026)
 
 Пользователь уточнил: в Release нет Debug-вкладки. Точка входа и кнопка компилируются только при DEBUG; обычный Debug объясняет, почему отсутствуют вмешательства. God mode не дублируется и не открывается обычному клиенту: это существующий Developer Debug/ExportDebug. Для корректного .exe packager закрепляет флаги в отдельной копии props и даёт --export-windows, всегда --export-debug. Оригинальная сборка/сохранения изолированы. Проверяем реальный ExportDebug без CLI flags и отсутствие Debug entrypoint в Release; полный Windows EXE gate не подменять Linux native controls.
+
+## 51. Обычная галочка Godot вместо обязательной команды (21.10.2026)
+
+Владелец прямо запросил стандартный экспорт: Export With Debug включает существующий режим бога, без неё Release не имеет отладочного входа/API. Это заменяет stage-only ограничение решения50 для ExportDebug. Root MSBuild props выбирают flavour по ExportDebug для всех зависимостей; клиент разрешает исходный ExportDebug без Package flag. Optional stage CLI остаётся для автоматизации/Developer editor Debug, не как обязательный пользовательский workflow.
+
+Реальный debug→release Windows export в одну папку выявил orphan Simulation.Developer.dll/.pdb stock Godot. Убираем их узким editor-only addon после подтверждённого release manifest. Debug/failed-release manifest и все прочие файлы защищены, addon не shipped. Экономика/save/аудит/приватность прежние. Экспорт EXE не является запуском на Windows hardware.

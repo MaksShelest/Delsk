@@ -1,0 +1,73 @@
+{
+  "Status": "passed",
+  "Failure": null,
+  "Tick": 62,
+  "StateHash": "07cbf7b8a764e78797cfcad8cd986371320041418825b4570fccd0aefd5ccc31",
+  "CheckedTicks": 62,
+  "LifecycleAdapterChecked": true,
+  "CheckpointRestoreChecked": true,
+  "RestoredTicks": [
+    12,
+    34,
+    55,
+    60
+  ],
+  "ElectionCheckedTicks": 40,
+  "ElectionStateHash": "5b45b11da900715ddf1dd8b766f9d957abf8214a088fdccc55939fd605af7ef2",
+  "ElectionRestoredTicks": [
+    9,
+    19,
+    20,
+    21
+  ],
+  "SupportCheckedTicks": 120,
+  "SupportStateHash": "dcd426adae3d1d6a11c2afd36e84b371b292e285b74a0125b81da043410feea4",
+  "SupportRestoredTicks": [
+    17,
+    18,
+    19,
+    27,
+    99,
+    100
+  ],
+  "StoppedVotingFinalHash": "4d4b0f48b443e3f64ebf7e16547b7d65844dd4d6fd32b66a15e92435e1a8e580",
+  "StoppedVotingRestoredTicks": [
+    3,
+    6
+  ],
+  "PhysicalCheckedTicks": 81,
+  "PhysicalStateHash": "33f1a44436c3643ba791a5ae7246d6f07e24e8d24590eb57519bb52e43e90e60",
+  "PhysicalRestoredTicks": [
+    14,
+    18,
+    25,
+    33,
+    42,
+    76
+  ],
+  "FoodCheckedTicks": 609,
+  "FoodStateHash": "8188bcb42bb1b3ea3cc975a744044566e9dc7a1bc2c1b7e832a3d7f62b6c962b",
+  "FoodRestoredTicks": [
+    340,
+    405,
+    414,
+    561,
+    562,
+    584
+  ],
+  "TradeCheckedTicks": 220,
+  "TradeStateHash": "66c511b6d656d910943cb3f28ef6f810040ae4cd8e62c24e4973cbda582f1411",
+  "TradeRestoredTicks": [
+    32,
+    33,
+    34,
+    35,
+    38,
+    51,
+    69
+  ],
+  "Runtime": "10.0.12",
+  "Platform": "Linux",
+  "GodotVersion": "4.7.2-stable (official)",
+  "Author": "\u0428\u0435\u043B\u0435\u0441\u0442\u043E\u0432 \u041C\u0430\u043A\u0441\u0438\u043C \u0415\u0432\u0433\u0435\u043D\u044C\u0435\u0432\u0438\u0447"
+}
