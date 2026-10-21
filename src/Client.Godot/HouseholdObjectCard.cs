@@ -5,6 +5,9 @@ using Simulation.Hosting;
 /// <summary>Own objects only. Commands and access come from Core, not a client economy.</summary>
 public partial class HouseholdObjectCard : VBoxContainer
 {
+    public event System.Action<bool>? ArtworkHeaderChanged;
+    public event System.Action? HelpRequested;
+    public event System.Action? CloseRequested;
     private readonly ScenarioDefinition _scenario;
     private readonly string _language;
     private readonly string _kind;
@@ -22,6 +25,9 @@ public partial class HouseholdObjectCard : VBoxContainer
     private readonly RouteEditor _routes;
     private readonly VBoxContainer _details=new();
     private ProductionTabletPresenter? _productionTablet;
+    private readonly VBoxContainer _recipeCards=new(){Visible=false};
+    private readonly List<(Button Button,string Recipe,int Level)> _recipeButtons=[];
+    private string _recipeCardType="";
     private Button? _detailsToggle;
     private bool _expanded;
     private PlayerView? _lastView;
@@ -34,13 +40,13 @@ public partial class HouseholdObjectCard : VBoxContainer
         System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access)
     {
         _scenario = scenario; _language = language; _kind = kind; _id = id; _submit = submit; _access = access;
-        AddChild(_details);_details.AddChild(_heading);_details.AddChild(_progress);_details.AddChild(_stock);_details.AddChild(_workers);_details.AddChild(_delivery);
-        var amount = new HBoxContainer(); _details.AddChild(amount);
+        AddChild(_details);AddChild(_recipeCards);_details.AddChild(_heading);_details.AddChild(_progress);_details.AddChild(_stock);_details.AddChild(_workers);_details.AddChild(_delivery);
+        var amount = new TabletColumns{Breakpoint=650}; _details.AddChild(amount);
         amount.AddChild(new Label { Text = L("Количество для переноса", "Transfer quantity") }); amount.AddChild(_quantity);
         _details.AddChild(_actions);
         var routeToggle=new Button{Text=L("Маршруты ▸","Routes ▸"),FocusMode=FocusModeEnum.None};_details.AddChild(routeToggle);
         _routes=new(scenario,language,kind,id,submit){Visible=false};_details.AddChild(_routes);routeToggle.Pressed+=()=>_routes.Visible=!_routes.Visible;
-        Resized+=LayoutCard;
+        TabletDesign.CompactInputs(this);Resized+=LayoutCard;
         _quantity.ValueChanged += _ => { if (_lastView is not null) ShowData(_lastView,_pending,_paused); };
     }
 
@@ -125,16 +131,16 @@ public partial class HouseholdObjectCard : VBoxContainer
         if(view.Transfers.Length>0)Add("transfer-stop",L("Остановить передачу","Stop transfer"),new(ActionKind.StopTransfer));
         UpdateActions(actions, pending);
         var artworkRecipe=enterprise is null?null:_scenario.Recipes.Single(r=>r.Id==enterprise.RecipeId);
-        _showProductionTablet=artworkRecipe is not null && artworkRecipe.Ingredients.Length==1 &&
-            (building?.TypeId=="sawmill" && artworkRecipe.Ingredients[0].ItemId=="wood" && artworkRecipe.OutputItem=="plank" ||
-             building?.TypeId=="bakery" && artworkRecipe.Ingredients[0].ItemId=="grain" && artworkRecipe.OutputItem=="bread");
+        _showProductionTablet=artworkRecipe is not null && building is not null && ProductionTabletPresenter.Supports(building.TypeId,artworkRecipe);
         if(_showProductionTablet && _productionTablet is null)
         {
-            _productionTablet=new(_scenario,_language,_id,RevealLogistics,building!.TypeId);AddChild(_productionTablet);MoveChild(_productionTablet,0);
-            _detailsToggle=new Button{Text=L("Подробности · перенос, маршруты, транспорт","Details · transfers, routes, transport"),FocusMode=FocusModeEnum.None};AddChild(_detailsToggle);MoveChild(_detailsToggle,1);
+            _productionTablet=new(_scenario,_language,_id,RevealLogistics,building!.TypeId);
+            _productionTablet.RecipesRequested+=()=>{_recipeCards.Visible=!_recipeCards.Visible;};
+            _productionTablet.HelpRequested+=()=>HelpRequested?.Invoke();_productionTablet.CloseRequested+=()=>CloseRequested?.Invoke();AddChild(_productionTablet);MoveChild(_productionTablet,0);
+            _detailsToggle=new Button{Text=L("Подробности · перенос, маршруты, транспорт","Details · transfers, routes, transport"),FocusMode=FocusModeEnum.None};AddChild(_detailsToggle);MoveChild(_detailsToggle,1);MoveChild(_recipeCards,1);
             _detailsToggle.Pressed+=()=>{_expanded=!_expanded;LayoutCard();};
         }
-        if(_showProductionTablet)_productionTablet!.ShowData(view,paused,_buttons);LayoutCard();
+        if(_showProductionTablet){_productionTablet!.ShowData(view,paused,_buttons);ShowRecipeCards(building!,enterprise!);}LayoutCard();
         if(view.Transfers.Length==0 && !pending)_activeTransferKey=null;
         foreach(var (key,pair) in _buttons)
             if(pair.Button is ContextActionButton button)
@@ -146,6 +152,31 @@ public partial class HouseholdObjectCard : VBoxContainer
                 button.ShowProgress(!active?0:100d*(double)((Int128)process!.Completed*volume+process.WorkRemainder)/(double)((Int128)process.Quantity*volume));
                 if(active)button.ShowCaption(L("Передано ","Transferred ")+process!.Completed+"/"+process.Quantity+" · "+PlayerText.Item(_language,process.ItemId));
             }
+    }
+
+    private void ShowRecipeCards(BuildingView building,EnterpriseView enterprise)
+    {
+        if(_recipeCardType!=building.TypeId)
+        {
+            _recipeCardType=building.TypeId;
+            _recipeCards.AddChild(TabletDesign.Heading(L("Рецепты и уровни","Recipes and levels")));
+            var levels=_scenario.BuildingTypes!.Single(t=>t.Id==building.TypeId).Levels;
+            foreach(var group in levels.SelectMany(l=>l.UnlockedRecipes.Select(id=>(Id:id,Level:l.Level))).GroupBy(x=>x.Id))
+            {
+                var entry=group.OrderBy(x=>x.Level).First();var r=_scenario.Recipes.Single(r=>r.Id==entry.Id);
+                var box=new VBoxContainer();box.AddChild(TabletDesign.Heading(L("Уровень ","Level ")+entry.Level,21));
+                box.AddChild(new Label{Text=Recipe(r.Id)+"\n"+L("Полный штат: ","Full crew: ")+r.RequiredStaff+L(" · рабочих тиков: "," · work ticks: ")+r.FullStaffTicks+L(" · энергия: "," · energy: ")+PlayerText.Money(r.EnergyPerBatchMinor),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+                var choose=new Button{FocusMode=FocusModeEnum.None};string key="recipe:"+r.Id;choose.Pressed+=()=>{if(_buttons.TryGetValue(key,out var original) && !original.Button.Disabled)original.Button.EmitSignal(BaseButton.SignalName.Pressed);};box.AddChild(choose);
+                _recipeButtons.Add((choose,r.Id,entry.Level));_recipeCards.AddChild(TabletDesign.Wrap(box));
+            }
+        }
+        foreach(var entry in _recipeButtons)
+        {
+            bool current=entry.Recipe==enterprise.RecipeId;
+            entry.Button.Text=current?L("Текущий рецепт","Current recipe"):entry.Level>building.Level?L("Откроется после улучшения","Unlocks after upgrade"):L("Выбрать рецепт","Choose recipe");
+            entry.Button.Disabled=current || entry.Level>building.Level || !_buttons.TryGetValue("recipe:"+entry.Recipe,out var target) || target.Button.Disabled;
+            entry.Button.TooltipText=L("Смена только после остановки, без незавершённой партии.","Change only while stopped, with no batch in progress.");
+        }
     }
 
     private void RevealLogistics()
@@ -160,7 +191,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         bool artwork=_showProductionTablet && Size.X>=980;
         if(_productionTablet is not null)_productionTablet.Visible=artwork;
         if(_detailsToggle is not null)_detailsToggle.Visible=artwork;
-        _details.Visible=!artwork || _expanded;
+        _details.Visible=!artwork || _expanded;ArtworkHeaderChanged?.Invoke(artwork);
     }
 
     private void LogisticsActions(PlayerView view, EnterpriseView enterprise, System.Action<string, string, GameAction, bool> add)

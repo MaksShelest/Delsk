@@ -1,0 +1,14 @@
+{
+  "checks": [
+    "expand viewport fills three window aspects without letterbox",
+    "Alt+Enter before focused form; plain Enter, echo and release guarded",
+    "Fullscreen preference restored after host restart",
+    "Keypad exit and windowed preference restored",
+    "Production tablet fullscreen keeps queued commands and paused economy unchanged",
+    "Help overlay shortcut preserves the open overlay",
+    "Menu and English player tablet fill fullscreen"
+  ],
+  "failures": [],
+  "scope": "Actual Linux X11 window/input and real Playfield; not Windows/Android hardware acceptance",
+  "screen": "(1440, 1024)"
+}

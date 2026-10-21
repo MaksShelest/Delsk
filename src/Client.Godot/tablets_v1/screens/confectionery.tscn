@@ -1,0 +1,1515 @@
+[gd_scene load_steps=32 format=3]
+
+[ext_resource type="FontFile" path="res://delsk_sawmill_ui/assets/fonts/Nunito-Medium.ttf" id="font"]
+
+[ext_resource type="FontFile" path="res://delsk_sawmill_ui/assets/fonts/Nunito-ExtraBold.ttf" id="bold"]
+
+[ext_resource type="Theme" path="res://tablets_v1/theme.tres" id="theme"]
+
+[ext_resource type="Texture2D" path="res://tablets_v1/assets/confectionery.svg" id="tex_confectionery"]
+
+[ext_resource type="Texture2D" path="res://tablets_v1/assets/icons/pause.svg" id="tex_pause"]
+
+[ext_resource type="Texture2D" path="res://tablets_v1/assets/icons/grain.svg" id="tex_grain"]
+
+[ext_resource type="Texture2D" path="res://tablets_v1/assets/icons/sugar.svg" id="tex_sugar"]
+
+[ext_resource type="Texture2D" path="res://tablets_v1/assets/icons/milk.svg" id="tex_milk"]
+
+[ext_resource type="Texture2D" path="res://tablets_v1/assets/icons/arrow.svg" id="tex_arrow"]
+
+[ext_resource type="Texture2D" path="res://tablets_v1/assets/icons/pastry.svg" id="tex_pastry"]
+
+[ext_resource type="Texture2D" path="res://tablets_v1/assets/icons/people.svg" id="tex_people"]
+
+[ext_resource type="Texture2D" path="res://tablets_v1/assets/icons/coin.svg" id="tex_coin"]
+
+[ext_resource type="Texture2D" path="res://tablets_v1/assets/icons/upgrade.svg" id="tex_upgrade"]
+
+[ext_resource type="Texture2D" path="res://tablets_v1/assets/icons/boards.svg" id="tex_boards"]
+
+[ext_resource type="Texture2D" path="res://tablets_v1/assets/icons/truck.svg" id="tex_truck"]
+
+[sub_resource type="StyleBoxFlat" id="panel"]
+bg_color = Color(0.968627, 0.952941, 0.913725, 1)
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_left = 32
+corner_radius_bottom_right = 32
+border_color = Color(0.886275, 0.905882, 0.839216, 1)
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+border_width_bottom = 1
+
+[sub_resource type="StyleBoxFlat" id="card"]
+bg_color = Color(1.0, 0.992157, 0.980392, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_left = 22
+corner_radius_bottom_right = 22
+border_color = Color(0.890196, 0.901961, 0.85098, 1)
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+border_width_bottom = 1
+
+[sub_resource type="StyleBoxFlat" id="soft"]
+bg_color = Color(0.929412, 0.945098, 0.878431, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_left = 18
+corner_radius_bottom_right = 18
+border_color = Color(0.862745, 0.898039, 0.8, 1)
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+border_width_bottom = 1
+
+[sub_resource type="StyleBoxFlat" id="green"]
+bg_color = Color(0.145098, 0.364706, 0.266667, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_left = 22
+corner_radius_bottom_right = 22
+
+[sub_resource type="StyleBoxFlat" id="pill"]
+bg_color = Color(0.890196, 0.929412, 0.854902, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
+
+[sub_resource type="StyleBoxFlat" id="line"]
+bg_color = Color(0.890196, 0.898039, 0.85098, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_left = 1
+corner_radius_bottom_right = 1
+
+[sub_resource type="StyleBoxFlat" id="button"]
+bg_color = Color(0.176471, 0.47451, 0.341176, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
+border_color = Color(0.137255, 0.392157, 0.278431, 1)
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+border_width_bottom = 1
+
+[sub_resource type="StyleBoxFlat" id="hover"]
+bg_color = Color(0.866667, 0.909804, 0.811765, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
+border_color = Color(0.721569, 0.796078, 0.686275, 1)
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+border_width_bottom = 1
+
+[sub_resource type="StyleBoxFlat" id="secondary"]
+bg_color = Color(0.956863, 0.956863, 0.913725, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
+border_color = Color(0.866667, 0.890196, 0.819608, 1)
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+border_width_bottom = 1
+
+[sub_resource type="StyleBoxFlat" id="gold"]
+bg_color = Color(0.937255, 0.784314, 0.458824, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
+border_color = Color(1.0, 0.866667, 0.627451, 1)
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+border_width_bottom = 1
+
+[sub_resource type="StyleBoxFlat" id="track"]
+bg_color = Color(0.862745, 0.894118, 0.803922, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+
+[sub_resource type="StyleBoxFlat" id="progress"]
+bg_color = Color(0.47451, 0.647059, 0.4, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+
+[sub_resource type="StyleBoxFlat" id="amber"]
+bg_color = Color(0.85098, 0.67451, 0.364706, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+
+[sub_resource type="StyleBoxFlat" id="rose"]
+bg_color = Color(0.941176, 0.886275, 0.858824, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
+border_color = Color(0.898039, 0.807843, 0.768627, 1)
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+border_width_bottom = 1
+
+[sub_resource type="StyleBoxFlat" id="white"]
+bg_color = Color(1.0, 0.996078, 0.984314, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
+
+[sub_resource type="StyleBoxFlat" id="process"]
+bg_color = Color(0.956863, 0.905882, 0.866667, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_left = 22
+corner_radius_bottom_right = 22
+border_color = Color(0.882353, 0.858824, 0.776471, 1)
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+border_width_bottom = 1
+
+[node name="Tablet" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("theme")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1440.0
+offset_bottom = 1024.0
+color = Color(0.141176, 0.282353, 0.239216, 1)
+mouse_filter = 2
+
+[node name="Tree0" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(34, 120, 78.0, 219.0, 58.2, 219.0, 91.2, 279.5, -23.2, 279.5, 9.8, 219.0, -10.0, 219.0)
+color = Color(0.172549, 0.317647, 0.262745, 1)
+
+[node name="Tree1" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(1350, 90, 1402.0, 207.0, 1378.6, 207.0, 1417.6, 278.5, 1282.4, 278.5, 1321.4, 207.0, 1298.0, 207.0)
+color = Color(0.172549, 0.317647, 0.262745, 1)
+
+[node name="Tree2" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(26, 750, 82.0, 876.0, 56.8, 876.0, 98.8, 953.0, -46.8, 953.0, -4.8, 876.0, -30.0, 876.0)
+color = Color(0.172549, 0.317647, 0.262745, 1)
+
+[node name="Tree3" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(1340, 680, 1404.0, 824.0, 1375.2, 824.0, 1423.2, 912.0, 1256.8, 912.0, 1304.8, 824.0, 1276.0, 824.0)
+color = Color(0.172549, 0.317647, 0.262745, 1)
+
+[node name="Tree4" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(150, 920, 182.0, 992.0, 167.6, 992.0, 191.6, 1036.0, 108.4, 1036.0, 132.4, 992.0, 118.0, 992.0)
+color = Color(0.172549, 0.317647, 0.262745, 1)
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 50.0
+offset_right = 1360.0
+offset_bottom = 974.0
+theme_override_styles/panel = SubResource("panel")
+mouse_filter = 2
+
+[node name="Card1" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 29.0
+offset_right = 110.0
+offset_bottom = 107.0
+theme_override_styles/panel = SubResource("pill")
+mouse_filter = 2
+
+[node name="Icon2" type="TextureRect" parent="Panel"]
+layout_mode = 0
+offset_left = 38.0
+offset_top = 35.0
+offset_right = 104.0
+offset_bottom = 101.0
+texture = ExtResource("tex_confectionery")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 130.0
+offset_top = 25.0
+offset_right = 770.0
+offset_bottom = 75.0
+text = "Кондитерская"
+theme_override_font_sizes/font_size = 38
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="Level" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 132.0
+offset_top = 76.0
+offset_right = 832.0
+offset_bottom = 106.0
+text = "Уровень 1"
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.466667, 0.509804, 0.466667, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="Card5" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_left = 866.0
+offset_top = 40.0
+offset_right = 1056.0
+offset_bottom = 86.0
+theme_override_styles/panel = SubResource("pill")
+mouse_filter = 2
+
+[node name="StatusText" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 882.0
+offset_top = 43.0
+offset_right = 1042.0
+offset_bottom = 83.0
+text = "●  Работает"
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.176471, 0.47451, 0.341176, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="Help" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 1084.0
+offset_top = 37.0
+offset_right = 1136.0
+offset_bottom = 89.0
+text = "?"
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 26
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = "help_production"
+metadata/action = ""
+tooltip_text = "?"
+disabled = false
+
+[node name="Close" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 1158.0
+offset_top = 37.0
+offset_right = 1210.0
+offset_bottom = 89.0
+text = "×"
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 29
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = "catalog"
+metadata/action = ""
+tooltip_text = "Каталог прототипов"
+disabled = false
+
+[node name="Card8" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 119.0
+offset_right = 1248.0
+offset_bottom = 120.0
+theme_override_styles/panel = SubResource("line")
+mouse_filter = 2
+
+[node name="Card9" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 851.0
+offset_right = 1248.0
+offset_bottom = 852.0
+theme_override_styles/panel = SubResource("line")
+mouse_filter = 2
+
+[node name="Icon10" type="TextureRect" parent="Panel"]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 874.0
+offset_right = 61.0
+offset_bottom = 900.0
+texture = ExtResource("tex_pause")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="PauseState" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 73.0
+offset_top = 869.0
+offset_right = 493.0
+offset_bottom = 905.0
+text = "Время остановлено"
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.466667, 0.509804, 0.466667, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="TimeToggle" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 1015.0
+offset_top = 868.0
+offset_right = 1248.0
+offset_bottom = 907.0
+text = "Продолжить время"
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 17
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = ""
+metadata/action = "time"
+tooltip_text = "Продолжить время"
+disabled = false
+
+[node name="Production" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 143.0
+offset_right = 790.0
+offset_bottom = 435.0
+theme_override_styles/panel = SubResource("process")
+mouse_filter = 2
+
+[node name="Heading" type="Label" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 14.0
+offset_right = 364.0
+offset_bottom = 54.0
+text = "Производство"
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="Recipes" type="Button" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 570.0
+offset_top = 17.0
+offset_right = 734.0
+offset_bottom = 55.0
+text = "Рецепты  ›"
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 17
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = "confectionery_recipes"
+metadata/action = ""
+tooltip_text = "Рецепты  ›"
+disabled = false
+
+[node name="Icon13" type="TextureRect" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 56.0
+offset_right = 273.0
+offset_bottom = 231.0
+texture = ExtResource("tex_confectionery")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Icon14" type="TextureRect" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 288.0
+offset_top = 76.0
+offset_right = 346.0
+offset_bottom = 134.0
+texture = ExtResource("tex_grain")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Input" type="Label" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 341.0
+offset_top = 82.0
+offset_right = 366.0
+offset_bottom = 124.0
+text = "2"
+theme_override_font_sizes/font_size = 25
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="Icon16" type="TextureRect" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 384.0
+offset_top = 76.0
+offset_right = 442.0
+offset_bottom = 134.0
+texture = ExtResource("tex_sugar")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="InputSugar" type="Label" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 437.0
+offset_top = 82.0
+offset_right = 462.0
+offset_bottom = 124.0
+text = "1"
+theme_override_font_sizes/font_size = 25
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="Icon18" type="TextureRect" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 480.0
+offset_top = 76.0
+offset_right = 538.0
+offset_bottom = 134.0
+texture = ExtResource("tex_milk")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="InputMilk" type="Label" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 533.0
+offset_top = 82.0
+offset_right = 558.0
+offset_bottom = 124.0
+text = "1"
+theme_override_font_sizes/font_size = 25
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="Label20" type="Label" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 366.0
+offset_top = 88.0
+offset_right = 386.0
+offset_bottom = 118.0
+text = "+"
+theme_override_font_sizes/font_size = 21
+theme_override_colors/font_color = Color(0.466667, 0.509804, 0.466667, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="Label21" type="Label" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 461.0
+offset_top = 88.0
+offset_right = 481.0
+offset_bottom = 118.0
+text = "+"
+theme_override_font_sizes/font_size = 21
+theme_override_colors/font_color = Color(0.466667, 0.509804, 0.466667, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="Icon22" type="TextureRect" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 575.0
+offset_top = 89.0
+offset_right = 609.0
+offset_bottom = 123.0
+texture = ExtResource("tex_arrow")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Icon23" type="TextureRect" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 619.0
+offset_top = 76.0
+offset_right = 680.0
+offset_bottom = 137.0
+texture = ExtResource("tex_pastry")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Output" type="Label" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 686.0
+offset_top = 82.0
+offset_right = 716.0
+offset_bottom = 124.0
+text = "1"
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="InputName" type="Label" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 288.0
+offset_top = 138.0
+offset_right = 588.0
+offset_bottom = 166.0
+text = "Зерно + сахар + молоко"
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.466667, 0.509804, 0.466667, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="ProgressLabel" type="Label" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 290.0
+offset_top = 179.0
+offset_right = 630.0
+offset_bottom = 207.0
+text = "Следующая партия"
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="ProgressValue" type="Label" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 650.0
+offset_top = 179.0
+offset_right = 724.0
+offset_bottom = 207.0
+text = "67%"
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 2
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="Progress" type="ProgressBar" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 290.0
+offset_top = 217.0
+offset_right = 734.0
+offset_bottom = 230.0
+value = 67
+show_percentage = false
+theme_override_styles/background = SubResource("track")
+theme_override_styles/fill = SubResource("progress")
+mouse_filter = 2
+
+[node name="PauseProduction" type="Button" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 234.0
+offset_right = 256.0
+offset_bottom = 278.0
+text = "Приостановить"
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 17
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = ""
+metadata/action = "production"
+tooltip_text = "Приостановить"
+disabled = false
+
+[node name="RecipeNote" type="Label" parent="Panel/Production"]
+layout_mode = 0
+offset_left = 290.0
+offset_top = 242.0
+offset_right = 734.0
+offset_bottom = 274.0
+text = "1 ед. за 8 с  ·  энергия 2,00"
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.466667, 0.509804, 0.466667, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="Workers" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_left = 810.0
+offset_top = 143.0
+offset_right = 1248.0
+offset_bottom = 435.0
+theme_override_styles/panel = SubResource("card")
+mouse_filter = 2
+
+[node name="Icon30" type="TextureRect" parent="Panel/Workers"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 18.0
+offset_right = 56.0
+offset_bottom = 52.0
+texture = ExtResource("tex_people")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Heading" type="Label" parent="Panel/Workers"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 14.0
+offset_right = 374.0
+offset_bottom = 54.0
+text = "Команда"
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="Headcount" type="Label" parent="Panel/Workers"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 62.0
+offset_right = 194.0
+offset_bottom = 127.0
+text = "4 / 4"
+theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="Full" type="Label" parent="Panel/Workers"]
+layout_mode = 0
+offset_left = 188.0
+offset_top = 82.0
+offset_right = 413.0
+offset_bottom = 112.0
+text = "Все места заняты"
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.176471, 0.47451, 0.341176, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="WageLabel" type="Label" parent="Panel/Workers"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 136.0
+offset_right = 374.0
+offset_bottom = 166.0
+text = "Зарплата за работника"
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.466667, 0.509804, 0.466667, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="WageMinus" type="Button" parent="Panel/Workers"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 177.0
+offset_right = 76.0
+offset_bottom = 227.0
+text = "−"
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 27
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = ""
+metadata/action = "wage_minus"
+tooltip_text = "−"
+disabled = false
+
+[node name="Card35" type="Panel" parent="Panel/Workers"]
+layout_mode = 0
+offset_left = 88.0
+offset_top = 177.0
+offset_right = 337.0
+offset_bottom = 227.0
+theme_override_styles/panel = SubResource("soft")
+mouse_filter = 2
+
+[node name="Icon36" type="TextureRect" parent="Panel/Workers"]
+layout_mode = 0
+offset_left = 110.0
+offset_top = 184.0
+offset_right = 144.0
+offset_bottom = 218.0
+texture = ExtResource("tex_coin")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="WageAmount" type="Label" parent="Panel/Workers"]
+layout_mode = 0
+offset_left = 154.0
+offset_top = 180.0
+offset_right = 264.0
+offset_bottom = 224.0
+text = "0,20"
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="WageUnit" type="Label" parent="Panel/Workers"]
+layout_mode = 0
+offset_left = 267.0
+offset_top = 184.0
+offset_right = 325.0
+offset_bottom = 220.0
+text = "/ с"
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.466667, 0.509804, 0.466667, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="WagePlus" type="Button" parent="Panel/Workers"]
+layout_mode = 0
+offset_left = 349.0
+offset_top = 177.0
+offset_right = 414.0
+offset_bottom = 227.0
+text = "+"
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 27
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = ""
+metadata/action = "wage_plus"
+tooltip_text = "+"
+disabled = false
+
+[node name="Hint" type="Label" parent="Panel/Workers"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 242.0
+offset_right = 414.0
+offset_bottom = 272.0
+text = "Новая ставка начнёт действовать позже"
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.466667, 0.509804, 0.466667, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="Stock" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 455.0
+offset_right = 790.0
+offset_bottom = 645.0
+theme_override_styles/panel = SubResource("card")
+mouse_filter = 2
+
+[node name="Heading" type="Label" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 12.0
+offset_right = 364.0
+offset_bottom = 50.0
+text = "Запасы"
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="Icon41" type="TextureRect" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 62.0
+offset_right = 73.0
+offset_bottom = 111.0
+texture = ExtResource("tex_grain")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="WoodTitle" type="Label" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 78.0
+offset_top = 59.0
+offset_right = 200.5
+offset_bottom = 89.0
+text = "Зерно"
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="WoodCount" type="Label" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 78.0
+offset_top = 92.0
+offset_right = 200.5
+offset_bottom = 123.0
+text = "24 ед."
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="Deposit" type="Button" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 134.0
+offset_right = 179.5
+offset_bottom = 172.0
+text = "Пополнить"
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 16
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = ""
+metadata/action = "transfer_grain"
+tooltip_text = "Пополнить"
+disabled = false
+
+[node name="Card45" type="Panel" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 189.5
+offset_top = 64.0
+offset_right = 190.5
+offset_bottom = 164.0
+theme_override_styles/panel = SubResource("line")
+mouse_filter = 2
+
+[node name="Icon46" type="TextureRect" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 201.5
+offset_top = 62.0
+offset_right = 250.5
+offset_bottom = 111.0
+texture = ExtResource("tex_sugar")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="SugarTitle" type="Label" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 255.5
+offset_top = 59.0
+offset_right = 378.0
+offset_bottom = 89.0
+text = "Сахар"
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="SugarCount" type="Label" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 255.5
+offset_top = 92.0
+offset_right = 378.0
+offset_bottom = 123.0
+text = "10 ед."
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="DepositSugar" type="Button" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 201.5
+offset_top = 134.0
+offset_right = 357.0
+offset_bottom = 172.0
+text = "Пополнить"
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 16
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = ""
+metadata/action = "transfer_sugar"
+tooltip_text = "Пополнить"
+disabled = false
+
+[node name="Card50" type="Panel" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 367.0
+offset_top = 64.0
+offset_right = 368.0
+offset_bottom = 164.0
+theme_override_styles/panel = SubResource("line")
+mouse_filter = 2
+
+[node name="Icon51" type="TextureRect" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 379.0
+offset_top = 62.0
+offset_right = 428.0
+offset_bottom = 111.0
+texture = ExtResource("tex_milk")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="MilkTitle" type="Label" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 433.0
+offset_top = 59.0
+offset_right = 555.5
+offset_bottom = 89.0
+text = "Молоко"
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="MilkCount" type="Label" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 433.0
+offset_top = 92.0
+offset_right = 555.5
+offset_bottom = 123.0
+text = "8 ед."
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="DepositMilk" type="Button" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 379.0
+offset_top = 134.0
+offset_right = 534.5
+offset_bottom = 172.0
+text = "Пополнить"
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 16
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = ""
+metadata/action = "transfer_milk"
+tooltip_text = "Пополнить"
+disabled = false
+
+[node name="Card55" type="Panel" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 544.5
+offset_top = 64.0
+offset_right = 545.5
+offset_bottom = 164.0
+theme_override_styles/panel = SubResource("line")
+mouse_filter = 2
+
+[node name="Icon56" type="TextureRect" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 556.5
+offset_top = 62.0
+offset_right = 605.5
+offset_bottom = 111.0
+texture = ExtResource("tex_pastry")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="PlankTitle" type="Label" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 610.5
+offset_top = 59.0
+offset_right = 733.0
+offset_bottom = 89.0
+text = "Выпечка"
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="PlankCount" type="Label" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 610.5
+offset_top = 92.0
+offset_right = 733.0
+offset_bottom = 123.0
+text = "6 ед."
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="Withdraw" type="Button" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 556.5
+offset_top = 134.0
+offset_right = 712.0
+offset_bottom = 172.0
+text = "Забрать"
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 16
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = ""
+metadata/action = "transfer_pastry"
+tooltip_text = "Забрать"
+disabled = false
+
+[node name="InputCapacity" type="Label" parent="Panel/Stock"]
+layout_mode = 0
+offset_left = 382.0
+offset_top = 15.0
+offset_right = 734.0
+offset_bottom = 45.0
+text = "Сырьё: 50 / 120 объёма"
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.466667, 0.509804, 0.466667, 1)
+vertical_alignment = 1
+horizontal_alignment = 2
+mouse_filter = 2
+
+[node name="Upgrade" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 665.0
+offset_right = 790.0
+offset_bottom = 829.0
+theme_override_styles/panel = SubResource("green")
+mouse_filter = 2
+
+[node name="Icon62" type="TextureRect" parent="Panel/Upgrade"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 28.0
+offset_right = 100.0
+offset_bottom = 104.0
+texture = ExtResource("tex_upgrade")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="Panel/Upgrade"]
+layout_mode = 0
+offset_left = 117.0
+offset_top = 18.0
+offset_right = 707.0
+offset_bottom = 57.0
+text = "Улучшить до уровня 2"
+theme_override_font_sizes/font_size = 25
+theme_override_colors/font_color = Color(1.0, 0.976471, 0.901961, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="Hint" type="Label" parent="Panel/Upgrade"]
+layout_mode = 0
+offset_left = 119.0
+offset_top = 59.0
+offset_right = 709.0
+offset_bottom = 87.0
+text = "Больше места, работников и новый рецепт"
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.788235, 0.858824, 0.760784, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="Icon65" type="TextureRect" parent="Panel/Upgrade"]
+layout_mode = 0
+offset_left = 119.0
+offset_top = 106.0
+offset_right = 148.0
+offset_bottom = 135.0
+texture = ExtResource("tex_coin")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="CostMoney" type="Label" parent="Panel/Upgrade"]
+layout_mode = 0
+offset_left = 154.0
+offset_top = 104.0
+offset_right = 240.0
+offset_bottom = 138.0
+text = "900"
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(1.0, 0.960784, 0.843137, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="Icon67" type="TextureRect" parent="Panel/Upgrade"]
+layout_mode = 0
+offset_left = 246.0
+offset_top = 103.0
+offset_right = 281.0
+offset_bottom = 138.0
+texture = ExtResource("tex_boards")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="CostPlanks" type="Label" parent="Panel/Upgrade"]
+layout_mode = 0
+offset_left = 291.0
+offset_top = 104.0
+offset_right = 352.0
+offset_bottom = 138.0
+text = "20"
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(1.0, 0.960784, 0.843137, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="UpgradeProduction" type="Button" parent="Panel/Upgrade"]
+layout_mode = 0
+offset_left = 504.0
+offset_top = 100.0
+offset_right = 734.0
+offset_bottom = 143.0
+text = "Улучшить"
+theme_override_styles/normal = SubResource("gold")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 20
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = ""
+metadata/action = "upgrade_confectionery"
+tooltip_text = "Улучшить"
+disabled = false
+
+[node name="Delivery" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_left = 810.0
+offset_top = 455.0
+offset_right = 1248.0
+offset_bottom = 829.0
+theme_override_styles/panel = SubResource("card")
+mouse_filter = 2
+
+[node name="Icon70" type="TextureRect" parent="Panel/Delivery"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 16.0
+offset_right = 61.0
+offset_bottom = 55.0
+texture = ExtResource("tex_truck")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Heading" type="Label" parent="Panel/Delivery"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 14.0
+offset_right = 310.0
+offset_bottom = 54.0
+text = "Доставка"
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="DeliverySettings" type="Button" parent="Panel/Delivery"]
+layout_mode = 0
+offset_left = 362.0
+offset_top = 14.0
+offset_right = 414.0
+offset_bottom = 62.0
+text = "⚙"
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 26
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = "delivery"
+metadata/action = ""
+tooltip_text = "Грузовик, экипаж и зарплата"
+disabled = false
+
+[node name="CrewBrief" type="Label" parent="Panel/Delivery"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 67.0
+offset_right = 413.0
+offset_bottom = 95.0
+text = "10 за рейс   ·   2 / 2 работника"
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.466667, 0.509804, 0.466667, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="Card74" type="Panel" parent="Panel/Delivery"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 108.0
+offset_right = 414.0
+offset_bottom = 109.0
+theme_override_styles/panel = SubResource("line")
+mouse_filter = 2
+
+[node name="SupplyTitle" type="Label" parent="Panel/Delivery"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 121.0
+offset_right = 299.0
+offset_bottom = 157.0
+text = "Подвозить сырьё"
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="SupplyToggle" type="CheckButton" parent="Panel/Delivery"]
+layout_mode = 0
+offset_left = 350.0
+offset_top = 118.0
+offset_right = 416.0
+offset_bottom = 164.0
+button_pressed = true
+metadata/action = "toggle"
+tooltip_text = "Включить или выключить это направление"
+
+[node name="Source" type="Button" parent="Panel/Delivery"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 166.0
+offset_right = 414.0
+offset_bottom = 211.0
+text = "Склад №1  →  Кондитерская"
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 17
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = "routes"
+metadata/action = ""
+tooltip_text = "Склад №1  →  Кондитерская"
+disabled = false
+
+[node name="Icon77" type="TextureRect" parent="Panel/Delivery"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 218.0
+offset_right = 55.0
+offset_bottom = 249.0
+texture = ExtResource("tex_truck")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="TripStatus" type="Label" parent="Panel/Delivery"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 218.0
+offset_right = 414.0
+offset_bottom = 246.0
+text = "В пути · ещё 6 с"
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.176471, 0.47451, 0.341176, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="Card79" type="Panel" parent="Panel/Delivery"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 257.0
+offset_right = 414.0
+offset_bottom = 258.0
+theme_override_styles/panel = SubResource("line")
+mouse_filter = 2
+
+[node name="SendTitle" type="Label" parent="Panel/Delivery"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 270.0
+offset_right = 314.0
+offset_bottom = 306.0
+text = "Отправлять продукцию"
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+vertical_alignment = 1
+horizontal_alignment = 0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("bold")
+
+[node name="SendToggle" type="CheckButton" parent="Panel/Delivery"]
+layout_mode = 0
+offset_left = 350.0
+offset_top = 267.0
+offset_right = 416.0
+offset_bottom = 313.0
+button_pressed = true
+metadata/action = "toggle"
+tooltip_text = "Включить или выключить это направление"
+
+[node name="Destination" type="Button" parent="Panel/Delivery"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 315.0
+offset_right = 414.0
+offset_bottom = 358.0
+text = "В мою лавочку  ›"
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("hover")
+theme_override_styles/pressed = SubResource("soft")
+theme_override_font_sizes/font_size = 17
+theme_override_fonts/font = ExtResource("bold")
+theme_override_colors/font_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_hover_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_pressed_color = Color(0.145098, 0.247059, 0.211765, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.509804, 0.466667, 1)
+theme_override_styles/disabled = SubResource("soft")
+mouse_default_cursor_shape = 2
+metadata/target = "routes"
+metadata/action = ""
+tooltip_text = "В мою лавочку  ›"
+disabled = false

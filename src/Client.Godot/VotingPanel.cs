@@ -9,10 +9,10 @@ public partial class VotingPanel:PanelContainer
     private readonly string _language;
     public VotingPanel(string language,ElectionObservation election,System.Action<ParticipantId> cast)
     {
-        _language=language;SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);OffsetLeft=80;OffsetRight=-80;OffsetTop=76;OffsetBottom=-55;
-        AddThemeStyleboxOverride("panel",new StyleBoxFlat{BgColor=new Color("243a3e"),ContentMarginLeft=12,ContentMarginRight=12,ContentMarginTop=12,ContentMarginBottom=12});
+        _language=language;Theme=TabletDesign.Theme;SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);OffsetLeft=80;OffsetRight=-80;OffsetTop=76;OffsetBottom=-55;
+        AddThemeStyleboxOverride("panel",TabletDesign.Box("f7f3e8",28,22));
         var box=new VBoxContainer();AddChild(box);
-        box.AddChild(new Label{Text=L("Выборы · экономика остановлена","Election · economy stopped"),HorizontalAlignment=HorizontalAlignment.Center});box.AddChild(_summary);
+        box.AddChild(TabletDesign.Art("vote",new(60,60)));box.AddChild(TabletDesign.Heading(L("Выборы · экономика остановлена","Election · economy stopped"),25));box.AddChild(TabletDesign.Wrap(_summary,true));
         foreach(var candidate in election.Participants)
         {
             var button=new Button{Text=L("Отдать голос участнику ","Cast ballot for participant ")+candidate.Value,FocusMode=FocusModeEnum.None};

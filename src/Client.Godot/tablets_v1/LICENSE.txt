@@ -1,0 +1,10 @@
+Delsk tablet materials v1
+Project/material author: Шелестов Максим Евгеньевич.
+The SVG artwork, three adapted native production scenes and theme originate from
+user-supplied delsk_tablets_godot_v1.zip. Original archive and README are preserved
+in docs/design/tablets-v1. No additional artwork licence is asserted here.
+
+Nunito font files are reused from ../delsk_sawmill_ui/assets/fonts,
+under the included SIL Open Font License (OFL.txt); identical archive font files
+were not duplicated. stepper.svg is a simple project integration UI icon.
+Demo.gd, Demo.tscn, demo project.godot and sample navigation/economy are not loaded.

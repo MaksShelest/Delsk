@@ -85,6 +85,14 @@ public partial class Playfield : Control
         else ShowMaps();
     }
 
+    public override void _Input(InputEvent e)
+    {
+        // Before GUI focus and contextual Enter: available on maps, in help and in forms too.
+        if (_left || e is not InputEventKey { AltPressed: true, Keycode: Key.Enter or Key.KpEnter } key) return;
+        GetViewport().SetInputAsHandled();
+        if (key.Pressed && !key.Echo) ToggleFullscreen();
+    }
+
     public override void _UnhandledInput(InputEvent e)
     {
         if (_left || e is not InputEventKey key) return;

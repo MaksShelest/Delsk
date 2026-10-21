@@ -1,0 +1,388 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "21.10.2026 Europe/Samara",
+  "base_head": "0a1ea34",
+  "branch": "feat/tablets-design-v1",
+  "pr": "https://github.com/MaksShelest/Delsk/pull/47",
+  "status": "succeeded",
+  "fullscreen_groups": 7,
+  "tablet_groups": 21,
+  "host_groups": 5,
+  "sawmill_groups": 4,
+  "bakery_groups": 6,
+  "hud_developer_groups": 17,
+  "ordinary_and_developer_hashes_each": 1132,
+  "ordinary_and_developer_restores_each": 35,
+  "fullscreen_screen": [
+    1440,
+    1024
+  ],
+  "window_sizes": [
+    [
+      1280,
+      720
+    ],
+    [
+      1000,
+      800
+    ],
+    [
+      800,
+      600
+    ]
+  ],
+  "gates": [
+    {
+      "name": "fullscreen-build",
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.sln",
+        "-c",
+        "Debug",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-20T21:08:09.811364+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 19.353,
+      "finished_at": "2026-10-20T21:08:29.164298+00:00"
+    },
+    {
+      "name": "fullscreen-window",
+      "command": [
+        "python3",
+        "scripts/check_sawmill_ui.py",
+        "--mode",
+        "fullscreen",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--xvfb",
+        "/workspace/work/delsk-package1/ui-tools/root/usr/bin/Xvfb",
+        "--output",
+        "/workspace/work/delsk-tablets-v1/fullscreen"
+      ],
+      "timeout_seconds": 110,
+      "started_at": "2026-10-20T21:11:26.787667+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 22.831,
+      "finished_at": "2026-10-20T21:11:49.619130+00:00"
+    },
+    {
+      "name": "fullscreen-screens",
+      "command": [
+        "python3",
+        "scripts/check_tablet_design.py",
+        "--reuse-stage",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--xvfb",
+        "/workspace/work/delsk-package1/ui-tools/root/usr/bin/Xvfb",
+        "--output",
+        "/workspace/work/delsk-tablets-v1/production"
+      ],
+      "timeout_seconds": 420,
+      "started_at": "2026-10-20T21:12:04.848709+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 70.131,
+      "finished_at": "2026-10-20T21:13:14.979965+00:00"
+    },
+    {
+      "name": "host-regressions",
+      "command": [
+        "bash",
+        "/workspace/work/delsk-tablets-v1/host-regressions.sh"
+      ],
+      "timeout_seconds": 340,
+      "started_at": "2026-10-20T21:12:12.026100+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 79.188,
+      "finished_at": "2026-10-20T21:13:31.214297+00:00"
+    },
+    {
+      "name": "tablets-host-final",
+      "command": [
+        "python3",
+        "scripts/check_sawmill_ui.py",
+        "--mode",
+        "tablets-host",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--xvfb",
+        "/workspace/work/delsk-package1/ui-tools/root/usr/bin/Xvfb",
+        "--output",
+        "/workspace/work/delsk-tablets-v1/tablets-host-final"
+      ],
+      "timeout_seconds": 110,
+      "started_at": "2026-10-20T21:12:12.089882+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 31.328,
+      "finished_at": "2026-10-20T21:12:43.417937+00:00"
+    },
+    {
+      "name": "sawmill-final",
+      "command": [
+        "python3",
+        "scripts/check_sawmill_ui.py",
+        "--mode",
+        "sawmill",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--xvfb",
+        "/workspace/work/delsk-package1/ui-tools/root/usr/bin/Xvfb",
+        "--output",
+        "/workspace/work/delsk-tablets-v1/sawmill-final"
+      ],
+      "timeout_seconds": 110,
+      "started_at": "2026-10-20T21:12:43.570454+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 27.054,
+      "finished_at": "2026-10-20T21:13:10.624443+00:00"
+    },
+    {
+      "name": "bakery-final",
+      "command": [
+        "python3",
+        "scripts/check_sawmill_ui.py",
+        "--mode",
+        "bakery",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--xvfb",
+        "/workspace/work/delsk-package1/ui-tools/root/usr/bin/Xvfb",
+        "--output",
+        "/workspace/work/delsk-tablets-v1/bakery-final"
+      ],
+      "timeout_seconds": 110,
+      "started_at": "2026-10-20T21:13:10.674402+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 20.491,
+      "finished_at": "2026-10-20T21:13:31.165193+00:00"
+    },
+    {
+      "name": "client-gate",
+      "command": [
+        "bash",
+        "/workspace/work/delsk-tablets-v1/client-gate.sh"
+      ],
+      "timeout_seconds": 1400,
+      "started_at": "2026-10-20T21:10:59.580540+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 116.041,
+      "finished_at": "2026-10-20T21:12:55.621279+00:00"
+    },
+    {
+      "name": "client-restore-final",
+      "command": [
+        "dotnet",
+        "restore",
+        "src/Client.Godot/Delsk.Client.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-20T21:10:59.608913+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.876,
+      "finished_at": "2026-10-20T21:11:01.485051+00:00"
+    },
+    {
+      "name": "client-debug-final",
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.sln",
+        "-c",
+        "Debug",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-20T21:11:01.516652+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.85,
+      "finished_at": "2026-10-20T21:11:07.366311+00:00"
+    },
+    {
+      "name": "client-release",
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.sln",
+        "-c",
+        "ExportRelease",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-20T21:11:08.858642+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.003,
+      "finished_at": "2026-10-20T21:11:14.861538+00:00"
+    },
+    {
+      "name": "audit",
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "src/Client.Godot/.godot/mono/temp/bin/ExportRelease"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-20T21:11:14.894272+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.489,
+      "finished_at": "2026-10-20T21:11:18.383124+00:00"
+    },
+    {
+      "name": "ordinary-smoke",
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--",
+        "--smoke",
+        "--report",
+        "/workspace/work/delsk-tablets-v1/platform.json"
+      ],
+      "timeout_seconds": 90,
+      "started_at": "2026-10-20T21:11:22.052404+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 8.024,
+      "finished_at": "2026-10-20T21:11:30.076186+00:00"
+    },
+    {
+      "name": "ordinary-verify",
+      "command": [
+        "python3",
+        "scripts/verify_platform_probe.py",
+        "--report",
+        "/workspace/work/delsk-tablets-v1/platform.json",
+        "--log-prefix",
+        "/workspace/work/delsk-tablets-v1/checks/ordinary-smoke"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-20T21:11:30.116519+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-20T21:11:30.149169+00:00"
+    },
+    {
+      "name": "hud-god-ui",
+      "command": [
+        "python3",
+        "scripts/check_hud_god_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/delsk-tablets-v1/hud-god"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-20T21:11:30.182161+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 41.981,
+      "finished_at": "2026-10-20T21:12:12.162851+00:00"
+    },
+    {
+      "name": "developer-smoke",
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/delsk-tablets-v1/hud-god/client/source/src/Client.Godot",
+        "--",
+        "--smoke",
+        "--report",
+        "/workspace/work/delsk-tablets-v1/developer-platform.json"
+      ],
+      "timeout_seconds": 90,
+      "started_at": "2026-10-20T21:12:12.256792+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 7.872,
+      "finished_at": "2026-10-20T21:12:20.128715+00:00"
+    },
+    {
+      "name": "developer-verify",
+      "command": [
+        "python3",
+        "scripts/verify_platform_probe.py",
+        "--report",
+        "/workspace/work/delsk-tablets-v1/developer-platform.json",
+        "--log-prefix",
+        "/workspace/work/delsk-tablets-v1/checks/developer-smoke"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-20T21:12:20.161590+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.064,
+      "finished_at": "2026-10-20T21:12:20.226026+00:00"
+    },
+    {
+      "name": "release-pack",
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--export-pack",
+        "Windows Probe",
+        "/workspace/work/delsk-tablets-v1/release.pck"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-20T21:12:20.255301+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 35.311,
+      "finished_at": "2026-10-20T21:12:55.566283+00:00"
+    },
+    {
+      "name": "fullscreen-pack",
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/delsk-tablets-v1/pack-inspection",
+        "--script",
+        "/workspace/Delsk/tests/Client.Probes/tablet-pack.gd",
+        "--",
+        "--pack",
+        "/workspace/work/delsk-tablets-v1/release.pck",
+        "--report",
+        "/workspace/work/delsk-tablets-v1/pack-inspection.json"
+      ],
+      "timeout_seconds": 45,
+      "started_at": "2026-10-20T21:13:39.631019+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.365,
+      "finished_at": "2026-10-20T21:13:39.996039+00:00"
+    },
+    {
+      "name": "fullscreen-python",
+      "command": [
+        "python3",
+        "-m",
+        "py_compile",
+        "scripts/check_sawmill_ui.py",
+        "scripts/check_tablet_design.py"
+      ],
+      "timeout_seconds": 20,
+      "started_at": "2026-10-20T21:13:40.061337+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-20T21:13:40.093532+00:00"
+    }
+  ],
+  "limits": [
+    "Actual ordinary Linux X11/Xvfb/xfwm4, software rendering and Dummy audio; no Windows EXE/Android hardware test",
+    "Previous 880/886 unit tests and 102/14/69 runner gate are from preceding tablet iteration, not rerun in this presentation-only follow-up"
+  ]
+}

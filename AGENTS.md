@@ -2,7 +2,16 @@
 
 Автор проекта и материалов: Шелестов Максим Евгеньевич.
 
-Актуальные версии/статусы — в разделе «Пакет8»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
+Актуальное представление — в разделе «Планшеты v1»; версии экономики/статусы плана — в разделе «Пакет8»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
+
+## Планшеты v1, 20.10.2026 (Europe/Samara)
+
+- База77d40e9 включает PR46; PR45 open/draft e195be1 просмотрен read-only и не включён. Отчёт IMPLEMENTATION_REPORT_TABLETS_V1.md, восстановление WORKLOG_TABLETS_V1.md. Это оформление, не новый пакет экономики: World18/production-recipes-1/Session2/Envelope2 прежние.
+- TabletDesign.Theme scoped: HUD/Developer не перекрашивать. ProductionTabletPresenter обслуживает пять производств, точный Supports guard рецепта; нестандартный рецепт/узкое окно сохраняет generic controls. Данные PlayerView, реальные HouseholdObjectCard actions; no demo.gd/sample values. Общие Help/Close и footer делегируют прежнему TabletState. Help всегда пауза с восстановлением режима. Резерв вместимости не physical stock.
+- ExchangeTablet — пять страниц поверх прежних presenters. Собственная лавка для MyOffers отделена от actual location; прежние AccessFor/Submit/валидация обязательны. Player четыре вкладки, own/bilateral privacy прежняя. Не добавлять Core команды ради архивной кнопки. Вторичные формы native/adaptive, исходные48сцен не все импортированы.
+- Native TabletDesignProbe*.cs только isolated stage; forbidden ordinary audit/PCK. scripts/check_tablet_design.py и check_sawmill_ui.py --mode tablets-host проверяют реальные игровые состояния RU/EN/1440/800/640 и host pause. В export presets сохранять tablets_v1/LICENSE.txt/OFL/audio. Архив только docs/design, не shipped demo. Linux gates не означают Windows/Android/hardware acceptance.
+
+- Дополнение21.10.2026: глобальный Alt+Enter/Alt+KpEnter в Playfield._Input до GUI/context, release/echo не переключают; прежние ToggleFullscreen/display.cfg, headless/embedded guard. canvas_items aspect expand обязателен для заполнения без letterbox. scripts/check_sawmill_ui.py --mode fullscreen требует Xvfb+xfwm4/dbus-run-session/xprop; проверяет actual window rect/persistence/paused world. Результаты отдельно fullscreen-summary.json, прежние unit/runner counts не называть повторным запуском.
 
 ## HUD и режим бога, 20.10.2026
 

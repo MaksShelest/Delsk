@@ -26,7 +26,7 @@ public partial class RouteEditor : VBoxContainer
         {
             _repeat=new();
             _map.Chosen+=cell=>{if(_map.Allowed.Contains(cell)&&_stops.Count<32){_stops.Add(cell);RefreshStops();}};
-            var row=new HBoxContainer();AddChild(row);
+            var row=new TabletColumns{Breakpoint=650};AddChild(row);
             var undo=new Button{Text=L("Убрать последнюю","Remove last")};undo.Pressed+=()=>{if(_stops.Count>0)_stops.RemoveAt(_stops.Count-1);RefreshStops();};row.AddChild(undo);
             var clear=new Button{Text=L("Очистить","Clear")};clear.Pressed+=()=>{_stops.Clear();RefreshStops();};row.AddChild(clear);
             _repeat.Text=L("Повторять","Repeat");row.AddChild(_repeat);
@@ -39,7 +39,7 @@ public partial class RouteEditor : VBoxContainer
         {
             _source=new();_destination=new();_item=new();
             foreach(var pair in new[]{(L("Источник","Source"),_source),(L("Получатель","Destination"),_destination),(L("Товар","Item"),_item)})
-            {var row=new HBoxContainer();row.AddChild(new Label{Text=pair.Item1,CustomMinimumSize=new(130,0)});pair.Item2.SizeFlagsHorizontal=SizeFlags.ExpandFill;row.AddChild(pair.Item2);AddChild(row);}
+            {var row=new TabletColumns{Breakpoint=650};row.AddChild(new Label{Text=pair.Item1,CustomMinimumSize=new(130,0)});pair.Item2.SizeFlagsHorizontal=SizeFlags.ExpandFill;row.AddChild(pair.Item2);AddChild(row);}
             foreach(var item in scenario.Items){_item.AddItem(PlayerText.Item(language,item.Id));_item.SetItemMetadata(_item.ItemCount-1,item.Id);}
             _apply.Text=L("Сохранить и включить доставку","Save and enable transport");_apply.Pressed+=()=>SendTransport(true);
             _stop.Text=L("Выключить маршрут; начатый рейс завершится","Disable route; finish current trip");_stop.Pressed+=()=>SendTransport(false);
