@@ -20,3 +20,5 @@ Root Directory.Build.props выбирает DelskDeveloper=true по умолч�
 Точные команды, SHA/размеры EXE и отчёты — [verification/standard-debug-export](verification/standard-debug-export/gate-summary.json). Восстановление — [WORKLOG_STANDARD_DEBUG_EXPORT.md](WORKLOG_STANDARD_DEBUG_EXPORT.md).
 
 Windows Mono templates4.7.2 получены из official pinned release: Range-загрузка только нужных четырёх x64 EXE/console entries (~72MB), не всего1.2GB архива. Шаблоны/выходные EXE/кеши не коммитятся. Это позволило проверить настоящий экспорт, но **запуск .exe на Windows и аппаратная приёмка здесь не выполнены**. Native controls проверены Linux Godot.
+
+[PR#49](https://github.com/MaksShelest/Delsk/pull/49), ветка `feat/standard-godot-debug-export`, реализация `9e6e477`; открыт без слияния. Предыдущий stage-only workflow PR48 заменён для обычного ExportDebug по явному запросу владельца.
