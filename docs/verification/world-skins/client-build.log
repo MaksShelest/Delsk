@@ -1,0 +1,11 @@
+  Simulation.Core -> <isolated-project>/src/Simulation.Core/bin/Debug/net10.0/Simulation.Core.dll
+  Simulation.Hosting -> <isolated-project>/src/Simulation.Hosting/bin/Debug/net10.0/Simulation.Hosting.dll
+  Agents.Algorithmic -> <isolated-project>/src/Agents.Algorithmic/bin/Debug/net10.0/Agents.Algorithmic.dll
+  Agents.Llm -> <isolated-project>/src/Agents.Llm/bin/Debug/net10.0/Agents.Llm.dll
+  Delsk.Client -> <isolated-project>/src/Client.Godot/.godot/mono/temp/bin/Debug/Delsk.Client.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:07.75

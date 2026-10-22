@@ -15,7 +15,7 @@ public partial class VotingPanel:PanelContainer
         box.AddChild(TabletDesign.Art("vote",new(60,60)));box.AddChild(TabletDesign.Heading(L("Выборы · экономика остановлена","Election · economy stopped"),25));box.AddChild(TabletDesign.Wrap(_summary,true));
         foreach(var candidate in election.Participants)
         {
-            var button=new Button{Text=L("Отдать голос участнику ","Cast ballot for participant ")+candidate.Value,FocusMode=FocusModeEnum.None};
+            var button=new Button{Text=L("Отдать голос: ","Cast ballot: ")+WorldSkins.ActorName(candidate.Value,_language),FocusMode=FocusModeEnum.None};
             button.Pressed+=()=>cast(candidate);box.AddChild(button);_votes.Add(candidate,button);
         }
     }

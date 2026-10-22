@@ -1,0 +1,486 @@
+[gd_scene load_steps=32 format=3]
+
+[sub_resource type="BoxMesh" id="mesh_0"]
+size = Vector3(0.240000, 0.500000, 0.280000)
+
+[sub_resource type="StandardMaterial3D" id="mat_0"]
+albedo_color = Color(0.32941176470588235, 0.4235294117647059, 0.4470588235294118, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="mesh_1"]
+size = Vector3(0.250000, 0.080000, 0.300000)
+
+[sub_resource type="SphereMesh" id="mesh_2"]
+radius = 0.5
+height = 1
+radial_segments = 12
+rings = 6
+
+[sub_resource type="StandardMaterial3D" id="mat_1"]
+albedo_color = Color(0.4117647058823529, 0.30980392156862746, 0.21568627450980393, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="mesh_3"]
+size = Vector3(0.280000, 0.055000, 0.400000)
+
+[sub_resource type="StandardMaterial3D" id="mat_2"]
+albedo_color = Color(0.27058823529411763, 0.2901960784313726, 0.24313725490196078, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="mesh_4"]
+size = Vector3(0.120000, 0.080000, 0.120000)
+
+[sub_resource type="StandardMaterial3D" id="mat_3"]
+albedo_color = Color(0.7411764705882353, 0.5764705882352941, 0.37254901960784315, 1)
+roughness = 0.88
+
+[sub_resource type="CylinderMesh" id="mesh_5"]
+top_radius = 0.3
+bottom_radius = 0.33
+height = 0.62
+radial_segments = 10
+
+[sub_resource type="StandardMaterial3D" id="mat_4"]
+albedo_color = Color(0.30980392156862746, 0.4745098039215686, 0.38823529411764707, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="mesh_6"]
+size = Vector3(0.045000, 0.480000, 0.030000)
+
+[sub_resource type="StandardMaterial3D" id="mat_5"]
+albedo_color = Color(0.8980392156862745, 0.8509803921568627, 0.7137254901960784, 1)
+roughness = 0.88
+
+[sub_resource type="StandardMaterial3D" id="mat_6"]
+albedo_color = Color(0.8588235294117647, 0.7176470588235294, 0.403921568627451, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="mesh_7"]
+size = Vector3(0.120000, 0.100000, 0.080000)
+
+[sub_resource type="BoxMesh" id="mesh_8"]
+size = Vector3(0.620000, 0.075000, 0.430000)
+
+[sub_resource type="BoxMesh" id="mesh_9"]
+size = Vector3(0.100000, 0.070000, 0.020000)
+
+[sub_resource type="CapsuleMesh" id="mesh_10"]
+radius = 0.105
+height = 0.4
+radial_segments = 10
+rings = 4
+
+[sub_resource type="BoxMesh" id="mesh_11"]
+size = Vector3(0.210000, 0.080000, 0.230000)
+
+[sub_resource type="CapsuleMesh" id="mesh_12"]
+radius = 0.078
+height = 0.28
+radial_segments = 10
+rings = 3
+
+[sub_resource type="StandardMaterial3D" id="mat_7"]
+albedo_color = Color(0.9294117647058824, 0.7647058823529411, 0.6078431372549019, 1)
+roughness = 0.88
+
+[sub_resource type="CylinderMesh" id="mesh_13"]
+top_radius = 0.095
+bottom_radius = 0.095
+height = 0.16
+radial_segments = 12
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="mat_8"]
+albedo_color = Color(0.23529411764705882, 0.23137254901960785, 0.19215686274509805, 1)
+roughness = 0.88
+
+[sub_resource type="StandardMaterial3D" id="mat_9"]
+albedo_color = Color(0.9568627450980393, 0.9372549019607843, 0.8666666666666667, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="mesh_14"]
+size = Vector3(0.080000, 0.022000, 0.025000)
+
+[sub_resource type="StandardMaterial3D" id="mat_10"]
+albedo_color = Color(0.615686274509804, 0.44313725490196076, 0.2980392156862745, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="mesh_15"]
+size = Vector3(0.090000, 0.014000, 0.019000)
+
+[sub_resource type="BoxMesh" id="mesh_16"]
+size = Vector3(0.370000, 0.330000, 0.060000)
+
+[sub_resource type="StandardMaterial3D" id="mat_11"]
+albedo_color = Color(0.9725490196078431, 0.9215686274509803, 0.803921568627451, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="mesh_17"]
+size = Vector3(0.500000, 0.450000, 0.070000)
+
+[sub_resource type="BoxMesh" id="mesh_18"]
+size = Vector3(0.270000, 0.140000, 0.025000)
+
+[node name="NPC_01_Alina" type="Node3D"]
+metadata/display_name = "Алина"
+
+[node name="VisualRig" type="Node3D" parent="."]
+scale = Vector3(0.980000, 1.000000, 1.000000)
+position = Vector3(0.000000, 0.000000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+
+[node name="Hips" type="Node3D" parent="VisualRig"]
+position = Vector3(0.000000, 0.930000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+
+[node name="LeftLeg" type="Node3D" parent="VisualRig/Hips"]
+position = Vector3(-0.160000, -0.080000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, -2.000000)
+
+[node name="Trousers" type="MeshInstance3D" parent="VisualRig/Hips/LeftLeg"]
+position = Vector3(0.000000, -0.230000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_0")
+material_override = SubResource("mat_0")
+
+[node name="TrouserCuff" type="MeshInstance3D" parent="VisualRig/Hips/LeftLeg"]
+position = Vector3(0.000000, -0.480000, 0.012000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_1")
+material_override = SubResource("mat_0")
+
+[node name="Shoe" type="MeshInstance3D" parent="VisualRig/Hips/LeftLeg"]
+position = Vector3(0.000000, -0.570000, 0.070000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.290000, 0.180000, 0.460000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_1")
+
+[node name="Sole" type="MeshInstance3D" parent="VisualRig/Hips/LeftLeg"]
+position = Vector3(0.000000, -0.630000, 0.070000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_2")
+
+[node name="ShoeTongue" type="MeshInstance3D" parent="VisualRig/Hips/LeftLeg"]
+position = Vector3(0.000000, -0.490000, 0.110000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="RightLeg" type="Node3D" parent="VisualRig/Hips"]
+position = Vector3(0.160000, -0.080000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 2.000000)
+
+[node name="Trousers" type="MeshInstance3D" parent="VisualRig/Hips/RightLeg"]
+position = Vector3(0.000000, -0.230000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_0")
+material_override = SubResource("mat_0")
+
+[node name="TrouserCuff" type="MeshInstance3D" parent="VisualRig/Hips/RightLeg"]
+position = Vector3(0.000000, -0.480000, 0.012000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_1")
+material_override = SubResource("mat_0")
+
+[node name="Shoe" type="MeshInstance3D" parent="VisualRig/Hips/RightLeg"]
+position = Vector3(0.000000, -0.570000, 0.070000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.290000, 0.180000, 0.460000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_1")
+
+[node name="Sole" type="MeshInstance3D" parent="VisualRig/Hips/RightLeg"]
+position = Vector3(0.000000, -0.630000, 0.070000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_2")
+
+[node name="ShoeTongue" type="MeshInstance3D" parent="VisualRig/Hips/RightLeg"]
+position = Vector3(0.000000, -0.490000, 0.110000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Torso" type="Node3D" parent="VisualRig/Hips"]
+position = Vector3(0.000000, 0.160000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+
+[node name="Shirt" type="MeshInstance3D" parent="VisualRig/Hips/Torso"]
+position = Vector3(0.000000, 0.120000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(1.000000, 0.950000, 0.660000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_4")
+
+[node name="ButtonPlacket" type="MeshInstance3D" parent="VisualRig/Hips/Torso"]
+position = Vector3(0.000000, 0.120000, 0.216000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_5")
+
+[node name="Button12" type="MeshInstance3D" parent="VisualRig/Hips/Torso"]
+position = Vector3(0.000000, -0.020000, 0.240000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.035000, 0.035000, 0.018000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_6")
+
+[node name="Button13" type="MeshInstance3D" parent="VisualRig/Hips/Torso"]
+position = Vector3(0.000000, 0.120000, 0.240000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.035000, 0.035000, 0.018000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_6")
+
+[node name="Button14" type="MeshInstance3D" parent="VisualRig/Hips/Torso"]
+position = Vector3(0.000000, 0.260000, 0.240000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.035000, 0.035000, 0.018000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_6")
+
+[node name="Collar-1" type="MeshInstance3D" parent="VisualRig/Hips/Torso"]
+position = Vector3(-0.085000, 0.400000, 0.170000)
+rotation_degrees = Vector3(0.000000, 0.000000, -25.000000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_5")
+
+[node name="Collar1" type="MeshInstance3D" parent="VisualRig/Hips/Torso"]
+position = Vector3(0.085000, 0.400000, 0.170000)
+rotation_degrees = Vector3(0.000000, 0.000000, 25.000000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_5")
+
+[node name="Belt" type="MeshInstance3D" parent="VisualRig/Hips/Torso"]
+position = Vector3(0.000000, -0.160000, 0.015000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_1")
+
+[node name="Buckle" type="MeshInstance3D" parent="VisualRig/Hips/Torso"]
+position = Vector3(0.000000, -0.160000, 0.240000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_9")
+material_override = SubResource("mat_6")
+
+[node name="LeftArm" type="Node3D" parent="VisualRig/Hips/Torso"]
+position = Vector3(-0.340000, 0.320000, 0.000000)
+rotation_degrees = Vector3(5.000000, 0.000000, -13.000000)
+
+[node name="Sleeve" type="MeshInstance3D" parent="VisualRig/Hips/Torso/LeftArm"]
+position = Vector3(0.000000, -0.130000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_4")
+
+[node name="RolledCuff" type="MeshInstance3D" parent="VisualRig/Hips/Torso/LeftArm"]
+position = Vector3(0.000000, -0.290000, 0.010000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_5")
+
+[node name="Forearm" type="MeshInstance3D" parent="VisualRig/Hips/Torso/LeftArm"]
+position = Vector3(0.000000, -0.420000, 0.025000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_12")
+material_override = SubResource("mat_7")
+
+[node name="Hand" type="MeshInstance3D" parent="VisualRig/Hips/Torso/LeftArm"]
+position = Vector3(0.000000, -0.580000, 0.030000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.170000, 0.210000, 0.170000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_7")
+
+[node name="Thumb" type="MeshInstance3D" parent="VisualRig/Hips/Torso/LeftArm"]
+position = Vector3(0.070000, -0.550000, 0.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.070000, 0.120000, 0.070000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_7")
+
+[node name="RightArm" type="Node3D" parent="VisualRig/Hips/Torso"]
+position = Vector3(0.340000, 0.320000, 0.000000)
+rotation_degrees = Vector3(-5.000000, 0.000000, 13.000000)
+
+[node name="Sleeve" type="MeshInstance3D" parent="VisualRig/Hips/Torso/RightArm"]
+position = Vector3(0.000000, -0.130000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_4")
+
+[node name="RolledCuff" type="MeshInstance3D" parent="VisualRig/Hips/Torso/RightArm"]
+position = Vector3(0.000000, -0.290000, 0.010000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_5")
+
+[node name="Forearm" type="MeshInstance3D" parent="VisualRig/Hips/Torso/RightArm"]
+position = Vector3(0.000000, -0.420000, 0.025000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_12")
+material_override = SubResource("mat_7")
+
+[node name="Hand" type="MeshInstance3D" parent="VisualRig/Hips/Torso/RightArm"]
+position = Vector3(0.000000, -0.580000, 0.030000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.170000, 0.210000, 0.170000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_7")
+
+[node name="Thumb" type="MeshInstance3D" parent="VisualRig/Hips/Torso/RightArm"]
+position = Vector3(-0.070000, -0.550000, 0.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.070000, 0.120000, 0.070000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_7")
+
+[node name="Neck" type="MeshInstance3D" parent="VisualRig"]
+position = Vector3(0.000000, 1.560000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_13")
+material_override = SubResource("mat_7")
+
+[node name="Head" type="Node3D" parent="VisualRig"]
+position = Vector3(0.000000, 1.790000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+
+[node name="Face" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(0.000000, 0.000000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.510000, 0.570000, 0.480000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_7")
+
+[node name="Ear-1" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(-0.254000, 0.000000, -0.005000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.100000, 0.150000, 0.080000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_7")
+
+[node name="Eye-1" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(-0.091000, 0.035000, 0.223000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.048000, 0.058000, 0.022000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_8")
+
+[node name="EyeHighlight-1" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(-0.099000, 0.045000, 0.235000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.013000, 0.014000, 0.008000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_9")
+
+[node name="Eyebrow-1" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(-0.093000, 0.108000, 0.220000)
+rotation_degrees = Vector3(0.000000, 0.000000, 8.000000)
+mesh = SubResource("mesh_14")
+material_override = SubResource("mat_10")
+
+[node name="Ear1" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(0.254000, 0.000000, -0.005000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.100000, 0.150000, 0.080000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_7")
+
+[node name="Eye1" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(0.091000, 0.035000, 0.223000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.048000, 0.058000, 0.022000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_8")
+
+[node name="EyeHighlight1" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(0.083000, 0.045000, 0.235000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.013000, 0.014000, 0.008000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_9")
+
+[node name="Eyebrow1" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(0.093000, 0.108000, 0.220000)
+rotation_degrees = Vector3(0.000000, 0.000000, -8.000000)
+mesh = SubResource("mesh_14")
+material_override = SubResource("mat_10")
+
+[node name="Nose" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(0.000000, -0.030000, 0.253000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.080000, 0.090000, 0.080000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_7")
+
+[node name="Smile" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(0.000000, -0.130000, 0.216000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_15")
+material_override = SubResource("mat_10")
+
+[node name="HairCap" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(0.000000, 0.150000, -0.045000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.540000, 0.360000, 0.480000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_10")
+
+[node name="BackHair" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(0.000000, -0.020000, -0.180000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.480000, 0.480000, 0.220000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_10")
+
+[node name="Braid0" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(0.210000, -0.180000, -0.230000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.160000, 0.170000, 0.160000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_10")
+
+[node name="Braid1" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(0.210000, -0.280000, -0.230000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.146000, 0.170000, 0.146000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_10")
+
+[node name="Braid2" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(0.210000, -0.380000, -0.230000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.132000, 0.170000, 0.132000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_10")
+
+[node name="Braid3" type="MeshInstance3D" parent="VisualRig/Head"]
+position = Vector3(0.210000, -0.480000, -0.230000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.118000, 0.170000, 0.118000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_10")
+
+[node name="ApronBib" type="MeshInstance3D" parent="VisualRig"]
+position = Vector3(0.000000, 1.220000, 0.237000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_16")
+material_override = SubResource("mat_11")
+
+[node name="ApronSkirt" type="MeshInstance3D" parent="VisualRig"]
+position = Vector3(0.000000, 0.880000, 0.280000)
+rotation_degrees = Vector3(-5.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_17")
+material_override = SubResource("mat_11")
+
+[node name="ApronPocket" type="MeshInstance3D" parent="VisualRig"]
+position = Vector3(0.000000, 0.930000, 0.326000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_18")
+material_override = SubResource("mat_3")
+
+[node name="InteractionPoint" type="Marker3D" parent="."]
+position = Vector3(0.000000, 0.000000, 2.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)

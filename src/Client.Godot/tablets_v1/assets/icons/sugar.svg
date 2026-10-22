@@ -1,1 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72"><path d="M13 23L47 13L62 27V58L29 65L13 51Z" fill="#DFCFB1"/><path d="M13 23L29 34L62 27L47 13Z" fill="#FCF4DF"/><path d="M29 34V65L62 58V27Z" fill="#F1E8D5"/><path d="M36 42L48 38L56 44V54L43 57L36 52Z" fill="#C7D9CB"/><path d="M36 42L43 47L56 44" fill="none" stroke="#9CB8A5" stroke-width="2"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72">
+<path d="M9 30L27 22L44 31V51L26 59L9 49Z" fill="#D9CEB4" stroke="#BDAF91" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M9 30L27 22L44 31L26 39Z" fill="#FFF8E5"/>
+<path d="M26 39L44 31V51L26 59Z" fill="#EEE5D2"/>
+<path d="M37 37L54 30L67 38V57L51 64L37 56Z" fill="#D5C9AE" stroke="#BDAF91" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M37 37L54 30L67 38L51 45Z" fill="#FFF9EA"/>
+<path d="M51 45L67 38V57L51 64Z" fill="#EAE0CA"/>
+<path d="M24 13L40 6L55 14V32L39 39L24 30Z" fill="#DACDB0" stroke="#BDAF91" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M24 13L40 6L55 14L39 21Z" fill="#FFFAE9"/>
+<path d="M39 21L55 14V32L39 39Z" fill="#EEE5D0"/>
+<path d="M13 35L17 33M31 16L35 14M44 41L48 39" fill="none" stroke="#F9F1DC" stroke-width="2" stroke-linecap="round"/>
+</svg>

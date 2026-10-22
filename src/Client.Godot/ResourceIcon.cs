@@ -4,8 +4,19 @@ using Godot;
 public partial class ResourceIcon : Control
 {
     public string Item { get; set; } = "";
+    private static readonly System.Collections.Generic.Dictionary<string,Texture2D> Icons = new();
     public override void _Draw()
     {
+        string icon = Item == "plank" ? "boards" : Item == "wood" ? "logs" : Item;
+        string path = $"res://tablets_v1/assets/icons/{icon}.svg";
+        if (!Icons.TryGetValue(icon, out var texture) && ResourceLoader.Exists(path))
+            Icons[icon] = texture = GD.Load<Texture2D>(path);
+        if (texture is not null)
+        {
+            float side = Mathf.Min(Size.X, Size.Y);
+            DrawTextureRect(texture, new Rect2((Size-new Vector2(side,side))/2,new Vector2(side,side)),false);
+            return;
+        }
         var center = Size / 2;
         switch (Item)
         {

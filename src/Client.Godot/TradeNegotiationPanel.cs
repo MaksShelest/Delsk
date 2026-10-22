@@ -46,8 +46,14 @@ public partial class TradeNegotiationPanel : VBoxContainer
     public void ShowData(PlayerView view,bool pending)
     {
         _view=view;_pending=pending;
-        string parties=string.Join(',',view.TradingParticipants);
-        if(parties!=_partyKey){_partyKey=parties;_partner.Clear();foreach(var p in view.TradingParticipants.Where(p=>p!=view.Participant.Id))_partner.AddItem("#"+p.Value,(int)p.Value);}
+        string parties=WorldSkins.Revision+":"+string.Join(',',view.TradingParticipants);
+        if(parties!=_partyKey)
+        {
+            int selected=_partner.Selected<0?-1:_partner.GetSelectedId();
+            _partyKey=parties;_partner.Clear();
+            foreach(var p in view.TradingParticipants.Where(p=>p!=view.Participant.Id))_partner.AddItem(WorldSkins.ActorName(p.Value,_language),(int)p.Value);
+            for(int i=0;i<_partner.ItemCount;i++)if(_partner.GetItemId(i)==selected)_partner.Select(i);
+        }
         var inventories=view.Inventories.Where(i=>view.Buildings.Any(b=>b.InputId==i.Id||b.OutputId==i.Id)).ToArray();
         string key=string.Join(',',inventories.Select(i=>i.Id.Value));
         if(key!=_inventoryKey)

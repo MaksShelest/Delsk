@@ -1,0 +1,3652 @@
+[gd_scene load_steps=20 format=3]
+
+[sub_resource type="BoxMesh" id="mesh_0"]
+size = Vector3(5.000000, 0.270000, 5.000000)
+
+[sub_resource type="StandardMaterial3D" id="mat_0"]
+albedo_color = Color(0.6313725490196078, 0.5450980392156862, 0.396078431372549, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="mesh_1"]
+size = Vector3(5.000000, 0.030000, 5.000000)
+
+[sub_resource type="StandardMaterial3D" id="mat_1"]
+albedo_color = Color(0.3176470588235294, 0.2784313725490196, 0.21568627450980393, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="mesh_2"]
+size = Vector3(5.000000, 0.008000, 0.035000)
+
+[sub_resource type="StandardMaterial3D" id="mat_2"]
+albedo_color = Color(0.36470588235294116, 0.3137254901960784, 0.23529411764705882, 1)
+roughness = 0.88
+
+[sub_resource type="SphereMesh" id="mesh_3"]
+radius = 0.5
+height = 1
+radial_segments = 12
+rings = 6
+
+[sub_resource type="StandardMaterial3D" id="mat_3"]
+albedo_color = Color(0.6352941176470588, 0.39215686274509803, 0.45098039215686275, 1)
+roughness = 0.88
+
+[sub_resource type="CylinderMesh" id="mesh_4"]
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.223606797749979
+radial_segments = 8
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="mat_4"]
+albedo_color = Color(0.6509803921568628, 0.7098039215686275, 0.4666666666666667, 1)
+roughness = 0.88
+
+[sub_resource type="CylinderMesh" id="mesh_5"]
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.22494443758403973
+radial_segments = 8
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="mat_5"]
+albedo_color = Color(0.4627450980392157, 0.5843137254901961, 0.37254901960784315, 1)
+roughness = 0.88
+
+[sub_resource type="CylinderMesh" id="mesh_6"]
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.22494443758403984
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_7"]
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.22360679774997896
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_8"]
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.22494443758403979
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_9"]
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.2249444375840398
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_10"]
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.22494443758403987
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_11"]
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.22360679774997894
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_12"]
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.22494443758403976
+radial_segments = 8
+rings = 1
+
+[node name="BeetField" type="Node3D"]
+
+[node name="Foundation" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, -0.135000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_0")
+material_override = SubResource("mat_0")
+
+[node name="Surface" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.015000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_1")
+material_override = SubResource("mat_1")
+
+[node name="Furrow2" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, -2.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="Furrow3" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, -1.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="Furrow4" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, -0.950000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="Furrow5" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, -0.350000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="Furrow6" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, 0.250000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="Furrow7" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, 0.850000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="Furrow8" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, 1.450000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="Furrow9" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, 2.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="BeetRoot10" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.110000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk11" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -2.2400000, 0.2600000, -2.2300000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf12" type="MeshInstance3D" parent="."]
+position = Vector3(-2.280000, 0.350000, -2.260000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk13" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -2.1550000, 0.2600000, -2.2250000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="Leaf14" type="MeshInstance3D" parent="."]
+position = Vector3(-2.110000, 0.350000, -2.250000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk15" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -2.2000000, 0.2600000, -2.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf16" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.350000, -2.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot17" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.110000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk18" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.6900000, 0.2600000, -2.2300000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf19" type="MeshInstance3D" parent="."]
+position = Vector3(-1.730000, 0.350000, -2.260000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk20" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.6050000, 0.2600000, -2.2250000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf21" type="MeshInstance3D" parent="."]
+position = Vector3(-1.560000, 0.350000, -2.250000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk22" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.6500000, 0.2600000, -2.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf23" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.350000, -2.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot24" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.110000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk25" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.1400000, 0.2600000, -2.2300000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf26" type="MeshInstance3D" parent="."]
+position = Vector3(-1.180000, 0.350000, -2.260000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk27" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.0550000, 0.2600000, -2.2250000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf28" type="MeshInstance3D" parent="."]
+position = Vector3(-1.010000, 0.350000, -2.250000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk29" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.1000000, 0.2600000, -2.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf30" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.350000, -2.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot31" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.110000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk32" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.5900000, 0.2600000, -2.2300000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf33" type="MeshInstance3D" parent="."]
+position = Vector3(-0.630000, 0.350000, -2.260000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk34" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -0.5050000, 0.2600000, -2.2250000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf35" type="MeshInstance3D" parent="."]
+position = Vector3(-0.460000, 0.350000, -2.250000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk36" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -0.5500000, 0.2600000, -2.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf37" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.350000, -2.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot38" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.110000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk39" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.0400000, 0.2600000, -2.2300000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf40" type="MeshInstance3D" parent="."]
+position = Vector3(-0.080000, 0.350000, -2.260000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk41" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.0450000, 0.2600000, -2.2250000)
+mesh = SubResource("mesh_9")
+material_override = SubResource("mat_3")
+
+[node name="Leaf42" type="MeshInstance3D" parent="."]
+position = Vector3(0.090000, 0.350000, -2.250000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk43" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.0000000, 0.2600000, -2.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf44" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.350000, -2.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot45" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.110000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk46" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 0.5100000, 0.2600000, -2.2300000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf47" type="MeshInstance3D" parent="."]
+position = Vector3(0.470000, 0.350000, -2.260000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk48" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.5950000, 0.2600000, -2.2250000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf49" type="MeshInstance3D" parent="."]
+position = Vector3(0.640000, 0.350000, -2.250000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk50" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.5500000, 0.2600000, -2.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf51" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.350000, -2.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot52" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.110000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk53" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.0600000, 0.2600000, -2.2300000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf54" type="MeshInstance3D" parent="."]
+position = Vector3(1.020000, 0.350000, -2.260000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk55" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.1450000, 0.2600000, -2.2250000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf56" type="MeshInstance3D" parent="."]
+position = Vector3(1.190000, 0.350000, -2.250000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk57" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.1000000, 0.2600000, -2.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf58" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.350000, -2.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot59" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.110000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk60" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.6100000, 0.2600000, -2.2300000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf61" type="MeshInstance3D" parent="."]
+position = Vector3(1.570000, 0.350000, -2.260000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk62" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.6950000, 0.2600000, -2.2250000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf63" type="MeshInstance3D" parent="."]
+position = Vector3(1.740000, 0.350000, -2.250000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk64" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.6500000, 0.2600000, -2.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf65" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.350000, -2.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot66" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.110000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk67" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 2.1600000, 0.2600000, -2.2300000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf68" type="MeshInstance3D" parent="."]
+position = Vector3(2.120000, 0.350000, -2.260000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk69" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 2.2450000, 0.2600000, -2.2250000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="Leaf70" type="MeshInstance3D" parent="."]
+position = Vector3(2.290000, 0.350000, -2.250000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk71" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 2.2000000, 0.2600000, -2.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf72" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.350000, -2.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot73" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.110000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk74" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -2.2400000, 0.2600000, -1.6800000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf75" type="MeshInstance3D" parent="."]
+position = Vector3(-2.280000, 0.350000, -1.710000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk76" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -2.1550000, 0.2600000, -1.6750000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf77" type="MeshInstance3D" parent="."]
+position = Vector3(-2.110000, 0.350000, -1.700000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk78" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -2.2000000, 0.2600000, -1.6000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf79" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.350000, -1.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot80" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.110000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk81" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.6900000, 0.2600000, -1.6800000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf82" type="MeshInstance3D" parent="."]
+position = Vector3(-1.730000, 0.350000, -1.710000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk83" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.6050000, 0.2600000, -1.6750000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf84" type="MeshInstance3D" parent="."]
+position = Vector3(-1.560000, 0.350000, -1.700000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk85" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.6500000, 0.2600000, -1.6000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf86" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.350000, -1.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot87" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.110000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk88" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.1400000, 0.2600000, -1.6800000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf89" type="MeshInstance3D" parent="."]
+position = Vector3(-1.180000, 0.350000, -1.710000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk90" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.0550000, 0.2600000, -1.6750000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf91" type="MeshInstance3D" parent="."]
+position = Vector3(-1.010000, 0.350000, -1.700000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk92" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.1000000, 0.2600000, -1.6000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf93" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.350000, -1.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot94" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.110000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk95" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.5900000, 0.2600000, -1.6800000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf96" type="MeshInstance3D" parent="."]
+position = Vector3(-0.630000, 0.350000, -1.710000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk97" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -0.5050000, 0.2600000, -1.6750000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf98" type="MeshInstance3D" parent="."]
+position = Vector3(-0.460000, 0.350000, -1.700000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk99" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -0.5500000, 0.2600000, -1.6000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf100" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.350000, -1.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot101" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.110000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk102" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.0400000, 0.2600000, -1.6800000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf103" type="MeshInstance3D" parent="."]
+position = Vector3(-0.080000, 0.350000, -1.710000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk104" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.0450000, 0.2600000, -1.6750000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf105" type="MeshInstance3D" parent="."]
+position = Vector3(0.090000, 0.350000, -1.700000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk106" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.0000000, 0.2600000, -1.6000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf107" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.350000, -1.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot108" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.110000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk109" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 0.5100000, 0.2600000, -1.6800000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf110" type="MeshInstance3D" parent="."]
+position = Vector3(0.470000, 0.350000, -1.710000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk111" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.5950000, 0.2600000, -1.6750000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf112" type="MeshInstance3D" parent="."]
+position = Vector3(0.640000, 0.350000, -1.700000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk113" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.5500000, 0.2600000, -1.6000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf114" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.350000, -1.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot115" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.110000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk116" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.0600000, 0.2600000, -1.6800000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf117" type="MeshInstance3D" parent="."]
+position = Vector3(1.020000, 0.350000, -1.710000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk118" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.1450000, 0.2600000, -1.6750000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf119" type="MeshInstance3D" parent="."]
+position = Vector3(1.190000, 0.350000, -1.700000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk120" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.1000000, 0.2600000, -1.6000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf121" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.350000, -1.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot122" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.110000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk123" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.6100000, 0.2600000, -1.6800000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf124" type="MeshInstance3D" parent="."]
+position = Vector3(1.570000, 0.350000, -1.710000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk125" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.6950000, 0.2600000, -1.6750000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf126" type="MeshInstance3D" parent="."]
+position = Vector3(1.740000, 0.350000, -1.700000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk127" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.6500000, 0.2600000, -1.6000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf128" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.350000, -1.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot129" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.110000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk130" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 2.1600000, 0.2600000, -1.6800000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf131" type="MeshInstance3D" parent="."]
+position = Vector3(2.120000, 0.350000, -1.710000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk132" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 2.2450000, 0.2600000, -1.6750000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf133" type="MeshInstance3D" parent="."]
+position = Vector3(2.290000, 0.350000, -1.700000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk134" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 2.2000000, 0.2600000, -1.6000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf135" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.350000, -1.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot136" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.110000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk137" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -2.2400000, 0.2600000, -1.1300000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf138" type="MeshInstance3D" parent="."]
+position = Vector3(-2.280000, 0.350000, -1.160000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk139" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -2.1550000, 0.2600000, -1.1250000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf140" type="MeshInstance3D" parent="."]
+position = Vector3(-2.110000, 0.350000, -1.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk141" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -2.2000000, 0.2600000, -1.0500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf142" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.350000, -1.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot143" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.110000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk144" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.6900000, 0.2600000, -1.1300000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf145" type="MeshInstance3D" parent="."]
+position = Vector3(-1.730000, 0.350000, -1.160000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk146" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.6050000, 0.2600000, -1.1250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf147" type="MeshInstance3D" parent="."]
+position = Vector3(-1.560000, 0.350000, -1.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk148" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.6500000, 0.2600000, -1.0500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf149" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.350000, -1.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot150" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.110000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk151" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.1400000, 0.2600000, -1.1300000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf152" type="MeshInstance3D" parent="."]
+position = Vector3(-1.180000, 0.350000, -1.160000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk153" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.0550000, 0.2600000, -1.1250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf154" type="MeshInstance3D" parent="."]
+position = Vector3(-1.010000, 0.350000, -1.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk155" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.1000000, 0.2600000, -1.0500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf156" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.350000, -1.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot157" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.110000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk158" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.5900000, 0.2600000, -1.1300000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf159" type="MeshInstance3D" parent="."]
+position = Vector3(-0.630000, 0.350000, -1.160000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk160" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -0.5050000, 0.2600000, -1.1250000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf161" type="MeshInstance3D" parent="."]
+position = Vector3(-0.460000, 0.350000, -1.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk162" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -0.5500000, 0.2600000, -1.0500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf163" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.350000, -1.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot164" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.110000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk165" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.0400000, 0.2600000, -1.1300000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf166" type="MeshInstance3D" parent="."]
+position = Vector3(-0.080000, 0.350000, -1.160000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk167" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.0450000, 0.2600000, -1.1250000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf168" type="MeshInstance3D" parent="."]
+position = Vector3(0.090000, 0.350000, -1.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk169" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.0000000, 0.2600000, -1.0500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf170" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.350000, -1.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot171" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.110000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk172" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 0.5100000, 0.2600000, -1.1300000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf173" type="MeshInstance3D" parent="."]
+position = Vector3(0.470000, 0.350000, -1.160000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk174" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.5950000, 0.2600000, -1.1250000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf175" type="MeshInstance3D" parent="."]
+position = Vector3(0.640000, 0.350000, -1.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk176" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.5500000, 0.2600000, -1.0500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf177" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.350000, -1.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot178" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.110000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk179" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.0600000, 0.2600000, -1.1300000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf180" type="MeshInstance3D" parent="."]
+position = Vector3(1.020000, 0.350000, -1.160000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk181" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.1450000, 0.2600000, -1.1250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf182" type="MeshInstance3D" parent="."]
+position = Vector3(1.190000, 0.350000, -1.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk183" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.1000000, 0.2600000, -1.0500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf184" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.350000, -1.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot185" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.110000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk186" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.6100000, 0.2600000, -1.1300000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf187" type="MeshInstance3D" parent="."]
+position = Vector3(1.570000, 0.350000, -1.160000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk188" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.6950000, 0.2600000, -1.1250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf189" type="MeshInstance3D" parent="."]
+position = Vector3(1.740000, 0.350000, -1.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk190" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.6500000, 0.2600000, -1.0500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf191" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.350000, -1.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot192" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.110000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk193" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 2.1600000, 0.2600000, -1.1300000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf194" type="MeshInstance3D" parent="."]
+position = Vector3(2.120000, 0.350000, -1.160000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk195" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 2.2450000, 0.2600000, -1.1250000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf196" type="MeshInstance3D" parent="."]
+position = Vector3(2.290000, 0.350000, -1.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk197" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 2.2000000, 0.2600000, -1.0500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf198" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.350000, -1.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot199" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.110000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk200" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -2.2400000, 0.2600000, -0.5800000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf201" type="MeshInstance3D" parent="."]
+position = Vector3(-2.280000, 0.350000, -0.610000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk202" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -2.1550000, 0.2600000, -0.5750000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf203" type="MeshInstance3D" parent="."]
+position = Vector3(-2.110000, 0.350000, -0.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk204" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -2.2000000, 0.2600000, -0.5000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf205" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.350000, -0.450000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot206" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.110000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk207" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.6900000, 0.2600000, -0.5800000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf208" type="MeshInstance3D" parent="."]
+position = Vector3(-1.730000, 0.350000, -0.610000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk209" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.6050000, 0.2600000, -0.5750000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf210" type="MeshInstance3D" parent="."]
+position = Vector3(-1.560000, 0.350000, -0.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk211" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.6500000, 0.2600000, -0.5000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf212" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.350000, -0.450000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot213" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.110000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk214" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.1400000, 0.2600000, -0.5800000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf215" type="MeshInstance3D" parent="."]
+position = Vector3(-1.180000, 0.350000, -0.610000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk216" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.0550000, 0.2600000, -0.5750000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf217" type="MeshInstance3D" parent="."]
+position = Vector3(-1.010000, 0.350000, -0.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk218" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.1000000, 0.2600000, -0.5000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf219" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.350000, -0.450000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot220" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.110000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk221" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.5900000, 0.2600000, -0.5800000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf222" type="MeshInstance3D" parent="."]
+position = Vector3(-0.630000, 0.350000, -0.610000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk223" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -0.5050000, 0.2600000, -0.5750000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf224" type="MeshInstance3D" parent="."]
+position = Vector3(-0.460000, 0.350000, -0.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk225" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -0.5500000, 0.2600000, -0.5000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf226" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.350000, -0.450000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot227" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.110000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk228" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.0400000, 0.2600000, -0.5800000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf229" type="MeshInstance3D" parent="."]
+position = Vector3(-0.080000, 0.350000, -0.610000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk230" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.0450000, 0.2600000, -0.5750000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf231" type="MeshInstance3D" parent="."]
+position = Vector3(0.090000, 0.350000, -0.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk232" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.0000000, 0.2600000, -0.5000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf233" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.350000, -0.450000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot234" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.110000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk235" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 0.5100000, 0.2600000, -0.5800000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf236" type="MeshInstance3D" parent="."]
+position = Vector3(0.470000, 0.350000, -0.610000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk237" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.5950000, 0.2600000, -0.5750000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf238" type="MeshInstance3D" parent="."]
+position = Vector3(0.640000, 0.350000, -0.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk239" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.5500000, 0.2600000, -0.5000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf240" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.350000, -0.450000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot241" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.110000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk242" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.0600000, 0.2600000, -0.5800000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf243" type="MeshInstance3D" parent="."]
+position = Vector3(1.020000, 0.350000, -0.610000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk244" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.1450000, 0.2600000, -0.5750000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf245" type="MeshInstance3D" parent="."]
+position = Vector3(1.190000, 0.350000, -0.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk246" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.1000000, 0.2600000, -0.5000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf247" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.350000, -0.450000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot248" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.110000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk249" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.6100000, 0.2600000, -0.5800000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf250" type="MeshInstance3D" parent="."]
+position = Vector3(1.570000, 0.350000, -0.610000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk251" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.6950000, 0.2600000, -0.5750000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf252" type="MeshInstance3D" parent="."]
+position = Vector3(1.740000, 0.350000, -0.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk253" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.6500000, 0.2600000, -0.5000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf254" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.350000, -0.450000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot255" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.110000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk256" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 2.1600000, 0.2600000, -0.5800000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf257" type="MeshInstance3D" parent="."]
+position = Vector3(2.120000, 0.350000, -0.610000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk258" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 2.2450000, 0.2600000, -0.5750000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf259" type="MeshInstance3D" parent="."]
+position = Vector3(2.290000, 0.350000, -0.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk260" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 2.2000000, 0.2600000, -0.5000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf261" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.350000, -0.450000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot262" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.110000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk263" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -2.2400000, 0.2600000, -0.0300000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf264" type="MeshInstance3D" parent="."]
+position = Vector3(-2.280000, 0.350000, -0.060000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk265" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -2.1550000, 0.2600000, -0.0250000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf266" type="MeshInstance3D" parent="."]
+position = Vector3(-2.110000, 0.350000, -0.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk267" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -2.2000000, 0.2600000, 0.0500000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf268" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.350000, 0.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot269" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.110000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk270" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.6900000, 0.2600000, -0.0300000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf271" type="MeshInstance3D" parent="."]
+position = Vector3(-1.730000, 0.350000, -0.060000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk272" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.6050000, 0.2600000, -0.0250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf273" type="MeshInstance3D" parent="."]
+position = Vector3(-1.560000, 0.350000, -0.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk274" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.6500000, 0.2600000, 0.0500000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf275" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.350000, 0.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot276" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.110000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk277" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.1400000, 0.2600000, -0.0300000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf278" type="MeshInstance3D" parent="."]
+position = Vector3(-1.180000, 0.350000, -0.060000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk279" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.0550000, 0.2600000, -0.0250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf280" type="MeshInstance3D" parent="."]
+position = Vector3(-1.010000, 0.350000, -0.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk281" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.1000000, 0.2600000, 0.0500000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf282" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.350000, 0.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot283" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.110000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk284" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.5900000, 0.2600000, -0.0300000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf285" type="MeshInstance3D" parent="."]
+position = Vector3(-0.630000, 0.350000, -0.060000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk286" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -0.5050000, 0.2600000, -0.0250000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf287" type="MeshInstance3D" parent="."]
+position = Vector3(-0.460000, 0.350000, -0.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk288" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -0.5500000, 0.2600000, 0.0500000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf289" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.350000, 0.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot290" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.110000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk291" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.0400000, 0.2600000, -0.0300000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf292" type="MeshInstance3D" parent="."]
+position = Vector3(-0.080000, 0.350000, -0.060000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk293" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.0450000, 0.2600000, -0.0250000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf294" type="MeshInstance3D" parent="."]
+position = Vector3(0.090000, 0.350000, -0.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk295" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.0000000, 0.2600000, 0.0500000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf296" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.350000, 0.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot297" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.110000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk298" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 0.5100000, 0.2600000, -0.0300000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf299" type="MeshInstance3D" parent="."]
+position = Vector3(0.470000, 0.350000, -0.060000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk300" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.5950000, 0.2600000, -0.0250000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf301" type="MeshInstance3D" parent="."]
+position = Vector3(0.640000, 0.350000, -0.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk302" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.5500000, 0.2600000, 0.0500000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf303" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.350000, 0.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot304" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.110000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk305" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.0600000, 0.2600000, -0.0300000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf306" type="MeshInstance3D" parent="."]
+position = Vector3(1.020000, 0.350000, -0.060000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk307" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.1450000, 0.2600000, -0.0250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf308" type="MeshInstance3D" parent="."]
+position = Vector3(1.190000, 0.350000, -0.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk309" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.1000000, 0.2600000, 0.0500000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf310" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.350000, 0.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot311" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.110000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk312" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.6100000, 0.2600000, -0.0300000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf313" type="MeshInstance3D" parent="."]
+position = Vector3(1.570000, 0.350000, -0.060000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk314" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.6950000, 0.2600000, -0.0250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf315" type="MeshInstance3D" parent="."]
+position = Vector3(1.740000, 0.350000, -0.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk316" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.6500000, 0.2600000, 0.0500000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf317" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.350000, 0.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot318" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.110000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk319" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 2.1600000, 0.2600000, -0.0300000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf320" type="MeshInstance3D" parent="."]
+position = Vector3(2.120000, 0.350000, -0.060000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk321" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 2.2450000, 0.2600000, -0.0250000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf322" type="MeshInstance3D" parent="."]
+position = Vector3(2.290000, 0.350000, -0.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk323" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 2.2000000, 0.2600000, 0.0500000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf324" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.350000, 0.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot325" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.110000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk326" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -2.2400000, 0.2600000, 0.5200000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf327" type="MeshInstance3D" parent="."]
+position = Vector3(-2.280000, 0.350000, 0.490000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk328" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -2.1550000, 0.2600000, 0.5250000)
+mesh = SubResource("mesh_12")
+material_override = SubResource("mat_3")
+
+[node name="Leaf329" type="MeshInstance3D" parent="."]
+position = Vector3(-2.110000, 0.350000, 0.500000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk330" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -2.2000000, 0.2600000, 0.6000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf331" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.350000, 0.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot332" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.110000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk333" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.6900000, 0.2600000, 0.5200000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf334" type="MeshInstance3D" parent="."]
+position = Vector3(-1.730000, 0.350000, 0.490000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk335" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.6050000, 0.2600000, 0.5250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf336" type="MeshInstance3D" parent="."]
+position = Vector3(-1.560000, 0.350000, 0.500000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk337" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.6500000, 0.2600000, 0.6000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf338" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.350000, 0.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot339" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.110000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk340" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.1400000, 0.2600000, 0.5200000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf341" type="MeshInstance3D" parent="."]
+position = Vector3(-1.180000, 0.350000, 0.490000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk342" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.0550000, 0.2600000, 0.5250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf343" type="MeshInstance3D" parent="."]
+position = Vector3(-1.010000, 0.350000, 0.500000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk344" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.1000000, 0.2600000, 0.6000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf345" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.350000, 0.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot346" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.110000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk347" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.5900000, 0.2600000, 0.5200000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf348" type="MeshInstance3D" parent="."]
+position = Vector3(-0.630000, 0.350000, 0.490000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk349" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -0.5050000, 0.2600000, 0.5250000)
+mesh = SubResource("mesh_9")
+material_override = SubResource("mat_3")
+
+[node name="Leaf350" type="MeshInstance3D" parent="."]
+position = Vector3(-0.460000, 0.350000, 0.500000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk351" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -0.5500000, 0.2600000, 0.6000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf352" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.350000, 0.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot353" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.110000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk354" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.0400000, 0.2600000, 0.5200000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf355" type="MeshInstance3D" parent="."]
+position = Vector3(-0.080000, 0.350000, 0.490000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk356" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.0450000, 0.2600000, 0.5250000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf357" type="MeshInstance3D" parent="."]
+position = Vector3(0.090000, 0.350000, 0.500000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk358" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.0000000, 0.2600000, 0.6000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf359" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.350000, 0.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot360" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.110000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk361" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 0.5100000, 0.2600000, 0.5200000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf362" type="MeshInstance3D" parent="."]
+position = Vector3(0.470000, 0.350000, 0.490000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk363" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.5950000, 0.2600000, 0.5250000)
+mesh = SubResource("mesh_9")
+material_override = SubResource("mat_3")
+
+[node name="Leaf364" type="MeshInstance3D" parent="."]
+position = Vector3(0.640000, 0.350000, 0.500000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk365" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.5500000, 0.2600000, 0.6000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf366" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.350000, 0.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot367" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.110000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk368" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.0600000, 0.2600000, 0.5200000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf369" type="MeshInstance3D" parent="."]
+position = Vector3(1.020000, 0.350000, 0.490000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk370" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.1450000, 0.2600000, 0.5250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf371" type="MeshInstance3D" parent="."]
+position = Vector3(1.190000, 0.350000, 0.500000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk372" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.1000000, 0.2600000, 0.6000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf373" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.350000, 0.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot374" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.110000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk375" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.6100000, 0.2600000, 0.5200000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf376" type="MeshInstance3D" parent="."]
+position = Vector3(1.570000, 0.350000, 0.490000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk377" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.6950000, 0.2600000, 0.5250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf378" type="MeshInstance3D" parent="."]
+position = Vector3(1.740000, 0.350000, 0.500000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk379" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.6500000, 0.2600000, 0.6000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf380" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.350000, 0.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot381" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.110000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk382" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 2.1600000, 0.2600000, 0.5200000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf383" type="MeshInstance3D" parent="."]
+position = Vector3(2.120000, 0.350000, 0.490000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk384" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 2.2450000, 0.2600000, 0.5250000)
+mesh = SubResource("mesh_12")
+material_override = SubResource("mat_3")
+
+[node name="Leaf385" type="MeshInstance3D" parent="."]
+position = Vector3(2.290000, 0.350000, 0.500000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk386" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 2.2000000, 0.2600000, 0.6000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="Leaf387" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.350000, 0.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot388" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.110000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk389" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -2.2400000, 0.2600000, 1.0700000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf390" type="MeshInstance3D" parent="."]
+position = Vector3(-2.280000, 0.350000, 1.040000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk391" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -2.1550000, 0.2600000, 1.0750000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf392" type="MeshInstance3D" parent="."]
+position = Vector3(-2.110000, 0.350000, 1.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk393" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -2.2000000, 0.2600000, 1.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf394" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.350000, 1.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot395" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.110000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk396" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.6900000, 0.2600000, 1.0700000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf397" type="MeshInstance3D" parent="."]
+position = Vector3(-1.730000, 0.350000, 1.040000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk398" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.6050000, 0.2600000, 1.0750000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf399" type="MeshInstance3D" parent="."]
+position = Vector3(-1.560000, 0.350000, 1.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk400" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.6500000, 0.2600000, 1.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf401" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.350000, 1.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot402" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.110000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk403" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.1400000, 0.2600000, 1.0700000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf404" type="MeshInstance3D" parent="."]
+position = Vector3(-1.180000, 0.350000, 1.040000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk405" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.0550000, 0.2600000, 1.0750000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf406" type="MeshInstance3D" parent="."]
+position = Vector3(-1.010000, 0.350000, 1.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk407" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.1000000, 0.2600000, 1.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf408" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.350000, 1.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot409" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.110000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk410" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.5900000, 0.2600000, 1.0700000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf411" type="MeshInstance3D" parent="."]
+position = Vector3(-0.630000, 0.350000, 1.040000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk412" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -0.5050000, 0.2600000, 1.0750000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf413" type="MeshInstance3D" parent="."]
+position = Vector3(-0.460000, 0.350000, 1.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk414" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -0.5500000, 0.2600000, 1.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf415" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.350000, 1.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot416" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.110000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk417" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.0400000, 0.2600000, 1.0700000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf418" type="MeshInstance3D" parent="."]
+position = Vector3(-0.080000, 0.350000, 1.040000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk419" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.0450000, 0.2600000, 1.0750000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf420" type="MeshInstance3D" parent="."]
+position = Vector3(0.090000, 0.350000, 1.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk421" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.0000000, 0.2600000, 1.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf422" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.350000, 1.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot423" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.110000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk424" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 0.5100000, 0.2600000, 1.0700000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf425" type="MeshInstance3D" parent="."]
+position = Vector3(0.470000, 0.350000, 1.040000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk426" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.5950000, 0.2600000, 1.0750000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf427" type="MeshInstance3D" parent="."]
+position = Vector3(0.640000, 0.350000, 1.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk428" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.5500000, 0.2600000, 1.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf429" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.350000, 1.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot430" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.110000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk431" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.0600000, 0.2600000, 1.0700000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf432" type="MeshInstance3D" parent="."]
+position = Vector3(1.020000, 0.350000, 1.040000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk433" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.1450000, 0.2600000, 1.0750000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf434" type="MeshInstance3D" parent="."]
+position = Vector3(1.190000, 0.350000, 1.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk435" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.1000000, 0.2600000, 1.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf436" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.350000, 1.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot437" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.110000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk438" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.6100000, 0.2600000, 1.0700000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf439" type="MeshInstance3D" parent="."]
+position = Vector3(1.570000, 0.350000, 1.040000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk440" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.6950000, 0.2600000, 1.0750000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf441" type="MeshInstance3D" parent="."]
+position = Vector3(1.740000, 0.350000, 1.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk442" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.6500000, 0.2600000, 1.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf443" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.350000, 1.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot444" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.110000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk445" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 2.1600000, 0.2600000, 1.0700000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf446" type="MeshInstance3D" parent="."]
+position = Vector3(2.120000, 0.350000, 1.040000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk447" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 2.2450000, 0.2600000, 1.0750000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf448" type="MeshInstance3D" parent="."]
+position = Vector3(2.290000, 0.350000, 1.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk449" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 2.2000000, 0.2600000, 1.1500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf450" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.350000, 1.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot451" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.110000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk452" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -2.2400000, 0.2600000, 1.6200000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf453" type="MeshInstance3D" parent="."]
+position = Vector3(-2.280000, 0.350000, 1.590000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk454" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -2.1550000, 0.2600000, 1.6250000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf455" type="MeshInstance3D" parent="."]
+position = Vector3(-2.110000, 0.350000, 1.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk456" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -2.2000000, 0.2600000, 1.7000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf457" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.350000, 1.750000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot458" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.110000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk459" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.6900000, 0.2600000, 1.6200000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf460" type="MeshInstance3D" parent="."]
+position = Vector3(-1.730000, 0.350000, 1.590000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk461" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.6050000, 0.2600000, 1.6250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf462" type="MeshInstance3D" parent="."]
+position = Vector3(-1.560000, 0.350000, 1.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk463" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.6500000, 0.2600000, 1.7000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf464" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.350000, 1.750000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot465" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.110000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk466" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.1400000, 0.2600000, 1.6200000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf467" type="MeshInstance3D" parent="."]
+position = Vector3(-1.180000, 0.350000, 1.590000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk468" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.0550000, 0.2600000, 1.6250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf469" type="MeshInstance3D" parent="."]
+position = Vector3(-1.010000, 0.350000, 1.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk470" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.1000000, 0.2600000, 1.7000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf471" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.350000, 1.750000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot472" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.110000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk473" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.5900000, 0.2600000, 1.6200000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf474" type="MeshInstance3D" parent="."]
+position = Vector3(-0.630000, 0.350000, 1.590000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk475" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -0.5050000, 0.2600000, 1.6250000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf476" type="MeshInstance3D" parent="."]
+position = Vector3(-0.460000, 0.350000, 1.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk477" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -0.5500000, 0.2600000, 1.7000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf478" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.350000, 1.750000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot479" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.110000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk480" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.0400000, 0.2600000, 1.6200000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf481" type="MeshInstance3D" parent="."]
+position = Vector3(-0.080000, 0.350000, 1.590000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk482" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.0450000, 0.2600000, 1.6250000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf483" type="MeshInstance3D" parent="."]
+position = Vector3(0.090000, 0.350000, 1.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk484" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.0000000, 0.2600000, 1.7000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf485" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.350000, 1.750000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot486" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.110000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk487" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 0.5100000, 0.2600000, 1.6200000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf488" type="MeshInstance3D" parent="."]
+position = Vector3(0.470000, 0.350000, 1.590000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk489" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.5950000, 0.2600000, 1.6250000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf490" type="MeshInstance3D" parent="."]
+position = Vector3(0.640000, 0.350000, 1.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk491" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.5500000, 0.2600000, 1.7000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf492" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.350000, 1.750000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot493" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.110000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk494" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.0600000, 0.2600000, 1.6200000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf495" type="MeshInstance3D" parent="."]
+position = Vector3(1.020000, 0.350000, 1.590000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk496" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.1450000, 0.2600000, 1.6250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf497" type="MeshInstance3D" parent="."]
+position = Vector3(1.190000, 0.350000, 1.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk498" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.1000000, 0.2600000, 1.7000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf499" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.350000, 1.750000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot500" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.110000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk501" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.6100000, 0.2600000, 1.6200000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf502" type="MeshInstance3D" parent="."]
+position = Vector3(1.570000, 0.350000, 1.590000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk503" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.6950000, 0.2600000, 1.6250000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_3")
+
+[node name="Leaf504" type="MeshInstance3D" parent="."]
+position = Vector3(1.740000, 0.350000, 1.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk505" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.6500000, 0.2600000, 1.7000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf506" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.350000, 1.750000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot507" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.110000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk508" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 2.1600000, 0.2600000, 1.6200000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf509" type="MeshInstance3D" parent="."]
+position = Vector3(2.120000, 0.350000, 1.590000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk510" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 2.2450000, 0.2600000, 1.6250000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf511" type="MeshInstance3D" parent="."]
+position = Vector3(2.290000, 0.350000, 1.600000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk512" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 2.2000000, 0.2600000, 1.7000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf513" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.350000, 1.750000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot514" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.110000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk515" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -2.2400000, 0.2600000, 2.1700000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf516" type="MeshInstance3D" parent="."]
+position = Vector3(-2.280000, 0.350000, 2.140000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk517" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -2.1550000, 0.2600000, 2.1750000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="Leaf518" type="MeshInstance3D" parent="."]
+position = Vector3(-2.110000, 0.350000, 2.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk519" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -2.2000000, 0.2600000, 2.2500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf520" type="MeshInstance3D" parent="."]
+position = Vector3(-2.200000, 0.350000, 2.300000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot521" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.110000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk522" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.6900000, 0.2600000, 2.1700000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf523" type="MeshInstance3D" parent="."]
+position = Vector3(-1.730000, 0.350000, 2.140000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk524" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.6050000, 0.2600000, 2.1750000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf525" type="MeshInstance3D" parent="."]
+position = Vector3(-1.560000, 0.350000, 2.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk526" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.6500000, 0.2600000, 2.2500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf527" type="MeshInstance3D" parent="."]
+position = Vector3(-1.650000, 0.350000, 2.300000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot528" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.110000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk529" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -1.1400000, 0.2600000, 2.1700000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf530" type="MeshInstance3D" parent="."]
+position = Vector3(-1.180000, 0.350000, 2.140000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk531" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -1.0550000, 0.2600000, 2.1750000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf532" type="MeshInstance3D" parent="."]
+position = Vector3(-1.010000, 0.350000, 2.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk533" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -1.1000000, 0.2600000, 2.2500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf534" type="MeshInstance3D" parent="."]
+position = Vector3(-1.100000, 0.350000, 2.300000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot535" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.110000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk536" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.5900000, 0.2600000, 2.1700000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf537" type="MeshInstance3D" parent="."]
+position = Vector3(-0.630000, 0.350000, 2.140000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk538" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, -0.5050000, 0.2600000, 2.1750000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf539" type="MeshInstance3D" parent="."]
+position = Vector3(-0.460000, 0.350000, 2.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk540" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, -0.5500000, 0.2600000, 2.2500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf541" type="MeshInstance3D" parent="."]
+position = Vector3(-0.550000, 0.350000, 2.300000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot542" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.110000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk543" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, -0.0400000, 0.2600000, 2.1700000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf544" type="MeshInstance3D" parent="."]
+position = Vector3(-0.080000, 0.350000, 2.140000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk545" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.0450000, 0.2600000, 2.1750000)
+mesh = SubResource("mesh_9")
+material_override = SubResource("mat_3")
+
+[node name="Leaf546" type="MeshInstance3D" parent="."]
+position = Vector3(0.090000, 0.350000, 2.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk547" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.0000000, 0.2600000, 2.2500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf548" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.350000, 2.300000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot549" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.110000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk550" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 0.5100000, 0.2600000, 2.1700000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="Leaf551" type="MeshInstance3D" parent="."]
+position = Vector3(0.470000, 0.350000, 2.140000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk552" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 0.5950000, 0.2600000, 2.1750000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_3")
+
+[node name="Leaf553" type="MeshInstance3D" parent="."]
+position = Vector3(0.640000, 0.350000, 2.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk554" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 0.5500000, 0.2600000, 2.2500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf555" type="MeshInstance3D" parent="."]
+position = Vector3(0.550000, 0.350000, 2.300000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot556" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.110000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk557" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.0600000, 0.2600000, 2.1700000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf558" type="MeshInstance3D" parent="."]
+position = Vector3(1.020000, 0.350000, 2.140000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk559" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.1450000, 0.2600000, 2.1750000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf560" type="MeshInstance3D" parent="."]
+position = Vector3(1.190000, 0.350000, 2.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk561" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.1000000, 0.2600000, 2.2500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf562" type="MeshInstance3D" parent="."]
+position = Vector3(1.100000, 0.350000, 2.300000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot563" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.110000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk564" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 1.6100000, 0.2600000, 2.1700000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf565" type="MeshInstance3D" parent="."]
+position = Vector3(1.570000, 0.350000, 2.140000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk566" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 1.6950000, 0.2600000, 2.1750000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="Leaf567" type="MeshInstance3D" parent="."]
+position = Vector3(1.740000, 0.350000, 2.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk568" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 1.6500000, 0.2600000, 2.2500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf569" type="MeshInstance3D" parent="."]
+position = Vector3(1.650000, 0.350000, 2.300000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="BeetRoot570" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.110000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.220000, 0.240000, 0.220000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="LeafStalk571" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9284767, 0.3713907, -0.0000000, -0.3577709, 0.8944272, -0.2683282, -0.0996546, 0.2491364, 0.9633276, 2.1600000, 0.2600000, 2.1700000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf572" type="MeshInstance3D" parent="."]
+position = Vector3(2.120000, 0.350000, 2.140000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="LeafStalk573" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9119215, -0.4103647, 0.0000000, 0.4000988, 0.8891084, -0.2222771, 0.0912147, 0.2026993, 0.9749835, 2.2450000, 0.2600000, 2.1750000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="Leaf574" type="MeshInstance3D" parent="."]
+position = Vector3(2.290000, 0.350000, 2.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_5")
+
+[node name="LeafStalk575" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.8944272, 0.4472136, 0.0000000, -0.4472136, 0.8944272, 2.2000000, 0.2600000, 2.2500000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="Leaf576" type="MeshInstance3D" parent="."]
+position = Vector3(2.200000, 0.350000, 2.300000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.210000, 0.120000, 0.210000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_4")
+
+[node name="InteractionPoint" type="Marker3D" parent="."]
+position = Vector3(0.000000, 0.000000, 2.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)

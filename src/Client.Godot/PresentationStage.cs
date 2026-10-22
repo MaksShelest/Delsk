@@ -22,6 +22,7 @@ public partial class PresentationStage : Node3D
     private readonly System.Collections.Generic.Dictionary<long, Mover> _trips = new();
     private readonly System.Collections.Generic.List<Node3D> _staticNodes = new();
     private string _staticKey = "";
+    private int _appearanceRevision=-1;
     private readonly Dictionary<long,(string Key,Node3D Node)> _stocks=[];
     public int StaticBuildCount {get;private set;}
     public int StockBuildCount {get;private set;}
@@ -34,7 +35,9 @@ public partial class PresentationStage : Node3D
         _camera = new Camera3D { Current = true, Fov = 46 };
         AddChild(_camera);
         AddChild(new WorldEnvironment { Environment = new Godot.Environment
-        { BackgroundMode = Godot.Environment.BGMode.Color, BackgroundColor = new Color("96aeb2") } });
+        { BackgroundMode = Godot.Environment.BGMode.Color, BackgroundColor = new Color("96aeb2"), AmbientLightSource=Godot.Environment.AmbientSource.Color, AmbientLightColor=new("f1e7cd"), AmbientLightEnergy=.32f } });
+        AddChild(new DirectionalLight3D { RotationDegrees=new(-48,-35,0),LightColor=new("fff2d4"),LightEnergy=.75f,ShadowEnabled=true });
+        AddChild(new DirectionalLight3D { RotationDegrees=new(-28,140,0),LightColor=new("dae5da"),LightEnergy=.16f });
         _selection = new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(0.96f, 0.025f, 0.96f) }, Visible = false };
         _selection.MaterialOverride = new StandardMaterial3D { AlbedoColor = new Color("f2cd6a"), ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded };
         AddChild(_selection);
@@ -51,13 +54,15 @@ public partial class PresentationStage : Node3D
         FollowHuman();
     }
 
-    public void Show(PresentationFrame frame, bool frozen, long selectedBuilding, string you, bool followHuman)
+    public void Show(PresentationFrame frame, bool frozen, long selectedBuilding, string you, bool followHuman, string language="ru")
     {
         bool snap = frozen || _frozen || _follow != followHuman;
         _frozen = frozen;
         _follow = followHuman;
-        string staticKey = frame.MapWidth + "x" + frame.MapHeight + "|" + string.Join(",", frame.Markers.Select(m =>
-            $"{m.Kind}:{m.X}:{m.Z}:{(m.Kind == "capital" ? "" : m.Label)}:{(m.Kind == "capital" ? 0 : m.EntityId)}:{m.OwnerId}:{m.Level}:{string.Join(";",m.Footprint)}:{string.Join(";",m.Walls)}"));
+        bool appearanceChanged=_appearanceRevision!=WorldSkins.Revision;
+        _appearanceRevision=WorldSkins.Revision;
+        string staticKey = WorldSkins.Revision+"|"+frame.MapWidth + "x" + frame.MapHeight + "|" + string.Join(",", frame.Markers.Select(m =>
+            $"{m.Kind}:{m.X}:{m.Z}:{(m.Kind == "capital" ? "" : m.Label)}:{(m.Kind == "capital" ? 0 : m.EntityId)}:{m.OwnerId}:{m.Level}:{(m.Kind.StartsWith("resource",StringComparison.Ordinal)?AppearanceCatalog.ResourceModel(m.Label,m.Kind=="resource-depleted"?0:m.ResourceStock,m.ResourceCapacity,m.ResourceSparse):"")}:{string.Join(";",m.Footprint)}:{string.Join(";",m.Walls)}"));
         if (_staticKey != staticKey)
         {
             _staticKey = staticKey;
@@ -71,19 +76,26 @@ public partial class PresentationStage : Node3D
             var at = new Vector3(actor.X + (actor.OffsetX - 500) / 1000f, 0.07f, actor.Z + (actor.OffsetZ - 500) / 1000f);
             if (!_actors.TryGetValue(actor.Id, out var mover))
             {
-                var body = WorldModels.Person(actor.Human ? new Color("eef0dc") : actor.Id switch
-                { 2 => new Color("d87667"), 3 => new Color("6699cf"), _ => new Color("e7ae58") }, actor.Human ? you : actor.Id.ToString());
+                var body = new Node3D {Name="Actor_"+actor.Id};
+                body.AddChild(WorldSkins.Person(actor.Id,actor.Human,you,language));
                 body.Position = at;
                 AddChild(body);
                 mover = new Mover(body, at) { Human = actor.Human };
                 _actors[actor.Id] = mover;
             }
+            if(appearanceChanged)
+            {
+                var prior=mover.Node.GetNodeOrNull<Node3D>("Appearance");
+                if(prior is not null){mover.Node.RemoveChild(prior);prior.QueueFree();}
+                mover.Node.AddChild(WorldSkins.Person(actor.Id,actor.Human,you,language));
+            }
             Target(mover, at, actor.Human ? 0.1f : 1, snap, !actor.Human);
             int labelRow = frame.Actors.Count(other => other.X == actor.X && other.Z == actor.Z && other.Id < actor.Id);
-            foreach (var label in mover.Node.GetChildren().OfType<Label3D>())
+            var caption=mover.Node.GetNodeOrNull<Label3D>("Appearance/Caption");
+            if(caption is not null)
             {
-                label.Position = new Vector3(0, 1.01f + labelRow * 0.23f, 0);
-                if (actor.Human) label.Text = you;
+                caption.Position=new(0,1.01f+labelRow*.23f,0);
+                caption.Text=(actor.Human?you+" · ":"")+WorldSkins.ActorName(actor.Id,language);
             }
             if (actor.FacingX != 0 || actor.FacingZ != 0)
                 mover.Node.Rotation = new Vector3(0, Mathf.Atan2(-actor.FacingX, -actor.FacingZ), 0);
@@ -101,14 +113,14 @@ public partial class PresentationStage : Node3D
                 var body = new Node3D();
                 body.Position = at;
                 AddChild(body);
-                body.AddChild(WorldModels.Truck(trip.Loaded));
+                body.AddChild(WorldSkins.Truck(trip.Loaded));
                 mover = new Mover(body, at) { Loaded = trip.Loaded };
                 _trips[trip.LogisticsId] = mover;
             }
-            if (mover.Loaded != trip.Loaded)
+            if (mover.Loaded != trip.Loaded || appearanceChanged)
             {
-                foreach (Node child in mover.Node.GetChildren()) child.QueueFree();
-                mover.Node.AddChild(WorldModels.Truck(trip.Loaded));
+                foreach (Node child in mover.Node.GetChildren()) {mover.Node.RemoveChild(child);child.QueueFree();}
+                mover.Node.AddChild(WorldSkins.Truck(trip.Loaded));
                 mover.Loaded = trip.Loaded;
             }
             var heading = at - mover.To;
@@ -230,11 +242,11 @@ public partial class PresentationStage : Node3D
         {
             if(marker.Kind=="blocked" && yardCells.Contains(new(marker.X,marker.Z)))continue;
             Node3D? node = null;
-            if (marker.Kind == "equipment") node = WorldModels.Equipment(marker.Label,marker.Level);
-            else if (marker.Kind == "truck-home") { node = WorldModels.Truck(false); _parked[marker.EntityId] = node; }
-            else if (marker.Kind is "resource" or "resource-depleted") node = marker.Kind=="resource"?WorldModels.Resource(marker.Label):WorldModels.DepletedResource(marker.Label);
+            if (marker.Kind == "equipment") node = WorldSkins.Equipment(marker.Label,marker.Level);
+            else if (marker.Kind == "truck-home") { node = WorldSkins.Truck(false); _parked[marker.EntityId] = node; }
+            else if (marker.Kind is "resource" or "resource-depleted") node = WorldSkins.Resource(marker);
             else if(marker.Kind=="warehouse")node=WorldModels.Warehouse(marker);
-            else if (marker.Kind is "production" or "shop" or "capital") node = WorldModels.Building(marker.Kind, marker.Label,marker.Level);
+            else if (marker.Kind is "production" or "shop" or "capital") node = WorldSkins.Building(marker);
             else
             {
                 var tile = new Node3D();
@@ -257,7 +269,7 @@ public partial class PresentationStage : Node3D
                         WorldModels.Part(tile, new BoxMesh { Size = new Vector3(0.055f, 0.18f, 0.055f) }, new Color("e4d8b3"), new Vector3(x, 0.1f, z));
                 node = tile;
             }
-            if (node is not null) { node.Position = marker.Kind is "truck-home" or "equipment" ? new Vector3(marker.X + 0.28f, 0.08f, marker.Z + 0.42f) : new Vector3(marker.X, 0.045f, marker.Z); AddStatic(node); }
+            if (node is not null) { node.Position = marker.Kind is "truck-home" or "equipment" ? new Vector3(marker.X + 0.28f, 0.08f, marker.Z + 0.42f) : new Vector3(marker.X, marker.Kind.StartsWith("resource",StringComparison.Ordinal) && WorldSkins.Preferences.ForModel("resource:"+marker.Label)==AppearancePreferences.Cozy ? .01f : .045f, marker.Z); AddStatic(node); }
         }
     }
 }

@@ -1,0 +1,365 @@
+[gd_scene load_steps=26 format=3]
+
+[sub_resource type="BoxMesh" id="mesh_0"]
+size = Vector3(5.000000, 0.270000, 5.000000)
+
+[sub_resource type="StandardMaterial3D" id="mat_0"]
+albedo_color = Color(0.6313725490196078, 0.5450980392156862, 0.396078431372549, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="mesh_1"]
+size = Vector3(5.000000, 0.030000, 5.000000)
+
+[sub_resource type="StandardMaterial3D" id="mat_1"]
+albedo_color = Color(0.6235294117647059, 0.7019607843137254, 0.5058823529411764, 1)
+roughness = 0.88
+
+[sub_resource type="CylinderMesh" id="mesh_2"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 0.507
+radial_segments = 8
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="mat_2"]
+albedo_color = Color(0.615686274509804, 0.44313725490196076, 0.2980392156862745, 1)
+roughness = 0.88
+
+[sub_resource type="CylinderMesh" id="mesh_3"]
+top_radius = 0.03
+bottom_radius = 0.27
+height = 0.312
+radial_segments = 9
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="mat_3"]
+albedo_color = Color(0.3333333333333333, 0.49019607843137253, 0.3333333333333333, 1)
+roughness = 0.88
+
+[sub_resource type="CylinderMesh" id="mesh_4"]
+top_radius = 0.03
+bottom_radius = 0.21600000000000003
+height = 0.312
+radial_segments = 9
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="mat_4"]
+albedo_color = Color(0.4627450980392157, 0.5843137254901961, 0.37254901960784315, 1)
+roughness = 0.88
+
+[sub_resource type="CylinderMesh" id="mesh_5"]
+top_radius = 0.03
+bottom_radius = 0.162
+height = 0.312
+radial_segments = 9
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_6"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 0.7722
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_7"]
+top_radius = 0.03
+bottom_radius = 0.34
+height = 0.47519999999999996
+radial_segments = 9
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_8"]
+top_radius = 0.03
+bottom_radius = 0.272
+height = 0.47519999999999996
+radial_segments = 9
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_9"]
+top_radius = 0.03
+bottom_radius = 0.20400000000000001
+height = 0.47519999999999996
+radial_segments = 9
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_10"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 0.6396000000000001
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_11"]
+top_radius = 0.03
+bottom_radius = 0.30500000000000005
+height = 0.3936
+radial_segments = 9
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_12"]
+top_radius = 0.03
+bottom_radius = 0.24400000000000005
+height = 0.3936
+radial_segments = 9
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_13"]
+top_radius = 0.03
+bottom_radius = 0.18300000000000002
+height = 0.3936
+radial_segments = 9
+rings = 1
+
+[sub_resource type="SphereMesh" id="mesh_14"]
+radius = 0.5
+height = 1
+radial_segments = 12
+rings = 6
+
+[sub_resource type="StandardMaterial3D" id="mat_5"]
+albedo_color = Color(0.6509803921568628, 0.7098039215686275, 0.4666666666666667, 1)
+roughness = 0.88
+
+[sub_resource type="CylinderMesh" id="mesh_15"]
+top_radius = 0.0119
+bottom_radius = 0.0119
+height = 0.15652475842498528
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_16"]
+top_radius = 0.0119
+bottom_radius = 0.0119
+height = 0.19848425630260957
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_17"]
+top_radius = 0.0119
+bottom_radius = 0.0119
+height = 0.12907362240210044
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_18"]
+top_radius = 0.0119
+bottom_radius = 0.0119
+height = 0.19848425630260955
+radial_segments = 8
+rings = 1
+
+[node name="Forest_Sparse_Young" type="Node3D"]
+
+[node name="Foundation" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, -0.135000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_0")
+material_override = SubResource("mat_0")
+
+[node name="Surface" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.015000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_1")
+material_override = SubResource("mat_1")
+
+[node name="Trunk0" type="MeshInstance3D" parent="."]
+position = Vector3(-1.750000, 0.260000, -1.700000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="FirCrown0_0" type="MeshInstance3D" parent="."]
+position = Vector3(-1.750000, 0.260000, -1.700000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="FirCrown0_1" type="MeshInstance3D" parent="."]
+position = Vector3(-1.750000, 0.390000, -1.700000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="FirCrown0_2" type="MeshInstance3D" parent="."]
+position = Vector3(-1.750000, 0.520000, -1.700000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_4")
+
+[node name="Trunk2" type="MeshInstance3D" parent="."]
+position = Vector3(0.720000, 0.396000, -1.750000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_2")
+
+[node name="FirCrown2_0" type="MeshInstance3D" parent="."]
+position = Vector3(0.720000, 0.396000, -1.750000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_7")
+material_override = SubResource("mat_3")
+
+[node name="FirCrown2_1" type="MeshInstance3D" parent="."]
+position = Vector3(0.720000, 0.594000, -1.750000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_8")
+material_override = SubResource("mat_4")
+
+[node name="FirCrown2_2" type="MeshInstance3D" parent="."]
+position = Vector3(0.720000, 0.792000, -1.750000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_9")
+material_override = SubResource("mat_4")
+
+[node name="Trunk4" type="MeshInstance3D" parent="."]
+position = Vector3(-1.700000, 0.328000, -0.480000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_2")
+
+[node name="FirCrown4_0" type="MeshInstance3D" parent="."]
+position = Vector3(-1.700000, 0.328000, -0.480000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_11")
+material_override = SubResource("mat_3")
+
+[node name="FirCrown4_1" type="MeshInstance3D" parent="."]
+position = Vector3(-1.700000, 0.492000, -0.480000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_12")
+material_override = SubResource("mat_4")
+
+[node name="FirCrown4_2" type="MeshInstance3D" parent="."]
+position = Vector3(-1.700000, 0.656000, -0.480000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_13")
+material_override = SubResource("mat_4")
+
+[node name="Trunk7" type="MeshInstance3D" parent="."]
+position = Vector3(1.770000, 0.328000, -0.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_10")
+material_override = SubResource("mat_2")
+
+[node name="LeafCrown15" type="MeshInstance3D" parent="."]
+position = Vector3(1.682600, 0.557600, -0.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.463600, 0.434625, 0.463600)
+mesh = SubResource("mesh_14")
+material_override = SubResource("mat_4")
+
+[node name="LeafCrown16" type="MeshInstance3D" parent="."]
+position = Vector3(1.846000, 0.595600, -0.100600)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.488000, 0.457500, 0.488000)
+mesh = SubResource("mesh_14")
+material_override = SubResource("mat_5")
+
+[node name="LeafCrown17" type="MeshInstance3D" parent="."]
+position = Vector3(1.770000, 0.698200, -0.195600)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.468480, 0.439200, 0.468480)
+mesh = SubResource("mesh_14")
+material_override = SubResource("mat_4")
+
+[node name="Trunk9" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.260000, 1.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="LeafCrown19" type="MeshInstance3D" parent="."]
+position = Vector3(-0.537400, 0.442000, 1.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.410400, 0.384750, 0.410400)
+mesh = SubResource("mesh_14")
+material_override = SubResource("mat_4")
+
+[node name="LeafCrown20" type="MeshInstance3D" parent="."]
+position = Vector3(-0.374000, 0.480000, 1.199400)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.432000, 0.405000, 0.432000)
+mesh = SubResource("mesh_14")
+material_override = SubResource("mat_5")
+
+[node name="LeafCrown21" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.582600, 1.104400)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.414720, 0.388800, 0.414720)
+mesh = SubResource("mesh_14")
+material_override = SubResource("mat_4")
+
+[node name="Trunk11" type="MeshInstance3D" parent="."]
+position = Vector3(1.800000, 0.396000, 1.300000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_2")
+
+[node name="LeafCrown23" type="MeshInstance3D" parent="."]
+position = Vector3(1.712600, 0.673200, 1.300000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.516800, 0.484500, 0.516800)
+mesh = SubResource("mesh_14")
+material_override = SubResource("mat_4")
+
+[node name="LeafCrown24" type="MeshInstance3D" parent="."]
+position = Vector3(1.876000, 0.711200, 1.349400)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.544000, 0.510000, 0.544000)
+mesh = SubResource("mesh_14")
+material_override = SubResource("mat_5")
+
+[node name="LeafCrown25" type="MeshInstance3D" parent="."]
+position = Vector3(1.800000, 0.813800, 1.254400)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.522240, 0.489600, 0.522240)
+mesh = SubResource("mesh_14")
+material_override = SubResource("mat_4")
+
+[node name="GrassBlade26" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9838699, 0.1788854, -0.0000000, -0.1788854, 0.9838699, 0.0000000, 0.0000000, 0.0000000, 1.0000000, -2.0640000, 0.1120000, 1.9000000)
+mesh = SubResource("mesh_15")
+material_override = SubResource("mat_4")
+
+[node name="GrassBlade27" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9899495, -0.1414214, 0.0000000, 0.1410691, 0.9874839, 0.0705346, -0.0099751, -0.0698257, 0.9975093, -2.0360000, 0.1330000, 1.9070000)
+mesh = SubResource("mesh_16")
+material_override = SubResource("mat_4")
+
+[node name="GrassBlade28" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, -0.0000000, 0.0000000, 0.0000000, 0.9761871, -0.2169305, 0.0000000, 0.2169305, 0.9761871, -2.0500000, 0.0980000, 1.8860000)
+mesh = SubResource("mesh_17")
+material_override = SubResource("mat_4")
+
+[node name="GrassBlade29" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9838699, 0.1788854, -0.0000000, -0.1788854, 0.9838699, 0.0000000, 0.0000000, 0.0000000, 1.0000000, 0.9860000, 0.1120000, 2.0000000)
+mesh = SubResource("mesh_15")
+material_override = SubResource("mat_4")
+
+[node name="GrassBlade30" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9899495, -0.1414214, 0.0000000, 0.1410691, 0.9874839, 0.0705346, -0.0099751, -0.0698257, 0.9975093, 1.0140000, 0.1330000, 2.0070000)
+mesh = SubResource("mesh_18")
+material_override = SubResource("mat_4")
+
+[node name="GrassBlade31" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, -0.0000000, 0.0000000, 0.0000000, 0.9761871, -0.2169305, 0.0000000, 0.2169305, 0.9761871, 1.0000000, 0.0980000, 1.9860000)
+mesh = SubResource("mesh_17")
+material_override = SubResource("mat_4")
+
+[node name="GrassBlade32" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9838699, 0.1788854, -0.0000000, -0.1788854, 0.9838699, 0.0000000, 0.0000000, 0.0000000, 1.0000000, -1.0140000, 0.1120000, -2.2000000)
+mesh = SubResource("mesh_15")
+material_override = SubResource("mat_4")
+
+[node name="GrassBlade33" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9899495, -0.1414214, 0.0000000, 0.1410691, 0.9874839, 0.0705346, -0.0099751, -0.0698257, 0.9975093, -0.9860000, 0.1330000, -2.1930000)
+mesh = SubResource("mesh_18")
+material_override = SubResource("mat_4")
+
+[node name="GrassBlade34" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000000, -0.0000000, 0.0000000, 0.0000000, 0.9761871, -0.2169305, 0.0000000, 0.2169305, 0.9761871, -1.0000000, 0.0980000, -2.2140000)
+mesh = SubResource("mesh_17")
+material_override = SubResource("mat_4")
+
+[node name="InteractionPoint" type="Marker3D" parent="."]
+position = Vector3(0.000000, 0.000000, 2.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)

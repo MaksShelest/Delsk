@@ -1,0 +1,21 @@
+{
+  "sdk": "10.0.401",
+  "godot": "4.7.2 Mono",
+  "platform": "Linux/Xvfb/Mesa llvmpipe",
+  "tests": {
+    "passed": 891,
+    "failed": 0,
+    "skipped": 0
+  },
+  "client_build": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "native_probe": "passed",
+  "canopy_nodes_checked": 24,
+  "runtime_models": 32,
+  "people": 10,
+  "world_hash_and_tick_unchanged": true,
+  "windows_hardware_tested": false,
+  "android_hardware_tested": false
+}
