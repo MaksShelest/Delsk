@@ -307,6 +307,8 @@ class Lab:
                 with self.lock:
                     j.update(status='failed', error=str(error))
             with self.lock:
+                j['logs'] = [str(p.relative_to(self.workspace)) for p in
+                             sorted((folder/'checks').glob(job['id']+'-a'+str(job['attempt'])+'.*')) if p.is_file()]
                 write(folder/'series.json', s)
                 self.export_summary(folder, self.compare([s['id']]))
                 self.save()
@@ -349,13 +351,19 @@ class Lab:
             return dict(groups=groups, pairedRightMinusLeft=pairs, scope='Research-only aggregates; paired analysis requires identical inputs except the declared factors. Repeated algorithmic seeds are replicas, not independent samples.')
 
 
-def main():
+def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--output', type=Path, default=Path('artifacts/lab'))
     p.add_argument('--plan', type=Path)
     p.add_argument('--run', action='store_true', help='Drain the persisted queue without the UI')
     p.add_argument('--port', type=int, default=8765)
-    a = p.parse_args()
+    p.add_argument('--prepare', action='store_true', help='Bounded restore/build of the shared runner before starting')
+    p.add_argument('--open-browser', action='store_true', help='Open this laboratory, or reopen the already running host')
+    a = p.parse_args(argv)
+    if sys.version_info < (3, 10):
+        p.error('Python 3.10+ is required')
+    if not 0 <= a.port <= 65535:
+        p.error('Port must be 0..65535 (0 selects an available port)')
     os.chdir(ROOT)
     os.environ['DELSK_COMMIT'] = commit() or 'unknown'
     # One writer per queue, across browser/CLI instances; released automatically on crash.
@@ -371,22 +379,41 @@ def main():
             import fcntl
             fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     except OSError:
-        p.error('Another laboratory owns this queue')
-    lab = Lab(a.output)
-    if a.plan:
-        print('Queued:', lab.enqueue(read(a.plan)))
-    if a.run:
-        lab.start()
-        while True:
-            with lab.lock:
-                t = lab.thread
-            if t is None:
-                break
-            t.join(.2)
-        return int(any(j['status'] != 'succeeded' for s in lab.series for j in s['jobs']))
-    from research_lab_server import serve
-    serve(lab, a.port)
-    return 0
+        lock.close()
+        from research_lab_launch import reopen
+        if a.open_browser and not a.run and not a.plan and reopen(a.output.resolve()):
+            return 0
+        p.error('Лаборатория уже использует эту папку. Дождитесь подготовки или закройте прежнее окно запуска.')
+    lab = None
+    try:
+        from research_lab_launch import prepare, require_runner
+        if a.prepare:
+            prepare(a.output.resolve())
+        require_runner()
+        lab = Lab(a.output)
+        if a.plan:
+            print('Queued:', lab.enqueue(read(a.plan)))
+        if a.run:
+            lab.start()
+            while True:
+                with lab.lock:
+                    t = lab.thread
+                if t is None:
+                    break
+                t.join(.2)
+            return int(any(j['status'] != 'succeeded' for s in lab.series for j in s['jobs']))
+        from research_lab_server import serve
+        serve(lab, a.port, a.open_browser)
+        return 0
+    except (ValueError, OSError) as error:
+        print('Не удалось запустить лабораторию: '+str(error), file=sys.stderr, flush=True)
+        return 1
+    finally:
+        if lab is not None:
+            lab.pause()
+            if lab.thread is not None:
+                lab.thread.join()  # Existing bounded job finishes before releasing the host lock.
+        lock.close()
 
 
 if __name__ == '__main__':

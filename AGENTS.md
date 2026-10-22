@@ -4,6 +4,23 @@
 
 Актуальное представление — в разделе «Планшеты v1»; версии экономики/статусы плана — в разделе «Пакет8»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
 
+## Простой запуск лаборатории, 22.10.2026 (Europe/Samara)
+
+- ResearchLab.cmd / ResearchLab.sh — оболочка существующего scripts/research_lab.py:
+  --prepare --open-browser --port 0, output artifacts/lab по умолчанию. SDK из global.json,
+  bounded locked restore/build Release перед UI; не запускать старый DLL после ошибки.
+  Игра/Godot/LLM не требуются. Пользователь Windows использует py -3; не требовать pip/npm.
+- OS host.lock держится до окончания активного bounded job. Повторный запуск открывает
+  прежнюю очередь только после проверки loopback instance health; host.json без токена.
+  UI shutdown — пауза и ожидание активного опыта, не убийство/обрезка тика.
+- Presets/формы создают прежние планы P58 и проходят прежние валидаторы. JSON/CLI
+  сохранены; Minor → монеты только presentation. ZIP полной серии недоступен во время
+  running; старые token/Host/Origin и own workspace guards обязательны и для ZIP/shutdown.
+- Gates: tests/Research.Lab, check_research_lab_startup.py и check_research_lab.py.
+  Браузерный тест использует реальные runner/CLI/save/load/replay, не fake-экономику.
+  Windows double-click не выдавать за проверенный облаком. Инструкция RESEARCH_LAB.md,
+  контекст WORKLOG_RESEARCH_LAB_EASY_START.md. Core/save/политики не менялись.
+
 ## Планшеты v1, 20.10.2026 (Europe/Samara)
 
 - База77d40e9 включает PR46; PR45 open/draft e195be1 просмотрен read-only и не включён. Отчёт IMPLEMENTATION_REPORT_TABLETS_V1.md, восстановление WORKLOG_TABLETS_V1.md. Это оформление, не новый пакет экономики: World18/production-recipes-1/Session2/Envelope2 прежние.
@@ -14,6 +31,8 @@
 - Дополнение21.10.2026: глобальный Alt+Enter/Alt+KpEnter в Playfield._Input до GUI/context, release/echo не переключают; прежние ToggleFullscreen/display.cfg, headless/embedded guard. canvas_items aspect expand обязателен для заполнения без letterbox. scripts/check_sawmill_ui.py --mode fullscreen требует Xvfb+xfwm4/dbus-run-session/xprop; проверяет actual window rect/persistence/paused world. Результаты отдельно fullscreen-summary.json, прежние unit/runner counts не называть повторным запуском.
 
 ## Стандартный экспорт Godot,21.10.2026 (Europe/Samara)
+
+- CI-дополнение22.10.2026: check_hud_god_ui.py включает editor/import/use_multiple_threads=false только в одноразовом stage после Windows import crash0xC0000005. Не переносить флаг в рабочий проект без отдельного основания, не игнорировать exit code и не убирать17+17native checks.
 
 - Владелец явно заменил stage-only правило: обычная галочка Export With Debug оригинального project.godot должна включать God mode без Python. Root Directory.Build.props по умолчанию включает DelskDeveloper при Configuration=ExportDebug, до fallbackfalse. Это одинаково для Core/Hosting/всех references. Debug editor/runner и Release остаются обычными; guard на stage действует для явного Developer Debug, но не для ExportDebug. Release с явно принудительным Developer всё ещё запрещён.
 - Основной проект src/Client.Godot/project.godot: галочка→Debug/God; без галочки→нет Debug/God/API. Optional packager сохранён для CI/автоматизации, не требовать его от пользователя. Не возвращать прежнее требование DelskDeveloperPackage для стандартного ExportDebug. Новое правило supersedes историческое решение50 и отчёт PR48.
