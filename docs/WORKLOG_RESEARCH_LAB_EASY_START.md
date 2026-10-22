@@ -48,3 +48,23 @@ Windows .cmd/hardware и реальная LLM не проверены; Godot н�
 ветка `feat/research-lab-easy-start`, PR https://github.com/MaksShelest/Delsk/pull/51
 к `feat/economic-cycle-p00-p05`. Push подтверждён, PR открыт без merge. Эта запись —
 documentation-only; результаты локальных gates выше не являются результатами remote CI.
+
+## Исправление Windows CI после передачи
+
+GitHub PR51: Core/research прошёл, Windows run39777598124 упал на
+`hud-god-import`, exit3221225477 (0xC0000005), stderr пустой; job119820402998.
+Один явный повтор (attempt2/job119827059326) дал тот же сбой. Предыдущий
+код89a6007 прошёл Windows; между ним и332296b изменены только8строк документации.
+Отказ не связан с Python лаборатории или ошибкой компиляции приложения.
+
+В одноразовом HUD/God stage включён штатный ProjectSettings
+`editor/import/use_multiple_threads=false`. Закреплённый Godot4.7.2 читает этот
+флаг через GLOBAL_GET в editor/file_system/editor_file_system.cpp. Рабочий
+project.godot/экспорт/правила игры не меняются. Nonzero exit остаётся fatal;
+повторные попытки/пропуск ошибок в скрипт не добавлены.
+
+Полный bounded Linux check_hud_god_ui.py с serial import прошёл:17Debug+17
+ExportDebug native checks, restore/build/import и строгая проверка логов. Evidence
+verification/research-lab-easy-start/hud-import-fix.json; полные логи
+/workspace/work/delsk-lab-easy/ci-fix. Перед закрытием исправления нужен зелёный
+Windows workflow на новом commit в том же PR51, без merge.

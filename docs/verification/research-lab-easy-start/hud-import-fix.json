@@ -1,0 +1,60 @@
+{
+  "failedRun": 39777598124,
+  "failedJobs": [
+    119820402998,
+    119827059326
+  ],
+  "exitCode": 3221225477,
+  "windowsOutcome": "Requires verification on repaired commit",
+  "scope": "Disposable HUD/God test stage only; no application/runner/world changes",
+  "engineSetting": "editor/import/use_multiple_threads=false",
+  "engineSource": "https://github.com/godotengine/godot/blob/4.7.2-stable/editor/file_system/editor_file_system.cpp",
+  "localPlatform": "Linux Godot .NET4.7.2",
+  "nativeChecks": {
+    "Debug": 17,
+    "ExportDebug": 17
+  },
+  "checks": [
+    {
+      "name": "hud-god-build",
+      "exitCode": 0,
+      "elapsedSeconds": 6.255
+    },
+    {
+      "name": "hud-god-controls",
+      "exitCode": 0,
+      "elapsedSeconds": 1.418
+    },
+    {
+      "name": "hud-god-export-build",
+      "exitCode": 0,
+      "elapsedSeconds": 22.538
+    },
+    {
+      "name": "hud-god-export-controls",
+      "exitCode": 0,
+      "elapsedSeconds": 1.52
+    },
+    {
+      "name": "hud-god-export-logs",
+      "exitCode": 0,
+      "elapsedSeconds": 0.032
+    },
+    {
+      "name": "hud-god-export-restore",
+      "exitCode": 0,
+      "elapsedSeconds": 1.575
+    },
+    {
+      "name": "hud-god-import",
+      "exitCode": 0,
+      "elapsedSeconds": 4.136
+    },
+    {
+      "name": "hud-god-stage",
+      "exitCode": 0,
+      "elapsedSeconds": 26.263
+    }
+  ],
+  "scriptSha256": "c9a3df72437a90b57d40c958b46d72ac61e12fca7a6caec5e862190296380f2c"
+}

@@ -35,6 +35,12 @@ def check(name, timeout, command):
 
 check("hud-god-stage", 420, [sys.executable, root / "scripts/build_developer_client.py", "--output", output / "client"])
 project = output / "client/source/src/Client.Godot"
+# Fresh Windows stages hit 0xC0000005 during resource import, before the probe ran.
+# Use Godot's serial importer in this disposable test project to avoid concurrent imports.
+# Keep nonzero exits fatal and run the complete native Debug/ExportDebug checks.
+settings = project / "project.godot"
+settings.write_text(settings.read_text(encoding="utf-8").replace(
+    "[application]", "[editor]\nimport/use_multiple_threads=false\n\n[application]", 1), encoding="utf-8")
 (project / "HudGodProbe.cs").write_text((root / "tests/Client.Probes/HudGodProbe.cs").read_text(encoding="utf-8"), encoding="utf-8")
 (project / "HudGodProbe.tscn").write_text(
     '[gd_scene load_steps=2 format=3]\n'

@@ -32,6 +32,8 @@
 
 ## Стандартный экспорт Godot,21.10.2026 (Europe/Samara)
 
+- CI-дополнение22.10.2026: check_hud_god_ui.py включает editor/import/use_multiple_threads=false только в одноразовом stage после Windows import crash0xC0000005. Не переносить флаг в рабочий проект без отдельного основания, не игнорировать exit code и не убирать17+17native checks.
+
 - Владелец явно заменил stage-only правило: обычная галочка Export With Debug оригинального project.godot должна включать God mode без Python. Root Directory.Build.props по умолчанию включает DelskDeveloper при Configuration=ExportDebug, до fallbackfalse. Это одинаково для Core/Hosting/всех references. Debug editor/runner и Release остаются обычными; guard на stage действует для явного Developer Debug, но не для ExportDebug. Release с явно принудительным Developer всё ещё запрещён.
 - Основной проект src/Client.Godot/project.godot: галочка→Debug/God; без галочки→нет Debug/God/API. Optional packager сохранён для CI/автоматизации, не требовать его от пользователя. Не возвращать прежнее требование DelskDeveloperPackage для стандартного ExportDebug. Новое правило supersedes историческое решение50 и отчёт PR48.
 - Стандартный .NET exporter оставляет DLL при debug→release в одной папке: addon addons/delsk_export удаляет только известные Simulation.Developer.dll/.pdb из own Windows managed bundle после подтверждения Client+deps и отсутствия Developer в libraries. Debug/failed release/соседние файлы сохраняются; addon исключён изPCK. Не заменять узкий guard рекурсивной очисткой выходной папки.
