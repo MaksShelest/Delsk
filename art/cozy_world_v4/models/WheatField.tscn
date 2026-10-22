@@ -1,0 +1,3930 @@
+[gd_scene load_steps=13 format=3]
+
+[sub_resource type="BoxMesh" id="mesh_0"]
+size = Vector3(5.000000, 0.270000, 5.000000)
+
+[sub_resource type="StandardMaterial3D" id="mat_0"]
+albedo_color = Color(0.6313725490196078, 0.5450980392156862, 0.396078431372549, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="mesh_1"]
+size = Vector3(5.000000, 0.030000, 5.000000)
+
+[sub_resource type="StandardMaterial3D" id="mat_1"]
+albedo_color = Color(0.3176470588235294, 0.2784313725490196, 0.21568627450980393, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="mesh_2"]
+size = Vector3(5.000000, 0.008000, 0.035000)
+
+[sub_resource type="StandardMaterial3D" id="mat_2"]
+albedo_color = Color(0.36470588235294116, 0.3137254901960784, 0.23529411764705882, 1)
+roughness = 0.88
+
+[sub_resource type="CylinderMesh" id="mesh_3"]
+top_radius = 0.013
+bottom_radius = 0.013
+height = 0.7211102550927979
+radial_segments = 8
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="mat_3"]
+albedo_color = Color(0.8588235294117647, 0.6823529411764706, 0.34509803921568627, 1)
+roughness = 0.88
+
+[sub_resource type="SphereMesh" id="mesh_4"]
+radius = 0.5
+height = 1
+radial_segments = 12
+rings = 6
+
+[sub_resource type="StandardMaterial3D" id="mat_4"]
+albedo_color = Color(0.9176470588235294, 0.7803921568627451, 0.47058823529411764, 1)
+roughness = 0.88
+
+[sub_resource type="CylinderMesh" id="mesh_5"]
+top_radius = 0.013
+bottom_radius = 0.013
+height = 0.7910120100226038
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="mesh_6"]
+top_radius = 0.013
+bottom_radius = 0.013
+height = 0.8609297300012353
+radial_segments = 8
+rings = 1
+
+[node name="WheatField" type="Node3D"]
+
+[node name="Foundation" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, -0.135000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_0")
+material_override = SubResource("mat_0")
+
+[node name="Surface" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.015000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_1")
+material_override = SubResource("mat_1")
+
+[node name="Furrow2" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, -2.150000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="Furrow3" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, -1.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="Furrow4" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, -0.950000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="Furrow5" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, -0.350000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="Furrow6" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, 0.250000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="Furrow7" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, 0.850000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="Furrow8" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, 1.450000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="Furrow9" type="MeshInstance3D" parent="."]
+position = Vector3(0.000000, 0.034000, 2.050000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+mesh = SubResource("mesh_2")
+material_override = SubResource("mat_2")
+
+[node name="WheatStem10" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -2.1800000, 0.5000000, -2.2000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar11" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.670000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar12" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.670000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar13" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.770000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar14" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.770000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar15" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.870000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar16" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.870000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem17" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.6300000, 0.5350000, -2.2000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar18" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.740000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar19" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.740000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar20" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.840000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar21" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.840000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar22" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.940000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar23" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.940000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem24" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.0800000, 0.5700000, -2.2000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar25" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.810000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar26" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.810000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar27" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.910000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar28" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.910000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar29" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 1.010000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar30" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 1.010000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem31" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -0.5300000, 0.5000000, -2.2000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar32" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.670000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar33" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.670000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar34" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.770000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar35" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.770000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar36" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.870000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar37" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.870000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem38" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.0200000, 0.5350000, -2.2000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar39" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.740000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar40" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.740000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar41" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.840000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar42" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.840000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar43" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.940000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar44" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.940000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem45" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.5700000, 0.5700000, -2.2000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar46" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.810000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar47" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.810000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar48" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.910000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar49" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.910000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar50" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 1.010000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar51" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 1.010000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem52" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.1200000, 0.5000000, -2.2000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar53" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.670000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar54" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.670000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar55" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.770000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar56" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.770000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar57" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.870000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar58" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.870000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem59" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.6700000, 0.5350000, -2.2000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar60" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.740000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar61" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.740000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar62" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.840000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar63" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.840000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar64" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.940000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar65" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.940000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem66" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 2.2200000, 0.5700000, -2.2000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar67" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.810000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar68" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.810000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar69" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.910000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar70" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.910000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar71" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 1.010000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar72" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 1.010000, -2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem73" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -2.1800000, 0.5350000, -1.6500000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar74" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.740000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar75" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.740000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar76" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.840000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar77" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.840000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar78" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.940000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar79" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.940000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem80" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.6300000, 0.5700000, -1.6500000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar81" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.810000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar82" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.810000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar83" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.910000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar84" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.910000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar85" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 1.010000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar86" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 1.010000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem87" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.0800000, 0.5000000, -1.6500000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar88" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.670000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar89" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.670000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar90" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.770000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar91" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.770000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar92" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.870000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar93" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.870000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem94" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -0.5300000, 0.5350000, -1.6500000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar95" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.740000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar96" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.740000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar97" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.840000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar98" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.840000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar99" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.940000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar100" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.940000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem101" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.0200000, 0.5700000, -1.6500000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar102" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.810000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar103" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.810000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar104" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.910000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar105" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.910000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar106" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 1.010000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar107" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 1.010000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem108" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.5700000, 0.5000000, -1.6500000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar109" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.670000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar110" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.670000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar111" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.770000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar112" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.770000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar113" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.870000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar114" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.870000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem115" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.1200000, 0.5350000, -1.6500000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar116" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.740000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar117" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.740000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar118" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.840000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar119" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.840000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar120" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.940000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar121" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.940000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem122" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.6700000, 0.5700000, -1.6500000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar123" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.810000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar124" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.810000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar125" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.910000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar126" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.910000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar127" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 1.010000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar128" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 1.010000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem129" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 2.2200000, 0.5000000, -1.6500000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar130" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.670000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar131" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.670000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar132" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.770000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar133" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.770000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar134" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.870000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar135" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.870000, -1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem136" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -2.1800000, 0.5700000, -1.1000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar137" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.810000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar138" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.810000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar139" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.910000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar140" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.910000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar141" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 1.010000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar142" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 1.010000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem143" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.6300000, 0.5000000, -1.1000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar144" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.670000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar145" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.670000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar146" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.770000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar147" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.770000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar148" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.870000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar149" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.870000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem150" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.0800000, 0.5350000, -1.1000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar151" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.740000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar152" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.740000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar153" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.840000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar154" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.840000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar155" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.940000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar156" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.940000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem157" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -0.5300000, 0.5700000, -1.1000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar158" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.810000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar159" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.810000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar160" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.910000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar161" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.910000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar162" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 1.010000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar163" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 1.010000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem164" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.0200000, 0.5000000, -1.1000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar165" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.670000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar166" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.670000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar167" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.770000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar168" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.770000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar169" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.870000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar170" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.870000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem171" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.5700000, 0.5350000, -1.1000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar172" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.740000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar173" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.740000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar174" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.840000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar175" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.840000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar176" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.940000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar177" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.940000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem178" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.1200000, 0.5700000, -1.1000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar179" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.810000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar180" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.810000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar181" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.910000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar182" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.910000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar183" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 1.010000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar184" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 1.010000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem185" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.6700000, 0.5000000, -1.1000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar186" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.670000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar187" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.670000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar188" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.770000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar189" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.770000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar190" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.870000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar191" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.870000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem192" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 2.2200000, 0.5350000, -1.1000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar193" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.740000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar194" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.740000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar195" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.840000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar196" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.840000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar197" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.940000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar198" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.940000, -1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem199" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -2.1800000, 0.5000000, -0.5500000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar200" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.670000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar201" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.670000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar202" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.770000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar203" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.770000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar204" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.870000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar205" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.870000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem206" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.6300000, 0.5350000, -0.5500000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar207" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.740000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar208" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.740000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar209" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.840000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar210" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.840000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar211" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.940000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar212" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.940000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem213" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.0800000, 0.5700000, -0.5500000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar214" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.810000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar215" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.810000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar216" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.910000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar217" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.910000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar218" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 1.010000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar219" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 1.010000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem220" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -0.5300000, 0.5000000, -0.5500000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar221" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.670000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar222" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.670000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar223" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.770000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar224" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.770000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar225" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.870000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar226" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.870000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem227" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.0200000, 0.5350000, -0.5500000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar228" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.740000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar229" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.740000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar230" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.840000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar231" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.840000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar232" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.940000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar233" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.940000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem234" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.5700000, 0.5700000, -0.5500000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar235" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.810000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar236" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.810000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar237" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.910000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar238" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.910000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar239" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 1.010000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar240" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 1.010000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem241" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.1200000, 0.5000000, -0.5500000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar242" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.670000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar243" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.670000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar244" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.770000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar245" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.770000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar246" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.870000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar247" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.870000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem248" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.6700000, 0.5350000, -0.5500000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar249" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.740000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar250" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.740000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar251" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.840000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar252" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.840000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar253" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.940000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar254" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.940000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem255" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 2.2200000, 0.5700000, -0.5500000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar256" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.810000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar257" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.810000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar258" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.910000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar259" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.910000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar260" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 1.010000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar261" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 1.010000, -0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem262" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -2.1800000, 0.5350000, 0.0000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar263" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.740000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar264" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.740000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar265" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.840000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar266" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.840000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar267" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.940000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar268" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.940000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem269" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.6300000, 0.5700000, 0.0000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar270" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.810000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar271" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.810000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar272" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.910000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar273" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.910000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar274" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 1.010000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar275" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 1.010000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem276" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.0800000, 0.5000000, 0.0000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar277" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.670000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar278" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.670000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar279" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.770000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar280" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.770000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar281" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.870000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar282" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.870000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem283" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -0.5300000, 0.5350000, 0.0000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar284" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.740000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar285" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.740000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar286" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.840000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar287" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.840000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar288" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.940000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar289" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.940000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem290" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.0200000, 0.5700000, 0.0000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar291" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.810000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar292" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.810000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar293" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.910000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar294" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.910000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar295" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 1.010000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar296" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 1.010000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem297" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.5700000, 0.5000000, 0.0000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar298" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.670000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar299" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.670000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar300" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.770000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar301" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.770000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar302" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.870000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar303" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.870000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem304" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.1200000, 0.5350000, 0.0000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar305" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.740000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar306" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.740000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar307" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.840000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar308" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.840000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar309" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.940000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar310" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.940000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem311" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.6700000, 0.5700000, 0.0000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar312" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.810000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar313" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.810000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar314" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.910000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar315" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.910000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar316" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 1.010000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar317" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 1.010000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem318" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 2.2200000, 0.5000000, 0.0000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar319" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.670000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar320" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.670000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar321" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.770000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar322" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.770000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar323" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.870000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar324" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.870000, 0.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem325" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -2.1800000, 0.5700000, 0.5500000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar326" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.810000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar327" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.810000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar328" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.910000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar329" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.910000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar330" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 1.010000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar331" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 1.010000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem332" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.6300000, 0.5000000, 0.5500000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar333" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.670000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar334" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.670000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar335" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.770000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar336" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.770000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar337" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.870000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar338" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.870000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem339" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.0800000, 0.5350000, 0.5500000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar340" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.740000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar341" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.740000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar342" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.840000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar343" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.840000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar344" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.940000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar345" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.940000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem346" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -0.5300000, 0.5700000, 0.5500000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar347" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.810000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar348" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.810000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar349" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.910000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar350" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.910000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar351" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 1.010000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar352" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 1.010000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem353" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.0200000, 0.5000000, 0.5500000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar354" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.670000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar355" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.670000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar356" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.770000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar357" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.770000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar358" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.870000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar359" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.870000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem360" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.5700000, 0.5350000, 0.5500000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar361" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.740000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar362" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.740000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar363" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.840000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar364" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.840000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar365" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.940000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar366" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.940000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem367" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.1200000, 0.5700000, 0.5500000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar368" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.810000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar369" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.810000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar370" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.910000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar371" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.910000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar372" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 1.010000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar373" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 1.010000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem374" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.6700000, 0.5000000, 0.5500000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar375" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.670000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar376" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.670000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar377" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.770000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar378" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.770000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar379" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.870000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar380" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.870000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem381" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 2.2200000, 0.5350000, 0.5500000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar382" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.740000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar383" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.740000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar384" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.840000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar385" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.840000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar386" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.940000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar387" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.940000, 0.550000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem388" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -2.1800000, 0.5000000, 1.1000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar389" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.670000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar390" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.670000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar391" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.770000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar392" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.770000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar393" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.870000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar394" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.870000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem395" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.6300000, 0.5350000, 1.1000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar396" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.740000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar397" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.740000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar398" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.840000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar399" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.840000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar400" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.940000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar401" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.940000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem402" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.0800000, 0.5700000, 1.1000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar403" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.810000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar404" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.810000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar405" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.910000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar406" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.910000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar407" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 1.010000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar408" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 1.010000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem409" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -0.5300000, 0.5000000, 1.1000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar410" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.670000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar411" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.670000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar412" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.770000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar413" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.770000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar414" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.870000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar415" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.870000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem416" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.0200000, 0.5350000, 1.1000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar417" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.740000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar418" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.740000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar419" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.840000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar420" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.840000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar421" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.940000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar422" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.940000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem423" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.5700000, 0.5700000, 1.1000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar424" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.810000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar425" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.810000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar426" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.910000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar427" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.910000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar428" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 1.010000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar429" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 1.010000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem430" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.1200000, 0.5000000, 1.1000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar431" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.670000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar432" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.670000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar433" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.770000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar434" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.770000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar435" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.870000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar436" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.870000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem437" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.6700000, 0.5350000, 1.1000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar438" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.740000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar439" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.740000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar440" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.840000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar441" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.840000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar442" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.940000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar443" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.940000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem444" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 2.2200000, 0.5700000, 1.1000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar445" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.810000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar446" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.810000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar447" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.910000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar448" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.910000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar449" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 1.010000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar450" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 1.010000, 1.100000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem451" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -2.1800000, 0.5350000, 1.6500000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar452" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.740000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar453" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.740000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar454" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.840000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar455" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.840000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar456" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.940000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar457" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.940000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem458" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.6300000, 0.5700000, 1.6500000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar459" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.810000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar460" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.810000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar461" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.910000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar462" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.910000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar463" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 1.010000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar464" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 1.010000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem465" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.0800000, 0.5000000, 1.6500000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar466" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.670000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar467" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.670000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar468" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.770000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar469" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.770000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar470" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.870000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar471" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.870000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem472" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -0.5300000, 0.5350000, 1.6500000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar473" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.740000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar474" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.740000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar475" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.840000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar476" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.840000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar477" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.940000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar478" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.940000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem479" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.0200000, 0.5700000, 1.6500000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar480" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.810000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar481" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.810000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar482" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.910000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar483" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.910000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar484" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 1.010000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar485" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 1.010000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem486" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.5700000, 0.5000000, 1.6500000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar487" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.670000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar488" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.670000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar489" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.770000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar490" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.770000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar491" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.870000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar492" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.870000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem493" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.1200000, 0.5350000, 1.6500000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar494" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.740000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar495" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.740000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar496" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.840000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar497" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.840000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar498" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.940000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar499" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.940000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem500" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.6700000, 0.5700000, 1.6500000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar501" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.810000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar502" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.810000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar503" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.910000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar504" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.910000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar505" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 1.010000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar506" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 1.010000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem507" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 2.2200000, 0.5000000, 1.6500000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar508" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.670000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar509" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.670000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar510" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.770000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar511" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.770000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar512" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.870000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar513" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.870000, 1.650000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem514" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -2.1800000, 0.5700000, 2.2000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar515" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.810000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar516" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.810000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar517" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 0.910000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar518" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 0.910000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar519" type="MeshInstance3D" parent="."]
+position = Vector3(-2.220000, 1.010000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar520" type="MeshInstance3D" parent="."]
+position = Vector3(-2.100000, 1.010000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem521" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.6300000, 0.5000000, 2.2000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar522" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.670000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar523" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.670000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar524" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.770000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar525" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.770000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar526" type="MeshInstance3D" parent="."]
+position = Vector3(-1.670000, 0.870000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar527" type="MeshInstance3D" parent="."]
+position = Vector3(-1.550000, 0.870000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem528" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -1.0800000, 0.5350000, 2.2000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar529" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.740000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar530" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.740000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar531" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.840000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar532" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.840000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar533" type="MeshInstance3D" parent="."]
+position = Vector3(-1.120000, 0.940000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar534" type="MeshInstance3D" parent="."]
+position = Vector3(-1.000000, 0.940000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem535" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, -0.5300000, 0.5700000, 2.2000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar536" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.810000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar537" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.810000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar538" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 0.910000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar539" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 0.910000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar540" type="MeshInstance3D" parent="."]
+position = Vector3(-0.570000, 1.010000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar541" type="MeshInstance3D" parent="."]
+position = Vector3(-0.450000, 1.010000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem542" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.0200000, 0.5000000, 2.2000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar543" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.670000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar544" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.670000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar545" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.770000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar546" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.770000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar547" type="MeshInstance3D" parent="."]
+position = Vector3(-0.020000, 0.870000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar548" type="MeshInstance3D" parent="."]
+position = Vector3(0.100000, 0.870000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem549" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 0.5700000, 0.5350000, 2.2000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar550" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.740000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar551" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.740000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar552" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.840000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar553" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.840000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar554" type="MeshInstance3D" parent="."]
+position = Vector3(0.530000, 0.940000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar555" type="MeshInstance3D" parent="."]
+position = Vector3(0.650000, 0.940000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem556" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9989201, -0.0464614, 0.0000000, 0.0464614, 0.9989201, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.1200000, 0.5700000, 2.2000000)
+mesh = SubResource("mesh_6")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar557" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.810000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar558" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.810000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar559" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 0.910000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar560" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 0.910000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar561" type="MeshInstance3D" parent="."]
+position = Vector3(1.080000, 1.010000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar562" type="MeshInstance3D" parent="."]
+position = Vector3(1.200000, 1.010000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem563" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9984604, -0.0554700, 0.0000000, 0.0554700, 0.9984604, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 1.6700000, 0.5000000, 2.2000000)
+mesh = SubResource("mesh_3")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar564" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.670000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar565" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.670000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar566" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.770000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar567" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.770000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar568" type="MeshInstance3D" parent="."]
+position = Vector3(1.630000, 0.870000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar569" type="MeshInstance3D" parent="."]
+position = Vector3(1.750000, 0.870000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="WheatStem570" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9987206, -0.0505681, 0.0000000, 0.0505681, 0.9987206, 0.0000000, -0.0000000, 0.0000000, 1.0000000, 2.2200000, 0.5350000, 2.2000000)
+mesh = SubResource("mesh_5")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar571" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.740000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar572" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.740000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar573" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.840000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar574" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.840000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="GrainEar575" type="MeshInstance3D" parent="."]
+position = Vector3(2.180000, 0.940000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_3")
+
+[node name="GrainEar576" type="MeshInstance3D" parent="."]
+position = Vector3(2.300000, 0.940000, 2.200000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)
+scale = Vector3(0.105000, 0.170000, 0.075000)
+mesh = SubResource("mesh_4")
+material_override = SubResource("mat_4")
+
+[node name="InteractionPoint" type="Marker3D" parent="."]
+position = Vector3(0.000000, 0.000000, 2.000000)
+rotation_degrees = Vector3(0.000000, 0.000000, 0.000000)

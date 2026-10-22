@@ -1,0 +1,17 @@
+[gd_scene load_steps=5 format=3]
+[ext_resource type="PackedScene" path="res://art_sources/WheatField.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://art_sources/WheatField.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://art_sources/BeetField.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://art_sources/EmptyField.tscn" id="4"]
+[node name="JoinedFields_2x2" type="Node3D"]
+[node name="Tile_0" parent="." instance=ExtResource("1")]
+position = Vector3(-2.500000, 0.000000, -2.500000)
+
+[node name="Tile_1" parent="." instance=ExtResource("2")]
+position = Vector3(2.500000, 0.000000, -2.500000)
+
+[node name="Tile_2" parent="." instance=ExtResource("3")]
+position = Vector3(-2.500000, 0.000000, 2.500000)
+
+[node name="Tile_3" parent="." instance=ExtResource("4")]
+position = Vector3(2.500000, 0.000000, 2.500000)

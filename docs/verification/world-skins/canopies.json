@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "checked_nodes": [
+    "Confectionery/CanopyStripe0",
+    "Confectionery/CanopyStripe1",
+    "Confectionery/CanopyStripe2",
+    "Confectionery/CanopyStripe3",
+    "Confectionery/CanopyStripe4",
+    "Confectionery/CanopyStripe5",
+    "Confectionery/CanopyStripe6",
+    "Confectionery/CanopyStripe7",
+    "Confectionery/CanopyStripe8",
+    "CapitalTownHall/PorticoRoof",
+    "CapitalTownHall/TerminalCanopy",
+    "Bakery/BakeryCanopy",
+    "MarketStall/AwningStripe0",
+    "MarketStall/AwningStripe1",
+    "MarketStall/AwningStripe2",
+    "MarketStall/AwningStripe3",
+    "MarketStall/AwningStripe4",
+    "MarketStall/AwningStripe5",
+    "MarketStall/AwningStripe6",
+    "MarketStall/AwningStripe7",
+    "MarketStall/AwningStripe8",
+    "MarketStall/AwningStripe9",
+    "MarketStall/AwningStripe10",
+    "MarketStall/AwningStripe11"
+  ]
+}

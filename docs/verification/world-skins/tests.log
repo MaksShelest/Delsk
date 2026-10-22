@@ -1,0 +1,6 @@
+  Discovering: Simulation.Tests
+  Discovered:  Simulation.Tests
+  Starting:    Simulation.Tests
+  Finished:    Simulation.Tests (ID = '50196d487f00d1f4957f23f7eb62bd1f139260cd6500fb6edc8ab0df02d5be21')
+=== TEST EXECUTION SUMMARY ===
+   Simulation.Tests  Total: 891, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 133.363s

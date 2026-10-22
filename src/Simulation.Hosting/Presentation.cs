@@ -11,6 +11,9 @@ public record PresentationMarker(string Kind, int X, int Z, string Label, long E
     public Cell[] Footprint {get;init;}=[];
     public Cell[] Walls {get;init;}=[];
     public WarehouseVisual? Warehouse {get;init;}
+    public long ResourceStock {get;init;}=1;
+    public long ResourceCapacity {get;init;}=1;
+    public bool ResourceSparse {get;init;}
 }
 public record PresentationTrip(long LogisticsId, long OwnerId, string ItemId, string State, int X, int Z, bool Loaded = false);
 public record PresentationFrame(long Tick, int MapWidth, int MapHeight, PresentationActor[] Actors,
@@ -51,8 +54,15 @@ public static class Presentation
                 : "plot-free";
             markers.Add(new(kind, plot.Position.X, plot.Position.Z, "", plot.Id.Value, plot.OwnerId?.Value ?? 0));
         }
-        foreach (var node in scenario.ResourceNodes)
-            markers.Add(new(engine.ResourceSites().Single(r=>r.Position==node.Position && r.ItemId==node.ItemId).Stock==0 ? "resource-depleted" : "resource", node.Position.X, node.Position.Z, node.ItemId, 0, 0));
+        var resourceSites=engine.ResourceSites();
+        var resourceIndex=resourceSites.ToDictionary(r=>(r.Position,r.ItemId));
+        var resourceMax=resourceSites.GroupBy(r=>r.ItemId).ToDictionary(g=>g.Key,g=>g.Max(r=>r.Capacity),StringComparer.Ordinal);
+        foreach(var node in scenario.ResourceNodes)
+        {
+            var site=resourceIndex[(node.Position,node.ItemId)];
+            markers.Add(new(site.Stock==0?"resource-depleted":"resource",node.Position.X,node.Position.Z,node.ItemId,0,0)
+            {ResourceStock=site.Stock,ResourceCapacity=site.Capacity,ResourceSparse=site.Capacity<resourceMax[node.ItemId]});
+        }
         foreach (var building in world.Buildings.OrderBy(b => b.Id.Value))
         {
             var type=scenario.BuildingTypes!.Single(t=>t.Id==building.TypeId);

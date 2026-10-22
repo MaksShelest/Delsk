@@ -75,6 +75,7 @@ public partial class Playfield : Control
             GetTree().CallDeferred(SceneTree.MethodName.ChangeSceneToFile, "res://PlatformProbe.tscn");
             return;
         }
+        InitializeAppearance();
         InitializeFeedback();
         Input.MouseMode = Input.MouseModeEnum.Visible;
         Engine.MaxFps = 60;
@@ -225,6 +226,7 @@ public partial class Playfield : Control
         _mapSelection.LanguageChanged += () => { _language = _language == "ru" ? "en" : "ru"; ShowMaps(); };
         _mapSelection.DisplaySettingsRequested += ToggleFullscreen;
         _mapSelection.FeedbackSettingsRequested += OpenFeedbackSettings;
+        _mapSelection.AppearanceSettingsRequested += OpenAppearanceSettings;
         _mapSelection.QuitRequested += ExitGame;
         AddChild(_mapSelection);
     }
@@ -463,7 +465,7 @@ public partial class Playfield : Control
         { DropTabletPanel(); ApplyPause(); ApplySurface(); }
         bool paused = _session.Paused;
         var frame = Presentation.Read(_scenario, _session.Engine, _human.Value);
-        if (_surface == Surface.Play || paused) _stage?.Show(frame, paused, _selectedEnterprise, T("you"), _surface == Surface.Play);
+        if (_surface == Surface.Play || paused) _stage?.Show(frame, paused, _selectedEnterprise, T("you"), _surface == Surface.Play, _language);
         if (_surface == Surface.Debug) _board?.Show(frame, _cellX, _cellZ);
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
         string stock = pack.Stock.Length == 0 ? T("inventory.empty")
@@ -800,6 +802,8 @@ public partial class Playfield : Control
         box.AddChild(chooseMap);
         Button(box, "language", ChangeLanguage);
         var feedbackSettings=new Button{Text=L("Реплики и звук","Speech and audio"),FocusMode=FocusModeEnum.None};feedbackSettings.Pressed+=OpenFeedbackSettings;box.AddChild(feedbackSettings);
+        var appearance = new Button { Text = L("Оформление и персонажи", "Appearance and characters"), FocusMode = FocusModeEnum.None };
+        appearance.Pressed += OpenAppearanceSettings; box.AddChild(appearance);
         var display = new Button { Text = L("Полный экран / окно", "Fullscreen / window"), FocusMode = FocusModeEnum.None };
         display.Pressed += ToggleFullscreen; box.AddChild(display);
         var handbook = new Button { Text = L("Справка", "Help"), FocusMode = FocusModeEnum.None };
