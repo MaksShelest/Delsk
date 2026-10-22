@@ -786,6 +786,15 @@ ProductionTabletPresenter — общий адаптер supplied sawmill/bakery 
 
 ## Пакет8: исследовательская оболочка P58
 
+Упрощение запуска 22.10.2026: ResearchLab.cmd/sh выполняет bounded подготовку
+общего Release runner и открывает локальный браузер. Пресеты/формы создают прежние
+планы; API/очередь не заменяют правила Core. OS-блокировка принадлежит host до
+завершения активного bounded job и уже принятых HTTP-запросов. Повторный launcher
+сверяет loopback instance health и открывает тот же host. Shutdown запрещает новые
+старты и завершает текущий job. ZIP researcher-серии создаётся под теми же
+token/Host/Origin guards между прогонами; архив не попадает в обычный Godot-клиент.
+См. RESEARCH_LAB.md и решение53; Core/save/controller versions не изменены.
+
 scripts/research_lab.py + локальный browser UI — отдельный composition/orchestration слой поверх прежнего Research.Runner, не зависимость Core/Hosting/обычного Godot. Scalar allowlist/копии исходных профилей/seed/состав разрешаются до queue; каждый arm проходит настоящие C# validators. В мире сохраняется прежняя resolved configuration, UI не моделирует экономику. Только loopback Host/Origin/token, полная история доступна исследователю. Пауза между bounded jobs; atomic journal/отдельный attempt/один file-lock owner, running после crash становится interrupted и требует явного retry. Сверяются полные UI/CLI/checkpoint/replay exports. Данные в queue/summary не заменяют исходные runner JSON/CSV/JSONL.
 
 ControllerSettings.NegotiationsEnabled nullable/JsonIgnoreWhenNull: отсутствие сохраняет прежнюю сериализацию/политику. false исключает переговорные candidates/responses; та же оценка BuySupport использует существующий прямой ProposeSupport, поэтому политика/торговля не выключаются вместе с переговорным фактором. Это ограничение выбранной NPC-политики, не новые права Core. При load восстанавливается exact controller checkpoint.

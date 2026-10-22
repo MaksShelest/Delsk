@@ -16,6 +16,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Research laboratory startup, queue and HTTP boundaries
+        run: python scripts/run_check.py --name research-lab-unit --timeout 60 --log-directory artifacts/gate-checks -- python -m unittest discover -s tests/Research.Lab -v
       - name: Bounded complete headless gate (P00-P22)
         env:
           DELSK_COMMIT: ${{ github.sha }}

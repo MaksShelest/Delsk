@@ -4,6 +4,23 @@
 
 Актуальное представление — в разделе «Планшеты v1»; версии экономики/статусы плана — в разделе «Пакет8»; датированные сведения предыдущих итераций ниже сохранены как история, не как параллельные текущие правила.
 
+## Простой запуск лаборатории, 22.10.2026 (Europe/Samara)
+
+- ResearchLab.cmd / ResearchLab.sh — оболочка существующего scripts/research_lab.py:
+  --prepare --open-browser --port 0, output artifacts/lab по умолчанию. SDK из global.json,
+  bounded locked restore/build Release перед UI; не запускать старый DLL после ошибки.
+  Игра/Godot/LLM не требуются. Пользователь Windows использует py -3; не требовать pip/npm.
+- OS host.lock держится до окончания активного bounded job. Повторный запуск открывает
+  прежнюю очередь только после проверки loopback instance health; host.json без токена.
+  UI shutdown — пауза и ожидание активного опыта, не убийство/обрезка тика.
+- Presets/формы создают прежние планы P58 и проходят прежние валидаторы. JSON/CLI
+  сохранены; Minor → монеты только presentation. ZIP полной серии недоступен во время
+  running; старые token/Host/Origin и own workspace guards обязательны и для ZIP/shutdown.
+- Gates: tests/Research.Lab, check_research_lab_startup.py и check_research_lab.py.
+  Браузерный тест использует реальные runner/CLI/save/load/replay, не fake-экономику.
+  Windows double-click не выдавать за проверенный облаком. Инструкция RESEARCH_LAB.md,
+  контекст WORKLOG_RESEARCH_LAB_EASY_START.md. Core/save/политики не менялись.
+
 ## Планшеты v1, 20.10.2026 (Europe/Samara)
 
 - База77d40e9 включает PR46; PR45 open/draft e195be1 просмотрен read-only и не включён. Отчёт IMPLEMENTATION_REPORT_TABLETS_V1.md, восстановление WORKLOG_TABLETS_V1.md. Это оформление, не новый пакет экономики: World18/production-recipes-1/Session2/Envelope2 прежние.

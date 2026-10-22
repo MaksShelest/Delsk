@@ -8,6 +8,12 @@
 
 # Delsk
 
+**Исследования без запуска игры:** в полной папке исходников дважды щёлкните
+[ResearchLab.cmd](ResearchLab.cmd). Он подготовит runner и откроет браузер.
+Python 3.10+ и .NET SDK из global.json обязательны; Godot/LLM не требуются.
+Выберите «Быстрая проверка» → «Начать исследование» → «Скачать серию ZIP».
+[Инструкция и устранение ошибок](docs/RESEARCH_LAB.md).
+
 Пакет5 P47–P50, выбранный вариант C: [результат и проверки](docs/IMPLEMENTATION_REPORT_PACKAGE5.md), [рецепты/цепочка/баланс](docs/PRODUCTION_CHAINS.md). Атомарные многокомпонентные рецепты, молочное сырьё/свёкла, сыр/сахар/выпечка.835 ordinary/841 Developer tests;102exports/14replay/69comparisons, Linux Godot/RU/EN. Следующий пакет6 P51–P53, с P51. Ниже — исторические срезы.
 
 Пакет4 P43–P46: [результат и проверки](docs/IMPLEMENTATION_REPORT_PACKAGE4.md), [лавочки, переговоры и получение](docs/PARTICIPANT_TRADE.md).805 ordinary/811 Developer tests, полный runner/load/replay/privacy gate, Linux Godot/UI. Дальше пакет5 с P47; P48+ требует выбора контента владельцем.

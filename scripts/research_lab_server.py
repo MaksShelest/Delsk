@@ -5,13 +5,20 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
 import secrets
+import shutil
+import tempfile
+import threading
+import zipfile
 from urllib.parse import urlsplit, unquote
-from research_lab import DEFAULT, FACTORS, ROOT, unique
+from research_lab import DEFAULT, FACTORS, ROOT, unique, write
 
 
 def make_server(lab, port=8765):
     token = secrets.token_urlsafe(32)
+    instance = secrets.token_hex(16)
+    stopping = threading.Event()
     class Handler(BaseHTTPRequestHandler):
+        timeout = 30
         def log_message(self, *_):
             pass
 
@@ -33,6 +40,11 @@ def make_server(lab, port=8765):
 
         def do_GET(self):
             path = urlsplit(self.path).path
+            if path == '/api/health':
+                expected = f'127.0.0.1:{self.server.server_port}'
+                if self.headers.get('Host') != expected or self.headers.get('Origin', 'http://'+expected) != 'http://'+expected:
+                    return self.send(403, {'error':'Use the loopback URL'})
+                return self.send(200, dict(application='Delsk Research Lab', instance=instance))
             if path == '/':
                 if self.headers.get('Host') != f'127.0.0.1:{self.server.server_port}':
                     return self.send(403, {'error':'Use the printed loopback URL'})
@@ -44,8 +56,39 @@ def make_server(lab, port=8765):
                 if path == '/api/state':
                     return self.send(200, lab.snapshot())
                 if path == '/api/catalog':
-                    return self.send(200, dict(default=DEFAULT, factors=FACTORS,
+                    from research_lab_presets import MAPS, FACTOR_LABELS, presets
+                    return self.send(200, dict(default=DEFAULT, factors=FACTORS, presets=presets(), maps=MAPS, factorLabels=FACTOR_LABELS,
                         scenarios=[str(p.relative_to(ROOT)) for p in sorted((ROOT/'scenarios').glob('*.json')) if 'controllers' not in p.name]))
+                if path.startswith('/archives/') and path.endswith('.zip'):
+                    key = unquote(path[len('/archives/'):-4])
+                    # Only a known series can be archived; no filesystem path is accepted.
+                    with tempfile.TemporaryFile() as stream:
+                        with lab.lock:
+                            series = next((s for s in lab.series if s['id'] == key), None)
+                            if series is None:
+                                raise ValueError('Неизвестная серия')
+                            if any(j['status'] == 'running' for j in series['jobs']):
+                                raise ValueError('Дождитесь завершения активного прогона или поставьте очередь на паузу')
+                            folder = (lab.workspace/key).resolve()
+                            if not folder.is_relative_to(lab.workspace):
+                                raise ValueError('Unknown series folder')
+                            with zipfile.ZipFile(stream, 'w', zipfile.ZIP_DEFLATED) as archive:
+                                for file in sorted(folder.rglob('*')):
+                                    if file.is_file():
+                                        if file.is_symlink() or not file.resolve().is_relative_to(folder):
+                                            raise ValueError('Unexpected link in series')
+                                        archive.write(file, key+'/'+str(file.relative_to(folder)).replace('\\', '/'))
+                        length = stream.tell()
+                        stream.seek(0)
+                        self.send_response(200)
+                        self.send_header('Content-Type', 'application/zip')
+                        self.send_header('Content-Length', str(length))
+                        self.send_header('Content-Disposition', 'attachment; filename="'+key+'.zip"')
+                        self.send_header('Cache-Control', 'no-store')
+                        self.send_header('X-Content-Type-Options', 'nosniff')
+                        self.end_headers()
+                        shutil.copyfileobj(stream, self.wfile)
+                        return
                 if path.startswith('/files/'):
                     target = (lab.workspace/unquote(path[7:])).resolve()
                     if not target.is_relative_to(lab.workspace) or not target.is_file() or target.suffix not in ('.json', '.jsonl', '.csv', '.log'):
@@ -58,6 +101,8 @@ def make_server(lab, port=8765):
         def do_POST(self):
             if not self.authorized():
                 return self.send(403, {'error':'Local researcher token required'})
+            if stopping.is_set():
+                return self.send(409, {'error':'Лаборатория завершает работу; новые задания не запускаются'})
             try:
                 size = int(self.headers.get('Content-Length', '0'))
                 if not 0 < size <= 2*1024*1024:
@@ -67,8 +112,18 @@ def make_server(lab, port=8765):
                     return self.send(200, dict(id=lab.enqueue(data)))
                 if self.path == '/api/pause':
                     lab.pause()
+                elif self.path == '/api/shutdown':
+                    with lab.lock:
+                        stopping.set()
+                        lab.pause()
+                    self.send(200, dict(stopping=True))
+                    threading.Thread(target=self.server.shutdown, daemon=True).start()
+                    return
                 elif self.path in ('/api/start', '/api/resume', '/api/retry'):
-                    lab.start(retry=self.path == '/api/retry')
+                    with lab.lock:
+                        if stopping.is_set():
+                            raise ValueError('Лаборатория завершает работу')
+                        lab.start(retry=self.path == '/api/retry')
                 elif self.path == '/api/compare':
                     return self.send(200, lab.compare(data['selected']))
                 else:
@@ -76,15 +131,31 @@ def make_server(lab, port=8765):
                 return self.send(200, lab.snapshot())
             except (ValueError, KeyError, TypeError, OSError) as e:
                 return self.send(400, {'error':str(e)})
-    return ThreadingHTTPServer(('127.0.0.1', port), Handler)
+    server = ThreadingHTTPServer(('127.0.0.1', port), Handler)
+    # Finish admitted validation/download requests before the owner releases its queue lock.
+    server.daemon_threads = False
+    server.instance_id = instance
+    server.stopping = stopping
+    return server
 
 
-def serve(lab, port):
+def serve(lab, port, launch_browser=False):
     server = make_server(lab, port)
-    print(f'Research laboratory: http://127.0.0.1:{server.server_port}/ (private researcher exports; pause between runs)', flush=True)
+    url = f'http://127.0.0.1:{server.server_port}/'
+    host_file = lab.workspace/'host.json'
+    write(host_file, dict(url=url, instance=server.instance_id))
+    print('Лаборатория готова: '+url+'\nИгра/Godot не требуются. Оставьте это окно открытым. Результаты: '+str(lab.workspace), flush=True)
+    if launch_browser:
+        from research_lab_launch import open_browser
+        open_browser(url)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         lab.pause()
     finally:
+        lab.pause()
+        if lab.thread is not None:
+            print('Ожидание завершения активного ограниченного прогона…', flush=True)
+            lab.thread.join()
+        host_file.unlink(missing_ok=True)
         server.server_close()

@@ -1,0 +1,108 @@
+{
+  "baseCommit": "25d48a2",
+  "date": "2026-10-22 Europe/Samara",
+  "status": "passed",
+  "dotnetTests": {
+    "total": 891,
+    "passed": 891,
+    "failed": 0
+  },
+  "pythonTests": {
+    "total": 23,
+    "passed": 23,
+    "failed": 0
+  },
+  "checks": {
+    "lab-unit-final": {
+      "exit_code": 0,
+      "elapsed_seconds": 4.066,
+      "timeout_seconds": 60,
+      "metadataSha256": "acaf70deb3f90f959b629ca8cd3a6cacfd8a0c5822674ba95f3233d72a3b277d"
+    },
+    "lab-launcher-final": {
+      "exit_code": 0,
+      "elapsed_seconds": 14.794,
+      "timeout_seconds": 150,
+      "metadataSha256": "f18836bceaf2814aba941425600b3ffe1b8067753668ac93662bf695613f056b"
+    },
+    "lab-browser-final": {
+      "exit_code": 0,
+      "elapsed_seconds": 21.379,
+      "timeout_seconds": 240,
+      "metadataSha256": "7135068d086e53809a3e59a8e486a5ff21ef206f508a19d02395838bb87a42b2"
+    },
+    "lab-regression-restore": {
+      "exit_code": 0,
+      "elapsed_seconds": 1.172,
+      "timeout_seconds": 180,
+      "metadataSha256": "d65348b3d379b70861daa80ff929bc9d3fb06094942cd92a312094b0997a1d91"
+    },
+    "lab-regression-build": {
+      "exit_code": 0,
+      "elapsed_seconds": 9.836,
+      "timeout_seconds": 180,
+      "metadataSha256": "601cbd9b626d9ca50eef1013fbe42d93718ab8b5f1051987cc9326deabe717a2"
+    },
+    "lab-regression-tests": {
+      "exit_code": 0,
+      "elapsed_seconds": 76.78,
+      "timeout_seconds": 180,
+      "metadataSha256": "f2574ec243d1f87077068b592988a4a946d59a33f2dd9900643525bf86a17897"
+    }
+  },
+  "ui": {
+    "status": "succeeded",
+    "uiInvalidRejected": true,
+    "pauseBetweenCells": true,
+    "downloadCsv": true,
+    "restartKeepsCompleted": true,
+    "access": {
+      "noToken": 403,
+      "invalidToken": 403,
+      "foreignOrigin": 403,
+      "foreignHost": 403
+    },
+    "uiCliHash": "c49e925fefbf543b1b21a196db2dc9a76da3a8a3c492056b37fbb5f3cbe62b76",
+    "saveLoadReplay": true,
+    "presetOneClick": true,
+    "factorForm": true,
+    "mapSelection": true,
+    "missingModelConfigRejected": true,
+    "filePanelPreservedAcrossRefresh": true,
+    "seriesZip": true,
+    "narrowViewport": true
+  },
+  "launcher": {
+    "status": "passed",
+    "prepare": true,
+    "availablePort": true,
+    "browserOpenedTwice": true,
+    "repeatedLaunchReusesHost": true,
+    "noRebuildOnReopen": true,
+    "duplicateCliRejected": true,
+    "unicodeAndSpaces": true,
+    "shutdownAndLockRelease": true,
+    "presetMapCombinationsValidated": 12,
+    "validatedArms": 21
+  },
+  "sourceSha256": {
+    "ResearchLab.cmd": "f236fec77d31b9cec9ffa3ff33009b38d2a99df9d691e11931622bd80e3e72ca",
+    "ResearchLab.sh": "847a280a8b683117494014956d218ecb19aa12940f302072943e364132066f8a",
+    "scripts/research_lab.py": "eb49685d5f69907235b351d1ab79c25873b8240d5fb90262786ad38b7a08a054",
+    "scripts/research_lab_launch.py": "121ec078afe3fb2dbb0051b2bbb477facb4d462fcf3e539673012965393516ca",
+    "scripts/research_lab_presets.py": "f67fed5540f083f29b252aff952725d96b680a6ce30eadb4bfe0ac7d3489f8ab",
+    "scripts/research_lab_server.py": "74728bd3ef813da2b567093edf4b1c4480f7170de8cc78cbc73fe46fbec0df55",
+    "scripts/research_lab.html": "57264adcd2501933ec50b23fcd73e7a0ad682cb7cc731dc9f4d3b61911629b3b",
+    "scripts/check_research_lab.py": "d83426997a18ebbad3f595f1b8d4f7fd0066255ccafc488111a81ee7acd2c547",
+    "scripts/check_research_lab_startup.py": "eced3f9c3e0b1c0209b33ba93c744e1f63db69fd450126629aa2dc2214ac4e50",
+    "tests/Research.Lab/test_lab.py": "f48397eb742d60dc1285666da552faaf92fc012aea94dcee3e043ee07a902135",
+    "tests/Research.Lab/test_metrics.py": "64e3e8303f099a7502dcf07f5996ae8dee8a555dc70ba5173f5ddd2f1b927521",
+    "tests/Research.Lab/test_launch.py": "18404250ccce21165d7b91f08a2dadf7852d32f6ad7d13e7abbb1bf5267ec719"
+  },
+  "notChecked": [
+    "Native Windows double-click",
+    "macOS launch",
+    "Godot client/export (no client changes)",
+    "Real LLM and hardware/balance gates"
+  ]
+}
