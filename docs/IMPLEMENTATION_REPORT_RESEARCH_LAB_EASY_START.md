@@ -70,3 +70,6 @@ Windows double-click/.cmd и macOS непосредственно не запу�
 затем выбрать содержательную парную серию для оставшихся P59/P60 вопросов.
 Временная legacy-design ветка не включалась в изменения и ждёт подтверждения
 скачивания перед удалением. PR этой задачи не сливать автоматически.
+
+Основной commit: [89a6007](https://github.com/MaksShelest/Delsk/commit/89a600768179ef080ba44d3d224c033ec9a84c3a).
+PR: [#51](https://github.com/MaksShelest/Delsk/pull/51), открыт без автоматического merge.

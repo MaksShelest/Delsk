@@ -43,3 +43,8 @@ CSV+ZIP/privacy,7exports/4pairs CLI/save/load/replay. Логи scratch
 Windows .cmd/hardware и реальная LLM не проверены; Godot не менялся/не запускался.
 Отчёт IMPLEMENTATION_REPORT_RESEARCH_LAB_EASY_START.md. Осталось перед передачей:
 проверить diff/author, commit+push и открыть PR к feat/economic-cycle-p00-p05 без merge.
+
+Передача опубликована: основной commit `89a600768179ef080ba44d3d224c033ec9a84c3a`,
+ветка `feat/research-lab-easy-start`, PR https://github.com/MaksShelest/Delsk/pull/51
+к `feat/economic-cycle-p00-p05`. Push подтверждён, PR открыт без merge. Эта запись —
+documentation-only; результаты локальных gates выше не являются результатами remote CI.
