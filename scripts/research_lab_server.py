@@ -9,7 +9,7 @@ import shutil
 import tempfile
 import threading
 import zipfile
-from urllib.parse import urlsplit, unquote
+from urllib.parse import urlsplit, unquote, parse_qs
 from research_lab import DEFAULT, FACTORS, ROOT, unique, write
 
 
@@ -50,9 +50,29 @@ def make_server(lab, port=8765):
                     return self.send(403, {'error':'Use the printed loopback URL'})
                 html = (ROOT/'scripts/research_lab.html').read_text(encoding='utf-8').replace('__TOKEN__', token)
                 return self.send(200, html.encode('utf-8'), 'text/html; charset=utf-8')
+            if path in ('/research_lab.css','/research_lab.js'):
+                if self.headers.get('Host')!=f'127.0.0.1:{self.server.server_port}':return self.send(403,{'error':'Use loopback'})
+                return self.send(200,(ROOT/'scripts'/path[1:]).read_bytes(),'text/css; charset=utf-8' if path.endswith('.css') else 'text/javascript; charset=utf-8')
             if not self.authorized():
                 return self.send(403, {'error':'Local researcher token required'})
             try:
+                q={k:v[0] for k,v in parse_qs(urlsplit(self.path).query).items()}
+                if path=='/api/profiles':return self.send(200,lab.views.profiles())
+                if path=='/api/profile':
+                    from research_lab import read
+                    profile=next((p for p in lab.views.profiles() if p['id']==q['id']),None)
+                    if profile is None:raise ValueError('Неизвестный профиль')
+                    target=Path(profile['path']).resolve()
+                    if not target.is_relative_to(lab.workspace/'profiles'):raise ValueError('Недопустимый профиль')
+                    return self.send(200,read(target))
+                if path=='/api/config':
+                    from research_lab import read,source
+                    return self.send(200,dict(economy=read(ROOT/'config/economy.json'),scenario=read(source(q.get('map',DEFAULT['scenario']),lab.workspace))))
+                if path=='/api/describe':return self.send(200,lab.views.describe(q['id']))
+                if path=='/api/preview':return self.send(200,lab.views.preview(q['id'],q['path'],q.get('cursor',0)))
+                if path=='/api/world':return self.send(200,lab.views.world(q['id'],q['job'],q['attempt'],q['tick']))
+                if path=='/api/chart':return self.send(200,lab.views.chart(q['id'],q['job'],q['attempt']))
+                if path=='/api/journal':return self.send(200,lab.views.journal(q['id'],q['job'],q['attempt'],q['kind'],q.get('cursor',0),q.get('actor',''),q.get('search',''),q.get('important','false')))
                 if path == '/api/state':
                     return self.send(200, lab.snapshot())
                 if path == '/api/catalog':
@@ -90,12 +110,19 @@ def make_server(lab, port=8765):
                         shutil.copyfileobj(stream, self.wfile)
                         return
                 if path.startswith('/files/'):
-                    target = (lab.workspace/unquote(path[7:])).resolve()
-                    if not target.is_relative_to(lab.workspace) or not target.is_file() or target.suffix not in ('.json', '.jsonl', '.csv', '.log'):
-                        raise ValueError('Unknown result file')
-                    return self.send(200, target.read_bytes(), 'application/octet-stream')
+                    parts=unquote(path[7:]).split('/',1)
+                    if len(parts)!=2:raise ValueError('Unknown result file')
+                    target=lab.views.file(parts[0],parts[1])
+                    self.send_response(200)
+                    self.send_header('Content-Type','application/octet-stream')
+                    self.send_header('Content-Length',str(target.stat().st_size))
+                    self.send_header('X-Content-Type-Options','nosniff')
+                    self.send_header('Cache-Control','no-store')
+                    self.end_headers()
+                    with target.open('rb') as stream:shutil.copyfileobj(stream,self.wfile)
+                    return
                 return self.send(404, {'error':'Unknown route'})
-            except (ValueError, OSError) as e:
+            except (ValueError, OSError,KeyError,TypeError) as e:
                 return self.send(400, {'error':str(e)})
 
         def do_POST(self):
@@ -108,6 +135,12 @@ def make_server(lab, port=8765):
                 if not 0 < size <= 2*1024*1024:
                     raise ValueError('Use a JSON body up to2MiB')
                 data = json.loads(self.rfile.read(size), object_pairs_hook=unique)
+                if self.path=='/api/manage':return self.send(200,lab.views.manage(data))
+                if self.path=='/api/control':return self.send(200,lab.views.control(data['id'],data['action']))
+                if self.path=='/api/profiles':return self.send(200,lab.views.save_profile(data))
+                if self.path=='/api/models':
+                    from research_workspace import model_tags
+                    return self.send(200,model_tags(data['endpoint']))
                 if self.path == '/api/queue':
                     return self.send(200, dict(id=lab.enqueue(data)))
                 if self.path == '/api/pause':

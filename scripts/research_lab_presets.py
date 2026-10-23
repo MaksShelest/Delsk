@@ -5,6 +5,8 @@ import copy
 from research_lab import DEFAULT
 
 MAPS = [
+    dict(label="Четыре квартала", path="scenarios/four-corners-v1.json"),
+    dict(label="Городской тракт", path="scenarios/city-corridor-v1.json"),
     dict(label='Карта 1 · базовая', path='scenarios/presentation-map-one-v3.json'),
     dict(label='Карта 2 · другой маршрут', path='scenarios/presentation-map-two-v3.json'),
     dict(label='Карта 3 · пищевые цепочки', path='scenarios/presentation-map-three-v2.json'),

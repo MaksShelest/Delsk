@@ -63,7 +63,7 @@ def prepare(workspace):
                          '. Установите его рядом с другими SDK и повторите запуск.\n'+version.stderr.strip())
     logs = workspace/'startup'
     for name, timeout, command in [
-        ('restore', 180, ['dotnet', 'restore', 'src/Research.Runner/Research.Runner.csproj', '--locked-mode', '--disable-build-servers']),
+        ('restore', 180, ['dotnet', 'restore', 'src/Research.Runner/Research.Runner.csproj', '--locked-mode', '--disable-build-servers', '--disable-parallel', '-m:1']),
         ('build', 180, ['dotnet', 'build', 'src/Research.Runner/Research.Runner.csproj', '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1']),
     ]:
         print(('1/2 · Подготовка зависимостей' if name == 'restore' else '2/2 · Сборка исследовательского runner')+

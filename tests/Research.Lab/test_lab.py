@@ -16,6 +16,7 @@ class LabTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.plan = copy.deepcopy(DEFAULT)
+        self.plan["recordWorld"]=False  # Unit executor has no simulation or recorded frames.
 
     def test_factor_changes_only_negotiation_not_trade_or_politics(self):
         scenario, model, arms = expand(self.plan,self.root)

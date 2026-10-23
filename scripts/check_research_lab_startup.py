@@ -57,7 +57,7 @@ with (out/'launcher.stdout.log').open('w') as stdout, (out/'launcher.stderr.log'
         for preset in presets():
             for choice in MAPS:
                 validation.enqueue(preset['plan'] | dict(scenario=choice['path']))
-        assert len(validation.series) == 12
+        assert len(validation.series) == len(presets())*len(MAPS)
         stamps = {f.name: f.stat().st_mtime_ns for f in (workspace/'startup').glob('*.json')}
         reopened = subprocess.run(command+['--prepare'], cwd=root, env=env, capture_output=True, text=True, timeout=15)
         assert reopened.returncode == 0, reopened.stderr
@@ -81,7 +81,7 @@ with (out/'launcher.stdout.log').open('w') as stdout, (out/'launcher.stderr.log'
         (out/'gate.json').write_text(json.dumps(dict(status='passed', prepare=True, availablePort=True,
             browserOpenedTwice=True, repeatedLaunchReusesHost=True, noRebuildOnReopen=True,
             duplicateCliRejected=True, unicodeAndSpaces=True, shutdownAndLockRelease=True,
-            presetMapCombinationsValidated=12, validatedArms=21), indent=2))
+            presetMapCombinationsValidated=len(presets())*len(MAPS), validatedArms=sum(len(s["jobs"])//len(s["plan"]["seeds"]) for s in validation.series)), indent=2))
         print('Actual launcher prepare/reopen/lock/shutdown passed')
     finally:
         if process.poll() is None:

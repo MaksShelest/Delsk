@@ -1,0 +1,69 @@
+{
+  "status": "succeeded",
+  "baseCommit": "96e19671766cd882dbd825df902ee6c872c8e15e",
+  "checks": {
+    "full-headless": {
+      "exit_code": 0,
+      "elapsed_seconds": 311.385
+    },
+    "developer-tests": {
+      "exit_code": 0,
+      "elapsed_seconds": 105.164
+    },
+    "client-build": {
+      "exit_code": 0,
+      "elapsed_seconds": 22.529
+    },
+    "godot-import-2": {
+      "exit_code": 0,
+      "elapsed_seconds": 4.533
+    },
+    "godot-smoke": {
+      "exit_code": 0,
+      "elapsed_seconds": 6.696
+    },
+    "workspace-browser-final": {
+      "exit_code": 0,
+      "elapsed_seconds": 46.018
+    },
+    "workspace-final-views": {
+      "exit_code": 0,
+      "elapsed_seconds": 2.472
+    },
+    "model-routing-final": {
+      "exit_code": 0,
+      "elapsed_seconds": 6.045
+    },
+    "launcher-serial": {
+      "exit_code": 0,
+      "elapsed_seconds": 36.769
+    },
+    "python-tests-complete": {
+      "exit_code": 0,
+      "elapsed_seconds": 4.078
+    },
+    "four-quarters-600": {
+      "exit_code": 0,
+      "elapsed_seconds": 9.193
+    },
+    "city-corridor-600": {
+      "exit_code": 0,
+      "elapsed_seconds": 9.502
+    }
+  },
+  "ordinaryTests": 897,
+  "developerTests": 903,
+  "pythonTests": 37,
+  "exports": 102,
+  "replays": 14,
+  "comparisonPairs": 69,
+  "sourceCoreAndEconomyUnchanged": true,
+  "importMessage": "EditorSettings not instantiated yet: export/android/shutdown_adb_on_exit; exit0",
+  "limitations": [
+    "real model inference not performed",
+    "Windows/Android hardware not tested",
+    "Hard efficacy and long balance/ROI still open",
+    "cloud API and visual map editor not implemented",
+    "existing full-history RAM/save/load limitations remain"
+  ]
+}

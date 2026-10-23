@@ -124,7 +124,7 @@ def scalar(document, path, value):
 
 def expand(plan, workspace):
     fields(plan, ['version', 'id', 'scenario', 'economy', 'controllers', 'ticks', 'seeds',
-                  'repetitions', 'mode', 'modelConfig', 'factors', 'composition', 'timeoutSeconds', 'profile'],
+                  'repetitions', 'mode', 'modelConfig', 'factors', 'composition', 'timeoutSeconds', 'profile', 'economyData', 'modelData', 'participants', 'recordWorld'],
            ['version', 'id', 'scenario', 'economy', 'controllers', 'ticks', 'seeds', 'repetitions', 'mode', 'factors'])
     if type(plan['version']) is not int or plan['version'] != 1 or not isinstance(plan['id'],str) or not re.fullmatch(r'[a-zA-Z0-9_-]{1,64}', str(plan['id'])):
         raise ValueError('Invalid plan version/id')
@@ -133,7 +133,7 @@ def expand(plan, workspace):
     seeds = plan['seeds']
     if not isinstance(seeds, list) or not seeds or len(seeds) != len(set(seeds)) or any(not integer(s, 0, 2**64-1) for s in seeds):
         raise ValueError('Use distinct uint64 seeds')
-    if plan['mode'] not in ('algorithmic', 'hybrid') or (plan['mode'] == 'hybrid') != ('modelConfig' in plan):
+    if plan['mode'] not in ('algorithmic', 'hybrid') or (plan['mode'] == 'hybrid') != ('modelConfig' in plan or 'modelData' in plan) or ('modelConfig' in plan and 'modelData' in plan):
         raise ValueError('Hybrid requires explicit real modelConfig; algorithmic forbids it')
     if type(plan.get('profile',False)) is not bool or plan.get('profile',False) and plan['mode']!='algorithmic':
         raise ValueError('Step profiling requires an algorithmic run')
@@ -151,9 +151,12 @@ def expand(plan, workspace):
     if count > 10000:
         raise ValueError('At most 10000 cells per series')
     scenario = read(source(plan['scenario'], workspace))
-    economy = read(source(plan['economy'], workspace))
+    economy = copy.deepcopy(plan['economyData']) if 'economyData' in plan else read(source(plan['economy'], workspace))
     controllers = read(source(plan['controllers'], workspace))
-    model = read(source(plan['modelConfig'], workspace)) if 'modelConfig' in plan else None
+    model = copy.deepcopy(plan['modelData']) if 'modelData' in plan else read(source(plan['modelConfig'], workspace)) if 'modelConfig' in plan else None
+    if not isinstance(economy,dict) or type(plan.get('recordWorld',True)) is not bool:raise ValueError('Invalid economy/recording options')
+    from research_workspace import prepare_participants
+    setup=prepare_participants(plan,scenario,controllers,economy)
     if plan['ticks'] > economy['world']['maxTicks']:
         raise ValueError('Ticks exceed profile maximum')
     if 'composition' in plan:
@@ -178,7 +181,7 @@ def expand(plan, workspace):
                         n.pop('planning', None)
             else:
                 scalar(e, path, value)
-        arms.append(dict(id=f'arm-{index}', factors=dict(zip(paths, combination)), economy=e, controllers=c))
+        arms.append(dict(id=f'arm-{index}', factors=dict(zip(paths, combination)), economy=e, controllers=c, setup=setup))
     return scenario, model, arms
 
 
@@ -191,6 +194,9 @@ def command(folder, job, output):
     # Reuse the common runner CLI, without rebuilding per cell.
     cmd = ['dotnet', str(ROOT/'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll'), *cmd[cmd.index('--')+1:]]
     if job.get('profile'):cmd += ['--profile','true']
+    if job.get('recordWorld',False):cmd += ['--research','true']
+    if job.get('modelWait',False):cmd += ['--model-wait','true']
+    if (path/'setup.json').exists():cmd += ['--research-setup',str(path/'setup.json')]
     return [*cmd, '--economy', str(path/'economy.json'), '--human-ballot', 'self']
 
 
@@ -210,6 +216,8 @@ class Lab:
         self.lock = threading.RLock()
         self.thread = None
         self.paused = True
+        from research_workspace import Workspace
+        self.views=Workspace(self)
         self.series = read(self.workspace/'queue.json') if (self.workspace/'queue.json').exists() else []
         # An interrupted process is never silently considered successful or reissued.
         for s in self.series:
@@ -223,8 +231,15 @@ class Lab:
 
     def snapshot(self):
         with self.lock:
+            series=copy.deepcopy(self.series)
+            for s in series:
+                for j in s['jobs']:
+                    if j['status']=='running':
+                        file=self.workspace/s['id']/'runs'/j['id']/str(j['attempt'])/'progress.json'
+                        try:j['progress']=read(file)
+                        except (OSError,ValueError):pass
             return dict(paused=self.paused, running=self.thread is not None and self.thread.is_alive(),
-                        workspace=str(self.workspace), series=copy.deepcopy(self.series))
+                        workspace=str(self.workspace), series=series)
 
     def enqueue(self, plan):
         scenario, model, arms = expand(plan, self.workspace)
@@ -235,7 +250,8 @@ class Lab:
             if model is not None:
                 write(stage/'inputs/model.json', model)
             for arm in arms:
-                for name in ('economy', 'controllers'):
+                for name in ('economy', 'controllers', 'setup'):
+                    if arm.get(name) is None:continue
                     write(stage/f"inputs/{arm['id']}/{name}.json", arm[name])
                 sample = dict(arm=arm['id'], mode=plan['mode'], seed=plan['seeds'][0], ticks=plan['ticks'])
                 code, _ = self.executor('validate-'+arm['id'], 45, stage/'checks',
@@ -252,9 +268,10 @@ class Lab:
             shutil.copytree(stage/'checks', folder/'validation') if (stage/'checks').exists() else None
         write(folder/'plan.json', plan)
         jobs = [dict(id=f"{arm['id']}-s{seed}-r{repeat}", arm=arm['id'], factors=arm['factors'],
-                     seed=seed, repeat=repeat, ticks=plan['ticks'], mode=plan['mode'], profile=plan.get('profile',False), status='queued', attempt=0)
+                     seed=seed, repeat=repeat, ticks=plan['ticks'], mode=plan['mode'], profile=plan.get('profile',False),recordWorld=plan.get('recordWorld',True) and not plan.get('profile',False),modelWait=not plan.get('profile',False), status='queued', attempt=0)
                 for arm in arms for seed in plan['seeds'] for repeat in range(plan['repetitions'])]
-        s = dict(id=key, plan=plan, jobs=jobs, commit=self.commit,
+        from research_workspace import binary_hashes
+        s = dict(id=key,name=plan['id'],archived=False, plan=copy.deepcopy(plan), jobs=jobs, commit=self.commit,binaries=binary_hashes(),
                  inputs={str(p.relative_to(folder)): digest(p) for p in sorted((folder/'inputs').rglob('*.json'))})
         with self.lock:
             self.series.append(s)
@@ -270,7 +287,7 @@ class Lab:
             if retry:
                 for s in self.series:
                     for j in s['jobs']:
-                        if j['status'] in ('failed', 'interrupted'):
+                        if not s.get('archived') and j['status'] in ('failed', 'interrupted','cancelled'):
                             j['status'] = 'queued'
             self.paused = False
             self.save()
@@ -281,7 +298,7 @@ class Lab:
     def drain(self):
         while True:
             with self.lock:
-                pending = next(((s, j) for s in self.series for j in s['jobs'] if j['status'] == 'queued'), None)
+                pending = next(((s, j) for s in self.series if not s.get('archived') for j in s['jobs'] if j['status'] == 'queued'), None)
                 if self.paused or pending is None:
                     # Close the start/drain race while holding the same lock.
                     self.thread = None
@@ -292,23 +309,31 @@ class Lab:
                 job = copy.deepcopy(j)
             folder = self.workspace/s['id']
             out = folder/'runs'/job['id']/str(job['attempt'])
+            cmd=[]
             try:
+                from research_workspace import binary_hashes,validate_recording
+                if s.get('binaries',{})!=binary_hashes():raise ValueError('Runner binaries changed; create a new series')
                 if any(digest(folder/p) != h for p, h in s['inputs'].items()):
                     raise ValueError('Validated input snapshot was changed')
                 cmd = command(folder, job, out)
                 code, meta = self.executor(job['id']+'-a'+str(job['attempt']), s['plan'].get('timeoutSeconds', 180), folder/'checks', cmd)
+                if code==2 and (out/'summary.json').exists() and read(out/'summary.json').get('status')=='cancelled':
+                    with self.lock:j.update(status='cancelled',result=str(out.relative_to(self.workspace)),command=cmd)
+                    raise InterruptedError('Researcher cancelled')
                 if code:
                     raise ValueError(f'Runner exit {code}; see checks/{job["id"]}-a{job["attempt"]} logs')
+                if job.get('recordWorld'):validate_recording(out)
                 metrics = measure(out)
                 with self.lock:
                     j.update(status='succeeded', metrics=metrics, result=str(out.relative_to(self.workspace)), check=meta, command=cmd, artifacts=[p.name for p in sorted(out.iterdir()) if p.suffix in ('.json','.jsonl','.csv')])
                     j.pop('error', None)
             except Exception as error:
                 with self.lock:
-                    j.update(status='failed', error=str(error))
+                    j.update(status='cancelled' if isinstance(error,InterruptedError) else 'failed', error=str(error),result=str(out.relative_to(self.workspace)),command=cmd)
             with self.lock:
                 j['logs'] = [str(p.relative_to(self.workspace)) for p in
                              sorted((folder/'checks').glob(job['id']+'-a'+str(job['attempt'])+'.*')) if p.is_file()]
+                s['bytes']=sum(p.stat().st_size for p in folder.rglob('*') if p.is_file() and not p.is_symlink())
                 write(folder/'series.json', s)
                 self.export_summary(folder, self.compare([s['id']]))
                 self.save()
@@ -338,7 +363,8 @@ class Lab:
             for left,right in itertools.combinations(groups,2):
                 a = next(s for s in self.series if s['id']==left['series'])
                 b = next(s for s in self.series if s['id']==right['series'])
-                if a['inputs']['inputs/scenario.json'] != b['inputs']['inputs/scenario.json']:
+                from research_workspace import compatible
+                if not compatible(self,a,b,left['arm'],right['arm']):
                     continue
                 aj = {(j['seed'],j['repeat']):j for j in a['jobs'] if j['arm']==left['arm'] and j['status']=='succeeded'}
                 bj = {(j['seed'],j['repeat']):j for j in b['jobs'] if j['arm']==right['arm'] and j['status']=='succeeded'}
@@ -346,6 +372,9 @@ class Lab:
                 common = left['metrics'].keys() & right['metrics'].keys()
                 pairs.append(dict(left=[left['series'],left['arm']],right=[right['series'],right['arm']],
                     pairs=len(keys),independentSeeds=len({k[0] for k in keys}),
+                    declaredContrasts=dict(mode=[a['plan']['mode'],b['plan']['mode']],
+                        modelConfigurationHashes=[a['inputs'].get('inputs/model.json'),b['inputs'].get('inputs/model.json')],
+                        factors=sorted({f['path'] for s in (a,b) for f in s['plan']['factors']})),
                     differences={m:spread([bj[k]['metrics'][m]-aj[k]['metrics'][m] for k in keys
                         if type(aj[k]['metrics'].get(m)) in (int,float) and type(bj[k]['metrics'].get(m)) in (int,float)]) for m in sorted(common)}))
             return dict(groups=groups, pairedRightMinusLeft=pairs, scope='Research-only aggregates; paired analysis requires identical inputs except the declared factors. Repeated algorithmic seeds are replicas, not independent samples.')

@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "prepare": true,
+  "availablePort": true,
+  "browserOpenedTwice": true,
+  "repeatedLaunchReusesHost": true,
+  "noRebuildOnReopen": true,
+  "duplicateCliRejected": true,
+  "unicodeAndSpaces": true,
+  "shutdownAndLockRelease": true,
+  "presetMapCombinationsValidated": 20,
+  "validatedArms": 35
+}
