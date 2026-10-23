@@ -1,3 +1,11 @@
+## Исследовательское пространство и две карты,23.10.2026
+
+- Последняя реализация P58: docs/RESEARCH_WORKSPACE.md, MAPS_RESEARCH.md и IMPLEMENTATION_REPORT_RESEARCH_WORKSPACE.md. Историческая пауза очереди между bounded jobs сохранена; новые pause/resume/cancel активной попытки идут только на безопасной границе Research.Runner observer. Core/World18/Rules production-recipes-1/Session2/Envelope2 не менялись.
+- Кадры0..finalTick записываются на диск с UTF-8 byte-offset index; frozen voting записывается после tally, replay подаёт конечные бюллетени до завершения записи. Не включать неполные/failed/cancelled записи в статистику.
+- Новая timing-группа ResearchWaitAtDecision-v1 не продвигает мир в ожидании модели. Per-NPC bindings используют один ModelRuntime; mixed load учитывает алгоритмические actors, pending не requery. Prompt/reply только researcher. API облачных моделей и редактор карт не реализованы.
+- PlayMaps.All включает прежние три карты, FourQuarters и CityCorridor. Из PR45 перенесён только сценарий; не сливать устаревшую draft-ветку целиком. Геометрическое равенство/600тиков не доказательство P59/Hard/ROI.
+- Входы и DLL закреплены SHA256; после обновления runner создаётся новая серия. Собственные profiles не переписывают начатые опыты. Тесты:37 лабораторных unit, check_research_workspace.py (реальный браузер/runner), check_research_model_routing.py (явная HTTP fixture). Фактические окончательные числа — только из отчёта.
+
 # Инструкции работы в Delsk
 
 Автор проекта и материалов: Шелестов Максим Евгеньевич.

@@ -6,7 +6,7 @@ using Agents.Llm;
 using Simulation.Core;
 using Simulation.Hosting;
 
-internal record ModelRunConfiguration(HybridSettings? Policy = null, ModelRuntimeSettings? Runtime = null, OllamaSettings? Ollama = null);
+internal record ModelRunConfiguration(HybridSettings? Policy = null, ModelRuntimeSettings? Runtime = null, OllamaSettings? Ollama = null, Dictionary<string,OllamaSettings?>? Bindings = null);
 
 /// <summary>Composition and external scheduling stay outside Core and controller code.</summary>
 internal sealed class ModelServices : IDisposable
@@ -35,7 +35,9 @@ internal sealed class ModelServices : IDisposable
         }
         if (_mode == "ollama" && !options.ContainsKey("--model-config")) throw new ArgumentException("Live Ollama requires --model-config");
         ILocalModelAdapter adapter;
-        if (_mode == "ollama") { var ollama = new OllamaAdapter(_config.Ollama ?? new()); adapter = ollama; _adapterOwner = ollama; }
+        if (_config.Bindings is {} bindings && bindings.Keys.Any(k=>!long.TryParse(k,out long actor) || !actors.Contains(actor)))
+            throw new ArgumentException("Model bindings must identify configured NPCs");
+        if (_mode == "ollama") { var router = new RoutingAdapter(_config,options); adapter = router; _adapterOwner = router; }
         else if (safety) { _safety = new(); adapter = _safety; _config = new(new(ApplyDelayTicks: 5, DecisionTtlTicks: 5, MaximumRequestsPerPeriod: 1), new()); }
         else adapter = new UnavailableAdapter();
         _runtime = new(adapter, actors, _config.Runtime ?? new(), enabled: _mode != "off");
@@ -46,16 +48,17 @@ internal sealed class ModelServices : IDisposable
         Setup(options, config.Npcs.Select(p => p.ActorId).ToArray(), safety);
         var policy = _config.Policy ?? new();
         if (_mode == "off") policy = policy with { Enabled = false };
-        return AutonomousRun.Configure(session, definition, controllers, c => new HybridController(c, _runtime!, policy), economics, options.GetValueOrDefault("--human-ballot")=="self");
+        return AutonomousRun.Configure(session, definition, controllers, c => _config.Bindings is {} b && (!b.TryGetValue(c.Actor.Value.ToString(),out var binding) || binding is null) ? c : new HybridController(c, _runtime!, policy), economics, options.GetValueOrDefault("--human-ballot")=="self");
     }
     public void Restore(GameSession session, Dictionary<string, string> options)
     {
         var actors = session.ControllerStates.Where(c => c.Kind == HybridController.PolicyKind).Select(c => c.Actor.Value).ToArray();
         if (actors.Length == 0 && (options.ContainsKey("--model-mode") || options.ContainsKey("--model-config")))
             throw new ArgumentException("The checkpoint has no hybrid controllers");
-        if (actors.Length > 0) Setup(options, actors, false);
+        if (actors.Length > 0) Setup(options, session.ControllerStates.Where(c=>c.Kind!=SelfBallotController.Kind).Select(c=>c.Actor.Value).ToArray(), false);
         session.RestoreControllers(c => c.Kind == HybridController.PolicyKind ? HybridController.Restore(c, _runtime!) : c.Kind==SelfBallotController.Kind ? SelfBallotController.Restore(c) : AlgorithmicController.Restore(c));
     }
+    public void ProgressWaiting()=>_runtime?.ProgressWaiting();
     public async Task RunSafety(GameSession session, long finalTick)
     {
         while (session.Engine.Tick < finalTick)
@@ -90,6 +93,33 @@ internal sealed class ModelServices : IDisposable
         if (!condition()) throw new InvalidOperationException("Fake model fixture exceeded its bound");
     }
     public void Dispose() { _safety?.ReleaseLate(); _runtime?.Dispose(); _adapterOwner?.Dispose(); }
+    private sealed class RoutingAdapter : ILocalModelAdapter, IDisposable
+    {
+        private readonly OllamaAdapter? _default;
+        private readonly Dictionary<long,OllamaAdapter> _bindings=[];
+        private readonly StreamWriter? _transcripts;
+        private bool _closed;
+        public RoutingAdapter(ModelRunConfiguration config,Dictionary<string,string> options)
+        {
+            if(config.Bindings is null)_default=new(config.Ollama??new());
+            else foreach(var (actor,binding) in config.Bindings)if(binding is not null)_bindings.Add(long.Parse(actor),new(binding));
+            if(options.GetValueOrDefault("--research")=="true")
+            {
+                string directory=options.GetValueOrDefault("--output","artifacts/cycle");Directory.CreateDirectory(directory);
+                _transcripts=new(new FileStream(Path.Combine(directory,"model-transcripts.jsonl"),FileMode.Create,FileAccess.Write,FileShare.Read),new System.Text.UTF8Encoding(false)){AutoFlush=true};
+            }
+        }
+        public async Task<ModelReply> CompleteAsync(ModelRequest request,CancellationToken cancellationToken)
+        {
+            Transcript(new {Tick=request.RequestedTick,ActorId=request.ActorId,Request=request,Status="Requested"});
+            var adapter=_bindings.GetValueOrDefault(request.ActorId)??_default;
+            var reply=adapter is null?new ModelReply(null,"ModelDisabled"):await adapter.CompleteAsync(request,cancellationToken).ConfigureAwait(false);
+            Transcript(new {Tick=request.RequestedTick,ActorId=request.ActorId,DecisionId=request.DecisionId,Reply=reply,Status="Completed"});
+            return reply;
+        }
+        private void Transcript(object row){if(_transcripts is not null)lock(_transcripts){if(!_closed)_transcripts.WriteLine(JsonSerializer.Serialize(row,SimulationJson.Options));}}
+        public void Dispose(){_default?.Dispose();foreach(var adapter in _bindings.Values)adapter.Dispose();if(_transcripts is not null)lock(_transcripts){_closed=true;_transcripts.Dispose();}}
+    }
     private sealed class UnavailableAdapter : ILocalModelAdapter
     { public Task<ModelReply> CompleteAsync(ModelRequest request, CancellationToken cancellationToken) => Task.FromResult(new ModelReply(null, "ModelUnavailable")); }
     private sealed class SafetyAdapter : ILocalModelAdapter

@@ -1,0 +1,17 @@
+{
+  "status": "succeeded",
+  "browserErrors": [],
+  "recordedFrames": 601,
+  "pauseResumeCancel": true,
+  "archiveRestoreDelete": true,
+  "independentSettings": true,
+  "inlineFiles": true,
+  "world": true,
+  "chart": true,
+  "modelProfiles": true,
+  "zip": true,
+  "narrow640": true,
+  "uiCliObserverLoadReplay": true,
+  "accessGuards": true,
+  "stateHash": "688418549b060e9088068646f9f6c6c1a23742b11d1c183f53b766a18f141ff9"
+}

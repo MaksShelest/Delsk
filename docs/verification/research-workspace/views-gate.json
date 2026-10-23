@@ -1,0 +1,13 @@
+{
+  "status": "succeeded",
+  "comparisonUi": true,
+  "diskSize": true,
+  "missingModelRejected": true,
+  "invalidSeedRejected": true,
+  "realCoreValidationRejected": true,
+  "noInvalidSeriesPublished": true,
+  "finalFrameVisible": true,
+  "narrow640": true,
+  "duplicateAndUnsafeJsonRejected": true,
+  "browserErrors": []
+}

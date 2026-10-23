@@ -1,0 +1,16 @@
+{
+  "status": "succeeded",
+  "fixture": "HTTP protocol fixture; no real neural inference",
+  "singlePhysicalSlot": true,
+  "models": [
+    "fixture-a",
+    "fixture-b"
+  ],
+  "algorithmActor": 3,
+  "recordedPromptReply": true,
+  "waitKeepsTick": true,
+  "mixedBindingsLoad": true,
+  "worldContinuation": true,
+  "replayWithoutInference": true,
+  "requests": 2
+}

@@ -816,3 +816,9 @@ menu.debug и OpenDebug ограничены DEBUG (Debug/ExportDebug); в Relea
 ## Стандартная галочка экспорта,21.10.2026
 
 По новому явному требованию владельца оригинальный Godot ExportDebug выбирает DelskDeveloper=true через ранний root props default (до fallbackfalse) во всём графе references. Для этой конфигурации отдельный stage/Package flag не нужен. Editor Debug остаётся обычным, ExportRelease обычный по умолчанию и без Developer API. Разделение obj/bin/locks сохраняется; явный Developer Release запрещён. Малый editor-only GDScript addon убирает два известных устаревших Developer файла из own Windows managed bundle после release с подтверждённым manifest; debug/ошибочный export/чужие файлы защищены. Runtime/симуляция/пауза/сохранения не меняются.
+
+## Исследовательское пространство,23.10.2026
+
+ResearchObservation в Research.Runner пишет lean Presentation/own researcher state на диск, byte-offset индекс, incremental events/decisions и atomic progress. Cooperative control читается только между шагами; никакой UI/Python-экономики и нового состояния Core/save. Final voting сначала завершается (replay подаёт final-barrier inputs), затем публикуется кадр. Полнота и конечный hash проверяются до statistics. ResearchWaitAtDecision-v1 обслуживает прежнюю admitted ModelRuntime queue вне Step. ModelServices routing выбирает adapter по actor и пишет private request/reply; один inference slot. Mixed restore регистрирует все NPC IDs.
+
+Python Workspace отвечает за известные папки опытов, previews/cursors/profiles/архив/удаление, не модель мира. Входы и бинарники закрепляются hashes; сравнение сверяет недекларированные условия и timing, объявляет mode/model/factor contrast. Пять карт разделяют экономический профиль и PlayMaps.All; source-specific scenario restore mapping сохранён. Процедура RESEARCH_WORKSPACE.md.
