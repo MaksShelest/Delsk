@@ -1,0 +1,177 @@
+{
+  "status": "succeeded",
+  "scope": "A2_only",
+  "baseCommit": "19d8cf16d626c42859ab9f88ba7cb894898f63bf",
+  "branch": "feat/vnext-package-a2",
+  "versions": {
+    "sdk": "10.0.401",
+    "tfm": "net10.0",
+    "world": 18,
+    "rules": "production-recipes-1",
+    "session": 2,
+    "envelope": 2,
+    "catalog": "delsk-vnext-catalog-1",
+    "full": "delsk-vnext-balance-1"
+  },
+  "tests": {
+    "total": "998",
+    "executed": "998",
+    "passed": "998",
+    "failed": "0",
+    "error": "0",
+    "timeout": "0",
+    "aborted": "0",
+    "inconclusive": "0",
+    "passedButRunAborted": "0",
+    "notRunnable": "0",
+    "notExecuted": "0",
+    "disconnected": "0",
+    "warning": "0",
+    "completed": "0",
+    "inProgress": "0",
+    "pending": "0"
+  },
+  "headless": {
+    "status": "succeeded",
+    "scenarios": 24,
+    "baselineCases": 5,
+    "exports": 102,
+    "replays": 14,
+    "comparisonPairs": 69
+  },
+  "a2": {
+    "processChecks": 49,
+    "exports": 4,
+    "comparisonPairs": 3,
+    "sourceAndA1Verified": true
+  },
+  "a1": {
+    "processChecks": 43,
+    "exports": 4,
+    "comparisonPairs": 3
+  },
+  "laboratory": {
+    "tests": 37,
+    "passed": 37,
+    "loopbackPermissionEnabled": true
+  },
+  "checks": {
+    "a2-final-headless": {
+      "command": [
+        "python3",
+        "scripts/check_headless.py",
+        "--output",
+        "/workspace/work/delsk-a2/headless-verified"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-24T13:58:46.278721+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 286.171,
+      "finished_at": "2026-10-24T14:03:32.450246+00:00"
+    },
+    "a2-process-verified": {
+      "command": [
+        "python3",
+        "scripts/check_vnext_balance.py",
+        "--output",
+        "/workspace/work/delsk-a2/cli-verified"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-24T14:01:47.593233+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 10.601,
+      "finished_at": "2026-10-24T14:01:58.194423+00:00"
+    },
+    "a1-regression-gate": {
+      "command": [
+        "python3",
+        "scripts/check_vnext_catalog.py",
+        "--output",
+        "/workspace/work/delsk-a2/a1-final"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-24T13:53:03.934621+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 9.506,
+      "finished_at": "2026-10-24T13:53:13.440311+00:00"
+    },
+    "a2-lab-loopback": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Research.Lab",
+        "-v"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-24T14:02:37.526173+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.662,
+      "finished_at": "2026-10-24T14:02:41.188430+00:00"
+    },
+    "a2-handoff-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-24T14:18:03.761240+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 23.898,
+      "finished_at": "2026-10-24T14:18:27.659707+00:00"
+    },
+    "a2-handoff-cli": {
+      "command": [
+        "python3",
+        "scripts/check_vnext_balance.py",
+        "--output",
+        "/workspace/work/delsk-a2/cli-handoff"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-24T14:18:27.712761+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 10.171,
+      "finished_at": "2026-10-24T14:18:37.883798+00:00"
+    }
+  },
+  "inputSha256": {
+    "docs/vnext/data/BALANCE_VNEXT.json": "4b12d705acd4c7f4e9d44f540eb3f600edd75b983b1ffdd52c71a15e8a42c9d2",
+    "config/vnext/catalog.b1.json": "62bf82eb8ed11e0cc72415c6fef026d8a3e305ee7f0849debdefb2115a70a0a8",
+    "config/vnext/balance.b1.json": "2b1d8e97593da5c3e75060b82e08fb3da810c6e66a415f5ee76f53d3e2b97078",
+    "config/vnext/economy.b1-supported.json": "4cbf810521e05703b13f8b8a8d2dc6204771eed738690ec1d3fadffead373e2f",
+    "config/economy.json": "b3da26be46960e876327a0dcca960c48575b6a98c9080eacb283a4a3f2c7317c"
+  },
+  "runtimeFixture": {
+    "id": "vnext-supported-production-fixture-1",
+    "tick": 50,
+    "stateHash": "8e1a85419d83a0581dcc71e20db6a7dc9aca3ad6dfc5432bad91a6ffb6efd7a9",
+    "configHash": "e94cfb4fbf72975aa914ea2a7782f51cb5722dc3ba8d948a6c63b52fa27ef1b6",
+    "checkpointTick": 18,
+    "inputStone": 3,
+    "outputGravel": 5,
+    "workTicks": 20,
+    "wagesMinor": 2000,
+    "serviceMinor": 40,
+    "finalCashMinor": 17960,
+    "preparedBuilding": true,
+    "sourceFileMetadataNotAddedToSave": true
+  },
+  "notClaimed": [
+    "full runtime B1",
+    "P61 new authoritative states",
+    "full P63",
+    "P53/P56/P59/P60 acceptance",
+    "variable participants/B1 or maps/B2",
+    "real model",
+    "device tests",
+    "dynamic balance or ROI"
+  ]
+}

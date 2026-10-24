@@ -7,6 +7,7 @@ using Simulation.Hosting;
 
 // Catalog-only commands must return before any model runtime, controller or world exists.
 if (args.Contains("--validate-vnext-catalog", StringComparer.Ordinal)) return VNextCatalogCommand.Run(args);
+if (args.Contains("--validate-vnext-balance", StringComparer.Ordinal)) return VNextBalanceCommand.Run(args);
 
 try
 {
@@ -31,13 +32,14 @@ try
         (options.GetValueOrDefault("--profile","false") == "true" || options.GetValueOrDefault("--validate-only","false") == "true"))
         throw new ArgumentException("Profile/validate-only require a new run");
     if(options.ContainsKey("--research-setup") && (options.ContainsKey("--load") || options.ContainsKey("--replay")))throw new ArgumentException("Research setup applies only to new runs");
-    EconomyProfile? economics = options.TryGetValue("--economy", out var economyPath) ? EconomyProfile.Load(economyPath) : null;
+    byte[]? economyBytes = options.TryGetValue("--economy", out var economyPath) ? VNextBalanceReader.ReadBounded(economyPath) : null;
+    EconomyProfile? economics = economyBytes is null ? null : EconomyProfile.Read(System.Text.Encoding.UTF8.GetString(economyBytes));
     if (economics is not null && (options.ContainsKey("--load") || options.ContainsKey("--replay")))
         throw new ArgumentException("--economy only applies to a new run; load/replay use the saved resolved configuration");
     string directory = options.GetValueOrDefault("--output", "artifacts/cycle");
     string script = options.GetValueOrDefault("--script", "cycle");
     string mode = options.GetValueOrDefault("--mode", "headless");
-    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market" or "pickup" or "delivery" or "capital-delivery" or "logistics" or "logistics-upgrade" or "own-storage" or "inbound" or "own-production" or "logistics-queue" or "capital-demand" or "elections" or "stopped-elections" or "physical-automation" or "participant-trade" or "food-chain" or "support" or "baseline" or "hybrid" or "model-safety") || mode is not ("headless" or "paced"))
+    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market" or "pickup" or "delivery" or "capital-delivery" or "logistics" or "logistics-upgrade" or "own-storage" or "inbound" or "own-production" or "logistics-queue" or "capital-demand" or "elections" or "stopped-elections" or "physical-automation" or "participant-trade" or "food-chain" or "support" or "baseline" or "hybrid" or "model-safety" or "vnext-supported-fixture") || mode is not ("headless" or "paced"))
         throw new ArgumentException("Invalid script or mode");
     if (options.ContainsKey("--controllers") && (script is not ("autonomous" or "baseline" or "hybrid" or "model-safety") || options.ContainsKey("--load") || options.ContainsKey("--replay")))
         throw new ArgumentException("--controllers applies only to a new autonomous run");
@@ -197,7 +199,7 @@ try
         throw;
     }
     observer?.Progress("exporting");
-    watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, modelMetadata: models.Metadata);
+    watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, modelMetadata: models.Metadata, economyProvenance: economics?.VNext is { } provenance ? new { Metadata=provenance, ProfileFileSha256=VNextBalanceReader.Digest(economyBytes!), ResolvedConfigHash=session.Engine.ConfigHash } : null);
     if (economics is not null)
         File.WriteAllText(Path.Combine(directory,"economy-profile.json"),JsonSerializer.Serialize(economics,new JsonSerializerOptions(SimulationJson.Options) {WriteIndented=true}));
     observer?.Progress("completed");
@@ -207,7 +209,8 @@ try
     void Save(GameSession s) { CheckpointStore.Save(s, options["--checkpoint"]); saved = true; }
     static void RunScript(GameSession s, ScenarioDefinition d, string script)
     {
-        if (script == "cycle") ScriptedScenarios.EconomicCycle(s, d);
+        if (script == "vnext-supported-fixture") ScriptedScenarios.VNextSupportedProduction(s,d);
+        else if (script == "cycle") ScriptedScenarios.EconomicCycle(s, d);
         else if (script == "recovery") ScriptedScenarios.ZeroCashRecovery(s, d);
         else if (script == "development") ScriptedScenarios.Development(s, d);
         else if (script == "labor") ScriptedScenarios.LaborDynamics(s, d);

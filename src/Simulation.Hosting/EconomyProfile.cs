@@ -14,7 +14,8 @@ public sealed record WorldEconomy(long StartingCashMinor, long PersonalInventory
 public sealed record ResourceTypeBalance(string ItemId, ResourceSiteRules Private, ResourceSiteRules Public);
 
 /// <summary>One editable balance source; geometry remains in the scenario. Resolved values are saved by Core.</summary>
-public sealed record EconomyProfile(int Version, string Id, WorldEconomy World, JsonElement Npc)
+public sealed record EconomyProfile(int Version, string Id, WorldEconomy World, JsonElement Npc,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] VNextProjectionMetadata? VNext = null)
 {
     public static EconomyProfile Read(string json)
     {
@@ -28,7 +29,17 @@ public sealed record EconomyProfile(int Version, string Id, WorldEconomy World, 
             p.World.Rules is null || p.World.Labor is null || p.World.Market is null || p.World.Delivery is null || p.World.Logistics is null ||
             p.World.CapitalDemand is null || p.World.Elections is null || p.World.Support is null)
             throw new ArgumentException("Economy profile: missing/invalid economic section");
-        p.World.Rules.Validate(); return p;
+        p.World.Rules.Validate();
+        if(p.Id==VNextSupportedProfile.ProfileId && p.VNext is null)throw new ArgumentException("Supported projection requires its provenance metadata.");
+        if(p.VNext is { } provenance)
+        {
+            if(provenance.ProjectionVersion!="supported-projection-1" || provenance.FixedParticipants!=4 ||
+                provenance.ActiveCapabilities is not {Length:>0} || provenance.Limitations is not {Length:>0} ||
+                new[]{provenance.SourceSha256,provenance.FullBalanceSha256,provenance.CatalogSha256,provenance.BaselineProfileSha256,provenance.ProjectionPayloadSha256}.Any(h=>h is null || !System.Text.RegularExpressions.Regex.IsMatch(h,"\\A[0-9a-f]{64}\\z",System.Text.RegularExpressions.RegexOptions.CultureInvariant)) ||
+                provenance.ProjectionPayloadSha256!=VNextBalanceReader.Digest(VNextSupportedProfile.Serialize(p with {VNext=null})))
+                throw new ArgumentException("Invalid/stale supported projection metadata. Regenerate it; edited research profiles must remove vNext metadata and choose their own id.");
+        }
+        return p;
     }
     private static void CheckUnique(JsonElement node)
     {
@@ -48,6 +59,8 @@ public sealed record EconomyProfile(int Version, string Id, WorldEconomy World, 
     public ScenarioDefinition Apply(ScenarioDefinition map)
     {
         var w = World;
+        if(VNext is {} projection && map.Participants.Length!=projection.FixedParticipants)
+            throw new ArgumentException("This supported projection is fixed to four participants; variable composition belongs to B1.");
         var resolved = map with {
             EconomyProfileId = Id, Economy = w.Rules, Items = w.Items, Recipes = w.Recipes,
             BuildingTypes = w.BuildingTypes, EquipmentTypes = w.EquipmentTypes, Population = w.Population,

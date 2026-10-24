@@ -636,3 +636,26 @@ Research.Runner --validate-vnext-catalog PATH --output DIR — ранний вы
 World18/production-recipes-1/Session2/Envelope2 и economy-v6 прежние. Остальные
 данные/адаптер/семантический граф/вместимости/явный новый runtime smoke — A2,
 новые игровые механики — последующие пакеты, не фиктивные placeholders A1.
+
+## 56. A2: полный read-only баланс и ограниченная проекция (24.10.2026)
+
+Отдельный delsk-vnext-balance-1 сохраняет все15разделов/metadata B1; A1 не
+расширяется скрытыми обязательными полями. Неизвестные/пропущенные/нецелые/
+нулевые вне домена/duplicate/ref/checked arithmetic отвергаются изолированным
+Hosting reader. Явные source+A1 inputs проверяют каждый section и exact source
+SHA; declaration SHA без source не называется проверенным происхождением.
+
+Семантика — статический анализ пяти ступеней, объёмов/69производных партий,
+полных прямых затрат и bounded construction witness с общим расходуемым seed.
+Неподтверждённый граф/переполнение — error, низкая маржа — warning. Ни pass,
+ни положительная маржа не означают balanced=true. Coverage показывает будущие
+неисполненные механики и консервативные пределы графа/финансирования/импорта.
+
+Supported EconomyProfile — отдельный явно выбираемый fixed4,34items/23V1/
+8настоящих resource profiles; executor прежний, service=T×rate, demand bp точно
+сокращается11/10. Нет фиктивных пяти уровней/строительных шаблонов/XP/цехов/
+импорта/услуг. Техника выключена, remaining baseline values explicit. Metadata
+Profile.VNext omitted when null, canonical payload SHA защищает от stale edits;
+runtime manifest хранит source/full/catalog/baseline/profile SHA и ConfigHash.
+World/save не расширялись ради метаданных; direct load/replay используют прежний
+saved resolved config. Полный отчёт/mapping и actual gates — PACKAGE_A2.

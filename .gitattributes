@@ -1,3 +1,6 @@
 # Provenance hashes cover exact bytes; keep these data files identical on Windows/Linux.
 /docs/vnext/data/BALANCE_VNEXT.json text eol=lf
 /config/vnext/catalog.b1.json text eol=lf
+/config/vnext/balance.b1.json text eol=lf
+/config/vnext/economy.b1-supported.json text eol=lf
+/config/economy.json text eol=lf

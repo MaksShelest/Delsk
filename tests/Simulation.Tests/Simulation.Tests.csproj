@@ -1,5 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <EmbeddedResource Include="../../config/vnext/balance.b1.json" LogicalName="Fixture.vnext-balance.json" />
+    <EmbeddedResource Include="../../config/vnext/economy.b1-supported.json" LogicalName="Fixture.vnext-supported.json" />
+    <EmbeddedResource Include="../../scenarios/vnext/supported-production-fixture.json" LogicalName="Fixture.vnext-production.json" />
     <EmbeddedResource Include="../../config/vnext/catalog.b1.json" LogicalName="Fixture.vnext-catalog.json" />
     <EmbeddedResource Include="../../docs/vnext/data/BALANCE_VNEXT.json" LogicalName="Fixture.vnext-design.json" />
   </ItemGroup>
