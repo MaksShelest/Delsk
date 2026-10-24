@@ -5,6 +5,8 @@ using Simulation.Core;
 using Agents.Algorithmic;
 using Simulation.Hosting;
 
+if(args.Contains("--export-map-design",StringComparer.Ordinal))return MapDesignCommand.Run(args);
+
 // Catalog-only commands must return before any model runtime, controller or world exists.
 if (args.Contains("--validate-vnext-catalog", StringComparer.Ordinal)) return VNextCatalogCommand.Run(args);
 if (args.Contains("--validate-vnext-balance", StringComparer.Ordinal)) return VNextBalanceCommand.Run(args);
@@ -90,7 +92,7 @@ try
     }
     else
     {
-        definition = RunArtifacts.LoadScenario(options.GetValueOrDefault("--scenario", script == "model-safety" ? "scenarios/model-safety.json" : script is "baseline" or "hybrid" ? "scenarios/baseline-economy.json" : script == "autonomous" ? "scenarios/autonomous-economy.json" : "scenarios/economic-cycle.json"));
+        definition = RunArtifacts.LoadScenario(options.GetValueOrDefault("--scenario", script == "model-safety" ? "scenarios/model-safety.json" : script is "baseline" or "hybrid" ? "scenarios/baseline-economy.json" : script == "autonomous" ? "scenarios/autonomous-economy.json" : "scenarios/economic-cycle.json"),economics);
         if(options.TryGetValue("--new-game",out var newGamePath))
         {
             if(new FileInfo(newGamePath).Length>8192)throw new ArgumentException("New-game options too large");
@@ -146,6 +148,7 @@ try
         session.ConfigureResearchPlayback(JsonSerializer.Deserialize<ResearchModification[]>(File.ReadAllText(researchPath),SimulationJson.Options)??throw new ArgumentException("InvalidResearchReplay"));
     }
 #endif
+    double startupMilliseconds=watch.Elapsed.TotalMilliseconds;
     bool observe=options.GetValueOrDefault("--research")=="true";
     bool waitForModel=options.GetValueOrDefault("--model-wait")=="true";
     if(observe && (target is null || options.GetValueOrDefault("--profile")=="true"))throw new ArgumentException("Research recording requires --ticks and no --profile");
@@ -211,7 +214,7 @@ try
         throw;
     }
     observer?.Progress("exporting");
-    watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, modelMetadata: models.Metadata, economyProvenance: economics?.VNext is { } provenance ? new { Metadata=provenance, ProfileFileSha256=VNextBalanceReader.Digest(economyBytes!), ResolvedConfigHash=session.Engine.ConfigHash } : null);
+    watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, modelMetadata: models.Metadata, economyProvenance: economics?.VNext is { } provenance ? new { Metadata=provenance, ProfileFileSha256=VNextBalanceReader.Digest(economyBytes!), ResolvedConfigHash=session.Engine.ConfigHash } : null,startupMilliseconds:startupMilliseconds);
     if (economics is not null)
         File.WriteAllText(Path.Combine(directory,"economy-profile.json"),JsonSerializer.Serialize(economics,new JsonSerializerOptions(SimulationJson.Options) {WriteIndented=true}));
     observer?.Progress("completed");

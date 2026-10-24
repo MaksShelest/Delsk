@@ -93,7 +93,8 @@ public record ScenarioDefinition(string Id, ulong Seed, int MapWidth, int MapHei
     [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] EconomicRules? Economy = null,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? EconomyProfileId = null,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long StartingTreasuryMinor = 0,
-    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] NewGameProvenance? NewGame = null);
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] NewGameProvenance? NewGame = null,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] MapLayout? Layout = null);
 
 public record StockView(string ItemId, long Quantity, long Reserved);
 public record InventoryView(InventoryId Id, ParticipantId OwnerId, Cell Position, long Capacity,

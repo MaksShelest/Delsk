@@ -1,3 +1,29 @@
+## Карты B2,24.10.2026
+
+- От verified B1/PR58 (74b0ca5,56badfa): MapDesignReader -> existing ScenarioDefinition,
+  strict source delsk-map-design-1, typed optional Layout/map-adapter-1. Source maps
+  неизменны; C# --export-map-design воспроизводит scenarios/vnext/*.json. Source SHA,
+  snapshot bytes/profile SHA/runtime ConfigHash различать. Initial scenario limit2MiB
+  для large snapshot; строгие A1/A2 reader limits не менялись.
+- small_river64x48/48lots/8districts и large_districts128x96/96lots/24districts,
+  8resource IDs,15stalls/11spawns. Runtime profile только explicit supported A2,
+  default economy-v6 на старых5картах прежний. CLI/UI incompatible profile reject;
+  preview не мир/HTTP, ошибки профиля не ломают каталог. Общий B1 setup/controllers.
+- MapLayout хранит exact roads/lots/district/civic/source IDs, исходник civic не имеет
+  entry и terminal/dealer body: южный approach, terminal north2x2/dealer north5x3;
+  townhall exact source2x2. Bodies blocked Core; decorations не collision authority.
+  Protected corridor/civic/resource не Plot. Buy/Build старые; no free contours.
+- 3D без промышленных stakes/grid; city dirt объединена, big ground без12kmeshes.
+  Ore/sand quarry fallback, milk farm. New-map mini reuses read-only DebugBoard,
+  no time/commands. Ратуша City+existing FillPolitics (scroll), terminal exchange,
+  dealer paused HelpOverlay о будущем E. No real vehicle sales/road ownership tiers.
+- World18/Rules production-recipes-1/Session2/Envelope2: Layout null omitted,
+  resolved geometry в save, load без source regeneration. Матрица/limitations:
+  IMPLEMENTATION_REPORT_PACKAGE_B2.md, vnext/PACKAGE_B_ACCEPTANCE.md; usage MAPS_PACKAGE_B2.md.
+ 1058ordinary/1064Developer,102exports/14replays/69pairs, Linux1132hashes/35restores;
+  real CLI64checks, native2mapsx3/6/10 RU/EN, lab28pairs/49arms+real Chromium2runs.
+  Не закрывать C/D/E, hardware, real-model/long balance; C автоматически не начинать.
+
 ## Ordinary B1,24.10.2026
 
 - От fda7203/A2: OrdinaryNewGame.Resolve в Hosting, separate policies factory

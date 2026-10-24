@@ -90,6 +90,7 @@ public partial class Playfield
             _playerTablet = new PlayerTablet(_scenario,_language,Submit,a => _session.Engine.AccessFor(_human,a));
             _playerTablet.HelpRequested+=()=>OpenHelp("production");
             _tabletPanel.Body.AddChild(_playerTablet); _playerTablet.SelectedTab = _playerTab;
+            if(_scenario.Layout is not null){_tabletPolitics=_playerTablet.PoliticsHost;FillPolitics(view,_tabletPolitics);}
         }
         else if (_tabletState.Kind is TabletKind.Market or TabletKind.Capital)
         {

@@ -195,7 +195,7 @@ public partial class Playfield : Control
     private OrdinaryGameResolution ResolveNewGame(string key,int count)
     {
         var map=JsonSerializer.Deserialize<ScenarioDefinition>(Text(PlayMaps.Resource(key)),SimulationJson.Options)??throw new InvalidOperationException(key);
-        var economy=ReadEconomy();
+        var economy=ReadEconomy(key);
         VNextBalance? full=null;
         if(economy.VNext is {} provenance)
         {var read=VNextBalanceReader.Read(System.Text.Encoding.UTF8.GetBytes(Text("Play.vnext-balance.json")));if(!read.IsValid || read.Sha256!=provenance.FullBalanceSha256)throw new InvalidOperationException("Full balance/profile mismatch");full=read.Balance;}
@@ -379,6 +379,8 @@ public partial class Playfield : Control
         }
         if (choice.Key.StartsWith("market:", StringComparison.Ordinal))
         { OpenMarketTablet(long.Parse(choice.Key[7..], CultureInfo.InvariantCulture)); return; }
+        if(choice.Key=="city"){_playerTab=3;OpenPlayerTablet();return;}
+        if(choice.Key=="dealership"){OpenHelp("dealership");return;}
         if (choice.Key == "exchange") { OpenCapitalTablet(); return; }
         if (choice.Command is { } action) Offer(action);
     }
@@ -476,6 +478,7 @@ public partial class Playfield : Control
         var frame = Presentation.Read(_scenario, _session.Engine, _human.Value);
         if (_surface == Surface.Play || paused) _stage?.Show(frame, paused, _selectedEnterprise, T("you"), _surface == Surface.Play, _language);
         if (_surface == Surface.Debug) _board?.Show(frame, _cellX, _cellZ);
+        _miniMap?.Show(frame,null,null);
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
         string stock = pack.Stock.Length == 0 ? T("inventory.empty")
             : string.Join(", ", pack.Stock.OrderBy(s => s.ItemId, StringComparer.Ordinal).Select(s => $"{PlayerText.Item(_language, s.ItemId)} ×{s.Quantity}"));
@@ -610,7 +613,7 @@ public partial class Playfield : Control
         if (view.Elections.NextElectionId is { } election)
         {
             host.AddChild(new Label { Text = $"{T("vote.title")} #{election.Value}  {view.Elections.OwnChoice?.Value.ToString() ?? T("no")}" });
-            var votes = new HBoxContainer();
+            var votes = new VBoxContainer();
             host.AddChild(votes);
             foreach (var candidate in view.Elections.Participants.Where(p => p != _human))
                 Button(votes, "vote.choose", () => Offer(PlayerDesk.Vote(election.Value, candidate.Value)), candidate.Value.ToString(CultureInfo.InvariantCulture));

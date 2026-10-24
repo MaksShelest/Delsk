@@ -5,6 +5,7 @@ using Simulation.Hosting;
 public partial class Playfield
 {
     private HelpOverlay? _helpOverlay;
+    private DebugBoard? _miniMap;
     private Label? _gameClock;
     private readonly System.Collections.Generic.List<ContextActionButton> _harvestButtons = [];
     private string _harvestCycle = "";
@@ -87,6 +88,13 @@ public partial class Playfield
             ContentMarginLeft = 12, ContentMarginRight = 12, ContentMarginTop = 8, ContentMarginBottom = 8,
             CornerRadiusTopLeft = 6, CornerRadiusTopRight = 6, CornerRadiusBottomLeft = 6, CornerRadiusBottomRight = 6 });
         _playChrome.AddChild(_tooltip);
+        _miniMap=null;
+        if(_scenario.Layout is not null)
+        {
+            var mapPanel=new PanelContainer{Name="PlayMiniMap"};mapPanel.SetAnchorsPreset(LayoutPreset.TopRight);
+            mapPanel.OffsetLeft=-248;mapPanel.OffsetRight=-16;mapPanel.OffsetTop=110;mapPanel.OffsetBottom=284;
+            _miniMap=new DebugBoard{CustomMinimumSize=new(232,174),MouseFilter=MouseFilterEnum.Ignore};mapPanel.MouseFilter=MouseFilterEnum.Ignore;mapPanel.AddChild(_miniMap);_playChrome.AddChild(mapPanel);
+        }
         var dock = new CenterContainer { MouseFilter = MouseFilterEnum.Ignore };
         dock.SetAnchorsAndOffsetsPreset(LayoutPreset.BottomWide);
         dock.OffsetTop = -132; dock.OffsetBottom = -16; dock.OffsetLeft = 16; dock.OffsetRight = -16;

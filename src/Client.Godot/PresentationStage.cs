@@ -61,7 +61,7 @@ public partial class PresentationStage : Node3D
         _follow = followHuman;
         bool appearanceChanged=_appearanceRevision!=WorldSkins.Revision;
         _appearanceRevision=WorldSkins.Revision;
-        string staticKey = WorldSkins.Revision+"|"+frame.MapWidth + "x" + frame.MapHeight + "|" + string.Join(",", frame.Markers.Select(m =>
+        string staticKey = frame.Layout?.SourceSha256+"|"+WorldSkins.Revision+"|"+frame.MapWidth + "x" + frame.MapHeight + "|" + string.Join(",", frame.Markers.Select(m =>
             $"{m.Kind}:{m.X}:{m.Z}:{(m.Kind == "capital" ? "" : m.Label)}:{(m.Kind == "capital" ? 0 : m.EntityId)}:{m.OwnerId}:{m.Level}:{(m.Kind.StartsWith("resource",StringComparison.Ordinal)?AppearanceCatalog.ResourceModel(m.Label,m.Kind=="resource-depleted"?0:m.ResourceStock,m.ResourceCapacity,m.ResourceSparse):"")}:{string.Join(";",m.Footprint)}:{string.Join(";",m.Walls)}"));
         if (_staticKey != staticKey)
         {
@@ -230,16 +230,28 @@ public partial class PresentationStage : Node3D
         var ground = new Node3D();
         WorldModels.Part(ground, new BoxMesh { Size = new Vector3(frame.MapWidth + 1, 0.15f, frame.MapHeight + 1) },
             new Color("729365"), new Vector3(frame.MapWidth / 2f - 0.5f, -0.13f, frame.MapHeight / 2f - 0.5f));
-        for (int x = 0; x < frame.MapWidth; x++) for (int z = 0; z < frame.MapHeight; z++)
+        if(frame.Layout is null)for (int x = 0; x < frame.MapWidth; x++) for (int z = 0; z < frame.MapHeight; z++)
         {
             float shade = ((x * 17 + z * 31) % 9) * 0.005f;
             WorldModels.Part(ground, new BoxMesh { Size = new Vector3(0.98f, 0.035f, 0.98f) },
                 new Color(0.48f + shade, 0.62f + shade, 0.39f + shade), new Vector3(x, -0.005f, z));
         }
+        if(frame.Layout is {} layout)
+        {
+            foreach(var row in layout.InitialCityDirtCells.GroupBy(c=>c.Z))
+            {
+                var cells=row.OrderBy(c=>c.X).ToArray();int begin=0;
+                for(int i=1;i<=cells.Length;i++)if(i==cells.Length || cells[i].X!=cells[i-1].X+1)
+                {int length=cells[i-1].X-cells[begin].X+1;WorldModels.Part(ground,new BoxMesh{Size=new(length,.025f,.98f)},new Color("a39578"),new(cells[begin].X+(length-1)/2f,.003f,row.Key));begin=i;}
+            }
+            foreach(var site in layout.CivicObjects)AddStatic(WorldModels.Civic(site));
+        }
         AddStatic(ground);
         var yardCells=frame.Markers.Where(m=>m.Kind=="warehouse").SelectMany(m=>m.Walls.Select(w=>new Simulation.Core.Cell(m.X+w.X,m.Z+w.Z))).ToHashSet();
+        var civicBodies=frame.Layout?.CivicObjects.SelectMany(s=>s.Body).ToHashSet();
         foreach (var marker in frame.Markers)
         {
+            if(frame.Layout is not null && (marker.Kind.StartsWith("plot",StringComparison.Ordinal) || marker.Kind is "shop-plot" or "capital" or "civic" || marker.Kind=="blocked" && civicBodies!.Contains(new(marker.X,marker.Z))))continue;
             if(marker.Kind=="blocked" && yardCells.Contains(new(marker.X,marker.Z)))continue;
             Node3D? node = null;
             if (marker.Kind == "equipment") node = WorldSkins.Equipment(marker.Label,marker.Level);
