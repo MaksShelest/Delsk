@@ -11,6 +11,7 @@
     <Error Condition="'$(DelskDeveloperPackage)' != 'true'" Text="Use scripts/build_developer_client.py for an isolated Developer client package." />
   </Target>
   <ItemGroup>
+    <EmbeddedResource Include="../../config/vnext/balance.b1.json" LogicalName="Play.vnext-balance.json" />
     <ProjectReference Include="../Simulation.Hosting/Simulation.Hosting.csproj" />
     <ProjectReference Include="../Agents.Algorithmic/Agents.Algorithmic.csproj" />
     <ProjectReference Include="../Agents.Llm/Agents.Llm.csproj" />

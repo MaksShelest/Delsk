@@ -152,11 +152,16 @@ public sealed partial class SimulationEngine
         return free < checked(e.Recipe.OutputQuantity * _items[e.Recipe.OutputItem].UnitVolume) ? "NoOutputSpace" : "Ready";
     }
 
+    private long ExpectedPopulation(long period)
+    {
+        Int128 n=(Int128)_config.Population+(Int128)period*Labor.GrowthPerPeriod;
+        return checked((long)(Labor.MaximumPopulation is {} max?Int128.Min(n,max):n));
+    }
     private void AdvanceLabor()
     {
         if (Tick % Labor.StepTicks != 0) return;
         long period = Tick / Labor.GrowthPeriodTicks;
-        long growth = checked((period - _lastGrowthPeriod) * Labor.GrowthPerPeriod);
+        long growth = checked(ExpectedPopulation(period)-_population);
         long population = checked(_population + growth);
         long pool = checked(_unemployed + growth);
         var groups = LaborWorkplaces();
@@ -237,7 +242,7 @@ public sealed partial class SimulationEngine
     private void ValidateLaborInvariants()
     {
         long employed = EmploymentGroups().Sum(g => (long)g.Headcount);
-        if (_population < _config.Population || _unemployed < 0 || checked(employed + _unemployed) != _population)
+        if (_population < _config.Population || Labor.MaximumPopulation is {} max && _population>max || _unemployed < 0 || checked(employed + _unemployed) != _population)
             throw new InvalidOperationException("I01: population not conserved");
         foreach (var g in EmploymentGroups())
         {

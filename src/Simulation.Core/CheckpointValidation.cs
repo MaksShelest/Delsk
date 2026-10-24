@@ -16,7 +16,7 @@ public sealed partial class SimulationEngine
                 (i > 0 && e.Tick < _events[i - 1].Tick) || (e.ActorId.HasValue && !_actors.ContainsKey(e.ActorId.Value.Value))).Any())
             throw new CheckpointException("UncommittedJournal");
         long lastGrowth = checked((Tick / Labor.StepTicks * Labor.StepTicks) / Labor.GrowthPeriodTicks);
-        if (_lastGrowthPeriod != lastGrowth || _population != checked(_config.Population + lastGrowth * Labor.GrowthPerPeriod))
+        if (_lastGrowthPeriod != lastGrowth || _population != ExpectedPopulation(lastGrowth))
             throw new CheckpointException("InvalidPopulationSchedule");
         if (_economy.Accounts[_treasury].Kind != "Treasury" || _economy.Accounts[_wages].Kind != "WagesSink" ||
             _economy.Accounts[_capital].Kind != "CapitalBudget" ||
@@ -25,6 +25,7 @@ public sealed partial class SimulationEngine
             _economy.Accounts.Count(a => a.Value.Kind == "Participant") != _actors.Count)
             throw new CheckpointException("InvalidAccounts");
         var balances = _economy.Accounts.Keys.ToDictionary(id => id, _ => 0L);
+        balances[_treasury]=_config.StartingTreasuryMinor;
         if (_travelQuantum is < 0 or >= TravelQuantaPerTick) throw new CheckpointException("InvalidTravel");
         foreach (var actor in _actors.Values)
             if (actor.OffsetX is < 0 or >= TravelUnitsPerCell || actor.OffsetZ is < 0 or >= TravelUnitsPerCell ||
@@ -52,7 +53,7 @@ public sealed partial class SimulationEngine
             else balances[l.CreditAccount] = checked(balances[l.CreditAccount] + l.AmountMinor);
         }
         if (incoming != _economy.ExternalIn || outgoing != _economy.ExternalOut ||
-            _economy.InitialMoney != _config.Participants.Sum(p => p.CashMinor) ||
+            _economy.InitialMoney != checked(_config.StartingTreasuryMinor+_config.Participants.Sum(p => p.CashMinor)) ||
             balances.Any(p => p.Value != _economy.Accounts[p.Key].Balance)) throw new CheckpointException("LedgerBalanceMismatch");
         foreach (var i in _economy.Inventories.Values)
             if (i.Id < 1 || !_actors.ContainsKey(i.Owner) || !_map.Walkable(i.Position))

@@ -42,13 +42,13 @@ internal sealed class ModelServices : IDisposable
         else adapter = new UnavailableAdapter();
         _runtime = new(adapter, actors, _config.Runtime ?? new(), enabled: _mode != "off");
     }
-    public long Configure(GameSession session, ScenarioDefinition definition, string controllers, Dictionary<string, string> options, bool safety, EconomyProfile? economics = null)
+    public long Configure(GameSession session, ScenarioDefinition definition, string controllers, Dictionary<string, string> options, bool safety, EconomyProfile? economics = null, OrdinaryGameResolution? ordinary=null)
     {
-        var config = AutonomousRun.ReadConfiguration(definition, controllers);
+        var config = AutonomousRun.ReadConfiguration(definition, controllers, ordinary);
         Setup(options, config.Npcs.Select(p => p.ActorId).ToArray(), safety);
         var policy = _config.Policy ?? new();
         if (_mode == "off") policy = policy with { Enabled = false };
-        return AutonomousRun.Configure(session, definition, controllers, c => _config.Bindings is {} b && (!b.TryGetValue(c.Actor.Value.ToString(),out var binding) || binding is null) ? c : new HybridController(c, _runtime!, policy), economics, options.GetValueOrDefault("--human-ballot")=="self");
+        return AutonomousRun.Configure(session, definition, controllers, c => _config.Bindings is {} b && (!b.TryGetValue(c.Actor.Value.ToString(),out var binding) || binding is null) ? c : new HybridController(c, _runtime!, policy), economics, options.GetValueOrDefault("--human-ballot")=="self",ordinary);
     }
     public void Restore(GameSession session, Dictionary<string, string> options)
     {

@@ -31,6 +31,8 @@ jobs:
         run: python scripts/run_check.py --name catalog-cli --timeout 180 --log-directory artifacts/gate-checks -- python scripts/check_vnext_catalog.py --output artifacts/vnext-catalog
       - name: Full B1 semantic CLI, supported production and WIP save/load/replay
         run: python scripts/run_check.py --name balance-cli --timeout 180 --log-directory artifacts/gate-checks -- python scripts/check_vnext_balance.py --output artifacts/vnext-balance
+      - name: Ordinary 3/6/10 NPC setup, replay and accounting
+        run: python scripts/run_check.py --name ordinary-game --timeout 300 --log-directory artifacts/gate-checks -- python scripts/check_ordinary_game.py --output artifacts/ordinary-game --voting-check
       - name: Bounded Developer tests and forbidden Release gate
         env:
           DOTNET_PROCESSOR_COUNT: '2'
