@@ -1,0 +1,15 @@
+{
+  "DELSK_IMPLEMENTATION_PLAN_VNEXT.md": "c918742702a4345fa2db77dbc323f0a56c856f25e87892f4c9093e8c6595468e",
+  "DELSK_SPECIFICATION_VNEXT.md": "24f09851835ff15e7f1f84fd2d865f6215070af5d48dcddd572a110ed3f4adef",
+  "README.md": "30b6d15ab71ff41dff052860035b6e6a12624024a079ffc621a4cbe5962415c1",
+  "VALIDATION.md": "7068181d12d5e45711b8e5ab9b70fb6a74e3f78098ba5925843ff99d7ea62413",
+  "VNEXT_GIT_AUDIT.md": "daa85c98f72f551485bd6d61c199d94eaececf7de855ada1240b575bac31684f",
+  "data/BALANCE_VNEXT.json": "4b12d705acd4c7f4e9d44f540eb3f600edd75b983b1ffdd52c71a15e8a42c9d2",
+  "data/CONTENT_TABLES.md": "5a3ebf840894a9a2ad164133192a71de2fe581ccd63ba94fbdc11d187e6bdd79",
+  "maps/large_districts.json": "2ce25ee5f91ccd52faec52cdb758f8eaf7b569b5c239f2275571c906d7837e42",
+  "maps/large_districts.png": "7ce06ad78dfdf14a39cfe55e5fb9ad2924c390d92585b29a33a9b8379f1b6eb8",
+  "maps/large_districts.svg": "ccaa368c934c06aed07a84e9f237a0f9dc2a7e2b47fb28da36443131907e727c",
+  "maps/small_river.json": "3f43dfc24e285efcda52ece4d451d61e10ba151fa9a856cccb635db2abc0fc0c",
+  "maps/small_river.png": "8bbfdfceaa78f19ff93775074af878c179d604d1e89f605a6bd711cdbc850f9b",
+  "maps/small_river.svg": "6ca415400ac42de74897f1373d9ce8f030b5d033650ad8ee801e8b5097c45906"
+}
