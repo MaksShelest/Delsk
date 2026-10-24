@@ -46,6 +46,7 @@ public static class MapSymbols
                     canvas.DrawColoredPolygon(Diamond(center, cell * 0.22f), new Color(0.9f, 0.78f, 0.2f));
                 else if(label=="milk")canvas.DrawRect(new Rect2(center-new Vector2(cell*.14f,cell*.18f),new Vector2(cell*.28f,cell*.36f)),new Color("b6e3f0"));
                 else if(label=="beet")canvas.DrawCircle(center,cell*.18f,new Color("b85684"));
+                else if(label is "stone" or "iron_ore" or "copper_ore" or "sand")canvas.DrawColoredPolygon(Diamond(center,cell*.2f),new Color(label=="copper_ore"?"b27850":label=="sand"?"cfbb83":"8c9390"));
                 else
                     canvas.DrawCircle(center, cell * 0.18f, new Color(0.2f, 0.62f, 0.24f));
                 break;
@@ -64,6 +65,7 @@ public static class MapSymbols
             case "truck-home":
                 canvas.DrawRect(new Rect2(center - new Vector2(cell * 0.18f, cell * 0.1f), new Vector2(cell * 0.36f, cell * 0.2f)), new Color("5b94b1"));
                 break;
+            case "civic":
             case "capital":
                 canvas.DrawColoredPolygon(Diamond(center, cell * 0.2f), new Color(0.95f, 0.72f, 0.15f));
                 break;

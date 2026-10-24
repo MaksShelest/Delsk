@@ -43,7 +43,7 @@ public static class WorldSkins
         if(Preferences.ForModel("resource:"+marker.Label)==AppearancePreferences.Cozy)
         {
             string key=AppearanceCatalog.ResourceModel(marker.Label,marker.Kind=="resource-depleted"?0:marker.ResourceStock,marker.ResourceCapacity,marker.ResourceSparse);
-            if(Model(key,.2f) is {} visual)return visual;
+            if(key.Length>0 && Model(key,.2f) is {} visual)return visual;
         }
         return Classic(marker.Kind=="resource-depleted"?WorldModels.DepletedResource(marker.Label):WorldModels.Resource(marker.Label));
     }
