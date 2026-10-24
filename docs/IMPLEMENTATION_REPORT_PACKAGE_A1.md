@@ -137,3 +137,6 @@ legacy→vNext mapping; отдельный выбранный runtime-профи
 smoke на прежнем executor, с регрессией. Версии менять только при реальном runtime
 изменении; старые saves не перезаписывать. Будущие цехи/XP/снос/машины/дороги/услуги
 остаются своими пакетами. Полный P61/P63 и аппаратные/model/balance gates не закрыты.
+
+Реализация: [055edbe](https://github.com/MaksShelest/Delsk/commit/055edbed1a58adac35460b214a07a018d597f58f),
+ветка `feat/vnext-package-a1`, [PR55](https://github.com/MaksShelest/Delsk/pull/55), без merge.

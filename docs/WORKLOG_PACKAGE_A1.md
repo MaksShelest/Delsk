@@ -44,3 +44,11 @@ Godot/Android/GPU/реальнаяLLM здесь не запускались, ф
 
 Отчёт IMPLEMENTATION_REPORT_PACKAGE_A1.md и план2.3 отмечают A1готов/A2не начат.
 Перед передачей: проверка diff/авторства, commit/push/PR безmerge. A2 не выполнять.
+
+## Передача
+
+Реализация опубликована commit055edbed1a58adac35460b214a07a018d597f58f,
+веткаfeat/vnext-package-a1, PR https://github.com/MaksShelest/Delsk/pull/55
+к feat/economic-cycle-p00-p05. Push подтверждён, PR открыт без merge.
+Эта заключительная запись documentation-only. Реальные локальные проверки выше
+не заменяют статусы GitHub CI; проверять их отдельно. A2 не начат.
