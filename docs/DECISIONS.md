@@ -615,3 +615,24 @@ ResearchLab.cmd использует существующий Python launcher/SD
 По новому заданию владельца выбраны нейтральная тёмная оболочка и навигация по опытам/настройкам/результатам; самостоятельные snapshots экономики и участников, профили Ollama по NPC и один общий ModelRuntime. Для новых опытов фиксируется ResearchWaitAtDecision-v1; прежний CLI deadline сохраняется без флага. История мира пишет завершённые шаги на диск, контролируется полнота до успеха. Cooperative pause/cancel не меняют Core, отмена сохраняет частичный export и исключает его из clean comparison.
 
 «Четыре квартала» переносится только сценарием PR45; «Городской тракт» реализует ресурсную/промышленную/городскую последовательность с равными начальными расстояниями. Старые карты сохраняются. Это география, не новый баланс. Облачный API, визуальный редактор, реальные устройства, Hard efficacy/ROI и ограничения старой полной истории остаются отдельными вопросами. Реализация и фактические gates: IMPLEMENTATION_REPORT_RESEARCH_WORKSPACE.md.
+
+
+## 55. A1: отдельный read-only каталог vNext (24.10.2026)
+
+Новый delsk-vnext-catalog-1/catalog_only — подмножество items/recipes/industries
+единственного B1 с source SHA точных байтов. Все данные переносятся механически,
+industries.coins переводятся в construction_price_minor ×100. Генератор --check
+и независимые xUnit сравнивают содержимое/provenance; общий reader проверяет
+синтаксис source SHA, не утверждает сверку непрочитанного источника.
+
+Hosting DTO immutable, strict reader ограничен1MiB/32уровнями и checked Int64.
+Fail-fast диагностика code/path/message воспроизводима. Catalog digest описывает
+байты файла и не участвует в runtime ConfigHash. Ключи/ID Ordinal, разные категории
+раздельны. SimulationJson/EconomyProfile глобально не меняются.
+
+Research.Runner --validate-vnext-catalog PATH --output DIR — ранний выход до
+мира/ModelServices/контроллеров/HTTP. Только две пары аргументов, exit0/2;
+непустой/недоступный output отвергается, отчёт записывается без перезаписи.
+World18/production-recipes-1/Session2/Envelope2 и economy-v6 прежние. Остальные
+данные/адаптер/семантический граф/вместимости/явный новый runtime smoke — A2,
+новые игровые механики — последующие пакеты, не фиктивные placeholders A1.

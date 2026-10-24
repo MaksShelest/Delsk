@@ -1,0 +1,13 @@
+{
+  "status": "succeeded",
+  "scope": "structure",
+  "formatVersion": "delsk-vnext-catalog-1",
+  "catalogId": "vnext-b1",
+  "sha256": "62bf82eb8ed11e0cc72415c6fef026d8a3e305ee7f0849debdefb2115a70a0a8",
+  "counts": {
+    "items": 34,
+    "recipes": 23,
+    "industries": 6
+  },
+  "diagnostics": []
+}

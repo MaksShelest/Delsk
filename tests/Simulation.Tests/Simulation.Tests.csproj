@@ -1,4 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <EmbeddedResource Include="../../config/vnext/catalog.b1.json" LogicalName="Fixture.vnext-catalog.json" />
+    <EmbeddedResource Include="../../docs/vnext/data/BALANCE_VNEXT.json" LogicalName="Fixture.vnext-design.json" />
+  </ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/elections.json" LogicalName="Fixture.elections.json" /></ItemGroup>
   <ItemGroup Condition="'$(DelskDeveloper)' == 'true'"><ProjectReference Include="../../src/Simulation.Developer/Simulation.Developer.csproj" /></ItemGroup>
   <PropertyGroup><IsTestProject>true</IsTestProject><IsPackable>false</IsPackable><OutputType>Exe</OutputType></PropertyGroup>

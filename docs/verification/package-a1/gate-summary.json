@@ -1,0 +1,261 @@
+{
+  "status": "succeeded",
+  "scope": "structure",
+  "baseCommit": "3a75917",
+  "date": "2026-10-24 Europe/Samara",
+  "catalogCounts": {
+    "items": 34,
+    "recipes": 23,
+    "industries": 6
+  },
+  "catalogSha256": "62bf82eb8ed11e0cc72415c6fef026d8a3e305ee7f0849debdefb2115a70a0a8",
+  "sourceSha256": "4b12d705acd4c7f4e9d44f540eb3f600edd75b983b1ffdd52c71a15e8a42c9d2",
+  "xunit": {
+    "total": 947,
+    "passed": 947,
+    "failed": 0,
+    "skipped": 0,
+    "newCases": 50
+  },
+  "checks": {
+    "a1-restore": {
+      "exit_code": 0,
+      "elapsed_seconds": 1.438,
+      "timeout_seconds": 180,
+      "metadataSha256": "01c8ea7871045d6b5131ab0c98d42f3a1e22d587a2a19ac861fb2cd6839dca43"
+    },
+    "a1-build": {
+      "exit_code": 0,
+      "elapsed_seconds": 11.029,
+      "timeout_seconds": 180,
+      "metadataSha256": "ab95e97e97e2b55f7bacb00cf9b0a6a3d5a7e9fc8f67c6744934d4c3d0583edf"
+    },
+    "a1-tests": {
+      "exit_code": 0,
+      "elapsed_seconds": 69.731,
+      "timeout_seconds": 120,
+      "metadataSha256": "19d3197833de1bce636b3c22ae67a8541bde09ebc4cbe87fe0c3749770d4eaa1"
+    },
+    "a1-cli-gate": {
+      "exit_code": 0,
+      "elapsed_seconds": 8.802,
+      "timeout_seconds": 180,
+      "metadataSha256": "081438eb5056ccf3c0de284d9019fdf52300e09cfaa67e4648b9737f1a8d0716"
+    }
+  },
+  "cli": {
+    "status": "succeeded",
+    "scope": "structure",
+    "counts": {
+      "items": 34,
+      "recipes": 23,
+      "industries": 6
+    },
+    "catalogSha256": "62bf82eb8ed11e0cc72415c6fef026d8a3e305ee7f0849debdefb2115a70a0a8",
+    "sourceSha256": "4b12d705acd4c7f4e9d44f540eb3f600edd75b983b1ffdd52c71a15e8a42c9d2",
+    "checks": [
+      {
+        "name": "extract-check",
+        "exitCode": 0
+      },
+      {
+        "name": "generated-1",
+        "exitCode": 0
+      },
+      {
+        "name": "generated-2",
+        "exitCode": 0
+      },
+      {
+        "name": "stale-source",
+        "exitCode": 2
+      },
+      {
+        "name": "valid-b1",
+        "exitCode": 0
+      },
+      {
+        "name": "small",
+        "exitCode": 0
+      },
+      {
+        "name": "bad-reference",
+        "exitCode": 2
+      },
+      {
+        "name": "missing-file",
+        "exitCode": 2
+      },
+      {
+        "name": "large",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-0",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-1",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-2",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-3",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-4",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-5",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-6",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-7",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-8",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-9",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-10",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-11",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-12",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-13",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-14",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-15",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-16",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-17",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-18",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-19",
+        "exitCode": 2
+      },
+      {
+        "name": "mixed-20",
+        "exitCode": 2
+      },
+      {
+        "name": "missing-value",
+        "exitCode": 2
+      },
+      {
+        "name": "missing-output",
+        "exitCode": 2
+      },
+      {
+        "name": "duplicate",
+        "exitCode": 2
+      },
+      {
+        "name": "duplicate-output",
+        "exitCode": 2
+      },
+      {
+        "name": "preserve-output",
+        "exitCode": 2
+      },
+      {
+        "name": "file-output",
+        "exitCode": 2
+      },
+      {
+        "name": "preserve-report",
+        "exitCode": 2
+      },
+      {
+        "name": "legacy-profile",
+        "exitCode": 0
+      },
+      {
+        "name": "legacy-save",
+        "exitCode": 0
+      },
+      {
+        "name": "legacy-load",
+        "exitCode": 0
+      },
+      {
+        "name": "legacy-continuation",
+        "exitCode": 0
+      },
+      {
+        "name": "legacy-replay",
+        "exitCode": 0
+      },
+      {
+        "name": "legacy-replay-equal",
+        "exitCode": 0
+      }
+    ],
+    "exactExtraction": true,
+    "staleSourceRejected": true,
+    "preservedInputsAndOutputs": true,
+    "legacySaveLoadReplay": true,
+    "simulationFlagsRejected": 21
+  },
+  "sourceHashes": {
+    "src/Simulation.Hosting/VNextCatalog.cs": "46aacca9869e3268069b98ecb57489439502271fcd3462be7deb6880baf71cdd",
+    "src/Simulation.Hosting/VNextCatalogReader.cs": "97c2774a5d393b867fac38cd5b30163c8e641b1906a5b07ff0538efbfcf7f28f",
+    "src/Research.Runner/VNextCatalogCommand.cs": "322ecafcf98438f542536123961020c338402b4e61000ccc087102295680e5ab",
+    "src/Research.Runner/Program.cs": "67ac304b25401321ab76f4cfc601ed7ea9a6f6a5e6870d4d985b91b8a7a93e15",
+    "tests/Simulation.Tests/VNextCatalogTests.cs": "80cf976cc0566c48d3302edac0fe645801102b583dfe927bbbffed7ec6eb8aa9",
+    "scripts/extract_vnext_catalog.py": "0c92f3c8e0784d27cf23d1bdf4ecb30259b812e4d6465d015222d24cdbcc442e",
+    "scripts/check_vnext_catalog.py": "eed70fde29e02d65299f0577dce509b73cfdca6dde13070425f5ee06f8f3fb10",
+    "config/vnext/catalog.b1.json": "62bf82eb8ed11e0cc72415c6fef026d8a3e305ee7f0849debdefb2115a70a0a8"
+  },
+  "windowsCheckoutSourceBytes": "Verified with git -c core.autocrlf=true cat-file --filters",
+  "versions": {
+    "World": 18,
+    "Rules": "production-recipes-1",
+    "Session": 2,
+    "Envelope": 2,
+    "Catalog": "delsk-vnext-catalog-1"
+  },
+  "notRun": [
+    "Full local headless gate: existing generic parser/execution unchanged; targeted normal CLI/direct load/replay and full xUnit passed",
+    "Godot",
+    "Android/device/GPU",
+    "Real LLM"
+  ],
+  "remaining": "A2 data/adaptation/semantic graph/capacity/bootstrap/explicit runtime profile smoke; not started"
+}
