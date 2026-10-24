@@ -5,6 +5,9 @@ using Simulation.Core;
 using Agents.Algorithmic;
 using Simulation.Hosting;
 
+// Catalog-only commands must return before any model runtime, controller or world exists.
+if (args.Contains("--validate-vnext-catalog", StringComparer.Ordinal)) return VNextCatalogCommand.Run(args);
+
 try
 {
     using var models = new ModelServices();

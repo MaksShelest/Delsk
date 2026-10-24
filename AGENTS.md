@@ -1,3 +1,18 @@
+## Каталог vNext, A1,24.10.2026
+
+- A1 — catalog_only, не EconomyProfile/игровой профиль. Отдельный формат
+  delsk-vnext-catalog-1 в Hosting; B1subset config/vnext/catalog.b1.json. Генерация
+  scripts/extract_vnext_catalog.py (--check),34/23/6 — данные B1, не лимит reader.
+- Source SHA и catalog SHA — точные байты разных файлов. Для B1/catalog закреплён LF;
+  reader не нормализует digest. immutable/Ordinal,1MiB/depth32, все поля required,
+  duplicate/unknown/null/type/version/reference/checked overflow reject.
+- --validate-vnext-catalog PATH --output DIR должен выйти ДО ModelServices/мира;
+  не смешивать с любыми simulation/model/research flags. Exit0/2, scope=structure,
+  output только новый/пустой, без перезаписи существующих результатов.
+- A2 не начат: прочие данные/adapter EconomyProfile/graph/capacity/bootstrap/runtime
+  smoke отдельно. Не менять существующий economy.json/сценарии/World18/rules/save
+  ради метаданных. Отчёт IMPLEMENTATION_REPORT_PACKAGE_A1.md, recovery WORKLOG_PACKAGE_A1.md.
+
 ## Исследовательское пространство и две карты,23.10.2026
 
 - Последняя реализация P58: docs/RESEARCH_WORKSPACE.md, MAPS_RESEARCH.md и IMPLEMENTATION_REPORT_RESEARCH_WORKSPACE.md. Историческая пауза очереди между bounded jobs сохранена; новые pause/resume/cancel активной попытки идут только на безопасной границе Research.Runner observer. Core/World18/Rules production-recipes-1/Session2/Envelope2 не менялись.

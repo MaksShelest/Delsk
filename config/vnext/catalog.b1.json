@@ -1,0 +1,636 @@
+{
+  "format_version": "delsk-vnext-catalog-1",
+  "id": "vnext-b1",
+  "status": "catalog_only",
+  "source_sha256": "4b12d705acd4c7f4e9d44f540eb3f600edd75b983b1ffdd52c71a15e8a42c9d2",
+  "items": [
+    {
+      "id": "wood",
+      "name": "Брёвна",
+      "unit_volume": 2,
+      "reference_price_minor": 500,
+      "xp_per_unit": 0,
+      "source": "resource"
+    },
+    {
+      "id": "grain",
+      "name": "Зерно",
+      "unit_volume": 1,
+      "reference_price_minor": 300,
+      "xp_per_unit": 0,
+      "source": "resource"
+    },
+    {
+      "id": "stone",
+      "name": "Камень",
+      "unit_volume": 1,
+      "reference_price_minor": 300,
+      "xp_per_unit": 0,
+      "source": "resource"
+    },
+    {
+      "id": "iron_ore",
+      "name": "Железная руда",
+      "unit_volume": 1,
+      "reference_price_minor": 400,
+      "xp_per_unit": 0,
+      "source": "resource"
+    },
+    {
+      "id": "copper_ore",
+      "name": "Медная руда",
+      "unit_volume": 1,
+      "reference_price_minor": 500,
+      "xp_per_unit": 0,
+      "source": "resource"
+    },
+    {
+      "id": "sand",
+      "name": "Песок",
+      "unit_volume": 1,
+      "reference_price_minor": 200,
+      "xp_per_unit": 0,
+      "source": "resource"
+    },
+    {
+      "id": "beet",
+      "name": "Свёкла",
+      "unit_volume": 1,
+      "reference_price_minor": 300,
+      "xp_per_unit": 0,
+      "source": "resource"
+    },
+    {
+      "id": "milk",
+      "name": "Молоко",
+      "unit_volume": 1,
+      "reference_price_minor": 400,
+      "xp_per_unit": 0,
+      "source": "resource"
+    },
+    {
+      "id": "coke",
+      "name": "Кокс",
+      "unit_volume": 1,
+      "reference_price_minor": 400,
+      "xp_per_unit": 0,
+      "source": "import"
+    },
+    {
+      "id": "soda",
+      "name": "Сода",
+      "unit_volume": 1,
+      "reference_price_minor": 300,
+      "xp_per_unit": 0,
+      "source": "import"
+    },
+    {
+      "id": "limestone",
+      "name": "Известняк",
+      "unit_volume": 1,
+      "reference_price_minor": 200,
+      "xp_per_unit": 0,
+      "source": "import"
+    },
+    {
+      "id": "cement",
+      "name": "Цемент",
+      "unit_volume": 1,
+      "reference_price_minor": 500,
+      "xp_per_unit": 0,
+      "source": "import"
+    },
+    {
+      "id": "bitumen",
+      "name": "Битум",
+      "unit_volume": 1,
+      "reference_price_minor": 600,
+      "xp_per_unit": 0,
+      "source": "import"
+    },
+    {
+      "id": "plank",
+      "name": "Доски",
+      "unit_volume": 1,
+      "xp_per_unit": 1,
+      "source": "production",
+      "reference_price_minor": 900
+    },
+    {
+      "id": "steel",
+      "name": "Сталь",
+      "unit_volume": 1,
+      "xp_per_unit": 2,
+      "source": "production",
+      "reference_price_minor": 2500
+    },
+    {
+      "id": "copper",
+      "name": "Медь",
+      "unit_volume": 1,
+      "xp_per_unit": 2,
+      "source": "production",
+      "reference_price_minor": 3600
+    },
+    {
+      "id": "gravel",
+      "name": "Щебень",
+      "unit_volume": 1,
+      "xp_per_unit": 1,
+      "source": "production",
+      "reference_price_minor": 800
+    },
+    {
+      "id": "flour",
+      "name": "Мука",
+      "unit_volume": 1,
+      "xp_per_unit": 1,
+      "source": "production",
+      "reference_price_minor": 900
+    },
+    {
+      "id": "sugar",
+      "name": "Сахар",
+      "unit_volume": 1,
+      "xp_per_unit": 1,
+      "source": "production",
+      "reference_price_minor": 1500
+    },
+    {
+      "id": "bread",
+      "name": "Хлеб",
+      "unit_volume": 1,
+      "xp_per_unit": 2,
+      "source": "production",
+      "reference_price_minor": 2100
+    },
+    {
+      "id": "cheese",
+      "name": "Сыр",
+      "unit_volume": 1,
+      "xp_per_unit": 3,
+      "source": "production",
+      "reference_price_minor": 5000
+    },
+    {
+      "id": "curd",
+      "name": "Творог",
+      "unit_volume": 1,
+      "xp_per_unit": 3,
+      "source": "production",
+      "reference_price_minor": 3300
+    },
+    {
+      "id": "cream",
+      "name": "Сметана",
+      "unit_volume": 1,
+      "xp_per_unit": 3,
+      "source": "production",
+      "reference_price_minor": 2800
+    },
+    {
+      "id": "wire",
+      "name": "Медная проволока",
+      "unit_volume": 1,
+      "xp_per_unit": 3,
+      "source": "production",
+      "reference_price_minor": 2900
+    },
+    {
+      "id": "beam",
+      "name": "Балки",
+      "unit_volume": 2,
+      "xp_per_unit": 3,
+      "source": "production",
+      "reference_price_minor": 7200
+    },
+    {
+      "id": "steel_sheet",
+      "name": "Стальной лист",
+      "unit_volume": 1,
+      "xp_per_unit": 3,
+      "source": "production",
+      "reference_price_minor": 4100
+    },
+    {
+      "id": "glass",
+      "name": "Стекло",
+      "unit_volume": 1,
+      "xp_per_unit": 4,
+      "source": "production",
+      "reference_price_minor": 3400
+    },
+    {
+      "id": "concrete",
+      "name": "Бетон",
+      "unit_volume": 1,
+      "xp_per_unit": 4,
+      "source": "production",
+      "reference_price_minor": 3900
+    },
+    {
+      "id": "asphalt",
+      "name": "Асфальтовая смесь",
+      "unit_volume": 1,
+      "xp_per_unit": 4,
+      "source": "production",
+      "reference_price_minor": 3900
+    },
+    {
+      "id": "furniture",
+      "name": "Мебель",
+      "unit_volume": 4,
+      "xp_per_unit": 6,
+      "source": "production",
+      "reference_price_minor": 20700
+    },
+    {
+      "id": "window",
+      "name": "Окна",
+      "unit_volume": 2,
+      "xp_per_unit": 6,
+      "source": "production",
+      "reference_price_minor": 13200
+    },
+    {
+      "id": "pastry",
+      "name": "Выпечка",
+      "unit_volume": 1,
+      "xp_per_unit": 4,
+      "source": "production",
+      "reference_price_minor": 5000
+    },
+    {
+      "id": "motor",
+      "name": "Электродвигатель",
+      "unit_volume": 4,
+      "xp_per_unit": 12,
+      "source": "production",
+      "reference_price_minor": 23400
+    },
+    {
+      "id": "conveyor",
+      "name": "Конвейер",
+      "unit_volume": 10,
+      "xp_per_unit": 25,
+      "source": "production",
+      "reference_price_minor": 66500
+    }
+  ],
+  "recipes": [
+    {
+      "id": "saw_planks",
+      "industry": "woodworking",
+      "unlock_level": 1,
+      "inputs": {
+        "wood": 2
+      },
+      "output": "plank",
+      "output_quantity": 4,
+      "work_ticks_full_staff": 16,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "smelt_steel",
+      "industry": "metallurgy",
+      "unlock_level": 1,
+      "inputs": {
+        "iron_ore": 3,
+        "coke": 1
+      },
+      "output": "steel",
+      "output_quantity": 2,
+      "work_ticks_full_staff": 20,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "smelt_copper",
+      "industry": "metallurgy",
+      "unlock_level": 1,
+      "inputs": {
+        "copper_ore": 2
+      },
+      "output": "copper",
+      "output_quantity": 1,
+      "work_ticks_full_staff": 16,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "crush_stone",
+      "industry": "materials",
+      "unlock_level": 1,
+      "inputs": {
+        "stone": 3
+      },
+      "output": "gravel",
+      "output_quantity": 5,
+      "work_ticks_full_staff": 20,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "mill_flour",
+      "industry": "food",
+      "unlock_level": 1,
+      "inputs": {
+        "grain": 3
+      },
+      "output": "flour",
+      "output_quantity": 4,
+      "work_ticks_full_staff": 16,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "make_sugar",
+      "industry": "food",
+      "unlock_level": 2,
+      "inputs": {
+        "beet": 3
+      },
+      "output": "sugar",
+      "output_quantity": 2,
+      "work_ticks_full_staff": 12,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "bake_bread",
+      "industry": "food",
+      "unlock_level": 1,
+      "inputs": {
+        "flour": 3
+      },
+      "output": "bread",
+      "output_quantity": 4,
+      "work_ticks_full_staff": 32,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "make_cheese",
+      "industry": "dairy",
+      "unlock_level": 1,
+      "inputs": {
+        "milk": 3
+      },
+      "output": "cheese",
+      "output_quantity": 1,
+      "work_ticks_full_staff": 24,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "make_curd",
+      "industry": "dairy",
+      "unlock_level": 2,
+      "inputs": {
+        "milk": 2
+      },
+      "output": "curd",
+      "output_quantity": 1,
+      "work_ticks_full_staff": 16,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "make_cream",
+      "industry": "dairy",
+      "unlock_level": 3,
+      "inputs": {
+        "milk": 3
+      },
+      "output": "cream",
+      "output_quantity": 2,
+      "work_ticks_full_staff": 28,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "draw_wire",
+      "industry": "metallurgy",
+      "unlock_level": 2,
+      "inputs": {
+        "copper": 1
+      },
+      "output": "wire",
+      "output_quantity": 4,
+      "work_ticks_full_staff": 48,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "roll_beams",
+      "industry": "metallurgy",
+      "unlock_level": 3,
+      "inputs": {
+        "steel": 3
+      },
+      "output": "beam",
+      "output_quantity": 2,
+      "work_ticks_full_staff": 30,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "roll_sheet",
+      "industry": "metallurgy",
+      "unlock_level": 3,
+      "inputs": {
+        "steel": 2
+      },
+      "output": "steel_sheet",
+      "output_quantity": 3,
+      "work_ticks_full_staff": 40,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "make_glass",
+      "industry": "materials",
+      "unlock_level": 2,
+      "inputs": {
+        "sand": 4,
+        "soda": 1,
+        "limestone": 1
+      },
+      "output": "glass",
+      "output_quantity": 3,
+      "work_ticks_full_staff": 60,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "mix_concrete",
+      "industry": "materials",
+      "unlock_level": 3,
+      "inputs": {
+        "gravel": 3,
+        "sand": 2,
+        "cement": 1
+      },
+      "output": "concrete",
+      "output_quantity": 4,
+      "work_ticks_full_staff": 80,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "mix_asphalt",
+      "industry": "materials",
+      "unlock_level": 4,
+      "inputs": {
+        "gravel": 3,
+        "sand": 1,
+        "bitumen": 1
+      },
+      "output": "asphalt",
+      "output_quantity": 4,
+      "work_ticks_full_staff": 80,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "assemble_furniture",
+      "industry": "woodworking",
+      "unlock_level": 2,
+      "inputs": {
+        "plank": 6,
+        "steel": 2
+      },
+      "output": "furniture",
+      "output_quantity": 1,
+      "work_ticks_full_staff": 48,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "assemble_windows",
+      "industry": "woodworking",
+      "unlock_level": 3,
+      "inputs": {
+        "plank": 4,
+        "glass": 2,
+        "steel": 1
+      },
+      "output": "window",
+      "output_quantity": 2,
+      "work_ticks_full_staff": 64,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "bake_milk",
+      "industry": "food",
+      "unlock_level": 3,
+      "inputs": {
+        "flour": 2,
+        "sugar": 1,
+        "milk": 2
+      },
+      "output": "pastry",
+      "output_quantity": 3,
+      "work_ticks_full_staff": 60,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "bake_curd",
+      "industry": "food",
+      "unlock_level": 4,
+      "inputs": {
+        "flour": 2,
+        "sugar": 1,
+        "curd": 1
+      },
+      "output": "pastry",
+      "output_quantity": 4,
+      "work_ticks_full_staff": 80,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "bake_cream",
+      "industry": "food",
+      "unlock_level": 4,
+      "inputs": {
+        "flour": 2,
+        "sugar": 1,
+        "cream": 1
+      },
+      "output": "pastry",
+      "output_quantity": 3,
+      "work_ticks_full_staff": 48,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "assemble_motor",
+      "industry": "machinery",
+      "unlock_level": 1,
+      "inputs": {
+        "steel": 2,
+        "wire": 2
+      },
+      "output": "motor",
+      "output_quantity": 1,
+      "work_ticks_full_staff": 64,
+      "service_minor_per_work_tick": 2
+    },
+    {
+      "id": "assemble_conveyor",
+      "industry": "machinery",
+      "unlock_level": 2,
+      "inputs": {
+        "steel": 4,
+        "plank": 4,
+        "motor": 1
+      },
+      "output": "conveyor",
+      "output_quantity": 1,
+      "work_ticks_full_staff": 120,
+      "service_minor_per_work_tick": 2
+    }
+  ],
+  "industries": [
+    {
+      "id": "woodworking",
+      "name": "Лесопилка → деревообрабатывающий комбинат",
+      "construction_price_minor": 17000,
+      "materials": {
+        "wood": 30,
+        "steel": 3
+      }
+    },
+    {
+      "id": "metallurgy",
+      "name": "Металлургический цех → комбинат",
+      "construction_price_minor": 24000,
+      "materials": {
+        "wood": 20,
+        "steel": 6,
+        "stone": 20
+      }
+    },
+    {
+      "id": "materials",
+      "name": "Дробильный цех → комбинат стройматериалов",
+      "construction_price_minor": 19000,
+      "materials": {
+        "wood": 20,
+        "steel": 4,
+        "stone": 20
+      }
+    },
+    {
+      "id": "food",
+      "name": "Пекарня → пищевой комбинат",
+      "construction_price_minor": 17000,
+      "materials": {
+        "wood": 30,
+        "steel": 3
+      }
+    },
+    {
+      "id": "dairy",
+      "name": "Сыроварня → молочный комбинат",
+      "construction_price_minor": 19000,
+      "materials": {
+        "wood": 25,
+        "steel": 4
+      }
+    },
+    {
+      "id": "machinery",
+      "name": "Механическая мастерская → машиностроительный завод",
+      "construction_price_minor": 35000,
+      "materials": {
+        "plank": 30,
+        "steel": 10,
+        "glass": 6
+      }
+    }
+  ]
+}
