@@ -40,3 +40,11 @@ Python sandbox socket EPERM устранён разрешением loopback, к
 LF attrs дополнены для baseline economy из-за exact source SHA на Windows.
 Отчёт/139leaf mapping готовы; публикация/CI/PR — следующий final handoff.
 A2 stop: не начинать B1 автоматически. Default/Core/старые карты не изменены.
+
+Публикация: реализация a8aa0c267802beb2a17338531fbda4dd8a895155 отправлена в
+origin/feat/vnext-package-a2; PR57 https://github.com/MaksShelest/Delsk/pull/57,
+open/unmerged. Финальный handoff уточняет generic coverage (без фиксированного69
+в описании маленького fixture) и trailing whitespace process script. Build и
+A2 process gate повторены для этой формулировки; состояние/правила не менялись.
+CI проверяется по финальному head; результаты не подменять предположениями.
+Продолжать A2 не требуется после зелёного CI. Следующий B1 только по новому заданию.

@@ -137,27 +137,27 @@ errors. Неположительная прямая маржа — warning; JSON
 
 | Source path | Единица / перенос | DTO / проверка | Runtime или следующий пакет |
 | --- | --- | --- | --- |
-| `rules.tick_seconds` | целое / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
-| `rules.money_minor_per_coin` | minor / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
-| `rules.min_bots` | целое / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
-| `rules.max_bots` | целое / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
-| `rules.default_bots` | целое / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
+| `rules.tick_seconds` | секунд активной симуляции / тик | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
+| `rules.money_minor_per_coin` | minor / монету | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
+| `rules.min_bots` | ботов; metadata | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
+| `rules.max_bots` | ботов; metadata | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
+| `rules.default_bots` | ботов; metadata | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
 | `rules.start_cash_minor` | minor / без смены | VNextRules; strict field/type/domain/reference/checked | World.StartingCashMinor |
 | `rules.cell_price_minor` | minor / без смены | VNextRules; strict field/type/domain/reference/checked | World.PlotPriceMinor |
 | `rules.reservation_extra_bp` | bp / integer,10000=1 | VNextRules; strict field/type/domain/reference/checked | World.Rules.ReservationFeeBasisPoints |
 | `rules.reservation_ttl` | целые тики / без смены | VNextRules; strict field/type/domain/reference/checked | World.LandReservationTicks |
-| `rules.personal_capacity` | целое / без смены | VNextRules; strict field/type/domain/reference/checked | World.PersonalInventoryCapacity |
-| `rules.bare_cell_capacity` | целое / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
-| `rules.warehouse_capacities[]` | целое / без смены | VNextRules; integer/range | metadata; C–F (см. активные исключения) |
-| `rules.staff_per_workshop` | целое / без смены | VNextRules; strict field/type/domain/reference/checked | RecipeDefinition.RequiredStaff |
+| `rules.personal_capacity` | объём | VNextRules; strict field/type/domain/reference/checked | World.PersonalInventoryCapacity |
+| `rules.bare_cell_capacity` | объём | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
+| `rules.warehouse_capacities[]` | объём | VNextRules; integer/range | metadata; C–F (см. активные исключения) |
+| `rules.staff_per_workshop` | численные люди (на указанный объект/участника) | VNextRules; strict field/type/domain/reference/checked | RecipeDefinition.RequiredStaff |
 | `rules.staff_rate_bp[]` | bp / integer,10000=1 | VNextRules; integer/range | metadata; C–F (см. активные исключения) |
-| `rules.wage_minor` | minor / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
+| `rules.wage_minor` | minor / работника / рабочий тик | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
 | `rules.wage_button_step_minor` | minor / без смены | VNextRules; strict field/type/domain/reference/checked | World.Rules.PlayerWageStepMinor |
 | `rules.demolition_recovery_bp` | bp / integer,10000=1 | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
 | `rules.demolition_cell_minor` | minor / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
 | `rules.demolition_extra_cell_level_minor` | minor / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
 | `rules.overflow_grace_ticks` | целые тики / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
-| `rules.overflow_warnings_remaining[]` | целое / без смены | VNextRules; integer/range | metadata; C–F (см. активные исключения) |
+| `rules.overflow_warnings_remaining[]` | тиков до истечения | VNextRules; integer/range | metadata; C–F (см. активные исключения) |
 | `rules.delivery_accept_ticks` | целые тики / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
 | `rules.delivery_deadline_min_buffer` | целое / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
 | `rules.delivery_deadline_buffer_bp` | bp / integer,10000=1 | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
@@ -171,7 +171,7 @@ errors. Неположительная прямая маржа — warning; JSON
 | `rules.penalty_period` | целые тики / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
 | `rules.penalty_bp` | bp / integer,10000=1 | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
 | `rules.city_private_road_share_bp` | bp / integer,10000=1 | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
-| `rules.road_speed_caps[]` | целое / без смены | VNextRules; integer/range | metadata; C–F (см. активные исключения) |
+| `rules.road_speed_caps[]` | единиц скорости; /80 = клеток/тик | VNextRules; integer/range | metadata; C–F (см. активные исключения) |
 | `rules.road_increment_light_minor` | minor / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
 | `rules.shop_update_ticks` | целые тики / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
 | `rules.shop_min_display_ticks` | целые тики / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
@@ -182,96 +182,96 @@ errors. Неположительная прямая маржа — warning; JSON
 | `rules.autosave_ticks` | целые тики / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
 | `rules.quest_refresh_ticks` | целые тики / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
 | `rules.quest_active_limit` | целое / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
-| `rules.base_speed_units_per_cell_tick` | целое / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
-| `rules.offroad_vehicle_speed` | целое / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
-| `rules.offroad_person_speed` | целое / без смены | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
+| `rules.base_speed_units_per_cell_tick` | знаменатель скорости (80 единиц / клетку за тик) | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
+| `rules.offroad_vehicle_speed` | единиц скорости; /80 = клеток/тик | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
+| `rules.offroad_person_speed` | единиц скорости; /80 = клеток/тик | VNextRules; strict field/type/domain/reference/checked | metadata; C–F (см. активные исключения) |
 | `items[].id` | строка/ID/enum / без смены | VNextCatalogItem; strict field/type/domain/reference/checked | ItemDefinition; XP/source → D |
 | `items[].name` | строка/ID/enum / без смены | VNextCatalogItem; strict field/type/domain/reference/checked | ItemDefinition; XP/source → D |
-| `items[].unit_volume` | целое / без смены | VNextCatalogItem; strict field/type/domain/reference/checked | ItemDefinition; XP/source → D |
+| `items[].unit_volume` | объём | VNextCatalogItem; strict field/type/domain/reference/checked | ItemDefinition; XP/source → D |
 | `items[].reference_price_minor` | minor / без смены | VNextCatalogItem; strict field/type/domain/reference/checked | ItemDefinition; XP/source → D |
-| `items[].xp_per_unit` | целое / без смены | VNextCatalogItem; strict field/type/domain/reference/checked | ItemDefinition; XP/source → D |
+| `items[].xp_per_unit` | XP; xp_per_unit — за единицу выпуска | VNextCatalogItem; strict field/type/domain/reference/checked | ItemDefinition; XP/source → D |
 | `items[].source` | строка/ID/enum / без смены | VNextCatalogItem; strict field/type/domain/reference/checked | ItemDefinition; XP/source → D |
 | `recipes[].id` | строка/ID/enum / без смены | VNextCatalogRecipe; strict field/type/domain/reference/checked | V1 executor; industry/unlock → D |
 | `recipes[].industry` | строка/ID/enum / без смены | VNextCatalogRecipe; strict field/type/domain/reference/checked | V1 executor; industry/unlock → D |
-| `recipes[].unlock_level` | целое / без смены | VNextCatalogRecipe; strict field/type/domain/reference/checked | V1 executor; industry/unlock → D |
-| `recipes[].inputs.{itemId}` | целое / без смены | VNextCatalogRecipe; quantity/ref/checked | V1 executor; industry/unlock → D |
+| `recipes[].unlock_level` | номер ступени/версии | VNextCatalogRecipe; strict field/type/domain/reference/checked | V1 executor; industry/unlock → D |
+| `recipes[].inputs.{itemId}` | единиц соответствующего товара | VNextCatalogRecipe; quantity/ref/checked | V1 executor; industry/unlock → D |
 | `recipes[].output` | строка/ID/enum / без смены | VNextCatalogRecipe; strict field/type/domain/reference/checked | V1 executor; industry/unlock → D |
-| `recipes[].output_quantity` | целое / без смены | VNextCatalogRecipe; strict field/type/domain/reference/checked | V1 executor; industry/unlock → D |
+| `recipes[].output_quantity` | единиц соответствующего товара | VNextCatalogRecipe; strict field/type/domain/reference/checked | V1 executor; industry/unlock → D |
 | `recipes[].work_ticks_full_staff` | целые тики / без смены | VNextCatalogRecipe; strict field/type/domain/reference/checked | V1 executor; industry/unlock → D |
-| `recipes[].service_minor_per_work_tick` | minor / без смены | VNextCatalogRecipe; strict field/type/domain/reference/checked | V1 executor; industry/unlock → D |
+| `recipes[].service_minor_per_work_tick` | minor / эквивалент полного рабочего тика | VNextCatalogRecipe; strict field/type/domain/reference/checked | V1 executor; industry/unlock → D |
 | `vehicles[].id` | строка/ID/enum / без смены | VNextVehicle; strict field/type/domain/reference/checked | metadata E |
 | `vehicles[].name` | строка/ID/enum / без смены | VNextVehicle; strict field/type/domain/reference/checked | metadata E |
-| `vehicles[].speed` | целое / без смены | VNextVehicle; strict field/type/domain/reference/checked | metadata E |
-| `vehicles[].capacity_volume` | целое / без смены | VNextVehicle; strict field/type/domain/reference/checked | metadata E |
+| `vehicles[].speed` | единиц скорости; /80 = клеток/тик | VNextVehicle; strict field/type/domain/reference/checked | metadata E |
+| `vehicles[].capacity_volume` | объём | VNextVehicle; strict field/type/domain/reference/checked | metadata E |
 | `vehicles[].price_minor` | minor / без смены | VNextVehicle; strict field/type/domain/reference/checked | metadata E |
-| `vehicles[].handling_max` | целое / без смены | VNextVehicle; strict field/type/domain/reference/checked | metadata E |
+| `vehicles[].handling_max` | объёма / тик | VNextVehicle; strict field/type/domain/reference/checked | metadata E |
 | `vehicles[].class_factor_bp` | bp / integer,10000=1 | VNextVehicle; strict field/type/domain/reference/checked | metadata E |
 | `vehicles[].delivery_service_allowed` | bool / без смены | VNextVehicle; strict field/type/domain/reference/checked | metadata E |
 | `industries[].id` | строка/ID/enum / без смены | VNextCatalogIndustry; strict field/type/domain/reference/checked | metadata D |
 | `industries[].name` | строка/ID/enum / без смены | VNextCatalogIndustry; strict field/type/domain/reference/checked | metadata D |
 | `industries[].coins` | coins → price_minor (industries: construction_price_minor), checked×100 | VNextCatalogIndustry; strict field/type/domain/reference/checked | metadata D |
-| `industries[].materials.{itemId}` | целое / без смены | VNextCatalogIndustry; quantity/ref/checked | metadata D |
-| `enterprise_tiers[].level` | целое / без смены | VNextEnterpriseTier; strict field/type/domain/reference/checked | metadata D |
-| `enterprise_tiers[].xp` | целое / без смены | VNextEnterpriseTier; strict field/type/domain/reference/checked | metadata D |
-| `enterprise_tiers[].cells` | целое / без смены | VNextEnterpriseTier; strict field/type/domain/reference/checked | metadata D |
-| `enterprise_tiers[].workshops` | целое / без смены | VNextEnterpriseTier; strict field/type/domain/reference/checked | metadata D |
-| `enterprise_tiers[].input_capacity` | целое / без смены | VNextEnterpriseTier; strict field/type/domain/reference/checked | metadata D |
-| `enterprise_tiers[].output_capacity` | целое / без смены | VNextEnterpriseTier; strict field/type/domain/reference/checked | metadata D |
+| `industries[].materials.{itemId}` | единиц соответствующего товара | VNextCatalogIndustry; quantity/ref/checked | metadata D |
+| `enterprise_tiers[].level` | номер ступени/версии | VNextEnterpriseTier; strict field/type/domain/reference/checked | metadata D |
+| `enterprise_tiers[].xp` | XP; xp_per_unit — за единицу выпуска | VNextEnterpriseTier; strict field/type/domain/reference/checked | metadata D |
+| `enterprise_tiers[].cells` | клеток | VNextEnterpriseTier; strict field/type/domain/reference/checked | metadata D |
+| `enterprise_tiers[].workshops` | цехов | VNextEnterpriseTier; strict field/type/domain/reference/checked | metadata D |
+| `enterprise_tiers[].input_capacity` | объём | VNextEnterpriseTier; strict field/type/domain/reference/checked | metadata D |
+| `enterprise_tiers[].output_capacity` | объём | VNextEnterpriseTier; strict field/type/domain/reference/checked | metadata D |
 | `enterprise_tiers[].coins` | coins → price_minor (industries: construction_price_minor), checked×100 | VNextEnterpriseTier; strict field/type/domain/reference/checked | metadata D |
-| `enterprise_tiers[].materials.{itemId}` | целое / без смены | VNextEnterpriseTier; quantity/ref/checked | metadata D |
+| `enterprise_tiers[].materials.{itemId}` | единиц соответствующего товара | VNextEnterpriseTier; quantity/ref/checked | metadata D |
 | `enterprise_tiers[].ticks` | целые тики / без смены | VNextEnterpriseTier; strict field/type/domain/reference/checked | metadata D |
-| `warehouses[].level` | целое / без смены | VNextWarehouse; strict field/type/domain/reference/checked | metadata C |
-| `warehouses[].capacity` | целое / без смены | VNextWarehouse; strict field/type/domain/reference/checked | metadata C |
+| `warehouses[].level` | номер ступени/версии | VNextWarehouse; strict field/type/domain/reference/checked | metadata C |
+| `warehouses[].capacity` | объём | VNextWarehouse; strict field/type/domain/reference/checked | metadata C |
 | `warehouses[].coins` | coins → price_minor (industries: construction_price_minor), checked×100 | VNextWarehouse; strict field/type/domain/reference/checked | metadata C |
-| `warehouses[].materials.{itemId}` | целое / без смены | VNextWarehouse; quantity/ref/checked | metadata C |
+| `warehouses[].materials.{itemId}` | единиц соответствующего товара | VNextWarehouse; quantity/ref/checked | metadata C |
 | `warehouses[].ticks` | целые тики / без смены | VNextWarehouse; strict field/type/domain/reference/checked | metadata C |
-| `recipe_versions[].version` | целое / без смены | VNextRecipeVersion; strict field/type/domain/reference/checked | metadata D |
+| `recipe_versions[].version` | номер ступени/версии | VNextRecipeVersion; strict field/type/domain/reference/checked | metadata D |
 | `recipe_versions[].input_multiplier` | точный integer/rational num/den | VNextRecipeVersion; strict field/type/domain/reference/checked | metadata D |
 | `recipe_versions[].output_multiplier` | точный integer/rational num/den | VNextRecipeVersion; strict field/type/domain/reference/checked | metadata D |
 | `recipe_versions[].work_multiplier_num` | точный integer/rational num/den | VNextRecipeVersion; strict field/type/domain/reference/checked | metadata D |
 | `recipe_versions[].work_multiplier_den` | точный integer/rational num/den | VNextRecipeVersion; strict field/type/domain/reference/checked | metadata D |
-| `recipe_versions[].unlock_level` | целое / без смены | VNextRecipeVersion; strict field/type/domain/reference/checked | metadata D |
+| `recipe_versions[].unlock_level` | номер ступени/версии | VNextRecipeVersion; strict field/type/domain/reference/checked | metadata D |
 | `resources.{id}.name` | строка/ID/enum / без смены | VNextResource; strict field/type/domain/reference/checked | ResourceTypeBalance/ResourceSiteRules; uniform manual ticks |
-| `resources.{id}.private_stock_per_cell` | целое / без смены | VNextResource; strict field/type/domain/reference/checked | ResourceTypeBalance/ResourceSiteRules; uniform manual ticks |
+| `resources.{id}.private_stock_per_cell` | единиц соответствующего товара | VNextResource; strict field/type/domain/reference/checked | ResourceTypeBalance/ResourceSiteRules; uniform manual ticks |
 | `resources.{id}.regen_one_every_ticks` | целые тики / без смены | VNextResource; strict field/type/domain/reference/checked | ResourceTypeBalance/ResourceSiteRules; uniform manual ticks |
 | `resources.{id}.manual_ticks` | целые тики / без смены | VNextResource; strict field/type/domain/reference/checked | ResourceTypeBalance/ResourceSiteRules; uniform manual ticks |
-| `resources.{id}.public_stock_per_cell` | целое / без смены | VNextResource; strict field/type/domain/reference/checked | ResourceTypeBalance/ResourceSiteRules; uniform manual ticks |
+| `resources.{id}.public_stock_per_cell` | единиц соответствующего товара | VNextResource; strict field/type/domain/reference/checked | ResourceTypeBalance/ResourceSiteRules; uniform manual ticks |
 | `resources.{id}.public_regen_one_every_ticks` | целые тики / без смены | VNextResource; strict field/type/domain/reference/checked | ResourceTypeBalance/ResourceSiteRules; uniform manual ticks |
 | `additional_workshop_outfits.{id}.coins` | coins → price_minor (industries: construction_price_minor), checked×100 | VNextOutfit; strict field/type/domain/reference/checked | metadata D |
-| `additional_workshop_outfits.{id}.materials.{itemId}` | целое / без смены | VNextOutfit; quantity/ref/checked | metadata D |
-| `workshop_recipe_modernization[].version` | целое / без смены | VNextModernization; strict field/type/domain/reference/checked | metadata D |
+| `additional_workshop_outfits.{id}.materials.{itemId}` | единиц соответствующего товара | VNextOutfit; quantity/ref/checked | metadata D |
+| `workshop_recipe_modernization[].version` | номер ступени/версии | VNextModernization; strict field/type/domain/reference/checked | metadata D |
 | `workshop_recipe_modernization[].coins` | coins → price_minor (industries: construction_price_minor), checked×100 | VNextModernization; strict field/type/domain/reference/checked | metadata D |
-| `workshop_recipe_modernization[].materials.{itemId}` | целое / без смены | VNextModernization; quantity/ref/checked | metadata D |
+| `workshop_recipe_modernization[].materials.{itemId}` | единиц соответствующего товара | VNextModernization; quantity/ref/checked | metadata D |
 | `workshop_recipe_modernization[].ticks` | целые тики / без смены | VNextModernization; strict field/type/domain/reference/checked | metadata D |
-| `loading_platforms[].level` | целое / без смены | VNextLoadingPlatform; strict field/type/domain/reference/checked | metadata E/F |
-| `loading_platforms[].throughput` | целое / без смены | VNextLoadingPlatform; strict field/type/domain/reference/checked | metadata E/F |
-| `loading_platforms[].requires_staff` | целое / без смены | VNextLoadingPlatform; strict field/type/domain/reference/checked | metadata E/F |
+| `loading_platforms[].level` | номер ступени/версии | VNextLoadingPlatform; strict field/type/domain/reference/checked | metadata E/F |
+| `loading_platforms[].throughput` | объёма / тик | VNextLoadingPlatform; strict field/type/domain/reference/checked | metadata E/F |
+| `loading_platforms[].requires_staff` | численные люди (на указанный объект/участника) | VNextLoadingPlatform; strict field/type/domain/reference/checked | metadata E/F |
 | `loading_platforms[].coins` | coins → price_minor (industries: construction_price_minor), checked×100 | VNextLoadingPlatform; strict field/type/domain/reference/checked | metadata E/F |
-| `loading_platforms[].materials.{itemId}` | целое / без смены | VNextLoadingPlatform; quantity/ref/checked | metadata E/F |
+| `loading_platforms[].materials.{itemId}` | единиц соответствующего товара | VNextLoadingPlatform; quantity/ref/checked | metadata E/F |
 | `loading_platforms[].ticks` | целые тики / без смены | VNextLoadingPlatform; strict field/type/domain/reference/checked | metadata E/F |
-| `loading_platforms[].service_minor_per_active_tick` | minor / без смены | VNextLoadingPlatform; strict field/type/domain/reference/checked | metadata E/F |
+| `loading_platforms[].service_minor_per_active_tick` | minor / активный тик передачи | VNextLoadingPlatform; strict field/type/domain/reference/checked | metadata E/F |
 | `vehicle_handling_kits[].id` | строка/ID/enum / без смены | VNextHandlingKit; strict field/type/domain/reference/checked | metadata E |
-| `vehicle_handling_kits[].throughput` | целое / без смены | VNextHandlingKit; strict field/type/domain/reference/checked | metadata E |
-| `vehicle_handling_kits[].requires_staff` | целое / без смены | VNextHandlingKit; strict field/type/domain/reference/checked | metadata E |
+| `vehicle_handling_kits[].throughput` | объёма / тик | VNextHandlingKit; strict field/type/domain/reference/checked | metadata E |
+| `vehicle_handling_kits[].requires_staff` | численные люди (на указанный объект/участника) | VNextHandlingKit; strict field/type/domain/reference/checked | metadata E |
 | `vehicle_handling_kits[].coins` | coins → price_minor (industries: construction_price_minor), checked×100 | VNextHandlingKit; strict field/type/domain/reference/checked | metadata E |
-| `vehicle_handling_kits[].materials.{itemId}` | целое / без смены | VNextHandlingKit; quantity/ref/checked | metadata E |
-| `road_projects[].level` | целое / без смены | VNextRoadProject; strict field/type/domain/reference/checked | metadata E |
-| `road_projects[].materials.{itemId}` | целое / без смены | VNextRoadProject; quantity/ref/checked | metadata E |
+| `vehicle_handling_kits[].materials.{itemId}` | единиц соответствующего товара | VNextHandlingKit; quantity/ref/checked | metadata E |
+| `road_projects[].level` | номер ступени/версии | VNextRoadProject; strict field/type/domain/reference/checked | metadata E |
+| `road_projects[].materials.{itemId}` | единиц соответствующего товара | VNextRoadProject; quantity/ref/checked | metadata E |
 | `road_projects[].coins` | coins → price_minor (industries: construction_price_minor), checked×100 | VNextRoadProject; strict field/type/domain/reference/checked | metadata E |
 | `road_projects[].ticks` | целые тики / без смены | VNextRoadProject; strict field/type/domain/reference/checked | metadata E |
 | `economy_globals.start_treasury_minor_per_4_participants` | minor / без смены | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
-| `economy_globals.start_population_per_participant` | целое / без смены | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
-| `economy_globals.max_population_per_participant` | целое / без смены | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
+| `economy_globals.start_population_per_participant` | численные люди (на указанный объект/участника) | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
+| `economy_globals.max_population_per_participant` | численные люди (на указанный объект/участника) | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
 | `economy_globals.population_growth_ticks` | целые тики / без смены | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
 | `economy_globals.resource_cell_coins` | coins → price_minor (industries: construction_price_minor), checked×100 | VNextEconomyGlobals; strict field/type/domain/reference/checked | ResourceSiteRules.PurchasePriceMinor |
 | `economy_globals.resource_lease_coins` | coins → price_minor (industries: construction_price_minor), checked×100 | VNextEconomyGlobals; strict field/type/domain/reference/checked | ResourceSiteRules.LeasePriceMinor |
 | `economy_globals.resource_lease_ticks` | целые тики / без смены | VNextEconomyGlobals; strict field/type/domain/reference/checked | ResourceSiteRules.LeaseTicks |
 | `economy_globals.import_markup_bp` | bp / integer,10000=1 | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
 | `economy_globals.import_refresh_ticks` | целые тики / без смены | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
-| `economy_globals.import_stock_per_additive_per_4_participants` | целое / без смены | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
-| `economy_globals.bootstrap_steel` | целое / без смены | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
-| `economy_globals.bootstrap_glass` | целое / без смены | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
-| `economy_globals.bootstrap_asphalt` | целое / без смены | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
+| `economy_globals.import_stock_per_additive_per_4_participants` | единиц добавки / пакет четырёх участников | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
+| `economy_globals.bootstrap_steel` | единиц соответствующего товара | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
+| `economy_globals.bootstrap_glass` | единиц соответствующего товара | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
+| `economy_globals.bootstrap_asphalt` | единиц соответствующего товара | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
 | `economy_globals.bootstrap_asphalt_refresh_ticks` | целые тики / без смены | VNextEconomyGlobals; strict field/type/domain/reference/checked | metadata B–F (см. активные исключения) |
 | `economy_globals.capital_demand_period` | целые тики / без смены | VNextEconomyGlobals; strict field/type/domain/reference/checked | World.CapitalDemand.PeriodTicks |
 | `economy_globals.capital_bootstrap_budget_minor_per_4_participants` | minor / без смены | VNextEconomyGlobals; strict field/type/domain/reference/checked | World.CapitalDemand.BootstrapBaseBudgetMinor (fixed4) |

@@ -110,6 +110,36 @@
       "exit_code": 0,
       "elapsed_seconds": 3.662,
       "finished_at": "2026-10-24T14:02:41.188430+00:00"
+    },
+    "a2-handoff-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-24T14:18:03.761240+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 23.898,
+      "finished_at": "2026-10-24T14:18:27.659707+00:00"
+    },
+    "a2-handoff-cli": {
+      "command": [
+        "python3",
+        "scripts/check_vnext_balance.py",
+        "--output",
+        "/workspace/work/delsk-a2/cli-handoff"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-24T14:18:27.712761+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 10.171,
+      "finished_at": "2026-10-24T14:18:37.883798+00:00"
     }
   },
   "inputSha256": {

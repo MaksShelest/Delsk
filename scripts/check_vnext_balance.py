@@ -63,7 +63,7 @@ broken=copy.deepcopy(original);broken['format_version']='future'
 validate('unknown-format',write('future.json',broken),2,'UnsupportedVersion')
 broken=copy.deepcopy(original);broken['rules']['typo']=1
 validate('strict-rules',write('rules.json',broken),2,'InvalidJson')
-broken=copy.deepcopy(original);broken['recipes'][0]['output']='missing' 
+broken=copy.deepcopy(original);broken['recipes'][0]['output']='missing'
 validate('reference',write('reference.json',broken),2,'UnknownReference')
 broken=copy.deepcopy(original);broken['economy_globals']['import_refresh_ticks']=777
 validate('metadata-conflict',write('metadata.json',broken),2,'SourceConflict',provenance)

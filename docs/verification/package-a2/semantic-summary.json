@@ -30,7 +30,7 @@
     {
       "section": "recipes",
       "structural": "A1 strict 1..8 inputs",
-      "semantic": "69 exact V1/V2/V3 derived batches, capacity, margin, reachability",
+      "semantic": "exact V1/V2/V3 derived batches, capacity, margin, reachability",
       "runtime": "23 V1 RecipeDefinition; one executor/linear staff, no unlock/XP"
     },
     {
@@ -193,7 +193,7 @@
     "limits": "Per four-participant package; finite stock and refresh, two-package cap from specification §16. Steel/glass purchases cost money, not free stock. One-package witness is conservative. Import quote rounded up to minor only in this static estimate; full B1 quotes are exact. Zero-cash recovery uses public harvest and funded spot sales without a factory. No transport/time/competition guarantee."
   },
   "profileSha256": "4cbf810521e05703b13f8b8a8d2dc6204771eed738690ec1d3fadffead373e2f",
-  "rawReportSha256": "5e556a8abf97495efbb51838e3a39561658aaa84922134963c583530af863b21",
+  "rawReportSha256": "90abe7f384a5c7dae58559587cd0a0776c9e1056374b674d8a8f5881c7dc7eef",
   "derivedBatchCount": 69,
   "minimumDirectMarginMinor": 868,
   "graph": {

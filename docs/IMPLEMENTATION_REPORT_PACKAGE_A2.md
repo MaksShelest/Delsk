@@ -185,4 +185,7 @@ A2 закрывает собственную границу A, ранний ка
 
 Далее только отдельное задание **B1 — первая половина пакета B**, затем B2;
 B1 здесь не начат. PR без автоматического merge. Ветка feat/vnext-package-a2;
-commit/PR добавляются в handoff после публикации.
+реализация [a8aa0c2](https://github.com/MaksShelest/Delsk/commit/a8aa0c267802beb2a17338531fbda4dd8a895155),
+[PR57](https://github.com/MaksShelest/Delsk/pull/57) открыт без merge.
+Финальный handoff также уточняет generic coverage без фиксированного числа партий
+для маленьких fixtures и убирает trailing whitespace; экономические правила прежние.

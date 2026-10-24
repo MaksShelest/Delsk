@@ -201,7 +201,7 @@ public static class VNextBalanceAnalyzer
     public static ImmutableArray<VNextCoverage> Coverage() => [
         new("rules","all fields/types/ranges","units, duplicate settings, timing order, staff/road curves; no future scheduler proof","selected existing scalar rules only"),
         new("items","A1 strict","references, grounded source and checked value/volume","34 ItemDefinition; XP/source metadata"),
-        new("recipes","A1 strict 1..8 inputs","69 exact V1/V2/V3 derived batches, capacity, margin, reachability","23 V1 RecipeDefinition; one executor/linear staff, no unlock/XP"),
+        new("recipes","A1 strict 1..8 inputs","exact V1/V2/V3 derived batches, capacity, margin, reachability","23 V1 RecipeDefinition; one executor/linear staff, no unlock/XP"),
         new("industries","A1 strict","initial material volume/cost and finite-seed construction witness","metadata; no legacy rename"),
         new("enterprise_tiers","all fields/refs/checked","five levels, XP/capacity/workshops/2x3/staff, previous input, unlock witness","metadata D"),
         new("warehouses","all fields/refs/checked","200/300/400 and duplicate settings; materials renewable","metadata C"),
