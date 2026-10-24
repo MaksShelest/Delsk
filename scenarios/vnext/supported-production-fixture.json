@@ -1,0 +1,8 @@
+{
+  "id":"vnext-supported-production-fixture-1","seed":42,"mapWidth":4,"mapHeight":4,"blockedCells":[],
+  "items":[{"id":"stone","unitVolume":1,"basePriceMinor":300},{"id":"gravel","unitVolume":1,"basePriceMinor":800}],
+  "recipes":[{"id":"crush_stone","inputs":[{"itemId":"stone","quantity":3}],"outputItem":"gravel","outputQuantity":5,"fullStaffTicks":20,"requiredStaff":5,"minimumStaff":1,"energyPerBatchMinor":40}],
+  "participants":[{"id":1,"cashMinor":20000,"position":{"x":1,"z":1},"inventoryCapacity":20},{"id":2,"cashMinor":20000,"position":{"x":0,"z":0},"inventoryCapacity":20},{"id":3,"cashMinor":20000,"position":{"x":3,"z":0},"inventoryCapacity":20},{"id":4,"cashMinor":20000,"position":{"x":3,"z":3},"inventoryCapacity":20}],
+  "enterprises":[{"id":1,"ownerId":1,"position":{"x":1,"z":1},"recipeId":"crush_stone","inputCapacity":80,"outputCapacity":80,"staff":5,"capacity":5,"wageMinor":20}],
+  "resourceNodes":[{"itemId":"stone","position":{"x":1,"z":1}}],"capitalOffers":[],"population":20,"maxTicks":100
+}

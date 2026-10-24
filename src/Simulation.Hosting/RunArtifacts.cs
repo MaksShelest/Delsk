@@ -15,7 +15,7 @@ public static class RunArtifacts
         ScenarioValidation.Validate(scenario); return scenario;
     }
     public static void Export(GameSession session, ScenarioDefinition definition, string directory,
-        string timingPolicy, string script, double elapsedMilliseconds, string status = "succeeded", string? failure = null, object? modelMetadata = null)
+        string timingPolicy, string script, double elapsedMilliseconds, string status = "succeeded", string? failure = null, object? modelMetadata = null, object? economyProvenance = null)
     {
         Directory.CreateDirectory(directory);
         var state = session.Engine.Inspect();
@@ -30,6 +30,7 @@ public static class RunArtifacts
             MapId = definition.Id, Difficulty = (string?)null, DifficultyReason = "Per-actor policy/settings and module versions are recorded in controllers; no inferred global difficulty",
             Stage = "Package8", DeveloperBuild=SimulationEngine.IsDeveloperBuild, ResearchModified=session.Engine.ResearchModified,
             CleanComparisonEligible=!SimulationEngine.IsDeveloperBuild && !session.Engine.ResearchModified,
+            EconomyProvenance = economyProvenance,
             Author = "Шелестов Максим Евгеньевич"
         });
         WriteJson("summary.json", new { Status = status, Failure = failure, state.Tick, StateHash = session.Engine.ComputeStateHash(),

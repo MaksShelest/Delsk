@@ -1,0 +1,1074 @@
+{
+  "version": 1,
+  "id": "vnext-b1-supported-1",
+  "world": {
+    "startingCashMinor": 20000,
+    "personalInventoryCapacity": 20,
+    "population": 20,
+    "plotPriceMinor": 10000,
+    "shopSitePriceMinor": 10000,
+    "harvestTicksPerUnit": 2,
+    "moveTicksPerCell": 1,
+    "tradeWindowTicks": 5,
+    "landReservationTicks": 120,
+    "maxActivePlotReservations": 4,
+    "maxTicks": 5000,
+    "items": [
+      {
+        "id": "wood",
+        "unitVolume": 2,
+        "basePriceMinor": 500
+      },
+      {
+        "id": "grain",
+        "unitVolume": 1,
+        "basePriceMinor": 300
+      },
+      {
+        "id": "stone",
+        "unitVolume": 1,
+        "basePriceMinor": 300
+      },
+      {
+        "id": "iron_ore",
+        "unitVolume": 1,
+        "basePriceMinor": 400
+      },
+      {
+        "id": "copper_ore",
+        "unitVolume": 1,
+        "basePriceMinor": 500
+      },
+      {
+        "id": "sand",
+        "unitVolume": 1,
+        "basePriceMinor": 200
+      },
+      {
+        "id": "beet",
+        "unitVolume": 1,
+        "basePriceMinor": 300
+      },
+      {
+        "id": "milk",
+        "unitVolume": 1,
+        "basePriceMinor": 400
+      },
+      {
+        "id": "coke",
+        "unitVolume": 1,
+        "basePriceMinor": 400
+      },
+      {
+        "id": "soda",
+        "unitVolume": 1,
+        "basePriceMinor": 300
+      },
+      {
+        "id": "limestone",
+        "unitVolume": 1,
+        "basePriceMinor": 200
+      },
+      {
+        "id": "cement",
+        "unitVolume": 1,
+        "basePriceMinor": 500
+      },
+      {
+        "id": "bitumen",
+        "unitVolume": 1,
+        "basePriceMinor": 600
+      },
+      {
+        "id": "plank",
+        "unitVolume": 1,
+        "basePriceMinor": 900
+      },
+      {
+        "id": "steel",
+        "unitVolume": 1,
+        "basePriceMinor": 2500
+      },
+      {
+        "id": "copper",
+        "unitVolume": 1,
+        "basePriceMinor": 3600
+      },
+      {
+        "id": "gravel",
+        "unitVolume": 1,
+        "basePriceMinor": 800
+      },
+      {
+        "id": "flour",
+        "unitVolume": 1,
+        "basePriceMinor": 900
+      },
+      {
+        "id": "sugar",
+        "unitVolume": 1,
+        "basePriceMinor": 1500
+      },
+      {
+        "id": "bread",
+        "unitVolume": 1,
+        "basePriceMinor": 2100
+      },
+      {
+        "id": "cheese",
+        "unitVolume": 1,
+        "basePriceMinor": 5000
+      },
+      {
+        "id": "curd",
+        "unitVolume": 1,
+        "basePriceMinor": 3300
+      },
+      {
+        "id": "cream",
+        "unitVolume": 1,
+        "basePriceMinor": 2800
+      },
+      {
+        "id": "wire",
+        "unitVolume": 1,
+        "basePriceMinor": 2900
+      },
+      {
+        "id": "beam",
+        "unitVolume": 2,
+        "basePriceMinor": 7200
+      },
+      {
+        "id": "steel_sheet",
+        "unitVolume": 1,
+        "basePriceMinor": 4100
+      },
+      {
+        "id": "glass",
+        "unitVolume": 1,
+        "basePriceMinor": 3400
+      },
+      {
+        "id": "concrete",
+        "unitVolume": 1,
+        "basePriceMinor": 3900
+      },
+      {
+        "id": "asphalt",
+        "unitVolume": 1,
+        "basePriceMinor": 3900
+      },
+      {
+        "id": "furniture",
+        "unitVolume": 4,
+        "basePriceMinor": 20700
+      },
+      {
+        "id": "window",
+        "unitVolume": 2,
+        "basePriceMinor": 13200
+      },
+      {
+        "id": "pastry",
+        "unitVolume": 1,
+        "basePriceMinor": 5000
+      },
+      {
+        "id": "motor",
+        "unitVolume": 4,
+        "basePriceMinor": 23400
+      },
+      {
+        "id": "conveyor",
+        "unitVolume": 10,
+        "basePriceMinor": 66500
+      }
+    ],
+    "recipes": [
+      {
+        "id": "saw_planks",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "plank",
+        "outputQuantity": 4,
+        "fullStaffTicks": 16,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 32,
+        "inputs": [
+          {
+            "itemId": "wood",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "smelt_steel",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "steel",
+        "outputQuantity": 2,
+        "fullStaffTicks": 20,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 40,
+        "inputs": [
+          {
+            "itemId": "coke",
+            "quantity": 1
+          },
+          {
+            "itemId": "iron_ore",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "smelt_copper",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "copper",
+        "outputQuantity": 1,
+        "fullStaffTicks": 16,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 32,
+        "inputs": [
+          {
+            "itemId": "copper_ore",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "crush_stone",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "gravel",
+        "outputQuantity": 5,
+        "fullStaffTicks": 20,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 40,
+        "inputs": [
+          {
+            "itemId": "stone",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "mill_flour",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "flour",
+        "outputQuantity": 4,
+        "fullStaffTicks": 16,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 32,
+        "inputs": [
+          {
+            "itemId": "grain",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "make_sugar",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "sugar",
+        "outputQuantity": 2,
+        "fullStaffTicks": 12,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 24,
+        "inputs": [
+          {
+            "itemId": "beet",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "bake_bread",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "bread",
+        "outputQuantity": 4,
+        "fullStaffTicks": 32,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 64,
+        "inputs": [
+          {
+            "itemId": "flour",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "make_cheese",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "cheese",
+        "outputQuantity": 1,
+        "fullStaffTicks": 24,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 48,
+        "inputs": [
+          {
+            "itemId": "milk",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "make_curd",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "curd",
+        "outputQuantity": 1,
+        "fullStaffTicks": 16,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 32,
+        "inputs": [
+          {
+            "itemId": "milk",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "make_cream",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "cream",
+        "outputQuantity": 2,
+        "fullStaffTicks": 28,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 56,
+        "inputs": [
+          {
+            "itemId": "milk",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "draw_wire",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "wire",
+        "outputQuantity": 4,
+        "fullStaffTicks": 48,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 96,
+        "inputs": [
+          {
+            "itemId": "copper",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "roll_beams",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "beam",
+        "outputQuantity": 2,
+        "fullStaffTicks": 30,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 60,
+        "inputs": [
+          {
+            "itemId": "steel",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "roll_sheet",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "steel_sheet",
+        "outputQuantity": 3,
+        "fullStaffTicks": 40,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 80,
+        "inputs": [
+          {
+            "itemId": "steel",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "make_glass",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "glass",
+        "outputQuantity": 3,
+        "fullStaffTicks": 60,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 120,
+        "inputs": [
+          {
+            "itemId": "limestone",
+            "quantity": 1
+          },
+          {
+            "itemId": "sand",
+            "quantity": 4
+          },
+          {
+            "itemId": "soda",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "mix_concrete",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "concrete",
+        "outputQuantity": 4,
+        "fullStaffTicks": 80,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 160,
+        "inputs": [
+          {
+            "itemId": "cement",
+            "quantity": 1
+          },
+          {
+            "itemId": "gravel",
+            "quantity": 3
+          },
+          {
+            "itemId": "sand",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "mix_asphalt",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "asphalt",
+        "outputQuantity": 4,
+        "fullStaffTicks": 80,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 160,
+        "inputs": [
+          {
+            "itemId": "bitumen",
+            "quantity": 1
+          },
+          {
+            "itemId": "gravel",
+            "quantity": 3
+          },
+          {
+            "itemId": "sand",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "assemble_furniture",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "furniture",
+        "outputQuantity": 1,
+        "fullStaffTicks": 48,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 96,
+        "inputs": [
+          {
+            "itemId": "plank",
+            "quantity": 6
+          },
+          {
+            "itemId": "steel",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "assemble_windows",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "window",
+        "outputQuantity": 2,
+        "fullStaffTicks": 64,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 128,
+        "inputs": [
+          {
+            "itemId": "glass",
+            "quantity": 2
+          },
+          {
+            "itemId": "plank",
+            "quantity": 4
+          },
+          {
+            "itemId": "steel",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "bake_milk",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "pastry",
+        "outputQuantity": 3,
+        "fullStaffTicks": 60,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 120,
+        "inputs": [
+          {
+            "itemId": "flour",
+            "quantity": 2
+          },
+          {
+            "itemId": "milk",
+            "quantity": 2
+          },
+          {
+            "itemId": "sugar",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "bake_curd",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "pastry",
+        "outputQuantity": 4,
+        "fullStaffTicks": 80,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 160,
+        "inputs": [
+          {
+            "itemId": "curd",
+            "quantity": 1
+          },
+          {
+            "itemId": "flour",
+            "quantity": 2
+          },
+          {
+            "itemId": "sugar",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "bake_cream",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "pastry",
+        "outputQuantity": 3,
+        "fullStaffTicks": 48,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 96,
+        "inputs": [
+          {
+            "itemId": "cream",
+            "quantity": 1
+          },
+          {
+            "itemId": "flour",
+            "quantity": 2
+          },
+          {
+            "itemId": "sugar",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "assemble_motor",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "motor",
+        "outputQuantity": 1,
+        "fullStaffTicks": 64,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 128,
+        "inputs": [
+          {
+            "itemId": "steel",
+            "quantity": 2
+          },
+          {
+            "itemId": "wire",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "assemble_conveyor",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "conveyor",
+        "outputQuantity": 1,
+        "fullStaffTicks": 120,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 240,
+        "inputs": [
+          {
+            "itemId": "motor",
+            "quantity": 1
+          },
+          {
+            "itemId": "plank",
+            "quantity": 4
+          },
+          {
+            "itemId": "steel",
+            "quantity": 4
+          }
+        ]
+      }
+    ],
+    "buildingTypes": [
+      {
+        "id": "warehouse",
+        "kind": "Warehouse",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          },
+          {
+            "x": 1,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "",
+            "priceMinor": 10000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 200,
+            "outputCapacity": 0,
+            "staffCapacity": 0,
+            "wageMinor": 0,
+            "workRateMultiplier": 1
+          }
+        ],
+        "walls": [
+          {
+            "x": 1,
+            "z": 0
+          }
+        ]
+      },
+      {
+        "id": "shop",
+        "kind": "Shop",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "",
+            "priceMinor": 10000,
+            "materials": [
+              {
+                "itemId": "wood",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 200,
+            "outputCapacity": 0,
+            "staffCapacity": 0,
+            "wageMinor": 0,
+            "workRateMultiplier": 1
+          }
+        ],
+        "walls": null
+      }
+    ],
+    "equipmentTypes": [],
+    "labor": {
+      "stepTicks": 10,
+      "salaryChangeDelayTicks": 20,
+      "mobilityNumerator": 1,
+      "mobilityDenominator": 10,
+      "growthPeriodTicks": 120,
+      "growthPerPeriod": 1
+    },
+    "market": {
+      "auctionRoundTicks": 5,
+      "auctionRounds": 2,
+      "minimumRaiseMinor": 1,
+      "pickupTtlTicks": 120,
+      "pickupFineBasisPoints": 500
+    },
+    "delivery": {
+      "contractTtlTicks": 180,
+      "fineBasisPoints": 500,
+      "offerTtlTicks": 180
+    },
+    "logistics": {
+      "purchasePriceMinor": 20000,
+      "cargoCapacity": 10,
+      "moveTicksPerCell": 1,
+      "minimumCrew": 2,
+      "crewCapacity": 2,
+      "wageMinor": 20,
+      "upgrade": {
+        "priceMinor": 30000,
+        "materials": [
+          {
+            "itemId": "plank",
+            "quantity": 10
+          }
+        ],
+        "cargoCapacity": 20,
+        "minimumCrew": 3,
+        "crewCapacity": 3
+      }
+    },
+    "capitalDemand": {
+      "terminal": {
+        "x": 15,
+        "z": 3
+      },
+      "periodTicks": 60,
+      "bootstrapBaseBudgetMinor": 20000,
+      "demandNumerator": 11,
+      "demandDenominator": 10,
+      "commonWaveTicks": 600,
+      "itemWaveTicks": 240,
+      "orderTtlTicks": 180,
+      "priceScaleBasisPoints": 10000
+    },
+    "elections": {
+      "periodTicks": 600,
+      "baseVote": 1,
+      "pauseForBallots": true
+    },
+    "support": {
+      "tradingPoint": {
+        "x": 15,
+        "z": 3
+      },
+      "sectionCapacity": 80
+    },
+    "rules": {
+      "playerWageStepMinor": 5,
+      "reservationFeeBasisPoints": 1000,
+      "wageAttractionExponent": 3,
+      "commonPriceMinimumBasisPoints": 9000,
+      "commonPriceMaximumBasisPoints": 11000,
+      "itemPriceMinimumBasisPoints": 8000,
+      "itemPriceMaximumBasisPoints": 12000,
+      "noiseMinimumBasisPoints": 9800,
+      "noiseMaximumBasisPoints": 10200,
+      "demandWeightMinimumBasisPoints": 5000,
+      "demandWeightMaximumBasisPoints": 15000,
+      "city": {
+        "confirmationTicks": 30,
+        "settlement": {
+          "capitalMinor": 150000,
+          "population": 25,
+          "activeProductions": 1
+        },
+        "smallTown": {
+          "capitalMinor": 400000,
+          "population": 40,
+          "activeProductions": 3
+        },
+        "developedTown": {
+          "capitalMinor": 1000000,
+          "population": 80,
+          "activeProductions": 6
+        }
+      },
+      "handling": {
+        "personalVolumePerTick": 4,
+        "workerVolumePerTick": 4
+      },
+      "negotiations": {
+        "ttlTicks": 60,
+        "maxVersions": 4,
+        "maxActivePerParticipant": 16
+      }
+    },
+    "resources": [
+      {
+        "itemId": "beet",
+        "private": {
+          "public": false,
+          "capacity": 100,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 10,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 50,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 30,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      },
+      {
+        "itemId": "copper_ore",
+        "private": {
+          "public": false,
+          "capacity": 100,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 16,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 50,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 48,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      },
+      {
+        "itemId": "grain",
+        "private": {
+          "public": false,
+          "capacity": 120,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 8,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 60,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 24,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      },
+      {
+        "itemId": "iron_ore",
+        "private": {
+          "public": false,
+          "capacity": 120,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 12,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 60,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 36,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      },
+      {
+        "itemId": "milk",
+        "private": {
+          "public": false,
+          "capacity": 80,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 10,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 40,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 30,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      },
+      {
+        "itemId": "sand",
+        "private": {
+          "public": false,
+          "capacity": 160,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 6,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 80,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 18,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      },
+      {
+        "itemId": "stone",
+        "private": {
+          "public": false,
+          "capacity": 160,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 8,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 80,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 24,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      },
+      {
+        "itemId": "wood",
+        "private": {
+          "public": false,
+          "capacity": 120,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 4,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 60,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 12,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      }
+    ]
+  },
+  "npc": {
+    "cashReserveMinor": 3000,
+    "batchQuantity": 20,
+    "baseWageMinor": 20,
+    "maximumWageMinor": 50,
+    "wageRaiseMinor": 1,
+    "wageReviewTicks": 60,
+    "blockedRetryTicks": 30,
+    "maximumBuyPriceBasisPoints": 12500,
+    "sellPriceBasisPoints": 10000,
+    "supportPricePerVoteMinor": 500,
+    "politicalHorizonTicks": 180,
+    "marketLotQuantity": 10,
+    "decisionIntervalTicks": 5,
+    "expansionWeight": 100,
+    "cashWeight": 100,
+    "productionWeight": 100,
+    "ownVictoryWeight": 100,
+    "humanDefeatWeight": 0,
+    "harvestCoefficient": 1,
+    "productionCoefficient": 1,
+    "tradeEnabled": true,
+    "logisticsEnabled": true,
+    "politicsEnabled": true,
+    "futureContractsEnabled": true
+  },
+  "vNext": {
+    "projectionVersion": "supported-projection-1",
+    "sourceSha256": "4b12d705acd4c7f4e9d44f540eb3f600edd75b983b1ffdd52c71a15e8a42c9d2",
+    "fullBalanceSha256": "2b1d8e97593da5c3e75060b82e08fb3da810c6e66a415f5ee76f53d3e2b97078",
+    "catalogSha256": "62bf82eb8ed11e0cc72415c6fef026d8a3e305ee7f0849debdefb2115a70a0a8",
+    "baselineProfileSha256": "b3da26be46960e876327a0dcca960c48575b6a98c9080eacb283a4a3f2c7317c",
+    "projectionPayloadSha256": "0d33ce2972c64aa8a6d7392c12c1210700a4144a003e3c17eb46fc60677b447f",
+    "fixedParticipants": 4,
+    "activeCapabilities": [
+      "34-item-definitions",
+      "23-v1-recipes-1-to-8-inputs",
+      "linear-staff-existing-executor",
+      "proportional-service-per-work",
+      "8-resource-site-profiles",
+      "uniform-manual-harvest",
+      "start-cash-personal-capacity-land-fee",
+      "demand-period-budget-coefficient-for-4",
+      "election-period"
+    ],
+    "limitations": [
+      "Not full B1 and not default game; fixed four-participant demand budget only.",
+      "No vNext production building templates: bare ground storage/construction duration need C/D. Use prepared Enterprise fixture.",
+      "Unlock level/XP/recipe V2,V3/parallel workshops and nonlinear staff curve are metadata; runtime uses linear headcount, minimum one.",
+      "No import inventory/bootstrap/replenishment runtime, five-tier expansion, services, invoices, new fleet or roads.",
+      "Baseline population/growth without new cap, labor/market/delivery/logistics/warehouse/shop/infrastructure/NPC/waves/handling/movement/maxTicks stay explicit legacy defaults.",
+      "Equipment catalog disabled in this subset; resources are manual. Resource profiles keep each actual ItemId; no resource maps, extra bots or UI added."
+    ]
+  }
+}

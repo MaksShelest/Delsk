@@ -1,3 +1,22 @@
+## A2: полный B1 и supported subset,24.10.2026
+
+- A2 реализован по docs/IMPLEMENTATION_REPORT_PACKAGE_A2.md; mapping/coverage:
+  docs/vnext/PACKAGE_A2_MAPPING.md. A1 формат/catalog/CLI неизменны.
+- Полный delsk-vnext-balance-1/balance.b1.json содержит15typed sections+source
+  metadata. extract_vnext_balance.py --check, source/full/A1 consistency; read-only
+  semantic CLI --validate-vnext-balance до мира/ModelServices, exit0/2, safe output.
+  Scope semantic/balanced=null; static witness/маржа не доказывают динамический баланс.
+- economy.b1-supported.json/--economy явный fixed4 subset:34items/23V1/8resource
+  profiles, прежний executor/линейный штат; будущие цеха/XP/tiers/V2,V3/import/fleet/
+  roads/services metadata. Production templates отсутствуют до C/D; оборудование
+  subset выключено. Нельзя подменять resource IDs wood или менять default игру.
+- Profile.VNext — optional provenance с payload SHA; stale edits отвергаются.
+  Save хранит прежний resolved config, не зависит от внешнего B1. World18/Rules
+  production-recipes-1/Session2/Envelope2 прежние, default economy-v6 сохранён.
+- Реальные gates998ordinary tests/102exports/14replay/69pairs, A2process49,
+  A1process43, lab37. Следующий только отдельный B1 (итерация пакета B, не баланс B1).
+  P61/P63 целиком и P53/P56/P59/P60 не закрыты; автоматически B1 не начинать.
+
 ## Каталог vNext, A1,24.10.2026
 
 - A1 — catalog_only, не EconomyProfile/игровой профиль. Отдельный формат

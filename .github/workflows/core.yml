@@ -20,6 +20,8 @@ jobs:
         run: python scripts/run_check.py --name research-lab-unit --timeout 60 --log-directory artifacts/gate-checks -- python -m unittest discover -s tests/Research.Lab -v
       - name: Reproducible vNext catalog extraction
         run: python scripts/run_check.py --name catalog-source --timeout 15 --log-directory artifacts/gate-checks -- python scripts/extract_vnext_catalog.py --check
+      - name: Reproducible full vNext balance extraction
+        run: python scripts/run_check.py --name balance-source --timeout 15 --log-directory artifacts/gate-checks -- python scripts/extract_vnext_balance.py --check
       - name: Bounded complete headless gate (P00-P22)
         env:
           DELSK_COMMIT: ${{ github.sha }}
@@ -27,6 +29,8 @@ jobs:
         run: python scripts/run_check.py --name headless --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --output artifacts/headless
       - name: Catalog-only CLI and legacy save/load/replay
         run: python scripts/run_check.py --name catalog-cli --timeout 180 --log-directory artifacts/gate-checks -- python scripts/check_vnext_catalog.py --output artifacts/vnext-catalog
+      - name: Full B1 semantic CLI, supported production and WIP save/load/replay
+        run: python scripts/run_check.py --name balance-cli --timeout 180 --log-directory artifacts/gate-checks -- python scripts/check_vnext_balance.py --output artifacts/vnext-balance
       - name: Bounded Developer tests and forbidden Release gate
         env:
           DOTNET_PROCESSOR_COUNT: '2'

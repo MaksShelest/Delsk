@@ -31,7 +31,7 @@ def check(name, timeout, command):
 check('restore', 180, [args.dotnet, 'restore', 'Delsk.sln', '--locked-mode', '--disable-parallel', '-m:1'])
 check('build', 180, [args.dotnet, 'build', 'Delsk.sln', '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1'])
 os.environ['DELSK_RETURN_ARTIFACTS'] = str(out)
-check('tests', 180, [args.dotnet, 'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',
+check('tests', 120, [args.dotnet, 'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',
     '-noColor', '-noLogo', '-parallelMode', 'none', '-result-trx', out/'tests.trx'])
 import xml.etree.ElementTree as ET
 trx=ET.parse(out/'tests.trx').getroot()

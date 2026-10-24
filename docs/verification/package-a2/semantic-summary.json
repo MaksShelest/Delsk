@@ -1,0 +1,209 @@
+{
+  "status": "succeeded",
+  "scope": "semantic",
+  "balanced": null,
+  "formatVersion": "delsk-vnext-balance-1",
+  "balanceId": "vnext-b1",
+  "sha256": "2b1d8e97593da5c3e75060b82e08fb3da810c6e66a415f5ee76f53d3e2b97078",
+  "sourceSha256": "4b12d705acd4c7f4e9d44f540eb3f600edd75b983b1ffdd52c71a15e8a42c9d2",
+  "catalogSha256": "62bf82eb8ed11e0cc72415c6fef026d8a3e305ee7f0849debdefb2115a70a0a8",
+  "provenanceVerified": true,
+  "counts": {
+    "items": 34,
+    "recipes": 23,
+    "industries": 6,
+    "sections": 15
+  },
+  "coverage": [
+    {
+      "section": "rules",
+      "structural": "all fields/types/ranges",
+      "semantic": "units, duplicate settings, timing order, staff/road curves; no future scheduler proof",
+      "runtime": "selected existing scalar rules only"
+    },
+    {
+      "section": "items",
+      "structural": "A1 strict",
+      "semantic": "references, grounded source and checked value/volume",
+      "runtime": "34 ItemDefinition; XP/source metadata"
+    },
+    {
+      "section": "recipes",
+      "structural": "A1 strict 1..8 inputs",
+      "semantic": "69 exact V1/V2/V3 derived batches, capacity, margin, reachability",
+      "runtime": "23 V1 RecipeDefinition; one executor/linear staff, no unlock/XP"
+    },
+    {
+      "section": "industries",
+      "structural": "A1 strict",
+      "semantic": "initial material volume/cost and finite-seed construction witness",
+      "runtime": "metadata; no legacy rename"
+    },
+    {
+      "section": "enterprise_tiers",
+      "structural": "all fields/refs/checked",
+      "semantic": "five levels, XP/capacity/workshops/2x3/staff, previous input, unlock witness",
+      "runtime": "metadata D"
+    },
+    {
+      "section": "warehouses",
+      "structural": "all fields/refs/checked",
+      "semantic": "200/300/400 and duplicate settings; materials renewable",
+      "runtime": "metadata C"
+    },
+    {
+      "section": "recipe_versions",
+      "structural": "all fields/exact rational",
+      "semantic": "ceil integer work, derived input/output/capacity/margin",
+      "runtime": "metadata D"
+    },
+    {
+      "section": "resources",
+      "structural": "all fields/refs",
+      "semantic": "item coverage, public half stock/triple regen, renewable source",
+      "runtime": "eight ResourceSiteRules profiles; uniform manual duration only"
+    },
+    {
+      "section": "additional_workshop_outfits",
+      "structural": "all fields/refs/checked",
+      "semantic": "industry coverage and renewable materials; no future installation proof",
+      "runtime": "metadata D"
+    },
+    {
+      "section": "workshop_recipe_modernization",
+      "structural": "all fields/refs/checked",
+      "semantic": "version coverage and renewable materials; no future installation proof",
+      "runtime": "metadata D"
+    },
+    {
+      "section": "loading_platforms",
+      "structural": "all fields/refs/checked",
+      "semantic": "three levels/base identity/renewable materials; no actual throughput proof",
+      "runtime": "metadata E/F"
+    },
+    {
+      "section": "vehicle_handling_kits",
+      "structural": "all fields/refs/checked",
+      "semantic": "operator count and renewable materials; compatibility deferred",
+      "runtime": "metadata E"
+    },
+    {
+      "section": "vehicles",
+      "structural": "all fields/ids/types/checked",
+      "semantic": "positive speed/capacity/handling/class cost; motion/stock simulation deferred",
+      "runtime": "metadata E"
+    },
+    {
+      "section": "road_projects",
+      "structural": "all fields/refs/checked",
+      "semantic": "three levels/renewable materials; traffic/ROI deferred",
+      "runtime": "metadata E"
+    },
+    {
+      "section": "economy_globals",
+      "structural": "all fields/units/checked",
+      "semantic": "population order/import arithmetic/finite bootstrap witness; money recovery static",
+      "runtime": "selected resource/demand scalars only; other metadata"
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    {
+      "code": "StaticOnly",
+      "path": "$",
+      "message": "Reference margins exclude logistics, idle time, land/construction financing, taxes/invoices and realized demand. No balanced=true claim."
+    },
+    {
+      "code": "FiniteBootstrap",
+      "path": "$.economy_globals",
+      "message": "Reachability spends ONE finite steel/glass/asphalt package; recurring imports have finite stock, refresh and two-package cap. This is not a scheduling/fairness proof for all participants."
+    },
+    {
+      "code": "MoneyRecovery",
+      "path": "$.rules.start_cash_minor",
+      "message": "Starting 200 coins is not a free factory. Public manual harvest and funded spot sales require no existing factory; actual time/competition are unmeasured."
+    },
+    {
+      "code": "RuntimeSubset",
+      "path": "$",
+      "message": "Five tiers, XP, staff curve, imports/bootstrap inventory, vehicles, invoices, roads, services and workshop parallelism remain metadata; see mapping."
+    }
+  ],
+  "construction": [
+    {
+      "industryId": "woodworking",
+      "materialVolume": 63,
+      "landMinor": 10000,
+      "workMinor": 17000,
+      "materialsReferenceMinor": 22500
+    },
+    {
+      "industryId": "metallurgy",
+      "materialVolume": 66,
+      "landMinor": 10000,
+      "workMinor": 24000,
+      "materialsReferenceMinor": 31000
+    },
+    {
+      "industryId": "materials",
+      "materialVolume": 64,
+      "landMinor": 10000,
+      "workMinor": 19000,
+      "materialsReferenceMinor": 26000
+    },
+    {
+      "industryId": "food",
+      "materialVolume": 63,
+      "landMinor": 10000,
+      "workMinor": 17000,
+      "materialsReferenceMinor": 22500
+    },
+    {
+      "industryId": "dairy",
+      "materialVolume": 54,
+      "landMinor": 10000,
+      "workMinor": 19000,
+      "materialsReferenceMinor": 22500
+    },
+    {
+      "industryId": "machinery",
+      "materialVolume": 46,
+      "landMinor": 10000,
+      "workMinor": 35000,
+      "materialsReferenceMinor": 72400
+    }
+  ],
+  "startup": {
+    "steelPackage": 12,
+    "glassPackage": 6,
+    "importRefreshTicks": 1200,
+    "maximumPackages": 2,
+    "importMarkupBp": 12500,
+    "steelUnitPriceMinor": 3125,
+    "glassUnitPriceMinor": 4250,
+    "sawmillLandMinor": 10000,
+    "sawmillWorksMinor": 17000,
+    "sawmillWoodQuantity": 30,
+    "sawmillSteelQuantity": 3,
+    "sawmillFullReferenceMinor": 51375,
+    "cashWithManuallyHarvestedWoodMinor": 36375,
+    "startingCashMinor": 20000,
+    "additionalCashMinor": 16375,
+    "woodSpotUnitsAtReferencePrice": 33,
+    "limits": "Per four-participant package; finite stock and refresh, two-package cap from specification §16. Steel/glass purchases cost money, not free stock. One-package witness is conservative. Import quote rounded up to minor only in this static estimate; full B1 quotes are exact. Zero-cash recovery uses public harvest and funded spot sales without a factory. No transport/time/competition guarantee."
+  },
+  "profileSha256": "4cbf810521e05703b13f8b8a8d2dc6204771eed738690ec1d3fadffead373e2f",
+  "rawReportSha256": "5e556a8abf97495efbb51838e3a39561658aaa84922134963c583530af863b21",
+  "derivedBatchCount": 69,
+  "minimumDirectMarginMinor": 868,
+  "graph": {
+    "initialFiniteSeed": {
+      "asphalt": 20,
+      "glass": 6,
+      "steel": 12
+    },
+    "exploredStates": 35,
+    "allRequiredReachable": true,
+    "witnessSteps": 30
+  }
+}

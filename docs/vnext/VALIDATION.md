@@ -46,3 +46,20 @@ A2 не начат, обычная игра/профиль не переключ
 Проверено локально: существование всех относительных ссылок изменённых документов; закрытые блоки промптов и точки остановки;15 числовых/контентных разделов B1 плюс3metadata,34/23/6 и объёмы начальных наборов63/66/64/63/54/46; точные размеры/counts обеих карт/11spawn/15мест/8ресурсов; SHA-256 manifest и git diff --check. Проверены исходные точки расширения A1/Hosting/ordinary меню/PlayMaps/research participants. Исходные AGENTS, историческая0.5 и текущая0.6 спецификации, BALANCE, геометрия обеих карт и config/economy.json побайтово совпадают с основой. Изменения только в документах docs/vnext.
 
 C# build/test, A1 process gate, новые CLI/runtime/Godot/LLM/hardware заново не запускались. Приведённые проверки A2/B1/B2 — требования к будущей реализации, не результаты. Статусы открытых P53/P56/P59/P60 сохранены. После подготовки хеши комплекта пересчитаны; исходный B1 и A1 catalog не изменены.
+
+## Выполнение A2,24.10.2026
+
+A2 реализован и проверен: полный typed15-section B1, strict reader,
+semantic CLI с source/A1 provenance и output protection, пятиступенчатые
+зависимости/объёмы/69точных партий/полная прямая маржа/конечный bootstrap witness.
+Явный supported profile34items/23V1/8resource profiles, fixed4, прежний executor.
+Prepared stone→gravel fixture с реальной добычей/переносом/WIP@18,
+direct load/replay имеет точные деньги/товар/работу/hash.
+
+998/998xUnit; полный headless102exports/14replay/69comparison pairs;
+49A2 и43A1 real bounded process checks;37Python lab tests с loopback. Действующий
+профиль/source B1/A1/Core/старые карты/World18/Rules/save не менялись.
+[Отчёт](../IMPLEMENTATION_REPORT_PACKAGE_A2.md), [mapping/coverage](PACKAGE_A2_MAPPING.md).
+Scope semantic, не dynamic balance. Цеха/XP/tiers/V2,V3/import runtime/fleet/roads/
+services metadata, baseline defaults explicit. P61/P63 целиком и старые
+P53/P56/P59/P60 открыты; B1/B2 не реализованы. После A2 остановка перед B1.
