@@ -15,13 +15,16 @@ public partial class MapSelectionScreen : ColorRect
     public event System.Action? FeedbackSettingsRequested;
     public event System.Action? AppearanceSettingsRequested;
     public string SelectedMap { get; private set; }
+    public int NpcCount {get;private set;}=3;
     public NpcDifficulty Difficulty {get;private set;}=NpcDifficulty.Medium;
     public LocalGameModel? ModelConfiguration {get;private set;}
     private readonly VBoxContainer _preview = new();
+    private readonly System.Func<string,int,ScenarioDefinition>? _readSetup;
     private readonly string _language;
     private readonly System.Func<string, ScenarioDefinition> _read;
-    public MapSelectionScreen(string language, bool canContinue, System.Func<string, ScenarioDefinition> read, string selected = PlayMaps.First, NpcDifficulty difficulty=NpcDifficulty.Medium,LocalGameModel? model=null)
+    public MapSelectionScreen(string language, bool canContinue, System.Func<string, ScenarioDefinition> read, string selected = PlayMaps.First, NpcDifficulty difficulty=NpcDifficulty.Medium,LocalGameModel? model=null,int npcCount=3,System.Func<string,int,ScenarioDefinition>? readSetup=null)
     {
+        new OrdinaryGameOptions(npcCount).Validate();NpcCount=npcCount;_readSetup=readSetup;
         SelectedMap = selected; _read = read; _language = language;
         Color = new Color("26383d"); SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         var scroll=new ScrollContainer{HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};scroll.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);AddChild(scroll);
@@ -29,6 +32,11 @@ public partial class MapSelectionScreen : ColorRect
         var column = new VBoxContainer { CustomMinimumSize = new Vector2(600, 0) }; center.AddChild(column);
         column.AddChild(new Label { Text = "Delsk", HorizontalAlignment = HorizontalAlignment.Center });
         column.AddChild(_preview); ShowPreview();
+        var roster=new HBoxContainer();column.AddChild(roster);
+        roster.AddChild(new Label{Text=L("Ботов","Bots")});
+        var count=new SpinBox{Name="NpcCount",MinValue=3,MaxValue=10,Step=1,Rounded=true,Value=npcCount,CustomMinimumSize=new(110,48)};roster.AddChild(count);
+        var total=new Label{Name="ParticipantCount",Text=L("Всего участников: ","Total participants: ")+(NpcCount+1)};roster.AddChild(total);
+        count.ValueChanged+=value=>{NpcCount=checked((int)value);new OrdinaryGameOptions(NpcCount).Validate();total.Text=L("Всего участников: ","Total participants: ")+(NpcCount+1);ShowPreview();};
         AddNpcSettings(column,difficulty,model);
         AddButton(column, L("Сменить карту", "Change map"), ShowCatalog);
         AddButton(column, L("Начать", "Start"), () => MapChosen?.Invoke(SelectedMap));
@@ -66,7 +74,7 @@ public partial class MapSelectionScreen : ColorRect
     private void ShowPreview()
     {
         foreach (Node child in _preview.GetChildren()) { _preview.RemoveChild(child); child.QueueFree(); }
-        var scenario = _read(SelectedMap);
+        var scenario = _readSetup?.Invoke(SelectedMap,NpcCount)??_read(SelectedMap);
         _preview.AddChild(new Label { Text = PlayMaps.Name(SelectedMap, _language), HorizontalAlignment = HorizontalAlignment.Center });
         _preview.AddChild(new MapPreview(scenario) { CustomMinimumSize = new Vector2(600, 240) });
         _preview.AddChild(new Label { Text = $"{scenario.MapWidth} × {scenario.MapHeight}" + L(" · Мир запустится только по «Начать».", " · The world starts only after Start."), HorizontalAlignment = HorizontalAlignment.Center });
@@ -81,7 +89,7 @@ public partial class MapSelectionScreen : ColorRect
         {
             string choice = key;
             list.AddChild(new Label { Text = PlayMaps.Name(key, _language) });
-            list.AddChild(new MapPreview(_read(key)) { CustomMinimumSize = new Vector2(640, 210) });
+            list.AddChild(new MapPreview(_readSetup?.Invoke(key,NpcCount)??_read(key)) { CustomMinimumSize = new Vector2(640, 210) });
             AddButton(list, L("Выбрать", "Select"), () => { SelectedMap = choice; ShowPreview(); dialog.Hide(); dialog.QueueFree(); });
         }
         dialog.Confirmed += () => dialog.QueueFree(); dialog.Canceled += () => dialog.QueueFree();

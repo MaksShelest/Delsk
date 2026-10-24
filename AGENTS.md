@@ -1,3 +1,19 @@
+## Ordinary B1,24.10.2026
+
+- От fda7203/A2: OrdinaryNewGame.Resolve в Hosting, separate policies factory
+  Algorithmic;3..10 NPC + one human. --new-game only new baseline/hybrid + economy,
+  no load/replay/seed/research-setup. Research1..15 не ограничен ordinary диапазоном.
+- Optional initial treasury/capped labor/NewGame provenance default-omitted:
+  World18/Rules production-recipes-1/Session2/Envelope2; old save exact hash.
+  Treasury initial money ровно один раз; capped population schedule/restore strict.
+- Legacy4/default positions прежние; иначе SHA startup rotation, без World RNG.
+  Aggregate ceil(base*N/4), A2 population20/max60 per actor через verified full balance,
+  profile default economy-v6 прежний. Save resolved roster, load не resolver.
+- Отчёт IMPLEMENTATION_REPORT_PACKAGE_B1.md, usage ORDINARY_NEW_GAME.md, recovery
+  WORKLOG_PACKAGE_B.md.1028ordinary tests; real CLI35process checks/3,6,10;
+  native3lifecycle RU/EN800x720;102exports/14replays/69pairs, Linux1132hashes/35restores.
+  Пользователь явно запросил затем отдельный B2; C не начинать.
+
 ## A2: полный B1 и supported subset,24.10.2026
 
 - A2 реализован по docs/IMPLEMENTATION_REPORT_PACKAGE_A2.md; mapping/coverage:

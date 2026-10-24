@@ -79,7 +79,8 @@ public record EquipmentTypeDefinition(string Id, string ItemId, EquipmentLevelDe
 public record CapitalOfferDefinition(long Id, string ItemId, long Quantity, long UnitPriceMinor, Cell Position);
 public record LaborSettings(int StepTicks = 10, int SalaryChangeDelayTicks = 20,
     int MobilityNumerator = 1, int MobilityDenominator = 10,
-    int GrowthPeriodTicks = 120, long GrowthPerPeriod = 1);
+    int GrowthPeriodTicks = 120, long GrowthPerPeriod = 1,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] long? MaximumPopulation = null);
 public enum EmploymentRole { Production, Logistics, Extraction }
 public record ScenarioDefinition(string Id, ulong Seed, int MapWidth, int MapHeight, Cell[] BlockedCells,
     ItemDefinition[] Items, RecipeDefinition[] Recipes, ParticipantDefinition[] Participants,
@@ -90,7 +91,9 @@ public record ScenarioDefinition(string Id, ulong Seed, int MapWidth, int MapHei
     BuildingDefinition[]? Buildings = null, int LandReservationTicks = 120, int MaxActivePlotReservations = 4,
     LaborSettings? Labor = null, EquipmentTypeDefinition[]? EquipmentTypes = null, MarketSettings? Market = null, DeliverySettings? Delivery = null, LogisticsSettings? Logistics = null, CapitalDemandSettings? CapitalDemand = null, ElectionSettings? Elections = null, SupportSettings? Support = null,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] EconomicRules? Economy = null,
-    [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? EconomyProfileId = null);
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? EconomyProfileId = null,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long StartingTreasuryMinor = 0,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] NewGameProvenance? NewGame = null);
 
 public record StockView(string ItemId, long Quantity, long Reserved);
 public record InventoryView(InventoryId Id, ParticipantId OwnerId, Cell Position, long Capacity,

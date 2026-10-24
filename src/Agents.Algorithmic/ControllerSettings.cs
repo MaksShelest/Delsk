@@ -19,7 +19,24 @@ public record ControllerSettings(long ActorId, string PreferredInput, int Decisi
     [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long PoliticalBudgetMinor=0,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] PlanningLimits? Planning=null,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] bool? NegotiationsEnabled=null);
-public record AutonomousConfiguration(int Version, long HumanActorId, long FinalTick, ControllerSettings[] Npcs);
+public record AutonomousConfiguration(int Version, long HumanActorId, long FinalTick, ControllerSettings[] Npcs)
+{
+    public void Validate(ScenarioDefinition scenario)
+    {
+        var ids=scenario.Participants.Select(p=>p.Id).ToHashSet();
+        if(Version!=1 || !ids.Contains(HumanActorId) || FinalTick<1 || FinalTick>scenario.MaxTicks || Npcs is null || Npcs.Length!=ids.Count-1 ||
+            Npcs.Select(n=>n.ActorId).Distinct().Count()!=Npcs.Length || Npcs.Any(n=>n.ActorId==HumanActorId || !ids.Contains(n.ActorId) || !scenario.ResourceNodes.Any(r=>r.ItemId==n.PreferredInput)))
+            throw new ArgumentException("Invalid autonomous configuration");
+    }
+    public AutonomousConfiguration ForOrdinary(ScenarioDefinition scenario,long human,IEnumerable<ControllerAssignment> assignments)
+    {
+        if(Npcs is not {Length:>0})throw new ArgumentException("Missing NPC settings template");
+        var result=this with {HumanActorId=human,FinalTick=Math.Min(FinalTick,scenario.MaxTicks),Npcs=assignments.Select((a,i)=>
+            Npcs[i%Npcs.Length] with {ActorId=a.ActorId,HumanActorId=human,PreferredInput=a.PreferredInput,
+                Difficulty=Enum.Parse<NpcDifficulty>(a.Difficulty),PoliticalBudgetMinor=5000,Planning=null}).ToArray()};
+        result.Validate(scenario);return result;
+    }
+}
 public record TrustEntry(long ParticipantId, int Value);
 public record PlanStep(GameAction Action);
 public record BidReview(long OfferId, int Round);

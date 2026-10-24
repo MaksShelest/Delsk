@@ -10,7 +10,7 @@ public static class WorldSkins
     private static readonly Dictionary<string,Mesh> Meshes = new(StringComparer.Ordinal);
     private static readonly HashSet<string> Missing = new(StringComparer.Ordinal);
     public static void Configure(AppearancePreferences preferences) { Preferences=preferences.Normalize(); Revision++; }
-    public static string ActorName(long actor,string language) => AppearanceCatalog.Name(Preferences.ForActor(actor),language);
+    public static string ActorName(long actor,string language) => AppearanceCatalog.Name(Preferences.ForActor(actor),language)+" #"+actor;
     private static Node3D? Model(string key,float scale,Vector3 offset=default,bool reverse=false,bool feet=false)
     {
         if(!Meshes.TryGetValue(key,out var mesh))
@@ -34,7 +34,7 @@ public static class WorldSkins
             model.AddChild(new Label3D { Name="Caption", Text=caption, FontSize=24, PixelSize=.004f, Position=new(0,1.01f,0), Billboard=BaseMaterial3D.BillboardModeEnum.Enabled, OutlineSize=5, Modulate=Colors.White });
             return model;
         }
-        var original=Classic(WorldModels.Person(human?new("eef0dc"):actor switch {2=>new("d87667"),3=>new("6699cf"),_=>new("e7ae58")},caption));
+        var original=Classic(WorldModels.Person(human?new("eef0dc"):MapSymbols.ActorColor(actor,false),caption));
         foreach(var label in original.GetChildren().OfType<Label3D>()){label.Name="Caption";label.FontSize=24;label.PixelSize=.004f;}
         return original;
     }

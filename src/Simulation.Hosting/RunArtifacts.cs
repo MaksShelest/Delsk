@@ -27,7 +27,7 @@ public static class RunArtifacts
             Controller = session.ControllerStates.Any(c => c.Kind.StartsWith("hybrid-", StringComparison.Ordinal)) ? "hybrid" : session.HasControllers ? "algorithmic" : session.PlaybackFinalTick.HasValue ? "recorded-inputs" : "scripted",
             Controllers = session.ControllerStates, ControllerStateHash = session.ComputeControllerStateHash(), Model = modelMetadata, RuntimeVersion = Environment.Version.ToString(),
             Commit = Environment.GetEnvironmentVariable("DELSK_COMMIT"), TickSeconds = 1,
-            MapId = definition.Id, Difficulty = (string?)null, DifficultyReason = "Per-actor policy/settings and module versions are recorded in controllers; no inferred global difficulty",
+            MapId = definition.Id, NewGame=definition.NewGame, ParticipantCount=definition.Participants.Length, NpcCount=definition.NewGame is null?(int?)null:definition.Participants.Length-1, Difficulty = definition.NewGame?.Difficulty, DifficultyReason = "Per-actor policy/settings and module versions are recorded in controllers; no inferred global difficulty",
             Stage = "Package8", DeveloperBuild=SimulationEngine.IsDeveloperBuild, ResearchModified=session.Engine.ResearchModified,
             CleanComparisonEligible=!SimulationEngine.IsDeveloperBuild && !session.Engine.ResearchModified,
             EconomyProvenance = economyProvenance,

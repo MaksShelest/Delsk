@@ -5,7 +5,7 @@ public static class MapSymbols
 {
     public static readonly Color CargoColor = new(0.95f, 0.82f, 0.25f);
     public static Color ActorColor(long id, bool human) => human ? Colors.White : id switch
-    { 2 => new(0.9f, 0.25f, 0.22f), 3 => new(0.25f, 0.48f, 0.95f), _ => new(0.95f, 0.55f, 0.15f) };
+    { 2 => new(0.9f, 0.25f, 0.22f), 3 => new(0.25f, 0.48f, 0.95f), 4 => new(0.95f, 0.55f, 0.15f), _ => Color.FromHsv((float)((id*.618033988749895)%1),.65f,1f) };
     public static void Draw(Control canvas, string kind, Rect2 area, string label = "")
     {
         float cell = Mathf.Min(area.Size.X, area.Size.Y) + 5;
