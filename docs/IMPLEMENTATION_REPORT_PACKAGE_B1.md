@@ -67,3 +67,8 @@ encode229.95ms/decode448.28ms, working set230,486,016bytes, exact restore hash.
 P62 ordinary portion закрыт; пространственная проверка
 новых карт — B2/P68. Здесь B2/C/XP/цеха/новая стратегия/автопарк не реализованы.
 Windows/Android hardware, реальные модели и длительный баланс не проверялись.
+
+GitHub Windows CI: ordinary import/hash и ExportRelease audit прошли; isolated HUD
+editor import дважды завершил загрузку ресурсов, но процесс не вышел до120s.
+В test-only importer явно добавлен --quit; deadline/ошибки/17+17 HUD checks сохранены.
+Итог повторного CI отмечается по реальному результату, не по наличию исправления.

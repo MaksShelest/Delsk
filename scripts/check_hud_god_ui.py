@@ -51,7 +51,9 @@ settings.write_text(settings.read_text(encoding="utf-8").replace(
 )
 check("hud-god-build", 180, ["dotnet", "build", project / "Delsk.Client.csproj", "-c", "Debug",
       "-p:DelskDeveloper=true", "-p:DelskDeveloperPackage=true", "--no-restore", "--disable-build-servers", "-m:1"])
-check("hud-god-import", 120, [args.godot, "--headless", "--path", project, "--editor", "--import"])
+# Explicit quit also bounds the editor lifecycle after the synchronous import.
+# Windows 4.7.2 can finish importing yet retain an editor process without it.
+check("hud-god-import", 120, [args.godot, "--headless", "--path", project, "--editor", "--import", "--quit"])
 check("hud-god-controls", 60, [args.godot, "--headless", "--audio-driver", "Dummy", "--path", project,
       "res://HudGodProbe.tscn", "--", "--output", output, "--windowed"])
 report = json.loads((output / "hud-god-check.json").read_text(encoding="utf-8"))
