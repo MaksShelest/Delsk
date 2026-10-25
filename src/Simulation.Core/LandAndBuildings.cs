@@ -28,7 +28,7 @@ public sealed partial class SimulationEngine
     private readonly Dictionary<string, BuildingTypeDefinition> _buildingTypes = new(StringComparer.Ordinal);
     private readonly Dictionary<long, BuildingState> _buildings = [];
 
-    private static bool IsManagement(ActionKind kind) => kind is ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.StopHarvest or ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.SetVoteChoice or ActionKind.ContinueAfterVictory or ActionKind.SetProductionEnabled or
+    private static bool IsManagement(ActionKind kind) => kind is ActionKind.PrepareDemolition or ActionKind.CancelDemolitionPreparation or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.StopHarvest or ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.SetVoteChoice or ActionKind.ContinueAfterVictory or ActionKind.SetProductionEnabled or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.CancelPlotReservation or ActionKind.Build or
         ActionKind.UpgradeBuilding or ActionKind.SetRecipe or ActionKind.SetWage or ActionKind.BuyEquipment or
         ActionKind.UpgradeEquipment or ActionKind.SetEquipmentMode or ActionKind.CreateSellOffer or
@@ -101,12 +101,12 @@ public sealed partial class SimulationEngine
         var plot = AccessiblePlot(actor, c.Action.Plot);
         if (plot.Owner.HasValue) throw new RuleViolation("PlotOwned");
         if (plot.ReservedBy.HasValue && plot.ReservedBy != actor.Id) throw new RuleViolation("PlotReserved");
-        long groundId=_nextId,next=Storage is null?_nextId:checked(_nextId+1);
+        long groundId=_nextId,next=!HasGroundStorage?_nextId:checked(_nextId+1);
         var tx = _economy.Begin(Tick); tx.Pay(actor.Account, _treasury, plot.Definition.PriceMinor, "PlotPurchase");
-        if(Storage is not null)tx.CreateInventory(groundId,actor.Id,plot.Definition.Position,Storage.GroundCapacity);
+        if(HasGroundStorage)tx.CreateInventory(groundId,actor.Id,plot.Definition.Position,GroundRules.GroundCapacity);
         tx.Commit();
         plot.Owner = actor.Id; plot.ReservedBy = null; plot.Until = null;
-        if(Storage is not null){_groundStorage.Add(plot.Definition.Id,groundId);_nextId=next;}
+        if(HasGroundStorage){_groundStorage.Add(plot.Definition.Id,groundId);_nextId=next;}
         Emit("PlotPurchased", actor.Id, plot.Definition.Id, money: plot.Definition.PriceMinor, command: c.CommandId);
     }
 
@@ -142,7 +142,7 @@ public sealed partial class SimulationEngine
             if (!_plotsByCell.TryGetValue(cell, out var plot) || plot.Definition.IsCorridor) throw new RuleViolation("InvalidFootprint");
             if (plot.Owner != actor.Id) throw new RuleViolation("LandNotOwned");
             if (plot.Building.HasValue) throw new RuleViolation("LandOccupied");
-            if(Storage is not null&&_groundStorage.TryGetValue(plot.Definition.Id,out var ground)&&(_economy.Inventories[ground].Stock.Any(s=>s.Value>0)||_economy.Inventories[ground].Incoming>0))throw new RuleViolation("GroundNotEmpty");
+            if(_groundStorage.TryGetValue(plot.Definition.Id,out var ground)&&(_economy.Inventories[ground].Stock.Any(s=>s.Value>0)||_economy.Inventories[ground].Incoming>0||_economy.Inventories[ground].Overflow.Count>0))throw new RuleViolation("GroundNotEmpty");
             if (plot.Definition.IsShopSite && type.Kind != BuildingKind.Shop ||
                 plot.Definition.ShopParticipantId.HasValue && (type.Kind != BuildingKind.Shop || plot.Definition.ShopParticipantId != actor.Id))
                 throw new RuleViolation("WrongBuildingSite");
@@ -163,7 +163,7 @@ public sealed partial class SimulationEngine
         var building = new BuildingState(id, actor.Id, c.Action.Target, type, 1, input, output, footprint);
         tx.Commit();
         _nextId = next; _buildings.Add(id, building); ApplyBuildingObstacles();
-        foreach (var cell in footprint){_plotsByCell[cell].Building = id;if(_groundStorage.Remove(_plotsByCell[cell].Definition.Id,out var ground))_economy.Inventories.Remove(ground);}
+        foreach (var cell in footprint){_plotsByCell[cell].Building = id;if(_groundStorage.Remove(_plotsByCell[cell].Definition.Id,out var ground)){if(_buildings.Values.Any(b=>b.Input==ground||b.Output==ground)){var archive=_economy.Begin(Tick);archive.SetCapacity(ground,0);archive.Commit();}else _economy.Inventories.Remove(ground);}}
         foreach (var pair in consumed) _flows[pair.Key].ConstructionInput = pair.Value;
         if (output.HasValue) AddProductionBuilding(building, level, 0, false); // Buying capacity never creates workers.
         Emit("BuildingConstructed", actor.Id, id, money: level.PriceMinor, reason: type.Id, command: c.CommandId);
@@ -180,7 +180,7 @@ public sealed partial class SimulationEngine
 
     private BuildingState OwnBuilding(ActorState actor, BuildingId id)
     {
-        if (!_buildings.TryGetValue(id.Value, out var b) || b.Owner != actor.Id) throw new RuleViolation("NotAvailable");
+        if (!_buildings.TryGetValue(id.Value, out var b) || b.Owner != actor.Id || Demolished(b.Id)) throw new RuleViolation("NotAvailable");
         if (_enterprises.TryGetValue(b.Id, out var e) && (e.Enabled || e.Batch is not null)) throw new RuleViolation("ProductionNotSafe");
         return b;
     }
@@ -251,7 +251,7 @@ public sealed partial class SimulationEngine
         p.Owner.HasValue ? new ParticipantId(p.Owner.Value) : null, p.ReservedBy.HasValue ? new ParticipantId(p.ReservedBy.Value) : null,
         p.Until, p.Building.HasValue ? new BuildingId(p.Building.Value) : null,
         p.Definition.ShopParticipantId.HasValue ? new ParticipantId(p.Definition.ShopParticipantId.Value) : null, p.Definition.IsShopSite)).ToArray();
-    private BuildingView[] BuildingViews() => _buildings.Values.OrderBy(b => b.Id).Select(b => new BuildingView(
+    private BuildingView[] BuildingViews(bool all=false) => _buildings.Values.Where(b=>all||!Demolished(b.Id)).OrderBy(b => b.Id).Select(b => new BuildingView(
         new(b.Id), new(b.Owner), b.Type.Id, b.Type.Kind, b.Level, b.Position, b.Footprint.ToArray(), new(b.Input),
         b.Output.HasValue ? new InventoryId(b.Output.Value) : null)).ToArray();
     private BuildingTypeDefinition[] CopyBuildingCatalog() => _buildingTypes.Values.OrderBy(t => t.Id, StringComparer.Ordinal)
@@ -265,7 +265,7 @@ public sealed partial class SimulationEngine
                 (plot.Owner.HasValue && !_actors.ContainsKey(plot.Owner.Value)) ||
                 (plot.Definition.IsCorridor && (plot.Owner.HasValue || plot.ReservedBy.HasValue || plot.Building.HasValue)))
                 throw new InvalidOperationException("I17: invalid plot ownership/reservation");
-        foreach (var b in _buildings.Values)
+        foreach (var b in _buildings.Values.Where(b=>!Demolished(b.Id)))
         {
             if (b.Footprint.Any(c => !_plotsByCell.TryGetValue(c, out var p) || p.Owner != b.Owner || p.Building != b.Id))
                 throw new InvalidOperationException("I17: building footprint lost");

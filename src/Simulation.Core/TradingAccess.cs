@@ -4,7 +4,7 @@ namespace Simulation.Core;
 
 public sealed partial class SimulationEngine
 {
-    public bool HasTradingAccess(ParticipantId actor) => _buildings.Values.Any(b=>b.Owner==actor.Value && b.Type.Kind==BuildingKind.Shop);
+    public bool HasTradingAccess(ParticipantId actor) => _buildings.Values.Any(b=>b.Owner==actor.Value && !Demolished(b.Id) && b.Type.Kind==BuildingKind.Shop);
     private ImmutableArray<ParticipantId> TradingParticipants() => [.._actors.Keys.Order().Where(id=>HasTradingAccess(new(id))).Select(id=>new ParticipantId(id))];
     private void RequireTradingAccess(long actor,long? other=null)
     {

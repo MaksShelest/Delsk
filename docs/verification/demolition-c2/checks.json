@@ -1,0 +1,205 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "2026-10-25",
+  "base": "9220b4c36a64763e7953c965d9a14a76a46db7d0",
+  "branch": "feat/vnext-package-c2",
+  "status": "succeeded",
+  "ordinaryTests": {
+    "total": "1095",
+    "executed": "1095",
+    "passed": "1095",
+    "failed": "0",
+    "error": "0",
+    "timeout": "0",
+    "aborted": "0",
+    "inconclusive": "0",
+    "passedButRunAborted": "0",
+    "notRunnable": "0",
+    "notExecuted": "0",
+    "disconnected": "0",
+    "warning": "0",
+    "completed": "0",
+    "inProgress": "0",
+    "pending": "0"
+  },
+  "developerTests": {
+    "total": "1101",
+    "executed": "1101",
+    "passed": "1101",
+    "failed": "0",
+    "error": "0",
+    "timeout": "0",
+    "aborted": "0",
+    "inconclusive": "0",
+    "passedButRunAborted": "0",
+    "notRunnable": "0",
+    "notExecuted": "0",
+    "disconnected": "0",
+    "warning": "0",
+    "completed": "0",
+    "inProgress": "0",
+    "pending": "0"
+  },
+  "newDemolitionTests": 18,
+  "pythonTests": 37,
+  "headless": {
+    "exports": 102,
+    "replays": 14,
+    "comparison_pairs": 69
+  },
+  "demolition": {
+    "status": "succeeded",
+    "processChecks": 16,
+    "checkpointCuts": [
+      794,
+      795,
+      796,
+      1994
+    ],
+    "finalTick": 1996,
+    "exports": 10,
+    "comparisonPairs": 9,
+    "scope": "Real C# effects, private researcher demolition export, prepared material sources; no D1"
+  },
+  "c1Regression": {
+    "status": "succeeded",
+    "processChecks": 24,
+    "checkpointCuts": [
+      34,
+      37,
+      1084,
+      1087,
+      1690,
+      2289
+    ],
+    "finalTick": 2293,
+    "scope": "Real C# commands/transactions; prepared materials, no claim of D factories/import or target hardware"
+  },
+  "native": {
+    "status": "succeeded",
+    "checks": [
+      "actual quote90 and recovery18wood+1steel",
+      "preview cancel spends zero",
+      "short hold cannot confirm",
+      "2second hold queues once without advancing paused tick",
+      "actual demolition fee and released geometry",
+      "disk Continue and live returned ground",
+      "RU800x720/EN1100x800"
+    ],
+    "scope": "Native input/actual Playfield, prepared materials, no hardware acceptance"
+  },
+  "legacyC1": {
+    "schema": 19,
+    "tick": 37,
+    "unchangedHash": "04a13e91946ec4765efb31b35da85e3ffc31a3822a8cd124f952054d88eae764"
+  },
+  "godot": {
+    "legacyTickHashes": 1132,
+    "checkpointRestores": 35,
+    "stoppedVotingFinalTick": 10,
+    "scope": "Linux mono/software render, not device acceptance"
+  },
+  "checks": [
+    {
+      "name": "c2-canonical-final",
+      "exitCode": 0,
+      "timeoutSeconds": 780,
+      "elapsedSeconds": 346.526
+    },
+    {
+      "name": "c2-exact-final-build",
+      "exitCode": 0,
+      "timeoutSeconds": 180,
+      "elapsedSeconds": 16.523
+    },
+    {
+      "name": "c2-exact-final-tests",
+      "exitCode": 0,
+      "timeoutSeconds": 120,
+      "elapsedSeconds": 105.113
+    },
+    {
+      "name": "c2-developer-exact",
+      "exitCode": 0,
+      "timeoutSeconds": 600,
+      "elapsedSeconds": 155.729
+    },
+    {
+      "name": "c2-process-final",
+      "exitCode": 0,
+      "timeoutSeconds": 240,
+      "elapsedSeconds": 50.378
+    },
+    {
+      "name": "c2-c1-regression",
+      "exitCode": 0,
+      "timeoutSeconds": 300,
+      "elapsedSeconds": 66.342
+    },
+    {
+      "name": "c2-old-c1-save",
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "elapsedSeconds": 0.768
+    },
+    {
+      "name": "c2-python",
+      "exitCode": 0,
+      "timeoutSeconds": 60,
+      "elapsedSeconds": 4.027
+    },
+    {
+      "name": "c2-native-polish",
+      "exitCode": 0,
+      "timeoutSeconds": 480,
+      "elapsedSeconds": 57.003
+    },
+    {
+      "name": "c2-client-restore",
+      "exitCode": 0,
+      "timeoutSeconds": 180,
+      "elapsedSeconds": 2.085
+    },
+    {
+      "name": "c2-client-polish",
+      "exitCode": 0,
+      "timeoutSeconds": 180,
+      "elapsedSeconds": 5.598
+    },
+    {
+      "name": "c2-audit-polish",
+      "exitCode": 0,
+      "timeoutSeconds": 120,
+      "elapsedSeconds": 1.623
+    },
+    {
+      "name": "c2-import-exact",
+      "exitCode": 0,
+      "timeoutSeconds": 120,
+      "elapsedSeconds": 3.382
+    },
+    {
+      "name": "c2-smoke-exact",
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "elapsedSeconds": 6.745
+    },
+    {
+      "name": "c2-verify-exact",
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "elapsedSeconds": 0.032
+    }
+  ],
+  "earlierFailures": [
+    "Concurrent ordinary test attempt exceeded120s; isolated repeated full suite passed.",
+    "Concurrent Developer attempt exceeded180s; isolated repeated full Developer suite passed."
+  ],
+  "limitations": [
+    "Existing shared building level applied per footprint cell; heterogeneous expansions remain D.",
+    "Existing timed projects are C1 warehouses, not future production construction.",
+    "No separate industry XP state exists before D; C2 does not implement it.",
+    "Natural new-map full material chain/import remains D; prepared sources prove operations.",
+    "No Windows/Android device or long-world/hardware acceptance."
+  ]
+}

@@ -155,6 +155,7 @@ internal sealed class EconomyTransaction
         if (_store.Inventories.ContainsKey(id) || InventoryChanges.ContainsKey(id)) throw new RuleViolation("DuplicateInventory");
         InventoryChanges.Add(id, new Inventory(id, owner, position, capacity));
     }
+    public long FreeVolume(long id,long unitVolume,long maximum){var i=Inventory(id);return Math.Min(maximum,Math.Max(0,i.Capacity-i.Occupied(_items)-i.Incoming)/unitVolume);}
     public (long Normal,long Excess) ReceiveForecast(long inventory,string item,long quantity,OverflowLot lot)
     {
         Positive(quantity);var i=Inventory(inventory);long normal=Math.Min(quantity,Math.Max(0,i.Capacity-i.Occupied(_items)-i.Incoming)/_items[item].UnitVolume);
@@ -169,7 +170,7 @@ internal sealed class EconomyTransaction
     public void UpdateOverflow(long inventory,OverflowLot lot)=>Inventory(inventory).Overflow[lot.Id]=lot;
     public void SetCapacity(long id, long capacity)
     {
-        Positive(capacity); var inventory = Inventory(id);
+        if(capacity<0)throw new RuleViolation("InvalidCapacity"); var inventory = Inventory(id);
         if (checked(inventory.Occupied(_items) + inventory.Incoming) > capacity) throw new RuleViolation("NoCapacity");
         inventory.Capacity = capacity;
     }

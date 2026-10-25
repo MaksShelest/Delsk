@@ -85,7 +85,7 @@ public static class PlayContext
             var issues = new List<string>();
             if (view.AvailableCashMinor < level.PriceMinor)
                 issues.Add(L(language, "Деньги: нужно ", "Money needed: ") + PlayerText.Money(level.PriceMinor) + L(language, ", доступно ", ", available ") + PlayerText.Money(view.AvailableCashMinor));
-            var materialInventory=type.Kind==BuildingKind.Warehouse&&view.Storage?.Ground.FirstOrDefault(g=>g.PlotId==plot?.Id.Value) is {} ground?view.Inventories.Single(i=>i.Id.Value==ground.InventoryId):pack;
+            var materialInventory=type.Kind==BuildingKind.Warehouse&&scenario.Economy?.Storage is not null&&view.Storage?.Ground.FirstOrDefault(g=>g.PlotId==plot?.Id.Value) is {} ground?view.Inventories.Single(i=>i.Id.Value==ground.InventoryId):pack;
             foreach (var cost in level.Materials)
                 if (Free(materialInventory, cost.ItemId) < cost.Quantity)
                     issues.Add(PlayerText.Item(language, cost.ItemId) + $": {Free(materialInventory, cost.ItemId)}/{cost.Quantity}");

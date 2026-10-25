@@ -80,7 +80,7 @@ public sealed partial class SimulationEngine
             .Sum(e => e.Batch!.Inputs.Sum(i=>checked(i.Quantity*_items[i.ItemId].BasePriceMinor)));
         wip=checked(wip+_storageConstruction.Values.Where(c=>c.Owner==actor.Value).Sum(c=>checked(c.PaidMinor+c.Materials.Sum(m=>checked(m.Quantity*_items[m.ItemId].BasePriceMinor)))));
         long land = checked(_plots.Values.Where(p => p.Owner == actor.Value).Sum(p => p.Definition.PriceMinor) + _resources.Values.Where(r=>r.Owner==actor.Value).Sum(r=>r.Rules.PurchasePriceMinor));
-        long buildings = _buildings.Values.Where(b => b.Owner == actor.Value).Sum(b => b.Type.Levels.Where(l => l.Level <= b.Level)
+        long buildings = _buildings.Values.Where(b => b.Owner == actor.Value&&!Demolished(b.Id)).Sum(b => b.Type.Levels.Where(l => l.Level <= b.Level)
             .Sum(l => checked(l.PriceMinor + l.Materials.Sum(m => checked(m.Quantity * _items[m.ItemId].BasePriceMinor)))));
         long equipment = _equipment.Values.Where(e => e.Owner == actor.Value)
             .Sum(e => e.Type.Levels.Where(l => l.Level <= e.Level).Sum(l => l.PriceMinor));

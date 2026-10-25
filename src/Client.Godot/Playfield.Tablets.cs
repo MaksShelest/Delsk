@@ -88,13 +88,13 @@ public partial class Playfield
         { StopHeading(); _waitRelease = true; _tabletState.SetTimeRunning(running); ApplyPause(); Refresh(); };
         if (_tabletState.Kind == TabletKind.Player)
         {
-            _playerTablet = new PlayerTablet(_scenario,_language,Submit,a => _session.Engine.AccessFor(_human,a));
+            _playerTablet = new PlayerTablet(_scenario,_language,Submit,a => _session.Engine.AccessFor(_human,a),(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction));
             _playerTablet.HelpRequested+=()=>OpenHelp("production");
             _tabletPanel.Body.AddChild(_playerTablet); _playerTablet.SelectedTab = _playerTab;
             if(_scenario.Layout is not null){_tabletPolitics=_playerTablet.PoliticsHost;FillPolitics(view,_tabletPolitics);}
         }
         else if(_tabletState.Kind==TabletKind.Object&&_objectKind=="ground")
-        {_groundPanel=new(_scenario,_language,"ground",_tabletState.EnterpriseId,Submit,a=>_session.Engine.AccessFor(_human,a));_tabletPanel.Body.AddChild(_groundPanel);}
+        {_groundPanel=new(_scenario,_language,"ground",_tabletState.EnterpriseId,Submit,a=>_session.Engine.AccessFor(_human,a),demolitionQuote:(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction));_tabletPanel.Body.AddChild(_groundPanel);}
         else if (_tabletState.Kind is TabletKind.Market or TabletKind.Capital)
         {
             long shop=view.Buildings.FirstOrDefault(b=>b.Kind==BuildingKind.Shop)?.Id.Value??0;
@@ -103,7 +103,7 @@ public partial class Playfield
         }
         else
         {
-            _enterpriseTablet = new HouseholdObjectCard(_scenario,_language,_tabletState.Kind == TabletKind.Object ? _objectKind : "building",_tabletState.EnterpriseId,Submit,a => _session.Engine.AccessFor(_human,a));
+            _enterpriseTablet = new HouseholdObjectCard(_scenario,_language,_tabletState.Kind == TabletKind.Object ? _objectKind : "building",_tabletState.EnterpriseId,Submit,a => _session.Engine.AccessFor(_human,a),(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction));
             _enterpriseTablet.ArtworkHeaderChanged+=_tabletPanel.UseArtworkHeader;
             _enterpriseTablet.HelpRequested+=_tabletPanel.RequestHelp;_enterpriseTablet.CloseRequested+=_tabletPanel.RequestClose;
             _tabletPanel.Body.AddChild(_enterpriseTablet);

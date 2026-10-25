@@ -180,6 +180,7 @@ public sealed partial class SimulationEngine
         {
             if (c.Action.Quantity < 0) throw new RuleViolation("InvalidQuantity");
             ActorState actor = _actors[c.ActorId.Value];
+            GuardDemolition(c.Action,actor.Id);
             var access = AccessFor(c.ActorId, c.Action);
             // Existing local handlers retain their established privacy/busy/resource error order.
             if (!access.Allowed && (c.Action.Kind == ActionKind.SetWage || NewTradingAction(c.Action.Kind)))
@@ -197,6 +198,10 @@ public sealed partial class SimulationEngine
                 case ActionKind.StartHarvesting: StartHarvesting(actor, c); break;
                 case ActionKind.StopHarvest: StopHarvest(actor, c); break;
                 case ActionKind.Transfer: Transfer(actor, c); break;
+                case ActionKind.PrepareDemolition: PrepareDemolition(actor,c);break;
+                case ActionKind.CancelDemolitionPreparation: CancelDemolitionPreparation(actor,c);break;
+                case ActionKind.DemolishBuilding: ExecuteDemolition(actor,c,false);break;
+                case ActionKind.CancelConstruction: ExecuteDemolition(actor,c,true);break;
                 case ActionKind.TakeOverflow: TakeOverflow(actor,c);break;
                 case ActionKind.SetProductionEnabled: SetProduction(actor, c); break;
                 case ActionKind.SellAvailableToCapital: StartSale(actor, c); break;
@@ -356,12 +361,12 @@ public sealed partial class SimulationEngine
                     .Select(x => new StockView(x.Key, x.Value, i.Reserved(x.Key))).ToArray(),i.Overflow.Count==0?null:i.Overflow.Values.OrderBy(l=>l.Id).Select(l=>l with{Warned=l.Warned.ToArray()}).ToArray())).ToArray(),
             _actors.Values.OrderBy(a => a.Id).Select(a => new ParticipantView(new(a.Id), new(a.Account), new(a.Inventory), a.Position,
                 a.Job is not null || HasSale(a.Id) || HasTransfer(a.Id), a.Job is { Kind: "Move" } move ? move.Path[^1] : null, a.Job?.CompletionTick)).ToArray(),
-            _enterprises.Values.OrderBy(e => e.Definition.Id).Select(e => new EnterpriseView(new(e.Definition.Id), new(e.Definition.OwnerId),
+            _enterprises.Values.Where(e=>!Demolished(e.Definition.Id)).OrderBy(e => e.Definition.Id).Select(e => new EnterpriseView(new(e.Definition.Id), new(e.Definition.OwnerId),
                 new(e.Input), new(e.Output), e.Enabled, e.Group.Headcount, e.Reason, e.Batch?.Id ?? 0,
                 e.Batch?.WorkDone ?? 0, e.Batch?.WorkRequired ?? 0, e.Completed, e.EnergyPaid,
                 e.Recipe.Id, e.Definition.Level, e.Definition.Capacity, e.Definition.WorkRateMultiplier) {BatchRecipeId=e.Batch?.RecipeId??"",BatchInputs=e.Batch is {} batch?batch.Inputs:[]}).ToArray(),
             _flows.Values.OrderBy(f => f.Id, StringComparer.Ordinal).Select(f => new FlowView(f.Id, f.Initial, f.Harvested,
-                f.RecipeInput, f.Produced, f.Exported, f.ConstructionInput,f.Lost)).ToArray(),
+                f.RecipeInput, f.Produced, f.Exported, f.ConstructionInput,f.Lost,f.ConstructionRecovered)).ToArray(),
             _offers.Values.OrderBy(o => o.Definition.Id).Select(o => new CapitalOfferView(o.Definition.Id, o.Definition.ItemId,
                 o.Remaining, o.Definition.UnitPriceMinor, o.Definition.Position, o.Cutoff,
                 (long)Int128.Min(long.MaxValue, o.Requests.Values.Aggregate((Int128)0, (n, r) => n + r.Quantity) +
@@ -390,7 +395,8 @@ public sealed partial class SimulationEngine
     public string ComputeStateHash()
     {
         object payload = StatePayload();
-        if(Storage is not null)payload=new{Payload=payload,Storage=CaptureStorage()};
+        if(HasGroundStorage)payload=new{Payload=payload,Storage=CaptureStorage()};
+        if(CaptureDemolition() is {} demolition)payload=new{Payload=payload,Demolition=demolition,RetiredBuildings=BuildingViews(true).Where(b=>Demolished(b.Id.Value)).ToArray(),RetiredEnterprises=_enterprises.Values.Where(e=>Demolished(e.Definition.Id)).OrderBy(e=>e.Definition.Id).Select(e=>new{e.Definition,e.Input,e.Output,Recipe=e.Recipe.Id,e.Enabled,e.Completed,e.EnergyPaid,Group=e.Group.View()}).ToArray()};
         var travel = TravelDeviation();
         return ScenarioValidation.Hash(travel is null ? payload : new { Payload = payload, Travel = travel });
     }
