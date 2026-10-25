@@ -1,0 +1,446 @@
+{
+  "status": "succeeded",
+  "author": "Шелестов Максим Евгеньевич",
+  "checks": [
+    {
+      "name": "d1-headless",
+      "command": [
+        "python3",
+        "scripts/check_headless.py",
+        "--output",
+        "/workspace/work/delsk-d1/headless"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-25T19:16:44.894472+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 421.386,
+      "finished_at": "2026-10-25T19:23:46.280110+00:00"
+    },
+    {
+      "name": "d1-boundary-build",
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-25T19:35:01.171435+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 27.117,
+      "finished_at": "2026-10-25T19:35:28.288812+00:00"
+    },
+    {
+      "name": "d1-boundary-focused",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.WorkshopD1Tests",
+        "-result-trx",
+        "/workspace/work/delsk-d1/boundary.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-25T19:35:28.321841+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 7.193,
+      "finished_at": "2026-10-25T19:35:35.514536+00:00"
+    },
+    {
+      "name": "d1-boundary-tests",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-result-trx",
+        "/workspace/work/delsk-d1/boundary-all.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-25T19:35:35.547959+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 109.733,
+      "finished_at": "2026-10-25T19:37:25.281265+00:00"
+    },
+    {
+      "name": "d1-developer-exact",
+      "command": [
+        "python3",
+        "scripts/check_developer.py",
+        "--output",
+        "/workspace/work/delsk-d1/developer-exact"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-25T19:38:13.270900+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 168.333,
+      "finished_at": "2026-10-25T19:41:01.603688+00:00"
+    },
+    {
+      "name": "d1-python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Research.Lab",
+        "-v"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-25T19:24:35.944026+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.892,
+      "finished_at": "2026-10-25T19:24:40.835999+00:00"
+    },
+    {
+      "name": "d1-c1-regression",
+      "command": [
+        "python3",
+        "scripts/check_storage_c1.py",
+        "--output",
+        "/workspace/work/delsk-d1/c1-regression"
+      ],
+      "timeout_seconds": 300,
+      "started_at": "2026-10-25T19:20:51.517475+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 112.659,
+      "finished_at": "2026-10-25T19:22:44.176081+00:00"
+    },
+    {
+      "name": "d1-c2-final",
+      "command": [
+        "python3",
+        "scripts/check_demolition_c2.py",
+        "--output",
+        "/workspace/work/delsk-d1/c2-final"
+      ],
+      "timeout_seconds": 240,
+      "started_at": "2026-10-25T19:24:30.898922+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 59.192,
+      "finished_at": "2026-10-25T19:25:30.091410+00:00"
+    },
+    {
+      "name": "d1-process-exact",
+      "command": [
+        "python3",
+        "scripts/check_workshops_d1.py",
+        "--output",
+        "/workspace/work/delsk-d1/process-exact"
+      ],
+      "timeout_seconds": 240,
+      "started_at": "2026-10-25T19:41:40.481370+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 18.408,
+      "finished_at": "2026-10-25T19:41:58.889033+00:00"
+    },
+    {
+      "name": "d1-native-exact",
+      "command": [
+        "python3",
+        "scripts/check_workshop_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--xvfb",
+        "/workspace/work/delsk-package1/ui-tools/root/usr/bin/Xvfb",
+        "--output",
+        "/workspace/work/delsk-d1/native",
+        "--reuse-stage"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-25T19:41:58.925614+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 55.884,
+      "finished_at": "2026-10-25T19:42:54.810115+00:00"
+    },
+    {
+      "name": "d1-client-polish",
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "-c",
+        "Debug",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-25T19:43:50.089589+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.7,
+      "finished_at": "2026-10-25T19:43:51.789410+00:00"
+    },
+    {
+      "name": "d1-audit-polish",
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-25T19:43:51.822904+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.867,
+      "finished_at": "2026-10-25T19:43:53.689509+00:00"
+    },
+    {
+      "name": "d1-import",
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--editor",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-25T19:41:26.172105+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.334,
+      "finished_at": "2026-10-25T19:41:30.505892+00:00"
+    },
+    {
+      "name": "d1-smoke",
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "src/Client.Godot",
+        "--",
+        "--smoke",
+        "--report",
+        "/workspace/work/delsk-d1/platform.json"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-25T19:41:30.544746+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.534,
+      "finished_at": "2026-10-25T19:41:37.078554+00:00"
+    },
+    {
+      "name": "d1-platform-verify",
+      "command": [
+        "python3",
+        "scripts/verify_platform_probe.py",
+        "--report",
+        "/workspace/work/delsk-d1/platform.json",
+        "--log-prefix",
+        "/workspace/work/delsk-d1/checks/d1-import",
+        "--log-prefix",
+        "/workspace/work/delsk-d1/checks/d1-smoke"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-25T19:41:37.109015+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.032,
+      "finished_at": "2026-10-25T19:41:37.141114+00:00"
+    },
+    {
+      "name": "d1-map-lab",
+      "command": [
+        "python3",
+        "scripts/check_map_lab.py",
+        "--output",
+        "/workspace/work/delsk-d1/map-lab"
+      ],
+      "timeout_seconds": 240,
+      "started_at": "2026-10-25T19:42:54.841368+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 10.35,
+      "finished_at": "2026-10-25T19:43:05.191620+00:00"
+    },
+    {
+      "name": "d1-new-map-native",
+      "command": [
+        "python3",
+        "scripts/check_ordinary_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--xvfb",
+        "/workspace/work/delsk-package1/ui-tools/root/usr/bin/Xvfb",
+        "--output",
+        "/workspace/work/delsk-d1/new-map-native",
+        "--maps",
+        "small-river",
+        "--counts",
+        "3"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-25T19:43:05.222767+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 75.073,
+      "finished_at": "2026-10-25T19:44:20.295868+00:00"
+    },
+    {
+      "name": "d1-world20-load",
+      "command": [
+        "dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/delsk-c2/final-process/794.save.json",
+        "--ticks",
+        "1996",
+        "--output",
+        "/workspace/work/delsk-d1/world20"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-25T19:25:36.829061+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 7.253,
+      "finished_at": "2026-10-25T19:25:44.081692+00:00"
+    }
+  ],
+  "headless": {
+    "status": "succeeded",
+    "scenarios": [
+      "cycle",
+      "recovery",
+      "development",
+      "labor",
+      "equipment",
+      "autonomous",
+      "market",
+      "pickup",
+      "delivery",
+      "capital-delivery",
+      "logistics",
+      "logistics-upgrade",
+      "own-storage",
+      "inbound",
+      "own-production",
+      "logistics-queue",
+      "capital-demand",
+      "autonomous-demand",
+      "elections",
+      "support",
+      "stopped-elections",
+      "physical-automation",
+      "participant-trade",
+      "food-chain"
+    ],
+    "checkpoint_cases": {
+      "cycle": 55,
+      "equipment": 101,
+      "autonomous": 350,
+      "market": 44,
+      "pickup": 47,
+      "delivery": 37,
+      "capital-delivery": 3,
+      "logistics": 69,
+      "logistics-upgrade": 170,
+      "own-storage": 170,
+      "inbound": 78,
+      "own-production": 170,
+      "logistics-queue": 185,
+      "capital-demand": 85,
+      "autonomous-demand": 350,
+      "elections": 9,
+      "support": 18,
+      "stopped-elections": 3,
+      "physical-automation": 20,
+      "participant-trade": 33,
+      "food-chain": 300
+    },
+    "comparison": "every exported tick hash, state, ledger, event, command and labor row",
+    "controlled_fixture": {
+      "name": "late-return",
+      "origin": "test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged",
+      "checkpoint_tick": 72,
+      "final_tick": 80
+    },
+    "baseline_cases": {
+      "economy": {
+        "final_tick": 1200,
+        "checkpoint_tick": 350
+      },
+      "auction": {
+        "final_tick": 180,
+        "checkpoint_tick": 30
+      },
+      "politics": {
+        "final_tick": 160,
+        "checkpoint_tick": 19
+      },
+      "logistics": {
+        "final_tick": 360,
+        "checkpoint_tick": 80
+      },
+      "food": {
+        "final_tick": 900,
+        "checkpoint_tick": 85
+      }
+    },
+    "model_safety": {
+      "checkpoint_tick": 6,
+      "final_tick": 60,
+      "valid": 1,
+      "forged_actor": 1,
+      "late_reply": 1
+    },
+    "model_off": "exact world equality with baseline-economy and the same headless timing label",
+    "exports": 102,
+    "replays": 14,
+    "comparison_pairs": 69,
+    "scope": "Package8 software and full previous economic/controller regression; laboratory/study/window/platform gates separate",
+    "author": "Шелестов Максим Евгеньевич"
+  },
+  "d1": {
+    "status": "succeeded",
+    "processChecks": 18,
+    "checkpointCuts": [
+      46,
+      105,
+      158,
+      194
+    ],
+    "finalTick": 353,
+    "exports": 10,
+    "comparisonPairs": 9,
+    "scope": "Real C# parallel production, outfit/payroll/shared stores, exact save/load/replay and profile; ready places prepared, D2 not started"
+  },
+  "native": {
+    "status": "succeeded",
+    "checks": [
+      "native paid outfit and disk Continue during montage",
+      "two real equipped workshop cards",
+      "native start two parallel batches",
+      "paused controls do not advance world",
+      "stop one preserves WIP while other advances",
+      "native conservative staff transfer",
+      "recipe switch disabled during WIP",
+      "disk Continue restores parallel WIP",
+      "RU800x720/EN1100x800"
+    ],
+    "scope": "Actual Playfield and ordinary input/validators; prepared paid-place fixture, no hardware acceptance"
+  },
+  "world20": {
+    "status": "succeeded",
+    "sourceSchema": 20,
+    "restoredFromTick": 794,
+    "finalTick": 1996,
+    "hash": "5b052b874926b59425b98366cfced5eecc3b86e2e864a970f6b5533bf05fec64",
+    "exactOldMetrics": true
+  },
+  "limits": [
+    "Windows/Android hardware and long large-map profiling not verified",
+    "D2/XP/expansion/material import not implemented",
+    "Parallel fixture ready places are explicitly prepared"
+  ]
+}

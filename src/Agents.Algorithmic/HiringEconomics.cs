@@ -45,8 +45,10 @@ public static class HiringEconomics
         long supply=r.Ingredients.Select(i=>Free(input,i.ItemId)/i.Quantity).Min()+(e.BatchId==0?0:1);
         int n0=group.Headcount>=r.MinimumStaff?group.Headcount:0,n1=target>=r.MinimumStaff?target:0;
         int full=o.Buildings.Any(b=>b.Id.Value==e.Id.Value)?e.StaffCapacity:r.RequiredStaff;
-        long required=checked(r.FullStaffTicks*full);
-        long work=Limit(((Int128)Math.Min(n0,full)*delay+(Int128)Math.Min(n1,full)*(horizon-delay))*e.WorkRateMultiplier);
+        bool workshops=o.Economics?.Workshops is not null;
+        int Rate(int n)=>workshops?WorkshopRules.Rate(n):Math.Min(n,full)*e.WorkRateMultiplier;
+        long required=checked(r.FullStaffTicks*(workshops?100:full));
+        long work=Limit((Int128)Rate(n0)*delay+(Int128)Rate(n1)*(horizon-delay));
         long batches=Math.Min(supply,work/required);
         var contracts=o.OwnDeliveryContracts.Where(c=>c.Supplier==o.Participant.Id && c.ItemId==r.OutputItem && c.ClosedTick is null && c.UnprovidedQuantity>0).OrderBy(c=>c.DeadlineTick).ToArray();
         var offers=o.CapitalOffers.Where(a=>a.ItemId==r.OutputItem && a.RemainingQuantity>0 && (a.ExpiresAtTick is null || a.ExpiresAtTick>o.Tick+delay+r.FullStaffTicks)).OrderByDescending(a=>a.UnitPriceMinor).ToArray();
@@ -70,14 +72,14 @@ public static class HiringEconomics
             long price=Math.Max(o.Map.Items.Single(x=>x.Id==i.ItemId).BasePriceMinor,o.CapitalPrices.Where(p=>p.ItemId==i.ItemId).Select(p=>p.UnitPriceMinor).DefaultIfEmpty(0).Max());
             raw+=(Int128)batches*i.Quantity*price;
         }
-        long needed=Limit((Int128)batches*required),first=Math.Min(needed,checked((long)Math.Min(n0,full)*delay*e.WorkRateMultiplier));
-        Int128 payroll=(Int128)Ceil(first,Math.Max(1,Math.Min(n0,full)*e.WorkRateMultiplier))*n0*wage+
-            (Int128)Ceil(needed-first,Math.Max(1,Math.Min(n1,full)*e.WorkRateMultiplier))*n1*wage;
+        long needed=Limit((Int128)batches*required),first=Math.Min(needed,checked((long)Rate(n0)*delay));
+        Int128 payroll=(Int128)Ceil(first,Math.Max(1,Rate(n0)))*n0*wage+
+            (Int128)Ceil(needed-first,Math.Max(1,Rate(n1)))*n1*wage;
         // Manual shipping has an opportunity cost even when no transport payroll is charged.
         long opportunity=o.CapitalOffers.Where(a=>o.Resources.Any(n=>n.ItemId==a.ItemId && n.Stock>n.Reserved && (n.Public || n.Owner==o.Participant.Id || n.Tenant==o.Participant.Id)))
             .Select(a=>a.UnitPriceMinor/Math.Max(1,o.Map.HarvestTicksPerUnit+2L*route*o.Map.MoveTicksPerCell/Math.Max(1,cargo))).DefaultIfEmpty(0).Max();
         Int128 transport=(Int128)Ceil(units,cargo)*trip*opportunity;
-        Int128 energy=(Int128)batches*r.EnergyPerBatchMinor;
+        Int128 energy=(Int128)batches*(workshops?checked(r.FullStaffTicks*o.Economics!.Workshops!.ServiceMinorPerFullTick):r.EnergyPerBatchMinor);
         return new(wage,target,batches,Limit(revenue),Limit(raw),Limit(energy),Limit(payroll),Limit(transport),Limit(revenue-raw-energy-payroll-transport),delay,"PublishedDemandEstimate");
     }
 }

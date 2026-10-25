@@ -16,14 +16,15 @@ public readonly record struct Cell(int X, int Z);
 
 public enum ActionKind { MoveTo, Harvest, Transfer, SetProductionEnabled, SellAvailableToCapital, CancelCapitalSale, SetTravelHeading,
     ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe, SetWage, BuyEquipment, UpgradeEquipment, SetEquipmentMode, CreateSellOffer, SubmitBuyRequest, RaiseBid, WithdrawBid, CollectPurchase, CreateBuyOffer, AcceptDeliveryQuantity, WithdrawSupplyRequest, CancelBuyOffer, DeliverContract, BuyLogistics, SetLogisticsContract, UpgradeLogistics, SetLogisticsStorage, SetLogisticsInbound, SetLogisticsProduction, QueueLogisticsJob, SetLogisticsEnabled, SetVoteChoice, ContinueAfterVictory, ProposeSupport, AcceptSupport, RejectSupport, SignSupport, StartHarvesting, StopHarvest,
-    BuyResource, LeaseResource, StopTransfer, MoveEquipment, SetExtractionRoute, SetTransportRoute,ProposeTrade,CounterTrade,AcceptTrade,RejectTrade,TakeOverflow,PrepareDemolition,CancelDemolitionPreparation,DemolishBuilding,CancelConstruction }
+    BuyResource, LeaseResource, StopTransfer, MoveEquipment, SetExtractionRoute, SetTransportRoute,ProposeTrade,CounterTrade,AcceptTrade,RejectTrade,TakeOverflow,PrepareDemolition,CancelDemolitionPreparation,DemolishBuilding,CancelConstruction,OutfitWorkshop,AssignWorkshopWorkers }
 public enum ResultStatus { Accepted, Rejected }
 public record GameAction(ActionKind Kind, Cell Target = default, string ItemId = "", long Quantity = 0,
     InventoryId Source = default, InventoryId Destination = default, EnterpriseId Enterprise = default,
     bool Enabled = false, long OfferId = 0, PlotId Plot = default, BuildingId Building = default,
     string BuildingTypeId = "", string RecipeId = "", EmploymentGroupId Group = default, long WageMinor = 0, EquipmentId Equipment = default,
     string EquipmentTypeId = "", int EquipmentLevel = 1, EquipmentMode Mode = EquipmentMode.Personal, long MarketOfferId = 0, long UnitPriceMinor = 0, long MaximumPriceMinor = 0, int MarketRound = 0, long PurchaseId = 0, long BuyOfferId = 0, int OfferWindow = 1, long ContractId = 0, LogisticsId Logistics = default, LogisticsDirection Direction = LogisticsDirection.Output, ElectionId Election = default, ParticipantId Candidate = default, ParticipantId SupportSeller = default, long SupportProposalId = 0, System.Collections.Immutable.ImmutableArray<MaterialCost>? Compensation = null, System.Collections.Immutable.ImmutableArray<Cell>? Stops = null, bool Repeat = false,long NegotiationId=0,int NegotiationVersion=0,TradeTerms? Terms=null,
-    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? DemolitionQuote=null);
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? DemolitionQuote=null,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] long WorkshopId=0);
 public record CommandEnvelope(string CommandId, ParticipantId ActorId, long LocalSequence,
     long IssuedAtTick, long NotBeforeTick, long ExpiresAtTick, GameAction Action)
 {
@@ -66,12 +67,14 @@ public record PlotDefinition(long Id, Cell Position, long PriceMinor, bool IsCor
 public record BuildingLevelDefinition(int Level, string RecipeId, long PriceMinor, MaterialCost[] Materials,
     long InputCapacity, long OutputCapacity, int StaffCapacity, long WageMinor, int WorkRateMultiplier = 1,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] System.Collections.Immutable.ImmutableArray<string> AdditionalRecipeIds = default,
-    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long ConstructionTicks=0)
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long ConstructionTicks=0,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] int WorkshopSlots=0)
 {
     [System.Text.Json.Serialization.JsonIgnore]
     public IEnumerable<string> UnlockedRecipes => RecipeId.Length==0 ? [] : new[]{RecipeId}.Concat(AdditionalRecipeIds.IsDefault?[]:AdditionalRecipeIds);
 }
-public record BuildingTypeDefinition(string Id, BuildingKind Kind, Cell[] Footprint, BuildingLevelDefinition[] Levels, Cell[]? Walls = null);
+public record BuildingTypeDefinition(string Id, BuildingKind Kind, Cell[] Footprint, BuildingLevelDefinition[] Levels, Cell[]? Walls = null,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] WorkshopOutfit? WorkshopOutfit=null);
 public record BuildingDefinition(long Id, long OwnerId, Cell Position, string TypeId, int Level = 1,
     int Staff = 0, bool Enabled = false);
 public enum EquipmentMode { Off, Personal, Automatic }
@@ -113,6 +116,10 @@ public record EnterpriseView(EnterpriseId Id, ParticipantId OwnerId, InventoryId
     long WorkRequired, long CompletedBatches, long EnergyPaidMinor, string RecipeId, int Level, int StaffCapacity,
     int WorkRateMultiplier)
 {
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)]
+    public System.Collections.Immutable.ImmutableArray<WorkshopView> Workshops {get;init;}=default;
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)]
+    public System.Collections.Immutable.ImmutableArray<WorkshopInstallation> Installations {get;init;}=default;
     public string BatchRecipeId {get;init;}="";
     public System.Collections.Immutable.ImmutableArray<MaterialCost> BatchInputs {get;init;}=[];
 }

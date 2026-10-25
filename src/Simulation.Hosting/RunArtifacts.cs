@@ -42,6 +42,7 @@ public static class RunArtifacts
             StartupMilliseconds=startupMilliseconds, ElapsedMilliseconds = elapsedMilliseconds, AverageMillisecondsPerTick = state.Tick > 0 ? elapsedMilliseconds / state.Tick : (double?)null,
             state.InitialMoneyMinor, state.ExternalMoneyInMinor, state.ExternalMoneyOutMinor, state.Accounts, state.Flows,
             state.Settlements, state.MarketOffers, state.MarketBids, state.MarketAllocations, state.BuyOffers, state.SupplyRequests, state.DeliveryContracts, state.Logistics, state.CapitalDemand, state.Elections, state.Population, state.Unemployed, state.EmploymentGroups, state.PopulationGrowth, RamBytes = (long?)null, RamMeasurementReason = "not measured" });
+        WriteJson("workshops.json",session.Engine.InspectWorkshops()!);
         WriteJson("demolition.json",session.Engine.InspectDemolition()!);
         WriteJson("scenario.json", definition);
         WriteJson("public-economy.json", session.Engine.PublicEconomy());

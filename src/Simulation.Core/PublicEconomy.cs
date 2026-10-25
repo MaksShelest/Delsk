@@ -58,7 +58,7 @@ public sealed partial class SimulationEngine
             _deliveryContracts.Any(c => c.Id == e.EntityId && c.CapitalOfferId != 0)).Sum(e => e.Quantity);
         return new("capital-reference-v1", participants, checked(participants.Sum(p => p.CapitalMinor) + municipal), municipal,
             _population, checked(_population - _unemployed), _unemployed,
-            _enterprises.Values.Count(e => e.Enabled && e.Group.Headcount > 0), _cityStage.Stage,
+            _enterprises.Values.Count(e => UnitsFor(e.Definition.Id).Any(w=>w.Enabled && w.Group.Headcount>0)), _cityStage.Stage,
             start, end, gross, checked(delivered + contractDelivered), contracts.Sum(c => c.Quantity), contractDelivered, LaborSummary());
     }
 
@@ -76,12 +76,14 @@ public sealed partial class SimulationEngine
         }
         long stock = _economy.Inventories.Values.Where(i => i.Owner == actor.Value)
             .Sum(i => checked(i.Stock.Sum(s => checked(s.Value * _items[s.Key].BasePriceMinor))+i.Overflow.Values.Sum(l=>checked(l.Quantity*_items[l.ItemId].BasePriceMinor))));
-        long wip = _enterprises.Values.Where(e => e.Definition.OwnerId == actor.Value && e.Batch is not null)
+        long wip = ProductionUnits().Where(e => e.Definition.OwnerId == actor.Value && e.Batch is not null)
             .Sum(e => e.Batch!.Inputs.Sum(i=>checked(i.Quantity*_items[i.ItemId].BasePriceMinor)));
         wip=checked(wip+_storageConstruction.Values.Where(c=>c.Owner==actor.Value).Sum(c=>checked(c.PaidMinor+c.Materials.Sum(m=>checked(m.Quantity*_items[m.ItemId].BasePriceMinor)))));
+        wip=checked(wip+_workshopInstallations.Values.Where(w=>_enterprises[w.Enterprise.Value].Definition.OwnerId==actor.Value).Sum(w=>checked(w.PriceMinor+w.Materials.Sum(m=>checked(m.Quantity*_items[m.ItemId].BasePriceMinor)))));
         long land = checked(_plots.Values.Where(p => p.Owner == actor.Value).Sum(p => p.Definition.PriceMinor) + _resources.Values.Where(r=>r.Owner==actor.Value).Sum(r=>r.Rules.PurchasePriceMinor));
         long buildings = _buildings.Values.Where(b => b.Owner == actor.Value&&!Demolished(b.Id)).Sum(b => b.Type.Levels.Where(l => l.Level <= b.Level)
             .Sum(l => checked(l.PriceMinor + l.Materials.Sum(m => checked(m.Quantity * _items[m.ItemId].BasePriceMinor)))));
+        buildings=checked(buildings+_additionalWorkshops.Values.Where(e=>e.Definition.OwnerId==actor.Value&&!Demolished(ProductionParent(e.Definition.Id))).Sum(e=>{var o=_buildings[ProductionParent(e.Definition.Id)].Type.WorkshopOutfit!;return checked(o.PriceMinor+o.Materials.Sum(m=>checked(m.Quantity*_items[m.ItemId].BasePriceMinor)));}));
         long equipment = _equipment.Values.Where(e => e.Owner == actor.Value)
             .Sum(e => e.Type.Levels.Where(l => l.Level <= e.Level).Sum(l => l.PriceMinor));
         foreach (var logistics in _logistics.Values.Where(l => l.Owner == actor.Value))
@@ -127,7 +129,7 @@ public sealed partial class SimulationEngine
     private void AdvanceCityStage()
     {
         long capital = checked(_actors.Keys.Sum(id => CapitalOf(new(id)).TotalMinor) + _economy.Accounts[_treasury].Balance);
-        int active = _enterprises.Values.Count(e => e.Enabled && e.Group.Headcount > 0);
+        int active = _enterprises.Values.Count(e => UnitsFor(e.Definition.Id).Any(w=>w.Enabled && w.Group.Headcount>0));
         int candidate = 0;
         foreach (var threshold in CityRules.Thresholds)
             if (capital >= threshold.CapitalMinor && _population >= threshold.Population && active >= threshold.ActiveProductions) ++candidate;

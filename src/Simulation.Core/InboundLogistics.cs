@@ -23,9 +23,16 @@ public sealed partial class SimulationEngine
     private long ProductionInputRoom(long input,string item,long free)
     {
         var e=_enterprises.Values.SingleOrDefault(e=>e.Input==input);
-        if(e is null || e.Recipe.Ingredients.Length==1)return free;
+        if(e is null)return free;
+        if(ParallelWorkshops)
+        {
+            var kits=ProductionRecipes(e).Where(r=>r.Uses(item)).Select(r=>r.Ingredients.Where(i=>i.ItemId!=item).Sum(i=>checked(Math.Max(0,i.Quantity-_economy.Inventories[input].Free(i.ItemId)-IncomingIngredient(input,i.ItemId))*_items[i.ItemId].UnitVolume))).ToArray();
+            return kits.Length==0?0:Math.Max(0,free-kits.Min());
+        }
+        var ingredients=e.Recipe.Ingredients;
+        if(ingredients.Length==1)return free;
         var destination=_economy.Inventories[input];
-        long missing=e.Recipe.Ingredients.Where(i=>i.ItemId!=item).Sum(i=>checked(Math.Max(0,i.Quantity-destination.Free(i.ItemId)-IncomingIngredient(input,i.ItemId))*_items[i.ItemId].UnitVolume));
+        long missing=ingredients.Where(i=>i.ItemId!=item).Sum(i=>checked(Math.Max(0,i.Quantity-destination.Free(i.ItemId)-IncomingIngredient(input,i.ItemId))*_items[i.ItemId].UnitVolume));
         return Math.Max(0,free-missing);
     }
     private long IncomingIngredient(long destination,string item)=>_logistics.Values.Where(l=>l.Trip is {} t && t.ItemId==item &&
@@ -35,7 +42,8 @@ public sealed partial class SimulationEngine
         var e = _enterprises[l.Enterprise]; var source = _economy.Inventories[origin];
         var destination = _economy.Inventories[e.Input];
         // Serve the least supplied component first. Ratio uses current + incoming stock and no PRNG.
-        var available=e.Recipe.Ingredients.Where(i=>source.Free(i.ItemId)>0).ToArray();
+        var requirements=ParallelWorkshops ? ProductionRecipes(e).SelectMany(r=>r.Ingredients).GroupBy(i=>i.ItemId,StringComparer.Ordinal).Select(g=>new MaterialCost(g.Key,g.Max(i=>i.Quantity))).OrderBy(i=>i.ItemId,StringComparer.Ordinal).ToArray() : e.Recipe.Ingredients.ToArray();
+        var available=requirements.Where(i=>source.Free(i.ItemId)>0).ToArray();
         if(available.Length==0)throw new RuleViolation("NoStock");
         var ingredient=available.Aggregate((a,b)=>
             (Int128)(destination.Free(a.ItemId)+IncomingIngredient(e.Input,a.ItemId))*b.Quantity<=
@@ -47,6 +55,7 @@ public sealed partial class SimulationEngine
         if (free < volume) throw new RuleViolation("NoDestinationSpace");
         long quantity = Math.Min(source.Free(item), Math.Min(l.CargoCapacity / volume, free / volume));
         quantity=Math.Min(quantity,ProductionInputRoom(e.Input,item,free)/volume);
+        if(ParallelWorkshops)quantity=Math.Min(quantity,ingredient.Quantity);
         if (quantity <= 0) throw new RuleViolation("NoStock");
         var path = _map.FindPath(_economy.Inventories[l.Source].Position, source.Position);
         long leg = Math.Max(1, checked((path.Length - 1L) * Logistics.MoveTicksPerCell));

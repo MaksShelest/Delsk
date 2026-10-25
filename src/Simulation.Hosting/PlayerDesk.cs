@@ -439,6 +439,15 @@ public static class PlayerText
     public static string Item(string language, string itemId)
     {
         if(itemId is "stone" or "iron_ore" or "copper_ore" or "sand")return itemId switch {"stone"=>Local(language,"Камень","Stone"),"iron_ore"=>Local(language,"Железная руда","Iron ore"),"copper_ore"=>Local(language,"Медная руда","Copper ore"),_=>Local(language,"Песок","Sand")};
+        var additional = itemId switch {
+            "coke"=>("Кокс","Coke"), "soda"=>("Сода","Soda"), "limestone"=>("Известняк","Limestone"),
+            "cement"=>("Цемент","Cement"), "bitumen"=>("Битум","Bitumen"), "steel"=>("Сталь","Steel"),
+            "copper"=>("Медь","Copper"), "gravel"=>("Щебень","Gravel"), "curd"=>("Творог","Curd"),
+            "cream"=>("Сметана","Sour cream"), "wire"=>("Медная проволока","Copper wire"), "beam"=>("Балки","Beams"),
+            "steel_sheet"=>("Стальной лист","Steel sheet"), "glass"=>("Стекло","Glass"), "concrete"=>("Бетон","Concrete"),
+            "asphalt"=>("Асфальтовая смесь","Asphalt mix"), "furniture"=>("Мебель","Furniture"), "window"=>("Окна","Windows"),
+            "motor"=>("Электродвигатель","Electric motor"), "conveyor"=>("Конвейер","Conveyor"), _=>("","") };
+        if(additional.Item1.Length>0)return Local(language,additional.Item1,additional.Item2);
         string key = "item." + itemId;
         return Keys(language).Contains(key) ? Get(language, key) : itemId;
     }
@@ -448,6 +457,11 @@ public static class PlayerText
     public static string Building(string language, string type) => type switch
     {
         "sawmill" => Local(language, "Лесопилка", "Sawmill"),
+        "woodworking" => Local(language,"Деревообрабатывающее предприятие","Woodworking factory"),
+        "metallurgy" => Local(language,"Металлургическое предприятие","Metallurgy factory"),
+        "materials" => Local(language,"Предприятие стройматериалов","Building materials factory"),
+        "food" => Local(language,"Пищевое предприятие","Food factory"),
+        "machinery" => Local(language,"Механическая мастерская","Machinery workshop"),
         "bakery" => Local(language, "Пекарня", "Bakery"),
         "dairy" => Local(language, "Сыроварня", "Dairy"),
         "sugar-factory" => Local(language, "Сахарный завод", "Sugar factory"),

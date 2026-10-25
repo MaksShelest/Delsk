@@ -7,9 +7,9 @@ public sealed partial class AlgorithmicController
     private IEnumerable<Candidate> EconomicWages(ControllerObservation o)
     {
         var settings=_state.Settings;
-        foreach(var e in o.Enterprises)
+        foreach(var line in o.Enterprises.SelectMany(ProductionWorkplaces))
         {
-            var group=o.EmploymentGroups.Single(g=>g.Id.Value==e.Id.Value);
+            var e=line.Unit;var group=o.EmploymentGroups.Single(g=>g.Id==line.Group);
             if(group.PendingWageMinor is not null)continue;
             var baseline=HiringEconomics.Evaluate(o,e,group,group.WageMinor,settings);
             var peers=o.LaborMarket.Where(g=>g.OwnerId!=Actor && g.Headcount>0).Select(g=>g.WageMinor).Order().ToArray();

@@ -13,11 +13,11 @@ public static class ActionPolicy
 {
     public static ActionReach Reach(ActionKind kind) => kind switch
     {
-        ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.TakeOverflow or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
+        ActionKind.OutfitWorkshop or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.TakeOverflow or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.Build or ActionKind.UpgradeBuilding or
         ActionKind.SetWage or ActionKind.BuyEquipment or ActionKind.UpgradeEquipment or ActionKind.CollectPurchase or
         ActionKind.DeliverContract or ActionKind.BuyLogistics or ActionKind.UpgradeLogistics or ActionKind.SignSupport => ActionReach.AtLocation,
-        ActionKind.PrepareDemolition or ActionKind.CancelDemolitionPreparation or ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.MoveTo or ActionKind.CancelCapitalSale or ActionKind.SetTravelHeading or ActionKind.StopHarvest or
+        ActionKind.AssignWorkshopWorkers or ActionKind.PrepareDemolition or ActionKind.CancelDemolitionPreparation or ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.MoveTo or ActionKind.CancelCapitalSale or ActionKind.SetTravelHeading or ActionKind.StopHarvest or
         ActionKind.SetProductionEnabled or ActionKind.CancelPlotReservation or ActionKind.SetRecipe or ActionKind.SetEquipmentMode or
         ActionKind.CreateSellOffer or ActionKind.SubmitBuyRequest or ActionKind.RaiseBid or ActionKind.WithdrawBid or
         ActionKind.CreateBuyOffer or ActionKind.AcceptDeliveryQuantity or ActionKind.WithdrawSupplyRequest or ActionKind.CancelBuyOffer or
@@ -56,6 +56,7 @@ public sealed partial class SimulationEngine
             ActionKind.DemolishBuilding=>_buildings.TryGetValue(action.Building.Value,out var demolishing)&&demolishing.Owner==actor.Id&&!Demolished(demolishing.Id)?[demolishing.Position]:null,
             ActionKind.CancelConstruction=>_storageConstruction.TryGetValue(action.OfferId,out var construction)&&construction.Owner==actor.Id?[construction.Position]:null,
             ActionKind.UpgradeBuilding => _buildings.TryGetValue(action.Building.Value, out var building) && building.Owner == actor.Id ? [building.Position] : null,
+            ActionKind.OutfitWorkshop => _enterprises.TryGetValue(action.Enterprise.Value, out var outfitting) && outfitting.Definition.OwnerId == actor.Id && !Demolished(outfitting.Definition.Id) ? [outfitting.Definition.Position] : null,
             ActionKind.BuyLogistics => _enterprises.TryGetValue(action.Enterprise.Value, out var enterprise) && enterprise.Definition.OwnerId == actor.Id ? [enterprise.Definition.Position] : null,
             ActionKind.UpgradeLogistics => _logistics.TryGetValue(action.Logistics.Value, out var logistics) && logistics.Owner == actor.Id ? [_enterprises[logistics.Enterprise].Definition.Position] : null,
             ActionKind.BuyEquipment => [action.Target],
@@ -80,7 +81,8 @@ public sealed partial class SimulationEngine
 
     private Cell[]? WageLocation(long actor, long group)
     {
-        if (_enterprises.TryGetValue(group, out var enterprise) && enterprise.Definition.OwnerId == actor) return [enterprise.Definition.Position];
+        var enterprise = ProductionUnits().FirstOrDefault(e => e.Group.Id == group && e.Definition.OwnerId == actor);
+        if (enterprise is not null) return [enterprise.Definition.Position];
         if (_equipment.TryGetValue(group, out var machine) && machine.Owner == actor) return [machine.Position];
         if (_logistics.TryGetValue(group, out var logistics) && logistics.Owner == actor) return [_enterprises[logistics.Enterprise].Definition.Position];
         return null;

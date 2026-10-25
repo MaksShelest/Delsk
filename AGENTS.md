@@ -1,3 +1,35 @@
+## D1,25.10.2026
+
+- Основа85955d7/PR62merged. Явные EconomicRules.Workshops; старые профили/пять
+  карт не подменять. Новый vnext-d1-workshops-1 для designed new games/lab presets:
+  checked A2+C1+typedBALANCE,6базовых фабрик с1начальным оснащённым местом.
+- Дополнительные линии используют прежний EnterpriseState/Batch/EmploymentGroup,
+  отдельные global IDs/parent, общий конечный input/output/кошелёк и EconomyTransaction.
+  Нельзя добавлять вторую экономику, транспорт или индивидуальных жителей.
+- Кривая0/25/45/65/85/100, масштаб100work/full tick. Batch.Terms фиксирует
+  рецепт/ставку/услугу2minor/full-work tick. Текущий N меняет скорость/payroll,
+  Stop сохраняет WIP/hold, простой бесплатен. Нельзя сменить рецепт с WIP.
+- AssignWorkshopWorkers переносит только текущих работников между своими линиями
+  одного предприятия. Наём прежний постепенный из общего населения. Montage60active
+  ticks оплачивает реальные материалы/input+деньги один раз, создаёт N0/off.
+- Fairness: persisted last successful start serial внутри прежней ротации ролей;
+  сырьё/полный выход/payroll атомарны. Сохранять порядок и все holds в restore/hash.
+- Логистика обслуживает все выбранные рецепты/продукты, принятый рейс прежний.
+  C2 подготовка останавливает новые старты всех линий, ждёт всеWIP/montage;
+  release всех групп, outfitmaterials в actual investments, no duplicate equipment.
+- World21 limited20/19/18 без D1fields; null/default omitted, старый World20/C2
+  actualsave сохранил hash/metrics. Rules production-recipes-1/Session2/Envelope2.
+  Own immutable DTO, полный workshops.json только researcher; ordinary audit
+  должен запрещать WorkshopProbe наряду с прочими isolated probes.
+- Финальные gates:1117ordinary/1123Developer/37Python,22D1; headless102exports/
+ 14replay/69pairs; D1process18checks/10exports/9pairs; C1/C2 regression, actual
+  native montage/start/Stop/staff/Continue RU800/EN1100, Linux1132hashes/35restores,
+  newmap-native и обе карты через browserlab, clean ordinary audit.
+- XP/новые места/контуры/строительные проекты/V2,V3 и импорт — D2, не начинать
+  автоматически. Не объявлять natural progression доказанным prepared3/6cell fixtures.
+  Инструкция WORKSHOPS_D1.md, отчёт IMPLEMENTATION_REPORT_PACKAGE_D1.md,
+  восстановление WORKLOG_PACKAGE_D1.md. Реальные финальные gates см. отчёт/evidence.
+
 ## C2,25.10.2026
 
 - От9220b4c/PR61merged: read-only own quote из фактического ConstructionMaterialConsumed;

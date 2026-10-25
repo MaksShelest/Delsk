@@ -6,7 +6,7 @@ public sealed partial class SimulationEngine
     private bool TransportSource(long owner,long inventory) => _economy.Inventories.TryGetValue(inventory,out var i) && i.Owner==owner &&
         (_buildings.Values.Any(b=>b.Input==inventory || b.Output==inventory) || _equipment.Values.Any(e=>e.Storage==inventory));
     private bool TransportDestination(long owner,long inventory,string item) => _buildings.Values.Any(b=>b.Owner==owner && b.Input==inventory &&
-        (b.Type.Kind!=BuildingKind.Production || _enterprises[b.Id].Recipe.Uses(item)));
+        (b.Type.Kind!=BuildingKind.Production || ProductionUses(_enterprises[b.Id],item)));
     private void SetTransportRoute(ActorState actor,CommandEnvelope c)
     {
         if(!_logistics.TryGetValue(c.Action.Logistics.Value,out var l)||l.Owner!=actor.Id ||

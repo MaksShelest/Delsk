@@ -38,7 +38,7 @@ public sealed partial class SimulationEngine
             a.Destination.Value != 0 && !IsOwnLogisticsDestination(l, a.Destination.Value))
             throw new RuleViolation("NotAvailable");
         if (a.Enabled && OwnProductionDestination(l, a.Destination.Value) is { } production &&
-            !production.Recipe.Uses(_enterprises[l.Enterprise].Recipe.OutputItem))
+            !ProductionOutputs(_enterprises[l.Enterprise]).Any(item=>ProductionUses(production,item)))
             throw new RuleViolation("IncompatibleRecipe");
         UpsertLogisticsJob(l, a.ContractId, a.Destination.Value, a.Source.Value, a.Enabled);
         Emit("LogisticsJobQueued", actor.Id, l.Id, reason: JobKey(a.ContractId, a.Destination.Value, a.Source.Value), command: c.CommandId);
@@ -57,7 +57,7 @@ public sealed partial class SimulationEngine
         var candidates = new List<(LogisticsJobView Job, LogisticsPlanData Plan, int Priority, long Deadline)>();
         string reason = "UserPaused";
         var enterprise = _enterprises[l.Enterprise];
-        bool shortage = enterprise.Enabled && enterprise.Recipe.Ingredients.Any(i=>_economy.Inventories[enterprise.Input].Free(i.ItemId)<i.Quantity);
+        bool shortage = UnitsFor(l.Enterprise).Any(e=>e.Enabled && e.Recipe.Ingredients.Any(i=>_economy.Inventories[e.Input].Free(i.ItemId)<i.Quantity));
         foreach (var job in l.Queue.OrderBy(j => j.Key, StringComparer.Ordinal))
         {
             bool input = job.InboundSource.Value != 0 || job.Source.Value!=0 && job.Destination.Value==enterprise.Input;

@@ -14,6 +14,7 @@ public partial class HouseholdObjectCard : VBoxContainer
     private readonly long _id;
     private readonly System.Action<GameAction> _submit;
     private readonly System.Func<GameAction, ActionAccess> _access;
+    private readonly WorkshopPanel? _workshopPanel;
     private readonly StoragePanel? _storagePanel;private readonly DemolitionPanel? _demolitionPanel;
     private readonly Label _heading = new() { AutowrapMode = TextServer.AutowrapMode.WordSmart };
     private readonly Label _stock = new() { AutowrapMode = TextServer.AutowrapMode.WordSmart };
@@ -43,6 +44,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         _scenario = scenario; _language = language; _kind = kind; _id = id; _submit = submit; _access = access;
         if(scenario.Economy?.Storage is not null&&kind=="building"){_storagePanel=new(scenario,language,kind,id,submit,access,true);AddChild(_storagePanel);}
         if(demolitionQuote is not null&&kind=="building"){_demolitionPanel=new(language,submit,demolitionQuote,access);AddChild(_demolitionPanel);}
+        if(scenario.Economy?.Workshops is not null&&kind=="building"){_workshopPanel=new(scenario,language,id,submit,access);AddChild(_workshopPanel);}
         AddChild(_details);AddChild(_recipeCards);_details.AddChild(_heading);_details.AddChild(_progress);_details.AddChild(_stock);_details.AddChild(_workers);_details.AddChild(_delivery);
         var amount = new TabletColumns{Breakpoint=650}; _details.AddChild(amount);
         amount.AddChild(new Label { Text = L("Количество для переноса", "Transfer quantity") }); amount.AddChild(_quantity);
@@ -57,6 +59,7 @@ public partial class HouseholdObjectCard : VBoxContainer
     {
         if(_storagePanel is not null){_storagePanel.Visible=view.Buildings.Any(b=>b.Id.Value==_id&&b.Kind==BuildingKind.Warehouse);if(_storagePanel.Visible)_storagePanel.ShowData(view,pending);}
         var buildingWork=view.Storage?.Construction.FirstOrDefault(c=>c.BuildingId==_id);_demolitionPanel?.ShowData(view,pending,buildingWork?.Id??_id,buildingWork is not null);
+        _workshopPanel?.ShowData(view,pending);
         _lastView = view; _pending = pending; _paused = paused;_routes.ShowData(view,pending);
         var actions = new List<(string Key, string Text, GameAction Action, bool Enabled)>();
         long quantity = (long)_quantity.Value;
@@ -92,15 +95,15 @@ public partial class HouseholdObjectCard : VBoxContainer
             {
                 var recipe = _scenario.Recipes.Single(r => r.Id == enterprise.RecipeId);
                 _heading.Text += "\n" + string.Join(" + ",recipe.Ingredients.Select(i=>PlayerText.Item(_language,i.ItemId)+" ×"+i.Quantity))+" → "+PlayerText.Item(_language,recipe.OutputItem)+" ×"+recipe.OutputQuantity +
-                    L(" · энергия/партия ", " · energy/batch ") + PlayerText.Money(recipe.EnergyPerBatchMinor) + "\n" + TabletText.Reason(_language, enterprise.ReasonCode);
+                    (_scenario.Economy?.Workshops is null?L(" · энергия/партия ", " · energy/batch "):L(" · услуга/полный тик "," · service/full tick ")) + PlayerText.Money(_scenario.Economy?.Workshops?.ServiceMinorPerFullTick??recipe.EnergyPerBatchMinor) + "\n" + TabletText.Reason(_language, enterprise.ReasonCode);
                 var progress = TabletProgress.Production(enterprise); _progress.MaxValue = progress.Total; _progress.Value = progress.Done;
-                Add("work", enterprise.Enabled ? L("Остановить производство", "Stop production") : L("Включить производство", "Start production"), PlayerDesk.Work(_id, !enterprise.Enabled));
-                if (building is not null)
+                if(enterprise.Workshops.IsDefault)Add("work", enterprise.Enabled ? L("Остановить производство", "Stop production") : L("Включить производство", "Start production"), PlayerDesk.Work(_id, !enterprise.Enabled));
+                if (building is not null && enterprise.Workshops.IsDefault)
                     foreach (var recipeId in _scenario.BuildingTypes!.Single(t => t.Id == building.TypeId).Levels.Where(l => l.Level <= building.Level)
                         .SelectMany(l=>l.UnlockedRecipes).Distinct(StringComparer.Ordinal).Where(id=>id!=enterprise.RecipeId))
                         Add("recipe:" + recipeId, L("Рецепт: ", "Recipe: ") + Recipe(recipeId), new(ActionKind.SetRecipe, Enterprise: new(building.Id.Value), RecipeId: recipeId), !enterprise.Enabled && enterprise.BatchId == 0);
             }
-            if (building is not null && _scenario.BuildingTypes!.Single(t => t.Id == building.TypeId).Levels.FirstOrDefault(l => l.Level == building.Level + 1) is { } upgrade)
+            if (_scenario.Economy?.Workshops is null && building is not null && _scenario.BuildingTypes!.Single(t => t.Id == building.TypeId).Levels.FirstOrDefault(l => l.Level == building.Level + 1) is { } upgrade)
                 Add("upgrade", L("Улучшить здание — ", "Upgrade building — ") + PlayerText.Money(upgrade.PriceMinor) + " + " + string.Join(", ", upgrade.Materials.Select(m => PlayerText.Item(_language, m.ItemId) + " ×" + m.Quantity)),
                     new(ActionKind.UpgradeBuilding, Building: building.Id), enterprise is null || !enterprise.Enabled && enterprise.BatchId == 0);
         }
@@ -121,7 +124,7 @@ public partial class HouseholdObjectCard : VBoxContainer
                 TransferChoice("put",pack,inventory,1,"one");TransferChoice("take",inventory,pack,1,"one");
                 TransferChoice("put",pack,inventory,long.MaxValue,"all");TransferChoice("take",inventory,pack,long.MaxValue,"all");
             }
-        var groups = view.Employment.Where(g => machine is null ? g.Role == EmploymentRole.Production && g.Id.Value == _id ||
+        var groups = view.Employment.Where(g => machine is null ? g.Role == EmploymentRole.Production && (g.Id.Value == _id || enterprise is not null && !enterprise.Workshops.IsDefault && enterprise.Workshops.Any(w=>w.GroupId==g.Id)) ||
             view.Logistics.Any(l => l.EnterpriseId.Value == _id && l.GroupId == g.Id) : g.Id == machine.GroupId).ToArray();
         _workers.Text = string.Join("\n", groups.Select(g => Role(g.Role) + L(": на вас работают ", ": working for you ") + $"{g.Headcount}/{g.Capacity}" + L(" · ставка ", " · wage ") + PlayerText.Money(g.WageMinor) +
             (g.PendingWageMinor is long pay ? L(" · новая ", " · pending ") + PlayerText.Money(pay) + L(" с тика ", " from tick ") + g.PayEffectiveTick : "")));
@@ -136,7 +139,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         if(view.Transfers.Length>0)Add("transfer-stop",L("Остановить передачу","Stop transfer"),new(ActionKind.StopTransfer));
         UpdateActions(actions, pending);
         var artworkRecipe=enterprise is null?null:_scenario.Recipes.Single(r=>r.Id==enterprise.RecipeId);
-        _showProductionTablet=artworkRecipe is not null && building is not null && ProductionTabletPresenter.Supports(building.TypeId,artworkRecipe);
+        _showProductionTablet=_scenario.Economy?.Workshops is null && artworkRecipe is not null && building is not null && ProductionTabletPresenter.Supports(building.TypeId,artworkRecipe);
         if(_showProductionTablet && _productionTablet is null)
         {
             _productionTablet=new(_scenario,_language,_id,RevealLogistics,building!.TypeId);
@@ -218,7 +221,12 @@ public partial class HouseholdObjectCard : VBoxContainer
         foreach (var b in view.Buildings.Where(b => b.Id.Value != _id))
         {
             bool production = b.Kind == BuildingKind.Production;
-            if (!production || _scenario.Recipes.Single(r => r.Id == view.Enterprises.Single(e => e.Id.Value == b.Id.Value).RecipeId).Uses(_scenario.Recipes.Single(r => r.Id == enterprise.RecipeId).OutputItem))
+            var receiver=view.Enterprises.SingleOrDefault(e=>e.Id.Value==b.Id.Value);
+            var incomingRecipes=receiver is null?System.Array.Empty<string>():receiver.Workshops.IsDefault?new[]{receiver.RecipeId}:receiver.Workshops.Select(w=>w.RecipeId).ToArray();
+            var sourceBuilding=view.Buildings.SingleOrDefault(source=>source.Id.Value==enterprise.Id.Value);
+            var sourceRecipes=enterprise.Workshops.IsDefault||sourceBuilding is null?new[]{enterprise.RecipeId}:_scenario.BuildingTypes!.Single(t=>t.Id==sourceBuilding.TypeId).Levels.Where(l=>l.Level<=sourceBuilding.Level).SelectMany(l=>l.UnlockedRecipes).ToArray();
+            bool compatible=incomingRecipes.Any(id=>sourceRecipes.Any(source=>_scenario.Recipes.Single(r=>r.Id==id).Uses(_scenario.Recipes.Single(r=>r.Id==source).OutputItem)));
+            if (!production || compatible)
                 add("route-out:" + b.Id.Value, L("Отправлять → ", "Deliver → ") + InventoryName(view, b.InputId), new(production ? ActionKind.SetLogisticsProduction : ActionKind.SetLogisticsStorage, Logistics: system.Id, Destination: b.InputId, Enabled: true), system.Trip is null);
             if (!production) add("route-in:" + b.Id.Value, L("Подвозить ← ", "Collect ← ") + InventoryName(view, b.InputId), PlayerDesk.FetchInput(system.Id.Value, b.InputId.Value, true), system.Trip is null);
         }

@@ -4,14 +4,14 @@ namespace Agents.Algorithmic;
 
 public sealed partial class AlgorithmicController
 {
-    private static bool ExpansionGoal(string goal) => goal is "BuildProduction" or "BuyExtraction" or "BuildShop" or "BuyLogistics";
+    private static bool ExpansionGoal(string goal) => goal is "BuildProduction" or "BuyExtraction" or "BuildShop" or "BuyLogistics" or "OutfitWorkshop";
     private static bool ObligationGoal(string goal) => goal is "DeliverContract" or "CollectPurchase" or "ConfigureContract" or
         "BuyInputs" or "SupplyProduction" or "ResumeProduction" or "AdjustWage" or "ClearCarrier";
     private Candidate WageCandidate(ControllerObservation o, EmploymentView group, long wage, long score, string reason)
     {
         Cell location = group.Role switch
         {
-            EmploymentRole.Production => Inventory(o,o.Enterprises.Single(e=>e.Id.Value==group.Id.Value).InputId).Position,
+            EmploymentRole.Production => Inventory(o,o.Enterprises.Single(e=>e.Id.Value==group.Id.Value||!e.Workshops.IsDefault&&e.Workshops.Any(w=>w.GroupId==group.Id)).InputId).Position,
             EmploymentRole.Extraction => o.Equipment.Single(e=>e.GroupId==group.Id).Position,
             _ => Inventory(o,o.Enterprises.Single(e=>e.Id==o.OwnLogistics.Single(l=>l.GroupId==group.Id).EnterpriseId).InputId).Position
         };
@@ -71,7 +71,7 @@ public sealed partial class AlgorithmicController
     private static long BasePrice(ControllerObservation o,string item)=>o.Map.Items.Single(i=>i.Id==item).BasePriceMinor;
     private long Need(ControllerObservation o,string item)
     {
-        long need=o.Enterprises.Where(e=>o.Map.Recipes.Single(r=>r.Id==e.RecipeId).Uses(item)).Sum(e=>{
+        long need=o.Enterprises.SelectMany(e=>ProductionWorkplaces(e).Select(l=>l.Unit)).Where(e=>o.Map.Recipes.Single(r=>r.Id==e.RecipeId).Uses(item)).Sum(e=>{
             var r=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);var ingredient=r.Ingredients.Single(i=>i.ItemId==item);return Math.Max(0,Math.Max(ingredient.Quantity,InputTarget(o,Inventory(o,e.InputId),r,ingredient)/2)-Free(Inventory(o,e.InputId),item));});
         need=checked(need+o.OwnDeliveryContracts.Where(c=>c.Supplier==Actor && c.ClosedTick is null && c.ItemId==item).Sum(c=>c.UnprovidedQuantity));
         long incoming=o.OwnMarketAllocations.Where(c=>c.Buyer==Actor && c.ItemId==item).Sum(c=>c.RemainingQuantity)+
