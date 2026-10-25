@@ -141,7 +141,7 @@ public sealed partial class SimulationEngine
         _stepping = true;
         try
         {
-            ++Tick; _phase = 0; AdvanceStorageConstruction(); AdvanceOverflow(); AdvanceResourceIntervals(); ApplyWages();
+            ++Tick; _phase = 0; AdvanceStorageConstruction(); AdvanceWorkshopInstallations(); AdvanceOverflow(); AdvanceResourceIntervals(); ApplyWages();
             var due = _pending.Where(c => c.NotBeforeTick <= Tick).ToArray();
             foreach (var c in due) _pending.Remove(c);
             var actors = due.Select(c => c.ActorId.Value).Distinct().Order().ToArray();
@@ -212,6 +212,8 @@ public sealed partial class SimulationEngine
                 case ActionKind.Build: Build(actor, c); break;
                 case ActionKind.UpgradeBuilding: UpgradeBuilding(actor, c); break;
                 case ActionKind.SetRecipe: SetRecipe(actor, c); break;
+                case ActionKind.OutfitWorkshop: OutfitWorkshop(actor, c); break;
+                case ActionKind.AssignWorkshopWorkers: AssignWorkshopWorkers(actor, c); break;
                 case ActionKind.SetWage: SetWage(actor, c); break;
                 case ActionKind.BuyEquipment: BuyEquipment(actor, c); break;
                 case ActionKind.UpgradeEquipment: UpgradeEquipment(actor, c); break;
@@ -299,8 +301,7 @@ public sealed partial class SimulationEngine
     }
     private void SetProduction(ActorState actor, CommandEnvelope c)
     {
-        if (!_enterprises.TryGetValue(c.Action.Enterprise.Value, out var e) || e.Definition.OwnerId != actor.Id)
-            throw new RuleViolation("NotAvailable");
+        var e = OwnProductionUnit(actor, c.Action);
         e.Enabled = c.Action.Enabled;
         if (!e.Enabled) e.Reason = "UserPaused";
         Emit("ProductionSettingChanged", actor.Id, e.Definition.Id, reason: e.Enabled ? "Enabled" : "UserPaused", command: c.CommandId);
@@ -364,7 +365,7 @@ public sealed partial class SimulationEngine
             _enterprises.Values.Where(e=>!Demolished(e.Definition.Id)).OrderBy(e => e.Definition.Id).Select(e => new EnterpriseView(new(e.Definition.Id), new(e.Definition.OwnerId),
                 new(e.Input), new(e.Output), e.Enabled, e.Group.Headcount, e.Reason, e.Batch?.Id ?? 0,
                 e.Batch?.WorkDone ?? 0, e.Batch?.WorkRequired ?? 0, e.Completed, e.EnergyPaid,
-                e.Recipe.Id, e.Definition.Level, e.Definition.Capacity, e.Definition.WorkRateMultiplier) {BatchRecipeId=e.Batch?.RecipeId??"",BatchInputs=e.Batch is {} batch?batch.Inputs:[]}).ToArray(),
+                e.Recipe.Id, e.Definition.Level, e.Definition.Capacity, e.Definition.WorkRateMultiplier) {BatchRecipeId=e.Batch?.RecipeId??"",BatchInputs=e.Batch is {} batch?batch.Inputs:[],Workshops=WorkshopViews(e.Definition.Id),Installations=InstallationViews(e.Definition.Id)}).ToArray(),
             _flows.Values.OrderBy(f => f.Id, StringComparer.Ordinal).Select(f => new FlowView(f.Id, f.Initial, f.Harvested,
                 f.RecipeInput, f.Produced, f.Exported, f.ConstructionInput,f.Lost,f.ConstructionRecovered)).ToArray(),
             _offers.Values.OrderBy(o => o.Definition.Id).Select(o => new CapitalOfferView(o.Definition.Id, o.Definition.ItemId,
@@ -397,6 +398,7 @@ public sealed partial class SimulationEngine
         object payload = StatePayload();
         if(HasGroundStorage)payload=new{Payload=payload,Storage=CaptureStorage()};
         if(CaptureDemolition() is {} demolition)payload=new{Payload=payload,Demolition=demolition,RetiredBuildings=BuildingViews(true).Where(b=>Demolished(b.Id.Value)).ToArray(),RetiredEnterprises=_enterprises.Values.Where(e=>Demolished(e.Definition.Id)).OrderBy(e=>e.Definition.Id).Select(e=>new{e.Definition,e.Input,e.Output,Recipe=e.Recipe.Id,e.Enabled,e.Completed,e.EnergyPaid,Group=e.Group.View()}).ToArray()};
+        if (CaptureWorkshops() is {} workshops) payload = new { Payload = payload, Workshops = workshops };
         var travel = TravelDeviation();
         return ScenarioValidation.Hash(travel is null ? payload : new { Payload = payload, Travel = travel });
     }

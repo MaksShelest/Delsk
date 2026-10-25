@@ -28,7 +28,7 @@ public sealed partial class SimulationEngine
     private readonly Dictionary<string, BuildingTypeDefinition> _buildingTypes = new(StringComparer.Ordinal);
     private readonly Dictionary<long, BuildingState> _buildings = [];
 
-    private static bool IsManagement(ActionKind kind) => kind is ActionKind.PrepareDemolition or ActionKind.CancelDemolitionPreparation or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.StopHarvest or ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.SetVoteChoice or ActionKind.ContinueAfterVictory or ActionKind.SetProductionEnabled or
+    private static bool IsManagement(ActionKind kind) => kind is ActionKind.OutfitWorkshop or ActionKind.AssignWorkshopWorkers or ActionKind.PrepareDemolition or ActionKind.CancelDemolitionPreparation or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.StopHarvest or ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.SetVoteChoice or ActionKind.ContinueAfterVictory or ActionKind.SetProductionEnabled or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.CancelPlotReservation or ActionKind.Build or
         ActionKind.UpgradeBuilding or ActionKind.SetRecipe or ActionKind.SetWage or ActionKind.BuyEquipment or
         ActionKind.UpgradeEquipment or ActionKind.SetEquipmentMode or ActionKind.CreateSellOffer or
@@ -181,13 +181,14 @@ public sealed partial class SimulationEngine
     private BuildingState OwnBuilding(ActorState actor, BuildingId id)
     {
         if (!_buildings.TryGetValue(id.Value, out var b) || b.Owner != actor.Id || Demolished(b.Id)) throw new RuleViolation("NotAvailable");
-        if (_enterprises.TryGetValue(b.Id, out var e) && (e.Enabled || e.Batch is not null)) throw new RuleViolation("ProductionNotSafe");
+        if (UnitsFor(b.Id).Any(e => e.Enabled || e.Batch is not null) || _workshopInstallations.Values.Any(w => w.Enterprise.Value == b.Id)) throw new RuleViolation("ProductionNotSafe");
         return b;
     }
 
     private void UpgradeBuilding(ActorState actor, CommandEnvelope c)
     {
         var b = OwnBuilding(actor, c.Action.Building);
+        if (ParallelWorkshops && b.Type.Kind == BuildingKind.Production) throw new RuleViolation("WorkshopExpansionNotAvailable");
         if(Storage is not null&&b.Type.Kind==BuildingKind.Warehouse){StartWarehouseConstruction(actor,c,b);return;}
         RequireActionLocation(actor, c.Action);
         var level = b.Type.Levels.SingleOrDefault(l => l.Level == checked(b.Level + 1)) ?? throw new RuleViolation("MaxLevel");
@@ -231,10 +232,9 @@ public sealed partial class SimulationEngine
 
     private void SetRecipe(ActorState actor, CommandEnvelope c)
     {
-        if (!_enterprises.TryGetValue(c.Action.Enterprise.Value, out var e) || e.Definition.OwnerId != actor.Id)
-            throw new RuleViolation("NotAvailable");
+        var e = OwnProductionUnit(actor, c.Action);
         if (e.Enabled || e.Batch is not null) throw new RuleViolation("ProductionNotSafe");
-        bool unlocked = _buildings.TryGetValue(e.Definition.Id, out var b)
+        bool unlocked = _buildings.TryGetValue(ProductionParent(e.Definition.Id), out var b)
             ? b.Type.Levels.Any(l => l.Level <= b.Level && l.UnlockedRecipes.Contains(c.Action.RecipeId,StringComparer.Ordinal))
             : c.Action.RecipeId == e.Recipe.Id;
         if (!unlocked) throw new RuleViolation("RecipeLocked");

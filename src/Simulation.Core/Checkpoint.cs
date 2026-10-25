@@ -19,7 +19,8 @@ internal record SavedActor(long Id, long Account, long Inventory, Cell Position,
     int OffsetX = SimulationEngine.TravelCenter, int OffsetZ = SimulationEngine.TravelCenter,
     int HeadingX = 0, int HeadingZ = 0, int FacingX = 0, int FacingZ = -1);
 internal record SavedBatch(long Id, string Hold, long WorkRequired, long WorkDone, long EnergyPaid, string RecipeId="",
-    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] System.Collections.Immutable.ImmutableArray<MaterialCost> Inputs=default);
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] System.Collections.Immutable.ImmutableArray<MaterialCost> Inputs=default,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] WorkshopBatchTerms? Terms=null);
 internal record SavedEnterprise(EnterpriseDefinition Definition, long Input, long Output, string RecipeId,
     bool Enabled, string Reason, SavedBatch? Batch, long Completed, long EnergyPaid, EmploymentView Group);
 internal record SavedEquipment(long Id, long Owner, Cell Position, long Storage, string TypeId, int Level,
@@ -37,11 +38,12 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
     SavedMarketOffer[] MarketOffers, MarketAllocationView[] MarketAllocations, SavedBuyOffer[] BuyOffers, DeliveryContractView[] DeliveryContracts, long CapitalCompensation, SavedLogistics[] Logistics, CapitalDemandView? CapitalDemand, ElectionStateView Elections, SupportResearchState Support,
     int TravelQuantum = 0, CityStageState? CityStage = null, ResearchModification[]? Research = null,bool DeveloperPackage=false, System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources=default, ResourceClaim[]? ResourceClaims=null,TransferOperation[]? Transfers=null,TradeNegotiation[]? Negotiations=null,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] StorageState? Storage=null,
-    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] DemolitionState? Demolition=null);
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] DemolitionState? Demolition=null,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] WorkshopCheckpoint? Workshops=null);
 
 public sealed partial class SimulationEngine
 {
-    public const int CheckpointSchemaVersion = 20;
+    public const int CheckpointSchemaVersion = 21;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
@@ -75,7 +77,7 @@ public sealed partial class SimulationEngine
                     r.Reservation, r.CommandId)).ToArray(), o.SupplyRequests.Values.OrderBy(r => r.Supplier.Value).ToArray(), o.Window)).ToArray(), world.Flows, world.Settlements,
             _completedPersonalJobs.Order().ToArray(), _seenCommands.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(),
             _results.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(), _pending.Select(c => c.CommandId).ToArray(),
-            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum, _cityStage,_researchModifications.ToArray(),IsDeveloperBuild,ResourceSites(),_resourceClaims.Values.OrderBy(c=>c.JobId).ToArray(),_transfers.Values.OrderBy(t=>t.Id).ToArray(),InspectNegotiations(),!HasGroundStorage?null:CaptureStorage(),CaptureDemolition());
+            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum, _cityStage,_researchModifications.ToArray(),IsDeveloperBuild,ResourceSites(),_resourceClaims.Values.OrderBy(c=>c.JobId).ToArray(),_transfers.Values.OrderBy(t=>t.Id).ToArray(),InspectNegotiations(),!HasGroundStorage?null:CaptureStorage(),CaptureDemolition(),CaptureWorkshops());
         return JsonSerializer.Serialize(saved, SimulationJson.Options);
     }
     private static string MigrateTravel(string json)
@@ -98,9 +100,9 @@ public sealed partial class SimulationEngine
         => values.OrderBy(x => x.Key, StringComparer.Ordinal).ToArray();
     private static SavedJob? SaveJob(PersonalJob? j) => j is null ? null : new(j.Id, j.Kind, j.StartTick,
         j.CompletionTick, j.Path.ToArray(), j.PathIndex, j.SegmentTicks, j.Item, j.Quantity, j.CapacityHold, j.CommandId, j.EquipmentId);
-    private static SavedBatch? SaveBatch(BatchState? b) => b is null ? null : new(b.Id, b.Hold, b.WorkRequired, b.WorkDone, b.EnergyPaid,b.RecipeId,b.Inputs);
+    private static SavedBatch? SaveBatch(BatchState? b) => b is null ? null : new(b.Id, b.Hold, b.WorkRequired, b.WorkDone, b.EnergyPaid,b.RecipeId,b.Inputs,b.Terms);
     private static BatchState? LoadBatch(SavedBatch? b) => b is null ? null : new(b.Id, b.Hold, b.WorkRequired,b.RecipeId,b.Inputs)
-        { WorkDone = b.WorkDone, EnergyPaid = b.EnergyPaid };
+        { WorkDone = b.WorkDone, EnergyPaid = b.EnergyPaid, Terms=b.Terms };
     private static void LoadGroup(EmploymentGroup g, EmploymentView v)
     {
         if (g.Id != v.Id.Value || g.Owner != v.OwnerId.Value || g.Role != v.Role || g.Capacity != v.Capacity)
@@ -119,7 +121,8 @@ public sealed partial class SimulationEngine
         {
             var s = JsonSerializer.Deserialize<WorldCheckpoint>(MigrateTravel(json), SimulationJson.Options)
                 ?? throw new CheckpointException("EmptyCheckpoint");
-            if (s.SchemaVersion != CheckpointSchemaVersion && !(s.SchemaVersion==19&&s.Demolition is null&&s.Config.Economy?.Demolition is null&&s.Flows.All(f=>f.ConstructionRecovered==0))&&!(s.SchemaVersion==18&&s.Demolition is null&&s.Config.Economy?.Storage is null&&s.Storage is null&&s.Inventories.All(i=>i.Overflow is null)&&s.Flows.All(f=>f.Lost==0&&f.ConstructionRecovered==0))) throw new CheckpointException("UnknownWorldSchema");
+            if (s.SchemaVersion < CheckpointSchemaVersion && (s.Workshops is not null || s.Config.Economy?.Workshops is not null || s.Enterprises.Any(e=>e.Batch?.Terms is not null) || s.Equipment.Any(e=>e.Batch?.Terms is not null))) throw new CheckpointException("UnknownWorldSchema");
+            if (s.SchemaVersion != CheckpointSchemaVersion && s.SchemaVersion!=20 && !(s.SchemaVersion==19&&s.Demolition is null&&s.Config.Economy?.Demolition is null&&s.Flows.All(f=>f.ConstructionRecovered==0))&&!(s.SchemaVersion==18&&s.Demolition is null&&s.Config.Economy?.Storage is null&&s.Storage is null&&s.Inventories.All(i=>i.Overflow is null)&&s.Flows.All(f=>f.Lost==0&&f.ConstructionRecovered==0))) throw new CheckpointException("UnknownWorldSchema");
             if (s.RulesVersion != RulesVersion) throw new CheckpointException("UnknownRulesVersion");
             var e = new SimulationEngine(s.Config); // Only validates/configures a fresh, unpublished instance.
             if (e.ConfigHash != s.ConfigHash) throw new CheckpointException("ConfigurationHashMismatch");
@@ -186,6 +189,7 @@ public sealed partial class SimulationEngine
                 { Enabled = v.Enabled, Reason = v.Reason, Batch = LoadBatch(v.Batch), Completed = v.Completed, EnergyPaid = v.EnergyPaid };
             LoadGroup(value.Group, v.Group); _enterprises.Add(v.Definition.Id, value);
         }
+        RestoreWorkshops(s.Workshops);
         _equipment.Clear();
         foreach (var v in s.Equipment)
         {

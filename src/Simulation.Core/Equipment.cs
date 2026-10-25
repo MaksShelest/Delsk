@@ -146,13 +146,30 @@ public sealed partial class SimulationEngine
     private void AdvanceWork()
     {
         var groups = EmploymentGroups().OrderBy(g => g.Id).ToArray();
+        if (ParallelWorkshops)
+        {
+            // Keep inter-role rotation; within each shared enterprise serve the least recently started line first.
+            var rotated = groups.Skip((int)(Tick % Math.Max(1, groups.Length))).Concat(groups.Take((int)(Tick % Math.Max(1, groups.Length)))).ToArray();
+            foreach (var parent in _enterprises.Keys.Order())
+            {
+                var slots = rotated.Select((g, i) => (g, i)).Where(x => x.g.Role == EmploymentRole.Production && ProductionParent(x.g.Id) == parent).Select(x => x.i).ToArray();
+                var lines = slots.Select(i => rotated[i]).OrderBy(g => _workshopTurns.GetValueOrDefault(g.Id)).ThenBy(g => unchecked((ulong)g.Id ^ _config.Seed)).ToArray();
+                for (int i = 0; i < slots.Length; ++i) rotated[slots[i]] = lines[i];
+            }
+            foreach (var g in rotated) AdvanceGroup(g);
+            return;
+        }
         for (int n = 0; n < groups.Length; ++n)
         {
             var g = groups[(n + (int)(Tick % groups.Length)) % groups.Length];
-            if (g.Role == EmploymentRole.Production) AdvanceProduction(_enterprises[g.Id]);
-            else if (g.Role == EmploymentRole.Extraction) AdvanceEquipment(_equipment[g.Id]);
-            else AdvanceLogisticsWork(_logistics[g.Id]);
+            AdvanceGroup(g);
         }
+    }
+    private void AdvanceGroup(EmploymentGroup g)
+    {
+        if (g.Role == EmploymentRole.Production) AdvanceProduction(ProductionUnit(g.Id));
+        else if (g.Role == EmploymentRole.Extraction) AdvanceEquipment(_equipment[g.Id]);
+        else AdvanceLogisticsWork(_logistics[g.Id]);
     }
     private long NextEquipmentCost(EquipmentState e, int staff) => checked(staff * (e.Group.PendingWage ?? e.Group.Wage));
     private string EquipmentVacancyReason(EquipmentState e)

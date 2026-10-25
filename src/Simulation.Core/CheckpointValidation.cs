@@ -73,7 +73,7 @@ public sealed partial class SimulationEngine
                 .Concat(_results.Keys).Order(StringComparer.Ordinal)) ||
             _results.Values.Any(r => r.AppliedTick < 1 || r.AppliedTick > Tick || !Enum.IsDefined(r.Status)))
             throw new CheckpointException("InvalidCommandQueue");
-        foreach (var e in _enterprises.Values)
+        foreach (var e in ProductionUnits())
         {
             if (!_actors.ContainsKey(e.Definition.OwnerId) || e.Definition.RecipeId != e.Recipe.Id ||
                 e.Definition.Position != _economy.Inventories[e.Input].Position ||
@@ -84,8 +84,8 @@ public sealed partial class SimulationEngine
             if (e.Batch is { } batch)
             {
                 int full = e.Definition.BuildingTypeId == "" ? e.Recipe.RequiredStaff : e.Group.Capacity;
-                if (batch.RecipeId!=e.Recipe.Id || batch.Inputs.IsDefault || !batch.Inputs.SequenceEqual(e.Recipe.Ingredients) || batch.WorkRequired != checked(e.Recipe.FullStaffTicks * full) || batch.WorkDone <= 0 ||
-                    batch.EnergyPaid != checked((long)((Int128)e.Recipe.EnergyPerBatchMinor * batch.WorkDone / batch.WorkRequired)))
+                if (batch.RecipeId!=e.Recipe.Id || batch.Inputs.IsDefault || !batch.Inputs.SequenceEqual(e.Recipe.Ingredients) || batch.WorkRequired != checked(e.Recipe.FullStaffTicks * (ParallelWorkshops ? 100 : full)) || batch.WorkDone <= 0 ||
+                    batch.EnergyPaid != (ParallelWorkshops ? checked((long)((Int128)_config.Economy!.Workshops!.ServiceMinorPerFullTick * batch.WorkDone / 100)) : checked((long)((Int128)e.Recipe.EnergyPerBatchMinor * batch.WorkDone / batch.WorkRequired))))
                     throw new CheckpointException("InvalidProductionProgress");
             }
         }
@@ -126,7 +126,7 @@ public sealed partial class SimulationEngine
             }
             else throw new CheckpointException("UnknownPersonalJob");
         }
-        foreach (var e in _enterprises.Values)
+        foreach (var e in ProductionUnits())
             if (e.Batch is { } b) expectedCapacity.Add((e.Output, b.Hold), checked(e.Recipe.OutputQuantity * _items[e.Recipe.OutputItem].UnitVolume));
         foreach (var e in _equipment.Values)
             if (e.Batch is { } b)
@@ -168,7 +168,7 @@ public sealed partial class SimulationEngine
                     throw new CheckpointException("OrphanMoneyReservation");
         if (expectedCapacity.Count + expectedStock.Count + expectedMoney.Count != 0) throw new CheckpointException("MissingReservation");
         long maximum = _economy.Accounts.Keys.Concat(_economy.Inventories.Keys).Concat(_enterprises.Keys).Concat(_equipment.Keys)
-            .Concat(_offers.Keys).Concat(_logistics.Keys).Concat(_logistics.Values.Where(l => l.Trip is not null).Select(l => l.Trip!.Id))
+            .Concat(_additionalWorkshops.Keys).Concat(_workshopInstallations.Keys).Concat(_offers.Keys).Concat(_logistics.Keys).Concat(_logistics.Values.Where(l => l.Trip is not null).Select(l => l.Trip!.Id))
             .Concat(_buildings.Keys).Concat(_buyOffers.Keys).Concat(_deliveryContracts.Select(d => d.Id)).Concat(_marketOffers.Keys).Concat(_marketAllocations.Select(a => a.Id)).Concat(_completedPersonalJobs).Concat(_events.Select(e => e.EntityId))
             .Concat(_actors.Values.Where(a => a.Job != null).Select(a => a.Job!.Id)).DefaultIfEmpty(0).Max();
         if (_nextId <= maximum) throw new CheckpointException("NextIdWouldDuplicateEntity");

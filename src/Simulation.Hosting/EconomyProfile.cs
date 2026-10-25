@@ -31,10 +31,10 @@ public sealed record EconomyProfile(int Version, string Id, WorldEconomy World, 
             p.World.CapitalDemand is null || p.World.Elections is null || p.World.Support is null)
             throw new ArgumentException("Economy profile: missing/invalid economic section");
         p.World.Rules.Validate();
-        if(p.Id is VNextSupportedProfile.ProfileId or VNextStorageProfile.ProfileId && p.VNext is null)throw new ArgumentException("Supported projection requires its provenance metadata.");
+        if(p.Id is VNextSupportedProfile.ProfileId or VNextStorageProfile.ProfileId or VNextWorkshopProfile.ProfileId && p.VNext is null)throw new ArgumentException("Supported projection requires its provenance metadata.");
         if(p.VNext is { } provenance)
         {
-            if((p.Id==VNextStorageProfile.ProfileId)!=(provenance.ProjectionVersion=="storage-projection-1") || (p.Id==VNextStorageProfile.ProfileId&&p.World.Rules.Storage is null) || provenance.ProjectionVersion is not ("supported-projection-1" or "storage-projection-1") || provenance.FixedParticipants!=4 ||
+            if((p.Id==VNextStorageProfile.ProfileId)!=(provenance.ProjectionVersion=="storage-projection-1") || (p.Id==VNextWorkshopProfile.ProfileId)!=(provenance.ProjectionVersion=="workshops-projection-1") || (p.Id==VNextWorkshopProfile.ProfileId && (p.World.Rules.Workshops is null || p.World.Rules.Storage is null)) || (p.Id==VNextStorageProfile.ProfileId&&p.World.Rules.Storage is null) || provenance.ProjectionVersion is not ("supported-projection-1" or "storage-projection-1" or "workshops-projection-1") || provenance.FixedParticipants!=4 ||
                 provenance.ActiveCapabilities is not {Length:>0} || provenance.Limitations is not {Length:>0} ||
                 new[]{provenance.SourceSha256,provenance.FullBalanceSha256,provenance.CatalogSha256,provenance.BaselineProfileSha256,provenance.ProjectionPayloadSha256}.Any(h=>h is null || !System.Text.RegularExpressions.Regex.IsMatch(h,"\\A[0-9a-f]{64}\\z",System.Text.RegularExpressions.RegexOptions.CultureInvariant)) ||
                 provenance.ProjectionPayloadSha256!=VNextBalanceReader.Digest(VNextSupportedProfile.Serialize(p with {VNext=null})))

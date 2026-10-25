@@ -83,6 +83,8 @@ internal sealed class BatchState(long id, string hold, long required, string rec
     public string Hold { get; } = hold;
     public long WorkRequired { get; } = required;
     public long WorkDone { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public WorkshopBatchTerms? Terms {get;set;}
     public long EnergyPaid { get; set; }
 }
 internal sealed class EnterpriseState(EnterpriseDefinition definition, long input, long output, RecipeDefinition recipe)
@@ -223,7 +225,7 @@ public static partial class ScenarioValidation
             foreach (var e in s.Enterprises) _ = checked(e.Capacity * e.WageMinor + recipes[e.RecipeId].EnergyPerBatchMinor);
         }
         catch (OverflowException ex) { throw new ArgumentException("Scenario arithmetic overflow", ex); }
-        ValidateMapLayout(s);
+        ValidateMapLayout(s);ValidateWorkshopContent(s);
     }
     internal static string Hash<T>(T value) => Convert.ToHexString(SHA256.HashData(
         JsonSerializer.SerializeToUtf8Bytes(value, SimulationJson.Options))).ToLowerInvariant();

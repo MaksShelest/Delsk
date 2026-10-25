@@ -78,10 +78,10 @@ public sealed partial class SimulationEngine
     private long _lastGrowthPeriod;
     private LaborSettings Labor => _config.Labor ?? new();
 
-    private IEnumerable<EmploymentGroup> EmploymentGroups() => _enterprises.Values.Select(e => e.Group)
+    private IEnumerable<EmploymentGroup> EmploymentGroups() => ProductionUnits().Select(e => e.Group)
         .Concat(_equipment.Values.Select(e => e.Group)).Concat(_logistics.Values.Select(e => e.Group));
-    private LaborWorkplace[] LaborWorkplaces() => _enterprises.Values
-        .Select(e => new LaborWorkplace(e.Group, e.Recipe.MinimumStaff, VacancyReason(e), n => NextWorkCost(e, n)))
+    private LaborWorkplace[] LaborWorkplaces() => ProductionUnits()
+        .Select(e => new LaborWorkplace(e.Group, ParallelWorkshops ? 1 : e.Recipe.MinimumStaff, VacancyReason(e), n => NextWorkCost(e, n)))
         .Concat(_equipment.Values.Select(e => new LaborWorkplace(e.Group, e.Characteristics.MinimumCrew,
             EquipmentVacancyReason(e), n => NextEquipmentCost(e, n))))
         .Concat(_logistics.Values.Select(e => new LaborWorkplace(e.Group, e.MinimumCrew,
@@ -93,7 +93,7 @@ public sealed partial class SimulationEngine
         var g = EmploymentGroups().FirstOrDefault(g => g.Id == c.Action.Group.Value && g.Owner == actor.Id)
             ?? throw new RuleViolation("NotAvailable");
         if (c.Action.WageMinor < 0) throw new RuleViolation("InvalidWage");
-        long energy = g.Role == EmploymentRole.Production ? _enterprises[g.Id].Recipe.EnergyPerBatchMinor : 0;
+        long energy = g.Role == EmploymentRole.Production ? ProductionUnit(g.Id).Recipe.EnergyPerBatchMinor : 0;
         _ = checked(g.Capacity * c.Action.WageMinor + energy);
         if (g.Role == EmploymentRole.Logistics)
             _ = checked(g.Capacity * c.Action.WageMinor * MaximumFreightTicks(_config,_logistics[g.Id].CargoCapacity,_logistics[g.Id].Level));
@@ -110,6 +110,14 @@ public sealed partial class SimulationEngine
     {
         foreach (var g in EmploymentGroups().OrderBy(g => g.Id))
         {
+            if (ParallelWorkshops && g.Role == EmploymentRole.Production && ProductionUnit(g.Id).Batch is not null)
+            {
+                // A promised new rate starts at the next batch boundary, including its attraction signal.
+                // A stopped batch has no guessed wall-clock completion time.
+                if (g.PayEffectiveTick <= Tick) g.PayEffectiveTick = checked(Tick + 1);
+                if (g.AttractionEffectiveTick <= Tick) g.AttractionEffectiveTick = checked(Tick + 1);
+                continue;
+            }
             if(g.Role==EmploymentRole.Logistics && _logistics[g.Id].Trip is not null)
             {
                 if(g.PayEffectiveTick<=Tick)g.PayEffectiveTick=checked(Tick+1);
@@ -133,17 +141,19 @@ public sealed partial class SimulationEngine
     private long NextWorkCost(EnterpriseState e, int staff)
     {
         int full = e.Definition.BuildingTypeId == "" ? e.Recipe.RequiredStaff : e.Group.Capacity;
-        long required = e.Batch?.WorkRequired ?? checked(e.Recipe.FullStaffTicks * full);
+        long required = e.Batch?.WorkRequired ?? checked(e.Recipe.FullStaffTicks * (ParallelWorkshops ? 100 : full));
         long progress = e.Batch?.WorkDone ?? 0;
-        long work = checked((long)Math.Min(staff, full) * e.Definition.WorkRateMultiplier);
+        long work = ParallelWorkshops ? WorkshopRules.Rate(staff) : checked((long)Math.Min(staff, full) * e.Definition.WorkRateMultiplier);
         long next = Math.Min(required, checked(progress + work));
-        long energy = checked((long)((Int128)e.Recipe.EnergyPerBatchMinor * next / required) - (e.Batch?.EnergyPaid ?? 0));
-        return checked(staff * (e.Group.PendingWage ?? e.Group.Wage) + energy);
+        long total = ParallelWorkshops ? checked((long)((Int128)_config.Economy!.Workshops!.ServiceMinorPerFullTick * next / 100)) : checked((long)((Int128)e.Recipe.EnergyPerBatchMinor * next / required));
+        long energy = checked(total - (e.Batch?.EnergyPaid ?? 0));
+        long wage = ParallelWorkshops && e.Batch?.Terms is { } terms ? terms.WageMinor : e.Group.PendingWage ?? e.Group.Wage;
+        return checked(staff * wage + energy);
     }
 
     private string VacancyReason(EnterpriseState e)
     {
-        if (!e.Enabled) return "UserPaused";
+        if (!e.Enabled || PreparingDemolition(ProductionParent(e.Definition.Id)) && e.Batch is null) return "UserPaused";
         if ((e.Group.PendingWage ?? e.Group.Wage) <= 0 || e.Group.AttractionWage <= 0) return "NoPaidOffer";
         if (e.Batch is not null) return "Ready"; // WIP already owns its inputs and output hold.
         if (e.Recipe.Ingredients.Any(i=>_economy.Inventories[e.Input].Free(i.ItemId)<i.Quantity)) return "NoInputs";
@@ -254,7 +264,7 @@ public sealed partial class SimulationEngine
                 g.PendingAttractionWage.HasValue != g.AttractionEffectiveTick.HasValue)
                 throw new InvalidOperationException("I01: invalid employment group");
         }
-        if (_enterprises.Values.Any(e => e.Group.Capacity != e.Definition.Capacity || e.Group.Role != EmploymentRole.Production))
+        if (ProductionUnits().Any(e => e.Group.Capacity != e.Definition.Capacity || e.Group.Role != EmploymentRole.Production))
             throw new InvalidOperationException("Invalid production employment group");
     }
 }

@@ -4,22 +4,24 @@ public sealed partial class SimulationEngine
 {
     private void AdvanceProduction(EnterpriseState e)
     {
-        if(PreparingDemolition(e.Definition.Id)&&e.Batch is null){e.Enabled=false;e.Reason="PreparingDemolition";return;}
+        if(PreparingDemolition(ProductionParent(e.Definition.Id))&&e.Batch is null){e.Enabled=false;e.Reason="PreparingDemolition";return;}
         if (!e.Enabled) { e.Reason = "UserPaused"; return; }
-        if (e.Group.Headcount < e.Recipe.MinimumStaff) { e.Reason = "NoStaff"; return; }
+        if (e.Group.Headcount < (ParallelWorkshops ? 1 : e.Recipe.MinimumStaff)) { e.Reason = "NoStaff"; return; }
         try
         {
             bool starting = e.Batch is null;
             int fullStaff = e.Definition.BuildingTypeId == "" ? e.Recipe.RequiredStaff : e.Definition.Capacity;
-            long required = checked(e.Recipe.FullStaffTicks * fullStaff);
+            long required = ParallelWorkshops ? checked(e.Recipe.FullStaffTicks * 100) : checked(e.Recipe.FullStaffTicks * fullStaff);
             long id = e.Batch?.Id ?? _nextId;
             string hold = e.Batch?.Hold ?? $"batch:{id}";
             long previousWork = e.Batch?.WorkDone ?? 0;
-            long work = checked((long)Math.Min(e.Group.Headcount, fullStaff) * e.Definition.WorkRateMultiplier);
+            long work = ParallelWorkshops ? WorkshopRules.Rate(e.Group.Headcount) : checked((long)Math.Min(e.Group.Headcount, fullStaff) * e.Definition.WorkRateMultiplier);
             long nextWork = Math.Min(required, checked(previousWork + work));
-            long nextEnergy = checked((long)((Int128)e.Recipe.EnergyPerBatchMinor * nextWork / required));
+            long service = e.Batch?.Terms?.ServiceMinorPerFullTick ?? _config.Economy?.Workshops?.ServiceMinorPerFullTick ?? 0;
+            long nextEnergy = ParallelWorkshops ? checked((long)((Int128)service * nextWork / 100)) : checked((long)((Int128)e.Recipe.EnergyPerBatchMinor * nextWork / required));
             long energy = checked(nextEnergy - (e.Batch?.EnergyPaid ?? 0));
-            long wage = checked(e.Group.Headcount * e.Group.Wage);
+            long wageRate = ParallelWorkshops ? e.Batch?.Terms?.WageMinor ?? e.Group.Wage : e.Group.Wage;
+            long wage = checked(e.Group.Headcount * wageRate);
             long newTotalEnergy = checked(e.EnergyPaid + energy);
             var consumed = starting ? e.Recipe.Ingredients.ToDictionary(i=>i.ItemId,i=>checked(_flows[i.ItemId].RecipeInput+i.Quantity),StringComparer.Ordinal) : null;
             bool complete = nextWork == required;
@@ -44,6 +46,12 @@ public sealed partial class SimulationEngine
             if (starting)
             {
                 ++_nextId; e.Batch = new(id, hold, required,e.Recipe.Id,e.Recipe.Ingredients);
+                if (ParallelWorkshops)
+                {
+                    e.Batch.Terms = new(e.Recipe, wageRate, service);
+                    _workshopTurns[e.Definition.Id] = _workshopStartSerial = checked(_workshopStartSerial + 1);
+                    Emit("WorkshopBatchStarted", actor.Id, id, e.Recipe.Id, service, wageRate, e.Definition.Id.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                }
                 foreach(var ingredient in e.Recipe.Ingredients)
                 {
                     _flows[ingredient.ItemId].RecipeInput = consumed![ingredient.ItemId];
@@ -153,7 +161,7 @@ public sealed partial class SimulationEngine
     }
     public void ValidateInvariants()
     {
-        ValidateStorage();ValidateDemolition();
+        ValidateStorage();ValidateDemolition();ValidateWorkshops();
         ValidateResearchAudit(); ValidateResources(); ValidateExtractionRoutes(); ValidateTransfers();
         if (_plots.Values.Where(p => p.Definition.IsShopSite).SelectMany(p => new[] { p.Owner, p.ReservedBy }.Where(a => a.HasValue))
             .GroupBy(a => a).Any(g => g.Count() > 1)) throw new InvalidOperationException("Shared shop site limit exceeded");
@@ -177,7 +185,7 @@ public sealed partial class SimulationEngine
             long expected = checked(flow.Initial + flow.Harvested + flow.Produced + ResearchStockDelta(flow.Id) - flow.RecipeInput - flow.Exported - flow.ConstructionInput-flow.Lost+flow.ConstructionRecovered);
             if (physical != expected || expected < 0) throw new InvalidOperationException($"I05: {flow.Id} not conserved");
         }
-        foreach (var e in _enterprises.Values)
+        foreach (var e in ProductionUnits())
         {
             if (e.Batch is { } batch && (batch.WorkDone < 0 || batch.WorkDone >= batch.WorkRequired ||
                 !_economy.Inventories[e.Output].CapacityHolds.ContainsKey(batch.Hold) || batch.RecipeId!=e.Recipe.Id ||

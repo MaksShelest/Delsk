@@ -32,11 +32,11 @@ public sealed partial class AlgorithmicController
     private long ExecutionReserve(ControllerObservation o)
     {
         Int128 reserve=0;
-        foreach(var e in o.Enterprises.Where(e=>e.Enabled))
+        foreach(var line in o.Enterprises.SelectMany(ProductionWorkplaces).Where(l=>l.Unit.Enabled))
         {
-            var r=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);var input=Inventory(o,e.InputId);
+            var e=line.Unit;var r=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);var input=Inventory(o,e.InputId);
             if(e.BatchId!=0 || r.Ingredients.All(i=>Free(input,i.ItemId)>=i.Quantity))
-                reserve+=(Int128)e.StaffCapacity*o.EmploymentGroups.Single(g=>g.Id.Value==e.Id.Value).WageMinor+r.EnergyPerBatchMinor;
+                reserve+=(Int128)e.StaffCapacity*o.EmploymentGroups.Single(g=>g.Id==line.Group).WageMinor+(o.Economics?.Workshops?.ServiceMinorPerFullTick??r.EnergyPerBatchMinor);
         }
         foreach(var l in o.OwnLogistics.Where(l=>l.Trip is null && (l.Enabled || l.InboundEnabled) && l.Queue.Any(j=>j.Enabled)))
         {
@@ -93,6 +93,7 @@ public sealed partial class AlgorithmicController
                 {long cycles=Math.Min(site.Stock/level.CycleQuantity,Math.Max(0,Limits.HorizonTicks-eta-(o.Economics?.Labor.SalaryChangeDelayTicks??20))/level.CycleTicks);
                     long units=Math.Min(offer.RemainingQuantity,cycles*level.CycleQuantity);value+=(Int128)units*offer.UnitPriceMinor-(Int128)cycles*level.CrewCapacity*level.WageMinor*level.CycleTicks;}
             }
+            if(a.Kind==ActionKind.OutfitWorkshop){var b=o.Buildings.Single(b=>b.Id.Value==a.Enterprise.Value);var outfit=o.BuildingTypes.Single(t=>t.Id==b.TypeId).WorkshopOutfit!;capital+=outfit.PriceMinor+outfit.Materials.Sum(m=>checked(m.Quantity*BasePrice(o,m.ItemId)));}
             if(a.Kind==ActionKind.BuyLogistics)capital+=o.LogisticsRules.PurchasePriceMinor;
             if(a.Kind==ActionKind.AcceptDeliveryQuantity && o.BuyOffers.FirstOrDefault(b=>b.Id==a.BuyOfferId) is {} buy)
             {
