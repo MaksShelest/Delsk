@@ -163,7 +163,7 @@ public sealed partial class SimulationEngine
             _phase = 4; AdvanceHarvests(); AdvanceWork();
             _phase = 5; AdvanceLabor();
             _phase = 6; CloseCapitalWindows(); AdvanceMarketWindows(); CloseBuyWindows(); AdvanceCapitalDemand();
-            _phase = 7; AdvanceOverflow(true); ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders(); ExpireSupport(); ExpireNegotiations();
+            _phase = 7; AdvanceOverflow(true); ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders(); ExpireSupport(); ExpireNegotiations();AdvanceIndustryQuests();
             _phase = 8; AdvanceElections();
             _phase = 9; AdvanceCityStage(); ValidateInvariants(); Emit("TickCommitted");
         }
@@ -212,6 +212,8 @@ public sealed partial class SimulationEngine
                 case ActionKind.Build: Build(actor, c); break;
                 case ActionKind.UpgradeBuilding: UpgradeBuilding(actor, c); break;
                 case ActionKind.SetRecipe: SetRecipe(actor, c); break;
+                case ActionKind.AcceptIndustryQuest: AcceptIndustryQuest(actor,c); break;
+                case ActionKind.AbandonIndustryQuest: AbandonIndustryQuest(actor,c); break;
                 case ActionKind.OutfitWorkshop: OutfitWorkshop(actor, c); break;
                 case ActionKind.AssignWorkshopWorkers: AssignWorkshopWorkers(actor, c); break;
                 case ActionKind.SetWage: SetWage(actor, c); break;
@@ -399,6 +401,7 @@ public sealed partial class SimulationEngine
         if(HasGroundStorage)payload=new{Payload=payload,Storage=CaptureStorage()};
         if(CaptureDemolition() is {} demolition)payload=new{Payload=payload,Demolition=demolition,RetiredBuildings=BuildingViews(true).Where(b=>Demolished(b.Id.Value)).ToArray(),RetiredEnterprises=_enterprises.Values.Where(e=>Demolished(e.Definition.Id)).OrderBy(e=>e.Definition.Id).Select(e=>new{e.Definition,e.Input,e.Output,Recipe=e.Recipe.Id,e.Enabled,e.Completed,e.EnergyPaid,Group=e.Group.View()}).ToArray()};
         if (CaptureWorkshops() is {} workshops) payload = new { Payload = payload, Workshops = workshops };
+        if(InspectDevelopment() is {} development)payload=new{Payload=payload,Development=development};
         var travel = TravelDeviation();
         return ScenarioValidation.Hash(travel is null ? payload : new { Payload = payload, Travel = travel });
     }
