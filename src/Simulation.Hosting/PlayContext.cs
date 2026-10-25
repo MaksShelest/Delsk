@@ -57,6 +57,7 @@ public static class PlayContext
                     string.Format(CultureInfo.InvariantCulture, PlayerText.Get(language, "context.reserve"), PlayerText.Money(ReservationFee(plot.PriceMinor, view.Economy))),
                     PlayerDesk.ReservePlot(plot.Id.Value)));
         }
+        if(tablets && plot is not null && view.Storage?.Ground.Any(g=>g.PlotId==plot.Id.Value)==true)choices.Insert(0,new("object:ground:"+plot.Id.Value,L(language,"Хранение на земле · склад","Ground storage · warehouse"),null));
         var building = view.Buildings.SingleOrDefault(b => b.Position == cell);
         if (building?.Kind == BuildingKind.Production)
             choices.Add(new("card:" + building.Id.Value, PlayerText.Get(language, "context.card"), null));
@@ -84,9 +85,10 @@ public static class PlayContext
             var issues = new List<string>();
             if (view.AvailableCashMinor < level.PriceMinor)
                 issues.Add(L(language, "Деньги: нужно ", "Money needed: ") + PlayerText.Money(level.PriceMinor) + L(language, ", доступно ", ", available ") + PlayerText.Money(view.AvailableCashMinor));
+            var materialInventory=type.Kind==BuildingKind.Warehouse&&view.Storage?.Ground.FirstOrDefault(g=>g.PlotId==plot?.Id.Value) is {} ground?view.Inventories.Single(i=>i.Id.Value==ground.InventoryId):pack;
             foreach (var cost in level.Materials)
-                if (Free(pack, cost.ItemId) < cost.Quantity)
-                    issues.Add(PlayerText.Item(language, cost.ItemId) + $": {Free(pack, cost.ItemId)}/{cost.Quantity}");
+                if (Free(materialInventory, cost.ItemId) < cost.Quantity)
+                    issues.Add(PlayerText.Item(language, cost.ItemId) + $": {Free(materialInventory, cost.ItemId)}/{cost.Quantity}");
             if (type.Footprint.Any(offset => !view.Plots.Any(p => p.Position == new Cell(cell.X + offset.X, cell.Z + offset.Z) &&
                 p.OwnerId == view.Participant.Id && !p.IsCorridor && p.BuildingId is null &&
                 (!p.IsShopSite && p.ShopParticipantId is null || (p.IsShopSite || p.ShopParticipantId == view.Participant.Id) && type.Kind == BuildingKind.Shop))))

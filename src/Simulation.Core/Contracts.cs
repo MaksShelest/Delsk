@@ -16,7 +16,7 @@ public readonly record struct Cell(int X, int Z);
 
 public enum ActionKind { MoveTo, Harvest, Transfer, SetProductionEnabled, SellAvailableToCapital, CancelCapitalSale, SetTravelHeading,
     ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe, SetWage, BuyEquipment, UpgradeEquipment, SetEquipmentMode, CreateSellOffer, SubmitBuyRequest, RaiseBid, WithdrawBid, CollectPurchase, CreateBuyOffer, AcceptDeliveryQuantity, WithdrawSupplyRequest, CancelBuyOffer, DeliverContract, BuyLogistics, SetLogisticsContract, UpgradeLogistics, SetLogisticsStorage, SetLogisticsInbound, SetLogisticsProduction, QueueLogisticsJob, SetLogisticsEnabled, SetVoteChoice, ContinueAfterVictory, ProposeSupport, AcceptSupport, RejectSupport, SignSupport, StartHarvesting, StopHarvest,
-    BuyResource, LeaseResource, StopTransfer, MoveEquipment, SetExtractionRoute, SetTransportRoute,ProposeTrade,CounterTrade,AcceptTrade,RejectTrade }
+    BuyResource, LeaseResource, StopTransfer, MoveEquipment, SetExtractionRoute, SetTransportRoute,ProposeTrade,CounterTrade,AcceptTrade,RejectTrade,TakeOverflow }
 public enum ResultStatus { Accepted, Rejected }
 public record GameAction(ActionKind Kind, Cell Target = default, string ItemId = "", long Quantity = 0,
     InventoryId Source = default, InventoryId Destination = default, EnterpriseId Enterprise = default,
@@ -64,7 +64,8 @@ public record PlotDefinition(long Id, Cell Position, long PriceMinor, bool IsCor
     [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] bool IsShopSite = false);
 public record BuildingLevelDefinition(int Level, string RecipeId, long PriceMinor, MaterialCost[] Materials,
     long InputCapacity, long OutputCapacity, int StaffCapacity, long WageMinor, int WorkRateMultiplier = 1,
-    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] System.Collections.Immutable.ImmutableArray<string> AdditionalRecipeIds = default)
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] System.Collections.Immutable.ImmutableArray<string> AdditionalRecipeIds = default,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long ConstructionTicks=0)
 {
     [System.Text.Json.Serialization.JsonIgnore]
     public IEnumerable<string> UnlockedRecipes => RecipeId.Length==0 ? [] : new[]{RecipeId}.Concat(AdditionalRecipeIds.IsDefault?[]:AdditionalRecipeIds);
@@ -98,7 +99,8 @@ public record ScenarioDefinition(string Id, ulong Seed, int MapWidth, int MapHei
 
 public record StockView(string ItemId, long Quantity, long Reserved);
 public record InventoryView(InventoryId Id, ParticipantId OwnerId, Cell Position, long Capacity,
-    long OccupiedVolume, long ReservedCapacity, StockView[] Stock);
+    long OccupiedVolume, long ReservedCapacity, StockView[] Stock,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] OverflowLot[]? Overflow=null);
 public record AccountView(AccountId Id, string Kind, long BalanceMinor, long ReservedMinor)
 {
     public long AvailableMinor => checked(BalanceMinor - ReservedMinor);
@@ -119,7 +121,8 @@ public record PlotView(PlotId Id, Cell Position, long PriceMinor, bool IsCorrido
 public record BuildingView(BuildingId Id, ParticipantId OwnerId, string TypeId, BuildingKind Kind,
     int Level, Cell Position, Cell[] Footprint, InventoryId InputId, InventoryId? OutputId);
 public record FlowView(string ItemId, long Initial, long Harvested, long RecipeInput, long Produced, long Exported,
-    long ConstructionInput);
+    long ConstructionInput,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long Lost=0);
 public record CapitalOfferView(long Id, string ItemId, long RemainingQuantity, long UnitPriceMinor,
     Cell Position, long? CutoffTick, long RequestedQuantity, int Window = 1,
     long OriginalQuantity = 0, long CreatedTick = 0, long? ExpiresAtTick = null, long ReleasedQuantity = 0);

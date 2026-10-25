@@ -17,6 +17,7 @@ public partial class Playfield
         PrepareTablet();
     }
     private HouseholdObjectCard? _enterpriseTablet;
+    private StoragePanel? _groundPanel;
     private PlayerTablet? _playerTablet;
     private string _objectKind = "building";
     private int _playerTab;
@@ -63,7 +64,7 @@ public partial class Playfield
         if (_playerTablet is not null) _playerTab = _playerTablet.SelectedTab;
         if (_tabletPanel is not null)
         { _tabletPanel.GetParent()?.RemoveChild(_tabletPanel); _tabletPanel.QueueFree(); }
-        _exchangeTablet=null;_playerTablet = null; _tabletPanel = null; _capitalTablet = null; _enterpriseTablet = null; _marketTablet = null; _tabletPolitics = null;
+        _exchangeTablet=null;_playerTablet = null; _tabletPanel = null; _capitalTablet = null; _enterpriseTablet = null;_groundPanel=null; _marketTablet = null; _tabletPolitics = null;
     }
     private void ResetTablet(bool clearPreferences = false)
     {
@@ -92,6 +93,8 @@ public partial class Playfield
             _tabletPanel.Body.AddChild(_playerTablet); _playerTablet.SelectedTab = _playerTab;
             if(_scenario.Layout is not null){_tabletPolitics=_playerTablet.PoliticsHost;FillPolitics(view,_tabletPolitics);}
         }
+        else if(_tabletState.Kind==TabletKind.Object&&_objectKind=="ground")
+        {_groundPanel=new(_scenario,_language,"ground",_tabletState.EnterpriseId,Submit,a=>_session.Engine.AccessFor(_human,a));_tabletPanel.Body.AddChild(_groundPanel);}
         else if (_tabletState.Kind is TabletKind.Market or TabletKind.Capital)
         {
             long shop=view.Buildings.FirstOrDefault(b=>b.Kind==BuildingKind.Shop)?.Id.Value??0;
@@ -115,6 +118,7 @@ public partial class Playfield
         _capitalTablet?.ShowData(view,_session.Engine.CapitalTradingOf(_human),WaitingCommand,_session.Paused);
         _marketTablet?.ShowData(view,WaitingCommand);
         _enterpriseTablet?.ShowData(view,WaitingCommand,_session.Paused);
+        _groundPanel?.ShowData(view,WaitingCommand);
         _playerTablet?.ShowData(view,WaitingCommand,_session.Paused);
         string status = WaitingCommand && _tabletState.BlocksTime
             ? PlayerText.Local(_language,"Действие подготовлено — включите время.","Action queued — run time to continue.") : _tabletError;

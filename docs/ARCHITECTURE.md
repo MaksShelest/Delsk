@@ -822,3 +822,43 @@ menu.debug и OpenDebug ограничены DEBUG (Debug/ExportDebug); в Relea
 ResearchObservation в Research.Runner пишет lean Presentation/own researcher state на диск, byte-offset индекс, incremental events/decisions и atomic progress. Cooperative control читается только между шагами; никакой UI/Python-экономики и нового состояния Core/save. Final voting сначала завершается (replay подаёт final-barrier inputs), затем публикуется кадр. Полнота и конечный hash проверяются до statistics. ResearchWaitAtDecision-v1 обслуживает прежнюю admitted ModelRuntime queue вне Step. ModelServices routing выбирает adapter по actor и пишет private request/reply; один inference slot. Mixed restore регистрирует все NPC IDs.
 
 Python Workspace отвечает за известные папки опытов, previews/cursors/profiles/архив/удаление, не модель мира. Входы и бинарники закрепляются hashes; сравнение сверяет недекларированные условия и timing, объявляет mode/model/factor contrast. Пять карт разделяют экономический профиль и PlayMaps.All; source-specific scenario restore mapping сохранён. Процедура RESEARCH_WORKSPACE.md.
+
+## C1: физическое хранение и излишек (25.10.2026)
+
+`EconomicRules.Storage` включает отдельный C1 profile поверх A2. Его значения
+получены из typed полного баланса; Core не читает файлы. Старые профили с null
+не меняют поведение, ID-поток или хеш. Новые карты выбирают C1, старые5 — v6.
+
+GroundStorage сопоставляет owned empty Plot с прежним Inventory70. Права/общая
+вместимость и ручной Transfer прежние; market и automatic endpoint validators
+по-прежнему разрешают подходящие Building inventories. Старт строительства
+потребляет материалы/деньги одной EconomyTransaction, фиксирует StorageConstruction;
+завершение по активному Tick расширяет тот же Inventory и создаёт/улучшает Building.
+Вложение учитывается как WIP до перехода в стоимость здания. Нового worker/executor
+или отдельного склада-движка нет. C2/cancel/demolition не реализованы.
+
+I06 относится к **normal stock + normal capacity holds**. OverflowLot хранится
+отдельно в том же owned Inventory: id/owner/item/quantity/source/created/expires/warnings.
+C1 новые delivery buy contracts фиксируют forecast, а не невозможный normal hold;
+ранее принятые normal holds сохраняются. При фактической ReceiveDelivery одна tx
+снимает груз/оплачивает receipt/наполняет свободный normal и создаёт остаток overflow.
+Работают прежние ручная передача и автоматический Freight. Обычные производство,
+выкладка и собственные маршруты остаются строгими. В C1 нет операции уменьшения
+capacity: свой начатый маршрут защищён normal hold, «внезапная потеря места» через
+будущий снос не моделируется до C2.
+
+Phase0: завершение стройки/перевод свободного излишка; phase3: передачи/перевод;
+phase7: перевод, предупреждения, отмена незавершённого rescue и loss только остатка.
+Порядок expiry/id воспроизводим. Резерв rescue закрепляет часть лота отдельно от
+normal stock, а место в рюкзаке — обычным transfer hold. Окончание/Stop/expiry
+освобождает его без повторного receipt. Излишек нельзя передать в stock reservations.
+I05 учитывает normal+overflow и явный Flow.Lost; спрос отделяет Lost от потребления,
+выпуска и цен. Капитал учитывает реальные normal/overflow/WIP один раз.
+
+Overflow events доступны владельцу и полному researcher journal; PublicEventsSince
+их отфильтровывает. PlayerView берёт только собственные inventories/StorageOf.
+World19 сохраняет ground/construction/lots/holds/loss. Reader принимает World18
+только без C1 config/state/fields; реальное прежнее сохранение сохраняет exact hash.
+Rules production-recipes-1, Session2/Envelope2 прежние: resolved optional config
+однозначно задаёт legacy/C1 семантику. Новые default/null поля пропущены при hash/JSON.
+Проверяемые примеры и ограничения: [STORAGE_C1.md](STORAGE_C1.md).

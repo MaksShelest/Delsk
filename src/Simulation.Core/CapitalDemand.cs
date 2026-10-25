@@ -12,8 +12,8 @@ public sealed partial class SimulationEngine
     private ImmutableArray<MarketPricePoint> PublicCapitalPrices(bool history) => [.. _demandPeriods
         .TakeLast(history ? 16 : 1).SelectMany(p => p.Goods.Select(g => new MarketPricePoint(g.ItemId, g.UnitPriceMinor, p.Tick)))];
     private ImmutableArray<FlowView> CurrentFlows() => [.. _flows.Values.OrderBy(f => f.Id, StringComparer.Ordinal)
-        .Select(f => new FlowView(f.Id, f.Initial, f.Harvested, f.RecipeInput, f.Produced, f.Exported, f.ConstructionInput))];
-    private static long Physical(FlowView f) => checked(f.Initial + f.Harvested + f.Produced - f.RecipeInput - f.ConstructionInput - f.Exported);
+        .Select(f => new FlowView(f.Id, f.Initial, f.Harvested, f.RecipeInput, f.Produced, f.Exported, f.ConstructionInput,f.Lost))];
+    private static long Physical(FlowView f) => checked(f.Initial + f.Harvested + f.Produced - f.RecipeInput - f.ConstructionInput - f.Exported-f.Lost);
     private void InitializeCapitalDemand()
     {
         if (_config.CapitalDemand is not { } settings) return;
@@ -49,7 +49,7 @@ public sealed partial class SimulationEngine
             var old = _demandBaseline.Single(o => o.ItemId == f.ItemId);
             return new DemandCommodityView(f.ItemId, f.Harvested - old.Harvested, f.Produced - old.Produced,
                 checked(f.RecipeInput + f.ConstructionInput - old.RecipeInput - old.ConstructionInput),
-                f.Exported - old.Exported, checked(Physical(f) - Physical(old)), 0, 0);
+                f.Exported - old.Exported, checked(Physical(f) - Physical(old)), 0, 0, f.Lost-old.Lost);
         }).ToArray();
         long gross = metrics.Aggregate(0L, (sum, m) => checked(sum + checked((m.Harvested + m.Produced) * _items[m.ItemId].BasePriceMinor)));
         long consumed = metrics.Aggregate(0L, (sum, m) => checked(sum + checked(m.Consumed * _items[m.ItemId].BasePriceMinor)));

@@ -1,3 +1,27 @@
+## C1,25.10.2026
+
+- От45fae36 (PR58+59merged): optional EconomyRules.Storage, own manual ground70;
+  one-cell warehouses200/300/400 с real material/payment и60/120/180ticks.
+  Atomic start, same inventory, persisted StorageConstruction; investment WIP.
+- C1 buy-delivery forecast вместо новых невозможных normal holds. Старые holds/
+  товарные права/escrow сохранены; manual+Freight receipt normal-first/OverflowLot.
+ 1200active ticks/600,120warnings/independent deadlines; promote free room,
+  partial manual TakeOverflow через VolumeWork, explicit remaining Lost sink.
+  При освобождении места pending rescue отменяется со снятием backpackhold;
+  already transferred не дублировать. Stock reservations/production не берут overflow.
+- World19 читает18 только без C1 fields; old18 exacthash проверен. Rules production-
+  recipes-1/Session2/Envelope2 прежние; legacy null/default omitted, профили не migrate.
+  New maps default economy.c1-storage.json (typed full+A2 derivation/provenance),
+  старые5/defaultv6/A2bytes неизменны. Own UI/HUD, no public Overflow/rescue events.
+-1077ordinary/1083Developer/37Python, headless102exports/14replay/69pairs;
+  C1process24checks/14exports/13pairs; native RU/EN and2293C1hashes;
+  legacyGodot1132hashes/35restores+stopped10. Report IMPLEMENTATION_REPORT_PACKAGE_C1.md,
+  usage STORAGE_C1.md, recovery WORKLOG_PACKAGE_C1.md, verification/storage-c1.
+- Не объявлять ordinary new-map полную стройку доступной: D templates/import ещё
+  отсутствуют, реальные plank/steel/beam/concrete не подменять/free stock не выдавать.
+  C1fixtures явно prepared sources/backpack2000. C2/снос/capacity shrink/NPCновые
+  стратегии не начаты; P67/P74 и пакетC целиком не закрыты. C2 автоматически не начинать.
+
 ## Карты B2,24.10.2026
 
 - От verified B1/PR58 (74b0ca5,56badfa): MapDesignReader -> existing ScenarioDefinition,

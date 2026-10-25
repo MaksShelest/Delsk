@@ -76,6 +76,7 @@ public sealed partial class SimulationEngine
                 throw new InvalidOperationException("Delivery capital reference mismatch");
             bool active = d.ClosedTick is null;
             long unfulfilled = active ? 0 : d.Quantity - d.DeliveredQuantity;
+            if(d.CapacityForecast&&(Storage is null||d.DestinationInventory is null))throw new InvalidOperationException("Invalid delivery forecast");
             if (d.UnfulfilledQuantity != unfulfilled || d.RefundedMinor != checked(unfulfilled * d.UnitPriceMinor) ||
                 d.FineMinor != DeliveryFine(d.RefundedMinor, Delivery.FineBasisPoints) ||
                 d.BondReturnedMinor != (active ? 0 : d.BondMinor - d.FineMinor) ||
@@ -87,7 +88,7 @@ public sealed partial class SimulationEngine
             if (d.DestinationInventory is { } inventory)
             {
                 long held = _economy.Inventories[inventory.Value].CapacityHolds.GetValueOrDefault(d.CapacityHold);
-                if (held != checked(d.RemainingQuantity * _items[d.ItemId].UnitVolume))
+                if (held != (d.CapacityForecast?0:checked(d.RemainingQuantity * _items[d.ItemId].UnitVolume)))
                     throw new InvalidOperationException("Delivery capacity reservation mismatch");
             }
             long prepared = _logistics.Values.Where(l=>l.Trip?.ContractId==d.Id).Sum(l=>FreightRemainingSource(l.Trip!)) +
@@ -136,7 +137,7 @@ public sealed partial class SimulationEngine
             money.Add((_actors[o.View.Buyer.Value].Account, o.BudgetHold), checked(o.View.RemainingQuantity * o.View.UnitPriceMinor));
         foreach (var r in SupplyRequestViews().Where(r => r.BondMinor > 0))
             money.Add((_actors[r.Supplier.Value].Account, r.BondHold), r.BondMinor);
-        foreach (var d in _deliveryContracts.Where(d => d.ClosedTick is null && d.DestinationInventory is not null))
-            capacity.Add((d.DestinationInventory!.Value.Value, d.CapacityHold), checked(d.RemainingQuantity * _items[d.ItemId].UnitVolume));
+        foreach (var d in _deliveryContracts.Where(d => d.ClosedTick is null && d.DestinationInventory is not null&&!d.CapacityForecast))
+            capacity.Add((d.DestinationInventory!.Value.Value, d.CapacityHold), d.CapacityForecast?0:checked(d.RemainingQuantity * _items[d.ItemId].UnitVolume));
     }
 }

@@ -29,7 +29,7 @@ public sealed class TabletState
     public void OpenPlayer(PlayerView view) => Open(TabletKind.Player, view.Participant.Position, 0);
     public bool OpenObject(PlayerView view, string kind, long id)
     {
-        bool valid = kind == "equipment" ? view.Equipment?.Any(e => e.Id.Value == id && e.Position == view.Participant.Position) == true
+        bool valid = kind=="ground"?view.Storage?.Ground.Any(g=>g.PlotId==id&&view.Plots.Any(p=>p.Id.Value==id&&p.Position==view.Participant.Position))==true:kind == "equipment" ? view.Equipment?.Any(e => e.Id.Value == id && e.Position == view.Participant.Position) == true
             : view.Buildings.Any(b => b.Id.Value == id && b.Footprint.Contains(view.Participant.Position));
         if (!valid) return false;
         Open(TabletKind.Object, view.Participant.Position, id); return true;

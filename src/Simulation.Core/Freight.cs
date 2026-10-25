@@ -38,7 +38,7 @@ public sealed partial class SimulationEngine
         if(l.Group.Headcount<l.MinimumCrew){l.Reason="NoStaff";return;}
         try
         {
-            var p=LogisticsPlan(l);var source=_economy.Inventories[p.GoodsSource];var home=_economy.Inventories[l.Source].Position;
+            var p=LogisticsPlan(l);if(Storage is not null&&p.OwnDestination!=0&&HasOverflow(p.OwnDestination))throw new RuleViolation("DestinationOverflow");var source=_economy.Inventories[p.GoodsSource];var home=_economy.Inventories[l.Source].Position;
             var destination=p.Index>=0?_deliveryContracts[p.Index].Position:_economy.Inventories[p.OwnDestination].Position;
             long id=_nextId,next=checked(id+1),budget=FreightCost(l,p,true);
             var f=new FreightState(new(p.GoodsSource),new(p.OwnDestination),[.._map.FindPath(home,source.Position)],

@@ -82,6 +82,7 @@ public sealed partial class SimulationEngine
         InitializeCapitalDemand();
         InitializeElections();
         InitializeSupport();
+        InitializeStorage();
         Emit("WorldCreated");
         ValidateInvariants();
     }
@@ -140,7 +141,7 @@ public sealed partial class SimulationEngine
         _stepping = true;
         try
         {
-            ++Tick; _phase = 0; AdvanceResourceIntervals(); ApplyWages();
+            ++Tick; _phase = 0; AdvanceStorageConstruction(); AdvanceOverflow(); AdvanceResourceIntervals(); ApplyWages();
             var due = _pending.Where(c => c.NotBeforeTick <= Tick).ToArray();
             foreach (var c in due) _pending.Remove(c);
             var actors = due.Select(c => c.ActorId.Value).Distinct().Order().ToArray();
@@ -158,11 +159,11 @@ public sealed partial class SimulationEngine
             _phase = 2; AdvanceEquipmentMovements(); AdvanceMovements(); AdvanceLogisticsMovements();
             _phase = 3; AcceptLogisticsArrivals(); ReserveSupportResources();
             foreach (var c in allowed.Where(c => !IsManagement(c.Action.Kind))) Execute(c);
-            AdvanceTransfers(); ReserveSupportResources();
+            AdvanceTransfers(); AdvanceOverflow(); ReserveSupportResources();
             _phase = 4; AdvanceHarvests(); AdvanceWork();
             _phase = 5; AdvanceLabor();
             _phase = 6; CloseCapitalWindows(); AdvanceMarketWindows(); CloseBuyWindows(); AdvanceCapitalDemand();
-            _phase = 7; ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders(); ExpireSupport(); ExpireNegotiations();
+            _phase = 7; AdvanceOverflow(true); ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders(); ExpireSupport(); ExpireNegotiations();
             _phase = 8; AdvanceElections();
             _phase = 9; AdvanceCityStage(); ValidateInvariants(); Emit("TickCommitted");
         }
@@ -196,6 +197,7 @@ public sealed partial class SimulationEngine
                 case ActionKind.StartHarvesting: StartHarvesting(actor, c); break;
                 case ActionKind.StopHarvest: StopHarvest(actor, c); break;
                 case ActionKind.Transfer: Transfer(actor, c); break;
+                case ActionKind.TakeOverflow: TakeOverflow(actor,c);break;
                 case ActionKind.SetProductionEnabled: SetProduction(actor, c); break;
                 case ActionKind.SellAvailableToCapital: StartSale(actor, c); break;
                 case ActionKind.CancelCapitalSale: CancelSale(actor, c); break;
@@ -286,6 +288,7 @@ public sealed partial class SimulationEngine
         if (_logistics.Values.Any(l => l.Cargo == source.Id || l.Cargo == destination.Id))
             throw new RuleViolation("ManagedCargo");
         RequireActionLocation(actor, c.Action);
+        if((IsGround(source.Id)||IsGround(destination.Id))&&source.Id!=actor.Inventory&&destination.Id!=actor.Inventory)throw new RuleViolation("GroundManualOnly");
         if (_equipment.Values.Any(e => (e.Storage==source.Id || e.Storage==destination.Id) && e.Motion is not null)) throw new RuleViolation("EquipmentBusy");
         BeginTransfer(actor,c,source.Id,destination.Id,c.Action.ItemId,c.Action.Quantity);
     }
@@ -350,7 +353,7 @@ public sealed partial class SimulationEngine
             _economy.Accounts.Values.OrderBy(a => a.Id).Select(a => new AccountView(new(a.Id), a.Kind, a.Balance, a.Reserved)).ToArray(),
             _economy.Inventories.Values.OrderBy(i => i.Id).Select(i => new InventoryView(new(i.Id), new(i.Owner), i.Position,
                 i.Capacity, i.Occupied(_items), i.Incoming, i.Stock.OrderBy(x => x.Key, StringComparer.Ordinal)
-                    .Select(x => new StockView(x.Key, x.Value, i.Reserved(x.Key))).ToArray())).ToArray(),
+                    .Select(x => new StockView(x.Key, x.Value, i.Reserved(x.Key))).ToArray(),i.Overflow.Count==0?null:i.Overflow.Values.OrderBy(l=>l.Id).Select(l=>l with{Warned=l.Warned.ToArray()}).ToArray())).ToArray(),
             _actors.Values.OrderBy(a => a.Id).Select(a => new ParticipantView(new(a.Id), new(a.Account), new(a.Inventory), a.Position,
                 a.Job is not null || HasSale(a.Id) || HasTransfer(a.Id), a.Job is { Kind: "Move" } move ? move.Path[^1] : null, a.Job?.CompletionTick)).ToArray(),
             _enterprises.Values.OrderBy(e => e.Definition.Id).Select(e => new EnterpriseView(new(e.Definition.Id), new(e.Definition.OwnerId),
@@ -358,7 +361,7 @@ public sealed partial class SimulationEngine
                 e.Batch?.WorkDone ?? 0, e.Batch?.WorkRequired ?? 0, e.Completed, e.EnergyPaid,
                 e.Recipe.Id, e.Definition.Level, e.Definition.Capacity, e.Definition.WorkRateMultiplier) {BatchRecipeId=e.Batch?.RecipeId??"",BatchInputs=e.Batch is {} batch?batch.Inputs:[]}).ToArray(),
             _flows.Values.OrderBy(f => f.Id, StringComparer.Ordinal).Select(f => new FlowView(f.Id, f.Initial, f.Harvested,
-                f.RecipeInput, f.Produced, f.Exported, f.ConstructionInput)).ToArray(),
+                f.RecipeInput, f.Produced, f.Exported, f.ConstructionInput,f.Lost)).ToArray(),
             _offers.Values.OrderBy(o => o.Definition.Id).Select(o => new CapitalOfferView(o.Definition.Id, o.Definition.ItemId,
                 o.Remaining, o.Definition.UnitPriceMinor, o.Definition.Position, o.Cutoff,
                 (long)Int128.Min(long.MaxValue, o.Requests.Values.Aggregate((Int128)0, (n, r) => n + r.Quantity) +
@@ -387,6 +390,7 @@ public sealed partial class SimulationEngine
     public string ComputeStateHash()
     {
         object payload = StatePayload();
+        if(Storage is not null)payload=new{Payload=payload,Storage=CaptureStorage()};
         var travel = TravelDeviation();
         return ScenarioValidation.Hash(travel is null ? payload : new { Payload = payload, Travel = travel });
     }

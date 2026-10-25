@@ -12,7 +12,7 @@ public sealed partial class SimulationEngine
     }
     private bool IsTradingSource(long actor,long inventory) => _economy.Inventories.TryGetValue(inventory,out var i) && i.Owner==actor &&
         _buildings.Values.Any(b=>b.Owner==actor && (b.Input==inventory || b.Output==inventory));
-    private bool IsTradingDestination(long actor,long inventory) => _economy.Inventories.TryGetValue(inventory,out var i) && i.Owner==actor &&
+    private bool IsTradingDestination(long actor,long inventory) => _economy.Inventories.TryGetValue(inventory,out var i) && i.Owner==actor && (Storage is null||!HasOverflow(inventory)) &&
         _buildings.Values.Any(b=>b.Owner==actor && b.Input==inventory);
     private static bool NewTradingAction(ActionKind kind) => kind is ActionKind.CreateSellOffer or ActionKind.SubmitBuyRequest or ActionKind.RaiseBid or
         ActionKind.CreateBuyOffer or ActionKind.AcceptSupport or ActionKind.SignSupport or ActionKind.ProposeSupport or ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade;

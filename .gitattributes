@@ -8,3 +8,5 @@
 docs/vnext/maps/*.json text eol=lf
 scenarios/vnext/small-river.json text eol=lf
 scenarios/vnext/large-districts.json text eol=lf
+
+config/vnext/economy.c1-storage.json text eol=lf

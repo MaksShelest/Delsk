@@ -30,11 +30,13 @@ public sealed partial class SimulationEngine
         if (logistics is not null) tx.ConsumeReserved(sourceInventory, logistics.Trip!.CargoHold, q);
         else if(preparedHold is not null) tx.ConsumeReserved(sourceInventory,preparedHold,q);
         else tx.RemoveFreeStock(sourceInventory, d.ItemId, q);
-        if (d.DestinationInventory is { } inventory) tx.ReceiveReservedCapacity(inventory.Value, d.CapacityHold, d.ItemId, q);
+        long excess=0;
+        if (d.DestinationInventory is { } inventory){if(d.CapacityForecast)excess=ReceiveForecast(tx,inventory.Value,d.ItemId,q,$"delivery:{d.Id}");else tx.ReceiveReservedCapacity(inventory.Value, d.CapacityHold, d.ItemId, q);}
         if (logistics is not null) tx.ReleaseCapacityVolume(logistics.Trip!.Freight!.GoodsSource.Value, logistics.Trip.ReturnHold,d.ItemId,q);
         tx.Pay(d.EscrowAccount.Value, _actors[supplier].Account, payment, "DeliveryPayment");
         if (complete && d.BondMinor > 0) tx.Pay(d.BondAccount.Value, _actors[supplier].Account, d.BondMinor, "DeliveryBondReturn");
         tx.Commit(); _deliveryContracts[index] = next; _flows[d.ItemId].Exported = exported;
+        if(d.DestinationInventory is {} received)ForecastReceived(received.Value,d.ItemId,excess);
         Emit("DeliveryReceived", supplier, d.Id, d.ItemId, q, payment, next.Status, command);
     }
     private void ExpireDelivery()
@@ -52,7 +54,7 @@ public sealed partial class SimulationEngine
             tx.Pay(d.EscrowAccount.Value, d.BuyerAccount.Value, refund, "DeliveryRefund");
             if (fine > 0) tx.Pay(d.BondAccount.Value, d.Buyer is null ? _capitalCompensation : d.BuyerAccount.Value, fine, "DeliveryFine");
             if (returned > 0) tx.Pay(d.BondAccount.Value, _actors[d.Supplier.Value].Account, returned, "DeliveryBondReturn");
-            if (d.DestinationInventory is { } inventory) tx.ReleaseCapacity(inventory.Value, d.CapacityHold);
+            if (!d.CapacityForecast && d.DestinationInventory is { } inventory) tx.ReleaseCapacity(inventory.Value, d.CapacityHold);
             tx.Commit(); _deliveryContracts[index] = next;
             Emit("DeliveryExpired", d.Supplier.Value, d.Id, d.ItemId, remainder, fine, "Expired");
         }

@@ -27,7 +27,7 @@ public static class MapDesignReader
         if(d.SchemaVersion!="delsk-map-design-1" || d.Width is <1 or >128 || d.Height is <1 or >128 || d.MaxParticipants is <4 or >64 ||
             !System.Text.RegularExpressions.Regex.IsMatch(d.Id,"\\A[a-z0-9_]{1,60}\\z") || string.IsNullOrWhiteSpace(d.Name))throw new ArgumentException("Invalid map version/id/dimensions");
         if(d.IndustrialLots.Length==0 || d.ResourceDistricts.Length==0 || d.MarketStalls.Length<d.MaxParticipants || d.SpawnCells.Length!=d.MaxParticipants || d.CivicObjects.Length!=3 || !d.CivicObjects.Select(c=>c.Kind).Order(StringComparer.Ordinal).SequenceEqual(new[]{"dealership","terminal","town_hall"}))throw new ArgumentException("Missing map geometry or civic objects");
-        if(economy.Id!=VNextSupportedProfile.ProfileId || economy.VNext is null)throw new ArgumentException("Designed maps require the explicit A2 supported profile");
+        if(!VNextStorageProfile.MapCompatible(economy))throw new ArgumentException("Designed maps require the explicit A2 supported profile");
         Cell Point(int[] p)=>p.Length==2?new(p[0],p[1]):throw new ArgumentException("Map cell must contain exactly x,z");
         Cell[] Cells(int[][] p)=>p.Select(Point).ToArray();
         var civic=d.CivicObjects.Select(c=>

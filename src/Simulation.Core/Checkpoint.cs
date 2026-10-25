@@ -11,7 +11,8 @@ public sealed class CheckpointException(string reason, Exception? inner = null) 
 internal record SavedAccount(long Id, string Kind, long Balance, KeyValuePair<string, long>[] Holds);
 internal record SavedStockHold(string Id, string Item, long Quantity);
 internal record SavedInventory(long Id, long Owner, Cell Position, long Capacity,
-    KeyValuePair<string, long>[] Stock, SavedStockHold[] Reservations, KeyValuePair<string, long>[] CapacityHolds);
+    KeyValuePair<string, long>[] Stock, SavedStockHold[] Reservations, KeyValuePair<string, long>[] CapacityHolds,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] OverflowLot[]? Overflow=null);
 internal record SavedJob(long Id, string Kind, long StartTick, long CompletionTick, Cell[] Path, int PathIndex,
     int SegmentTicks, string Item, long Quantity, string CapacityHold, string CommandId, long EquipmentId);
 internal record SavedActor(long Id, long Account, long Inventory, Cell Position, SavedJob? Job,
@@ -34,11 +35,12 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
     long[] CompletedJobs, CommandEnvelope[] Commands, CommandResult[] Results, string[] Pending,
     LedgerRecord[] Ledger, SimulationEvent[] Events, ulong MarketRandom,
     SavedMarketOffer[] MarketOffers, MarketAllocationView[] MarketAllocations, SavedBuyOffer[] BuyOffers, DeliveryContractView[] DeliveryContracts, long CapitalCompensation, SavedLogistics[] Logistics, CapitalDemandView? CapitalDemand, ElectionStateView Elections, SupportResearchState Support,
-    int TravelQuantum = 0, CityStageState? CityStage = null, ResearchModification[]? Research = null,bool DeveloperPackage=false, System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources=default, ResourceClaim[]? ResourceClaims=null,TransferOperation[]? Transfers=null,TradeNegotiation[]? Negotiations=null);
+    int TravelQuantum = 0, CityStageState? CityStage = null, ResearchModification[]? Research = null,bool DeveloperPackage=false, System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources=default, ResourceClaim[]? ResourceClaims=null,TransferOperation[]? Transfers=null,TradeNegotiation[]? Negotiations=null,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] StorageState? Storage=null);
 
 public sealed partial class SimulationEngine
 {
-    public const int CheckpointSchemaVersion = 18;
+    public const int CheckpointSchemaVersion = 19;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
@@ -59,7 +61,7 @@ public sealed partial class SimulationEngine
                 Ordered(a.Holds))).ToArray(),
             _economy.Inventories.Values.OrderBy(i => i.Id).Select(i => new SavedInventory(i.Id, i.Owner, i.Position,
                 i.Capacity, Ordered(i.Stock), i.Reservations.OrderBy(x => x.Key, StringComparer.Ordinal)
-                    .Select(x => new SavedStockHold(x.Key, x.Value.Item, x.Value.Quantity)).ToArray(), Ordered(i.CapacityHolds))).ToArray(),
+                    .Select(x => new SavedStockHold(x.Key, x.Value.Item, x.Value.Quantity)).ToArray(), Ordered(i.CapacityHolds),i.Overflow.Count==0?null:i.Overflow.Values.OrderBy(l=>l.Id).ToArray())).ToArray(),
             _actors.Values.OrderBy(a => a.Id).Select(a => new SavedActor(a.Id, a.Account, a.Inventory, a.Position, SaveJob(a.Job),
                 a.OffsetX, a.OffsetZ, a.HeadingX, a.HeadingZ, a.FacingX, a.FacingZ)).ToArray(),
             _enterprises.Values.OrderBy(e => e.Definition.Id).Select(e => new SavedEnterprise(e.Definition, e.Input,
@@ -72,7 +74,7 @@ public sealed partial class SimulationEngine
                     r.Reservation, r.CommandId)).ToArray(), o.SupplyRequests.Values.OrderBy(r => r.Supplier.Value).ToArray(), o.Window)).ToArray(), world.Flows, world.Settlements,
             _completedPersonalJobs.Order().ToArray(), _seenCommands.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(),
             _results.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(), _pending.Select(c => c.CommandId).ToArray(),
-            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum, _cityStage,_researchModifications.ToArray(),IsDeveloperBuild,ResourceSites(),_resourceClaims.Values.OrderBy(c=>c.JobId).ToArray(),_transfers.Values.OrderBy(t=>t.Id).ToArray(),InspectNegotiations());
+            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum, _cityStage,_researchModifications.ToArray(),IsDeveloperBuild,ResourceSites(),_resourceClaims.Values.OrderBy(c=>c.JobId).ToArray(),_transfers.Values.OrderBy(t=>t.Id).ToArray(),InspectNegotiations(),Storage is null?null:CaptureStorage());
         return JsonSerializer.Serialize(saved, SimulationJson.Options);
     }
     private static string MigrateTravel(string json)
@@ -116,7 +118,7 @@ public sealed partial class SimulationEngine
         {
             var s = JsonSerializer.Deserialize<WorldCheckpoint>(MigrateTravel(json), SimulationJson.Options)
                 ?? throw new CheckpointException("EmptyCheckpoint");
-            if (s.SchemaVersion != CheckpointSchemaVersion) throw new CheckpointException("UnknownWorldSchema");
+            if (s.SchemaVersion != CheckpointSchemaVersion && !(s.SchemaVersion==18&&s.Config.Economy?.Storage is null&&s.Storage is null&&s.Inventories.All(i=>i.Overflow is null)&&s.Flows.All(f=>f.Lost==0))) throw new CheckpointException("UnknownWorldSchema");
             if (s.RulesVersion != RulesVersion) throw new CheckpointException("UnknownRulesVersion");
             var e = new SimulationEngine(s.Config); // Only validates/configures a fresh, unpublished instance.
             if (e.ConfigHash != s.ConfigHash) throw new CheckpointException("ConfigurationHashMismatch");
@@ -159,6 +161,7 @@ public sealed partial class SimulationEngine
             foreach (var stock in i.Stock) value.Stock.Add(stock.Key, stock.Value);
             foreach (var h in i.CapacityHolds) value.CapacityHolds.Add(h.Key, h.Value);
             foreach (var h in i.Reservations) value.Reservations.Add(h.Id, new(h.Item, h.Quantity));
+            foreach(var lot in i.Overflow??[])value.Overflow.Add(lot.Id,lot);
             _economy.Inventories.Add(i.Id, value);
         }
         _economy.Ledger.AddRange(s.Ledger.Select(l => new LedgerEntry(l.Tick, l.DebitAccount.Value, l.CreditAccount.Value, l.AmountMinor, l.Reason)));
@@ -208,6 +211,8 @@ public sealed partial class SimulationEngine
             _buildings.Add(v.Id.Value, new(v.Id.Value, v.OwnerId.Value, v.Position, type, v.Level,
                 v.InputId.Value, v.OutputId?.Value, v.Footprint.ToArray()));
         }
+        _groundStorage.Clear();foreach(var g in s.Storage?.Ground??[])_groundStorage.Add(g.PlotId,g.InventoryId);
+        _storageConstruction.Clear();foreach(var c in s.Storage?.Construction??[])_storageConstruction.Add(c.Id,c);
         ApplyBuildingObstacles();
         RestoreCapitalDemand(s.CapitalDemand);
         if (s.Offers.Length != _offers.Count) throw new CheckpointException("InvalidOfferCount");
@@ -221,7 +226,7 @@ public sealed partial class SimulationEngine
         }
         _flows.Clear();
         foreach (var f in s.Flows) _flows.Add(f.ItemId, new(f.ItemId) { Initial = f.Initial, Harvested = f.Harvested,
-            RecipeInput = f.RecipeInput, Produced = f.Produced, Exported = f.Exported, ConstructionInput = f.ConstructionInput });
+            RecipeInput = f.RecipeInput, Produced = f.Produced, Exported = f.Exported, ConstructionInput = f.ConstructionInput,Lost=f.Lost });
         _settlements.Clear(); _settlements.AddRange(s.Settlements);
         _completedPersonalJobs.Clear(); foreach (long id in s.CompletedJobs)
             if (!_completedPersonalJobs.Add(id)) throw new CheckpointException("DuplicateCompletedJob");

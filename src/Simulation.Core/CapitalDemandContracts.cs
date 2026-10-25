@@ -8,7 +8,8 @@ public record CapitalDemandSettings(Cell Terminal, int PeriodTicks = 60, long Bo
 public record CommodityCycle(string ItemId, int PricePhase, int DemandPhase);
 public record MarketPricePoint(string ItemId, long UnitPriceMinor, long PublishedAtTick);
 public record DemandCommodityView(string ItemId, long Harvested, long Produced, long Consumed,
-    long Exported, long StockChange, long DemandQuantity, long UnitPriceMinor);
+    long Exported, long StockChange, long DemandQuantity, long UnitPriceMinor,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long Lost=0);
 public record DemandPeriodView(long Period, long Tick, long GrossOutputBaseMinor, long InternalConsumptionBaseMinor,
     long StockChangeBaseMinor, long SmoothedOutputBaseMinor, int SmoothingRemainder,
     long TargetBaseMinor, long OrderedBaseMinor, long MonetaryBudgetMinor, long ExternalFundingMinor,
