@@ -49,8 +49,8 @@ public sealed partial class SimulationEngine
         {
             if (p.Goods.IsDefault || !p.Goods.Select(g => g.ItemId).SequenceEqual(items) || p.Tick != p.Period * settings.PeriodTicks ||
                 p.Period < 0 || p.Tick > Tick || _demandPeriods[(int)p.Period] != p ||
-                p.Goods.Any(g => g.Harvested < 0 || g.Produced < 0 || g.Consumed < 0 || g.Exported < 0 || g.DemandQuantity < 0 ||
-                    g.StockChange != checked(g.Harvested + g.Produced - g.Consumed - g.Exported)) ||
+                p.Goods.Any(g => g.Harvested < 0 || g.Produced < 0 || g.Consumed < 0 || g.Exported < 0 || g.DemandQuantity < 0 || g.Lost<0 ||
+                    g.StockChange != checked(g.Harvested + g.Produced - g.Consumed - g.Exported - g.Lost)) ||
                 p.GrossOutputBaseMinor != p.Goods.Sum(g => checked((g.Harvested + g.Produced) * _items[g.ItemId].BasePriceMinor)) ||
                 p.InternalConsumptionBaseMinor != p.Goods.Sum(g => checked(g.Consumed * _items[g.ItemId].BasePriceMinor)) ||
                 p.StockChangeBaseMinor != p.Goods.Sum(g => checked(g.StockChange * _items[g.ItemId].BasePriceMinor)))
@@ -82,7 +82,8 @@ public sealed partial class SimulationEngine
                 f.RecipeInput + f.ConstructionInput != _demandPeriods.Sum(p => p.Goods.Single(g => g.ItemId == f.ItemId).Consumed) ||
                 f.Exported != _demandPeriods.Sum(p => p.Goods.Single(g => g.ItemId == f.ItemId).Exported) ||
                 f.Harvested > _flows[f.ItemId].Harvested || f.Produced > _flows[f.ItemId].Produced || f.RecipeInput > _flows[f.ItemId].RecipeInput ||
-                f.ConstructionInput > _flows[f.ItemId].ConstructionInput || f.Exported > _flows[f.ItemId].Exported)
+                f.ConstructionInput > _flows[f.ItemId].ConstructionInput || f.Exported > _flows[f.ItemId].Exported ||
+                f.Lost != _demandPeriods.Sum(p=>p.Goods.Single(g=>g.ItemId==f.ItemId).Lost) || f.Lost>_flows[f.ItemId].Lost)
                 throw new InvalidOperationException("Demand baseline does not match measured periods");
         foreach (var o in _offers.Values)
             if (o.Definition.Id < 1000 || o.Definition.Position != settings.Terminal || o.CreatedTick < 0 || o.CreatedTick > Tick ||

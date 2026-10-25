@@ -46,7 +46,7 @@ public sealed partial class SimulationEngine
             Tick, actor.Position, c.CommandId, kind, contract);
         long nextId = checked(_nextId + 1);
         var tx = _economy.Begin(Tick);
-        if (kind != "Pickup") tx.ReserveStock(source, operation.StockHold, item, quantity);
+        if (kind is not ("Pickup" or "Overflow")) tx.ReserveStock(source, operation.StockHold, item, quantity);
         if (destination != 0 && kind != "Delivery") tx.ReserveCapacity(destination, operation.CapacityHold, item, quantity);
         tx.Commit();
         if (kind == "Delivery")
@@ -70,6 +70,8 @@ public sealed partial class SimulationEngine
             if (work.Units > 0)
             {
                 if (t.Kind == "Pickup") CompletePickupTransfer(actor, t, work.Units);
+                else if(t.Kind=="Overflow")
+                {var tx=_economy.Begin(Tick);tx.WithdrawOverflow(t.Source,t.Contract,work.Units);tx.ReceiveReservedCapacity(t.Destination,t.CapacityHold,t.ItemId,work.Units);tx.Commit();Emit("OverflowTaken",actor.Id,t.Contract,t.ItemId,work.Units,command:t.CommandId);}
                 else if (t.Kind == "Delivery") ReceiveDelivery(_deliveryContracts.FindIndex(d => d.Id == t.Contract),
                     t.Source, work.Units, false, null, t.CommandId, t.StockHold);
                 else
@@ -92,7 +94,7 @@ public sealed partial class SimulationEngine
     private void CancelTransfer(TransferOperation t, string reason)
     {
         var tx = _economy.Begin(Tick);
-        if (t.Kind != "Pickup") tx.ReleaseStock(t.Source, t.StockHold);
+        if (t.Kind is not ("Pickup" or "Overflow")) tx.ReleaseStock(t.Source, t.StockHold);
         if (t.Destination != 0 && t.Kind != "Delivery") tx.ReleaseCapacity(t.Destination, t.CapacityHold);
         tx.Commit();
         if (t.Kind == "Delivery")
@@ -114,12 +116,12 @@ public sealed partial class SimulationEngine
                 !_actors.TryGetValue(t.Owner.Value, out var actor) || actor.Position != t.Position ||
                 !_seenCommands.TryGetValue(t.CommandId, out var c) || c.ActorId != t.Owner ||
                 !_results.TryGetValue(t.CommandId, out var r) || r.Status != ResultStatus.Accepted ||
-                t.Kind is not ("Stock" or "Pickup" or "Delivery") || actor.Job is not null ||
+                t.Kind is not ("Stock" or "Pickup" or "Delivery" or "Overflow") || actor.Job is not null ||
                 c.Action.Quantity!=t.Quantity || r.AppliedTick!=t.StartedTick || !ValidTransferReferences(t,actor,c.Action)) throw new CheckpointException("InvalidTransferOperation");
-            string receipt=t.Kind switch {"Pickup"=>"PurchaseCollected","Delivery"=>"DeliveryReceived",_=>"StockTransferred"};
+            string receipt=t.Kind switch {"Pickup"=>"PurchaseCollected","Delivery"=>"DeliveryReceived","Overflow"=>"OverflowTaken",_=>"StockTransferred"};
             if(_events.Where(e=>e.CommandId==t.CommandId && e.Type==receipt).Sum(e=>e.Quantity)!=t.Completed)
                 throw new CheckpointException("TransferReceiptMismatch");
-            if (t.Kind != "Pickup") stock.Add((t.Source,t.StockHold),new(t.ItemId,t.Remaining));
+            if (t.Kind is not ("Pickup" or "Overflow")) stock.Add((t.Source,t.StockHold),new(t.ItemId,t.Remaining));
             if (t.Destination != 0 && t.Kind != "Delivery") capacity.Add((t.Destination,t.CapacityHold),checked(t.Remaining*_items[t.ItemId].UnitVolume));
         }
     }
@@ -131,6 +133,7 @@ public sealed partial class SimulationEngine
             action.ItemId==t.ItemId && source.Owner==actor.Id && _economy.Inventories.TryGetValue(t.Destination,out var target) && target.Owner==actor.Id &&
             source.Position==t.Position && target.Position==t.Position && (source.Id==actor.Inventory || target.Id==actor.Inventory) &&
             !_logistics.Values.Any(l=>l.Cargo==source.Id || l.Cargo==target.Id);
+        if(t.Kind=="Overflow")return action.Kind==ActionKind.TakeOverflow && action.Source.Value==t.Source && action.OfferId==t.Contract && action.ItemId==t.ItemId && source.Owner==actor.Id && source.Position==t.Position && t.Destination==actor.Inventory && source.Overflow.TryGetValue(t.Contract,out var lot)&&lot.Quantity>=t.Remaining;
         if(t.Kind=="Pickup")return action.Kind==ActionKind.CollectPurchase && action.PurchaseId==t.Contract && t.Destination==actor.Inventory &&
             _marketAllocations.Any(a=>a.Id==t.Contract && a.Buyer.Value==actor.Id && a.SourceInventory.Value==t.Source && a.ItemId==t.ItemId &&
                 a.ClosedTick is null && a.DeadlineTick>Tick && a.RemainingQuantity>=t.Remaining);
@@ -154,7 +157,7 @@ public sealed partial class SimulationEngine
     private bool IsTransferControlEvent(SimulationEvent e) => e.Tick==Tick && e.Phase==9 && e.Type=="TransferCancelled" &&
         e.ReasonCode=="LeftTransferLocation" && e.EntityId>=1000 && e.Quantity>=0 && e.CommandId is {} id &&
         _seenCommands.TryGetValue(id,out var command) && command.ActorId==e.ActorId &&
-        command.Action.Kind is ActionKind.Transfer or ActionKind.CollectPurchase or ActionKind.DeliverContract &&
+        command.Action.Kind is ActionKind.Transfer or ActionKind.TakeOverflow or ActionKind.CollectPurchase or ActionKind.DeliverContract &&
         _results.TryGetValue(id,out var result) && result.Status==ResultStatus.Accepted &&
         _events.Any(start=>start.Type=="TransferStarted" && start.EntityId==e.EntityId && start.CommandId==id &&
             start.ActorId==e.ActorId && start.ItemId==e.ItemId && start.Quantity>=e.Quantity);

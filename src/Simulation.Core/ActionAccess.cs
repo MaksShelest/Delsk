@@ -13,7 +13,7 @@ public static class ActionPolicy
 {
     public static ActionReach Reach(ActionKind kind) => kind switch
     {
-        ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
+        ActionKind.TakeOverflow or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.Build or ActionKind.UpgradeBuilding or
         ActionKind.SetWage or ActionKind.BuyEquipment or ActionKind.UpgradeEquipment or ActionKind.CollectPurchase or
         ActionKind.DeliverContract or ActionKind.BuyLogistics or ActionKind.UpgradeLogistics or ActionKind.SignSupport => ActionReach.AtLocation,
@@ -33,7 +33,7 @@ public sealed partial class SimulationEngine
     private void RequireActionLocation(ActorState actor, GameAction action, string reason = "NotAtLocation")
     {
         var access = AccessFor(new(actor.Id), action);
-        if (!access.Allowed) throw new RuleViolation(access.ReasonCode == "NotAvailable" ? "NotAvailable" : reason);
+        if (!access.Allowed) throw new RuleViolation(access.ReasonCode is "NotAvailable" or "ConstructionInProgress" ? access.ReasonCode : reason);
     }
     /// <summary>Participant-safe read query, also called immediately before execution. No hidden-ID oracle.</summary>
     public ActionAccess AccessFor(ParticipantId participant, GameAction action)
@@ -44,6 +44,8 @@ public sealed partial class SimulationEngine
         if (action.Kind == ActionKind.SetVoteChoice && Elections.PauseForBallots && RequiredCandidate(actor.Id) is { } required && required != action.Candidate)
             return new(reach, [], "CommittedVote");
         if((NewTradingAction(action.Kind) || action.Kind==ActionKind.AcceptDeliveryQuantity && action.BuyOfferId>0) && !HasTradingAccess(participant))return new(reach,[],"ShopRequired");
+        Cell? constructionLocation=action.Kind==ActionKind.Build? action.Target : action.Kind==ActionKind.UpgradeBuilding && _buildings.TryGetValue(action.Building.Value,out var ownBuilding)&&ownBuilding.Owner==actor.Id?ownBuilding.Position:null;
+        if(constructionLocation is {} cell&&_storageConstruction.Values.Any(c=>c.Owner==actor.Id&&c.Position==cell))return new(reach,[cell],"ConstructionInProgress");
         if (reach == ActionReach.Remote) return new(reach, [], "Allowed");
         Cell[]? locations = action.Kind switch
         {
@@ -60,6 +62,7 @@ public sealed partial class SimulationEngine
                 ? (_equipment.TryGetValue(action.Equipment.Value, out var equipment) && equipment.Owner == actor.Id ? [equipment.Position] : null)
                 : _config.ResourceNodes.Where(n => n.ItemId == action.ItemId).Select(n => n.Position).ToArray(),
             ActionKind.Transfer => TransferLocations(actor, action),
+            ActionKind.TakeOverflow=>_economy.Inventories.TryGetValue(action.Source.Value,out var overflow)&&overflow.Owner==actor.Id&&overflow.Overflow.ContainsKey(action.OfferId)?[overflow.Position]:null,
             ActionKind.SellAvailableToCapital => _offers.TryGetValue(action.OfferId, out var offer) ? [offer.Definition.Position] : null,
             ActionKind.CollectPurchase => _marketAllocations.FirstOrDefault(p => p.Id == action.PurchaseId && p.Buyer.Value == actor.Id) is { } purchase
                 ? [_economy.Inventories[purchase.SourceInventory.Value].Position] : null,

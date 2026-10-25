@@ -16,6 +16,7 @@ public sealed partial class SimulationEngine
         if (!_economy.Inventories.TryGetValue(c.Action.Destination.Value, out var destination) ||
             destination.Owner != actor.Id || !_buildings.Values.Any(b => b.Input == destination.Id && b.Owner == actor.Id))
             throw new RuleViolation("NotAvailable");
+        if(Storage is not null&&HasOverflow(destination.Id))throw new RuleViolation("DestinationOverflow");
         long id = _nextId, next = checked(id + 1), budget = checked(c.Action.Quantity * c.Action.UnitPriceMinor);
         _ = checked(c.Action.Quantity * _items[c.Action.ItemId].UnitVolume);
         var offer = new BuyOfferState(new(id, new(actor.Id), new(destination.Id), destination.Position,
@@ -32,6 +33,7 @@ public sealed partial class SimulationEngine
         {
             if (!_buyOffers.TryGetValue(action.BuyOfferId, out var b) || b.View.Status != "Open" ||
                 b.View.CreatedTick >= Tick || Tick > b.View.ExpiresAtTick) throw new RuleViolation("NotAvailable");
+            if(Storage is not null&&HasOverflow(b.View.DestinationInventory.Value))throw new RuleViolation("DestinationOverflow");
             if (action.OfferWindow != b.View.Window) throw new RuleViolation("StaleOfferWindow");
             return (b.View.UnitPriceMinor, b.Requests);
         }
@@ -109,7 +111,7 @@ public sealed partial class SimulationEngine
             var amounts = AllocateFixedVolume(requests.Select(r => (r.Supplier.Value, r.Quantity)).ToArray(), v.RemainingQuantity);
             long allocated = amounts.Values.Sum(), nextId = _nextId;
             var destination = _economy.Inventories[v.DestinationInventory.Value];
-            bool space = checked(destination.Occupied(_items) + destination.Incoming + checked(allocated * _items[v.ItemId].UnitVolume)) <= destination.Capacity;
+            bool space = Storage is not null?!HasOverflow(destination.Id):checked(destination.Occupied(_items) + destination.Incoming + checked(allocated * _items[v.ItemId].UnitVolume)) <= destination.Capacity;
             var tx = _economy.Begin(Tick); var contracts = new List<DeliveryContractView>();
             foreach (var r in requests)
             {
@@ -136,10 +138,10 @@ public sealed partial class SimulationEngine
         tx.Pay(buyerAccount, escrow, value, "DeliveryFunding", budgetHold);
         if (bond > 0) tx.Pay(_actors[request.Supplier.Value].Account, bondAccount, bond, "DeliveryBond", request.BondHold);
         if (request.BondMinor > bond) tx.ReleaseMoney(_actors[request.Supplier.Value].Account, request.BondHold);
-        if (destination is { } inventory) tx.ReserveCapacity(inventory.Value, capacityHold, item, quantity);
+        if (Storage is null && destination is { } inventory) tx.ReserveCapacity(inventory.Value, capacityHold, item, quantity);
         return new(id, request.BuyOfferId, request.CapitalOfferId, buyer, request.Supplier, destination, position,
             item, quantity, price, new(buyerAccount), new(escrow), new(bondAccount), bond, capacityHold,
-            Tick, checked(Tick + Delivery.ContractTtlTicks));
+            Tick, checked(Tick + Delivery.ContractTtlTicks),CapacityForecast:Storage is not null&&destination is not null);
     }
     private void EmitDeliveryCreated(DeliveryContractView d) => Emit("DeliveryContractCreated", d.Supplier.Value, d.Id,
         d.ItemId, d.Quantity, checked(d.Quantity * d.UnitPriceMinor), "Active");

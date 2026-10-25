@@ -23,6 +23,7 @@ internal sealed class Inventory(long id, long owner, Cell position, long capacit
     public Cell Position { get; set; } = position;
     public long Capacity { get; set; } = capacity;
     public Dictionary<string, long> Stock { get; } = new(StringComparer.Ordinal);
+    public Dictionary<long,OverflowLot> Overflow {get;}=[];
     public Dictionary<string, StockReservation> Reservations { get; } = new(StringComparer.Ordinal);
     public Dictionary<string, long> CapacityHolds { get; } = new(StringComparer.Ordinal);
     public long Count(string item) => Stock.GetValueOrDefault(item);
@@ -35,6 +36,7 @@ internal sealed class Inventory(long id, long owner, Cell position, long capacit
     public Inventory Copy()
     {
         var copy = new Inventory(Id, Owner, Position, Capacity);
+        foreach(var p in Overflow)copy.Overflow.Add(p.Key,p.Value);
         foreach (var pair in Stock) copy.Stock.Add(pair.Key, pair.Value);
         foreach (var pair in Reservations) copy.Reservations.Add(pair.Key, pair.Value);
         foreach (var pair in CapacityHolds) copy.CapacityHolds.Add(pair.Key, pair.Value);
@@ -153,6 +155,18 @@ internal sealed class EconomyTransaction
         if (_store.Inventories.ContainsKey(id) || InventoryChanges.ContainsKey(id)) throw new RuleViolation("DuplicateInventory");
         InventoryChanges.Add(id, new Inventory(id, owner, position, capacity));
     }
+    public (long Normal,long Excess) ReceiveForecast(long inventory,string item,long quantity,OverflowLot lot)
+    {
+        Positive(quantity);var i=Inventory(inventory);long normal=Math.Min(quantity,Math.Max(0,i.Capacity-i.Occupied(_items)-i.Incoming)/_items[item].UnitVolume);
+        if(normal>0)AddStock(inventory,item,normal);
+        long excess=quantity-normal;if(excess>0)i.Overflow.Add(lot.Id,lot with{Quantity=excess});return(normal,excess);
+    }
+    public void WithdrawOverflow(long inventory,long lotId,long quantity)
+    {
+        Positive(quantity);var i=Inventory(inventory);if(!i.Overflow.TryGetValue(lotId,out var lot)||quantity>lot.Quantity)throw new RuleViolation("OverflowUnavailable");
+        if(quantity==lot.Quantity)i.Overflow.Remove(lotId);else i.Overflow[lotId]=lot with{Quantity=lot.Quantity-quantity};
+    }
+    public void UpdateOverflow(long inventory,OverflowLot lot)=>Inventory(inventory).Overflow[lot.Id]=lot;
     public void SetCapacity(long id, long capacity)
     {
         Positive(capacity); var inventory = Inventory(id);

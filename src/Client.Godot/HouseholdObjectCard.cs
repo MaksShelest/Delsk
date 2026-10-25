@@ -14,6 +14,7 @@ public partial class HouseholdObjectCard : VBoxContainer
     private readonly long _id;
     private readonly System.Action<GameAction> _submit;
     private readonly System.Func<GameAction, ActionAccess> _access;
+    private readonly StoragePanel? _storagePanel;
     private readonly Label _heading = new() { AutowrapMode = TextServer.AutowrapMode.WordSmart };
     private readonly Label _stock = new() { AutowrapMode = TextServer.AutowrapMode.WordSmart };
     private readonly Label _workers = new() { AutowrapMode = TextServer.AutowrapMode.WordSmart };
@@ -40,6 +41,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access)
     {
         _scenario = scenario; _language = language; _kind = kind; _id = id; _submit = submit; _access = access;
+        if(scenario.Economy?.Storage is not null&&kind=="building"){_storagePanel=new(scenario,language,kind,id,submit,access,true);AddChild(_storagePanel);}
         AddChild(_details);AddChild(_recipeCards);_details.AddChild(_heading);_details.AddChild(_progress);_details.AddChild(_stock);_details.AddChild(_workers);_details.AddChild(_delivery);
         var amount = new TabletColumns{Breakpoint=650}; _details.AddChild(amount);
         amount.AddChild(new Label { Text = L("Количество для переноса", "Transfer quantity") }); amount.AddChild(_quantity);
@@ -52,6 +54,7 @@ public partial class HouseholdObjectCard : VBoxContainer
 
     public void ShowData(PlayerView view, bool pending, bool paused)
     {
+        if(_storagePanel is not null){_storagePanel.Visible=view.Buildings.Any(b=>b.Id.Value==_id&&b.Kind==BuildingKind.Warehouse);if(_storagePanel.Visible)_storagePanel.ShowData(view,pending);}
         _lastView = view; _pending = pending; _paused = paused;_routes.ShowData(view,pending);
         var actions = new List<(string Key, string Text, GameAction Action, bool Enabled)>();
         long quantity = (long)_quantity.Value;

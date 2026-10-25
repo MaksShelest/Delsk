@@ -101,8 +101,12 @@ public sealed partial class SimulationEngine
         var plot = AccessiblePlot(actor, c.Action.Plot);
         if (plot.Owner.HasValue) throw new RuleViolation("PlotOwned");
         if (plot.ReservedBy.HasValue && plot.ReservedBy != actor.Id) throw new RuleViolation("PlotReserved");
-        var tx = _economy.Begin(Tick); tx.Pay(actor.Account, _treasury, plot.Definition.PriceMinor, "PlotPurchase"); tx.Commit();
+        long groundId=_nextId,next=Storage is null?_nextId:checked(_nextId+1);
+        var tx = _economy.Begin(Tick); tx.Pay(actor.Account, _treasury, plot.Definition.PriceMinor, "PlotPurchase");
+        if(Storage is not null)tx.CreateInventory(groundId,actor.Id,plot.Definition.Position,Storage.GroundCapacity);
+        tx.Commit();
         plot.Owner = actor.Id; plot.ReservedBy = null; plot.Until = null;
+        if(Storage is not null){_groundStorage.Add(plot.Definition.Id,groundId);_nextId=next;}
         Emit("PlotPurchased", actor.Id, plot.Definition.Id, money: plot.Definition.PriceMinor, command: c.CommandId);
     }
 
@@ -130,12 +134,15 @@ public sealed partial class SimulationEngine
         RequireIdle(actor);
         if (!_buildingTypes.TryGetValue(c.Action.BuildingTypeId, out var type)) throw new RuleViolation("UnknownBuildingType");
         RequireActionLocation(actor, c.Action);
+        if(Storage is not null&&type.Kind==BuildingKind.Warehouse){StartWarehouseConstruction(actor,c);return;}
+        if(StorageWorkAt(c.Action.Target))throw new RuleViolation("ConstructionInProgress");
         var footprint = ScenarioValidation.FootprintCells(c.Action.Target, type);
         foreach (var cell in footprint)
         {
             if (!_plotsByCell.TryGetValue(cell, out var plot) || plot.Definition.IsCorridor) throw new RuleViolation("InvalidFootprint");
             if (plot.Owner != actor.Id) throw new RuleViolation("LandNotOwned");
             if (plot.Building.HasValue) throw new RuleViolation("LandOccupied");
+            if(Storage is not null&&_groundStorage.TryGetValue(plot.Definition.Id,out var ground)&&(_economy.Inventories[ground].Stock.Any(s=>s.Value>0)||_economy.Inventories[ground].Incoming>0))throw new RuleViolation("GroundNotEmpty");
             if (plot.Definition.IsShopSite && type.Kind != BuildingKind.Shop ||
                 plot.Definition.ShopParticipantId.HasValue && (type.Kind != BuildingKind.Shop || plot.Definition.ShopParticipantId != actor.Id))
                 throw new RuleViolation("WrongBuildingSite");
@@ -156,7 +163,7 @@ public sealed partial class SimulationEngine
         var building = new BuildingState(id, actor.Id, c.Action.Target, type, 1, input, output, footprint);
         tx.Commit();
         _nextId = next; _buildings.Add(id, building); ApplyBuildingObstacles();
-        foreach (var cell in footprint) _plotsByCell[cell].Building = id;
+        foreach (var cell in footprint){_plotsByCell[cell].Building = id;if(_groundStorage.Remove(_plotsByCell[cell].Definition.Id,out var ground))_economy.Inventories.Remove(ground);}
         foreach (var pair in consumed) _flows[pair.Key].ConstructionInput = pair.Value;
         if (output.HasValue) AddProductionBuilding(building, level, 0, false); // Buying capacity never creates workers.
         Emit("BuildingConstructed", actor.Id, id, money: level.PriceMinor, reason: type.Id, command: c.CommandId);
@@ -181,6 +188,7 @@ public sealed partial class SimulationEngine
     private void UpgradeBuilding(ActorState actor, CommandEnvelope c)
     {
         var b = OwnBuilding(actor, c.Action.Building);
+        if(Storage is not null&&b.Type.Kind==BuildingKind.Warehouse){StartWarehouseConstruction(actor,c,b);return;}
         RequireActionLocation(actor, c.Action);
         var level = b.Type.Levels.SingleOrDefault(l => l.Level == checked(b.Level + 1)) ?? throw new RuleViolation("MaxLevel");
         var consumed = PrepareMaterialFlows(level.Materials);

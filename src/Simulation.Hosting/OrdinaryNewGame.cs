@@ -29,7 +29,7 @@ public static class OrdinaryNewGame
     {
         options.Validate();
         spawnPool??=map.Layout?.SpawnCells;
-        if(map.Layout is not null && economy.Id!=VNextSupportedProfile.ProfileId)throw new ArgumentException("Designed maps require the explicit A2 supported profile");
+        if(map.Layout is not null && !VNextStorageProfile.MapCompatible(economy))throw new ArgumentException("Designed maps require the explicit A2 supported profile");
         if(!map.Participants.Any(p=>p.Id==options.HumanActorId))throw new ArgumentException("Unknown human actor");
         // A2's exact fixed-four projection is applied once, then only the named aggregates are scaled.
         var baseScenario=economy.Apply(map);int count=checked(options.NpcCount+1);ulong seed=options.Seed??map.Seed;

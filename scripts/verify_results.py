@@ -33,8 +33,8 @@ def verify(folder):
     for tick, sample in samples.items():
         assert int(sample['population']) == int(sample['unemployed']) + employed[tick]
     for flow in summary['flows']:
-        physical = sum(stock['quantity'] for inventory in state['inventories'] for stock in inventory['stock'] if stock['itemId']==flow['itemId'])
-        assert physical == flow['initial']+flow['harvested']+flow['produced']+sum(m['newValue']-m['oldValue'] for m in modifications if m['kind']=='Stock' and m['item']==flow['itemId'])-flow['recipeInput']-flow['exported']-flow.get('constructionInput',0)
+        physical = sum(stock['quantity'] for inventory in state['inventories'] for stock in inventory['stock'] if stock['itemId']==flow['itemId']) + sum(lot['quantity'] for inventory in state['inventories'] for lot in (inventory.get('overflow') or []) if lot['itemId']==flow['itemId'])
+        assert physical == flow['initial']+flow['harvested']+flow['produced']+sum(m['newValue']-m['oldValue'] for m in modifications if m['kind']=='Stock' and m['item']==flow['itemId'])-flow['recipeInput']-flow['exported']-flow.get('constructionInput',0)-flow.get('lost',0)
     for inv in state['inventories']:
         assert inv['occupiedVolume']+inv['reservedCapacity'] <= inv['capacity']
         assert all(0 <= item['reserved'] <= item['quantity'] for item in inv['stock'])
@@ -144,7 +144,7 @@ def verify(folder):
             assert {l['reason'] for l in entries} <= {reason for reason, _ in fields}
             for reason, field in fields: assert sum(l['amountMinor'] for l in entries if l['reason'] == reason) == d[field]
     for inventory in state['inventories']:
-        claims = sum(d['remainingQuantity'] * items[d['itemId']] for d in contracts if d['destinationInventory'] == inventory['id'])
+        claims = sum(d['remainingQuantity'] * items[d['itemId']] for d in contracts if d['destinationInventory'] == inventory['id'] and not d.get('capacityForecast', False))
         assert claims <= inventory['reservedCapacity']
     for offer in state.get('buyOffers', []):
         assert offer['quantity'] == offer['allocatedQuantity'] + offer['remainingQuantity'] + offer['releasedQuantity']
@@ -255,7 +255,7 @@ def verify(folder):
         assert 0<=process['completed']<process['quantity'] and process['remaining']==process['quantity']-process['completed']
         assert 0<=process['workRemainder']<items[process['itemId']]
         assert process['owner']['value'] in people
-        if process['kind']!='Pickup':
+        if process['kind'] not in ('Pickup','Overflow'):
             assert sum(s['reserved'] for s in inventories[process['source']]['stock'] if s['itemId']==process['itemId'])>=process['remaining']
         if process['destination'] and process['kind']!='Delivery':
             assert inventories[process['destination']]['reservedCapacity']>=process['remaining']*items[process['itemId']]

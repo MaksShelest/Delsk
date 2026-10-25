@@ -31,9 +31,9 @@ public sealed partial class SimulationEngine
             CommandId: command, Support: new(proposal, _politicalCommitments.GetValueOrDefault(proposal.Id))));
     /// <summary>Public journal: no private command IDs, raw sequence gaps, choices or support terms.</summary>
     public PublicSimulationEvent[] PublicEventsSince(long afterSequence)
-        => _events.Where(e => e.Support is null && e.Negotiation is null && e.Type != "VoteChoiceChanged" &&
+        => _events.Where(e => e.Support is null && e.Negotiation is null && e.Type != "VoteChoiceChanged" && !e.Type.StartsWith("Overflow",StringComparison.Ordinal) &&
                 !(e.CommandId is { } id && _seenCommands.TryGetValue(id, out var c) &&
-                  (IsSupportAction(c.Action.Kind) || IsNegotiationAction(c.Action.Kind) || c.Action.Kind == ActionKind.SetVoteChoice)))
+                  (IsSupportAction(c.Action.Kind) || IsNegotiationAction(c.Action.Kind) || c.Action.Kind is ActionKind.SetVoteChoice or ActionKind.TakeOverflow)))
             .Select((e, i) => new PublicSimulationEvent(i + 1L, e.Tick, e.Phase, e.Type, e.ActorId,
                 e.EntityId, e.ItemId, e.Quantity, e.AmountMinor, e.ReasonCode)).Where(e => e.Sequence > afterSequence).ToArray();
     private void ProposeSupport(ActorState actor, CommandEnvelope c)

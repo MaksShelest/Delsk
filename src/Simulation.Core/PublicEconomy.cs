@@ -75,9 +75,10 @@ public sealed partial class SimulationEngine
             if (contract.Supplier == actor) money = checked(money + _economy.Accounts[contract.BondAccount.Value].Balance);
         }
         long stock = _economy.Inventories.Values.Where(i => i.Owner == actor.Value)
-            .Sum(i => i.Stock.Sum(s => checked(s.Value * _items[s.Key].BasePriceMinor)));
+            .Sum(i => checked(i.Stock.Sum(s => checked(s.Value * _items[s.Key].BasePriceMinor))+i.Overflow.Values.Sum(l=>checked(l.Quantity*_items[l.ItemId].BasePriceMinor))));
         long wip = _enterprises.Values.Where(e => e.Definition.OwnerId == actor.Value && e.Batch is not null)
             .Sum(e => e.Batch!.Inputs.Sum(i=>checked(i.Quantity*_items[i.ItemId].BasePriceMinor)));
+        wip=checked(wip+_storageConstruction.Values.Where(c=>c.Owner==actor.Value).Sum(c=>checked(c.PaidMinor+c.Materials.Sum(m=>checked(m.Quantity*_items[m.ItemId].BasePriceMinor)))));
         long land = checked(_plots.Values.Where(p => p.Owner == actor.Value).Sum(p => p.Definition.PriceMinor) + _resources.Values.Where(r=>r.Owner==actor.Value).Sum(r=>r.Rules.PurchasePriceMinor));
         long buildings = _buildings.Values.Where(b => b.Owner == actor.Value).Sum(b => b.Type.Levels.Where(l => l.Level <= b.Level)
             .Sum(l => checked(l.PriceMinor + l.Materials.Sum(m => checked(m.Quantity * _items[m.ItemId].BasePriceMinor)))));

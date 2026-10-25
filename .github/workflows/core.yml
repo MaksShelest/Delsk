@@ -35,6 +35,8 @@ jobs:
         run: python scripts/run_check.py --name ordinary-game --timeout 300 --log-directory artifacts/gate-checks -- python scripts/check_ordinary_game.py --output artifacts/ordinary-game --voting-check
       - name: Exact C# map snapshots and compatible profiles
         run: python scripts/run_check.py --name map-designs --timeout 180 --log-directory artifacts/gate-checks -- python scripts/check_map_designs.py --output artifacts/map-designs
+      - name: C1 storage, real projection and physical save/load/replay
+        run: python scripts/run_check.py --name storage-c1 --timeout 300 --log-directory artifacts/gate-checks -- python scripts/check_storage_c1.py --output artifacts/storage-c1
       - name: Bounded Developer tests and forbidden Release gate
         env:
           DOTNET_PROCESSOR_COUNT: '2'

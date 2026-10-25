@@ -5,6 +5,7 @@ using Simulation.Core;
 using Agents.Algorithmic;
 using Simulation.Hosting;
 
+if(args.Contains("--export-storage-profile",StringComparer.Ordinal))return StorageProfileCommand.Run(args);
 if(args.Contains("--export-map-design",StringComparer.Ordinal))return MapDesignCommand.Run(args);
 
 // Catalog-only commands must return before any model runtime, controller or world exists.
@@ -43,7 +44,7 @@ try
     string mode = options.GetValueOrDefault("--mode", "headless");
     if(options.ContainsKey("--new-game") && (options.ContainsKey("--load") || options.ContainsKey("--replay") || options.ContainsKey("--seed") || options.ContainsKey("--research-setup") ||
         script is not ("baseline" or "hybrid") || economics is null))throw new ArgumentException("--new-game OPTIONS requires new baseline/hybrid with --economy; no load/replay/seed/research-setup overrides");
-    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market" or "pickup" or "delivery" or "capital-delivery" or "logistics" or "logistics-upgrade" or "own-storage" or "inbound" or "own-production" or "logistics-queue" or "capital-demand" or "elections" or "stopped-elections" or "physical-automation" or "participant-trade" or "food-chain" or "support" or "baseline" or "hybrid" or "model-safety" or "vnext-supported-fixture") || mode is not ("headless" or "paced"))
+    if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market" or "pickup" or "delivery" or "capital-delivery" or "logistics" or "logistics-upgrade" or "own-storage" or "inbound" or "own-production" or "logistics-queue" or "capital-demand" or "elections" or "stopped-elections" or "physical-automation" or "participant-trade" or "food-chain" or "support" or "baseline" or "hybrid" or "model-safety" or "vnext-supported-fixture" or "storage-c1") || mode is not ("headless" or "paced"))
         throw new ArgumentException("Invalid script or mode");
     if (options.ContainsKey("--controllers") && (script is not ("autonomous" or "baseline" or "hybrid" or "model-safety") || options.ContainsKey("--load") || options.ContainsKey("--replay")))
         throw new ArgumentException("--controllers applies only to a new autonomous run");
@@ -224,7 +225,8 @@ try
     void Save(GameSession s) { CheckpointStore.Save(s, options["--checkpoint"]); saved = true; }
     static void RunScript(GameSession s, ScenarioDefinition d, string script)
     {
-        if (script == "vnext-supported-fixture") ScriptedScenarios.VNextSupportedProduction(s,d);
+        if(script=="storage-c1")ScriptedScenarios.StorageC1(s,d);
+        else if (script == "vnext-supported-fixture") ScriptedScenarios.VNextSupportedProduction(s,d);
         else if (script == "cycle") ScriptedScenarios.EconomicCycle(s, d);
         else if (script == "recovery") ScriptedScenarios.ZeroCashRecovery(s, d);
         else if (script == "development") ScriptedScenarios.Development(s, d);

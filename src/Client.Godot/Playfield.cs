@@ -252,6 +252,7 @@ public partial class Playfield : Control
     private void Start(string mode, bool hold)
     {
         DisposeModel();
+        _storageCursor=0;_storageLossUntil=0;_storageLoss="";
         DismissHelp();
         ResetTablet(true);
         _mode = mode;
@@ -512,6 +513,7 @@ public partial class Playfield : Control
             $"{T("npc.title")}: " + string.Join("; ", view.LaborMarket.Where(g => g.OwnerId != _human).Select(g => $"{g.OwnerId.Value} {g.Role} {g.Headcount}/{g.Capacity}"));
         _feedbackLabel.Text = _feedback;
         UpdatePlayNotice();
+        StorageNotice(view);
         if (_gameClock is not null) _gameClock.Text = L("Время ", "Time ") + GameTime(view.Tick) + (_session.Paused ? "  Ⅱ" : "  ▸");
         if (_cellLabel is not null) _cellLabel.Text = CellText(frame);
         string signature = _selectedEnterprise + "|" + CardSignature(view);
@@ -898,6 +900,7 @@ public partial class Playfield : Control
         ResetTablet(true);
         _stage?.ResetMotion();
         DisposeModel();
+        _storageCursor=0;_storageLossUntil=0;_storageLoss="";
         _session = loaded.Session;
         _scenario = _session.Engine.Configuration();
         _mapKey = PlayMaps.KeyForScenario(_scenario.Id);

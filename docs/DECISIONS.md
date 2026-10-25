@@ -659,3 +659,23 @@ Profile.VNext omitted when null, canonical payload SHA защищает от sta
 runtime manifest хранит source/full/catalog/baseline/profile SHA и ConfigHash.
 World/save не расширялись ради метаданных; direct load/replay используют прежний
 saved resolved config. Полный отчёт/mapping и actual gates — PACKAGE_A2.
+
+## 57. C1: хранение отдельно от будущего сноса (25.10.2026)
+
+Согласно vNext§6/§13 и текущему заданию: ground70, warehouse200/300/400,
+реальные дополнительные цены/материалы/60/120/180ticks; grace1200, warnings600/120.
+Прежнее D04 о резервировании места всего будущего контракта сохраняется в legacy
+и для существующих holds. Новые C1 buy-delivery contracts используют forecast:
+обещанный приём/escrow не теряется при недостатке места, excess идёт в отдельный lot.
+Normal I06 не ослаблен. Rescue использует прежний VolumeWork. Loss — отдельный sink,
+не производство/потребление. Строительное вложение до завершения — капитал WIP.
+
+C1 отдельным generated profile производен от проверенного A2 и typed full balance;
+новые карты используют его, старые5/saves сохраняют resolved rules. World19 читает
+ограниченный legacy18 без изменения хеша, а18 с C1-данными отвергает. Profile provenance
+различает исходный balance SHA, projection payload SHA и runtime config hash.
+
+Зависимость от D/импорта существенна: A2/C1 не предоставляют все натуральные цепочки
+получения стройматериалов. Требования не заменены и free stock не добавлен; prepared
+source fixture доказывает C1 операции, не обычную прогрессию. Переход к C2/сносу
+этой итерацией не разрешён. [Инструкция и граница](STORAGE_C1.md).

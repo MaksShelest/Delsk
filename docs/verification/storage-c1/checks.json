@@ -1,0 +1,238 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "date": "2026-10-25",
+  "baseHead": "45fae36dd88fd84dfed1e5b2bb7af6d6dd0233ae",
+  "branch": "feat/vnext-package-c1",
+  "status": "succeeded",
+  "ordinaryTests": {
+    "total": "1077",
+    "executed": "1077",
+    "passed": "1077",
+    "failed": "0",
+    "error": "0",
+    "timeout": "0",
+    "aborted": "0",
+    "inconclusive": "0",
+    "passedButRunAborted": "0",
+    "notRunnable": "0",
+    "notExecuted": "0",
+    "disconnected": "0",
+    "warning": "0",
+    "completed": "0",
+    "inProgress": "0",
+    "pending": "0"
+  },
+  "developerTests": {
+    "total": "1083",
+    "executed": "1083",
+    "passed": "1083",
+    "failed": "0",
+    "error": "0",
+    "timeout": "0",
+    "aborted": "0",
+    "inconclusive": "0",
+    "passedButRunAborted": "0",
+    "notRunnable": "0",
+    "notExecuted": "0",
+    "disconnected": "0",
+    "warning": "0",
+    "completed": "0",
+    "inProgress": "0",
+    "pending": "0"
+  },
+  "newStorageTests": 19,
+  "pythonTests": 37,
+  "headless": {
+    "exports": 102,
+    "replays": 14,
+    "comparison_pairs": 69
+  },
+  "storage": {
+    "status": "succeeded",
+    "processChecks": 24,
+    "checkpointCuts": [
+      34,
+      37,
+      1084,
+      1087,
+      1690,
+      2289
+    ],
+    "finalTick": 2293,
+    "scope": "Real C# commands/transactions; prepared materials, no claim of D factories/import or target hardware"
+  },
+  "native": {
+    "status": "succeeded",
+    "checks": [
+      "native ground deposit and exact capacity",
+      "paused command queue and paused tick",
+      "native build/cost/time",
+      "disk Continue resumes construction",
+      "native real warehouse overflow/rescue/validator and own HUD warning",
+      "RU/EN native controls at 1100x800 and 800x720",
+      "2293 C1 tick hashes equal real runner"
+    ],
+    "scope": "Prepared sources, actual native input and Playfield; no target-device/D progression claim"
+  },
+  "checks": [
+    {
+      "name": "c1-final-headless",
+      "exitCode": 0,
+      "timeoutSeconds": 780,
+      "elapsedSeconds": 408.482
+    },
+    {
+      "name": "c1-developer-final",
+      "exitCode": 0,
+      "timeoutSeconds": 600,
+      "elapsedSeconds": 229.544
+    },
+    {
+      "name": "c1-process-final",
+      "exitCode": 0,
+      "timeoutSeconds": 300,
+      "elapsedSeconds": 117.648
+    },
+    {
+      "name": "c1-native-verified",
+      "exitCode": 0,
+      "timeoutSeconds": 480,
+      "elapsedSeconds": 74.734
+    },
+    {
+      "name": "c1-client-restore-final",
+      "exitCode": 0,
+      "timeoutSeconds": 180,
+      "elapsedSeconds": 1.12
+    },
+    {
+      "name": "c1-client-build-verified",
+      "exitCode": 0,
+      "timeoutSeconds": 180,
+      "elapsedSeconds": 39.768
+    },
+    {
+      "name": "c1-client-audit-verified",
+      "exitCode": 0,
+      "timeoutSeconds": 120,
+      "elapsedSeconds": 2.569
+    },
+    {
+      "name": "c1-godot-import-verified",
+      "exitCode": 0,
+      "timeoutSeconds": 120,
+      "elapsedSeconds": 5.758
+    },
+    {
+      "name": "c1-godot-smoke-verified",
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "elapsedSeconds": 11.596
+    },
+    {
+      "name": "c1-godot-verify-final",
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "elapsedSeconds": 0.032
+    },
+    {
+      "name": "c1-old18-save",
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "elapsedSeconds": 1.975
+    },
+    {
+      "name": "c1-a1-regression",
+      "exitCode": 0,
+      "timeoutSeconds": 180,
+      "elapsedSeconds": 8.562
+    },
+    {
+      "name": "c1-a2-regression",
+      "exitCode": 0,
+      "timeoutSeconds": 180,
+      "elapsedSeconds": 10.406
+    },
+    {
+      "name": "c1-map-snapshots",
+      "exitCode": 0,
+      "timeoutSeconds": 180,
+      "elapsedSeconds": 4.216
+    },
+    {
+      "name": "c1-map-small",
+      "exitCode": 0,
+      "timeoutSeconds": 300,
+      "elapsedSeconds": 43.119
+    },
+    {
+      "name": "c1-map-large",
+      "exitCode": 0,
+      "timeoutSeconds": 300,
+      "elapsedSeconds": 80.933
+    },
+    {
+      "name": "c1-python",
+      "exitCode": 0,
+      "timeoutSeconds": 60,
+      "elapsedSeconds": 5.105
+    },
+    {
+      "name": "c1-catalog-source",
+      "exitCode": 0,
+      "timeoutSeconds": 15,
+      "elapsedSeconds": 0.052
+    },
+    {
+      "name": "c1-balance-source",
+      "exitCode": 0,
+      "timeoutSeconds": 15,
+      "elapsedSeconds": 0.136
+    },
+    {
+      "name": "c1-map-lab",
+      "exitCode": 0,
+      "timeoutSeconds": 120,
+      "elapsedSeconds": 30.592
+    }
+  ],
+  "legacyWorld18": {
+    "tick": 50,
+    "stateHash": "8e1a85419d83a0581dcc71e20db6a7dc9aca3ad6dfc5432bad91a6ffb6efd7a9",
+    "source": "Previously produced A2 WIP envelope, unchanged exact hash"
+  },
+  "maps": {
+    "map-small": {
+      "processChecks": 32,
+      "ticks": 60,
+      "counts": [
+        3,
+        6,
+        10
+      ],
+      "saveLoadReplay": true
+    },
+    "map-large": {
+      "processChecks": 32,
+      "ticks": 60,
+      "counts": [
+        3,
+        6,
+        10
+      ],
+      "saveLoadReplay": true
+    }
+  },
+  "platform": {
+    "legacyHashes": 1132,
+    "legacyRestores": 35,
+    "stoppedFinalTick": 10,
+    "c1Hashes": 2293,
+    "engine": "Godot 4.7.2 mono Linux software rendering"
+  },
+  "limitations": [
+    "Prepared material sources prove C1 operations, not full natural material progression on A2/C1 new maps; D/import pending.",
+    "No C2 demolition, capacity shrink, multi-owner warehouse or new NPC strategy.",
+    "No Windows/Android device or long balance acceptance."
+  ]
+}

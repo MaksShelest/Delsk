@@ -152,6 +152,7 @@ public sealed partial class SimulationEngine
     }
     public void ValidateInvariants()
     {
+        ValidateStorage();
         ValidateResearchAudit(); ValidateResources(); ValidateExtractionRoutes(); ValidateTransfers();
         if (_plots.Values.Where(p => p.Definition.IsShopSite).SelectMany(p => new[] { p.Owner, p.ReservedBy }.Where(a => a.HasValue))
             .GroupBy(a => a).Any(g => g.Count() > 1)) throw new InvalidOperationException("Shared shop site limit exceeded");
@@ -171,8 +172,8 @@ public sealed partial class SimulationEngine
         }
         foreach (var flow in _flows.Values)
         {
-            long physical = _economy.Inventories.Values.Aggregate(0L, (n, inv) => checked(n + inv.Count(flow.Id)));
-            long expected = checked(flow.Initial + flow.Harvested + flow.Produced + ResearchStockDelta(flow.Id) - flow.RecipeInput - flow.Exported - flow.ConstructionInput);
+            long physical = _economy.Inventories.Values.Aggregate(0L, (n, inv) => checked(n + inv.Count(flow.Id)+inv.Overflow.Values.Where(l=>l.ItemId==flow.Id).Sum(l=>l.Quantity)));
+            long expected = checked(flow.Initial + flow.Harvested + flow.Produced + ResearchStockDelta(flow.Id) - flow.RecipeInput - flow.Exported - flow.ConstructionInput-flow.Lost);
             if (physical != expected || expected < 0) throw new InvalidOperationException($"I05: {flow.Id} not conserved");
         }
         foreach (var e in _enterprises.Values)
