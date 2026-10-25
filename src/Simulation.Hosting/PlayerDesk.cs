@@ -436,6 +436,7 @@ public static class PlayerText
 
     public static string Item(string language, string itemId)
     {
+        if(itemId is "stone" or "iron_ore" or "copper_ore" or "sand")return itemId switch {"stone"=>Local(language,"Камень","Stone"),"iron_ore"=>Local(language,"Железная руда","Iron ore"),"copper_ore"=>Local(language,"Медная руда","Copper ore"),_=>Local(language,"Песок","Sand")};
         string key = "item." + itemId;
         return Keys(language).Contains(key) ? Get(language, key) : itemId;
     }

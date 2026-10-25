@@ -11,6 +11,11 @@
     <Error Condition="'$(DelskDeveloperPackage)' != 'true'" Text="Use scripts/build_developer_client.py for an isolated Developer client package." />
   </Target>
   <ItemGroup>
+    <EmbeddedResource Include="../../scenarios/vnext/small-river.json" LogicalName="Play.small-river.json" />
+    <EmbeddedResource Include="../../scenarios/vnext/large-districts.json" LogicalName="Play.large-districts.json" />
+    <EmbeddedResource Include="../../config/vnext/economy.b1-supported.json" LogicalName="Play.vnext-supported.json" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="../../config/vnext/balance.b1.json" LogicalName="Play.vnext-balance.json" />
     <ProjectReference Include="../Simulation.Hosting/Simulation.Hosting.csproj" />
     <ProjectReference Include="../Agents.Algorithmic/Agents.Algorithmic.csproj" />

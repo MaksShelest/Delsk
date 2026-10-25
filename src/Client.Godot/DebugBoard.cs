@@ -39,7 +39,8 @@ public partial class DebugBoard : Control
         var font = ThemeDB.FallbackFont;
         for (int x = 0; x < _frame.MapWidth; x++)
             for (int z = 0; z < _frame.MapHeight; z++)
-                DrawRect(new Rect2(x * cell, z * cell, cell - 1, cell - 1), new Color(0.36f, 0.44f, 0.3f));
+                DrawRect(new Rect2(x * cell, z * cell, Mathf.Max(.1f,cell*.9f), Mathf.Max(.1f,cell*.9f)), new Color(0.36f, 0.44f, 0.3f));
+        if(_frame.Layout is {} layout)foreach(var c in layout.InitialCityDirtCells)DrawRect(new Rect2(c.X*cell,c.Z*cell,cell,cell),new Color("a39578"));
         foreach (var marker in _frame.Markers)
             if (marker.Kind != "truck-home" || !_frame.Trips.Any(t => t.LogisticsId == marker.EntityId)) DrawMarker(marker, cell);
         foreach (var actor in _frame.Actors)
@@ -47,13 +48,13 @@ public partial class DebugBoard : Control
         foreach (var trip in _frame.Trips)
             DrawCargo(trip, cell);
         if (_selectedX is int sx && _selectedZ is int sz)
-            DrawRect(new Rect2(sx * cell, sz * cell, cell - 1, cell - 1), new Color(1, 0.9f, 0.3f), false, 2);
+            DrawRect(new Rect2(sx * cell, sz * cell, Mathf.Max(.1f,cell*.9f), Mathf.Max(.1f,cell*.9f)), new Color(1, 0.9f, 0.3f), false, 2);
     }
 
     private void DrawMarker(PresentationMarker marker, float cell)
     {
         MapSymbols.Draw(this, marker.Kind,
-            new Rect2(marker.X * cell + 2, marker.Z * cell + 2, cell - 5, cell - 5), marker.Label);
+            new Rect2(marker.X * cell + cell*.1f, marker.Z * cell + cell*.1f, cell*.8f, cell*.8f), marker.Label);
     }
 
     private void DrawActor(PresentationActor actor, float cell, Font? font)

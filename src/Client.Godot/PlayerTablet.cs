@@ -24,6 +24,7 @@ public partial class PlayerTablet : VBoxContainer
     private PlayerView _view=null!;
     private bool _pending,_paused;
     private string _signature="";
+    public VBoxContainer PoliticsHost {get;}=new(){Name="CityPolitics"};
     public int SelectedTab{get=>_tabs.CurrentTab;set=>_tabs.CurrentTab=Math.Clamp(value,0,3);}
     public PlayerTablet(ScenarioDefinition scenario,string language,System.Action<GameAction> submit,System.Func<GameAction,ActionAccess> access)
     {
@@ -40,7 +41,7 @@ public partial class PlayerTablet : VBoxContainer
         _negotiations=new(scenario,language,submit);talks.AddChild(Fold(L("Двусторонние предложения и встречные условия","Bilateral proposals and counteroffers"),_negotiations,true));
         _deals=new(scenario,language,submit,access);talks.AddChild(Fold(L("Закупки, договоры и политическая поддержка","Buy offers, contracts and political support"),_deals));
         _pickups=new(scenario,language,submit);talks.AddChild(Fold(L("Покупки и путь получения","Purchases and pickup route"),_pickups));
-        var city=Tab(L("Город","City"));city.AddChild(TabletDesign.Wrap(_city));city.AddChild(TabletDesign.Wrap(_labor,true));
+        var city=Tab(L("Город","City"));city.AddChild(TabletDesign.Wrap(_city));city.AddChild(TabletDesign.Wrap(_labor,true));city.AddChild(PoliticsHost);
         TabletDesign.CompactInputs(this);
     }
     private static void Stat(Container host,string icon,Label value,string caption)

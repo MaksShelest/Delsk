@@ -60,6 +60,7 @@ public sealed record EconomyProfile(int Version, string Id, WorldEconomy World, 
     public ScenarioDefinition Apply(ScenarioDefinition map)
     {
         var w = World;
+        if(map.Layout is not null && map.ResourceNodes.Any(n=>!(w.Resources??[]).Any(r=>r.ItemId==n.ItemId)))throw new ArgumentException("Designed map needs compatible resource rules; select the A2 supported profile");
         if(VNext is {} projection && map.Participants.Length!=projection.FixedParticipants)
             throw new ArgumentException("This supported projection is fixed to four participants; variable composition belongs to B1.");
         var resolved = map with {

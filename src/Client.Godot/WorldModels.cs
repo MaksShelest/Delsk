@@ -46,6 +46,12 @@ public static partial class WorldModels
             foreach(float x in new[]{-.25f,0,.25f})foreach(float z in new[]{-.25f,0,.25f})
             {Round(root,.075f,new("9c486d"),new(x,.08f,z));Cylinder(root,.025f,.2f,new("5b9f48"),new(x,.22f,z),.06f);}
         }
+        else if(item is "stone" or "iron_ore" or "copper_ore" or "sand")
+        {
+            Color color=item switch {"iron_ore"=>new("796c66"),"copper_ore"=>new("b27850"),"sand"=>new("cfbb83"),_=>new("8c9390")};
+            Box(root,new(.88f,.04f,.88f),new("8f846b"),new(0,.02f,0));
+            for(int i=0;i<4;i++)Round(root,item=="sand"?.21f:.16f,color,new((i%2)*.33f-.16f,.12f,(i/2)*.3f-.15f));
+        }
         else
         {
             Box(root, new Vector3(0.85f, 0.045f, 0.85f), new Color("a77b48"), new Vector3(0, 0.02f, 0));

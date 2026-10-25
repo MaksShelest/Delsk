@@ -67,7 +67,10 @@ def make_server(lab, port=8765):
                     return self.send(200,read(target))
                 if path=='/api/config':
                     from research_lab import read,source
-                    return self.send(200,dict(economy=read(ROOT/'config/economy.json'),scenario=read(source(q.get('map',DEFAULT['scenario']),lab.workspace))))
+                    from research_lab_presets import MAPS
+                    map_path=q.get('map',DEFAULT['scenario']);choice=next((m for m in MAPS if m['path']==map_path),{})
+                    profile=choice.get('economy','config/economy.json')
+                    return self.send(200,dict(economy=read(ROOT/profile),economyPath=profile,scenario=read(source(map_path,lab.workspace))))
                 if path=='/api/describe':return self.send(200,lab.views.describe(q['id']))
                 if path=='/api/preview':return self.send(200,lab.views.preview(q['id'],q['path'],q.get('cursor',0)))
                 if path=='/api/world':return self.send(200,lab.views.world(q['id'],q['job'],q['attempt'],q['tick']))

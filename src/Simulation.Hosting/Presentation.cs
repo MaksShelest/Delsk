@@ -17,7 +17,8 @@ public record PresentationMarker(string Kind, int X, int Z, string Label, long E
 }
 public record PresentationTrip(long LogisticsId, long OwnerId, string ItemId, string State, int X, int Z, bool Loaded = false);
 public record PresentationFrame(long Tick, int MapWidth, int MapHeight, PresentationActor[] Actors,
-    PresentationMarker[] Markers, PresentationTrip[] Trips);
+    PresentationMarker[] Markers, PresentationTrip[] Trips)
+{public MapLayout? Layout {get;init;}};
 
 /// <summary>Публичная картинка сцены. Чужие договоры поддержки сюда не входят.</summary>
 public static class Presentation
@@ -54,6 +55,7 @@ public static class Presentation
                 : "plot-free";
             markers.Add(new(kind, plot.Position.X, plot.Position.Z, "", plot.Id.Value, plot.OwnerId?.Value ?? 0));
         }
+        if(scenario.Layout is {} layout)foreach(var site in layout.CivicObjects)markers.Add(new("civic",site.Entry.X,site.Entry.Z,site.Kind,0,0));
         var resourceSites=engine.ResourceSites();
         var resourceIndex=resourceSites.ToDictionary(r=>(r.Position,r.ItemId));
         var resourceMax=resourceSites.GroupBy(r=>r.ItemId).ToDictionary(g=>g.Key,g=>g.Max(r=>r.Capacity),StringComparer.Ordinal);
@@ -99,7 +101,7 @@ public static class Presentation
         }
         var trips = world.Logistics.Where(l => l.Trip is not null).OrderBy(l => l.Id.Value).Select(l =>
             new PresentationTrip(l.Id.Value, l.OwnerId.Value, l.Trip!.ItemId, l.Trip.State, l.Trip.Position.X, l.Trip.Position.Z, world.Inventories.Single(i=>i.Id==l.CargoInventory).Stock.Any(s=>s.Quantity>0))).ToArray();
-        return new(world.Tick, scenario.MapWidth, scenario.MapHeight, actors, markers.ToArray(), trips);
+        return new(world.Tick, scenario.MapWidth, scenario.MapHeight, actors, markers.ToArray(), trips){Layout=scenario.Layout};
     }
 }
 

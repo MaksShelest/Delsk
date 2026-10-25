@@ -99,7 +99,7 @@ function formPlan(){
 function syncPlan(){try{const p=formPlan();$('plan').value=JSON.stringify(p,null,2);let count=p.seeds.length*p.repetitions;for(const f of p.factors)count*=f.values?.length??1;$('estimate').textContent='Запланировано прогонов: '+count+' · '+p.ticks+' тиков · '+(p.mode==='algorithmic'?'алгоритмы':'гибрид');}catch(e){$('estimate').textContent=e.message;}}
 async function setPlan(plan){
  draft=clone(plan);$('experiment-name').value=plan.id;$('map').value=plan.scenario;$('ticks').value=plan.ticks;$('seeds').value=plan.seeds.join(', ');$('repetitions').value=plan.repetitions;$('timeout').value=plan.timeoutSeconds??180;$('mode').value=plan.mode;
- const c=await api(query('/api/config',{map:plan.scenario}));scenario=c.scenario;economy=clone(plan.economyData??c.economy);
+ const c=await api(query('/api/config',{map:plan.scenario}));scenario=c.scenario;economy=clone(plan.economyData??c.economy);if(!plan.economyData)draft.economy=c.economyPath;
  customMembers=!!plan.participants;members=plan.participants?clone(plan.participants):scenario.participants.map((m,i)=>({id:m.id,cashMinor:economy.world.startingCashMinor,inventoryCapacity:economy.world.personalInventoryCapacity,position:m.position,preferredInput:m.publicPreferenceItem||(['grain','wood'][i%2]),difficulty:'Medium'}));
  $('npc-count').value=members.length-1;renderMembers();renderEconomy();renderFactors();syncPlan();
 }
@@ -159,7 +159,7 @@ bind('add-factor',()=>{
  draft.factors=draft.factors.filter(f=>f.path!==path);draft.factors.push({path,values});renderFactors();syncPlan();
 });
 ['experiment-name','ticks','seeds','repetitions','timeout','mode'].forEach(id=>$(id).addEventListener('input',syncPlan));
-$('map').addEventListener('change',()=>{const p=formPlan();delete p.participants;setPlan(p).catch(alertError);});
+$('map').addEventListener('change',()=>{const p=formPlan();delete p.participants;delete p.economyData;setPlan(p).catch(alertError);});
 $('preset').addEventListener('change',()=>{const p=catalog.presets.find(p=>p.id===$('preset').value);$('preset-description').textContent=p.description;setPlan(p.plan).catch(alertError);});
 bind('apply-json',()=>setPlan(parsePlan($('plan').value)));
 async function queue(run){const plan=formPlan();$('run').disabled=$('queue').disabled=true;try{
