@@ -15,13 +15,18 @@ public partial class MapSelectionScreen : ColorRect
     public event System.Action? FeedbackSettingsRequested;
     public event System.Action? AppearanceSettingsRequested;
     public string SelectedMap { get; private set; }
+    public int NpcCount {get;private set;}=3;
     public NpcDifficulty Difficulty {get;private set;}=NpcDifficulty.Medium;
     public LocalGameModel? ModelConfiguration {get;private set;}
     private readonly VBoxContainer _preview = new();
+    private bool _previewAvailable=true;
+    private Button? _startButton;
+    private readonly System.Func<string,int,ScenarioDefinition>? _readSetup;
     private readonly string _language;
     private readonly System.Func<string, ScenarioDefinition> _read;
-    public MapSelectionScreen(string language, bool canContinue, System.Func<string, ScenarioDefinition> read, string selected = PlayMaps.First, NpcDifficulty difficulty=NpcDifficulty.Medium,LocalGameModel? model=null)
+    public MapSelectionScreen(string language, bool canContinue, System.Func<string, ScenarioDefinition> read, string selected = PlayMaps.First, NpcDifficulty difficulty=NpcDifficulty.Medium,LocalGameModel? model=null,int npcCount=3,System.Func<string,int,ScenarioDefinition>? readSetup=null)
     {
+        new OrdinaryGameOptions(npcCount).Validate();NpcCount=npcCount;_readSetup=readSetup;
         SelectedMap = selected; _read = read; _language = language;
         Color = new Color("26383d"); SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         var scroll=new ScrollContainer{HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};scroll.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);AddChild(scroll);
@@ -29,9 +34,14 @@ public partial class MapSelectionScreen : ColorRect
         var column = new VBoxContainer { CustomMinimumSize = new Vector2(600, 0) }; center.AddChild(column);
         column.AddChild(new Label { Text = "Delsk", HorizontalAlignment = HorizontalAlignment.Center });
         column.AddChild(_preview); ShowPreview();
+        var roster=new HBoxContainer();column.AddChild(roster);
+        roster.AddChild(new Label{Text=L("Ботов","Bots")});
+        var count=new SpinBox{Name="NpcCount",MinValue=3,MaxValue=10,Step=1,Rounded=true,Value=npcCount,CustomMinimumSize=new(110,48)};roster.AddChild(count);
+        var total=new Label{Name="ParticipantCount",Text=L("Всего участников: ","Total participants: ")+(NpcCount+1)};roster.AddChild(total);
+        count.ValueChanged+=value=>{NpcCount=checked((int)value);new OrdinaryGameOptions(NpcCount).Validate();total.Text=L("Всего участников: ","Total participants: ")+(NpcCount+1);ShowPreview();};
         AddNpcSettings(column,difficulty,model);
         AddButton(column, L("Сменить карту", "Change map"), ShowCatalog);
-        AddButton(column, L("Начать", "Start"), () => MapChosen?.Invoke(SelectedMap));
+        _startButton=AddButton(column, L("Начать", "Start"), () => {if(_previewAvailable)MapChosen?.Invoke(SelectedMap);});_startButton.Disabled=!_previewAvailable;
         if (canContinue) AddButton(column, L("Продолжить", "Continue"), () => Continued?.Invoke());
         AddButton(column, L("Настройки экрана", "Display settings"), () => DisplaySettingsRequested?.Invoke());
         AddButton(column,L("Реплики и звук","Speech and audio"),()=>FeedbackSettingsRequested?.Invoke());
@@ -66,7 +76,10 @@ public partial class MapSelectionScreen : ColorRect
     private void ShowPreview()
     {
         foreach (Node child in _preview.GetChildren()) { _preview.RemoveChild(child); child.QueueFree(); }
-        var scenario = _read(SelectedMap);
+        ScenarioDefinition scenario;
+        try{scenario=_readSetup?.Invoke(SelectedMap,NpcCount)??_read(SelectedMap);_previewAvailable=true;if(_startButton is not null)_startButton.Disabled=false;}
+        catch(Exception error)when(error is ArgumentException or InvalidOperationException)
+        {_previewAvailable=false;if(_startButton is not null)_startButton.Disabled=true;_preview.AddChild(new Label{Name="MapUnavailable",Text=L("Карта недоступна с текущим профилем: ","Map unavailable with the current profile: ")+error.Message,AutowrapMode=TextServer.AutowrapMode.WordSmart});return;}
         _preview.AddChild(new Label { Text = PlayMaps.Name(SelectedMap, _language), HorizontalAlignment = HorizontalAlignment.Center });
         _preview.AddChild(new MapPreview(scenario) { CustomMinimumSize = new Vector2(600, 240) });
         _preview.AddChild(new Label { Text = $"{scenario.MapWidth} × {scenario.MapHeight}" + L(" · Мир запустится только по «Начать».", " · The world starts only after Start."), HorizontalAlignment = HorizontalAlignment.Center });
@@ -81,14 +94,19 @@ public partial class MapSelectionScreen : ColorRect
         {
             string choice = key;
             list.AddChild(new Label { Text = PlayMaps.Name(key, _language) });
-            list.AddChild(new MapPreview(_read(key)) { CustomMinimumSize = new Vector2(640, 210) });
-            AddButton(list, L("Выбрать", "Select"), () => { SelectedMap = choice; ShowPreview(); dialog.Hide(); dialog.QueueFree(); });
+            try
+            {
+                list.AddChild(new MapPreview(_readSetup?.Invoke(key,NpcCount)??_read(key)) { CustomMinimumSize = new Vector2(640, 210) });
+                AddButton(list, L("Выбрать", "Select"), () => { SelectedMap = choice; ShowPreview(); dialog.Hide(); dialog.QueueFree(); });
+            }
+            catch(Exception error)when(error is ArgumentException or InvalidOperationException)
+            {list.AddChild(new Label{Text=L("Карта недоступна с текущим профилем: ","Map unavailable with the current profile: ")+error.Message,AutowrapMode=TextServer.AutowrapMode.WordSmart});list.AddChild(new Button{Text=L("Выбрать","Select"),Disabled=true});}
         }
         dialog.Confirmed += () => dialog.QueueFree(); dialog.Canceled += () => dialog.QueueFree();
         AddChild(dialog); dialog.PopupCentered();
     }
-    private static void AddButton(Container parent, string text, System.Action action)
-    { var button = new Button { Text = text, FocusMode = FocusModeEnum.None }; button.Pressed += action; parent.AddChild(button); }
+    private static Button AddButton(Container parent, string text, System.Action action)
+    { var button = new Button { Text = text, FocusMode = FocusModeEnum.None }; button.Pressed += action; parent.AddChild(button);return button; }
     private string L(string ru, string en) => PlayerText.Local(_language, ru, en);
 }
 
@@ -98,9 +116,12 @@ public partial class MapPreview(ScenarioDefinition scenario) : Control
     {
         float cell = Mathf.Min(Size.X / scenario.MapWidth, Size.Y / scenario.MapHeight);
         var offset = (Size - new Vector2(scenario.MapWidth, scenario.MapHeight) * cell) / 2;
-        Rect2 Area(int x, int z) => new(offset + new Vector2(x, z) * cell + Vector2.One, Vector2.One * (cell - 2));
+        float padding=Mathf.Min(1,cell*.12f);
+        Rect2 Area(int x, int z) => new(offset + new Vector2(x, z) * cell + Vector2.One*padding, Vector2.One * (cell - 2*padding));
         for (int x = 0; x < scenario.MapWidth; x++) for (int z = 0; z < scenario.MapHeight; z++)
             DrawRect(Area(x,z), new Color("729365"));
+        if(scenario.Layout is {} layout)
+        {foreach(var c in layout.RoadCorridorCells)DrawRect(Area(c.X,c.Z),new Color("88947c"));foreach(var c in layout.InitialCityDirtCells)DrawRect(Area(c.X,c.Z),new Color("a39578"));foreach(var site in layout.CivicObjects)foreach(var c in site.Footprint)DrawRect(Area(c.X,c.Z),new Color(site.Kind=="dealership"?"947b6c":"c6bda2"));}
         foreach (var plot in scenario.Plots ?? [])
             MapSymbols.Draw(this, plot.IsCorridor ? "corridor" : plot.IsShopSite || plot.ShopParticipantId.HasValue ? "shop-plot" : "plot-free", Area(plot.Position.X,plot.Position.Z));
         foreach (var node in scenario.ResourceNodes)

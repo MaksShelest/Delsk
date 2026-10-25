@@ -13,6 +13,15 @@ internal sealed class GridMap
     private HashSet<Cell> _buildingWalls = [];
     public void SetBuildingWalls(IEnumerable<Cell> walls) => _buildingWalls=walls.ToHashSet();
     public bool Walkable(Cell c) => c.X >= 0 && c.Z >= 0 && c.X < _width && c.Z < _height && !_blocked.Contains(c) && !_buildingWalls.Contains(c);
+    public Dictionary<Cell,int> DistancesFrom(Cell source)
+    {
+        if(!Walkable(source))throw new RuleViolation("NoPath");
+        var distances=new Dictionary<Cell,int>{{source,0}};var queue=new Queue<Cell>();queue.Enqueue(source);
+        while(queue.TryDequeue(out var cell))foreach(var next in Neighbors(cell))
+            if(Walkable(next) && distances.TryAdd(next,checked(distances[cell]+1)))queue.Enqueue(next);
+        return distances;
+    }
+    private static Cell[] Neighbors(Cell cell)=>[new(cell.X+1,cell.Z),new(cell.X,cell.Z+1),new(cell.X-1,cell.Z),new(cell.X,cell.Z-1)];
     public Cell[] FindPath(Cell source, Cell destination)
     {
         if (!Walkable(source) || !Walkable(destination)) throw new RuleViolation("NoPath");
@@ -29,8 +38,7 @@ internal sealed class GridMap
                 path.Reverse(); return path.ToArray();
             }
             // Canonical neighbor order is part of rules-v1.
-            Cell[] neighbors = [new(cell.X + 1, cell.Z), new(cell.X, cell.Z + 1),
-                new(cell.X - 1, cell.Z), new(cell.X, cell.Z - 1)];
+            Cell[] neighbors = Neighbors(cell);
             foreach (var next in neighbors)
                 if (Walkable(next) && seen.Add(next)) { previous[next] = cell; queue.Enqueue(next); }
         }
@@ -121,10 +129,15 @@ public static partial class ScenarioValidation
     {
         ArgumentNullException.ThrowIfNull(s);
         s.Economy?.Validate();
+        if(s.NewGame is {} setup && (setup.Version!="ordinary-setup-1" || setup.AssignmentVersion is not ("legacy-default" or "startup-rotation-1") ||
+            setup.Difficulty is not ("Easy" or "Medium" or "Hard") || s.Participants is null || !s.Participants.Any(p=>p.Id==setup.HumanActorId) ||
+            s.Participants.Length is <4 or >11 || string.IsNullOrWhiteSpace(setup.SourceMapId) || setup.BasePopulation<0 || setup.BaseMaximumPopulation<setup.BasePopulation ||
+            setup.BaseTreasuryMinor<0 || setup.BaseDemandBudgetMinor<0 || !System.Text.RegularExpressions.Regex.IsMatch(setup.EconomyProfileSha256??"","\\A[0-9a-f]{64}\\z",System.Text.RegularExpressions.RegexOptions.CultureInvariant)))
+            throw new ArgumentException("Invalid new-game provenance");
         if (string.IsNullOrWhiteSpace(s.Id) || s.Id.Length > 80 || s.MapWidth is < 1 or > 128 ||
             s.MapHeight is < 1 or > 128 || s.HarvestTicksPerUnit <= 0 || s.MoveTicksPerCell <= 0 ||
             s.TradeWindowTicks <= 0 || s.MaxCommandsPerActorTick is < 1 or > 64 || s.MaxTicks is < 1 or > 1000000 ||
-            s.Population < 0 || s.BlockedCells is null || s.Items is null || s.Recipes is null ||
+            s.Population < 0 || s.StartingTreasuryMinor<0 || s.BlockedCells is null || s.Items is null || s.Recipes is null ||
             s.Participants is null || s.Enterprises is null || s.CapitalOffers is null || s.ResourceNodes is null ||
             s.Participants.Length is < 1 or > 64)
             throw new ArgumentException("Invalid scenario settings");
@@ -208,6 +221,7 @@ public static partial class ScenarioValidation
             foreach (var e in s.Enterprises) _ = checked(e.Capacity * e.WageMinor + recipes[e.RecipeId].EnergyPerBatchMinor);
         }
         catch (OverflowException ex) { throw new ArgumentException("Scenario arithmetic overflow", ex); }
+        ValidateMapLayout(s);
     }
     internal static string Hash<T>(T value) => Convert.ToHexString(SHA256.HashData(
         JsonSerializer.SerializeToUtf8Bytes(value, SimulationJson.Options))).ToLowerInvariant();

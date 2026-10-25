@@ -5,6 +5,8 @@ using Simulation.Core;
 using Agents.Algorithmic;
 using Simulation.Hosting;
 
+if(args.Contains("--export-map-design",StringComparer.Ordinal))return MapDesignCommand.Run(args);
+
 // Catalog-only commands must return before any model runtime, controller or world exists.
 if (args.Contains("--validate-vnext-catalog", StringComparer.Ordinal)) return VNextCatalogCommand.Run(args);
 if (args.Contains("--validate-vnext-balance", StringComparer.Ordinal)) return VNextBalanceCommand.Run(args);
@@ -16,12 +18,12 @@ try
     for (int i = 0; i < args.Length; i += 2)
     {
         if (i + 1 >= args.Length || args[i] is not ("--scenario" or "--output" or "--script" or "--mode" or "--seed" or
-            "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers" or "--model-mode" or "--model-config" or "--economy" or "--validate-only" or "--profile" or "--human-ballot" or "--research" or "--research-setup" or "--model-wait"
+            "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers" or "--model-mode" or "--model-config" or "--economy" or "--new-game" or "--validate-only" or "--profile" or "--human-ballot" or "--research" or "--research-setup" or "--model-wait"
 #if DELSK_DEVELOPER
             or "--research-modifications"
 #endif
             ))
-            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--economy config/economy.json] [--validate-only true] [--profile true] [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|stopped-elections|physical-automation|participant-trade|food-chain|support|baseline|hybrid|model-safety] [--mode headless|paced] [--model-mode off|ollama --model-config PATH] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
+            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--economy config/economy.json] [--new-game OPTIONS_JSON (new baseline/hybrid only)] [--validate-only true] [--profile true] [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|stopped-elections|physical-automation|participant-trade|food-chain|support|baseline|hybrid|model-safety] [--mode headless|paced] [--model-mode off|ollama --model-config PATH] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
         if (!options.TryAdd(args[i], args[i + 1])) throw new ArgumentException("Duplicate argument");
     }
     foreach (string flag in new[] { "--profile", "--validate-only", "--research", "--model-wait", "--recover-backup" })
@@ -39,6 +41,8 @@ try
     string directory = options.GetValueOrDefault("--output", "artifacts/cycle");
     string script = options.GetValueOrDefault("--script", "cycle");
     string mode = options.GetValueOrDefault("--mode", "headless");
+    if(options.ContainsKey("--new-game") && (options.ContainsKey("--load") || options.ContainsKey("--replay") || options.ContainsKey("--seed") || options.ContainsKey("--research-setup") ||
+        script is not ("baseline" or "hybrid") || economics is null))throw new ArgumentException("--new-game OPTIONS requires new baseline/hybrid with --economy; no load/replay/seed/research-setup overrides");
     if (script is not ("cycle" or "recovery" or "development" or "labor" or "equipment" or "autonomous" or "market" or "pickup" or "delivery" or "capital-delivery" or "logistics" or "logistics-upgrade" or "own-storage" or "inbound" or "own-production" or "logistics-queue" or "capital-demand" or "elections" or "stopped-elections" or "physical-automation" or "participant-trade" or "food-chain" or "support" or "baseline" or "hybrid" or "model-safety" or "vnext-supported-fixture") || mode is not ("headless" or "paced"))
         throw new ArgumentException("Invalid script or mode");
     if (options.ContainsKey("--controllers") && (script is not ("autonomous" or "baseline" or "hybrid" or "model-safety") || options.ContainsKey("--load") || options.ContainsKey("--replay")))
@@ -58,6 +62,7 @@ try
         if (remaining > 0) Thread.Sleep(TimeSpan.FromSeconds((double)remaining / Stopwatch.Frequency));
     }
     var watch = Stopwatch.StartNew();
+    OrdinaryGameResolution? ordinary=null;
     GameSession session;
     ScenarioDefinition definition;
     long? target = options.TryGetValue("--ticks", out string? ticks) ? long.Parse(ticks, CultureInfo.InvariantCulture) : null;
@@ -87,14 +92,23 @@ try
     }
     else
     {
-        definition = RunArtifacts.LoadScenario(options.GetValueOrDefault("--scenario", script == "model-safety" ? "scenarios/model-safety.json" : script is "baseline" or "hybrid" ? "scenarios/baseline-economy.json" : script == "autonomous" ? "scenarios/autonomous-economy.json" : "scenarios/economic-cycle.json"));
-        if (economics is not null) definition = economics.Apply(definition);
+        definition = RunArtifacts.LoadScenario(options.GetValueOrDefault("--scenario", script == "model-safety" ? "scenarios/model-safety.json" : script is "baseline" or "hybrid" ? "scenarios/baseline-economy.json" : script == "autonomous" ? "scenarios/autonomous-economy.json" : "scenarios/economic-cycle.json"),economics);
+        if(options.TryGetValue("--new-game",out var newGamePath))
+        {
+            if(new FileInfo(newGamePath).Length>8192)throw new ArgumentException("New-game options too large");
+            var gameOptions=OrdinaryGameOptions.Read(File.ReadAllText(newGamePath));
+            VNextBalance? full=null;
+            if(economics!.VNext is not null)
+            { var read=VNextBalanceReader.Load(Path.Combine(Path.GetDirectoryName(economyPath!)!,"balance.b1.json"));if(!read.IsValid || read.Sha256!=economics.VNext.FullBalanceSha256)throw new ArgumentException("Full balance/profile mismatch");full=read.Balance; }
+            ordinary=OrdinaryNewGame.Resolve(definition,economics!,gameOptions,vnextBalance:full);definition=ordinary.Scenario;
+        }
+        else if (economics is not null) definition = economics.Apply(definition);
         if(options.TryGetValue("--research-setup",out var setupPath))definition=ResearchObservation.ApplySetup(definition,setupPath);
         if (options.GetValueOrDefault("--validate-only", "false") == "true")
         {
             var validationSession = new GameSession(new SimulationEngine(definition));
-            if (script == "hybrid") models.Configure(validationSession, definition, options.GetValueOrDefault("--controllers", "scenarios/baseline-controllers.json"), options, false, economics);
-            else AutonomousRun.Configure(validationSession, definition, options.GetValueOrDefault("--controllers", "scenarios/baseline-controllers.json"), economics: economics);
+            if (script == "hybrid") models.Configure(validationSession, definition, options.GetValueOrDefault("--controllers", "scenarios/baseline-controllers.json"), options, false, economics,ordinary);
+            else AutonomousRun.Configure(validationSession, definition, options.GetValueOrDefault("--controllers", "scenarios/baseline-controllers.json"), economics: economics,ordinary:ordinary);
             Console.WriteLine($"Economy/scenario valid: {economics?.Id ?? definition.Id}"); return 0;
         }
         if (options.TryGetValue("--seed", out string? seed)) definition = definition with { Seed = ulong.Parse(seed, CultureInfo.InvariantCulture) };
@@ -104,8 +118,8 @@ try
         if (script is ("autonomous" or "baseline" or "hybrid" or "model-safety") && tape is null)
         {
             string controllers = options.GetValueOrDefault("--controllers", script == "autonomous" ? "scenarios/autonomous-controllers.json" : "scenarios/baseline-controllers.json");
-            long horizon = script is "hybrid" or "model-safety" ? models.Configure(session, definition, controllers, options, script == "model-safety", economics)
-                : AutonomousRun.Configure(session, definition, controllers, economics: economics, selfBallots: options.GetValueOrDefault("--human-ballot")=="self");
+            long horizon = script is "hybrid" or "model-safety" ? models.Configure(session, definition, controllers, options, script == "model-safety", economics,ordinary)
+                : AutonomousRun.Configure(session, definition, controllers, economics: economics, selfBallots: options.GetValueOrDefault("--human-ballot")=="self",ordinary:ordinary);
             if(definition.Elections?.PauseForBallots==true && options.GetValueOrDefault("--human-ballot")!="self")
                 throw new ArgumentException("Frozen elections require an explicit --human-ballot self policy in headless runs");
             target ??= horizon;
@@ -134,6 +148,7 @@ try
         session.ConfigureResearchPlayback(JsonSerializer.Deserialize<ResearchModification[]>(File.ReadAllText(researchPath),SimulationJson.Options)??throw new ArgumentException("InvalidResearchReplay"));
     }
 #endif
+    double startupMilliseconds=watch.Elapsed.TotalMilliseconds;
     bool observe=options.GetValueOrDefault("--research")=="true";
     bool waitForModel=options.GetValueOrDefault("--model-wait")=="true";
     if(observe && (target is null || options.GetValueOrDefault("--profile")=="true"))throw new ArgumentException("Research recording requires --ticks and no --profile");
@@ -199,7 +214,7 @@ try
         throw;
     }
     observer?.Progress("exporting");
-    watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, modelMetadata: models.Metadata, economyProvenance: economics?.VNext is { } provenance ? new { Metadata=provenance, ProfileFileSha256=VNextBalanceReader.Digest(economyBytes!), ResolvedConfigHash=session.Engine.ConfigHash } : null);
+    watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, modelMetadata: models.Metadata, economyProvenance: economics?.VNext is { } provenance ? new { Metadata=provenance, ProfileFileSha256=VNextBalanceReader.Digest(economyBytes!), ResolvedConfigHash=session.Engine.ConfigHash } : null,startupMilliseconds:startupMilliseconds);
     if (economics is not null)
         File.WriteAllText(Path.Combine(directory,"economy-profile.json"),JsonSerializer.Serialize(economics,new JsonSerializerOptions(SimulationJson.Options) {WriteIndented=true}));
     observer?.Progress("completed");

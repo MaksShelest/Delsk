@@ -7,15 +7,17 @@ namespace Simulation.Hosting;
 
 public static class RunArtifacts
 {
-    public static ScenarioDefinition LoadScenario(string path)
+    public static ScenarioDefinition LoadScenario(string path,EconomyProfile? economy=null)
     {
-        if (new FileInfo(path).Length > 1024 * 1024) throw new ArgumentException("Scenario file too large");
-        var scenario = JsonSerializer.Deserialize<ScenarioDefinition>(File.ReadAllText(path), SimulationJson.Options)
+        if (new FileInfo(path).Length > MapDesignReader.MaximumBytes) throw new ArgumentException("Scenario file too large");
+        var bytes=File.ReadAllBytes(path);
+        if(MapDesignReader.IsDesign(bytes))return MapDesignReader.Read(bytes,economy??throw new ArgumentException("Map design needs --economy A2 supported profile"));
+        var scenario = JsonSerializer.Deserialize<ScenarioDefinition>(bytes, SimulationJson.Options)
             ?? throw new ArgumentException("Scenario is empty");
         ScenarioValidation.Validate(scenario); return scenario;
     }
     public static void Export(GameSession session, ScenarioDefinition definition, string directory,
-        string timingPolicy, string script, double elapsedMilliseconds, string status = "succeeded", string? failure = null, object? modelMetadata = null, object? economyProvenance = null)
+        string timingPolicy, string script, double elapsedMilliseconds, string status = "succeeded", string? failure = null, object? modelMetadata = null, object? economyProvenance = null,double? startupMilliseconds=null)
     {
         Directory.CreateDirectory(directory);
         var state = session.Engine.Inspect();
@@ -27,7 +29,7 @@ public static class RunArtifacts
             Controller = session.ControllerStates.Any(c => c.Kind.StartsWith("hybrid-", StringComparison.Ordinal)) ? "hybrid" : session.HasControllers ? "algorithmic" : session.PlaybackFinalTick.HasValue ? "recorded-inputs" : "scripted",
             Controllers = session.ControllerStates, ControllerStateHash = session.ComputeControllerStateHash(), Model = modelMetadata, RuntimeVersion = Environment.Version.ToString(),
             Commit = Environment.GetEnvironmentVariable("DELSK_COMMIT"), TickSeconds = 1,
-            MapId = definition.Id, Difficulty = (string?)null, DifficultyReason = "Per-actor policy/settings and module versions are recorded in controllers; no inferred global difficulty",
+            MapId = definition.Id, MapDesign=definition.Layout is {} layout?new{layout.Version,layout.SourceSha256,layout.SourceId}:null, NewGame=definition.NewGame, ParticipantCount=definition.Participants.Length, NpcCount=definition.NewGame is null?(int?)null:definition.Participants.Length-1, Difficulty = definition.NewGame?.Difficulty, DifficultyReason = "Per-actor policy/settings and module versions are recorded in controllers; no inferred global difficulty",
             Stage = "Package8", DeveloperBuild=SimulationEngine.IsDeveloperBuild, ResearchModified=session.Engine.ResearchModified,
             CleanComparisonEligible=!SimulationEngine.IsDeveloperBuild && !session.Engine.ResearchModified,
             EconomyProvenance = economyProvenance,
@@ -37,7 +39,7 @@ public static class RunArtifacts
             ControllerStateHash = session.ComputeControllerStateHash(),
             ControllerDecisionTurns = session.ControllerTurns.Length,
             ControllerRejections = session.ControllerTurns.Sum(t => t.Feedback.Count(r => r.Status == ResultStatus.Rejected)),
-            ElapsedMilliseconds = elapsedMilliseconds, AverageMillisecondsPerTick = state.Tick > 0 ? elapsedMilliseconds / state.Tick : (double?)null,
+            StartupMilliseconds=startupMilliseconds, ElapsedMilliseconds = elapsedMilliseconds, AverageMillisecondsPerTick = state.Tick > 0 ? elapsedMilliseconds / state.Tick : (double?)null,
             state.InitialMoneyMinor, state.ExternalMoneyInMinor, state.ExternalMoneyOutMinor, state.Accounts, state.Flows,
             state.Settlements, state.MarketOffers, state.MarketBids, state.MarketAllocations, state.BuyOffers, state.SupplyRequests, state.DeliveryContracts, state.Logistics, state.CapitalDemand, state.Elections, state.Population, state.Unemployed, state.EmploymentGroups, state.PopulationGrowth, RamBytes = (long?)null, RamMeasurementReason = "not measured" });
         WriteJson("scenario.json", definition);

@@ -191,12 +191,20 @@ public partial class Playfield : Control
         Refresh();
     }
 
-    private ScenarioDefinition ReadMap(string key) => ReadEconomy().Apply(
-        JsonSerializer.Deserialize<ScenarioDefinition>(Text(PlayMaps.Resource(key)), SimulationJson.Options)
-        ?? throw new InvalidOperationException(key));
+    private int _newNpcCount=3;
+    private OrdinaryGameResolution ResolveNewGame(string key,int count)
+    {
+        var map=JsonSerializer.Deserialize<ScenarioDefinition>(Text(PlayMaps.Resource(key)),SimulationJson.Options)??throw new InvalidOperationException(key);
+        var economy=ReadEconomy(key);
+        VNextBalance? full=null;
+        if(economy.VNext is {} provenance)
+        {var read=VNextBalanceReader.Read(System.Text.Encoding.UTF8.GetBytes(Text("Play.vnext-balance.json")));if(!read.IsValid || read.Sha256!=provenance.FullBalanceSha256)throw new InvalidOperationException("Full balance/profile mismatch");full=read.Balance;}
+        return OrdinaryNewGame.Resolve(map,economy,new(count,_newDifficulty.ToString()),vnextBalance:full);
+    }
+    private ScenarioDefinition ReadMap(string key)=>ResolveNewGame(key,_newNpcCount).Scenario;
 
     private void DismissMaps()
-    { if (_mapSelection is not null) {_newMapKey = _mapSelection.SelectedMap;_newDifficulty=_mapSelection.Difficulty;_newModel=_mapSelection.ModelConfiguration;} _mapSelection?.QueueFree(); _mapSelection = null; }
+    { if (_mapSelection is not null) {_newNpcCount=_mapSelection.NpcCount;_newMapKey = _mapSelection.SelectedMap;_newDifficulty=_mapSelection.Difficulty;_newModel=_mapSelection.ModelConfiguration;} _mapSelection?.QueueFree(); _mapSelection = null; }
 
     private void ShowMaps()
     {
@@ -206,7 +214,7 @@ public partial class Playfield : Control
         ResetTablet();
         ApplySurface();
         DismissMaps();
-        _mapSelection = new MapSelectionScreen(_language, _session is not null || System.IO.File.Exists(SavePath), ReadMap, _newMapKey,_newDifficulty,_newModel);
+        _mapSelection = new MapSelectionScreen(_language, _session is not null || System.IO.File.Exists(SavePath), ReadMap, _newMapKey,_newDifficulty,_newModel,_newNpcCount,(key,count)=>ResolveNewGame(key,count).Scenario);
         _mapSelection.MapChosen += key =>
         {
             try{_mapSelection.ModelConfiguration?.Validate();}catch(ArgumentException){_mapSelection.TooltipText=L("Проверьте имя модели и настройки.","Check model name and settings.");return;}
@@ -284,7 +292,8 @@ public partial class Playfield : Control
             ?? throw new InvalidOperationException(controllerName);
         if (mode == "economy")
         {
-            var economy = ReadEconomy(); _scenario = economy.Apply(_scenario);
+            var economy = ReadEconomy();var resolved=ResolveNewGame(_mapKey,_newNpcCount);_scenario=resolved.Scenario;
+            config=config.ForOrdinary(_scenario,resolved.HumanActorId,resolved.Controllers);
             config = config with { Npcs = config.Npcs.Select(n => AlgorithmicController.WithEconomy(n, economy.Npc)).ToArray() };
         }
         _human = new(config.HumanActorId);
@@ -370,6 +379,8 @@ public partial class Playfield : Control
         }
         if (choice.Key.StartsWith("market:", StringComparison.Ordinal))
         { OpenMarketTablet(long.Parse(choice.Key[7..], CultureInfo.InvariantCulture)); return; }
+        if(choice.Key=="city"){_playerTab=3;OpenPlayerTablet();return;}
+        if(choice.Key=="dealership"){OpenHelp("dealership");return;}
         if (choice.Key == "exchange") { OpenCapitalTablet(); return; }
         if (choice.Command is { } action) Offer(action);
     }
@@ -467,6 +478,7 @@ public partial class Playfield : Control
         var frame = Presentation.Read(_scenario, _session.Engine, _human.Value);
         if (_surface == Surface.Play || paused) _stage?.Show(frame, paused, _selectedEnterprise, T("you"), _surface == Surface.Play, _language);
         if (_surface == Surface.Debug) _board?.Show(frame, _cellX, _cellZ);
+        _miniMap?.Show(frame,null,null);
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
         string stock = pack.Stock.Length == 0 ? T("inventory.empty")
             : string.Join(", ", pack.Stock.OrderBy(s => s.ItemId, StringComparer.Ordinal).Select(s => $"{PlayerText.Item(_language, s.ItemId)} ×{s.Quantity}"));
@@ -601,7 +613,7 @@ public partial class Playfield : Control
         if (view.Elections.NextElectionId is { } election)
         {
             host.AddChild(new Label { Text = $"{T("vote.title")} #{election.Value}  {view.Elections.OwnChoice?.Value.ToString() ?? T("no")}" });
-            var votes = new HBoxContainer();
+            var votes = new VBoxContainer();
             host.AddChild(votes);
             foreach (var candidate in view.Elections.Participants.Where(p => p != _human))
                 Button(votes, "vote.choose", () => Offer(PlayerDesk.Vote(election.Value, candidate.Value)), candidate.Value.ToString(CultureInfo.InvariantCulture));
@@ -722,10 +734,8 @@ public partial class Playfield : Control
         };
         var legend = new GridContainer { Columns = 2 };
         legendScroll.AddChild(legend);
-        foreach (var entry in new[]
+        foreach (var entry in _scenario.Participants.Select(p=>(p.Id==_human.Value?"player":"npc",p.Id.ToString(),WorldSkins.ActorName(p.Id,"ru"),WorldSkins.ActorName(p.Id,"en"))).Concat(new[]
         {
-            ("player", "", "Вы", "You"), ("npc", "2", "Участник NPC 2", "NPC participant 2"),
-            ("npc", "3", "Участник NPC 3", "NPC participant 3"), ("npc", "4", "Участник NPC 4", "NPC participant 4"),
             ("resource", "wood", "Древесина", "Wood"), ("resource", "grain", "Зерно", "Grain"),
             ("resource", "milk", "Приём молочного сырья", "Dairy collection"), ("resource", "beet", "Свёкла", "Beet"),
             ("plot-free", "", "Свободный участок", "Free plot"), ("plot-own", "", "Ваш участок", "Your plot"),
@@ -735,7 +745,7 @@ public partial class Playfield : Control
             ("warehouse", "", "Склад", "Warehouse"), ("shop", "", "Лавочка", "Shop"),
             ("capital", "", "Терминал столицы", "Capital terminal"), ("cargo", "", "Груз в пути", "Cargo in transit"),
             ("truck-home", "", "Грузовик без груза", "Empty truck"), ("equipment", "", "Добывающая техника", "Extraction equipment")
-        })
+        }))
         {
             legend.AddChild(new LegendIcon { Kind = entry.Item1, Item = entry.Item2, CustomMinimumSize = new Vector2(34, 32) });
             legend.AddChild(new Label { Text = PlayerText.Local(_language, entry.Item3, entry.Item4), VerticalAlignment = VerticalAlignment.Center });
@@ -891,7 +901,7 @@ public partial class Playfield : Control
         _session = loaded.Session;
         _scenario = _session.Engine.Configuration();
         _mapKey = PlayMaps.KeyForScenario(_scenario.Id);
-        _human = new(1);
+        _human = new(_scenario.NewGame?.HumanActorId??1);
         RestoreGameControllers();
         ObserveModelFallbacks();
         _scheduler = new TickScheduler(_session,controllerBarrier:()=>ModelBarrier);

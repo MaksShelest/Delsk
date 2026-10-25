@@ -4,3 +4,7 @@
 /config/vnext/balance.b1.json text eol=lf
 /config/vnext/economy.b1-supported.json text eol=lf
 /config/economy.json text eol=lf
+
+docs/vnext/maps/*.json text eol=lf
+scenarios/vnext/small-river.json text eol=lf
+scenarios/vnext/large-districts.json text eol=lf

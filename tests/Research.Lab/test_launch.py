@@ -98,7 +98,7 @@ class HttpTests(unittest.TestCase):
         self.assertEqual(4, len(catalog['presets']))
         for preset in presets():
             for choice in MAPS:
-                _, _, arms = expand(preset['plan'] | dict(scenario=choice['path']), self.lab.workspace)
+                _, _, arms = expand(preset['plan'] | dict(scenario=choice['path'],economy=choice.get('economy','config/economy.json')), self.lab.workspace)
                 self.assertGreaterEqual(len(arms), 1)
         self.assertEqual(original, DEFAULT)
         self.assertEqual(1, len(presets()[0]['plan']['seeds']))

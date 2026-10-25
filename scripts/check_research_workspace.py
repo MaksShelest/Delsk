@@ -40,7 +40,7 @@ try:
         page.locator('[data-page=new]').first.click()
         page.locator('#map').select_option('scenarios/city-corridor-v1.json')
         page.wait_for_function("() => JSON.parse(document.getElementById('plan').value).scenario==='scenarios/city-corridor-v1.json'")
-        assert page.locator('#map option').count()==5
+        assert page.locator('#map option').count()==7
         page.locator('#setup-tabs [data-tab=members]').click()
         page.locator('#npc-count').fill('2');page.locator('#npc-count').press('Tab')
         page.locator('[data-member="0"][data-key=cashMinor]').fill('37.25')

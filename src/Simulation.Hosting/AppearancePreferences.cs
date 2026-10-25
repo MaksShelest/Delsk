@@ -48,6 +48,6 @@ public static class AppearanceCatalog
     {
         if(item=="wood")return "Forest_"+(sparse?"Sparse":"Rich")+"_"+(stock<=0?"Cut":stock<capacity-stock?"Young":"Full");
         if(item=="milk")return sparse?"Pasture_1Cow":"Pasture_2Cow";
-        return stock<=0?"EmptyField":item=="beet"?"BeetField":"WheatField";
+        return item is "grain" or "beet" ? stock<=0?"EmptyField":item=="beet"?"BeetField":"WheatField" : "";
     }
 }

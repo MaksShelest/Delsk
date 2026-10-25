@@ -56,7 +56,7 @@ with (out/'launcher.stdout.log').open('w') as stdout, (out/'launcher.stderr.log'
         validation = Lab(out/'preset-validation')
         for preset in presets():
             for choice in MAPS:
-                validation.enqueue(preset['plan'] | dict(scenario=choice['path']))
+                validation.enqueue(preset['plan'] | dict(scenario=choice['path'],economy=choice.get('economy','config/economy.json')))
         assert len(validation.series) == len(presets())*len(MAPS)
         stamps = {f.name: f.stat().st_mtime_ns for f in (workspace/'startup').glob('*.json')}
         reopened = subprocess.run(command+['--prepare'], cwd=root, env=env, capture_output=True, text=True, timeout=15)

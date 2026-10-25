@@ -9,7 +9,8 @@ public sealed record WorldEconomy(long StartingCashMinor, long PersonalInventory
     RecipeDefinition[] Recipes, BuildingTypeDefinition[] BuildingTypes, EquipmentTypeDefinition[] EquipmentTypes,
     LaborSettings Labor, MarketSettings Market, DeliverySettings Delivery, LogisticsSettings Logistics,
     CapitalDemandSettings CapitalDemand, ElectionSettings Elections, SupportSettings Support, EconomicRules Rules,
-    ResourceTypeBalance[]? Resources = null);
+    ResourceTypeBalance[]? Resources = null,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long StartingTreasuryMinor=0);
 
 public sealed record ResourceTypeBalance(string ItemId, ResourceSiteRules Private, ResourceSiteRules Public);
 
@@ -59,11 +60,12 @@ public sealed record EconomyProfile(int Version, string Id, WorldEconomy World, 
     public ScenarioDefinition Apply(ScenarioDefinition map)
     {
         var w = World;
+        if(map.Layout is not null && map.ResourceNodes.Any(n=>!(w.Resources??[]).Any(r=>r.ItemId==n.ItemId)))throw new ArgumentException("Designed map needs compatible resource rules; select the A2 supported profile");
         if(VNext is {} projection && map.Participants.Length!=projection.FixedParticipants)
             throw new ArgumentException("This supported projection is fixed to four participants; variable composition belongs to B1.");
         var resolved = map with {
             EconomyProfileId = Id, Economy = w.Rules, Items = w.Items, Recipes = w.Recipes,
-            BuildingTypes = w.BuildingTypes, EquipmentTypes = w.EquipmentTypes, Population = w.Population,
+            BuildingTypes = w.BuildingTypes, EquipmentTypes = w.EquipmentTypes, Population = w.Population, StartingTreasuryMinor=w.StartingTreasuryMinor,
             Participants = map.Participants.Select(p => p with { CashMinor = w.StartingCashMinor, InventoryCapacity = w.PersonalInventoryCapacity }).ToArray(),
             Plots = map.Plots?.Select(p => p.IsCorridor ? p : p with { PriceMinor = p.IsShopSite || p.ShopParticipantId.HasValue ? w.ShopSitePriceMinor : w.PlotPriceMinor }).ToArray(),
             HarvestTicksPerUnit = w.HarvestTicksPerUnit, MoveTicksPerCell = w.MoveTicksPerCell, TradeWindowTicks = w.TradeWindowTicks,

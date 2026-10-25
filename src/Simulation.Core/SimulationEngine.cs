@@ -49,7 +49,7 @@ public sealed partial class SimulationEngine
         _laborRandom = new(unchecked(_config.Seed ^ 0x1AB012UL));
         _marketRandom = new(unchecked(_config.Seed ^ 0xA0C710UL));
         _population = _config.Population;
-        _treasury = CreateAccount("Treasury"); _wages = CreateAccount("WagesSink");
+        _treasury = CreateAccount("Treasury",_config.StartingTreasuryMinor); _economy.InitialMoney=_config.StartingTreasuryMinor; _wages = CreateAccount("WagesSink");
         _capital = CreateAccount("CapitalBudget");
         foreach (var p in _config.Participants.OrderBy(p => p.Id))
         {
