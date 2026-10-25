@@ -20,16 +20,16 @@ public partial class PlayerTablet : VBoxContainer
     private readonly PurchaseGuidePanel _pickups;
     private readonly EquipmentPurchasePanel _purchases;
     private readonly Dictionary<(string,long),(Label Stock,ProgressBar Progress,Button Walk)> _rows=[];
-    private HouseholdObjectCard? _card;
+    private HouseholdObjectCard? _card;private (string Kind,long Id)? _cardObject;private readonly Func<long,bool,DemolitionQuote?>? _demolitionQuote;private readonly VBoxContainer _parked=new();private readonly Dictionary<long,RouteEditor> _parkedRoutes=[];
     private PlayerView _view=null!;
     private bool _pending,_paused;
     private string _signature="";
     public VBoxContainer PoliticsHost {get;}=new(){Name="CityPolitics"};
     public int SelectedTab{get=>_tabs.CurrentTab;set=>_tabs.CurrentTab=Math.Clamp(value,0,3);}
-    public PlayerTablet(ScenarioDefinition scenario,string language,System.Action<GameAction> submit,System.Func<GameAction,ActionAccess> access)
+    public PlayerTablet(ScenarioDefinition scenario,string language,System.Action<GameAction> submit,System.Func<GameAction,ActionAccess> access,Func<long,bool,DemolitionQuote?>? demolitionQuote=null)
     {
-        Name="PlayerPages";_scenario=scenario;_language=language;_submit=submit;_access=access;AddChild(_tabs);
-        var farm=Tab(L("Моё хозяйство","My holdings"));farm.AddChild(_overview);
+        _demolitionQuote=demolitionQuote;Name="PlayerPages";_scenario=scenario;_language=language;_submit=submit;_access=access;AddChild(_tabs);
+        var farm=Tab(L("Моё хозяйство","My holdings"));farm.AddChild(_overview);_overview.AddChild(_parked);
         var stats=new TabletColumns{Breakpoint=660};_overview.AddChild(stats);
         Stat(stats,"coin",_capital,L("Капитал","Capital"));Stat(stats,"people",_employed,L("Работают на вас","Working for you"));Stat(stats,"bag",_room,L("Свободно в рюкзаке · объём","Free backpack volume"));
         _empty.Text=L("Своих объектов пока нет. Добывайте сырьё, продавайте столице, покупайте участок и стройте.","No holdings yet. Harvest inputs, sell to the capital, buy a plot and build.");_overview.AddChild(_empty);_overview.AddChild(_holdings);
@@ -54,11 +54,12 @@ public partial class PlayerTablet : VBoxContainer
     private void Open(string kind,long id)
     {
         foreach(Node child in _cardHost.GetChildren()){_cardHost.RemoveChild(child);child.QueueFree();}
-        _card=new(_scenario,_language,kind,id,_submit,_access);_card.CloseRequested+=Back;_card.HelpRequested+=()=>HelpRequested?.Invoke();_cardHost.AddChild(_card);
+        _cardObject=(kind,id);_card=new(_scenario,_language,kind,id,_submit,_access,_demolitionQuote);_card.CloseRequested+=Back;_card.HelpRequested+=()=>HelpRequested?.Invoke();_cardHost.AddChild(_card);
         _overview.Visible=false;_cardHost.Visible=true;_back.Visible=true;_card.ShowData(_view,_pending,_paused);
     }
     public void ShowData(PlayerView view,bool pending,bool paused)
     {
+        if(_cardObject is {} selected&&selected.Kind=="building"&&!view.Buildings.Any(b=>b.Id.Value==selected.Id)){_card=null;_cardObject=null;Back();}
         _view=view;_pending=pending;_paused=paused;_tabs.CustomMinimumSize=new(0,Mathf.Max(260,GetViewportRect().Size.Y-340));
         var entries=view.Buildings.Select(b=>(Kind:"building",Id:b.Id.Value,Position:b.Position,Title:PlayerText.Building(_language,b.TypeId),Icon:b.TypeId))
             .Concat((view.Equipment??[]).Select(e=>(Kind:"equipment",Id:e.Id.Value,Position:e.Position,Title:L("Добывающая техника","Extraction equipment"),Icon:"gear"))).ToArray();
@@ -92,6 +93,10 @@ public partial class PlayerTablet : VBoxContainer
         _card?.ShowData(view,pending,paused);_deals.ShowData(view,pending);_negotiations.ShowData(view,pending);_pickups.ShowData(view,pending);_purchases.ShowData(view,pending);
         _participants.Text=L("Рейтинг по капиталу · фиксированная оценка","Capital ranking · fixed reference valuation")+"\n\n"+string.Join("\n\n",city.Participants.OrderByDescending(p=>p.CapitalMinor).ThenBy(p=>p.Actor.Value).Select(p=>(p.Actor==view.Participant.Id?L("Вы","You"):WorldSkins.ActorName(p.Actor.Value,_language))+" · "+PlayerText.Money(p.CapitalMinor)+L(" · работников "," · workforce ")+p.Employed+(p.Actor==view.Participant.Id?"":"\n"+L("Предпочтение: ","Preference: ")+(p.PreferenceItem.Length==0?L("не объявлено","not declared"):PlayerText.Item(_language,p.PreferenceItem)))));
         _city.Text=Stage(city.Stage)+L(" · капитал города "," · city capital ")+PlayerText.Money(city.CapitalMinor)+"\n\n"+L("Население / занятые / безработные: ","Population / employed / unemployed: ")+$"{city.Population} / {city.Employed} / {city.Unemployed}\n"+L("Работают на вас: ","Working for you: ")+own.Employed+(city.Employed==0?"":$" ({100m*own.Employed/city.Employed:0.0}%)")+"\n"+L("Действующих производств: ","Active productions: ")+city.ActiveProductions+"\n"+L("Завершённый выпуск: ","Completed-period output: ")+PlayerText.Money(city.GrossOutputMinor)+"\n"+L("Период приёмки: ","Receipt period: ")+$"{city.PeriodStartTick}–{city.PeriodEndTick}\n"+L("Принято столицей: ","Capital receipts: ")+city.CapitalDeliveredQuantity+L(" · по договорам "," · contracted receipts ")+city.CapitalContractDeliveredQuantity+L(" · новых обязательств "," · new commitments ")+city.CapitalContractedQuantity;
+        foreach(var system in view.Logistics.Where(l=>view.Demolition?.Receipts.Any(r=>!r.Construction&&r.Target==l.EnterpriseId.Value)==true))
+        {
+            if(!_parkedRoutes.TryGetValue(system.Id.Value,out var routes)){var box=new VBoxContainer();box.AddChild(new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart,Text=L("Сохранённая машина #","Retained vehicle #")+system.Id.Value+L(" · задайте явный маршрут между действующими объектами. Находится у освобождённого участка."," · set an explicit route between active objects. Parked at the released site.")});routes=new(_scenario,_language,"building",system.EnterpriseId.Value,_submit);box.AddChild(routes);_parked.AddChild(Fold(L("Сохранённая машина #","Retained vehicle #")+system.Id.Value,box));_parkedRoutes.Add(system.Id.Value,routes);}routes.ShowData(view,pending);
+        }
         _labor.Text=L("Действующая оплата занятых: ","Weighted current employed pay: ")+Wage(city.Labor.EmployedRate)+"\n"+L("Обеспеченные вакансии: ","Weighted ready-vacancy rate: ")+Wage(city.Labor.VacancyRate)+"\n\n"+string.Join("\n",city.Labor.Offers.Select(o=>"#"+o.Group.Value+" · "+L("участник ","participant ")+o.Owner.Value+L(" · мест "," · places ")+o.Vacancies+" · "+PlayerText.Money(o.AttractionWageMinor)+(o.PendingWageMinor is long wage?L(" · объявлено "," · announced ")+PlayerText.Money(wage):"")))+"\n\n"+L("Простой не оплачивается. Найм и изменение ставок происходят постепенно.","Idle work is unpaid. Hiring and wage changes take time.");
     }
     private string Stage(int stage)=>stage switch{0=>L("Деревня","Village"),1=>L("Посёлок","Settlement"),2=>L("Небольшой город","Small town"),_=>L("Развитый город","Developed town")};

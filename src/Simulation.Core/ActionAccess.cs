@@ -13,11 +13,11 @@ public static class ActionPolicy
 {
     public static ActionReach Reach(ActionKind kind) => kind switch
     {
-        ActionKind.TakeOverflow or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
+        ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.TakeOverflow or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.Build or ActionKind.UpgradeBuilding or
         ActionKind.SetWage or ActionKind.BuyEquipment or ActionKind.UpgradeEquipment or ActionKind.CollectPurchase or
         ActionKind.DeliverContract or ActionKind.BuyLogistics or ActionKind.UpgradeLogistics or ActionKind.SignSupport => ActionReach.AtLocation,
-        ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.MoveTo or ActionKind.CancelCapitalSale or ActionKind.SetTravelHeading or ActionKind.StopHarvest or
+        ActionKind.PrepareDemolition or ActionKind.CancelDemolitionPreparation or ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.MoveTo or ActionKind.CancelCapitalSale or ActionKind.SetTravelHeading or ActionKind.StopHarvest or
         ActionKind.SetProductionEnabled or ActionKind.CancelPlotReservation or ActionKind.SetRecipe or ActionKind.SetEquipmentMode or
         ActionKind.CreateSellOffer or ActionKind.SubmitBuyRequest or ActionKind.RaiseBid or ActionKind.WithdrawBid or
         ActionKind.CreateBuyOffer or ActionKind.AcceptDeliveryQuantity or ActionKind.WithdrawSupplyRequest or ActionKind.CancelBuyOffer or
@@ -53,6 +53,8 @@ public sealed partial class SimulationEngine
             ActionKind.SetWage => WageLocation(actor.Id, action.Group.Value),
             ActionKind.ReservePlot or ActionKind.BuyPlot => _plots.TryGetValue(action.Plot.Value, out var plot) ? [plot.Definition.Position] : null,
             ActionKind.Build => [action.Target],
+            ActionKind.DemolishBuilding=>_buildings.TryGetValue(action.Building.Value,out var demolishing)&&demolishing.Owner==actor.Id&&!Demolished(demolishing.Id)?[demolishing.Position]:null,
+            ActionKind.CancelConstruction=>_storageConstruction.TryGetValue(action.OfferId,out var construction)&&construction.Owner==actor.Id?[construction.Position]:null,
             ActionKind.UpgradeBuilding => _buildings.TryGetValue(action.Building.Value, out var building) && building.Owner == actor.Id ? [building.Position] : null,
             ActionKind.BuyLogistics => _enterprises.TryGetValue(action.Enterprise.Value, out var enterprise) && enterprise.Definition.OwnerId == actor.Id ? [enterprise.Definition.Position] : null,
             ActionKind.UpgradeLogistics => _logistics.TryGetValue(action.Logistics.Value, out var logistics) && logistics.Owner == actor.Id ? [_enterprises[logistics.Enterprise].Definition.Position] : null,

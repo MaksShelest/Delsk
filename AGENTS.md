@@ -1,3 +1,33 @@
+## C2,25.10.2026
+
+- От9220b4c/PR61merged: read-only own quote из фактического ConstructionMaterialConsumed;
+ 3000minor/cell+1500/extra cell level, recovery floor6000bp каждого ItemId после суммы.
+  Initial free scenario assets не создают paid material refund. Cash не возвращается.
+- Prepare/CancelPreparation отдельны от Demolish/CancelConstruction. New work/promises
+  blocked, existing WIP/accepted freight/foreign pickup rights/normal holds сохраняются;
+  blockers+fresh token+location+money перед commit. UI preview+hold2sec, cancel/no shortclick.
+- Все normal goods и salvage на своих ground70/cell, excess C1/1200active ticks;
+  old overflow IDs/deadlines не обновлять. ConstructionRecovered отдельный flow,
+  неProduced/Harvested;40% discard explicit. Population/land сохраняются.
+- Retired Building/Enterprise и empty historical inventory IDs сохраняются для old
+  contracts и собственной машины, исключены из active views/capital/walls/accessanchors.
+  Archive входит в C2 canonical hash. Не удалять empty inventory identity при rebuild,
+  если на неё ссылаются historical records. Preserved truck uses прежний explicit-route
+  executor после сноса/повторной стройки; PlayerTablet retained routes, no new fleet.
+- C2 также на legacy five maps: HasGroundStorage после первого сноса; config.Storage
+  не подменять, старые warehouse/build/delivery semantics прежние. Frozen defaults
+  demolition6000/3000/1500 и ground70/1200 проверены against BALANCE; optional overrides
+  в EconomicRules.Demolition. World20 limited readers18/19, legacy/C1 exacthash unchanged.
+-1095ordinary/1101Developer/37Python,18newC2; headless102exports/14replay/69pairs;
+  C2process16checks/10exports/9pairs/1996ticks; native RU/EN800/1100 preview/short+2s
+  hold/pause/diskContinue/materials, Linux legacy1132hashes/35restores+stopped10.
+  Full evidence/report IMPLEMENTATION_REPORT_PACKAGE_C2.md; usage DEMOLITION_C2.md,
+  recovery WORKLOG_PACKAGE_C2.md, verification/demolition-c2. CI C2 gate added.
+- Existing shared Level applies per footprint cell. Heterogeneous expansions/industry
+  XP/production construction stages/full material import относятся к D, не выдумывать.
+  Current timed construction cancellation = C1 warehouse build/upgrade. D1 не начинать
+  автоматически. Device Windows/Android/long balance остаются открытыми.
+
 ## C1,25.10.2026
 
 - От45fae36 (PR58+59merged): optional EconomyRules.Storage, own manual ground70;

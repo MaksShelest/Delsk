@@ -4,11 +4,11 @@ namespace Simulation.Core;
 
 public sealed partial class SimulationEngine
 {
-    public ImmutableArray<Cell> BlockedCells() => [.. _config.BlockedCells.Concat(_buildings.Values.SelectMany(BuildingWalls))
+    public ImmutableArray<Cell> BlockedCells() => [.. _config.BlockedCells.Concat(_buildings.Values.Where(b=>!Demolished(b.Id)).SelectMany(BuildingWalls))
         .Distinct().OrderBy(c => c.Z).ThenBy(c => c.X)];
     private static IEnumerable<Cell> BuildingWalls(BuildingState b) => (b.Type.Walls ?? [])
         .Select(c => new Cell(checked(b.Position.X+c.X),checked(b.Position.Z+c.Z)));
-    private void ApplyBuildingObstacles() => _map.SetBuildingWalls(_buildings.Values.SelectMany(BuildingWalls));
+    private void ApplyBuildingObstacles() => _map.SetBuildingWalls(_buildings.Values.Where(b=>!Demolished(b.Id)).SelectMany(BuildingWalls));
     private void CheckBuildingAccess(Cell position, BuildingTypeDefinition type)
     {
         var walls=(type.Walls??[]).Select(c=>new Cell(checked(position.X+c.X),checked(position.Z+c.Z))).ToHashSet();
@@ -19,8 +19,8 @@ public sealed partial class SimulationEngine
             _economy.Inventories.Values.Any(i=>walls.Contains(i.Position))) throw new RuleViolation("RouteWouldBeBlocked");
         var anchors=_actors.Values.Select(a=>a.Position).Concat(_resources.Keys.Select(k=>k.Position))
             .Concat(_plots.Values.Where(p=>!p.Definition.IsCorridor).Select(p=>p.Definition.Position).Where(c=>!walls.Contains(c)))
-            .Concat(_offers.Values.Select(o=>o.Definition.Position)).Concat(_buildings.Values.Select(b=>b.Position)).Distinct().ToArray();
-        var previous=_buildings.Values.SelectMany(BuildingWalls).ToArray();
+            .Concat(_offers.Values.Select(o=>o.Definition.Position)).Concat(_buildings.Values.Where(b=>!Demolished(b.Id)).Select(b=>b.Position)).Distinct().ToArray();
+        var previous=_buildings.Values.Where(b=>!Demolished(b.Id)).SelectMany(BuildingWalls).ToArray();
         _map.SetBuildingWalls(previous.Concat(walls));
         try
         {

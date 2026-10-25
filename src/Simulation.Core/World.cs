@@ -121,6 +121,7 @@ internal sealed class ItemFlow(string id)
     public long Produced { get; set; }
     public long Exported { get; set; }
     public long ConstructionInput { get; set; }
+    public long ConstructionRecovered {get;set;}
     public long Lost {get;set;}
 }
 

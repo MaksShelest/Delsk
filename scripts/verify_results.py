@@ -34,7 +34,7 @@ def verify(folder):
         assert int(sample['population']) == int(sample['unemployed']) + employed[tick]
     for flow in summary['flows']:
         physical = sum(stock['quantity'] for inventory in state['inventories'] for stock in inventory['stock'] if stock['itemId']==flow['itemId']) + sum(lot['quantity'] for inventory in state['inventories'] for lot in (inventory.get('overflow') or []) if lot['itemId']==flow['itemId'])
-        assert physical == flow['initial']+flow['harvested']+flow['produced']+sum(m['newValue']-m['oldValue'] for m in modifications if m['kind']=='Stock' and m['item']==flow['itemId'])-flow['recipeInput']-flow['exported']-flow.get('constructionInput',0)-flow.get('lost',0)
+        assert physical == flow['initial']+flow['harvested']+flow['produced']+sum(m['newValue']-m['oldValue'] for m in modifications if m['kind']=='Stock' and m['item']==flow['itemId'])-flow['recipeInput']-flow['exported']-flow.get('constructionInput',0)-flow.get('lost',0)+flow.get('constructionRecovered',0)
     for inv in state['inventories']:
         assert inv['occupiedVolume']+inv['reservedCapacity'] <= inv['capacity']
         assert all(0 <= item['reserved'] <= item['quantity'] for item in inv['stock'])

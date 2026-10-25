@@ -862,3 +862,50 @@ World19 сохраняет ground/construction/lots/holds/loss. Reader прин�
 Rules production-recipes-1, Session2/Envelope2 прежние: resolved optional config
 однозначно задаёт legacy/C1 семантику. Новые default/null поля пропущены при hash/JSON.
 Проверяемые примеры и ограничения: [STORAGE_C1.md](STORAGE_C1.md).
+
+## C2: подготовка, снос и фактические вложения (25.10.2026)
+
+DemolitionQuote — собственная read-only проекция из реальных
+ConstructionMaterialConsumed, а не из текущего рецепта/нормативной цены. Она содержит
+клетки/уровни, плату, возврат и блокировки; детерминированный token связывает
+подтверждение с актуальным расчётом. PrepareDemolition/CancelDemolitionPreparation
+не демонтируют объект. DemolishBuilding/CancelConstruction повторно проверяют
+владение, местоположение, безопасность, token и деньги; UI требует отдельного
+предварительного расчёта и непрерывного удержания2сек. В Core нет wall-clock.
+
+Prepare запрещает новые партии/назначения/обещания объекта; существующий WIP может
+закончиться, груз/подписанные обязательства сохраняются. Open buy-offer закрывается
+с возвратом неиспользованных holds, уже подписанные контракты остаются. Pending
+manual transfers, market pickup rights, normal holds и active freight блокируют
+немедленный снос. Обычный ручной вывоз разрешён. При нехватке средств/персонала для
+WIP игрок восстанавливает условия либо отменяет подготовку; партия не удаляется.
+
+Нормальные запасы и возврат распределяются в стабильном порядке по освобождённым
+клеткам. Пустой объём распределяется до создания отдельного C1 OverflowLot. Старые
+партии излишка остаются с прежними ID/сроками. ConstructionRecovered — отдельный
+поток, не Produced/Harvested: I05, demand-baseline, stock change и export учитывают
+его один раз. Невозвращённая часть вложений имеет отдельное событие discard.
+Возврат денег отсутствует. Workers→unemployed атомарно сохраняет population и
+исторические election/EmploymentChanged references.
+
+Retired Building/Enterprise и пустые старые inventories сохраняются в snapshot для
+исторических market/delivery references и собственной машины. Из активных views,
+капитала зданий и building walls объект исключён; на старом месте можно строить
+снова. При повторной стройке архивные inventory identities не удаляются. Логистика
+сохраняет собственный ID/ценность/уровень/кузов и прежний general transport executor;
+новый явный маршрут может работать от освобождённой базы. Бесплатного предмета
+«оборудование» из невозвратной денежной цены не создаётся.
+
+C2 распространяется на прежние обычные карты. До явного C2 действия legacy hash
+и ID-поток прежние. HasGroundStorage включает пустую землю после сноса; GroundRules
+использует прежние C1 defaults, но config.Storage не подменяется. Поэтому старое
+строительство/normal delivery holds не переходят молча в vNext. Typed demolition
+knobs допускаются через optional EconomicRules.Demolition; default6000bp/3000/1500
+соответствует BALANCE_VNEXT и проверяется тестом. Новых производств D нет.
+
+World20 сохраняет preparation/receipts/actual investments/cell levels/recovered flow;
+читает ограниченные18/19 без новых состояний и с прежним хешем. Rules production-
+recipes-1/Session2/Envelope2 прежние. Retired snapshots необходимы для исторических
+ссылок и не являются действующими складами/рабочими местами. Полный исследовательский
+экспорт дополнен demolition.json; участнику доступны только его собственные данные,
+публичный журнал не раскрывает состав возврата и confirmation token.
