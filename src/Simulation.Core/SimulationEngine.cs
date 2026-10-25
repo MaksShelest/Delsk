@@ -82,7 +82,7 @@ public sealed partial class SimulationEngine
         InitializeCapitalDemand();
         InitializeElections();
         InitializeSupport();
-        InitializeStorage();
+        InitializeStorage();InitializeDevelopmentBuildings();
         Emit("WorldCreated");
         ValidateInvariants();
     }
@@ -212,6 +212,9 @@ public sealed partial class SimulationEngine
                 case ActionKind.Build: Build(actor, c); break;
                 case ActionKind.UpgradeBuilding: UpgradeBuilding(actor, c); break;
                 case ActionKind.SetRecipe: SetRecipe(actor, c); break;
+                case ActionKind.PrepareEnterpriseExpansion: PrepareDevelopment(actor,c); break;
+                case ActionKind.CancelExpansionPreparation: PrepareDevelopment(actor,c,true); break;
+                case ActionKind.BuyExpansionLand: BuyExpansionLand(actor,c); break;
                 case ActionKind.AcceptIndustryQuest: AcceptIndustryQuest(actor,c); break;
                 case ActionKind.AbandonIndustryQuest: AbandonIndustryQuest(actor,c); break;
                 case ActionKind.OutfitWorkshop: OutfitWorkshop(actor, c); break;
@@ -304,6 +307,8 @@ public sealed partial class SimulationEngine
     private void SetProduction(ActorState actor, CommandEnvelope c)
     {
         var e = OwnProductionUnit(actor, c.Action);
+        if(c.Action.Enabled&&PreparingDevelopment(ProductionParent(e.Definition.Id))&&e.Batch is null)throw new RuleViolation("PreparingDevelopment");
+        if(c.Action.Enabled&&Development is not null&&StorageWorkAt(e.Definition.Position))throw new RuleViolation("ConstructionInProgress");
         e.Enabled = c.Action.Enabled;
         if (!e.Enabled) e.Reason = "UserPaused";
         Emit("ProductionSettingChanged", actor.Id, e.Definition.Id, reason: e.Enabled ? "Enabled" : "UserPaused", command: c.CommandId);

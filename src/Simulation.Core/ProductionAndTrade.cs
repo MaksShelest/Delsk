@@ -4,7 +4,7 @@ public sealed partial class SimulationEngine
 {
     private void AdvanceProduction(EnterpriseState e)
     {
-        if(PreparingDemolition(ProductionParent(e.Definition.Id))&&e.Batch is null){e.Enabled=false;e.Reason="PreparingDemolition";return;}
+        if((PreparingDemolition(ProductionParent(e.Definition.Id))||PreparingDevelopment(ProductionParent(e.Definition.Id)))&&e.Batch is null){e.Enabled=false;e.Reason=PreparingDemolition(ProductionParent(e.Definition.Id))?"PreparingDemolition":"PreparingDevelopment";return;}
         if (!e.Enabled) { e.Reason = "UserPaused"; return; }
         if (e.Group.Headcount < (ParallelWorkshops ? 1 : e.Recipe.MinimumStaff)) { e.Reason = "NoStaff"; return; }
         try
@@ -163,7 +163,7 @@ public sealed partial class SimulationEngine
     }
     public void ValidateInvariants()
     {
-        ValidateStorage();ValidateDemolition();ValidateWorkshops();ValidateIndustryDevelopment();
+        ValidateStorage();ValidateDemolition();ValidateWorkshops();ValidateIndustryDevelopment();ValidateDevelopmentBuildings();
         ValidateResearchAudit(); ValidateResources(); ValidateExtractionRoutes(); ValidateTransfers();
         if (_plots.Values.Where(p => p.Definition.IsShopSite).SelectMany(p => new[] { p.Owner, p.ReservedBy }.Where(a => a.HasValue))
             .GroupBy(a => a).Any(g => g.Count() > 1)) throw new InvalidOperationException("Shared shop site limit exceeded");

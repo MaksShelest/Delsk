@@ -23,7 +23,7 @@ public sealed partial class SimulationEngine
         BuildingState? building=null;StorageConstruction? job=null;
         if(construction){if(!_storageConstruction.TryGetValue(target,out job)||job.Owner!=actor.Value)return null;}
         else if(!_buildings.TryGetValue(target,out building)||building.Owner!=actor.Value||Demolished(target))return null;
-        var cells=building is null?new[]{new DemolitionCell(job!.Position,job.Level)}:building.Footprint.OrderBy(c=>c.Z).ThenBy(c=>c.X).Select(c=>new DemolitionCell(c,building.Level)).ToArray();
+        var cells=building is null?(job!.Development?.Cells.ToArray()??new[]{new DemolitionCell(job.Position,job.Level)}):DemolitionCells(building);
         // Journal entries describe actual committed investments; initial scenario assets have none.
         var commands=construction?new HashSet<string>([job!.CommandId],StringComparer.Ordinal):_events.Where(e=>e.EntityId==target&&e.Type is "BuildingConstructed" or "BuildingUpgraded" or "WorkshopOutfitStarted").Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal);
         var invested=_events.Where(e=>e.Type=="ConstructionMaterialConsumed"&&e.CommandId is {} id&&commands.Contains(id)).GroupBy(e=>e.ItemId,StringComparer.Ordinal).OrderBy(g=>g.Key,StringComparer.Ordinal).Select(g=>new MaterialCost(g.Key,g.Sum(e=>e.Quantity))).ToArray();
@@ -79,7 +79,7 @@ public sealed partial class SimulationEngine
         // Cancelling an upgrade returns only the unfinished project's materials; the existing building stays.
         if(job?.BuildingId>0)
         {
-            var tx=_economy.Begin(Tick);if(quote.PriceMinor>0)tx.Pay(actor.Account,_treasury,quote.PriceMinor,"Demolition");long next=_nextId;
+            var tx=_economy.Begin(Tick);StageReleaseDevelopmentHolds(tx,job);if(quote.PriceMinor>0)tx.Pay(actor.Account,_treasury,quote.PriceMinor,"Demolition");long next=_nextId;
             var upgradeLots=new List<OverflowLot>();foreach(var m in quote.Recovery){var lot=new OverflowLot(next++,actor.Id,m.ItemId,m.Quantity,$"demolition:{id}",Tick,checked(Tick+GroundRules.OverflowGraceTicks),[]);long excess=tx.ReceiveForecast(job.InventoryId,m.ItemId,m.Quantity,lot).Excess;if(excess>0)upgradeLots.Add(lot with{Quantity=excess});}
             tx.Commit();_nextId=next;FinishCancellation(job,quote,[job.InventoryId],command);RecordDemolitionRecovery(quote,command);foreach(var lot in upgradeLots)Emit("OverflowCreated",actor.Id,lot.Id,lot.ItemId,lot.Quantity,reason:lot.ExpiresTick.ToString(System.Globalization.CultureInfo.InvariantCulture),command:command.CommandId);return;
         }
@@ -105,7 +105,7 @@ public sealed partial class SimulationEngine
         {
             foreach(var e in UnitsFor(id)){e.Enabled=false;ReleaseDemolitionWorkers(e.Group);}
             foreach(var l in _logistics.Values.Where(l=>l.Enterprise==id)){ReleaseDemolitionWorkers(l.Group);l.Enabled=false;l.InboundEnabled=false;l.Queue.Clear();l.Contract=0;l.Destination=0;l.InboundSource=0;l.Reason="ParkedAfterDemolition";}
-            _preparingDemolition.Remove(id);
+            _preparingDemolition.Remove(id);ReleaseDevelopmentRights(id);
         }
         if(job is not null)FinishCancellation(job,quote,grounds,command);
         else{_demolitionReceipts.Add(new(id,false,actor.Id,Tick,quote.PriceMinor,quote.Cells,quote.Invested,quote.Recovery,grounds));Emit("BuildingDemolished",actor.Id,id,money:quote.PriceMinor,command:command.CommandId);}
@@ -116,14 +116,14 @@ public sealed partial class SimulationEngine
     private void RecordDemolitionRecovery(DemolitionQuote quote,CommandEnvelope command)
     {foreach(var m in quote.Recovery){_flows[m.ItemId].ConstructionRecovered=checked(_flows[m.ItemId].ConstructionRecovered+m.Quantity);Emit("DemolitionMaterialRecovered",quote.Owner,quote.Target,m.ItemId,m.Quantity,command:command.CommandId);}foreach(var m in quote.Invested){long recovered=quote.Recovery.Where(r=>r.ItemId==m.ItemId).Sum(r=>r.Quantity);Emit("DemolitionMaterialDiscarded",quote.Owner,quote.Target,m.ItemId,m.Quantity-recovered,command:command.CommandId);}}
     private void FinishCancellation(StorageConstruction job,DemolitionQuote quote,long[] inventories,CommandEnvelope command)
-    {_storageConstruction.Remove(job.Id);_demolitionReceipts.Add(new(job.Id,true,job.Owner,Tick,quote.PriceMinor,quote.Cells,quote.Invested,quote.Recovery,inventories));Emit("StorageConstructionCancelled",job.Owner,job.Id,money:quote.PriceMinor,command:command.CommandId);}
+    {_storageConstruction.Remove(job.Id);if(job.Development is not null)ReleaseDevelopmentRights(job.BuildingId);_demolitionReceipts.Add(new(job.Id,true,job.Owner,Tick,quote.PriceMinor,quote.Cells,quote.Invested,quote.Recovery,inventories));Emit("StorageConstructionCancelled",job.Owner,job.Id,money:quote.PriceMinor,command:command.CommandId);}
     private void ReleaseDemolitionWorkers(EmploymentGroup group)
     {int count=group.Headcount;_unemployed=checked(_unemployed+count);group.Headcount=0;group.Target=0;group.Ready=false;group.ReadinessReason="UserPaused";group.AssessedAtTick=Tick;if(count>0)Emit("EmploymentChanged",group.Owner,group.Id,quantity:-count);}
     private void GuardDemolition(GameAction a,long actor)
     {
         if(a.Kind is ActionKind.PrepareDemolition or ActionKind.CancelDemolitionPreparation or ActionKind.DemolishBuilding or ActionKind.CancelConstruction)return;
         bool RestrictedInventory(long id)=>_economy.Inventories.TryGetValue(id,out var inv)&&inv.Owner==actor&&DemolitionInventory(id);
-        bool change=a.Kind is ActionKind.OutfitWorkshop or ActionKind.AssignWorkshopWorkers or ActionKind.Build or ActionKind.UpgradeBuilding or ActionKind.SetRecipe or ActionKind.BuyLogistics||a.Kind==ActionKind.SetProductionEnabled&&a.Enabled;
+        bool change=a.Kind is ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.AssignWorkshopWorkers or ActionKind.Build or ActionKind.UpgradeBuilding or ActionKind.SetRecipe or ActionKind.BuyLogistics||a.Kind==ActionKind.SetProductionEnabled&&a.Enabled;
         long target=a.Building.Value!=0?a.Building.Value:a.Enterprise.Value;
         if(change&&target!=0&&_buildings.TryGetValue(target,out var owned)&&owned.Owner==actor&&(Demolished(target)||PreparingDemolition(target)&&!(a.Kind==ActionKind.SetProductionEnabled&&UnitsFor(target).Any(w=>w.Definition.Id==(a.WorkshopId==0?target:a.WorkshopId)&&w.Batch is not null))))throw new RuleViolation("PreparingDemolition");
         if(a.Kind==ActionKind.Build&&_preparingDemolition.Any(id=>_buildings[id].Owner==actor&&_buildings[id].Footprint.Contains(a.Target)))throw new RuleViolation("PreparingDemolition");
@@ -155,8 +155,8 @@ public sealed partial class SimulationEngine
             var commands=r.Construction?_events.Where(e=>e.EntityId==r.Target&&e.Type=="StorageConstructionStarted").Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal):_events.Where(e=>e.EntityId==r.Target&&e.Type is "BuildingConstructed" or "BuildingUpgraded" or "WorkshopOutfitStarted").Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal);
             var actual=_events.Where(e=>e.Type=="ConstructionMaterialConsumed"&&e.CommandId is {} id&&commands.Contains(id)).GroupBy(e=>e.ItemId,StringComparer.Ordinal).OrderBy(g=>g.Key,StringComparer.Ordinal).Select(g=>new MaterialCost(g.Key,g.Sum(e=>e.Quantity))).ToArray();
             if(!actual.SequenceEqual(r.Invested))throw new CheckpointException("InvalidActualInvestment");
-            if(r.Tick<1||r.Tick>Tick||r.GroundInventories.Length!=r.Cells.Length||r.Cells.Length==0||r.PriceMinor!=r.Cells.Sum(c=>checked(DemolitionRules.CellPriceMinor+(c.Level-1)*DemolitionRules.ExtraLevelPriceMinor))||!r.Recovery.SequenceEqual(r.Invested.Select(m=>new MaterialCost(m.ItemId,checked((long)((Int128)m.Quantity*DemolitionRules.RecoveryBasisPoints/10000)))).Where(m=>m.Quantity>0))||!_events.Any(e=>e.Type==(r.Construction?"StorageConstructionCancelled":"BuildingDemolished")&&e.EntityId==r.Target&&e.Tick==r.Tick&&e.ActorId?.Value==r.Owner&&e.AmountMinor==r.PriceMinor))throw new CheckpointException("InvalidDemolitionReceipt");
-            if(!r.Construction){var b=_buildings[r.Target];if(b.Owner!=r.Owner||b.Input!=r.GroundInventories[0]||!r.Cells.SequenceEqual(b.Footprint.OrderBy(c=>c.Z).ThenBy(c=>c.X).Select(c=>new DemolitionCell(c,b.Level)))||b.Footprint.Any(c=>_plotsByCell[c].Building==r.Target)||UnitsFor(r.Target).Any(e=>e.Enabled||e.Batch is not null||e.Group.Headcount!=0))throw new CheckpointException("InvalidDemolishedBuilding");}
+            if(r.Tick<1||r.Tick>Tick||(r.GroundInventories.Length!=r.Cells.Length&&!(r.Construction&&r.GroundInventories.Length==1))||r.Cells.Length==0||r.PriceMinor!=r.Cells.Sum(c=>checked(DemolitionRules.CellPriceMinor+(c.Level-1)*DemolitionRules.ExtraLevelPriceMinor))||!r.Recovery.SequenceEqual(r.Invested.Select(m=>new MaterialCost(m.ItemId,checked((long)((Int128)m.Quantity*DemolitionRules.RecoveryBasisPoints/10000)))).Where(m=>m.Quantity>0))||!_events.Any(e=>e.Type==(r.Construction?"StorageConstructionCancelled":"BuildingDemolished")&&e.EntityId==r.Target&&e.Tick==r.Tick&&e.ActorId?.Value==r.Owner&&e.AmountMinor==r.PriceMinor))throw new CheckpointException("InvalidDemolitionReceipt");
+            if(!r.Construction){var b=_buildings[r.Target];if(b.Owner!=r.Owner||b.Input!=r.GroundInventories[0]||!r.Cells.SequenceEqual(DemolitionCells(b))||b.Footprint.Any(c=>_plotsByCell[c].Building==r.Target)||UnitsFor(r.Target).Any(e=>e.Enabled||e.Batch is not null||e.Group.Headcount!=0))throw new CheckpointException("InvalidDemolishedBuilding");}
         }
     }
 }

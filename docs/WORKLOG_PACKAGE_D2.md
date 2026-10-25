@@ -54,3 +54,72 @@ actual market pickup, partial/expiry/cancel/two slots, rewardtiers и save/repla
 Следующий этап: Level.Footprint, реальные контуры/claimed rights и paid land,
 extension существующего StorageConstruction DevelopmentProject, C2 per-cell
 salvage/cancel, profile D2. UI/NPC/gates ещё не выполнены. D3 не реализовывать.
+
+## Этап2: физические проекты и права — целевой gate28/28
+
+EnterpriseExpansion.cs: реальные Level.Footprint1/3/4/5/6 и80/120/160/200/240,
+платный BuyExpansionLand с базы, claim всего контура после начала проекта;
+прочие участники не покупают/не бронируют, свой другой объект тоже не строится
+в назначенном контуре. До старта чужие ownership/reservations защищены.
+
+StorageConstruction расширен optional DevelopmentProject. Один прежний executor
+AdvanceStorageConstruction выполняет warehouse + initial production60ticks +
+расширение120/180/300/480. Initial материалы из ground70; расширение из input,
+цена/материалы из typed BALANCE. До completion старый корпус/capacity прежний.
+Каждая новая клетка проекта держит весь GroundCapacity как development:JOB hold:
+нельзя положить туда груз, который был бы потерян при присоединении. Reverse hold
+ownership в CheckpointValidation. Hold освобождается той же tx при completion/
+C2cancel. Initial build создаёт первый N0/off цех; расширение не добавляет линий/
+людей, лишь места; outfit прежний D1.
+
+DevelopmentBuilding сохраняет полный contour + реальные DemolitionCell levels.
+C2 quote использует реальные cells; отмена upgrade оставляет старый корпус,
+возвращает60% project materials в input/overflow. Fee относится ко всей площади
+отменяемого проекта/target level, как прежняя C2 warehouse cancellation. Receipt
+разрешает one receiving inventory для many project cells. Отмена/снос снимают
+неиспользованные contour rights, купленная земля остаётся своей. Все реальные
+вложения учитываются Constructed/Upgraded/Outfit command journal, без double.
+
+PrepareEnterpriseExpansion/CancelExpansionPreparation remote: finish WIP и stop
+новых партий, без закрытия товарных обязательств/логистики. Сохраняется Preparing,
+снятие после успешной оплаты проекта/сноса, отмена не auto-resume. Не пользоваться
+C2подготовкой к сносу ради обычного upgrade. Зарплата/инвентари прежние.
+
+Own DTO DevelopmentObservation/DevelopmentProjectView — immutable (не выдавать
+StorageConstruction.Materials[] контроллеру). Quests offer review windows из
+Tick/1200, stale OfferWindow reject; активное задание хранит contract deadline,
+не перезапускается при review. Новый funded contract может дать выбор в текущем
+review window. Explicit project60batches500XP требует объявленного CapitalOfferId
+в rules.PublicProjectOffers и>=3600remaining; не создаёт финансирование/заказы.
+
+VNextDevelopmentProfile.Create(A2,balance) -> D1+C1+XP/уровни/контуры. Генератор
+--export-development-profile добавлен; файл пока в /workspace/work/delsk-d2/generated/
+economy.d2-development.json (68k). Его надо скопировать config/vnext и подключить
+в client/default designed maps/lab. Старые A2/C1/D1 профили не менять. В D2активны
+ТОЛЬКО D1базовые рецепты; advanced content/V2,V3 остаются D3 по последнему user.
+
+Tests:16XP +11geometry +1prep =28, последний d2-project-gate15.368s/120,build0warnings.
+Normal XP tests используют реальные xp/unit1/2, в т.ч.12реальных поставок→600XP без
+производства. Physical project fixture ЯВНО accelerated XP40000/plank и labor1tick,
+prepared material sources/personal2000: изолирует геометрию, не normal balance.
+Source profile costs/caps/thresholds отдельно проверены against BALANCE. Исправлены
+ошибки ожиданий теста: реальная начальная woodworking цена17000,30wood+3steel;
+снос после II+outfit даёт15plank+5steel+18wood (не ранний неверный15000/20wood).
+
+Промежуточные commit ccad0c0(XP) и следующий stage2. Осталось:
+- Общая технология в SetRecipe/Workshop validation/output compatibility: current
+  code ещё использует physical b.Level, надо при Development использовать global
+  Experience tech + поддержанный активным контентом IndustryRecipeAvailable; D3
+  рецепты не активировать в profile.
+- Подключить PlayerView.Development, UI development/quests/initial-ground builds
+  и cancellation через реальные команды. C2 quote provider уже существует.
+- NPC: quests при own funded contracts, prepare/land/materials/upgrade, initial
+  ground deliveries несколькими рейсами (20capacity), обычные команды/allowlist.
+  Старый NPC BuildProduction из backpack отключить ТОЛЬКО для D2.
+- При необходимости Developer XP только conditional Developer tools/audit, никакой
+  обычной AddXP команды. Изучить Interventions.cs/DeveloperTools/SessionResearch.
+- Runner D2 сценарии, development.json export + compare list, checkpoint/replay/
+  privacy, полный bounded gates, native RU/EN/размеры, Godot hash/audit, docs/PR.
+- Старые actual D1World21 checkpoints есть /workspace/work/delsk-d1/process-exact.
+- Новые поля по умолчанию omitted; ControllerBuildingLevel ConstructionTicks
+  заполняется ТОЛЬКО при Development, чтобы старый C1/D1 observation hash не менять.

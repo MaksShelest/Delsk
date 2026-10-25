@@ -122,7 +122,7 @@ public sealed partial class SimulationEngine
         {
             var s = JsonSerializer.Deserialize<WorldCheckpoint>(MigrateTravel(json), SimulationJson.Options)
                 ?? throw new CheckpointException("EmptyCheckpoint");
-            if(s.SchemaVersion<CheckpointSchemaVersion && (s.Development is not null||s.Config.Economy?.Development is not null||s.Storage?.Construction.Any(c=>c.Development is not null)==true))throw new CheckpointException("UnknownWorldSchema");
+            if(s.SchemaVersion<CheckpointSchemaVersion && (s.Development is not null||s.Config.Economy?.Development is not null||s.Config.BuildingTypes?.Any(t=>t.Levels.Any(l=>!l.Footprint.IsDefault))==true||s.Storage?.Construction.Any(c=>c.Development is not null)==true))throw new CheckpointException("UnknownWorldSchema");
             if (s.SchemaVersion < 21 && (s.Workshops is not null || s.Config.Economy?.Workshops is not null || s.Enterprises.Any(e=>e.Batch?.Terms is not null) || s.Equipment.Any(e=>e.Batch?.Terms is not null))) throw new CheckpointException("UnknownWorldSchema");
             if (s.SchemaVersion != CheckpointSchemaVersion && s.SchemaVersion!=21 && s.SchemaVersion!=20 && !(s.SchemaVersion==19&&s.Demolition is null&&s.Config.Economy?.Demolition is null&&s.Flows.All(f=>f.ConstructionRecovered==0))&&!(s.SchemaVersion==18&&s.Demolition is null&&s.Config.Economy?.Storage is null&&s.Storage is null&&s.Inventories.All(i=>i.Overflow is null)&&s.Flows.All(f=>f.Lost==0&&f.ConstructionRecovered==0))) throw new CheckpointException("UnknownWorldSchema");
             if (s.RulesVersion != RulesVersion) throw new CheckpointException("UnknownRulesVersion");
@@ -223,6 +223,7 @@ public sealed partial class SimulationEngine
         _groundStorage.Clear();foreach(var g in s.Storage?.Ground??[])_groundStorage.Add(g.PlotId,g.InventoryId);
         _storageConstruction.Clear();foreach(var c in s.Storage?.Construction??[])_storageConstruction.Add(c.Id,c);
         RestoreDevelopment(s.Development);
+        if(s.Plots.Any(p=>p.ExpansionFor!=ExpansionClaim(p.Position)?.Id))throw new CheckpointException("InvalidExpansionClaim");
         ApplyBuildingObstacles();
         RestoreCapitalDemand(s.CapitalDemand);
         if (s.Offers.Length != _offers.Count) throw new CheckpointException("InvalidOfferCount");

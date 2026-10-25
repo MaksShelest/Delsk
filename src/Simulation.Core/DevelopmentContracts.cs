@@ -21,9 +21,10 @@ public sealed record IndustryExperience(ParticipantId Owner,string Industry,long
 public sealed record ExperienceGrant(long Owner,string Industry,string Source,long SourceId,string ItemId,long Quantity,long Xp,long Tick);
 public sealed record IndustryQuest(long Id,ParticipantId Owner,string Industry,string Kind,long ContractId,string RecipeId,string ItemId,long Quantity,long Reward,
     long AcceptedTick,long DeadlineTick,long BaselineDelivered,long Delivered,string Status,long? ClosedTick=null);
-public sealed record IndustryQuestChoice(string Industry,string Kind,long ContractId,string RecipeId,string ItemId,long Quantity,long Reward,long DeadlineTick,int Batches,bool FirstDelivery);
+public sealed record IndustryQuestChoice(string Industry,string Kind,long ContractId,string RecipeId,string ItemId,long Quantity,long Reward,long DeadlineTick,int Batches,bool FirstDelivery,long ReviewTick,long OfferExpiresTick,int ReviewWindow);
 public sealed record DevelopmentBuilding(long Id,long Owner,string Industry,ImmutableArray<Cell> Contour,ImmutableArray<DemolitionCell> Cells,bool Claimed=true);
 public sealed record DevelopmentProject(ImmutableArray<Cell> Contour,ImmutableArray<DemolitionCell> Cells);
-public sealed record DevelopmentState(ImmutableArray<ExperienceGrant> Grants,ImmutableArray<IndustryQuest> Quests,ImmutableArray<DevelopmentBuilding> Buildings);
+public sealed record DevelopmentState(ImmutableArray<ExperienceGrant> Grants,ImmutableArray<IndustryQuest> Quests,ImmutableArray<DevelopmentBuilding> Buildings,ImmutableArray<long> Preparing=default);
+public sealed record DevelopmentProjectView(long Id,long BuildingId,Cell Position,string TypeId,int Level,long InventoryId,long StartedTick,long CompletesTick,long PaidMinor,ImmutableArray<MaterialCost> Materials,DevelopmentProject Plan);
 public sealed record DevelopmentObservation(ImmutableArray<IndustryExperience> Experience,ImmutableArray<IndustryQuest> Quests,ImmutableArray<IndustryQuestChoice> Choices,
-    ImmutableArray<DevelopmentBuilding> Buildings,ImmutableArray<StorageConstruction> Projects,DevelopmentRules Rules);
+    ImmutableArray<DevelopmentBuilding> Buildings,ImmutableArray<DevelopmentProjectView> Projects,DevelopmentRules Rules,long ReviewTick,long NextReviewTick,ImmutableArray<long> Preparing);

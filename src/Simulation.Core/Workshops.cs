@@ -37,6 +37,8 @@ public sealed partial class SimulationEngine
         if (!ParallelWorkshops || !_buildings.TryGetValue(parent.Definition.Id, out var b) || b.Type.WorkshopOutfit is not { } outfit)
             throw new RuleViolation("NotAvailable");
         RequireIdle(actor); RequireActionLocation(actor, c.Action);
+        if(PreparingDevelopment(b.Id))throw new RuleViolation("PreparingDevelopment");
+        if(StorageWorkAt(b.Position))throw new RuleViolation("ConstructionInProgress");
         if (UnitsFor(b.Id).Count() + _workshopInstallations.Values.Count(w => w.Enterprise.Value == b.Id) >= ReadyWorkshopSlots(b))
             throw new RuleViolation("NoReadyWorkshopSlot");
         long id = _nextId, next = checked(id + 1), end = checked(Tick + outfit.Ticks);
@@ -165,7 +167,7 @@ public static partial class ScenarioValidation
             foreach (var l in t.Levels)
             {
                 int cells = l.WorkshopSlots == 1 ? 1 : l.WorkshopSlots + 1;
-                if (l.WorkshopSlots is < 1 or > 5 || t.Footprint.Length < cells || l.StaffCapacity != 5 || l.WorkRateMultiplier != 1)
+                if (l.WorkshopSlots is < 1 or > 5 || (l.Footprint.IsDefault?t.Footprint.Length:l.Footprint.Length) < cells || l.StaffCapacity != 5 || l.WorkRateMultiplier != 1)
                     throw new ArgumentException("Invalid ready workshop places or staffing");
             }
             if (t.WorkshopOutfit is { } o && (o.PriceMinor <= 0 || o.Ticks is < 1 or > 1000000 || o.Materials.IsDefaultOrEmpty ||

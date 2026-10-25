@@ -35,6 +35,7 @@ public sealed partial class SimulationEngine
     private ImmutableArray<IndustryQuestChoice> QuestChoices(long owner)
     {
         if(Development is null)return [];
+        long review=Tick/Development.QuestReviewTicks*Development.QuestReviewTicks;
         var choices=new List<IndustryQuestChoice>();
         foreach(var contract in _deliveryContracts.Where(d=>d.Supplier.Value==owner&&d.ClosedTick is null&&d.DeadlineTick>Tick).OrderBy(d=>d.Id))
         {
@@ -49,7 +50,7 @@ public sealed partial class SimulationEngine
                     long quantity=checked(product.Quantity*batches);
                     if(quantity>contract.Quantity-contract.DeliveredQuantity)continue;
                     if(batches==60&&(Development.PublicProjectOffers.IsDefaultOrEmpty||!Development.PublicProjectOffers.Contains(contract.CapitalOfferId)||contract.DeadlineTick-Tick<3600))continue;
-                    choices.Add(new(industry.Id,first&&batches==5?"FirstDelivery":batches==60?"CityProject":"Delivery",contract.Id,product.RecipeId,product.ItemId,quantity,reward,contract.DeadlineTick,batches,first&&batches==5));
+                    choices.Add(new(industry.Id,first&&batches==5?"FirstDelivery":batches==60?"CityProject":"Delivery",contract.Id,product.RecipeId,product.ItemId,quantity,reward,contract.DeadlineTick,batches,first&&batches==5,review,Math.Min(contract.DeadlineTick,checked(review+Development.QuestReviewTicks)),checked((int)(Tick/Development.QuestReviewTicks+1))));
                 }
             }
         }
@@ -58,6 +59,7 @@ public sealed partial class SimulationEngine
     private void AcceptIndustryQuest(ActorState actor,CommandEnvelope command)
     {
         if(Development is null)throw new RuleViolation("NotAvailable");
+        if(command.Action.OfferWindow!=Tick/Development.QuestReviewTicks+1)throw new RuleViolation("StaleQuestReview");
         if(_industryQuests.Values.Count(q=>q.Owner.Value==actor.Id&&q.Status=="Active")>=Development.QuestSlots)throw new RuleViolation("QuestSlotsFull");
         var c=QuestChoices(actor.Id).FirstOrDefault(q=>q.ContractId==command.Action.ContractId&&q.Industry==command.Action.BuildingTypeId&&q.Batches==command.Action.Quantity)
             ??throw new RuleViolation("QuestNotAvailable");
@@ -92,17 +94,19 @@ public sealed partial class SimulationEngine
         return new([..Development.Industries.OrderBy(i=>i.Id,StringComparer.Ordinal).Select(i=>Experience(actor.Value,i.Id))],
             [.._industryQuests.Values.Where(q=>q.Owner==actor).OrderBy(q=>q.Id)],QuestChoices(actor.Value),
             [.._developmentBuildings.Values.Where(b=>b.Owner==actor.Value&&!Demolished(b.Id)).OrderBy(b=>b.Id)],
-            [.._storageConstruction.Values.Where(c=>c.Owner==actor.Value&&c.Development is not null).OrderBy(c=>c.Id)],Development);
+            [.._storageConstruction.Values.Where(c=>c.Owner==actor.Value&&c.Development is not null).OrderBy(c=>c.Id).Select(c=>new DevelopmentProjectView(c.Id,c.BuildingId,c.Position,c.TypeId,c.Level,c.InventoryId,c.StartedTick,c.CompletesTick,c.PaidMinor,[..c.Materials],c.Development!))],Development,Tick/Development.QuestReviewTicks*Development.QuestReviewTicks,checked((Tick/Development.QuestReviewTicks+1)*Development.QuestReviewTicks),[.._preparingDevelopment.Where(id=>_buildings[id].Owner==actor.Value).Order()]);
     }
     public DevelopmentState? InspectDevelopment()=>Development is null?null:new([.._experienceGrants],
-        [.._industryQuests.Values.OrderBy(q=>q.Id)],[.._developmentBuildings.Values.OrderBy(b=>b.Id)]);
+        [.._industryQuests.Values.OrderBy(q=>q.Id)],[.._developmentBuildings.Values.OrderBy(b=>b.Id)],[.._preparingDevelopment.Order()]);
     private void RestoreDevelopment(DevelopmentState? state)
     {
         if((Development is null)!=(state is null))throw new CheckpointException("MissingDevelopmentState");
         if(state is null)return;
+        _experienceGrants.Clear();_experienceGrantKeys.Clear();_industryExperience.Clear();_industryQuests.Clear();_developmentBuildings.Clear();
         foreach(var g in state.Grants){if(!_experienceGrantKeys.Add((g.Source,g.SourceId)))throw new CheckpointException("DuplicateExperienceGrant");var e=Experience(g.Owner,g.Industry);_industryExperience[(g.Owner,g.Industry)]=g.Source=="Production"?e with{ProductionXp=checked(e.ProductionXp+g.Xp)}:e with{QuestXp=checked(e.QuestXp+g.Xp)};_experienceGrants.Add(g);}
         foreach(var q in state.Quests)_industryQuests.Add(q.Id,q);
         foreach(var b in state.Buildings)_developmentBuildings.Add(b.Id,b);
+        _preparingDevelopment.Clear();foreach(long id in state.Preparing.IsDefault?[]:state.Preparing)_preparingDevelopment.Add(id);
     }
     private void ValidateIndustryDevelopment()
     {
@@ -136,7 +140,7 @@ public static partial class ScenarioValidation
 {
     private static void ValidateDevelopmentContent(ScenarioDefinition s)
     {
-        if(s.Economy?.Development is not {} rules)return;
+        if(s.Economy?.Development is not {} rules){if((s.BuildingTypes??[]).Any(t=>t.Levels.Any(l=>!l.Footprint.IsDefault)))throw new ArgumentException("Level footprints require development rules");return;}
         if(s.Economy.Workshops is null||s.Economy.Storage is null||s.Enterprises.Length!=0)throw new ArgumentException("Development requires workshop/ground rules and physical buildings");
         foreach(var type in (s.BuildingTypes??[]).Where(t=>t.Kind==BuildingKind.Production))
             if(!rules.Industries.Any(i=>i.Id==type.Id))throw new ArgumentException("Unregistered development industry");
@@ -147,6 +151,15 @@ public static partial class ScenarioValidation
             foreach(var p in industry.Products)
                 if(!s.Recipes.Any(r=>r.Id==p.RecipeId&&r.OutputItem==p.ItemId&&r.OutputQuantity==p.Quantity))throw new ArgumentException("Industry product differs from recipe");
             if(industry.Products.GroupBy(p=>p.ItemId).Any(g=>g.Select(p=>p.XpPerUnit).Distinct().Count()!=1))throw new ArgumentException("Inconsistent product experience");
+            var type=s.BuildingTypes!.Single(t=>t.Id==industry.Id);HashSet<Cell>? previous=null;
+            foreach(var level in type.Levels.OrderBy(l=>l.Level))
+            {
+                var shape=level.Footprint.IsDefault?type.Footprint:level.Footprint.ToArray();var cells=shape.ToHashSet();
+                if(cells.Count!=shape.Length||!cells.Contains(new(0,0))||cells.Any(c=>c.X<0||c.Z<0)||previous is not null&&!previous.IsSubsetOf(cells))throw new ArgumentException("Invalid development level geometry");
+                var reached=new HashSet<Cell>{new(0,0)};var pending=new Queue<Cell>();pending.Enqueue(new(0,0));
+                while(pending.TryDequeue(out var cell))foreach(var n in new[]{new Cell(cell.X+1,cell.Z),new Cell(cell.X-1,cell.Z),new Cell(cell.X,cell.Z+1),new Cell(cell.X,cell.Z-1)})if(cells.Contains(n)&&reached.Add(n))pending.Enqueue(n);
+                if(reached.Count!=cells.Count)throw new ArgumentException("Disconnected development footprint");previous=cells;
+            }
         }
         if(!rules.PublicProjectOffers.IsDefault&&(rules.PublicProjectOffers.Distinct().Count()!=rules.PublicProjectOffers.Length||rules.PublicProjectOffers.Any(id=>!s.CapitalOffers.Any(o=>o.Id==id))))throw new ArgumentException("Unknown public project demand");
     }

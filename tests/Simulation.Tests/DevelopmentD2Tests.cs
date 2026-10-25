@@ -29,7 +29,7 @@ public class DevelopmentD2Tests
     }
     private static DeliveryContractView Contract(GameSession s,long quantity=10,int offer=220)
     {Step(s,new(ActionKind.AcceptDeliveryQuantity,OfferId:offer,Quantity:quantity,OfferWindow:s.Engine.Observe(new(1)).CapitalOffers.Single(o=>o.Id==offer).Window));s.AdvanceTo(s.Engine.Tick+6);return s.Engine.Inspect().DeliveryContracts.Last();}
-    private static void Accept(GameSession s,DeliveryContractView contract,int batches=5)=>Step(s,new(ActionKind.AcceptIndustryQuest,ContractId:contract.Id,BuildingTypeId:"d1-prepared",Quantity:batches));
+    private static void Accept(GameSession s,DeliveryContractView contract,int batches=5)=>Step(s,new(ActionKind.AcceptIndustryQuest,ContractId:contract.Id,BuildingTypeId:"d1-prepared",Quantity:batches,OfferWindow:checked((int)(s.Engine.Tick/1200+1))));
     [Theory][InlineData(5,50)][InlineData(15,100)][InlineData(30,200)][InlineData(60,500)]
     public void QuestUsesFundedRealDemandAndAwardsExactlyOnceAfterPhysicalReceipt(int batches,long reward)
     {
@@ -67,5 +67,11 @@ public class DevelopmentD2Tests
         {var c=Contract(s);Accept(s,c);Step(s,new(ActionKind.DeliverContract,ContractId:c.Id,Quantity:10));StorageC1Tests.Idle(s);}
         Assert.Equal(0,Xp(s).ProductionXp);Assert.Equal(600,Xp(s).QuestXp);Assert.Equal(2,Xp(s).TechnologyLevel);Assert.Equal(0,WorkshopD1Tests.Lines(s).Single().CompletedBatches);
         Assert.Single(s.Engine.DevelopmentOf(new(1))!.Quests.Where(q=>q.Kind=="FirstDelivery"&&q.Status=="Completed"));CheckpointStore.Decode(CheckpointStore.Encode(s));
+    }
+    [Fact] public void ReviewBoundaryRejectsAnOldOfferAndRestoresTheSameCurrentDemand()
+    {
+        var d=Definition();d=d with{Delivery=new(ContractTtlTicks:4500)};var s=new GameSession(new(d));var contract=Contract(s);s.AdvanceTo(1199);
+        string old=s.Send(new(1),new(ActionKind.AcceptIndustryQuest,ContractId:contract.Id,BuildingTypeId:"d1-prepared",Quantity:5,OfferWindow:1));var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));s.Step();copy.Step();Assert.Equal("StaleQuestReview",s.Engine.Result(old)!.ReasonCode);Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());
+        Assert.Equal(1200,s.Engine.DevelopmentOf(new(1))!.ReviewTick);Assert.All(s.Engine.DevelopmentOf(new(1))!.Choices,c=>Assert.Equal(2,c.ReviewWindow));Accept(s,contract);Accept(copy,contract);Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());Assert.Equal(0,Xp(s).Total);
     }
 }

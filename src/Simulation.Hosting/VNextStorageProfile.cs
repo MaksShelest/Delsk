@@ -6,7 +6,7 @@ namespace Simulation.Hosting;
 public static class VNextStorageProfile
 {
     public const string ProfileId="vnext-c1-storage-1";
-    public static bool MapCompatible(EconomyProfile p)=>p.VNext is not null && p.Id is VNextSupportedProfile.ProfileId or ProfileId or VNextWorkshopProfile.ProfileId;
+    public static bool MapCompatible(EconomyProfile p)=>p.VNext is not null && p.Id is VNextSupportedProfile.ProfileId or ProfileId or VNextWorkshopProfile.ProfileId or VNextDevelopmentProfile.ProfileId;
     public static EconomyProfile Create(EconomyProfile basis,VNextBalance balance)
     {
         if(basis.Id!=VNextSupportedProfile.ProfileId || basis.VNext is not {} source || source.SourceSha256!=balance.SourceSha256)throw new ArgumentException("C1 requires the matching verified A2 basis");

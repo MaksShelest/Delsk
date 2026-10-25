@@ -48,6 +48,7 @@ public sealed partial class SimulationEngine
     {
         foreach(var c in _storageConstruction.Values.Where(c=>c.CompletesTick<=Tick).OrderBy(c=>c.Id).ToArray())
         {
+            if(c.Development is not null){CompleteDevelopmentConstruction(c);continue;}
             var type=_buildingTypes[c.TypeId];var level=type.Levels.Single(l=>l.Level==c.Level);
             var tx=_economy.Begin(Tick);tx.SetCapacity(c.InventoryId,level.InputCapacity);tx.Commit();
             if(c.BuildingId==0)
@@ -102,7 +103,7 @@ public sealed partial class SimulationEngine
         var expected=_plots.Values.Where(p=>p.Owner.HasValue&&p.Building is null&&!p.Definition.IsCorridor).Select(p=>p.Definition.Id).Order();
         if(!expected.SequenceEqual(_groundStorage.Keys.Order())||_groundStorage.Values.Distinct().Count()!=_groundStorage.Count)throw new CheckpointException("InvalidGroundStorage");
         foreach(var p in _groundStorage)
-        {var plot=_plots[p.Key];if(!_economy.Inventories.TryGetValue(p.Value,out var i)||i.Owner!=plot.Owner||i.Position!=plot.Definition.Position||i.Capacity!=GroundRules.GroundCapacity||i.Overflow.Count>0&&!DemolitionInventory(i.Id,false)&&!_demolitionReceipts.Any(r=>r.GroundInventories.Contains(i.Id))||i.Reservations.Keys.Any(h=>!h.StartsWith("transfer-stock:",StringComparison.Ordinal))||i.CapacityHolds.Keys.Any(h=>!h.StartsWith("transfer-capacity:",StringComparison.Ordinal)))throw new CheckpointException("InvalidGroundInventory");}
+        {var plot=_plots[p.Key];if(!_economy.Inventories.TryGetValue(p.Value,out var i)||i.Owner!=plot.Owner||i.Position!=plot.Definition.Position||i.Capacity!=GroundRules.GroundCapacity||i.Overflow.Count>0&&!DemolitionInventory(i.Id,false)&&!_demolitionReceipts.Any(r=>r.GroundInventories.Contains(i.Id))||i.Reservations.Keys.Any(h=>!h.StartsWith("transfer-stock:",StringComparison.Ordinal))||i.CapacityHolds.Keys.Any(h=>!h.StartsWith("transfer-capacity:",StringComparison.Ordinal)&&!h.StartsWith("development:",StringComparison.Ordinal)))throw new CheckpointException("InvalidGroundInventory");}
         var pending=_events.Where(e=>e.Type=="StorageConstructionStarted").Select(e=>e.EntityId).Except(_events.Where(e=>e.Type is "StorageConstructionCompleted" or "StorageConstructionCancelled").Select(e=>e.EntityId)).Order();
         if(!pending.SequenceEqual(_storageConstruction.Keys.Order()))throw new CheckpointException("MissingStorageConstruction");
         if(_storageConstruction.Values.Select(c=>c.Position).Distinct().Count()!=_storageConstruction.Count)throw new CheckpointException("DuplicateStorageConstruction");
