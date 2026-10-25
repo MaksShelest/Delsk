@@ -63,3 +63,12 @@ direct load/replay имеет точные деньги/товар/работу/
 Scope semantic, не dynamic balance. Цеха/XP/tiers/V2,V3/import runtime/fleet/roads/
 services metadata, baseline defaults explicit. P61/P63 целиком и старые
 P53/P56/P59/P60 открыты; B1/B2 не реализованы. После A2 остановка перед B1.
+
+
+## Подготовка пяти промптов C/D,25.10.2026
+
+На основе45fae36 проверено включение PR57/A2, PR58/B1 и PR59/B2 в основную ветку. Прочитаны новые инструкции/реальные отчёты B, текущее отсутствие production templates/import в supported profile и точки расширения LandAndBuildings/ProductionAndTrade/Labor/VolumeTransfers/Checkpoint/Developer. Созданы пять полных промптов C1/C2/D1/D2/D3 и общий guide; план2.6 и навигация различают готовые A/B и только подготовленные C/D.
+
+Фактически выполнены статические проверки: относительные ссылки всех новых/изменённых документов, закрытые text blocks и stop/report для каждой итерации; source34/23/6, IDимпорта/продуктов, warehouses200/300/400, XP0/600/3000/12000/40000, footprints1/3/4/5/6, staff0/25/45/65/85/100%, ground70/recovery60%/overflow1200; целостность SHA256 manifest и git diff --check. Исходные AGENTS, историческая0.5/текущая0.6спецификации, runtime config/economy, A1catalog/A2full/supported profile, исходный BALANCE и геометрия обеих карт побайтово сохранены. Изменения ограничены docs/vnext.
+
+Это документационная подготовка. C/D-код не реализован, новые Core/CLI/Godot/LLM/hardware тесты здесь не запускались; численные результаты прошлых B-отчётов не названы новыми pass. Требуемые будущие проверки явно описаны в каждом промпте, сроки развития/баланс и прежние открытые gates не объявлены доказанными.
