@@ -1,0 +1,24 @@
+{
+  "status": "succeeded",
+  "cases": [
+    {
+      "map": "small",
+      "tick": 300,
+      "harvests": 8,
+      "capitalSettlements": 16,
+      "imports": 1,
+      "savedControllersExact": true,
+      "replayWorldExact": true
+    },
+    {
+      "map": "large",
+      "tick": 180,
+      "harvests": 10,
+      "capitalSettlements": 16,
+      "imports": 7,
+      "savedControllersExact": true,
+      "replayWorldExact": true
+    }
+  ],
+  "scope": "Short actual designed-map baseline without LLM. No first-factory/endgame/long balance claim."
+}

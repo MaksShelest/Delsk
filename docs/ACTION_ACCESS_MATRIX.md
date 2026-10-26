@@ -79,3 +79,15 @@ D2: `AcceptIndustryQuest`, `AbandonIndustryQuest`, `PrepareEnterpriseExpansion`,
 для D2production требует явный target level в Quantity против устаревшего клика.
 Initial Build — AtLocation anchor; материалы ground70, остальные условия прежние.
 Developer XP отсутствует в ActionKind и доступен только conditional intervention.
+
+### D3
+
+| Действие | Доступ | Условия |
+| --- | --- | --- |
+| BuyImport | AtLocation: терминал | Idle, текущий конечный запас и свободные деньги; оплаченный товар остаётся в собственном пункте выдачи |
+| Transfer из пункта импорта | AtLocation: терминал | Только собственный рюкзак/товар, время обработки и реальная вместимость; обратная выкладка запрещена |
+| ModernizeWorkshop | AtLocation: своё предприятие | Конкретный stopped/noWIP цех, следующий local V2/V3, глобальная techIV/V, реальные input materials/деньги, отсутствие строительства/подготовки |
+| SetRecipe V2/V3 | Remote | Старые owner/noWIP/stop проверки +global unlock и отдельно оплаченная версия выбранного цеха |
+
+Industry XP в режиме бога остаётся conditional research intervention,
+не обычной ActionKind. Money/stock/XP не требуют Step на паузе, не обходят holds.

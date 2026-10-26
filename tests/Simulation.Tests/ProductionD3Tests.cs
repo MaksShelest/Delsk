@@ -111,9 +111,9 @@ public class ProductionD3Tests
         // Election dialogs are disabled only in this economic path fixture; no economic value is changed.
         return Profile().Apply(map) with{Elections=w.Elections with{PauseForBallots=false}};
     }
-    [Fact] public void NpcBuysImportThroughOrdinaryValidationAndSavesTheSamePlan()
+    [Theory][InlineData("wood")][InlineData("grain")][InlineData("iron_ore")] public void NpcBuysImportThroughOrdinaryValidationAndSavesTheSamePlan(string preference)
     {
-        var s=new GameSession(new(CompactOrdinary()));var npc=new AlgorithmicController(new(1,"wood",PoliticsEnabled:false,CashReserveMinor:0),17,[1,2,3,4]);
+        var s=new GameSession(new(CompactOrdinary()));var npc=new AlgorithmicController(new(1,preference,PoliticsEnabled:false,CashReserveMinor:0),17,[1,2,3,4]);
         var observation=s.Engine.ObserveController(new(1));var decision=npc.Decide(observation,[]);
         Assert.Equal("BuyImport",decision.Goal);Assert.Equal(ActionKind.BuyImport,decision.Actions.Single().Kind);Step(s,decision.Actions.Single());
         Assert.NotNull(s.Engine.ProductionContentOf(new(1))!.Pickup);Assert.Null(s.Engine.ObserveController(new(2)).ProductionContent!.Pickup);
@@ -132,6 +132,16 @@ public class ProductionD3Tests
             s.AdvanceTo(s.Engine.ProductionContentOf(new(1))!.Projects.Single().EndTick);copy.AdvanceTo(s.Engine.Tick);Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());Assert.Equal(version,s.Engine.ProductionContentOf(new(1))!.Technologies.Single().Version);
         }
         Evidence(s,"npc-modernization");
+    }
+    [Fact] public void NpcChoosesFlourBeforeBreadWhenOnlyGrainIsAvailable()
+    {
+        var p=Profile();var d=Prepared("food");d=d with{Recipes=p.World.Recipes,BuildingTypes=p.World.BuildingTypes,Economy=p.World.Rules,
+            ResourceNodes=d.ResourceNodes.Where(n=>p.World.Resources!.Any(r=>r.ItemId==n.ItemId)).ToArray()};
+        var s=new GameSession(new(d));Assert.Equal("bake_bread",s.Engine.Observe(new(1)).OwnEnterprises.Single().RecipeId);
+        var npc=new AlgorithmicController(new(1,"grain",CashReserveMinor:0,CashWeight:0,PoliticsEnabled:false,TradeEnabled:false,LogisticsEnabled:false),17,[1,2]);
+        var decision=npc.Decide(s.Engine.ObserveController(new(1)),[]);Assert.Equal("SelectRecipe",decision.Goal);Assert.Equal("mill_flour",decision.Actions.Single().RecipeId);
+        Step(s,decision.Actions.Single());var recipe=d.Recipes.Single(r=>r.Id=="mill_flour");Supply(s,recipe.Ingredients);Step(s,new(ActionKind.SetProductionEnabled,Enterprise:new(8),Enabled:true));s.AdvanceTo(s.Engine.Tick+recipe.FullStaffTicks);
+        Assert.Equal(recipe.OutputQuantity,s.Engine.Inspect().Flows.Single(f=>f.ItemId=="flour").Produced);
     }
     [Fact] public void PaidModernizationDoesNotEquipOtherWorkshopsAndDemolitionWaitsForIt()
     {
@@ -156,6 +166,22 @@ public class ProductionD3Tests
         if(Environment.GetEnvironmentVariable("DELSK_D3_EVIDENCE") is null)return;
         var s=new GameSession(new(Prepared()));Unlock(s);Supply(s,s.Engine.Configuration().Economy!.ProductionContent!.Modernizations.Single(m=>m.Version==2).Materials);StorageC1Tests.Move(s,Factory(s).Position);Evidence(s,"native-modernize");
         Evidence(new GameSession(new(CompactOrdinary())),"native-import");
+    }
+    [Fact] public void AsphaltBootstrapStopsAfterActualMaterialsTierFourWithoutDeletingPaidGoods()
+    {
+        var d=Prepared("materials");d=d with{Buildings=[d.Buildings![0] with{Level=3}]};var s=new GameSession(new(d));Unlock(s);
+        Supply(s,d.BuildingTypes!.Single(t=>t.Id=="materials").Levels.Single(l=>l.Level==4).Materials);StorageC1Tests.Move(s,Factory(s).Position);
+        Step(s,new(ActionKind.UpgradeBuilding,Building:new(8),Quantity:4));var project=s.Engine.StorageOf(new(1)).Construction.Single();s.AdvanceTo(project.CompletesTick);
+        StorageC1Tests.Move(s,d.CapitalDemand!.Terminal);Step(s,new(ActionKind.BuyImport,ItemId:"asphalt",Quantity:20));
+        s.AdvanceTo(2399);var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));s.AdvanceTo(2401);copy.AdvanceTo(2401);
+        Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());Assert.Equal(0,s.Engine.ProductionContentOf(new(1))!.Imports.Single(i=>i.ItemId=="asphalt").Remaining);
+        var pickup=s.Engine.ProductionContentOf(new(1))!.Pickup!.Value;Assert.Equal(20,StorageC1Tests.Inventory(s,pickup).Stock.Single(i=>i.ItemId=="asphalt").Quantity);
+        Assert.Equal(s.Engine.ComputeStateHash(),GameSession.Replay(d,s.CommandTape,s.Engine.Tick).Engine.ComputeStateHash());Evidence(s,"asphalt-cutoff");
+    }
+    [Fact] public void SharedTechnologyAloneDoesNotEndAsphaltBootstrap()
+    {
+        var s=new GameSession(new(Prepared("materials")));Unlock(s);StorageC1Tests.Move(s,s.Engine.Configuration().CapitalDemand!.Terminal);Step(s,new(ActionKind.BuyImport,ItemId:"asphalt",Quantity:20));s.AdvanceTo(2400);
+        Assert.Equal(20,s.Engine.ProductionContentOf(new(1))!.Imports.Single(i=>i.ItemId=="asphalt").Remaining);Assert.Equal(1,Factory(s).Level);
     }
 }
 

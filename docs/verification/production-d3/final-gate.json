@@ -1,0 +1,80 @@
+{
+  "status": "succeeded-local-software",
+  "scope": "D3 only; E not started; preserved evidence explicitly marked, changed gates rerun.",
+  "sourceFilesSha256": "548ae73fe1a2729e9a593f6c6a2ec627e8b52407a3230629379c6f1d5c75a18f",
+  "sourceFileCount": 708,
+  "recoveryCommit": "ac9e706310d47ee8de8a0b145507057bf7471c0a",
+  "pr": "https://github.com/MaksShelest/Delsk/pull/65",
+  "ordinary": {
+    "uniquePassed": 1197,
+    "detail": "ordinary-consolidated.json",
+    "reused": [
+      "base1067",
+      "integration55",
+      "D236",
+      "compact ordinary start1"
+    ],
+    "freshD3": 38
+  },
+  "developer": {
+    "passed": 1208,
+    "detail": "developer-latest.json",
+    "allPartitionsFresh": true,
+    "negativeRelease": "expected rejection"
+  },
+  "python": {
+    "checks": 12,
+    "researchLab": 37,
+    "malformedImportSubcases": 15
+  },
+  "productionRunner": {
+    "cases": 9,
+    "exports": 39,
+    "comparisons": 30,
+    "processChecks": 58,
+    "detail": "runner-latest.json"
+  },
+  "maps": {
+    "detail": "npc-maps.json",
+    "scope": "Small3NPC300/large10NPC180; all exports exact on load; world exact on command replay, no LLM"
+  },
+  "native": {
+    "detail": "native-latest.json",
+    "flows": 4,
+    "windows": [
+      "EN1100x800",
+      "RU800x720"
+    ]
+  },
+  "god": {
+    "debugChecks": 20,
+    "standardExportDebugChecks": 20,
+    "evidenceReused": true,
+    "detail": "God control code unchanged; actual D3/frozen quantum5; headless native controls, not visual/hardware acceptance"
+  },
+  "linux": {
+    "hashes": 1132,
+    "restores": 35,
+    "frozenVotingFinalTick": 10,
+    "detail": "linux-latest.json",
+    "rerun": true
+  },
+  "ci": {
+    "status": "pending-final-push",
+    "initialRecoveryCore": "success",
+    "initialRecoveryDeveloper": "success",
+    "initialRecoveryWindows": "import exit timeout, fixed in disposable workflow; final Windows result pending"
+  },
+  "limitations": [
+    "Prepared recipe/modernization fixtures are not natural endgame progression",
+    "Compact ordinary-start has control geography and no modal ballot; first actual production tick2094 with standard economic prices/times/XP",
+    "Short designed-map runs are not long balance or complete autonomous six-industry development",
+    "No hardware Windows/Android/FPS/audio or new real-model inference verification",
+    "No separate modernization cancellation; wait for120ticks; subsequent safe C2 demolition uses actual costs"
+  ],
+  "finalCompatibilityTests": {
+    "passed": 6,
+    "detail": "policy-final.json",
+    "reason": "D3 multiple-initial-recipes logic guarded to preserve old D2 decisions; targeted ordinary tests passed after the final guard."
+  }
+}

@@ -1,3 +1,39 @@
+## D3 и восстановление,26.10.2026
+
+- Основа28a41a7/PR64. Ветка feat/vnext-package-d3, recovery ac9e706 сохранён
+  в origin, один PR65. Не выдавать WIP-снимок за итог. ПакетE не начинать.
+- vnext-d3-production-1 default только новых двух designedmaps/lab presets;
+  legacy5/default/A2/C1/D1/D2 profiles и resolved saves не подменять. 34items,
+  23V1 +46derived V2/V3,6industries. XP открывает tech; local equipment version
+  отдельно оплачивается300/900coins +exact materials,120active ticks. Старые
+  рецепты доступны, модернизация только stopped/noWIP, C2 ждёт и считает вложения.
+- Imports конечные,125% fixedreference, ceil(N/4), cap2packages; 5additives30,
+  steel12/glass6 each1200, asphalt20/2400. После первого actual materials-tierIV
+  bootstrap asphalt не пополнять, уже оплаченные/остатки не удалять, demolition
+  не перезапускает bootstrap. XP без корпусаIV поставку не останавливает.
+- BuyImport обычная AtLocation terminal команда; external debit +own pickup,
+  затем прежний physical timed Transfer. No reverse deposits/trading source.
+  Imported отдельный flow/stockdelta, никогда G/Produced. Independent audit
+  scripts/import_audit.py обязателен; ExternalOut=retired demand+actual import.
+- World23 limited22/21/20/19/18, new fields optional/default omitted. Own immutable
+  content observation, полный production-content.json researcher only. Import
+  receipts/modernization/material terms не публиковать в public stream.
+- NPC те же команды/планы: imports, local versions, staging, feasible recipes.
+  Начальная специализация смотрит все V1 (зерно→мука), не только default хлеб;
+  прибыльный недоступный рецепт не блокирует доступный. Полная оптимизация внеD3.
+- God XP backend переиспользован изD2. Immediate money/stock/XP на текущем travel
+  quantum без Step и без обхода holds/capacity. Quantum в audit/playback, ordinary
+  API отсутствует. Стандартный ExportDebug включает, обычный Debug/Release нет.
+- Native ProductionProbe только isolatedtests, AssemblyAudit запрещает его.
+  CI serial root importer только disposable checkout, finally восстанавливает
+  точные project.godot bytes. Не игнорировать timeout/errors. Required verify
+  включает core/developer/production. Heavy local gates выполнять последовательно.
+- Recovery/results: WORKLOG_PACKAGE_D3.md, IMPLEMENTATION_REPORT_PACKAGE_D3.md,
+  PRODUCTION_D3.md, verification/production-d3/final-gate.json. Prepared resources,
+  high XP/initial buildings не выдавать за natural progression; compact ordinary
+  first output2094, полные карты только short3/10NPC smoke+load/replay. Длительный
+  баланс/endgame/hardware/реальная LLM не закрыты. Старые записи ниже исторические.
+
 ## CI follow-up D2,26.10.2026
 
 - PR64 исходныеfailures: CorexUnit120s, HUDMonoeditor shutdown120s; push15min

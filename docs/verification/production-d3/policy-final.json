@@ -1,0 +1,25 @@
+{
+  "command": [
+    "dotnet",
+    "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+    "-noColor",
+    "-noLogo",
+    "-parallelMode",
+    "none",
+    "-method",
+    "Simulation.Tests.DevelopmentD2Tests.AlgorithmAcceptsOnlyItsOwnFundedDemandThroughTheSameValidator",
+    "-method",
+    "Simulation.Tests.ProductionD3Tests.NpcBuysImportThroughOrdinaryValidationAndSavesTheSamePlan",
+    "-method",
+    "Simulation.Tests.ProductionD3Tests.NpcChoosesFlourBeforeBreadWhenOnlyGrainIsAvailable",
+    "-method",
+    "Simulation.Tests.ProductionD3Tests.NpcActuallyPaysForBothLocalVersionsWithoutLlmOrPrivilegedCommands",
+    "-result-trx",
+    "/workspace/work/delsk-d3/policy-selected.trx"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-10-26T16:14:14.575590+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 5.745,
+  "finished_at": "2026-10-26T16:14:20.320449+00:00"
+}

@@ -1,0 +1,33 @@
+{
+  "status": "succeeded",
+  "testsPassed": 1197,
+  "partitions": [
+    {
+      "file": "headless/tests.trx",
+      "passed": 1067,
+      "recovered": true
+    },
+    {
+      "file": "headless/tests-integration.trx",
+      "passed": 55,
+      "recovered": true
+    },
+    {
+      "file": "headless/tests-d2.trx",
+      "passed": 36,
+      "recovered": true
+    },
+    {
+      "file": "final-d3.trx",
+      "passed": 38,
+      "recovered": false
+    },
+    {
+      "file": "headless/tests-d3-start.trx",
+      "passed": 1,
+      "recovered": true
+    }
+  ],
+  "scope": "Existing ordinary base/integration/D2 and compact start preserved; changed D3 cases rerun. Full final ordinary CI executes all partitions afresh.",
+  "d3TrxSha256": "f812d91e3355efe0af10fcded93625a1d1a4a8e1766a89b443243e5365a182cc"
+}

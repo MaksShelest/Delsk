@@ -9,11 +9,11 @@ if out.exists() and any(out.iterdir()):p.error('Use a new/empty output')
 out.mkdir(parents=True,exist_ok=True);runner=['dotnet',ROOT/'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll'];checks=[];folders=[];pairs=0;cases={}
 def check(name,cmd):
  subprocess.run([sys.executable,ROOT/'scripts/run_check.py','--name',name,'--timeout','120','--log-directory',out/'checks','--',*map(str,cmd)],cwd=ROOT,check=True);checks.append(name)
-for name in ['saw_planks','make_glass','assemble_conveyor','modernization-2','modernization-3','modernized-demolition','import','ordinary-start']:
+for name in ['saw_planks','make_glass','assemble_conveyor','modernization-2','modernization-3','modernized-demolition','import','ordinary-start','asphalt-cutoff']:
  tick=int((fixtures/(name+'.tick')).read_text());common=[*runner,'--scenario',fixtures/(name+'.json'),'--replay',fixtures/(name+'.commands.jsonl'),'--ticks',tick]
  base=out/name;check(name,common+['--output',base]);folders.append(base)
  events=[json.loads(line) for line in (base/'events.jsonl').read_text().splitlines()]
- selected={'import':['ImportPurchased','ImportRestocked'],'ordinary-start':['StorageConstructionStarted','ProductionBatchStarted'],'modernization-2':['WorkshopModernizationStarted','ProductionBatchStarted'],'modernization-3':['WorkshopModernizationStarted','ProductionBatchStarted']}.get(name,['ProductionBatchStarted'])
+ selected={'import':['ImportPurchased','ImportRestocked'],'ordinary-start':['StorageConstructionStarted','ProductionBatchStarted'],'modernization-2':['WorkshopModernizationStarted','ProductionBatchStarted'],'modernization-3':['WorkshopModernizationStarted','ProductionBatchStarted'],'asphalt-cutoff':['StorageConstructionStarted','BuildingUpgraded','ImportRestocked']}.get(name,['ProductionBatchStarted'])
  cuts=sorted({max(1,next(e['tick'] for e in events if e['type']==kind)) for kind in selected})
  cases[name]=dict(finalTick=tick,cuts=cuts)
  for cut in cuts:

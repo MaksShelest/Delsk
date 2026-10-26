@@ -18,7 +18,7 @@ public partial class ImportPanel:VBoxContainer
     {
         _view=view;if(view.ProductionContent is not {} content){_status.Text=L("Импорт не предусмотрен этим сохранением.","This saved profile has no import supply.");return;}
         bool at=view.Participant.Position==content.Terminal;
-        _status.Text=L("Покупка и выдача у терминала. Товар после оплаты остаётся в вашем пункте выдачи. Заберите его в рюкзак и перевезите обычным способом. Время включается прежней кнопкой планшета.","Buy and collect at the terminal. Paid goods stay in your pickup section. Collect into your backpack and transport normally. Use the tablet's existing time control.");
+        _status.Text=L("Покупка и выдача у терминала. Товар после оплаты остаётся в вашем пункте выдачи. Заберите его в рюкзак и перевезите обычным способом. Время включается прежней кнопкой планшета. Стартовый асфальт не пополняется после первого комбината стройматериалов IV.","Buy and collect at the terminal. Paid goods stay in your pickup section. Collect into your backpack and transport normally. Use the tablet's existing time control. Bootstrap asphalt stops replenishing after the first tier IV materials plant.");
         foreach(var stock in content.Imports)
         {
             string item=stock.ItemId;var spec=content.Rules.Imports.Single(i=>i.ItemId==item);
@@ -32,7 +32,7 @@ public partial class ImportPanel:VBoxContainer
                 row.Take.Pressed+=()=>{if(_view?.ProductionContent?.Pickup is {} source)_submit(new(ActionKind.Transfer,Source:source,Destination:_view.Participant.InventoryId,ItemId:item,Quantity:(long)quantity.Value));};
             }
             long owned=content.Pickup is {} pickup?view.Inventories.Single(i=>i.Id==pickup).Stock.Where(s=>s.ItemId==item).Sum(s=>s.Quantity-s.Reserved):0;
-            row.Label.Text=PlayerText.Item(_language,item)+" · "+PlayerText.Money(spec.UnitPriceMinor)+L("/шт · осталось ","/unit · remaining ")+stock.Remaining+L(" · пополнение через "," · replenishment in ")+Math.Max(0,stock.NextRefreshTick-view.Tick)+L(" тиков · оплачено к вывозу "," ticks · paid for pickup ")+owned;
+            row.Label.Text=PlayerText.Item(_language,item)+" · "+PlayerText.Money(spec.UnitPriceMinor)+L("/шт · осталось ","/unit · remaining ")+stock.Remaining+L(" · проверка поставок через "," · supply review in ")+Math.Max(0,stock.NextRefreshTick-view.Tick)+L(" тиков · оплачено к вывозу "," ticks · paid for pickup ")+owned;
             row.Buy.Disabled=!at||view.Participant.Busy||stock.Remaining==0;row.Take.Disabled=!at||view.Participant.Busy||owned==0;
         }
     }

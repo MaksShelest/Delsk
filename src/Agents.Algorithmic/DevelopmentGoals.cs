@@ -52,7 +52,8 @@ public sealed partial class AlgorithmicController
         foreach(var type in o.BuildingTypes.Where(t=>t.Kind==BuildingKind.Production))
         {
             var level=type.Levels.Single(l=>l.Level==1);var recipe=o.Map.Recipes.Single(r=>r.Id==level.RecipeId);
-            if(!recipe.Uses(settings.PreferredInput)||BestOffer(o,recipe.OutputItem,recipe.OutputQuantity,o.Participant.Position) is null)continue;
+            bool preferred=o.ProductionContent is null?recipe.Uses(settings.PreferredInput):level.UnlockedRecipes.Any(id=>o.Map.Recipes.Single(r=>r.Id==id).Uses(settings.PreferredInput));
+            if(!preferred||BestOffer(o,recipe.OutputItem,recipe.OutputQuantity,o.Participant.Position) is null)continue;
             foreach(var plot in o.Plots.Where(p=>p.BuildingId is null&&p.ExpansionFor is null&&!p.IsCorridor&&!p.IsShopSite&&p.ShopParticipantId is null&&(p.OwnerId is null||p.OwnerId==Actor)&&(p.ReservedBy is null||p.ReservedBy==Actor)&&
                 (d.BuildAnchors.IsEmpty||d.BuildAnchors.Contains(p.Position))).OrderBy(p=>p.OwnerId==Actor?0:1).ThenBy(p=>p.Id.Value))
             {

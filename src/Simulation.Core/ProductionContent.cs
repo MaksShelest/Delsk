@@ -16,6 +16,11 @@ public sealed partial class SimulationEngine
     private int RecipeVersion(string id)=>Content?.Versions.SingleOrDefault(v=>v.RecipeId==id)?.Version??1;
     private int WorkshopVersion(long id)=>_workshopTechnologies.GetValueOrDefault(id,1);
     private bool Modernizing(long id)=>_modernizations.Values.Any(p=>p.Workshop==id);
+    // Bootstrap asphalt ends after the first real local materials plant reaches IV.
+    // Existing paid/unsold goods stay intact; demolition cannot restart bootstrap.
+    private bool AsphaltBootstrapEnded(long tick)=>(_config.Buildings??[]).Any(b=>b.TypeId=="materials"&&b.Level>=4)||
+        _events.Any(e=>e.Tick<=tick&&e.Type=="BuildingUpgraded"&&e.ReasonCode is "4" or "5"&&
+            _buildings.TryGetValue(e.EntityId,out var b)&&b.Type.Id=="materials");
     private void RequireProductionItem(long inventory,string item)
     {
         if(Content is null)return;
@@ -88,7 +93,7 @@ public sealed partial class SimulationEngine
         foreach(var rule in Content.Imports)
         {
             var stock=_imports[rule.ItemId];if(Tick<stock.NextRefreshTick)continue;
-            long remaining=Math.Min(checked(rule.Package*2),checked(stock.Remaining+rule.Package));
+            long remaining=rule.ItemId=="asphalt"&&AsphaltBootstrapEnded(Tick)?stock.Remaining:Math.Min(checked(rule.Package*2),checked(stock.Remaining+rule.Package));
             _imports[rule.ItemId]=stock with{Remaining=remaining,NextRefreshTick=checked(stock.NextRefreshTick+rule.RefreshTicks)};
             Emit("ImportRestocked",item:rule.ItemId,quantity:remaining-stock.Remaining);
         }
@@ -117,7 +122,7 @@ public sealed partial class SimulationEngine
             foreach(var e in _events.Where(e=>e.ItemId==rule.ItemId&&e.Type is "ImportPurchased" or "ImportRestocked"))
             {
                 if(e.Type=="ImportRestocked")
-                {if(e.Tick!=next||e.Phase!=0||e.Quantity!=Math.Min(rule.Package,rule.Package*2-remaining))throw new CheckpointException("InvalidImportRefresh");remaining+=e.Quantity;next=checked(next+rule.RefreshTicks);}
+                {long added=rule.ItemId=="asphalt"&&AsphaltBootstrapEnded(e.Tick)?0:Math.Min(rule.Package,rule.Package*2-remaining);if(e.Tick!=next||e.Phase!=0||e.Quantity!=added)throw new CheckpointException("InvalidImportRefresh");remaining+=e.Quantity;next=checked(next+rule.RefreshTicks);}
                 else
                 {
                     if(e.Quantity<=0||e.Quantity>remaining||e.AmountMinor!=checked(e.Quantity*rule.UnitPriceMinor)||e.ActorId is not {} owner||

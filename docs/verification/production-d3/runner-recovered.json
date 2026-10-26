@@ -1,0 +1,107 @@
+{
+  "status": "succeeded",
+  "cases": {
+    "saw_planks": {
+      "finalTick": 67,
+      "cuts": [
+        23
+      ]
+    },
+    "make_glass": {
+      "finalTick": 159,
+      "cuts": [
+        23
+      ]
+    },
+    "assemble_conveyor": {
+      "finalTick": 295,
+      "cuts": [
+        23
+      ]
+    },
+    "modernization-2": {
+      "finalTick": 373,
+      "cuts": [
+        23,
+        136
+      ]
+    },
+    "modernization-3": {
+      "finalTick": 572,
+      "cuts": [
+        23,
+        136
+      ]
+    },
+    "modernized-demolition": {
+      "finalTick": 398,
+      "cuts": [
+        23
+      ]
+    },
+    "import": {
+      "finalTick": 3600,
+      "cuts": [
+        39,
+        1200
+      ]
+    },
+    "ordinary-start": {
+      "finalTick": 2094,
+      "cuts": [
+        1959,
+        2051
+      ]
+    }
+  },
+  "exports": 32,
+  "comparisonPairs": 24,
+  "recoveredCompletedChecks": [
+    "saw_planks-compare-23.json",
+    "saw_planks-load-23.json",
+    "saw_planks-save-23.json",
+    "saw_planks.json",
+    "make_glass-compare-23.json",
+    "make_glass.json",
+    "make_glass-load-23.json",
+    "make_glass-save-23.json",
+    "assemble_conveyor-load-23.json",
+    "assemble_conveyor-save-23.json",
+    "assemble_conveyor.json",
+    "assemble_conveyor-compare-23.json",
+    "modernization-2-save-136.json",
+    "modernization-2-load-23.json",
+    "modernization-2-compare-23.json",
+    "modernization-2.json",
+    "modernization-2-compare-136.json",
+    "modernization-2-save-23.json",
+    "modernization-2-load-136.json",
+    "modernization-3-compare-23.json",
+    "modernization-3-save-136.json",
+    "modernization-3-load-23.json",
+    "modernization-3.json",
+    "modernization-3-compare-136.json",
+    "modernization-3-load-136.json",
+    "modernization-3-save-23.json",
+    "modernized-demolition-load-23.json",
+    "modernized-demolition.json",
+    "modernized-demolition-compare-23.json",
+    "modernized-demolition-save-23.json",
+    "import-compare-1200.json",
+    "import-load-39.json",
+    "import.json",
+    "import-save-39.json",
+    "import-save-1200.json",
+    "import-compare-39.json",
+    "import-load-1200.json",
+    "ordinary-start-compare-2051.json",
+    "ordinary-start-compare-1959.json",
+    "ordinary-start-load-2051.json",
+    "ordinary-start-load-1959.json",
+    "ordinary-start.json",
+    "ordinary-start-save-2051.json",
+    "ordinary-start-save-1959.json"
+  ],
+  "evidence": "Original successful runner exit metadata, fixture scenario/tape/target matching; all comparisons and independent audits rerun, profile regenerated twice.",
+  "scope": "Prepared sources/XP except compact ordinary-start. No full designed-map natural endgame/balance claim."
+}

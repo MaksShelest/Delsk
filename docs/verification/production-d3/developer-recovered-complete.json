@@ -1,0 +1,33 @@
+{
+  "status": "succeeded",
+  "testsPassed": 1203,
+  "testPartitions": [
+    {
+      "file": "tests.trx",
+      "passed": 1078
+    },
+    {
+      "file": "tests-integration.trx",
+      "passed": 55
+    },
+    {
+      "file": "tests-d2.trx",
+      "passed": 36
+    },
+    {
+      "file": "tests-d3.trx",
+      "passed": 33
+    },
+    {
+      "file": "tests-d3-start.trx",
+      "passed": 1
+    }
+  ],
+  "reusedPartitions": [
+    "tests.trx"
+  ],
+  "reuseEvidence": "Recovered exit0/TRX, exact command, unchanged source and assembly predating original run; every TRX revalidated for failure/skip/overlap/class membership.",
+  "assemblySha256": "91e48a5b6db121992fd0cc0fe152cb1bedeffce1e36c46ed6e3f728e181b993b",
+  "sourceCommit": "ac9e706310d47ee8de8a0b145507057bf7471c0a",
+  "release_negative_build": "expected rejection"
+}

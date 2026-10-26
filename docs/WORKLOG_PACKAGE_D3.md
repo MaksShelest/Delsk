@@ -12,7 +12,7 @@
 инвентари/переполнение, C2 фактические вложения/снос. Старые профили не менять.
 Подготовленные состояния отделять от естественного старта без бизнеса.
 
-Текущий статус: изучены AGENTS, спецификация §§5–9,16,19–20, результаты D2,
+История первоначального анализа: изучены AGENTS, спецификация §§5–9,16,19–20, результаты D2,
 основные Core/Hosting/UI механизмы. D3 пока не реализован и не проверен.
 Решения: конечные внешние запасы у терминала, оплаченный товар в собственном
 пункте выдачи; перенос через прежний timed Transfer, без телепорта в рюкзак.
@@ -76,3 +76,75 @@ checkpoint90 прошли, с explicit --human-ballot self. Есть сбор/п
 Первый recovery commit — намеренно НЕЗАВЕРШЁННЫЙ D3 для сохранности вне среды.
 Осталось: import audit, Developer, необходимые итоговые regressions/assembly
 audit, docs/отчёт и PR. ПакетE запрещён. Не объявлять D3 закрытым по этому commit.
+
+## Этап 3: сохранность и оставшиеся gates
+
+ac9e706 отправлен в origin/feat/vnext-package-d3; draft PR65 открыт. Сверено
+через git ls-remote: коммит доступен вне среды. Это намеренно незавершённый
+снимок; subsequent commits завершают D3, PR один, merge запрещён.
+
+Подтверждён прежний base Developer1078 exit0+TRX, источник/assembly старше
+начала проверки и не изменялись. Остальные4части выполнены последовательно:
+55+36+33+1, итого1203; forbidden Release ожидаемо отвергнут. Источник изменён
+после этого только для найденных ниже случаев: нужен свежий финальный gate.
+
+Import audit: добавлен независимый import_audit.py, проверяет конечные запасы,
+периоды/лимит2пакета, цену/Actor/команду/внешний платёж, private receipt,
+физическую выдачу и current flows. 15 corruption cases + прочие проверки;
+реальные32выгрузки/24пары повторно прошли, checked profile дважды совпал.
+Реальные small3NPC300/large10NPC180 продолжены из checkpoint и replay,
+контроллеры exact, независимый audit/capital passed. Это короткие прогоны,
+не полная натуральная индустриализация обеих карт.
+
+Найдены реальные недочёты первоначального D3: §14 требует прекращать
+bootstrap-пополнение асфальта после первого реального материалов-комбинатаIV;
+покупки/остатки сохраняются, снос не перезапускает поставки. Исправлено и
+проверено actual UpgradeBuilding + save/load/replay. Общая XP без корпусаIV
+не прекращает bootstrap (явная интерпретация термина «комбинатIV»).
+NPC начальная специализация теперь рассматривает все рецептыI (зерно→мука),
+выбор рецепта не удерживает выгодный, но недоступный хлеб вместо доступной
+муки. Новые meaningful NPC tests выполняют настоящие команды и выпуск.
+
+WIP Windows CI40350309350: импорт ресурсов завершился, Monoeditor не вышел
+за120s; artifact показывает EditorSettings/shutdown_adb_on_exit. Для disposable
+CI checkout только: serial importer + явные editor/import/quit, finally
+восстанавливает точные project.godot bytes. Таймаут/ошибки не игнорируются.
+D3runner вынесен в отдельный bounded production job; required verify требует
+core+developer+production, тесты не вычёркиваются ради deadline.
+
+## Этап 4: итоговый локальный software gate
+
+- Latest production tests38 прошли; в совокупности ordinary1197 с явно
+  указанным reuse прежних base/integration/D2/compact-start. Последний compatibility
+  guard сохраняет прежнюю D2 affinity, D3 использует всеV1; selected policy tests
+  с явными -method выполнены отдельно (нулевой запуск class+method не считается).
+- Свежий полный Developer1208,12Python checks(+15 corruption subcases),37Lab.
+  Запрещённый Developer Release ожидаемо rejected; ordinary Debug и ExportRelease
+  построены и AssemblyAudit проверил5assemblies, Release не содержит Debug entry.
+- D3runner заново:9cases/39exports/30pairs/58process checks. Все independent
+  balance/privacy/capital audits passed. Дважды генерируемый profile exact.
+- Native RU/EN повторён с текущими Import/Workshopпанелями и runtime. Реальный
+  ordinary compact start2094, полный Linux smoke1132hashes/35restores+frozen10
+  повторён. God20+20 evidence переиспользован: обработчики/applies не менялись.
+- Full-map3NPC300/10NPC180: new/load/replay +independent audits/capital exact.
+  До естественного полного развития эти короткие прогоны не дошли.
+- Evidence: docs/verification/production-d3/final-gate.json; usage PRODUCTION_D3.md,
+  report IMPLEMENTATION_REPORT_PACKAGE_D3.md; решения61/архитектура/access обновлены.
+- CI на итоговом commit ещё должен запуститься после push. Старый WIP Core/Developer
+  green, Windows import timeout не выдавать за final pass. Финальный PR65 один,
+  E не начат, auto merge запрещён.
+
+Воспроизводимые основные команды (SDK/env согласно global.json):
+
+```sh
+python scripts/check_headless.py --output NEW_HEADLESS
+python scripts/check_developer.py --output NEW_DEVELOPER
+python scripts/check_production_d3.py --fixtures NEW_HEADLESS/d3-fixtures --output NEW_D3
+python -m unittest discover -s tests/Checks -v
+python -m unittest discover -s tests/Research.Lab -v
+python scripts/check_development_ui.py --probe ProductionProbe --godot GODOT --xvfb XVFB --fixtures NEW_HEADLESS/d3-fixtures --output NEW_NATIVE
+python scripts/check_hud_god_ui.py --godot GODOT --import-cache src/Client.Godot --output NEW_GOD
+```
+
+Все игровые процессы в скриптах bounded. Локально тяжёлые gates запускать
+последовательно, чтобы не повторять исходный CPU/memory contention.
