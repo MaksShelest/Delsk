@@ -55,7 +55,7 @@ public sealed partial class AlgorithmicController
         return Choose(o, DecisionCandidates(o));
     }
     private Candidate[] DecisionCandidates(ControllerObservation o) => StrategicCandidates(o,Candidates(o).Concat(WageCandidates(o)).Concat(ContractCandidates(o)).Concat(MarketCandidates(o))
-            .Concat(LogisticsCandidates(o)).Concat(WorkshopCandidates(o)).Concat(RecipeCandidates(o)).Concat(PoliticalCandidates(o)).Concat(NegotiationCandidates(o)).Concat(NegotiationResponses(o))
+            .Concat(DevelopmentCandidates(o)).Concat(LogisticsCandidates(o)).Concat(WorkshopCandidates(o)).Concat(RecipeCandidates(o)).Concat(PoliticalCandidates(o)).Concat(NegotiationCandidates(o)).Concat(NegotiationResponses(o))
             .Where(c => (!SimplePolicy || SimpleGoal(c) || HasObligations(o)) && Feasible(c,o) && (!HasObligations(o) || !ExpansionGoal(c.Goal)) &&
                 (o.OwnSupplyRequests.Length==0 || c.Goal is not ("SellCarried" or "SellOutput" or "HarvestForSale")))
             .Select(c => HasObligations(o) && c.Goal is "SupplyProduction" or "ResumeProduction" or "AdjustWage"
@@ -127,7 +127,7 @@ public sealed partial class AlgorithmicController
             // Stop expenses during cash recovery; the core retains WIP and gradually releases workers.
             if (recovery && enterprise.Enabled)
                 yield return One("PreserveCash", "UnpaidPause", 200000, new(ActionKind.SetProductionEnabled, Enterprise: enterprise.Id, Enabled: false));
-            if (!recovery && !enterprise.Enabled && enterprise.ReasonCode!="PreparingDemolition")
+            if (!recovery && !enterprise.Enabled && enterprise.ReasonCode!="PreparingDemolition" && o.Development?.Preparing.Contains(enterprise.Id.Value)!=true && o.Development?.Projects.Any(p=>p.BuildingId==enterprise.Id.Value)!=true)
                 yield return One("ResumeProduction", recipe.Id, 110000*settings.ProductionWeight/100, new(ActionKind.SetProductionEnabled, Enterprise: enterprise.Id, Enabled: true));
             long targetWage = settings.BaseWageMinor;
             if (group.Ready && group.Headcount < recipe.MinimumStaff && o.Tick >= _state.NextWageTick)
@@ -157,7 +157,7 @@ public sealed partial class AlgorithmicController
             }
         }
         // One primary production site per policy in this first baseline; expansion of chains belongs to P21.
-        if (!recovery && o.Enterprises.Length == 0 && carrier.Stock.All(s => s.Quantity == 0))
+        if (o.Development is null && !recovery && o.Enterprises.Length == 0 && carrier.Stock.All(s => s.Quantity == 0))
         foreach (var type in o.BuildingTypes.Where(t => t.Kind == BuildingKind.Production))
         {
             var level = type.Levels.Single(l => l.Level == 1);

@@ -71,3 +71,11 @@
 | AssignWorkshopWorkers | Remote | Источник и получатель — свои цеха одного предприятия; только существующий штат и свободные места |
 | SetProductionEnabled / SetRecipe с WorkshopId | Remote | Обычный owner validator; рецепт только без WIP и при остановке выбранного цеха |
 | SetWage группы дополнительного цеха | AtLocation: предприятие | Прежняя общая проверка ставки/границы партии; без бесплатного найма |
+
+D2: `AcceptIndustryQuest`, `AbandonIndustryQuest`, `PrepareEnterpriseExpansion`,
+`CancelExpansionPreparation` — Remote, только собственные договоры/фабрики.
+`BuyExpansionLand` — AtLocation собственной фабрики, покупает конкретную клетку
+своего контура прежней транзакцией земли. `UpgradeBuilding` сохраняет AtLocation,
+для D2production требует явный target level в Quantity против устаревшего клика.
+Initial Build — AtLocation anchor; материалы ground70, остальные условия прежние.
+Developer XP отсутствует в ActionKind и доступен только conditional intervention.

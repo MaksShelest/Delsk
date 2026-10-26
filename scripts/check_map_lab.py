@@ -16,15 +16,15 @@ try:
   page.goto(f'http://127.0.0.1:{server.server_port}/');page.wait_for_function("() => document.getElementById('plan').value.length>0")
   for key,source in [('small-river','small_river'),('large-districts','large_districts')]:
    page.locator('[data-page=new]').first.click();page.locator('#map').select_option('scenarios/vnext/'+key+'.json')
-   page.wait_for_function('(key) => {let p=JSON.parse(document.getElementById("plan").value);return p.scenario.endsWith(key+".json")&&p.economyData.id==="vnext-d1-workshops-1"}',arg=key)
-   plan=json.loads(page.locator('#plan').input_value());assert plan['economy']=='config/vnext/economy.d1-workshops.json'
+   page.wait_for_function('(key) => {let p=JSON.parse(document.getElementById("plan").value);return p.scenario.endsWith(key+".json")&&p.economyData.id==="vnext-d2-development-1"}',arg=key)
+   plan=json.loads(page.locator('#plan').input_value());assert plan['economy']=='config/vnext/economy.d2-development.json'
    page.locator('#experiment-name').fill('map-'+key);page.locator('#ticks').fill('30');page.locator('#seeds').fill('42');page.locator('#run').click();page.wait_for_selector('#page-detail:not([hidden])',timeout=60000)
    series=lab.series[-1];job=series['jobs'][0];end=time.monotonic()+120
    while job['status'] in ('queued','running'):
     if time.monotonic()>end:raise AssertionError('Research map job timeout')
     time.sleep(.1)
    assert job['status']=='succeeded',job
-   folder=lab.workspace/series['id']/'runs'/job['id']/'1';manifest=read(folder/'manifest.json');assert manifest['mapId']==source and manifest['economyProfileId']=='vnext-d1-workshops-1';assert manifest['mapDesign']['sourceId']==source
+   folder=lab.workspace/series['id']/'runs'/job['id']/'1';manifest=read(folder/'manifest.json');assert manifest['mapId']==source and manifest['economyProfileId']=='vnext-d2-development-1';assert manifest['mapDesign']['sourceId']==source
    validate_recording(folder);page.screenshot(path=str(a.output/(key+'.png')),full_page=True);results.append(dict(map=source,tick=read(folder/'summary.json')['tick'],status='succeeded',recording='validated',sourceSha256=manifest['mapDesign']['sourceSha256']))
   assert not errors,errors;browser.close()
  (a.output/'gate.json').write_text(json.dumps(dict(status='succeeded',runs=results,scope='Actual Chromium controls, lab queue, C# validators and runner; explicit research composition, no LLM'),indent=2)+'\n')

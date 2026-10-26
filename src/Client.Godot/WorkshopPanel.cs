@@ -54,7 +54,7 @@ public partial class WorkshopPanel : VBoxContainer
                 L("Услуга за полный рабочий тик: ","Service per full work tick: ")+PlayerText.Money(_scenario.Economy!.Workshops!.ServiceMinorPerFullTick);
             row.Progress.MaxValue=Math.Max(1,w.WorkRequired);row.Progress.Value=w.WorkDone;
             Action(row.Actions,"work:"+w.Id,w.Enabled?L("Остановить цех","Stop workshop"):L("Запустить цех","Start workshop"),new(ActionKind.SetProductionEnabled,Enterprise:e.Id,WorkshopId:w.Id,Enabled:!w.Enabled),true);
-            foreach(string id in type?.Levels.Where(l=>l.Level<=b!.Level).SelectMany(l=>l.UnlockedRecipes).Distinct(StringComparer.Ordinal)??new[]{w.RecipeId})
+            foreach(string id in type?.Levels.Where(l=>l.Level<=(view.Development?.Experience.Single(x=>x.Industry==b!.TypeId).TechnologyLevel??b!.Level)).SelectMany(l=>l.UnlockedRecipes).Distinct(StringComparer.Ordinal)??new[]{w.RecipeId})
             {
                 var r=_scenario.Recipes.Single(r=>r.Id==id);
                 Action(row.Actions,"recipe:"+w.Id+":"+id,L("Рецепт: ","Recipe: ")+PlayerText.Item(_language,r.OutputItem)+" ("+id+")",new(ActionKind.SetRecipe,Enterprise:e.Id,WorkshopId:w.Id,RecipeId:id),!w.Enabled&&w.BatchId==0&&w.RecipeId!=id);

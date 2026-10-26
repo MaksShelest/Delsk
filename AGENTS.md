@@ -1,3 +1,36 @@
+## D2,26.10.2026
+
+- Основа29cb58b/PR63merged. Пользователь явно ограничил D2: XP/задания/контуры/
+  платные проекты/оснащение. Полный контент, импорт и V2/V3 — D3, не начинать.
+- vnext-d2-development-1 — checked A2→C1→D1 + typedBALANCE, default только новых
+  designedmaps/lab. Старые5/defaultv6/A2/C1/D1 bytes и resolved saves не подменять.
+- XP actor+industry, production только actual completion, quests по существующему
+  funded DeliveryContract с baselineDelivered и sourceonce. Two slots/review1200,
+ 5/15/30batch50/100/200;60/500 только explicit public project и>=3600remaining.
+  Не создавать новый спрос/бюджет; purchased goods допустимы. No productionCount.
+- Footprint уровней1/3/4/5/6, capacities80/120/160/200/240. Full contour claim не
+  дарит землю. Initial staged ground70/60ticks, expansion materials input, отдельная
+  земля/цена/120/180/300/480. Executor прежний StorageConstruction.Development.
+  Newcell fullcapacityhold development:job защищает late deposits; reverse holds
+  validated. До completion geometry/caps прежние, новые places ещё не outfit/staff.
+- PrepareEnterpriseExpansion drains WIP без следующих стартов, не C2prepare и не
+  отмена trade/logistics. C2cancel/salvage peractualcells/allpaidmaterials, no double.
+  Вторая фабрика знает tech, но платит свойI/expansion/outfit и нанимает из населения.
+- World22 limited21/20/19/18 без новых полей; default omitted. XP proofs indexed
+  bybatchID при capture/restore. Quest restore проверяет receipt interval/baseline/
+  acceptance/knowntech. Own immutable DTO; development.json полный researcher only.
+- Baseline plans/ordinary actions, staging target исключён из Fetch sources,
+  иначе loop. Developer XP только прежний conditional ResearchModification,
+  audit/replay/nonclean; ordinary ActionKind выдачиXP не добавлять.
+- Presentation uses actual building footprint. Native DevelopmentProbe только
+  isolatedtests, запрещён AssemblyAudit. Usage DEVELOPMENT_D2.md, decision60,
+  report IMPLEMENTATION_REPORT_PACKAGE_D2.md, recovery WORKLOG_PACKAGE_D2.md.
+- Gates:1153ordinary/1160Developer/37Python,36D2; headless102exports/14replay/69pairs;
+  D2process31checks/18exports/16pairs, C1/C2/D1 regressions, actualWorld21exact,
+  nativeRU/EN/GodotD2hashes+legacy1132/35restores, cleanordinaryaudit и2maplabruns.
+  Evidence docs/verification/development-d2/. Не выдавать prepared
+  material/accelerated geometry fixtures за natural progression/длительный баланс.
+
 ## D1,25.10.2026
 
 - Основа85955d7/PR62merged. Явные EconomicRules.Workshops; старые профили/пять

@@ -16,8 +16,8 @@ public sealed record DevelopmentRules(ImmutableArray<DevelopmentIndustry> Indust
             Industries.Any(i=>string.IsNullOrWhiteSpace(i.Id)||i.Products.IsDefaultOrEmpty||i.Products.Any(p=>p.Quantity<=0||p.XpPerUnit<=0||p.TechnologyLevel is <1 or >5)))throw new ArgumentException("Invalid development rules");
     }
 }
-public sealed record IndustryExperience(ParticipantId Owner,string Industry,long ProductionXp,long QuestXp)
-{public long Total=>checked(ProductionXp+QuestXp);public int TechnologyLevel=>DevelopmentRules.Technology(Total);}
+public sealed record IndustryExperience(ParticipantId Owner,string Industry,long ProductionXp,long QuestXp,[property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] long ResearchXp=0)
+{public long Total=>checked(ProductionXp+QuestXp+ResearchXp);public int TechnologyLevel=>DevelopmentRules.Technology(Total);}
 public sealed record ExperienceGrant(long Owner,string Industry,string Source,long SourceId,string ItemId,long Quantity,long Xp,long Tick);
 public sealed record IndustryQuest(long Id,ParticipantId Owner,string Industry,string Kind,long ContractId,string RecipeId,string ItemId,long Quantity,long Reward,
     long AcceptedTick,long DeadlineTick,long BaselineDelivered,long Delivered,string Status,long? ClosedTick=null);
@@ -27,4 +27,4 @@ public sealed record DevelopmentProject(ImmutableArray<Cell> Contour,ImmutableAr
 public sealed record DevelopmentState(ImmutableArray<ExperienceGrant> Grants,ImmutableArray<IndustryQuest> Quests,ImmutableArray<DevelopmentBuilding> Buildings,ImmutableArray<long> Preparing=default);
 public sealed record DevelopmentProjectView(long Id,long BuildingId,Cell Position,string TypeId,int Level,long InventoryId,long StartedTick,long CompletesTick,long PaidMinor,ImmutableArray<MaterialCost> Materials,DevelopmentProject Plan);
 public sealed record DevelopmentObservation(ImmutableArray<IndustryExperience> Experience,ImmutableArray<IndustryQuest> Quests,ImmutableArray<IndustryQuestChoice> Choices,
-    ImmutableArray<DevelopmentBuilding> Buildings,ImmutableArray<DevelopmentProjectView> Projects,DevelopmentRules Rules,long ReviewTick,long NextReviewTick,ImmutableArray<long> Preparing);
+    ImmutableArray<DevelopmentBuilding> Buildings,ImmutableArray<DevelopmentProjectView> Projects,DevelopmentRules Rules,long ReviewTick,long NextReviewTick,ImmutableArray<long> Preparing,ImmutableArray<Cell> BuildAnchors);

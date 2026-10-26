@@ -58,9 +58,9 @@ public static class WorldSkins
             float sourceWidth=id=="capital"?15:5;
             float scale=Mathf.Min(width/sourceWidth,depth/5f);
             if(Model(key,scale,new((minX+cells.Max(c=>c.X))/2f,0,(minZ+cells.Max(c=>c.Z))/2f)) is {} visual)
-            {AddLevel(visual,marker.Level);return visual;}
+            {AddLevel(visual,marker.Level);return WorldModels.EnterpriseExtent(marker,visual);}
         }
-        return Classic(WorldModels.Building(marker.Kind,marker.Label,marker.Level));
+        return WorldModels.EnterpriseExtent(marker,Classic(WorldModels.Building(marker.Kind,marker.Label,marker.Level)));
     }
     public static Node3D Truck(bool loaded)
     {

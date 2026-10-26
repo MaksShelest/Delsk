@@ -4,6 +4,14 @@ using Simulation.Hosting;
 
 public static partial class WorldModels
 {
+    public static Node3D EnterpriseExtent(PresentationMarker marker,Node3D model)
+    {
+        if(marker.Kind!="production"||marker.Footprint.Length<=1)return model;
+        var root=new Node3D{Name="EnterpriseExtent"};root.AddChild(model);
+        // Actual occupied cells only; cosmetic foundation creates neither equipment nor collision.
+        foreach(var cell in marker.Footprint)Box(root,new(.98f,.045f,.98f),new("a1a493"),new(cell.X,.025f,cell.Z));
+        return root;
+    }
     public static Node3D Warehouse(PresentationMarker marker)
     {
         var root=new Node3D();var walls=marker.Walls.ToHashSet();

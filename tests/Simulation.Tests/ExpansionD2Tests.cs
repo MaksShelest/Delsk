@@ -3,6 +3,8 @@ using System.Text;
 using Simulation.Core;
 using Simulation.Hosting;
 using Xunit;
+using System.Text.Json;
+using Agents.Algorithmic;
 
 namespace Simulation.Tests;
 
@@ -30,9 +32,17 @@ public class ExpansionD2Tests
     {
         var s=new GameSession(new(definition??Definition(fastExperience)));var ground=new InventoryId(s.Engine.StorageOf(new(1)).Ground.Single(g=>g.PlotId==50).InventoryId);
         Materials(s,s.Engine.Configuration().BuildingTypes!.Single(t=>t.Id=="woodworking").Levels[0].Materials,ground);
+        Assert.True(PlayContext.At(PlayerDesk.Read(s.Engine,new(1)),s.Engine.Configuration(),"ru",true).Single(c=>c.Key=="build:woodworking").Enabled);
         Step(s,new(ActionKind.Build,BuildingTypeId:"woodworking",Target:new(8,2)));
         if(complete)s.AdvanceTo(s.Engine.StorageOf(new(1)).Construction.Single().CompletesTick);
         return s;
+    }
+    internal static void Evidence(GameSession s,string name)
+    {
+        if(Environment.GetEnvironmentVariable("DELSK_D2_EVIDENCE") is not {} folder)return;
+        Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,name+".json"),JsonSerializer.Serialize(s.Engine.Configuration(),SimulationJson.Options)+"\n");
+        File.WriteAllText(Path.Combine(folder,name+".commands.jsonl"),string.Join("\n",s.CommandTape.Select(c=>JsonSerializer.Serialize(c,SimulationJson.Options)))+"\n");
+        File.WriteAllText(Path.Combine(folder,name+".tick"),s.Engine.Tick.ToString());
     }
     internal static void Unlock(GameSession s)
     {
@@ -72,9 +82,13 @@ public class ExpansionD2Tests
             var job=s.Engine.StorageOf(new(1)).Construction.Single();var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));s.AdvanceTo(job.CompletesTick);copy.AdvanceTo(s.Engine.Tick);Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());
             b=Factory(s);Assert.Equal(level,b.Level);Assert.Equal(new[]{1,3,4,5,6}[level-1],b.Footprint.Length);Assert.Equal(80+40*(level-1),StorageC1Tests.Inventory(s,b.InputId).Capacity);Assert.Equal(80+40*(level-1),StorageC1Tests.Inventory(s,b.OutputId!.Value).Capacity);Assert.Single(s.Engine.Observe(new(1)).OwnEnterprises.Single().Workshops);
             Assert.All(s.Engine.DevelopmentOf(new(1))!.Buildings.Single().Cells,c=>Assert.Equal(level,c.Level));
+            StorageC1Tests.Move(s,b.Footprint.Last());Assert.Contains(PlayContext.At(PlayerDesk.Read(s.Engine,new(1)),s.Engine.Configuration(),"ru",true),c=>c.Key=="card:"+b.Id.Value);
+            StorageC1Tests.Move(s,b.Position);
+            Assert.Equal(b.Footprint.Select(c=>new Cell(c.X-b.Position.X,c.Z-b.Position.Z)),Presentation.Read(s.Engine.Configuration(),s.Engine,1).Markers.Single(m=>m.Kind=="production"&&m.EntityId==b.Id.Value).Footprint);
         }
         Assert.Equal(50000,s.Engine.Ledger().Where(l=>l.Reason=="PlotPurchase").Sum(l=>l.AmountMinor));Assert.Equal(10,s.Engine.Inspect().Population);Assert.Equal(40000,s.Engine.DevelopmentOf(new(1))!.Experience.Single(x=>x.Industry=="woodworking").Total);
         Assert.Equal(s.Engine.ComputeStateHash(),GameSession.Replay(Definition(),s.CommandTape,s.Engine.Tick).Engine.ComputeStateHash());
+        Evidence(s,"physical");
     }
     [Fact] public void PendingNewCellsCannotReceiveStockOrBeStolenAndCancellationReleasesHolds()
     {
@@ -110,6 +124,48 @@ public class ExpansionD2Tests
     {
         var d=Definition();d=d with{Recipes=d.Recipes.Select(r=>r.Id=="fixture-plank"?r with{FullStaffTicks=10}:r).ToArray()};var s=Initial(definition:d);Unlock(s);ReadyExpansion(s);var b=Factory(s);Materials(s,[new("wood",1)],b.InputId);Step(s,new(ActionKind.SetProductionEnabled,Enterprise:new(b.Id.Value),Enabled:true));s.Step();Step(s,new(ActionKind.SetProductionEnabled,Enterprise:new(b.Id.Value),Enabled:false));Assert.NotEqual(0,s.Engine.Observe(new(1)).OwnEnterprises.Single().BatchId);Step(s,new(ActionKind.UpgradeBuilding,Building:b.Id,Quantity:2),accepted:false);
         Step(s,new(ActionKind.SetProductionEnabled,Enterprise:new(b.Id.Value),Enabled:true));s.AdvanceTo(s.Engine.Tick+12);Step(s,new(ActionKind.SetProductionEnabled,Enterprise:new(b.Id.Value),Enabled:false));Step(s,new(ActionKind.UpgradeBuilding,Building:b.Id,Quantity:2));s.AdvanceTo(s.Engine.StorageOf(new(1)).Construction.Single().CompletesTick);long cash=s.Engine.Observe(new(1)).Account.BalanceMinor;Step(s,new(ActionKind.UpgradeBuilding,Building:b.Id,Quantity:2),accepted:false);Assert.Equal(cash,s.Engine.Observe(new(1)).Account.BalanceMinor);Assert.Equal(2,Factory(s).Level);
+    }
+    [Fact] public void NewCellGoodsBlockExpansionWithoutAnyChargeOrLoss()
+    {
+        var s=Initial();Unlock(s);ReadyExpansion(s);var b=Factory(s);var ground=new InventoryId(s.Engine.StorageOf(new(1)).Ground.Single(g=>g.PlotId==51).InventoryId);
+        Materials(s,[new("wood",1)],ground);StorageC1Tests.Move(s,b.Position);long money=s.Engine.Observe(new(1)).Account.BalanceMinor;
+        Assert.Contains("GroundNotEmpty",s.Engine.QuoteExpansion(new(1),b.Id)!.Blockers);Step(s,new(ActionKind.UpgradeBuilding,Building:b.Id,Quantity:2),accepted:false);
+        Assert.Equal(money,s.Engine.Observe(new(1)).Account.BalanceMinor);Assert.Equal(1,StorageC1Tests.Inventory(s,ground).Stock.Single().Quantity);CheckpointStore.Decode(CheckpointStore.Encode(s));
+    }
+    [Fact] public void AlgorithmPaysForTheKnownTierWithoutPrivilegedActions()
+    {
+        var s=Initial();Unlock(s);ReadyExpansion(s);var controller=new AlgorithmicController(new(1,"wood",PoliticsEnabled:false,TradeEnabled:false,LogisticsEnabled:false),1,[1,2]);
+        var decision=controller.Decide(s.Engine.ObserveController(new(1)),[]);var action=decision.Actions.Single();Assert.Equal(ActionKind.UpgradeBuilding,action.Kind);Assert.Equal(2,action.Quantity);Step(s,action);
+        Assert.Equal(2,s.Engine.DevelopmentOf(new(1))!.Projects.Single().Level);Assert.Equal(1,Factory(s).Level);CheckpointStore.Decode(CheckpointStore.Encode(s));
+    }
+    [Fact] public void NativeFixtureUsesOnlyOrdinaryPaidCommands()
+    {
+        if(Environment.GetEnvironmentVariable("DELSK_D2_EVIDENCE") is not {} folder)return;
+        var s=Initial();Unlock(s);var b=Factory(s);Materials(s,[new("plank",26),new("steel",6)],b.InputId);
+        CheckpointStore.Save(s,Path.Combine(folder,"native.save.json"));
+    }
+    [Fact] public void SupportedRecipesUseSharedTechnologyRatherThanPhysicalBuildingSize()
+    {
+        var d=Definition();var extra=d.Recipes.Single(r=>r.Id=="fixture-plank") with{Id="supported-tech-two"};
+        d=d with{Recipes=[..d.Recipes,extra],BuildingTypes=d.BuildingTypes!.Select(t=>t.Id=="woodworking"?t with{Levels=t.Levels.Select(l=>l.Level>=2?l with{AdditionalRecipeIds=[extra.Id]}:l).ToArray()}:t).ToArray(),
+            Economy=d.Economy! with{Development=d.Economy.Development! with{Industries=[..d.Economy.Development!.Industries.Select(i=>i.Id=="woodworking"?i with{Products=[..i.Products,new(extra.Id,"plank",1,40000,2)]}:i)]}}};
+        var s=Initial(definition:d);var b=Factory(s);Step(s,new(ActionKind.SetRecipe,Enterprise:new(b.Id.Value),RecipeId:extra.Id),accepted:false);Unlock(s);
+        Step(s,new(ActionKind.SetRecipe,Enterprise:new(b.Id.Value),RecipeId:extra.Id));Assert.Equal(1,Factory(s).Level);Assert.Equal(extra.Id,s.Engine.Observe(new(1)).OwnEnterprises.Single().RecipeId);CheckpointStore.Decode(CheckpointStore.Encode(s));
+    }
+    [Fact] public void AlgorithmStagesInitialMaterialsInSeveralOrdinaryTripsAndRestoresItsPlan()
+    {
+        // An unfinished owned site is the target; missing materials must not trigger buying another lot.
+        var lacking=Definition();Cell[] second=[new(10,2),new(11,2),new(10,3),new(11,3),new(10,4),new(11,4)];
+        lacking=lacking with{ResourceNodes=lacking.ResourceNodes.Where(n=>n.ItemId!="steel").ToArray(),Plots=[..lacking.Plots!,..second.Select((c,n)=>new PlotDefinition(60+n,c,10000))]};
+        var waiting=new GameSession(new(lacking));var policy=new AlgorithmicController(new(1,"wood",TradeEnabled:false,PoliticsEnabled:false,LogisticsEnabled:false,FutureContractsEnabled:false),1,[1,2]);
+        Assert.NotEqual("BuildProduction",policy.Decide(waiting.Engine.ObserveController(new(1)),[]).Goal);
+        var d=Definition();d=d with{Participants=d.Participants.Select(p=>p.Id==1?p with{InventoryCapacity=20}:p).ToArray(),CapitalOffers=[new(220,"plank",1000,100,new(15,3))]};
+        var s=new GameSession(new(d));s.AttachControllers([new AlgorithmicController(new(1,"wood",DecisionIntervalTicks:1,TradeEnabled:false,PoliticsEnabled:false,LogisticsEnabled:false,FutureContractsEnabled:false),d.Seed,d.Participants.Select(p=>p.Id))]);
+        s.AdvanceTo(40);var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));copy.RestoreControllers(AlgorithmicController.Restore);
+        int bound=1000;while(!s.Engine.Observe(new(1)).OwnBuildings.Any(b=>b.TypeId=="woodworking")&&bound-->0){s.Step();copy.Step();}
+        Assert.True(bound>0,string.Join("; ",s.ControllerTurns.TakeLast(8).Select(t=>$"{t.Tick}:{t.Decision.Goal}:{t.Decision.Reason}")));Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());Assert.Equal(s.ComputeControllerStateHash(),copy.ComputeControllerStateHash());
+        Assert.True(s.Engine.EventsSince(0).Count(e=>e.Type=="TransferCompleted"&&e.ActorId?.Value==1)>=3);Assert.Equal(0,s.Engine.Observe(new(1)).OwnEnterprises.Single().Staff);
+        Assert.Single(s.Engine.Ledger(),l=>l.Reason=="Construction");Assert.DoesNotContain(s.Engine.ResearchModifications,m=>true);
     }
     [Fact] public void PreparationFinishesTheCurrentBatchWithoutStartingAnotherAndSurvivesLoad()
     {

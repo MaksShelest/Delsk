@@ -41,6 +41,8 @@ jobs:
         run: python scripts/run_check.py --name demolition-c2 --timeout 240 --log-directory artifacts/gate-checks -- python scripts/check_demolition_c2.py --output artifacts/demolition-c2
       - name: D1 parallel workshops, real outfit, payroll and checkpoint replay
         run: python scripts/run_check.py --name workshops-d1 --timeout 240 --log-directory artifacts/gate-checks -- python scripts/check_workshops_d1.py --output artifacts/workshops-d1
+      - name: D2 shared experience, funded quests and paid projects
+        run: python scripts/run_check.py --name development-d2 --timeout 240 --log-directory artifacts/gate-checks -- python scripts/check_development_d2.py --fixtures artifacts/headless/d2-fixtures --output artifacts/development-d2
       - name: Bounded Developer tests and forbidden Release gate
         env:
           DOTNET_PROCESSOR_COUNT: '2'

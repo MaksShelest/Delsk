@@ -1,0 +1,26 @@
+{
+  "status": "succeeded",
+  "processChecks": 31,
+  "cases": {
+    "physical": {
+      "finalTick": 1869,
+      "cuts": [
+        112,
+        172,
+        194,
+        1860
+      ]
+    },
+    "quests": {
+      "finalTick": 393,
+      "cuts": [
+        268,
+        271,
+        392
+      ]
+    }
+  },
+  "exports": 18,
+  "comparisonPairs": 16,
+  "scope": "Real commands/runner/paid projects and funded quests, exact save/load/replay/privacy/balances. Prepared sources and accelerated geometry XP; no natural D3 balance claim."
+}

@@ -4,7 +4,7 @@ namespace Agents.Algorithmic;
 
 public sealed partial class AlgorithmicController
 {
-    private static bool ExpansionGoal(string goal) => goal is "BuildProduction" or "BuyExtraction" or "BuildShop" or "BuyLogistics" or "OutfitWorkshop";
+    private static bool ExpansionGoal(string goal) => goal is "BuildProduction" or "BuyExtraction" or "BuildShop" or "BuyLogistics" or "OutfitWorkshop" or "ExpandEnterprise";
     private static bool ObligationGoal(string goal) => goal is "DeliverContract" or "CollectPurchase" or "ConfigureContract" or
         "BuyInputs" or "SupplyProduction" or "ResumeProduction" or "AdjustWage" or "ClearCarrier";
     private Candidate WageCandidate(ControllerObservation o, EmploymentView group, long wage, long score, string reason)

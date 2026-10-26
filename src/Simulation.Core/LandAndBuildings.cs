@@ -239,7 +239,7 @@ public sealed partial class SimulationEngine
         var e = OwnProductionUnit(actor, c.Action);
         if (e.Enabled || e.Batch is not null) throw new RuleViolation("ProductionNotSafe");
         bool unlocked = _buildings.TryGetValue(ProductionParent(e.Definition.Id), out var b)
-            ? b.Type.Levels.Any(l => l.Level <= b.Level && l.UnlockedRecipes.Contains(c.Action.RecipeId,StringComparer.Ordinal))
+            ? Development is not null ? IndustryRecipeAvailable(b.Type.Id,c.Action.RecipeId,Experience(actor.Id,b.Type.Id).TechnologyLevel) : b.Type.Levels.Any(l => l.Level <= b.Level && l.UnlockedRecipes.Contains(c.Action.RecipeId,StringComparer.Ordinal))
             : c.Action.RecipeId == e.Recipe.Id;
         if (!unlocked) throw new RuleViolation("RecipeLocked");
         var recipe = _config.Recipes.Single(r => r.Id == c.Action.RecipeId);

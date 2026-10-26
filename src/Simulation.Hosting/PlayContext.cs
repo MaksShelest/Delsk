@@ -45,7 +45,7 @@ public static class PlayContext
                 Details: tablets ? L(language, "Повторяется по одной единице до остановки, ухода или заполнения инвентаря.",
                     "Repeats one unit at a time until stopped, leaving the area or inventory full.") : ""));
         var plot = view.Plots.SingleOrDefault(p => p.Position == cell);
-        if (plot is { IsCorridor: false, OwnerId: null } &&
+        if (plot is { IsCorridor: false, OwnerId: null, ExpansionFor: null } &&
             (plot.ShopParticipantId is null || plot.ShopParticipantId == view.Participant.Id) &&
             (plot.ReservedBy is null || plot.ReservedBy == view.Participant.Id))
         {
@@ -58,7 +58,7 @@ public static class PlayContext
                     PlayerDesk.ReservePlot(plot.Id.Value)));
         }
         if(tablets && plot is not null && view.Storage?.Ground.Any(g=>g.PlotId==plot.Id.Value)==true)choices.Insert(0,new("object:ground:"+plot.Id.Value,L(language,"Хранение на земле · склад","Ground storage · warehouse"),null));
-        var building = view.Buildings.SingleOrDefault(b => b.Position == cell);
+        var building = view.Buildings.SingleOrDefault(b => b.Footprint.Contains(cell));
         if (building?.Kind == BuildingKind.Production)
             choices.Add(new("card:" + building.Id.Value, PlayerText.Get(language, "context.card"), null));
         if (building?.Kind is BuildingKind.Warehouse or BuildingKind.Shop)
@@ -77,15 +77,17 @@ public static class PlayContext
                     pack.OccupiedVolume + pack.ReservedCapacity + scenario.Items.Single(i => i.Id == item.ItemId).UnitVolume <= pack.Capacity,
                     L(language, "В хранилище: ", "In storage: ") + (item.Quantity - item.Reserved)));
         }
-        if (plot?.OwnerId == view.Participant.Id && plot.BuildingId is null && !plot.IsCorridor)
+        if (plot?.OwnerId == view.Participant.Id && plot.BuildingId is null && plot.ExpansionFor is null && !plot.IsCorridor)
         foreach (var type in scenario.BuildingTypes ?? [])
         {
             if ((type.Kind == BuildingKind.Shop) != (plot.IsShopSite || plot.ShopParticipantId == view.Participant.Id)) continue;
             var level = type.Levels.Single(l => l.Level == 1);
             var issues = new List<string>();
+            if(type.Kind==BuildingKind.Production&&view.Development is {} development&&!development.BuildAnchors.IsEmpty&&!development.BuildAnchors.Contains(cell))
+                issues.Add(PlayerText.Reason(language,"BuildAtContourAnchor"));
             if (view.AvailableCashMinor < level.PriceMinor)
                 issues.Add(L(language, "Деньги: нужно ", "Money needed: ") + PlayerText.Money(level.PriceMinor) + L(language, ", доступно ", ", available ") + PlayerText.Money(view.AvailableCashMinor));
-            var materialInventory=type.Kind==BuildingKind.Warehouse&&scenario.Economy?.Storage is not null&&view.Storage?.Ground.FirstOrDefault(g=>g.PlotId==plot?.Id.Value) is {} ground?view.Inventories.Single(i=>i.Id.Value==ground.InventoryId):pack;
+            var materialInventory=(type.Kind==BuildingKind.Warehouse&&scenario.Economy?.Storage is not null||type.Kind==BuildingKind.Production&&view.Development is not null)&&view.Storage?.Ground.FirstOrDefault(g=>g.PlotId==plot?.Id.Value) is {} ground?view.Inventories.Single(i=>i.Id.Value==ground.InventoryId):pack;
             foreach (var cost in level.Materials)
                 if (Free(materialInventory, cost.ItemId) < cost.Quantity)
                     issues.Add(PlayerText.Item(language, cost.ItemId) + $": {Free(materialInventory, cost.ItemId)}/{cost.Quantity}");

@@ -27,7 +27,8 @@ public sealed partial class SimulationEngine
 #endif
         if(_researchModifications.Count>1024 || _researchModifications.Where((m,i)=>m.Sequence!=i+1 || m.Tick<0 || m.Tick>Tick ||
             m.AfterCommandCount<0 || m.OldValue<0 || m.NewValue<0 || !_actors.ContainsKey(m.Actor.Value) ||
-            (m.Kind!="Money" && m.Kind!="Stock" && m.Kind!="WageExponent" && m.Kind!="HumanSelfBallot") ||
+            (m.Kind!="Money" && m.Kind!="Stock" && m.Kind!="WageExponent" && m.Kind!="HumanSelfBallot" && m.Kind!="IndustryExperience") ||
+            (m.Kind=="IndustryExperience" && (Development is null || !Development.Industries.Any(i=>i.Id==m.Item))) ||
             (m.Kind=="Stock" && (!_items.ContainsKey(m.Item) || !_economy.Inventories.TryGetValue(m.Inventory.Value,out var inv) || inv.Owner!=m.Actor.Value)) ||
             (m.Kind=="WageExponent" && (m.NewValue<1 || m.NewValue>5)) || (i>0 && (m.Tick<_researchModifications[i-1].Tick || m.AfterCommandCount<_researchModifications[i-1].AfterCommandCount))).Any() ||
             _events.Count(e=>e.Type=="ResearchModified")!=_researchModifications.Count || _events.Where(e=>e.Type=="ResearchModified").Any(e=>!IsResearchEvent(e)))

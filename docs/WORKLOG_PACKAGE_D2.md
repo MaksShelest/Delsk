@@ -123,3 +123,113 @@ Source profile costs/caps/thresholds отдельно проверены against
 - Старые actual D1World21 checkpoints есть /workspace/work/delsk-d1/process-exact.
 - Новые поля по умолчанию omitted; ControllerBuildingLevel ConstructionTicks
   заполняется ТОЛЬКО при Development, чтобы старый C1/D1 observation hash не менять.
+
+## Этап3: подключение UI/NPC и native gate
+
+D2профиль теперь config/vnext/economy.d2-development.json, embedded и default
+только двух designedmaps; лабораторные presets D2. OldA2/C1/D1 files неизменны.
+PlayerView.Development own immutable; DevelopmentPanel в карточке фабрики и
+«Моё хозяйство → Опыт и задания». Initial ground staging UI, текущие XP/уровень,
+стоимость/материалы/сроки, отдельные land buttons, prepare/cancel/explicit target.
+C2подтверждение/quote для отмены проекта прежние. Общая технология в SetRecipe/
+workshop validation/output compatibility; активный profile всё ещё D1базовые.
+
+DevelopmentGoals используют только ControllerObservation/обычные команды;
+первоначальная стройка несколькими20volume рейсами, remote accept own funded
+quests, prepare/land/input/paid upgrades. План/цель/курсор прежние. Найден реальный
+NPC deadlock: Fetch выбирал сам target ground как источник и перекладывал его
+материалы обратно; target исключён. Нельзя выбирать первый геометрически
+непригодный legacy plot до проверки контура. Tests фиксируют обе причины.
+
+Developer IndustryExperience как новый kind прежнего research intervention,
+не ActionKind; exacttotal, отдельная ResearchXp поправка, без fake production.
+Lowering XP не должен запереть уже выбранный поддержанный рецепт. Audit/hash/
+replay/nonclean package, ordinary conditionalRemove прежние. НовыйDeveloper test
+ещё ожидает полныйDeveloper gate. Public Industry events скрыты, own projections.
+
+Последний целевой gate33/33 за16.412s/120; ещё добавлены2 meaningful cases
+(new ground goods block withoutcharge +NPC actual paid tier); полный gate будет35.
+Fixtures генерируются tests при DELSK_D2_EVIDENCE в отдельной workspace folder,
+не добавлять saves/commands в обычный клиент. Full headless создаёт d2-fixtures.
+Новый RunArtifacts development.json, сравнивается verify_checkpoint_exports.
+check_development_d2.py прогоняет actual command tapes geometry+12trade quests,
+с cuts/replay/balances/privacy/profilebyte reproduction. Пока НЕ ЗАПУЩЕН.
+
+Native check_development_ui.py/DevelopmentProbe (isolated source, запрещён в
+AssemblyAudit): успешно настоящиеPlayfield/buttons, XP40000 fixture, prepare,
+2land payments, exact45000 expansion/oldshape untilcompletion, diskContinue
+duringproject, real3cell/ready2places, native paidoutfit/N0, native questaccept+
+actualdelivery→50XP, pausepreserved. RU800x720/EN1100x800,3screens viewed.
+Logs /workspace/work/delsk-d2/native, native-check.json. Initial restore failed
+NU1900 no network; rerun with permittednetwork passed. Probe firstbuild type
+CheckpointLoadResult vsGameSession corrected toDecode; not counted aspass.
+
+Теперь running scripts/check_headless.py в /workspace/work/delsk-d2/headless,
+outer900/per-test120. Suite deliberately partitions old1117 andnewD2 in2processes,
+all tests remain; growing suite would exceed old120 ifoneprocess. Need inspect
+actual counts/results, then isolated Developer180, D2process, C1/C2/D1process,
+oldWorld21exact, root Godot import/smoke/hash/audit, map-lab defaultD2. Check
+normal root client after last changes. D3 не начинать. Docs usage/architecture/
+decision60/actions updated; final report/evidence/AGENTS/plan/PR still pending.
+
+Gate progress: full ordinary partitions1117/1117(110.380s) +35/35(16.536s)
+passed; headless runner matrix stillrunning. Added restore proof of quest baseline,
+actual receipt interval, acceptance event, technology at acceptance and explicit
+city-project source. Production proof now indexed bybatchID atcapture/restore
+instead of events scan pergrant (important for actual40000XP histories). New
+prior-receipt tamper test; rerun D2targets/process and fullDeveloper after build.
+No legacy profile path changed by this validation. Client-only help/active-quest
+history and input-overflow label improvements pending final native rerun.
+
+Presentation audit found a real integration gap: Presentation.Read used static
+Type.Footprint instead of the completed building footprint. Fixed to actual
+relative cells; meaningful assertion atall5tiers. Added cosmetic foundation only
+for actual multi-cell production, nofreeequipment/collision. Native finalprobe
+checks EnterpriseExtent afterexpansion. Latest target36/36 was before this fix;
+final headless+Developer willrebuild/repeat. D2process/C1/C2/D1 scripts running on
+previous validated binary; rerunD2process if necessary afterfinalbuild. No D3.
+Final UX audit: D2reason codes localized RU/EN; next tier explicitly shows required
+XP. Quest history keeps all active quests even after many closed tasks. Developer
+has exactset andaddXP using same audited target API. No further feature work.
+Final context audit: PlayContext initial production material preview still read
+backpack although Core uses ground; corrected and asserted in Initial helper.
+Card resolution now uses actual footprint, checked on each expanded tier (move
+onto newcell→open card→return anchor). Future contour cells do not offer misleading
+newBuild/foreignBuy buttons. These Hosting/UI changes occurred after final
+headless build; Developer full suite and final ordinary D2/native mustrebuild them.
+Core/runner economic rules unchanged. Physical evidence tape changed by these
+extra ordinary moves: final fixture generation/process must use new output.
+Final headless1153/1153 +102exports/14replay/69pairs passed. Developer1160/1160
+151.184s/180, negativeRelease expectedreject. Last NPC guard: if its valid owned
+initial site lacks unavailable materials, stop searching more lots instead of
+buying another site; existing NPC test extended with second available contour
+and no steel source. Final ordinary D2/native +targetedDeveloper D2+XP mustrepeat
+this guard and latest context changes. No newfeature or ordinarylegacy change.
+
+## Этап4: финальные проверки завершены
+
+Код D2 готов, D3 не начат. Все перечисленные ниже exit0:
+- Full headless-final:1153ordinary(1117+36),102exports/14replay/69pairs.
+- Последний ordinary D2 после context/planner:36/36 за16.710s/120;
+  полный Developer повтор1160/1160 за154.779s/180. ForbiddenRelease expectedreject.
+- Process-exact:31checks/18exports/16pairs, physical1869ticks(cuts112/172/194/1860),
+  trade393ticks(cuts268/271/392). Exactprofiles twice, no duplicate grants/budgets.
+- C1:24checks/2293ticks, C2:16checks/10exports/9pairs, D1:18checks/10exports/9pairs.
+- Native exact:186D2tickhashes/8restores, paidland/expansion/outfit,N0, questreceipt,
+  actualfootprintvisual, pause/diskContinue, RU800x720/EN1100x800.3finalimages viewed.
+- Root client/import/smoke/hash, legacy1132hashes/35restores; ordinary audit5assemblies.
+  Separate Developer client built XPUI0warnings.37Python.2designedmaps actual
+  Chromium→lab→runner afterfinalbuild, checkedrecordings withD2profile.
+- Actual previousD1World21save158→353: samefinalhash +24exactexportfiles/metrics.
+
+Evidence/commands/timings: docs/verification/development-d2/gate.json, native.json,
+world21.json, othermanifests and3screens. Report IMPLEMENTATION_REPORT_PACKAGE_D2.md;
+usage DEVELOPMENT_D2.md. Originalsourceprofiles/A2/C1/D1/legacyfive not modified.
+Rootimport created3knownuntrackedUIDs (Appearance/SkinPreview/WorldSkins); removed
+onlythose. New DevelopmentPanel.cs.uid is taskowned andkept. Git diff --check green.
+
+Pending only git integration commit/push/PR(no merge), then final answer. Base
+remote still29cb58b atlastls-remote. Commitsalreadyccad0c0/2ef6410; authorconfirmed
+Шелестов Максим Евгеньевич <314023140a@gmail.com>. Do not redo code or startD3.
+Natural all-tier material availability, full content/import/V2,V3, longbalance,
+Windows/Androidhardware andrealLLM remain explicitlyunverified/outofscope.

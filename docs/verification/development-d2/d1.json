@@ -1,0 +1,14 @@
+{
+  "status": "succeeded",
+  "processChecks": 18,
+  "checkpointCuts": [
+    46,
+    105,
+    158,
+    194
+  ],
+  "finalTick": 353,
+  "exports": 10,
+  "comparisonPairs": 9,
+  "scope": "Real C# parallel production, outfit/payroll/shared stores, exact save/load/replay and profile; ready places prepared, D2 not started"
+}

@@ -66,7 +66,25 @@ public class DevelopmentD2Tests
         for(int n=0;n<12;n++)
         {var c=Contract(s);Accept(s,c);Step(s,new(ActionKind.DeliverContract,ContractId:c.Id,Quantity:10));StorageC1Tests.Idle(s);}
         Assert.Equal(0,Xp(s).ProductionXp);Assert.Equal(600,Xp(s).QuestXp);Assert.Equal(2,Xp(s).TechnologyLevel);Assert.Equal(0,WorkshopD1Tests.Lines(s).Single().CompletedBatches);
-        Assert.Single(s.Engine.DevelopmentOf(new(1))!.Quests.Where(q=>q.Kind=="FirstDelivery"&&q.Status=="Completed"));CheckpointStore.Decode(CheckpointStore.Encode(s));
+        Assert.Single(s.Engine.DevelopmentOf(new(1))!.Quests.Where(q=>q.Kind=="FirstDelivery"&&q.Status=="Completed"));CheckpointStore.Decode(CheckpointStore.Encode(s));ExpansionD2Tests.Evidence(s,"quests");
+    }
+    [Fact] public void NativeQuestFixtureHasFundedDemandAndDeliveryGoods()
+    {
+        if(Environment.GetEnvironmentVariable("DELSK_D2_EVIDENCE") is not {} folder)return;
+        var s=new GameSession(new(Definition()));StorageC1Tests.Harvest(s,"plank",10);Contract(s);StorageC1Tests.Move(s,new(15,3));CheckpointStore.Save(s,Path.Combine(folder,"quest-native.save.json"));
+    }
+    [Fact] public void AlgorithmAcceptsOnlyItsOwnFundedDemandThroughTheSameValidator()
+    {
+        var s=new GameSession(new(Definition()));var contract=Contract(s);var controller=new Agents.Algorithmic.AlgorithmicController(new(1,"wood",PoliticsEnabled:false),1,[1,2]);
+        var decision=controller.Decide(s.Engine.ObserveController(new(1)),[]);Assert.Equal(ActionKind.AcceptIndustryQuest,decision.Actions.Single().Kind);Step(s,decision.Actions.Single());Assert.Single(s.Engine.DevelopmentOf(new(1))!.Quests);
+        Assert.Empty(s.Engine.DevelopmentOf(new(2))!.Choices);Assert.Empty(PlayerDesk.Read(s.Engine,new(2)).Development!.Quests);
+    }
+    [Fact] public void PriorReceiptsCannotBeReusedByEditingAQuestCheckpoint()
+    {
+        var s=new GameSession(new(Definition()));var contract=Contract(s,20);StorageC1Tests.Harvest(s,"plank",20);StorageC1Tests.Move(s,contract.Position);Step(s,new(ActionKind.DeliverContract,ContractId:contract.Id,Quantity:10));StorageC1Tests.Idle(s);Accept(s,contract);
+        Assert.Equal(10,s.Engine.DevelopmentOf(new(1))!.Quests.Single().BaselineDelivered);Assert.Equal(0,Xp(s).Total);CheckpointStore.Decode(CheckpointStore.Encode(s));
+        var root=JsonNode.Parse(s.Engine.CreateCheckpointJson())!;root["development"]!["quests"]![0]!["baselineDelivered"]=0;Assert.Throws<CheckpointException>(()=>SimulationEngine.FromCheckpointJson(root.ToJsonString(SimulationJson.Options)));
+        Step(s,new(ActionKind.DeliverContract,ContractId:contract.Id,Quantity:10));StorageC1Tests.Idle(s);Assert.Equal(50,Xp(s).QuestXp);
     }
     [Fact] public void ReviewBoundaryRejectsAnOldOfferAndRestoresTheSameCurrentDemand()
     {

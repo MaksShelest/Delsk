@@ -10,7 +10,11 @@ public sealed partial class SimulationEngine
     private readonly Dictionary<(long Owner,string Industry),IndustryExperience> _industryExperience=[];
     private readonly Dictionary<long,IndustryQuest> _industryQuests=[];
     private readonly Dictionary<long,DevelopmentBuilding> _developmentBuildings=[];
-    private IndustryExperience Experience(long owner,string industry)=>_industryExperience.GetValueOrDefault((owner,industry))??new(new(owner),industry,0,0);
+    private IndustryExperience Experience(long owner,string industry)
+    {
+        var earned=_industryExperience.GetValueOrDefault((owner,industry))??new(new(owner),industry,0,0);
+        return earned with{ResearchXp=_researchModifications.Where(m=>m.Kind=="IndustryExperience"&&m.Actor.Value==owner&&m.Item==industry).Sum(m=>checked(m.NewValue-m.OldValue))};
+    }
     private ExperienceGrant? PrepareProductionExperience(EnterpriseState unit,long batch)
     {
         var industry=Development?.Industries.SingleOrDefault(i=>i.Id==unit.Definition.BuildingTypeId);
@@ -94,7 +98,7 @@ public sealed partial class SimulationEngine
         return new([..Development.Industries.OrderBy(i=>i.Id,StringComparer.Ordinal).Select(i=>Experience(actor.Value,i.Id))],
             [.._industryQuests.Values.Where(q=>q.Owner==actor).OrderBy(q=>q.Id)],QuestChoices(actor.Value),
             [.._developmentBuildings.Values.Where(b=>b.Owner==actor.Value&&!Demolished(b.Id)).OrderBy(b=>b.Id)],
-            [.._storageConstruction.Values.Where(c=>c.Owner==actor.Value&&c.Development is not null).OrderBy(c=>c.Id).Select(c=>new DevelopmentProjectView(c.Id,c.BuildingId,c.Position,c.TypeId,c.Level,c.InventoryId,c.StartedTick,c.CompletesTick,c.PaidMinor,[..c.Materials],c.Development!))],Development,Tick/Development.QuestReviewTicks*Development.QuestReviewTicks,checked((Tick/Development.QuestReviewTicks+1)*Development.QuestReviewTicks),[.._preparingDevelopment.Where(id=>_buildings[id].Owner==actor.Value).Order()]);
+            [.._storageConstruction.Values.Where(c=>c.Owner==actor.Value&&c.Development is not null).OrderBy(c=>c.Id).Select(c=>new DevelopmentProjectView(c.Id,c.BuildingId,c.Position,c.TypeId,c.Level,c.InventoryId,c.StartedTick,c.CompletesTick,c.PaidMinor,[..c.Materials],c.Development!))],Development,Tick/Development.QuestReviewTicks*Development.QuestReviewTicks,checked((Tick/Development.QuestReviewTicks+1)*Development.QuestReviewTicks),[.._preparingDevelopment.Where(id=>_buildings[id].Owner==actor.Value).Order()],_config.Layout is {} layout?[..layout.IndustrialLots.Select(l=>l.Cells.OrderBy(c=>c.Z).ThenBy(c=>c.X).First()).OrderBy(c=>c.Z).ThenBy(c=>c.X)]:[]);
     }
     public DevelopmentState? InspectDevelopment()=>Development is null?null:new([.._experienceGrants],
         [.._industryQuests.Values.OrderBy(q=>q.Id)],[.._developmentBuildings.Values.OrderBy(b=>b.Id)],[.._preparingDevelopment.Order()]);
@@ -112,7 +116,13 @@ public sealed partial class SimulationEngine
     {
         if(Development is null){if(_experienceGrants.Count+_industryQuests.Count+_developmentBuildings.Count!=0)throw new CheckpointException("UnexpectedDevelopmentState");return;}
         if(_stepping)return; // Append-only grants are checked fully at capture/restore, not events×history each tick.
-        if(_experienceGrants.Count(g=>g.Source=="Production")!=_events.Count(e=>e.Type=="ProductionCompleted"))throw new CheckpointException("MissingProductionExperience");
+        if(Development.Industries.Any(i=>_actors.Keys.Any(owner=>Experience(owner,i.Id).Total<0)))throw new CheckpointException("InvalidIndustryExperience");
+        var production=_events.Where(e=>e.Type=="ProductionCompleted").ToLookup(e=>e.EntityId);
+        var receipts=_events.Where(e=>e.Type=="DeliveryReceived").ToLookup(e=>e.EntityId);
+        var accepted=_events.Where(e=>e.Type=="IndustryQuestAccepted").ToLookup(e=>e.EntityId);
+        var contracts=_deliveryContracts.ToDictionary(d=>d.Id);
+        var rewarded=_experienceGrants.Where(g=>g.Source=="Quest").Select(g=>g.SourceId).ToHashSet();
+        if(_experienceGrants.Count(g=>g.Source=="Production")!=production.Sum(g=>g.Count()))throw new CheckpointException("MissingProductionExperience");
         if(_experienceGrants.GroupBy(g=>(g.Source,g.SourceId)).Any(g=>g.Count()!=1))throw new CheckpointException("DuplicateExperienceGrant");
         foreach(var grant in _experienceGrants)
         {
@@ -120,17 +130,25 @@ public sealed partial class SimulationEngine
             if(grant.Source=="Production")
             {
                 var p=Development.Industries.Single(i=>i.Id==grant.Industry).Products.Where(p=>p.ItemId==grant.ItemId).FirstOrDefault();
-                if(p is null||grant.Xp!=checked(p.XpPerUnit*grant.Quantity)||!_events.Any(e=>e.Type=="ProductionCompleted"&&e.EntityId==grant.SourceId&&e.ActorId?.Value==grant.Owner&&e.ItemId==grant.ItemId&&e.Quantity==grant.Quantity&&e.Tick==grant.Tick))throw new CheckpointException("InvalidProductionExperience");
+                if(p is null||grant.Xp!=checked(p.XpPerUnit*grant.Quantity)||!production[grant.SourceId].Any(e=>e.ActorId?.Value==grant.Owner&&e.ItemId==grant.ItemId&&e.Quantity==grant.Quantity&&e.Tick==grant.Tick))throw new CheckpointException("InvalidProductionExperience");
             }
             else if(grant.Source!="Quest"||!_industryQuests.TryGetValue(grant.SourceId,out var q)||q.Status!="Completed"||q.Reward!=grant.Xp||q.Owner.Value!=grant.Owner||q.Industry!=grant.Industry||q.ClosedTick!=grant.Tick)throw new CheckpointException("InvalidQuestExperience");
         }
         if(_industryQuests.Values.GroupBy(q=>(q.Owner,q.ContractId)).Any(g=>g.Count()!=1)||_industryQuests.Values.Where(q=>q.Kind=="FirstDelivery"&&q.Status=="Completed").GroupBy(q=>(q.Owner,q.Industry)).Any(g=>g.Count()!=1))throw new CheckpointException("DuplicateQuestReward");
         foreach(var q in _industryQuests.Values)
         {
-            var d=_deliveryContracts.SingleOrDefault(d=>d.Id==q.ContractId);int batches=q.Reward switch{50=>5,100=>15,200=>30,500=>60,_=>0};
+            var d=contracts.GetValueOrDefault(q.ContractId);int batches=q.Reward switch{50=>5,100=>15,200=>30,500=>60,_=>0};
             var p=Development.Industries.SingleOrDefault(i=>i.Id==q.Industry)?.Products.SingleOrDefault(p=>p.RecipeId==q.RecipeId);
             if(d is null||d.Supplier!=q.Owner||d.ItemId!=q.ItemId||p is null||batches==0||q.Quantity!=checked(p.Quantity*batches)||q.AcceptedTick<1||q.AcceptedTick>Tick||q.DeadlineTick!=d.DeadlineTick||q.BaselineDelivered<0||q.Delivered<0||q.Delivered>q.Quantity||q.Delivered>d.DeliveredQuantity-q.BaselineDelivered||q.Status is not ("Active" or "Completed" or "Expired" or "Abandoned")||
-                (q.Status=="Active"?(q.ClosedTick is not null||q.DeadlineTick<=Tick):(q.ClosedTick is null||q.ClosedTick<q.AcceptedTick||q.ClosedTick>Tick))||q.Status=="Completed"&&(q.Delivered!=q.Quantity||_experienceGrants.Count(g=>g.Source=="Quest"&&g.SourceId==q.Id)!=1))throw new CheckpointException("InvalidIndustryQuest");
+                (q.Status=="Active"?(q.ClosedTick is not null||q.DeadlineTick<=Tick):(q.ClosedTick is null||q.ClosedTick<q.AcceptedTick||q.ClosedTick>Tick))||q.Status=="Completed"&&(q.Delivered!=q.Quantity||!rewarded.Contains(q.Id)))throw new CheckpointException("InvalidIndustryQuest");
+            long before=receipts[q.ContractId].Where(e=>e.Tick<q.AcceptedTick).Sum(e=>e.Quantity);
+            long cut=q.Status=="Abandoned"?q.ClosedTick!.Value-1:q.ClosedTick??Tick;
+            long received=receipts[q.ContractId].Where(e=>e.Tick>=q.AcceptedTick&&e.Tick<=cut).Sum(e=>e.Quantity);
+            long known=_experienceGrants.Where(g=>g.Owner==q.Owner.Value&&g.Industry==q.Industry&&g.Tick<q.AcceptedTick).Sum(g=>g.Xp)+_researchModifications.Where(m=>m.Kind=="IndustryExperience"&&m.Actor==q.Owner&&m.Item==q.Industry&&m.Tick<q.AcceptedTick).Sum(m=>m.NewValue-m.OldValue);
+            if(q.BaselineDelivered!=before||q.Delivered!=Math.Min(q.Quantity,received)||!IndustryRecipeAvailable(q.Industry,q.RecipeId,DevelopmentRules.Technology(known))||
+                !accepted[q.Id].Any(e=>e.Tick==q.AcceptedTick&&e.ActorId==q.Owner&&e.ItemId==q.Industry&&e.Quantity==q.Quantity&&e.ReasonCode==q.Kind)||
+                q.Kind is not ("Delivery" or "FirstDelivery" or "CityProject")||q.Kind=="FirstDelivery"&&batches!=5||
+                batches==60&&(q.Kind!="CityProject"||Development.PublicProjectOffers.IsDefaultOrEmpty||!Development.PublicProjectOffers.Contains(d.CapitalOfferId)||q.DeadlineTick-q.AcceptedTick<3600))throw new CheckpointException("InvalidQuestReceiptProof");
         }
         foreach(var owner in _actors.Keys)if(_industryQuests.Values.Count(q=>q.Owner.Value==owner&&q.Status=="Active")>Development.QuestSlots)throw new CheckpointException("TooManyIndustryQuests");
     }

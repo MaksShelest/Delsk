@@ -73,10 +73,17 @@ public sealed partial class SimulationEngine
         var cells=ScenarioValidation.FootprintCells(b.Position,b.Type,level.Level);
         var land=cells.Select(c=>_plotsByCell.GetValueOrDefault(c)).Where(p=>p is not null).Select(p=>new ExpansionLand(new(p!.Definition.Id),p.Definition.Position,p.Definition.PriceMinor,p.Owner is {} owner?new ParticipantId(owner):null)).ToImmutableArray();
         if(cells.Any(c=>!contour.Contains(c)||!_plotsByCell.TryGetValue(c,out var p)||p.Owner!=b.Owner))blockers.Add("LandNotOwned");
+        if(cells.Where(c=>!b.Footprint.Contains(c)).Any(DevelopmentGroundBusy))blockers.Add("GroundNotEmpty");
+        if(_transfers.Values.Any(t=>t.Source==b.Input||t.Destination==b.Input))blockers.Add("StorageBusy");
         if(level.Materials.Any(m=>_economy.Inventories[b.Input].Free(m.ItemId)<m.Quantity))blockers.Add("NoStock");
         if(_economy.Accounts[_actors[b.Owner].Account].Available<level.PriceMinor)blockers.Add("NoMoney");
         return new(id,b.Level,level.Level,known,level.PriceMinor,level.ConstructionTicks,[..level.Materials],
             [..cells.OrderBy(c=>c.Z).ThenBy(c=>c.X).Select(c=>new DemolitionCell(c,level.Level))],land,[..blockers.Distinct(StringComparer.Ordinal)]);
+    }
+    private bool DevelopmentGroundBusy(Cell cell)
+    {
+        if(!_groundStorage.TryGetValue(_plotsByCell[cell].Definition.Id,out var ground))return false;
+        var i=_economy.Inventories[ground];return i.Stock.Any(s=>s.Value>0)||i.Overflow.Count>0||i.Incoming>0||i.Reservations.Count>0||_transfers.Values.Any(t=>t.Source==ground||t.Destination==ground);
     }
     private void StartDevelopmentConstruction(ActorState actor,CommandEnvelope command,BuildingState? building=null)
     {
@@ -95,11 +102,7 @@ public sealed partial class SimulationEngine
         {
             if(!contour.Contains(cell)||!_plotsByCell.TryGetValue(cell,out var p)||p.Owner!=actor.Id)throw new RuleViolation("LandNotOwned");
             if(p.Building.HasValue&&p.Building!=building?.Id)throw new RuleViolation("LandOccupied");
-            if(building is not null&&!building.Footprint.Contains(cell)&&_groundStorage.TryGetValue(p.Definition.Id,out var ground))
-            {
-                var i=_economy.Inventories[ground];
-                if(i.Stock.Any(s=>s.Value>0)||i.Overflow.Count>0||i.Incoming>0||i.Reservations.Count>0||_transfers.Values.Any(t=>t.Source==ground||t.Destination==ground))throw new RuleViolation("GroundNotEmpty");
-            }
+            if(building is not null&&!building.Footprint.Contains(cell)&&DevelopmentGroundBusy(cell))throw new RuleViolation("GroundNotEmpty");
         }
         long inventory=building?.Input??_groundStorage[_plotsByCell[anchor].Definition.Id];
         if(_transfers.Values.Any(t=>t.Source==inventory||t.Destination==inventory))throw new RuleViolation("StorageBusy");

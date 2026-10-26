@@ -86,7 +86,7 @@ public sealed partial class SimulationEngine
     {
         var recipes=ProductionRecipes(parent).AsEnumerable();
         if(ParallelWorkshops&&_buildings.TryGetValue(parent.Definition.Id,out var b))
-            recipes=b.Type.Levels.Where(l=>l.Level<=b.Level).SelectMany(l=>l.UnlockedRecipes).Distinct(StringComparer.Ordinal).Select(id=>_config.Recipes.Single(r=>r.Id==id));
+            recipes=b.Type.Levels.SelectMany(l=>l.UnlockedRecipes).Distinct(StringComparer.Ordinal).Where(id=>Development is not null?IndustryRecipeAvailable(b.Type.Id,id,Experience(b.Owner,b.Type.Id).TechnologyLevel):b.Type.Levels.Any(l=>l.Level<=b.Level&&l.UnlockedRecipes.Contains(id,StringComparer.Ordinal))).Select(id=>_config.Recipes.Single(r=>r.Id==id));
         return recipes.Select(r=>r.OutputItem).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray();
     }
 
@@ -133,7 +133,7 @@ public sealed partial class SimulationEngine
                 Demolished(parentId) && (e.Enabled || e.Batch is not null || e.Group.Headcount != 0)) throw new CheckpointException("InvalidWorkshopReference");
             if (e != parent && (!_buildings.ContainsKey(parentId) || !_events.Any(v => v.Type == "WorkshopOutfitCompleted" && v.EntityId == parentId && v.Quantity == e.Definition.Id)))
                 throw new CheckpointException("UnpaidWorkshop");
-            if (_buildings.TryGetValue(parentId, out var b) && !b.Type.Levels.Where(l => l.Level <= b.Level).SelectMany(l => l.UnlockedRecipes).Contains(e.Recipe.Id, StringComparer.Ordinal))
+            if (_buildings.TryGetValue(parentId, out var b) && !(Development is not null?IndustryRecipeAvailable(b.Type.Id,e.Recipe.Id,Experience(b.Owner,b.Type.Id).TechnologyLevel):b.Type.Levels.Where(l => l.Level <= b.Level).SelectMany(l => l.UnlockedRecipes).Contains(e.Recipe.Id, StringComparer.Ordinal)))
                 throw new CheckpointException("InvalidWorkshopRecipe");
             if (e.Batch is { } batch && (batch.Terms is not { } terms || terms.WageMinor < 0 || terms.ServiceMinorPerFullTick != _config.Economy!.Workshops!.ServiceMinorPerFullTick ||
                 ScenarioValidation.Hash(terms.Recipe) != ScenarioValidation.Hash(e.Recipe) || batch.WorkRequired != checked(e.Recipe.FullStaffTicks * 100) || !_events.Any(v=>v.Type=="WorkshopBatchStarted"&&v.EntityId==batch.Id&&v.ItemId==e.Recipe.Id&&v.AmountMinor==terms.WageMinor&&v.Quantity==terms.ServiceMinorPerFullTick&&v.ReasonCode==e.Definition.Id.ToString(System.Globalization.CultureInfo.InvariantCulture))))

@@ -20,7 +20,7 @@ public sealed partial class AlgorithmicController
             foreach(var line in ProductionWorkplaces(parent).Where(l=>l.Workshop!=parent.Id.Value))
             {
                 var e=line.Unit;var r=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);
-                if(e.ReasonCode=="PreparingDemolition")continue;
+                if(e.ReasonCode=="PreparingDemolition"||o.Development?.Preparing.Contains(parent.Id.Value)==true||o.Development?.Projects.Any(p=>p.BuildingId==parent.Id.Value)==true)continue;
                 if(recovery&&e.Enabled)yield return One("PreserveCash","Workshop:"+line.Workshop,210000,new(ActionKind.SetProductionEnabled,Enterprise:parent.Id,WorkshopId:line.Workshop,Enabled:false));
                 if(!recovery&&!e.Enabled)yield return One("ResumeProduction","Workshop:"+line.Workshop,111000*settings.ProductionWeight/100,new(ActionKind.SetProductionEnabled,Enterprise:parent.Id,WorkshopId:line.Workshop,Enabled:true));
                 if(!recovery&&e.Staff==0&&e.Enabled)
@@ -45,7 +45,7 @@ public sealed partial class AlgorithmicController
                 }
             }
             var b=o.Buildings.SingleOrDefault(b=>b.Id.Value==parent.Id.Value);var type=b is null?null:o.BuildingTypes.Single(t=>t.Id==b.TypeId);
-            if(recovery||HasObligations(o)||type?.WorkshopOutfit is not {} outfit||parent.Workshops.Length+parent.Installations.Length>=type.Levels.Single(l=>l.Level==b!.Level).WorkshopSlots)continue;
+            if(o.Development?.Preparing.Contains(parent.Id.Value)==true||o.Development?.Projects.Any(p=>p.BuildingId==parent.Id.Value)==true||recovery||HasObligations(o)||type?.WorkshopOutfit is not {} outfit||parent.Workshops.Length+parent.Installations.Length>=type.Levels.Single(l=>l.Level==b!.Level).WorkshopSlots)continue;
             // Buy capacity only behind a busy, supplied, profitable line and a funded payroll reserve.
             var recipe=o.Map.Recipes.Single(r=>r.Id==parent.RecipeId);var demand=BestOffer(o,recipe.OutputItem,recipe.OutputQuantity,input.Position);
             long cost=checked(outfit.PriceMinor+5L*settings.BaseWageMinor*settings.WageReviewTicks);
