@@ -1,0 +1,21 @@
+{
+  "command": [
+    "dotnet",
+    "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+    "-noColor",
+    "-noLogo",
+    "-parallelMode",
+    "none",
+    "-class",
+    "Simulation.Tests.DeveloperToolsTests",
+    "-class",
+    "Simulation.Tests.TravelTests",
+    "-result-trx",
+    "/workspace/work/delsk-d3/replay-final-checked.trx"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-10-26T16:42:54.212423+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 2.878,
+  "finished_at": "2026-10-26T16:42:57.090683+00:00"
+}

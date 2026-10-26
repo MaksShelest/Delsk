@@ -16,6 +16,7 @@ public sealed partial class SimulationEngine
         if (!_economy.Inventories.TryGetValue(c.Action.Destination.Value, out var destination) ||
             destination.Owner != actor.Id || !_buildings.Values.Any(b => b.Input == destination.Id && b.Owner == actor.Id))
             throw new RuleViolation("NotAvailable");
+        RequireProductionItem(destination.Id,c.Action.ItemId);
         if(Storage is not null&&HasOverflow(destination.Id))throw new RuleViolation("DestinationOverflow");
         long id = _nextId, next = checked(id + 1), budget = checked(c.Action.Quantity * c.Action.UnitPriceMinor);
         _ = checked(c.Action.Quantity * _items[c.Action.ItemId].UnitVolume);

@@ -16,7 +16,7 @@ public readonly record struct Cell(int X, int Z);
 
 public enum ActionKind { MoveTo, Harvest, Transfer, SetProductionEnabled, SellAvailableToCapital, CancelCapitalSale, SetTravelHeading,
     ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe, SetWage, BuyEquipment, UpgradeEquipment, SetEquipmentMode, CreateSellOffer, SubmitBuyRequest, RaiseBid, WithdrawBid, CollectPurchase, CreateBuyOffer, AcceptDeliveryQuantity, WithdrawSupplyRequest, CancelBuyOffer, DeliverContract, BuyLogistics, SetLogisticsContract, UpgradeLogistics, SetLogisticsStorage, SetLogisticsInbound, SetLogisticsProduction, QueueLogisticsJob, SetLogisticsEnabled, SetVoteChoice, ContinueAfterVictory, ProposeSupport, AcceptSupport, RejectSupport, SignSupport, StartHarvesting, StopHarvest,
-    BuyResource, LeaseResource, StopTransfer, MoveEquipment, SetExtractionRoute, SetTransportRoute,ProposeTrade,CounterTrade,AcceptTrade,RejectTrade,TakeOverflow,PrepareDemolition,CancelDemolitionPreparation,DemolishBuilding,CancelConstruction,OutfitWorkshop,AssignWorkshopWorkers,AcceptIndustryQuest,AbandonIndustryQuest,BuyExpansionLand,PrepareEnterpriseExpansion,CancelExpansionPreparation }
+    BuyResource, LeaseResource, StopTransfer, MoveEquipment, SetExtractionRoute, SetTransportRoute,ProposeTrade,CounterTrade,AcceptTrade,RejectTrade,TakeOverflow,PrepareDemolition,CancelDemolitionPreparation,DemolishBuilding,CancelConstruction,OutfitWorkshop,AssignWorkshopWorkers,AcceptIndustryQuest,AbandonIndustryQuest,BuyExpansionLand,PrepareEnterpriseExpansion,CancelExpansionPreparation,BuyImport,ModernizeWorkshop }
 public enum ResultStatus { Accepted, Rejected }
 public record GameAction(ActionKind Kind, Cell Target = default, string ItemId = "", long Quantity = 0,
     InventoryId Source = default, InventoryId Destination = default, EnterpriseId Enterprise = default,
@@ -133,7 +133,8 @@ public record BuildingView(BuildingId Id, ParticipantId OwnerId, string TypeId, 
 public record FlowView(string ItemId, long Initial, long Harvested, long RecipeInput, long Produced, long Exported,
     long ConstructionInput,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long Lost=0,
-    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long ConstructionRecovered=0);
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long ConstructionRecovered=0,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] long Imported=0);
 public record CapitalOfferView(long Id, string ItemId, long RemainingQuantity, long UnitPriceMinor,
     Cell Position, long? CutoffTick, long RequestedQuantity, int Window = 1,
     long OriginalQuantity = 0, long CreatedTick = 0, long? ExpiresAtTick = null, long ReleasedQuantity = 0);

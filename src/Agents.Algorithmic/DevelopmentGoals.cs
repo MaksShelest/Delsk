@@ -38,7 +38,7 @@ public sealed partial class AlgorithmicController
             long land=plots.Where(p=>p!.OwnerId is null).Sum(p=>p!.PriceMinor);
             if(o.Account.AvailableMinor<next.PriceMinor+land+settings.CashReserveMinor)continue;
             // Require a reachable source before stopping a working business.
-            bool materialsPossible=next.Materials.All(m=>Free(input,m.ItemId)+Free(carrier,m.ItemId)>=m.Quantity||o.Inventories.Any(i=>i.Id!=input.Id&&Free(i,m.ItemId)>0)||o.Map.ResourceNodes.Any(n=>n.ItemId==m.ItemId&&AvailableResource(o,n)));
+            bool materialsPossible=next.Materials.All(m=>Free(input,m.ItemId)+Free(carrier,m.ItemId)>=m.Quantity||o.Inventories.Any(i=>i.Id!=input.Id&&Free(i,m.ItemId)>0)||o.Map.ResourceNodes.Any(n=>n.ItemId==m.ItemId&&AvailableResource(o,n))||o.ProductionContent?.Imports.Any(i=>i.ItemId==m.ItemId&&i.Remaining>0)==true);
             if(!materialsPossible)continue;
             if(!d.Preparing.Contains(b.Id.Value)&&(enterprise.Workshops.Any(w=>w.Enabled||w.BatchId!=0)))
             {yield return One("ExpandEnterprise","Prepare:"+b.Id.Value,155000,new(ActionKind.PrepareEnterpriseExpansion,Building:b.Id));continue;}
@@ -52,7 +52,8 @@ public sealed partial class AlgorithmicController
         foreach(var type in o.BuildingTypes.Where(t=>t.Kind==BuildingKind.Production))
         {
             var level=type.Levels.Single(l=>l.Level==1);var recipe=o.Map.Recipes.Single(r=>r.Id==level.RecipeId);
-            if(!recipe.Uses(settings.PreferredInput)||BestOffer(o,recipe.OutputItem,recipe.OutputQuantity,o.Participant.Position) is null)continue;
+            bool preferred=o.ProductionContent is null?recipe.Uses(settings.PreferredInput):level.UnlockedRecipes.Any(id=>o.Map.Recipes.Single(r=>r.Id==id).Uses(settings.PreferredInput));
+            if(!preferred||BestOffer(o,recipe.OutputItem,recipe.OutputQuantity,o.Participant.Position) is null)continue;
             foreach(var plot in o.Plots.Where(p=>p.BuildingId is null&&p.ExpansionFor is null&&!p.IsCorridor&&!p.IsShopSite&&p.ShopParticipantId is null&&(p.OwnerId is null||p.OwnerId==Actor)&&(p.ReservedBy is null||p.ReservedBy==Actor)&&
                 (d.BuildAnchors.IsEmpty||d.BuildAnchors.Contains(p.Position))).OrderBy(p=>p.OwnerId==Actor?0:1).ThenBy(p=>p.Id.Value))
             {

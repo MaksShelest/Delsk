@@ -117,17 +117,23 @@ public partial class HudGodProbe : Control
                 using var stream=typeof(Playfield).Assembly.GetManifestResourceStream(name)??throw new InvalidOperationException(name);
                 using var reader=new System.IO.StreamReader(stream);return reader.ReadToEnd();
             }
-            var developmentProfile=EconomyProfile.Read(Embedded("Play.d2-development.json"));
+            var developmentProfile=EconomyProfile.Read(Embedded("Play.d3-production.json"));
             var developmentMap=JsonSerializer.Deserialize<ScenarioDefinition>(Embedded("Play.small-river.json"),SimulationJson.Options)!;
             var developmentSession=new GameSession(new SimulationEngine(developmentProfile.Apply(developmentMap)));
+            for(int q=0;q<5;q++)developmentSession.AdvanceTravelQuantum();developmentSession.SetPaused(true);
+            long frozenTick=developmentSession.Engine.Tick;int frozenQuantum=developmentSession.Engine.TravelQuantum;
             using var developmentTools=new DeveloperTools(developmentSession,new(1));
             var experiencePanel=new DeveloperPanel(developmentTools,developmentSession,new(1),"ru",()=>{});AddChild(experiencePanel);
             var industryChoice=Named<OptionButton>(experiencePanel,"GodIndustry");
             string industryId=developmentSession.Engine.Configuration().Economy!.Development!.Industries[industryChoice.Selected].Id;
+            Named<SpinBox>(experiencePanel,"GodMoneyTarget").Value=123.45;Press(experiencePanel,"GodMoneyApply");
+            Named<SpinBox>(experiencePanel,"GodStockTarget").Value=1;Press(experiencePanel,"GodStockApply");
+            Check(developmentSession.Engine.Observe(new(1)).Account.BalanceMinor==12345&&developmentSession.Engine.Tick==frozenTick&&developmentSession.Engine.TravelQuantum==frozenQuantum&&developmentSession.Paused,"Paused partial-quantum money/stock controls failed");
             Named<SpinBox>(experiencePanel,"GodExperienceTarget").Value=600;Press(experiencePanel,"GodExperienceApply");
             Check(developmentSession.Engine.DevelopmentOf(new(1))!.Experience.Single(e=>e.Industry==industryId).Total==600,"Native XP set failed");
             Named<SpinBox>(experiencePanel,"GodExperienceTarget").Value=50;Press(experiencePanel,"GodExperienceAdd");
             Check(developmentSession.Engine.DevelopmentOf(new(1))!.Experience.Single(e=>e.Industry==industryId).Total==650&&developmentSession.Engine.ResearchModified,"Native XP add/audit failed");
+            Check(developmentSession.Engine.Tick==frozenTick&&developmentSession.Engine.TravelQuantum==frozenQuantum&&developmentSession.Engine.ResearchModifications.All(m=>m.TravelQuantum==5),"XP intervention advanced economy");
             experiencePanel.QueueFree();for(int i=0;i<4;i++)await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);
             Check(!GodotObject.IsInstanceValid(experiencePanel),"Experience controls were not released");
             var report = new

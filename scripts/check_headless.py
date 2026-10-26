@@ -32,6 +32,7 @@ check('restore', 180, [args.dotnet, 'restore', 'Delsk.sln', '--locked-mode', '--
 check('build', 180, [args.dotnet, 'build', 'Delsk.sln', '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1'])
 os.environ['DELSK_RETURN_ARTIFACTS'] = str(out)
 os.environ['DELSK_D2_EVIDENCE'] = str(out/'d2-fixtures')
+os.environ['DELSK_D3_EVIDENCE'] = str(out/'d3-fixtures')
 from test_partitions import run_suite
 partitions=run_suite(check,args.dotnet,'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',out)
 passed=sum(p['passed'] for p in partitions)

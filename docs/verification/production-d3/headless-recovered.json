@@ -1,0 +1,117 @@
+{
+  "status": "succeeded",
+  "scenarios": [
+    "cycle",
+    "recovery",
+    "development",
+    "labor",
+    "equipment",
+    "autonomous",
+    "market",
+    "pickup",
+    "delivery",
+    "capital-delivery",
+    "logistics",
+    "logistics-upgrade",
+    "own-storage",
+    "inbound",
+    "own-production",
+    "logistics-queue",
+    "capital-demand",
+    "autonomous-demand",
+    "elections",
+    "support",
+    "stopped-elections",
+    "physical-automation",
+    "participant-trade",
+    "food-chain"
+  ],
+  "checkpoint_cases": {
+    "cycle": 55,
+    "equipment": 101,
+    "autonomous": 350,
+    "market": 44,
+    "pickup": 47,
+    "delivery": 37,
+    "capital-delivery": 3,
+    "logistics": 69,
+    "logistics-upgrade": 170,
+    "own-storage": 170,
+    "inbound": 78,
+    "own-production": 170,
+    "logistics-queue": 185,
+    "capital-demand": 85,
+    "autonomous-demand": 350,
+    "elections": 9,
+    "support": 18,
+    "stopped-elections": 3,
+    "physical-automation": 20,
+    "participant-trade": 33,
+    "food-chain": 300
+  },
+  "comparison": "every exported tick hash, state, ledger, event, command and labor row",
+  "controlled_fixture": {
+    "name": "late-return",
+    "origin": "test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged",
+    "checkpoint_tick": 72,
+    "final_tick": 80
+  },
+  "baseline_cases": {
+    "economy": {
+      "final_tick": 1200,
+      "checkpoint_tick": 350
+    },
+    "auction": {
+      "final_tick": 180,
+      "checkpoint_tick": 30
+    },
+    "politics": {
+      "final_tick": 160,
+      "checkpoint_tick": 19
+    },
+    "logistics": {
+      "final_tick": 360,
+      "checkpoint_tick": 80
+    },
+    "food": {
+      "final_tick": 900,
+      "checkpoint_tick": 85
+    }
+  },
+  "model_safety": {
+    "checkpoint_tick": 6,
+    "final_tick": 60,
+    "valid": 1,
+    "forged_actor": 1,
+    "late_reply": 1
+  },
+  "model_off": "exact world equality with baseline-economy and the same headless timing label",
+  "testsPassed": 1191,
+  "testPartitions": [
+    {
+      "file": "tests.trx",
+      "passed": 1067
+    },
+    {
+      "file": "tests-integration.trx",
+      "passed": 55
+    },
+    {
+      "file": "tests-d2.trx",
+      "passed": 36
+    },
+    {
+      "file": "tests-d3.trx",
+      "passed": 32
+    },
+    {
+      "file": "tests-d3-start.trx",
+      "passed": 1
+    }
+  ],
+  "exports": 102,
+  "replays": 14,
+  "comparison_pairs": 69,
+  "scope": "Package8 software and full previous economic/controller regression; laboratory/study/window/platform gates separate",
+  "author": "Шелестов Максим Евгеньевич"
+}

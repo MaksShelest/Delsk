@@ -83,8 +83,8 @@ public partial class DeveloperPanel : PanelContainer
         _exponent.Value = session.Engine.EconomyRules.WageAttractionExponent;
         Row(edit, L("Привлекательность зарплаты (степень 1–5)", "Wage attraction (exponent 1–5)"), _exponent, () => _tools.WageExponent((int)_exponent.Value));
         edit.AddChild(new Label { Text = L(
-            "Мир остаётся на паузе. Изменения записываются в аудит. Зарезервированные деньги и товары защищены, вместимость не увеличивается. На голосовании и внутри незавершённого хода изменения недоступны.",
-            "The world stays paused. Changes are audited. Reserved money and stock remain protected; capacity is unchanged. Edits are unavailable during voting or an unfinished tick."), AutowrapMode = TextServer.AutowrapMode.WordSmart });
+            "Мир остаётся на паузе. Изменения записываются в аудит. Зарезервированные деньги и товары защищены, вместимость не увеличивается. Применение не продвигает время. Во время голосования изменения недоступны.",
+            "The world stays paused. Changes are audited. Reserved money and stock remain protected; capacity is unchanged. Applying does not advance time. Edits are unavailable during voting."), AutowrapMode = TextServer.AutowrapMode.WordSmart });
 
         var advance = Tab(tabs, L("Перемотка", "Advance time"));
         _target.MaxValue = session.Engine.Configuration().MaxTicks;
@@ -116,7 +116,7 @@ public partial class DeveloperPanel : PanelContainer
         catch (Exception e)
         {
             _notice = e.Message == "UnsafeInterventionBoundary"
-                ? L("Завершите ход кнопкой шага в Debug; при выборах сначала проголосуйте.", "Complete the tick with the Debug step button; finish any pending vote first.")
+                ? L("Изменение недоступно во время операции ядра; при выборах сначала проголосуйте.", "An engine operation is in progress; finish any pending vote first.")
                 : L("Не применено: ", "Not applied: ") + e.Message;
         }
         RefreshData();

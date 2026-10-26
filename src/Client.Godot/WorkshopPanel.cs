@@ -57,7 +57,20 @@ public partial class WorkshopPanel : VBoxContainer
             foreach(string id in type?.Levels.Where(l=>l.Level<=(view.Development?.Experience.Single(x=>x.Industry==b!.TypeId).TechnologyLevel??b!.Level)).SelectMany(l=>l.UnlockedRecipes).Distinct(StringComparer.Ordinal)??new[]{w.RecipeId})
             {
                 var r=_scenario.Recipes.Single(r=>r.Id==id);
+                if(view.ProductionContent is {} pc&&(pc.Rules.Versions.Single(v=>v.RecipeId==id).Version>(pc.Technologies.SingleOrDefault(t=>t.Workshop==w.Id)?.Version??1)))continue;
                 Action(row.Actions,"recipe:"+w.Id+":"+id,L("Рецепт: ","Recipe: ")+PlayerText.Item(_language,r.OutputItem)+" ("+id+")",new(ActionKind.SetRecipe,Enterprise:e.Id,WorkshopId:w.Id,RecipeId:id),!w.Enabled&&w.BatchId==0&&w.RecipeId!=id);
+            }
+            if(view.ProductionContent is {} content)
+            {
+                int version=content.Technologies.SingleOrDefault(t=>t.Workshop==w.Id)?.Version??1;
+                var project=content.Projects.SingleOrDefault(p=>p.Workshop==w.Id);
+                row.Status.Text+="\n"+L("Оснащение V","Equipment V")+version+(project is null?"":L(" · модернизация, осталось "," · modernization, remaining ")+(project.EndTick-view.Tick));
+                if(content.Rules.Modernizations.SingleOrDefault(m=>m.Version==version+1) is {} upgrade)
+                {
+                    var input=view.Inventories.Single(i=>i.Id==e.InputId);
+                    bool ready=!w.Enabled&&w.BatchId==0&&project is null&&(view.Development?.Experience.Single(x=>x.Industry==b!.TypeId).TechnologyLevel??0)>=(upgrade.Version==2?4:5)&&view.AvailableCashMinor>=upgrade.PriceMinor&&upgrade.Materials.All(m=>input.Stock.Where(s=>s.ItemId==m.ItemId).Sum(s=>s.Quantity-s.Reserved)>=m.Quantity);
+                    Action(row.Actions,"modernize:"+w.Id,L("Модернизация V","Modernize V")+upgrade.Version+" · "+PlayerText.Money(upgrade.PriceMinor)+" + "+string.Join(", ",upgrade.Materials.Select(m=>PlayerText.Item(_language,m.ItemId)+" ×"+m.Quantity))+" · "+upgrade.Ticks+L(" тиков"," ticks"),new(ActionKind.ModernizeWorkshop,Enterprise:e.Id,WorkshopId:w.Id,Quantity:upgrade.Version),ready);
+                }
             }
             long wage=group.PendingWageMinor??group.WageMinor,step=view.Economy!.PlayerWageStepMinor;
             Action(row.Actions,"wage-plus:"+w.Id,L("Ставка +","Wage +")+PlayerText.Money(step),PlayerDesk.Wage(w.GroupId.Value,wage>long.MaxValue-step?wage:wage+step),wage<=long.MaxValue-step);

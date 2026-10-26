@@ -55,7 +55,7 @@ public sealed partial class AlgorithmicController
         return Choose(o, DecisionCandidates(o));
     }
     private Candidate[] DecisionCandidates(ControllerObservation o) => StrategicCandidates(o,Candidates(o).Concat(WageCandidates(o)).Concat(ContractCandidates(o)).Concat(MarketCandidates(o))
-            .Concat(DevelopmentCandidates(o)).Concat(LogisticsCandidates(o)).Concat(WorkshopCandidates(o)).Concat(RecipeCandidates(o)).Concat(PoliticalCandidates(o)).Concat(NegotiationCandidates(o)).Concat(NegotiationResponses(o))
+            .Concat(ProductionContentCandidates(o)).Concat(DevelopmentCandidates(o)).Concat(LogisticsCandidates(o)).Concat(WorkshopCandidates(o)).Concat(RecipeCandidates(o)).Concat(PoliticalCandidates(o)).Concat(NegotiationCandidates(o)).Concat(NegotiationResponses(o))
             .Where(c => (!SimplePolicy || SimpleGoal(c) || HasObligations(o)) && Feasible(c,o) && (!HasObligations(o) || !ExpansionGoal(c.Goal)) &&
                 (o.OwnSupplyRequests.Length==0 || c.Goal is not ("SellCarried" or "SellOutput" or "HarvestForSale")))
             .Select(c => HasObligations(o) && c.Goal is "SupplyProduction" or "ResumeProduction" or "AdjustWage"
@@ -258,6 +258,8 @@ public sealed partial class AlgorithmicController
     { if (source != target) steps.Add(new(new(ActionKind.MoveTo, Target: target))); }
     private static Cell AcquisitionPosition(ControllerObservation o, string item, long q)
     {
+        var own=o.ProductionContent is null?null:o.Inventories.Where(i=>i.Id!=o.Participant.InventoryId&&Free(i,item)>=q&&Reachable(o,i.Position)).OrderBy(i=>Distance(o.Map,o.Participant.Position,i.Position)).ThenBy(i=>i.Id.Value).FirstOrDefault();
+        if(own is not null)return own.Position;
         var machine = o.Equipment.Where(m => o.EquipmentTypes.Single(t => t.Id == m.TypeId).ItemId == item &&
             Free(Inventory(o, m.StorageId), item) >= q && Reachable(o, m.Position)).OrderBy(m => m.Id.Value).FirstOrDefault();
         return machine?.Position ?? o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)).First(n => n.ItemId == item && AvailableResource(o,n,q) && Reachable(o, n.Position)).Position;
@@ -265,6 +267,8 @@ public sealed partial class AlgorithmicController
     private static List<PlanStep>? Acquire(ControllerObservation o, string item, long q)
     {
         if (q <= 0) return null;
+        var own=o.ProductionContent is null?null:o.Inventories.Where(i=>i.Id!=o.Participant.InventoryId&&Free(i,item)>=q&&Reachable(o,i.Position)).OrderBy(i=>Distance(o.Map,o.Participant.Position,i.Position)).ThenBy(i=>i.Id.Value).FirstOrDefault();
+        if(own is not null){var plan=new List<PlanStep>();Move(plan,o.Participant.Position,own.Position);plan.Add(new(new(ActionKind.Transfer,Source:own.Id,Destination:o.Participant.InventoryId,ItemId:item,Quantity:q)));return plan;}
         var machine = o.Equipment.Where(m => o.EquipmentTypes.Single(t => t.Id == m.TypeId).ItemId == item &&
             Free(Inventory(o, m.StorageId), item) >= q && Reachable(o, m.Position)).OrderBy(m => m.Id.Value).FirstOrDefault();
         var node = o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)).FirstOrDefault(n => n.ItemId == item && AvailableResource(o,n,q) && Reachable(o, n.Position));

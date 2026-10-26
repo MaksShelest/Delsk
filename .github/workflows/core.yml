@@ -50,6 +50,43 @@ jobs:
         with:
           name: core-checks-and-runs
           path: artifacts/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: production-command-fixtures
+          path: |
+            artifacts/headless/d3-fixtures/*.json
+            artifacts/headless/d3-fixtures/*.jsonl
+            artifacts/headless/d3-fixtures/*.tick
+            !artifacts/headless/d3-fixtures/*.save.json
+  production:
+    needs: [core]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: production-command-fixtures
+          path: artifacts/production-fixtures
+      - name: Bounded runner restore and build
+        run: |
+          python scripts/run_check.py --name production-restore --timeout 180 -- dotnet restore src/Research.Runner/Research.Runner.csproj --locked-mode --disable-parallel -m:1
+          python scripts/run_check.py --name production-build --timeout 180 -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
+      - name: D3 production, finite imports, modernization and independent audit
+        run: python scripts/run_check.py --name production-d3 --timeout 600 -- python scripts/check_production_d3.py --fixtures artifacts/production-fixtures --output artifacts/production-d3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-checks-and-runs
+          path: artifacts/
   developer:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -70,15 +107,16 @@ jobs:
         with:
           name: developer-checks-and-runs
           path: artifacts/
-  # Preserve the existing required check: it must include the separate Developer job.
+  # Preserve the required check and require every suite, including D3's independent audit.
   verify:
     if: ${{ always() }}
-    needs: [core, developer]
+    needs: [core, developer, production]
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
-      - name: Require both complete suites
+      - name: Require all complete suites
         env:
           CORE_RESULT: ${{ needs.core.result }}
           DEVELOPER_RESULT: ${{ needs.developer.result }}
-        run: test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success
+          PRODUCTION_RESULT: ${{ needs.production.result }}
+        run: test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success

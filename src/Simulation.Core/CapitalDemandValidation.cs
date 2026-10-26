@@ -49,8 +49,8 @@ public sealed partial class SimulationEngine
         {
             if (p.Goods.IsDefault || !p.Goods.Select(g => g.ItemId).SequenceEqual(items) || p.Tick != p.Period * settings.PeriodTicks ||
                 p.Period < 0 || p.Tick > Tick || _demandPeriods[(int)p.Period] != p ||
-                p.Goods.Any(g => g.Harvested < 0 || g.Produced < 0 || g.Consumed < 0 || g.Exported < 0 || g.DemandQuantity < 0 || g.Lost<0 || g.ConstructionRecovered<0 ||
-                    g.StockChange != checked(g.Harvested + g.Produced - g.Consumed - g.Exported - g.Lost + g.ConstructionRecovered)) ||
+                p.Goods.Any(g => g.Imported<0 || g.Harvested < 0 || g.Produced < 0 || g.Consumed < 0 || g.Exported < 0 || g.DemandQuantity < 0 || g.Lost<0 || g.ConstructionRecovered<0 ||
+                    g.StockChange != checked(g.Imported + g.Harvested + g.Produced - g.Consumed - g.Exported - g.Lost + g.ConstructionRecovered)) ||
                 p.GrossOutputBaseMinor != p.Goods.Sum(g => checked((g.Harvested + g.Produced) * _items[g.ItemId].BasePriceMinor)) ||
                 p.InternalConsumptionBaseMinor != p.Goods.Sum(g => checked(g.Consumed * _items[g.ItemId].BasePriceMinor)) ||
                 p.StockChangeBaseMinor != p.Goods.Sum(g => checked(g.StockChange * _items[g.ItemId].BasePriceMinor)))
@@ -78,6 +78,7 @@ public sealed partial class SimulationEngine
             throw new InvalidOperationException("Demand funding/random state mismatch");
         foreach (var f in _demandBaseline)
             if (f.Harvested != _demandPeriods.Sum(p => p.Goods.Single(g => g.ItemId == f.ItemId).Harvested) ||
+                f.Imported!=_demandPeriods.Sum(p=>p.Goods.Single(g=>g.ItemId==f.ItemId).Imported) || f.Imported>ImportQuantity(f.ItemId) ||
                 f.Produced != _demandPeriods.Sum(p => p.Goods.Single(g => g.ItemId == f.ItemId).Produced) ||
                 f.RecipeInput + f.ConstructionInput != _demandPeriods.Sum(p => p.Goods.Single(g => g.ItemId == f.ItemId).Consumed) ||
                 f.Exported != _demandPeriods.Sum(p => p.Goods.Single(g => g.ItemId == f.ItemId).Exported) ||

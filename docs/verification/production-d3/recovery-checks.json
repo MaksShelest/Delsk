@@ -1,0 +1,58 @@
+{
+  "recovered-python": {
+    "exit_code": 0,
+    "elapsed_seconds": 0.696,
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/Checks",
+      "-v"
+    ]
+  },
+  "recovered-lab-python": {
+    "exit_code": 0,
+    "elapsed_seconds": 5.028,
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/Research.Lab",
+      "-v"
+    ]
+  },
+  "d3-npc-final-build": {
+    "exit_code": 0,
+    "elapsed_seconds": 18.962,
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ]
+  },
+  "d3-final-tests": {
+    "exit_code": 0,
+    "elapsed_seconds": 48.948,
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.ProductionD3Tests",
+      "-result-trx",
+      "/workspace/work/delsk-d3/final-d3.trx"
+    ]
+  }
+}

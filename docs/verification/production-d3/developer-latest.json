@@ -1,0 +1,28 @@
+{
+  "status": "succeeded",
+  "testsPassed": 1213,
+  "testPartitions": [
+    {
+      "file": "tests.trx",
+      "passed": 1083
+    },
+    {
+      "file": "tests-integration.trx",
+      "passed": 55
+    },
+    {
+      "file": "tests-d2.trx",
+      "passed": 36
+    },
+    {
+      "file": "tests-d3.trx",
+      "passed": 38
+    },
+    {
+      "file": "tests-d3-start.trx",
+      "passed": 1
+    }
+  ],
+  "release_negative_build": "expected rejection",
+  "scope": "Developer variant; ordinary release/client metadata checked separately"
+}

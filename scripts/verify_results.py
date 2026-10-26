@@ -4,6 +4,7 @@ import csv
 import json
 from pathlib import Path
 import sys
+from import_audit import verify_imports
 
 def verify(folder):
     folder = Path(folder)
@@ -34,13 +35,14 @@ def verify(folder):
         assert int(sample['population']) == int(sample['unemployed']) + employed[tick]
     for flow in summary['flows']:
         physical = sum(stock['quantity'] for inventory in state['inventories'] for stock in inventory['stock'] if stock['itemId']==flow['itemId']) + sum(lot['quantity'] for inventory in state['inventories'] for lot in (inventory.get('overflow') or []) if lot['itemId']==flow['itemId'])
-        assert physical == flow['initial']+flow['harvested']+flow['produced']+sum(m['newValue']-m['oldValue'] for m in modifications if m['kind']=='Stock' and m['item']==flow['itemId'])-flow['recipeInput']-flow['exported']-flow.get('constructionInput',0)-flow.get('lost',0)+flow.get('constructionRecovered',0)
+        assert physical == flow['initial']+flow.get('imported',0)+flow['harvested']+flow['produced']+sum(m['newValue']-m['oldValue'] for m in modifications if m['kind']=='Stock' and m['item']==flow['itemId'])-flow['recipeInput']-flow['exported']-flow.get('constructionInput',0)-flow.get('lost',0)+flow.get('constructionRecovered',0)
     for inv in state['inventories']:
         assert inv['occupiedVolume']+inv['reservedCapacity'] <= inv['capacity']
         assert all(0 <= item['reserved'] <= item['quantity'] for item in inv['stock'])
     tape = [json.loads(line) for line in (folder/'commands.jsonl').read_text(encoding='utf-8').splitlines()]
     assert tape or json.loads((folder/'scenario.json').read_text(encoding='utf-8')).get('economyProfileId'), 'No real commands recorded'
     ledger = [json.loads(line) for line in (folder/'ledger.jsonl').read_text(encoding='utf-8').splitlines()]
+    events = [json.loads(line) for line in (folder/'events.jsonl').read_text(encoding='utf-8').splitlines()]
     assert sum(entry['amountMinor'] for entry in ledger if entry['reason']=='CapitalSettlement') == sum(s['paidMinor'] for s in summary['settlements'])
     assert all(0 <= a['reservedMinor'] <= a['balanceMinor'] for a in state['accounts'])
     accounts = {a['id']['value']: a for a in state['accounts']}
@@ -153,6 +155,10 @@ def verify(folder):
     for offer in state['capitalOffers']:
         original = capital_orders.get(offer['id'], {}).get('quantity', offer['originalQuantity'])
         assert original == offer['remainingQuantity'] + offer['releasedQuantity'] + sum(s['accepted'] for s in state['settlements'] if s['offerId'] == offer['id']) + sum(d['quantity'] for d in contracts if d['capitalOfferId'] == offer['id'])
+    content_path = folder/'production-content.json'
+    content = json.loads(content_path.read_text()) if content_path.is_file() else None
+    public = [json.loads(line) for line in (folder/'public-events.jsonl').read_text().splitlines()]
+    import_paid = verify_imports(config, state, content, events, ledger, tape, public, modifications)
     demand = state.get('capitalDemand')
     assert json.loads((folder/'capital-demand.json').read_text(encoding='utf-8')) == demand
     if demand is not None:
@@ -167,7 +173,7 @@ def verify(folder):
             consumed = sum(g['consumed'] * bases[g['itemId']] for g in goods)
             stock_delta = sum(g['stockChange'] * bases[g['itemId']] for g in goods)
             assert gross == period['grossOutputBaseMinor'] and consumed == period['internalConsumptionBaseMinor'] and stock_delta == period['stockChangeBaseMinor']
-            assert all(g['stockChange'] == g['harvested'] + g['produced'] - g['consumed'] - g['exported'] for g in goods)
+            assert all(g['stockChange'] == g.get('imported',0) + g['harvested'] + g['produced'] - g['consumed'] - g['exported'] - g.get('lost',0) + g.get('constructionRecovered',0) for g in goods)
             smooth, carry = divmod(smooth + gross + carry, 2)
             assert smooth == period['smoothedOutputBaseMinor'] and carry == period['smoothingRemainder']
             assert period['targetBaseMinor'] == max(rules['bootstrapBaseBudgetMinor'], smooth * rules['demandNumerator'] // rules['demandDenominator'])
@@ -181,7 +187,8 @@ def verify(folder):
             assert sum(o['originalQuantity'] * o['unitPriceMinor'] for o in state['capitalOffers'] if o['createdTick'] == period['tick']) == monetary
         assert sum(p['externalFundingMinor'] for p in periods) == state['externalMoneyInMinor']
         assert all(l['tick'] % rules['periodTicks'] == 0 for l in ledger if l['reason'] == 'CapitalDemandBudget')
-        assert sum(o['releasedQuantity'] * o['unitPriceMinor'] for o in state['capitalOffers']) == state['externalMoneyOutMinor']
+        # Import pays an external supplier; it is a separate sink from retired demand.
+        assert sum(o['releasedQuantity'] * o['unitPriceMinor'] for o in state['capitalOffers']) + import_paid == state['externalMoneyOutMinor']
     assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'DeliveryFunding') == sum(d['quantity'] * d['unitPriceMinor'] for d in contracts)
     assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'DeliveryBond') == sum(d['bondMinor'] for d in contracts)
     systems = state.get('logistics', [])
@@ -231,7 +238,6 @@ def verify(folder):
                 assert group['payEffectiveTick'] >= max(state['tick']+1,trip['endTick']+1)
             owner = accounts[people[system['ownerId']['value']]]
             assert owner['reservedMinor'] >= trip['wageBudgetMinor'] - trip['wagesPaidMinor'] >= 0
-    events = [json.loads(line) for line in (folder/'events.jsonl').read_text(encoding='utf-8').splitlines()]
     assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'LogisticsWages') == sum(e['amountMinor'] for e in events if e['type'] == 'LogisticsWagesPaid')
     for d in contracts:
         active_trips = [l['trip'] for l in systems if l['trip'] and l['trip']['contractId'] == d['id']]

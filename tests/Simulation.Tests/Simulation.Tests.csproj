@@ -57,4 +57,5 @@
     <EmbeddedResource Include="../../scenarios/four-corners-v1.json" LogicalName="Fixture.four-corners-v1.json" />
     <EmbeddedResource Include="../../scenarios/city-corridor-v1.json" LogicalName="Fixture.city-corridor-v1.json" />
   </ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../config/vnext/economy.d3-production.json" LogicalName="Fixture.economy.d3-production.json" /></ItemGroup>
 </Project>

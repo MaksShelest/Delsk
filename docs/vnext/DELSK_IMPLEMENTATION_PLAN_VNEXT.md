@@ -4,6 +4,18 @@
 
 Основание: [требования 0.6/vNext](DELSK_SPECIFICATION_VNEXT.md), [проверка Git](VNEXT_GIT_AUDIT.md), runtime-профиль presentation-economy-v6 на `dfd6b8e170c83118f10ff19554e7fb3582c014dc`. B1 в приложениях — будущий баланс, не замена config/economy.json в этом PR.
 
+## Результат D3,26.10.2026
+
+ПакетD завершает производственный software-объём P63/P64/P65/P66 на базе
+C1/C2/D1/D2:6отраслей/34товара/23V1 с opening gates, finite import/bootstrap и
+добывающая техника, local paid V2/V3, UI/NPC, immediate audited God tools,
+save/load/replay. [Отчёт D3](../IMPLEMENTATION_REPORT_PACKAGE_D3.md) и
+[точные проверки](../verification/production-d3/final-gate.json) отделяют
+готовые механизмы от prepared fixtures/коротких smoke. Исторические записи о
+границе D2 ниже сохранены; ограничения длительного баланса/natural endgame и
+hardware не закрываются наличием контента. Следующий пакетE автоматически
+не начинать. Результат не закрывает P69–P80 и весь vNext.
+
 ## Результат A2,24.10.2026
 
 **A2 выполнен в границе A**, [отчёт](../IMPLEMENTATION_REPORT_PACKAGE_A2.md),

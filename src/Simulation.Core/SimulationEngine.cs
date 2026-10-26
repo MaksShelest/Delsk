@@ -82,7 +82,7 @@ public sealed partial class SimulationEngine
         InitializeCapitalDemand();
         InitializeElections();
         InitializeSupport();
-        InitializeStorage();InitializeDevelopmentBuildings();
+        InitializeStorage();InitializeDevelopmentBuildings();InitializeProductionContent();
         Emit("WorldCreated");
         ValidateInvariants();
     }
@@ -141,7 +141,7 @@ public sealed partial class SimulationEngine
         _stepping = true;
         try
         {
-            ++Tick; _phase = 0; AdvanceStorageConstruction(); AdvanceWorkshopInstallations(); AdvanceOverflow(); AdvanceResourceIntervals(); ApplyWages();
+            ++Tick; _phase = 0; AdvanceStorageConstruction(); AdvanceWorkshopInstallations(); AdvanceProductionContent(); AdvanceOverflow(); AdvanceResourceIntervals(); ApplyWages();
             var due = _pending.Where(c => c.NotBeforeTick <= Tick).ToArray();
             foreach (var c in due) _pending.Remove(c);
             var actors = due.Select(c => c.ActorId.Value).Distinct().Order().ToArray();
@@ -211,6 +211,8 @@ public sealed partial class SimulationEngine
                 case ActionKind.CancelPlotReservation: CancelPlotReservation(actor, c); break;
                 case ActionKind.Build: Build(actor, c); break;
                 case ActionKind.UpgradeBuilding: UpgradeBuilding(actor, c); break;
+                case ActionKind.BuyImport: BuyImport(actor,c); break;
+                case ActionKind.ModernizeWorkshop: ModernizeWorkshop(actor,c); break;
                 case ActionKind.SetRecipe: SetRecipe(actor, c); break;
                 case ActionKind.PrepareEnterpriseExpansion: PrepareDevelopment(actor,c); break;
                 case ActionKind.CancelExpansionPreparation: PrepareDevelopment(actor,c,true); break;
@@ -302,11 +304,13 @@ public sealed partial class SimulationEngine
         RequireActionLocation(actor, c.Action);
         if((IsGround(source.Id)||IsGround(destination.Id))&&source.Id!=actor.Inventory&&destination.Id!=actor.Inventory)throw new RuleViolation("GroundManualOnly");
         if (_equipment.Values.Any(e => (e.Storage==source.Id || e.Storage==destination.Id) && e.Motion is not null)) throw new RuleViolation("EquipmentBusy");
+        RequireProductionItem(destination.Id,c.Action.ItemId);
         BeginTransfer(actor,c,source.Id,destination.Id,c.Action.ItemId,c.Action.Quantity);
     }
     private void SetProduction(ActorState actor, CommandEnvelope c)
     {
         var e = OwnProductionUnit(actor, c.Action);
+        if(c.Action.Enabled&&Modernizing(e.Definition.Id))throw new RuleViolation("ConstructionInProgress");
         if(c.Action.Enabled&&PreparingDevelopment(ProductionParent(e.Definition.Id))&&e.Batch is null)throw new RuleViolation("PreparingDevelopment");
         if(c.Action.Enabled&&Development is not null&&StorageWorkAt(e.Definition.Position))throw new RuleViolation("ConstructionInProgress");
         e.Enabled = c.Action.Enabled;
@@ -374,7 +378,7 @@ public sealed partial class SimulationEngine
                 e.Batch?.WorkDone ?? 0, e.Batch?.WorkRequired ?? 0, e.Completed, e.EnergyPaid,
                 e.Recipe.Id, e.Definition.Level, e.Definition.Capacity, e.Definition.WorkRateMultiplier) {BatchRecipeId=e.Batch?.RecipeId??"",BatchInputs=e.Batch is {} batch?batch.Inputs:[],Workshops=WorkshopViews(e.Definition.Id),Installations=InstallationViews(e.Definition.Id)}).ToArray(),
             _flows.Values.OrderBy(f => f.Id, StringComparer.Ordinal).Select(f => new FlowView(f.Id, f.Initial, f.Harvested,
-                f.RecipeInput, f.Produced, f.Exported, f.ConstructionInput,f.Lost,f.ConstructionRecovered)).ToArray(),
+                f.RecipeInput, f.Produced, f.Exported, f.ConstructionInput,f.Lost,f.ConstructionRecovered,ImportQuantity(f.Id))).ToArray(),
             _offers.Values.OrderBy(o => o.Definition.Id).Select(o => new CapitalOfferView(o.Definition.Id, o.Definition.ItemId,
                 o.Remaining, o.Definition.UnitPriceMinor, o.Definition.Position, o.Cutoff,
                 (long)Int128.Min(long.MaxValue, o.Requests.Values.Aggregate((Int128)0, (n, r) => n + r.Quantity) +
@@ -406,6 +410,7 @@ public sealed partial class SimulationEngine
         if(HasGroundStorage)payload=new{Payload=payload,Storage=CaptureStorage()};
         if(CaptureDemolition() is {} demolition)payload=new{Payload=payload,Demolition=demolition,RetiredBuildings=BuildingViews(true).Where(b=>Demolished(b.Id.Value)).ToArray(),RetiredEnterprises=_enterprises.Values.Where(e=>Demolished(e.Definition.Id)).OrderBy(e=>e.Definition.Id).Select(e=>new{e.Definition,e.Input,e.Output,Recipe=e.Recipe.Id,e.Enabled,e.Completed,e.EnergyPaid,Group=e.Group.View()}).ToArray()};
         if (CaptureWorkshops() is {} workshops) payload = new { Payload = payload, Workshops = workshops };
+        if(InspectProductionContent() is {} content)payload=new{Payload=payload,ProductionContent=content};
         if(InspectDevelopment() is {} development)payload=new{Payload=payload,Development=development};
         var travel = TravelDeviation();
         return ScenarioValidation.Hash(travel is null ? payload : new { Payload = payload, Travel = travel });

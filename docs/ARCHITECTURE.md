@@ -978,3 +978,36 @@ snapshot, validation, replay и researcher development.json. Controller/PlayerVi
 
 UX/граница D3: DEVELOPMENT_D2.md; решения60. Native probes не входят в клиент,
 AssemblyAudit запрещает DevelopmentProbe. Полный контент и V2/V3 не активируются.
+
+## D3: полный производственный профиль и внешняя поставка
+
+VNextProductionProfile разрешает typed BALANCE в существующие RecipeDefinition,
+BuildingTypes/IndustryProduct и opt-in ProductionContentRules. Core не читает
+файлы. Варианты V2/V3 — явные ID с проверяемым base/version mapping и целыми
+формулами; один прежний production executor, WorkshopBatchTerms и общие склады.
+Глобальная технология и оплаченная версия конкретного цеха — отдельные проверки.
+Модернизация списывает деньги/материалы атомарно, завершается phase0 через120
+активных тиков; начатую партию для монтажа сначала завершают и останавливают.
+Остальные цеха не изменяются. C2 учитывает actual materials, блокирует снос проекта.
+
+Импорт — конечное предложение внешнего поставщика у терминала. Пакеты и cap
+не являются бюджетом/выпуском города. BuyImport phase1 атомарно оплачивает
+внешний debit и передаёт собственность в собственный terminal pickup. В рюкзак
+товар попадает прежним timed Transfer. Обратная выкладка/торговая точка запрещены.
+Refill phase0, расписание и cap2packages; asphalt bootstrap заканчивается после
+первого actual материалов-корпусаIV (включая initial fixture или completed upgrade).
+Purchased/unsold остатки не исчезают. История сохраняет достижение после сноса.
+Imported учитывается отдельно в flow/stockchange, но не в G или произведённом XP.
+
+World23 сохраняет imports/pickups/локальные технологии/проекты. Derived import
+index восстанавливается из receipts, валидируются stock/payment/command/time,
+капвложения и последовательность V2/V3. Limited22/21/20/19/18 запрещает новые
+поля в старой схеме; null/default не меняют старые hashes. Controller/Player
+получает собственные immutable данные и публичное текущее предложение. Полный
+export researcher-only, private receipts не попадают в public events.
+
+Developer-вмешательство теперь допустимо между committed travel quanta; оно
+не вызывает Step и не сбрасывает quantum. ResearchModification хранит точный
+quantum для replay; старое значение0 omitted. Голосование/реентерабельный Step
+остаются защищены, экономика/holds/capacity меняются прежней транзакцией.
+Кнопки и API отсутствуют в ordinary/Release. Точные gates/ограничения — отчётD3.

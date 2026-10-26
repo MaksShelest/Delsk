@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+    "-noColor",
+    "-noLogo",
+    "-parallelMode",
+    "none",
+    "-class",
+    "Simulation.Tests.ProductionD3Tests",
+    "-result-trx",
+    "/workspace/work/delsk-d3/final-d3.trx"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-10-26T15:54:26.686226+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 48.948,
+  "finished_at": "2026-10-26T15:55:15.633784+00:00"
+}

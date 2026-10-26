@@ -20,8 +20,8 @@ public sealed partial class GameSession
         while(_researchIndex<_researchPlayback.Length)
         {
             var m=_researchPlayback[_researchIndex];
-            if(m.Tick>Engine.Tick || m.AfterCommandCount>_tape.Count)return;
-            if(m.Tick!=Engine.Tick || m.AfterCommandCount!=_tape.Count)throw new CheckpointException("MissedResearchBarrier");
+            if(m.Tick>Engine.Tick || m.AfterCommandCount>_tape.Count || m.Tick==Engine.Tick&&m.TravelQuantum>Engine.TravelQuantum)return;
+            if(m.Tick!=Engine.Tick || m.AfterCommandCount!=_tape.Count || m.TravelQuantum!=Engine.TravelQuantum)throw new CheckpointException("MissedResearchBarrier");
             Engine.DeveloperModify(m.Kind,m.Actor,m.NewValue,_tape.Count,m.Inventory,m.Item,m);++_researchIndex;RefreshResearchHash();
         }
     }

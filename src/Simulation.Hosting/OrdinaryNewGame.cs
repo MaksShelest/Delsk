@@ -72,6 +72,7 @@ public static class OrdinaryNewGame
         long? maximum=vnext?checked(globals!.MaxPopulationPerParticipant*count):baseScenario.Labor?.MaximumPopulation is {} max?Scale(max,count):null;
         long treasury=Scale(vnext?globals!.StartTreasuryMinorPer4Participants:baseScenario.StartingTreasuryMinor,count);
         var scenario=baseScenario with {Seed=seed,Participants=actors,Plots=baseScenario.Plots is null?null:plots.ToArray(),
+            Economy=baseScenario.Economy?.ProductionContent is {} content?baseScenario.Economy with{ProductionContent=content with{Imports=[..content.Imports.Select(i=>i with{Package=checked(i.Package*((count+3)/4))})]}}:baseScenario.Economy,
             Population=population,Labor=(baseScenario.Labor??new()) with {MaximumPopulation=maximum},StartingTreasuryMinor=treasury,
             CapitalDemand=baseScenario.CapitalDemand is {} demand?demand with {BootstrapBaseBudgetMinor=Scale(demand.BootstrapBaseBudgetMinor,count)}:null,
             NewGame=new("ordinary-setup-1",options.HumanActorId,options.Difficulty,map.Id,VNextBalanceReader.Digest(VNextSupportedProfile.Serialize(economy)),legacy?"legacy-default":"startup-rotation-1",

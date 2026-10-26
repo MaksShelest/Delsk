@@ -74,7 +74,7 @@ public static class PlayerDesk
             seen.CapitalOffers, seen.Account.AvailableMinor, engine.HarvestOf(actor), engine.EconomyRules,
             new(seen.MarketOffers, seen.OwnMarketBids, seen.OwnMarketAllocations, seen.MarketRules, engine.PublicShops()),
             seen.OwnEquipment, seen.OwnDeliveryContracts, seen.BuyOffers, seen.OwnSupplyRequests, seen.City)
-            { Development=engine.DevelopmentOf(actor),Demolition=engine.DemolitionOf(actor),Storage=engine.HasGroundStorage?engine.StorageOf(actor):null,Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))] };
+            { ProductionContent=engine.ProductionContentOf(actor),Development=engine.DevelopmentOf(actor),Demolition=engine.DemolitionOf(actor),Storage=engine.HasGroundStorage?engine.StorageOf(actor):null,Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))] };
     }
 }
 
@@ -85,6 +85,7 @@ public record PlayerView(long Tick, ParticipantView Participant, long CashMinor,
     BuyOfferView[]? BuyOffers = null, SupplyRequest[]? SupplyRequests = null, CityEconomy? City = null)
 {
     public DevelopmentObservation? Development {get;init;}
+    public ProductionContentObservation? ProductionContent {get;init;}
     public DemolitionState? Demolition {get;init;}
     public StorageState? Storage {get;init;}
     public System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources {get;init;}=[];
@@ -154,6 +155,11 @@ public static class PlayerText
         ["reason.MaxLevel"] = "Достигнут максимальный уровень здания.",
         ["reason.MaxEquipmentLevel"] = "Достигнут максимальный уровень техники.",
         ["reason.RecipeLocked"] = "Этот рецепт ещё не открыт.",
+        ["reason.WorkshopVersionLocked"] = "Сначала модернизируйте оснащение именно этого цеха.",
+        ["reason.InvalidRecipeVersion"] = "Эта ступень модернизации сейчас недоступна.",
+        ["reason.ImportStockUnavailable"] = "На терминале недостаточно импортного товара. Уменьшите количество или дождитесь пополнения.",
+        ["reason.ImportPickupOnly"] = "Этот пункт предназначен только для вывоза оплаченного импорта.",
+        ["reason.InventoryItemNotAllowed"] = "Этот товар не соответствует назначению входа или выхода предприятия.",
         ["reason.ContractClosed"] = "Договор уже закрыт или срок истёк.",
         ["reason.NotAtResourceNode"] = "Подойдите к выбранной ресурсной точке.",
         ["reason.NoBondMoney"] = "Недостаточно денег для залога.",
@@ -331,6 +337,11 @@ public static class PlayerText
         ["reason.MaxLevel"] = "The building is at its maximum level.",
         ["reason.MaxEquipmentLevel"] = "Equipment is at its maximum level.",
         ["reason.RecipeLocked"] = "This recipe is not unlocked.",
+        ["reason.WorkshopVersionLocked"] = "Modernize this workshop's own equipment first.",
+        ["reason.InvalidRecipeVersion"] = "This modernization tier is unavailable.",
+        ["reason.ImportStockUnavailable"] = "Not enough import stock at the terminal. Reduce the quantity or wait for replenishment.",
+        ["reason.ImportPickupOnly"] = "This section is only for collecting paid imports.",
+        ["reason.InventoryItemNotAllowed"] = "This item is not allowed in this factory input or output.",
         ["reason.ContractClosed"] = "The contract is closed or its deadline has expired.",
         ["reason.NotAtResourceNode"] = "Walk to the selected resource node.",
         ["reason.NoBondMoney"] = "Not enough money for the collateral.",
