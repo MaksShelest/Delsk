@@ -268,3 +268,14 @@ expectedreject. NativeHUDfull20Debug+20ExportDebug withrealD2Set/Add andlegacy
 absence; noGodotlogerrors. Core1153/102/14/69,7infraPython. YAML parsed, aggregate
 verifyneedsbothjobs. Readycommit/pushsamePR64; thenwaitactualGitHubWindows/Core/
 Developer, noautomaticmerge. Portableevidence development-d2-ci/.
+
+
+CIe5766a0: отдельныйDeveloperjob ужеsuccess; Coreheadless/CLI проходят, продолжает
+scenarios. Windowsrun40290138313 теперьпрошёл cacheimport, но новаяD2XPnativecheck
+нашланастоящуюportabilityошибкуProfile.Read metadata: VNextSupportedProfile.Serialize
+prettyNewLineзависелотOS. ЯвныйNewLineLF +LFattributesD1/D2, SHAguardсохранён,
+Linuxacceptedbytesunchanged.4newProjectionPortabilityTests сembeddedA2/C1/D1/D2,
+LF/CRLFinput+simulatedCRLFwriter прошли40/40 вместеD2;build0warnings. Floors now
+1157ordinary/1164Developer, nativefloor20. Нужноcommit/pushвтотжеPR64 иследить
+последнийSHA, особенноWindows; неостанавливатьсянаpending/failure. Gamebalance/D3
+не менялись. Следующийкоммитбудетотдельнымfixcanonicalnewline.

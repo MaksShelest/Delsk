@@ -55,5 +55,5 @@ public static class VNextSupportedProfile
              "Equipment catalog disabled in this subset; resources are manual. Resource profiles keep each actual ItemId; no resource maps, extra bots or UI added."]);
         return new(1,ProfileId,world,baseline.Npc,metadata);
     }
-    public static byte[] Serialize(EconomyProfile profile)=>JsonSerializer.SerializeToUtf8Bytes(profile,new JsonSerializerOptions(SimulationJson.Options){WriteIndented=true});
+    public static byte[] Serialize(EconomyProfile profile)=>JsonSerializer.SerializeToUtf8Bytes(profile,new JsonSerializerOptions(SimulationJson.Options){WriteIndented=true,NewLine="\n"});
 }

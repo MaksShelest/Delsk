@@ -64,7 +64,7 @@ else:
 check("hud-god-controls", 60, [args.godot, "--headless", "--audio-driver", "Dummy", "--path", project,
       "res://HudGodProbe.tscn", "--", "--output", output, "--windowed"])
 report = json.loads((output / "hud-god-check.json").read_text(encoding="utf-8"))
-if report.get("status") != "succeeded" or len(report.get("checks", [])) < 17:
+if report.get("status") != "succeeded" or len(report.get("checks", [])) < 20:
     raise SystemExit("Incomplete HUD/God-mode report")
 print("Native HUD and God-mode checks passed:", len(report["checks"]))
 
@@ -86,7 +86,7 @@ export_output.mkdir(exist_ok=True)
 check("hud-god-export-controls", 60, [args.godot, "--headless", "--audio-driver", "Dummy", "--path", project,
       "res://HudGodProbe.tscn", "--", "--output", export_output, "--windowed"])
 export_report = json.loads((export_output / "hud-god-check.json").read_text(encoding="utf-8"))
-if export_report.get("status") != "succeeded" or len(export_report.get("checks", [])) < 17:
+if export_report.get("status") != "succeeded" or len(export_report.get("checks", [])) < 20:
     raise SystemExit("Incomplete ExportDebug HUD/God-mode report")
 check("hud-god-export-logs", 30, [sys.executable, root / "scripts/verify_platform_probe.py",
       "--log-prefix", output / "checks/hud-god-controls", "--log-prefix", output / "checks/hud-god-export-controls"])

@@ -35,7 +35,7 @@ os.environ['DELSK_D2_EVIDENCE'] = str(out/'d2-fixtures')
 from test_partitions import run_suite
 partitions=run_suite(check,args.dotnet,'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',out)
 passed=sum(p['passed'] for p in partitions)
-if passed<1153:raise SystemExit('Incomplete test suite')
+if passed<1157:raise SystemExit('Incomplete test suite')
 runner = [args.dotnet, 'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll']
 scenarios = {'cycle':'economic-cycle', 'recovery':'zero-cash-recovery', 'development':'land-and-content',
              'labor':'labor-dynamics', 'equipment':'equipment-cycle', 'autonomous':'autonomous-economy', 'market':'market-window', 'pickup':'pickup-lifecycle', 'delivery':'delivery-lifecycle', 'capital-delivery':'capital-delivery', 'logistics':'logistics-cycle', 'logistics-upgrade':'logistics-upgrade', 'own-storage':'own-storage-cycle', 'inbound':'inbound-cycle', 'own-production':'own-production-cycle', 'logistics-queue':'logistics-queue', 'capital-demand':'capital-demand-cycle', 'autonomous-demand':'autonomous-demand', 'elections':'elections', 'support':'support-cycle','stopped-elections':'stopped-elections','physical-automation':'physical-automation','participant-trade':'participant-trade','food-chain':'food-chain'}
