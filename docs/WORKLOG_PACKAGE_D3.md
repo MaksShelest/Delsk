@@ -160,3 +160,36 @@ verify-only не пишет ресурсы. Missing sidecar/partial import — f
 Новый unit test доказывает readonly и отказ на недоимпортированном ресурсе.
 Время120s неизменно, source project.godot восстанавливается exact finally.
 Локальный lifecycle запуск проверен; окончательный Windows result — только CI.
+
+
+## Этап 5: финальный аудит порядка replay
+
+- Windows CI40359230362 на5b20470 прошёл целиком: обычный shared-core smoke,
+  Release audit и20+20god UI. Ранние import timeout не переобозначены в success;
+  исправлен жизненный цикл editor startup, затем независимо проверены96imports.
+- Дополнительный воспроизводящий тест выявил настоящий MissedResearchBarrier/
+  несовпадение hash: ordinary input до/после god edit наquantum5 и final heading9.
+  Начальный запуск2/2failed сохранён в recovery-checks/replay-repro.*.
+- Replay теперь использует один существующий persisted playback cursor для
+  ordinary inputs и heading; изменения god mode блокируют его на точном
+  AfterCommandCount/quantum. Обычные команды записывают существующее optional
+  полеTravelQuantum. Старые записи безquantum читаются; их tape bytes/identity
+  не подменяются. Курсор сохраняется прежним Session2, отдельной очереди нет.
+- Step/Runner и AdvanceTo воспроизводят quanta, когда это требуется tape;
+  final boundary включает последний heading после последнего god edit.
+  Добавлены ordinary mixed-input/checkpoint и4Developer cases, включая legacy
+  quantum0 и восстановление посреди playback. Production/World schema прежние.
+- После изменения Hosting нужны заново Developer, обычные unit/runner/replay и
+  Godot shared-core regression. Прежние native production/god handler evidence
+  остаются применимыми: обработчики и ordinary execution внеplayback не менялись.
+  Итоговые результаты ниже/final-gate; не считать промежуточные runs итоговыми.
+
+
+Итог replay follow-up: свежие bounded locked restore/build +1198ordinary,
+1213Developer; после уточнения fixture реальной зарплаты ещё28selected passed.
+Release negative gate expected rejection. Client Debug rebuild иLinux probe
+повторены:1132hashes/35restores+frozen10, строгий log verifier passed.
+5b20470 Core/Developer/Production/verify/Windows jobs все success; новый push
+заново запускает CI. Итоговую проверку GitHub смотреть на текущем HEAD PR65,
+не подменять её этим предыдущим snapshot. Все641D3fixturecommands quantum0,
+нетheadings, поэтому прежние runner39exports/30pairs применимы; CI повторит их.

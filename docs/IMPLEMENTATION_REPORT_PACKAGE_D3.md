@@ -37,7 +37,9 @@ Developer XP уже существовал в D2, но изменение зап
   а не неисполняемый хлеб. Общая оптимизация стратегии не входит в D3.
 - Режим бога переиспользует D2 XP API. Деньги/товары/XP применяются в открытом
   окне на текущем travel quantum без Step; резервы/ёмкости и запрет вмешательства
-  в замороженные выборы сохранены. Квант записывается в audit и replay.
+  в замороженные выборы сохранены. Квант записывается в audit и replay. Общий сохранённый cursor сохраняет
+  порядок обычных команд, движения и вмешательств, включая final quantum9;
+  восстановление посреди replay и старые записи безquantum проверены.
 - World23, limited22/21/20/19/18, сохранённый resolved config, explicit validation,
   hash/replay и researcher production-content.json. Own immutable observation;
   private import receipts/модернизации не попадают в public stream.
@@ -50,15 +52,15 @@ Developer XP уже существовал в D2, но изменение зап
 | Проверка | Подтверждение |
 | --- | --- |
 | Восстановленный ordinary gate |1191;102exports/14replay/69pairs, manifests сохранены |
-| Финальные D3 unit/integration |38passed; ordinary1197 в совокупности с явно указанным reuse; все23 V1 исполняются; локальные V2/V3, imports/cutoff, NPC, дедупликация, сохранение/replay; текущий TRX в final-gate.json |
-| Developer | recovered1203, затем свежий полный1208 и negative Release gate; developer-latest.json |
+| Финальные D3 unit/integration |38passed; затем полностью свежий ordinary1198 после replay fix (ordinary-latest.json); все23 V1 исполняются; локальные V2/V3, imports/cutoff, NPC, дедупликация, сохранение/replay; текущий TRX в final-gate.json |
+| Developer | recovered1203, затем свежий полный1213 и negative Release gate; developer-latest.json |
 | Независимый аудит | import_audit.py сверяет stock/schedule/cap/цены/Actor/command/ledger/physical pickup/flows/privacy;15 corruption cases и контроль отсутствия future-cutoff |
 | Обычный старт | compact control map:200 монет/пусто → ручной заработок → платная земля/импорт/стройка60 → первый выпуск tick2094; save/replay exact |
 | Реальные vNext-карты | small3NPC300/large10NPC180, actual harvest/sales/imports, checkpoint/controller continuation и world replay exact; npc-maps.json |
 | Native UI | четыре EN1100×800/RU800×720 сценария с настоящими mouse controls/командами, оплатой/120ticks/V2↔V1/физическим pickup; screenshots и native-recovered.json |
 | God mode |20Debug +20standard ExportDebug, реальный D3-профиль, money/stock/XP на frozen quantum5, audit и cleanup; не визуальная/hardware приёмка |
-| Godot Linux |1132runner hash comparisons,35restores +frozen voting10; linux-recovered.json |
-| CI |отдельный D3runner job, обязательный verify требует core+developer+production; Windows serial editor startup/30frames и отдельная проверка полноты96imports только в disposable checkout с восстановлением project.godot bytes |
+| Godot Linux |1132runner hash comparisons,35restores +frozen voting10; linux-latest.json |
+| CI |отдельный D3runner job, обязательный verify требует core+developer+production; Windows serial editor startup/30frames и отдельная проверка полноты96imports только в disposable checkout с восстановлением project.godot bytes;5b20470 все jobs success (ci-5b20470.json), replay follow-up запускает новый CI |
 
 Существенные уточнения и ограничения:
 

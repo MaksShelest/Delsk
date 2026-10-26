@@ -24,6 +24,10 @@
 - God XP backend переиспользован изD2. Immediate money/stock/XP на текущем travel
   quantum без Step и без обхода holds/capacity. Quantum в audit/playback, ordinary
   API отсутствует. Стандартный ExportDebug включает, обычный Debug/Release нет.
+- Replay использует один persisted playback cursor: ordinary inputs +heading в
+  исходном порядке, god edit на точном AfterCommandCount/quantum. Session2 и
+  optional RecordedCommand.TravelQuantum прежние; legacy quantum0 допускается.
+  Step/Runner и final boundary обязаны учитывать quanta; save/load сохраняет cursor.
 - Native ProductionProbe только isolatedtests, AssemblyAudit запрещает его.
   CI serial root importer только disposable checkout, finally восстанавливает
   точные project.godot bytes. Не игнорировать timeout/errors. Required verify

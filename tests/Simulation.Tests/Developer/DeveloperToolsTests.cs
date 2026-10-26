@@ -26,6 +26,29 @@ public class DeveloperToolsTests
         s.SetPaused(false);s.CompleteTravelTick();copy.SetPaused(false);copy.CompleteTravelTick();Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());
         Assert.Equal(s.Engine.ComputeStateHash(),GameSession.Replay(d,s.CommandTape,s.Engine.Tick,s.Engine.ResearchModifications.ToArray()).Engine.ComputeStateHash());
     }
+    [Theory][InlineData(false,false)][InlineData(true,false)][InlineData(false,true)][InlineData(true,true)]
+    public void QuantumEditsReplayInOrderWithOrdinaryCommandsAndHeadings(bool commandBeforeEdit,bool legacyQuantum)
+    {
+        var d=ProductionD3Tests.Prepared();var s=new GameSession(new(d));
+        s.SetTravelHeading(new(1),0,0);
+        if(commandBeforeEdit)s.Send(new(1),new(ActionKind.SetWage,Group:new(8),WageMinor:100));
+        for(int i=0;i<5;i++)s.AdvanceTravelQuantum();
+        using(var tools=new DeveloperTools(s,new(1)))tools.Money(new(1),123456);
+        if(!commandBeforeEdit)s.Send(new(1),new(ActionKind.SetWage,Group:new(8),WageMinor:100));
+        for(int i=5;i<9;i++)s.AdvanceTravelQuantum();s.SetTravelHeading(new(1),0,1);
+        var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));
+        var tape=s.CommandTape.Select(c=>legacyQuantum && c.Command.Action.Kind!=ActionKind.SetTravelHeading?c with{TravelQuantum=0}:c).ToArray();
+        var replay=GameSession.Replay(d,tape,s.Engine.Tick,s.Engine.ResearchModifications.ToArray());
+        Assert.Equal(s.Engine.ComputeStateHash(),replay.Engine.ComputeStateHash());
+        var midway=new GameSession(new(d));midway.ConfigurePlayback(tape,1);midway.ConfigureResearchPlayback(s.Engine.ResearchModifications.ToArray());
+        for(int i=0;i<6;i++)midway.AdvanceTravelQuantum();
+        midway=CheckpointStore.Decode(CheckpointStore.Encode(midway));midway.AdvanceTo(1);
+        s.CompleteTravelTick();copy.CompleteTravelTick();replay.CompleteTravelTick();
+        Assert.Equal(100,s.Engine.Observe(new(1)).OwnEmploymentGroups.Single(g=>g.Id.Value==8).PendingWageMinor);
+        Assert.Equal(s.Engine.ComputeStateHash(),midway.Engine.ComputeStateHash());
+        Assert.Equal(s.Engine.ComputeStateHash(),GameSession.Replay(d,s.CommandTape,1,s.Engine.ResearchModifications.ToArray()).Engine.ComputeStateHash());
+        Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());Assert.Equal(s.Engine.ComputeStateHash(),replay.Engine.ComputeStateHash());
+    }
     private sealed class WaitingAdapter:ILocalModelAdapter
     {public Task<ModelReply> CompleteAsync(ModelRequest request,CancellationToken token)=>new TaskCompletionSource<ModelReply>().Task;}
     private static GameSession Session()=>new(new(StoppedElectionTests.Definition()));

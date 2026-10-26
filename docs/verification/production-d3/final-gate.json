@@ -1,26 +1,26 @@
 {
   "status": "succeeded-local-software",
   "scope": "D3 only; E not started; preserved evidence explicitly marked, changed gates rerun.",
-  "sourceFilesSha256": "575a4fe37252a7ec173a710f25cb62b1b32d5b16d434f6a76ad164cc17b12669",
+  "sourceFilesSha256": "0dbe6deeb108f58e5e5e57fecc4c09504aac1eb6db18356f739b9f3265bfbd26",
   "sourceFileCount": 708,
   "recoveryCommit": "ac9e706310d47ee8de8a0b145507057bf7471c0a",
   "pr": "https://github.com/MaksShelest/Delsk/pull/65",
   "ordinary": {
-    "uniquePassed": 1197,
-    "detail": "ordinary-consolidated.json",
-    "reused": [
-      "base1067",
-      "integration55",
-      "D236",
-      "compact ordinary start1"
-    ],
+    "uniquePassed": 1198,
+    "detail": "ordinary-latest.json",
+    "allPartitionsFresh": true,
     "freshD3": 38
   },
   "developer": {
-    "passed": 1208,
+    "passed": 1213,
     "detail": "developer-latest.json",
     "allPartitionsFresh": true,
-    "negativeRelease": "expected rejection"
+    "negativeRelease": "expected rejection",
+    "followupReplayTests": {
+      "passed": 28,
+      "detail": "replay-final-checked.json",
+      "scope": "After refining four regression fixtures to assert an actual accepted wage change; runtime unchanged."
+    }
   },
   "python": {
     "checks": 13,
@@ -32,7 +32,9 @@
     "exports": 39,
     "comparisons": 30,
     "processChecks": 58,
-    "detail": "runner-latest.json"
+    "detail": "runner-latest.json",
+    "reusedAfterReplayFix": true,
+    "reuseReason": "All641 D3 fixture commands have quantum0/no headings; whole-tick execution unchanged. Independent runner job also succeeded on5b20470; final CI reruns it."
   },
   "maps": {
     "detail": "npc-maps.json",
@@ -57,14 +59,19 @@
     "restores": 35,
     "frozenVotingFinalTick": 10,
     "detail": "linux-latest.json",
-    "rerun": true
+    "rerun": true,
+    "rerunAfterReplayFix": true
   },
   "ci": {
-    "status": "pending-final-push",
-    "initialRecoveryCore": "success",
-    "initialRecoveryDeveloper": "success",
-    "initialRecoveryWindows": "import exit timeout, fixed in disposable workflow; final Windows result pending",
-    "windowsFollowup": "Serial --import/--quit still timed out on cc74ea8. Normal editor startup/30frames followed by independent96-asset completeness verification; exact project bytes restored; Windows run pending."
+    "status": "new-replay-fix-push-pending",
+    "previousVerifiedCommit": "5b20470d875e4d9056ed4955405da83688ba8c53",
+    "detail": "ci-5b20470.json",
+    "core": "success",
+    "developer": "success",
+    "production": "success",
+    "verify": "success",
+    "windows": "success",
+    "scope": "Those results verify the named previous commit. Final Hosting replay fix triggers new CI; its conclusion belongs to PR checks, not this pre-push snapshot."
   },
   "limitations": [
     "Prepared recipe/modernization fixtures are not natural endgame progression",
@@ -77,5 +84,6 @@
     "passed": 6,
     "detail": "policy-final.json",
     "reason": "D3 multiple-initial-recipes logic guarded to preserve old D2 decisions; targeted ordinary tests passed after the final guard."
-  }
+  },
+  "sourceDigestAlgorithm": "sha256(sorted tracked source path + NUL + file sha256 hex + LF)"
 }

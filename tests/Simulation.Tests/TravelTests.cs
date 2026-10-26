@@ -8,6 +8,21 @@ namespace Simulation.Tests;
 public class TravelTests
 {
     [Fact]
+    public void MixedInputsKeepTheirQuantumOrderAndPlaybackCursorAcrossLoad()
+    {
+        var s=Fixtures.Session();s.SetTravelHeading(new(1),1,0);
+        for(int i=0;i<5;i++)s.AdvanceTravelQuantum();
+        s.Send(new(1),new(ActionKind.SetWage,Group:new(1),WageMinor:150));
+        for(int i=5;i<9;i++)s.AdvanceTravelQuantum();s.SetTravelHeading(new(1),0,1);
+        var replay=GameSession.Replay(s.Engine.Configuration(),s.CommandTape,0);
+        Assert.Equal(s.Engine.ComputeStateHash(),replay.Engine.ComputeStateHash());
+        var mid=new GameSession(new(s.Engine.Configuration()));mid.ConfigurePlayback(s.CommandTape,1);
+        for(int i=0;i<6;i++)mid.AdvanceTravelQuantum();
+        mid=CheckpointStore.Decode(CheckpointStore.Encode(mid));mid.AdvanceTo(1);s.CompleteTravelTick();
+        Assert.Equal(s.Engine.ComputeStateHash(),mid.Engine.ComputeStateHash());
+        Assert.Equal(s.CommandTape,mid.CommandTape);
+    }
+    [Fact]
     public void PartialCellStopTurnsWithoutReachingTheNextCell()
     {
         var session = Fixtures.Session();

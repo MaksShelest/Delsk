@@ -1,0 +1,18 @@
+{
+  "commit": "5b20470d875e4d9056ed4955405da83688ba8c53",
+  "core": {
+    "run": 40359230375,
+    "jobs": {
+      "core": "success",
+      "developer": "success",
+      "production": "success",
+      "verify": "success"
+    }
+  },
+  "windows": {
+    "run": 40359230362,
+    "job": "windows-core-replay",
+    "conclusion": "success"
+  },
+  "scope": "Verified via GitHub Actions API. Includes independent D3 runner audit and Windows smoke/Release/god checks. Subsequent Hosting replay fix triggers fresh CI; do not substitute this snapshot for its result."
+}

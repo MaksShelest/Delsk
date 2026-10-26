@@ -1,10 +1,10 @@
 {
   "status": "succeeded",
-  "testsPassed": 1208,
+  "testsPassed": 1213,
   "testPartitions": [
     {
       "file": "tests.trx",
-      "passed": 1078
+      "passed": 1083
     },
     {
       "file": "tests-integration.trx",

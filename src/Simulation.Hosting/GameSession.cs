@@ -41,7 +41,7 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
     }
     public CommandResult? Submit(ParticipantId actor, CommandEnvelope command)
     {
-        _tape.Add(new(Engine.Tick, actor, command));
+        _tape.Add(new(Engine.Tick, actor, command, Engine.TravelQuantum));
         _sequences[actor.Value] = Math.Max(_sequences.GetValueOrDefault(actor.Value), command.LocalSequence);
         var result = Engine.Enqueue(actor, command);
         if (result is not null && _samples.Count > 0 && _samples[^1].Tick == Engine.Tick)
@@ -52,6 +52,7 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
     {
         if (Engine.WaitingForBallots) { SubmitPlaybackInputs(); PumpVoting(); return; }
         if (Paused) return;
+        if (!_closingTravelTick && PlaybackUsesTravel) { CompleteTravelTick(); return; }
         beforeStep?.Invoke();
         SubmitPlaybackInputs();
         bool measured = StepMeasured is not null;
@@ -89,11 +90,15 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
 
     public void AdvanceTravelQuantum()
     {
-        if (Engine.WaitingForBallots) { PumpVoting(); return; }
+        if (Engine.WaitingForBallots) { SubmitPlaybackInputs(); PumpVoting(); return; }
         if (Paused) return;
-        PumpResearchPlayback();
-        ApplyHeadingPlayback();
-        if (Engine.MoveTravelQuantum()) Step();
+        SubmitPlaybackInputs();
+        if (Engine.MoveTravelQuantum())
+        {
+            _closingTravelTick = true;
+            try { Step(); }
+            finally { _closingTravelTick = false; }
+        }
     }
 
     public void CompleteTravelTick()
@@ -109,58 +114,21 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
         while (Engine.TravelQuantum != 0);
     }
 
-    public void UseHeadingPlayback(RecordedCommand[] tape)
-    {
-        if (tape.Any(c => c.Command.Action.Kind == ActionKind.SetTravelHeading &&
-            (c.TravelQuantum < 0 || c.TravelQuantum >= SimulationEngine.TravelQuantaPerTick ||
-                c.Command.Action.Target.X is < -1 or > 1 || c.Command.Action.Target.Z is < -1 or > 1)))
-            throw new ArgumentException("Invalid travel playback");
-        _headingPlayback = tape.Where(c => c.Command.Action.Kind == ActionKind.SetTravelHeading)
-            .OrderBy(c => c.SubmittedAtTick).ThenBy(c => c.TravelQuantum).ThenBy(c => c.Command.LocalSequence).ToArray();
-        _headingPlaybackIndex = 0;
-    }
-
-    private void ApplyHeadingPlayback()
-    {
-        while (_headingPlaybackIndex < _headingPlayback.Length)
-        {
-            var input = _headingPlayback[_headingPlaybackIndex];
-            if (input.SubmittedAtTick > Engine.Tick ||
-                (input.SubmittedAtTick == Engine.Tick && input.TravelQuantum > Engine.TravelQuantum))
-                return;
-            if (input.SubmittedAtTick != Engine.Tick || input.TravelQuantum != Engine.TravelQuantum)
-                throw new InvalidOperationException("Playback input missed its barrier");
-            Engine.SetTravelHeading(input.AuthenticatedActor, input.Command.Action.Target.X, input.Command.Action.Target.Z);
-            _tape.Add(input);
-            PumpResearchPlayback();
-            _sequences[input.AuthenticatedActor.Value] = Math.Max(
-                _sequences.GetValueOrDefault(input.AuthenticatedActor.Value), input.Command.LocalSequence);
-            _headingPlaybackIndex++;
-        }
-    }
-
     public static GameSession Replay(ScenarioDefinition definition, RecordedCommand[] tape, long finalTick,ResearchModification[]? modifications=null)
     {
         if (finalTick < 0 || finalTick > definition.MaxTicks || tape.Any(x => x.SubmittedAtTick < 0 || x.SubmittedAtTick > finalTick))
             throw new ArgumentException("Invalid replay horizon");
         var session = new GameSession(new SimulationEngine(definition), "replay");
         session._researchPlayback=modifications??[];
-        bool travel = tape.Any(x => x.Command.Action.Kind == ActionKind.SetTravelHeading)||(modifications??[]).Any(m=>m.TravelQuantum!=0);
-        session.ConfigurePlayback(travel ? tape.Where(x => x.Command.Action.Kind != ActionKind.SetTravelHeading).ToArray() : tape, finalTick);
-        if (travel) session.UseHeadingPlayback(tape);
+        session.ConfigurePlayback(tape, finalTick);
         while (session.Engine.Tick < finalTick)
         {
             long prior = session.Engine.Tick;
-            if (travel) session.AdvanceTravelQuantum();
-            else session.Step();
+            session.Step();
             if (session.Engine.Tick == prior && session.Engine.WaitingForBallots)
                 throw new InvalidOperationException("Replay requires recorded ballots at the frozen boundary");
         }
-        session.SubmitPlaybackInputs(); // Preserve inputs submitted at the final published barrier.
-        if (travel) session.ApplyHeadingPlayback();
-        int finalQuantum=(modifications??[]).Where(m=>m.Tick==finalTick).Select(m=>m.TravelQuantum).DefaultIfEmpty(0).Max();
-        while(session.Engine.TravelQuantum<finalQuantum)session.AdvanceTravelQuantum();
-        session.PumpResearchPlayback();
+        session.FlushPlaybackBoundary();
         return session;
     }
 }
