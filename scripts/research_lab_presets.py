@@ -5,8 +5,8 @@ import copy
 from research_lab import DEFAULT
 
 MAPS = [
-    dict(label="Речные кварталы · D1", path="scenarios/vnext/small-river.json", economy="config/vnext/economy.d1-workshops.json"),
-    dict(label="Большой округ · D1", path="scenarios/vnext/large-districts.json", economy="config/vnext/economy.d1-workshops.json"),
+    dict(label="Речные кварталы · D2", path="scenarios/vnext/small-river.json", economy="config/vnext/economy.d2-development.json"),
+    dict(label="Большой округ · D2", path="scenarios/vnext/large-districts.json", economy="config/vnext/economy.d2-development.json"),
     dict(label="Четыре квартала", path="scenarios/four-corners-v1.json"),
     dict(label="Городской тракт", path="scenarios/city-corridor-v1.json"),
     dict(label='Карта 1 · базовая', path='scenarios/presentation-map-one-v3.json'),

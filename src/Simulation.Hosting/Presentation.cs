@@ -77,7 +77,7 @@ public static class Presentation
                 warehouse=new(known,stock?.Capacity??0,stock is null?[]:stock.Stock.Where(s=>s.Quantity>0).Select(s=>new VisibleStock(s.ItemId,checked(s.Quantity*scenario.Items.Single(i=>i.Id==s.ItemId).UnitVolume))).ToArray());
             }
             markers.Add(new(building.Kind.ToString().ToLowerInvariant(),building.Position.X,building.Position.Z,building.TypeId,building.Id.Value,building.OwnerId.Value)
-                {Level=building.Level,Footprint=[..type.Footprint],Walls=[..type.Walls??[]],Warehouse=warehouse});
+                {Level=building.Level,Footprint=[..building.Footprint.Select(c=>new Cell(c.X-building.Position.X,c.Z-building.Position.Z))],Walls=[..type.Walls??[]],Warehouse=warehouse});
         }
         foreach (var group in world.CapitalOffers.Where(o => o.RemainingQuantity > 0).GroupBy(o => o.Position))
         {

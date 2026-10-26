@@ -16,6 +16,7 @@ public partial class PlayerTablet : VBoxContainer
     private readonly Label _empty=Wrapped(),_participants=Wrapped(),_city=Wrapped(),_labor=Wrapped();
     private readonly Label _capital=TabletDesign.Heading("",27),_employed=TabletDesign.Heading("",27),_room=TabletDesign.Heading("",27);
     private readonly CurrentDealsPanel _deals;
+    private readonly DevelopmentPanel _development;
     private readonly TradeNegotiationPanel _negotiations;
     private readonly PurchaseGuidePanel _pickups;
     private readonly EquipmentPurchasePanel _purchases;
@@ -33,6 +34,7 @@ public partial class PlayerTablet : VBoxContainer
         var stats=new TabletColumns{Breakpoint=660};_overview.AddChild(stats);
         Stat(stats,"coin",_capital,L("Капитал","Capital"));Stat(stats,"people",_employed,L("Работают на вас","Working for you"));Stat(stats,"bag",_room,L("Свободно в рюкзаке · объём","Free backpack volume"));
         _empty.Text=L("Своих объектов пока нет. Добывайте сырьё, продавайте столице, покупайте участок и стройте.","No holdings yet. Harvest inputs, sell to the capital, buy a plot and build.");_overview.AddChild(_empty);_overview.AddChild(_holdings);
+        _development=new(scenario,language,0,submit,access);_overview.AddChild(Fold(L("Опыт и задания ›","Experience and quests ›"),_development));
         _purchases=new(scenario,language,submit,access);_overview.AddChild(Fold(L("Купить технику ›","Buy equipment ›"),_purchases));
         _back.Text=L("‹ Моё хозяйство","‹ My holdings");_back.FocusMode=FocusModeEnum.None;_back.Visible=false;_back.Pressed+=Back;farm.AddChild(_back);farm.AddChild(_cardHost);
         Tab(L("Участники","Participants")).AddChild(TabletDesign.Wrap(_participants));
@@ -90,7 +92,7 @@ public partial class PlayerTablet : VBoxContainer
         }
         var city=view.City!;var own=city.Participants.Single(p=>p.Actor==view.Participant.Id);var pack=view.Inventories.Single(i=>i.Id==view.Participant.InventoryId);
         _capital.Text=PlayerText.Money(own.CapitalMinor);_employed.Text=own.Employed.ToString();_room.Text=Math.Max(0,pack.Capacity-pack.OccupiedVolume-pack.ReservedCapacity).ToString();
-        _card?.ShowData(view,pending,paused);_deals.ShowData(view,pending);_negotiations.ShowData(view,pending);_pickups.ShowData(view,pending);_purchases.ShowData(view,pending);
+        _development.ShowData(view,pending);_card?.ShowData(view,pending,paused);_deals.ShowData(view,pending);_negotiations.ShowData(view,pending);_pickups.ShowData(view,pending);_purchases.ShowData(view,pending);
         _participants.Text=L("Рейтинг по капиталу · фиксированная оценка","Capital ranking · fixed reference valuation")+"\n\n"+string.Join("\n\n",city.Participants.OrderByDescending(p=>p.CapitalMinor).ThenBy(p=>p.Actor.Value).Select(p=>(p.Actor==view.Participant.Id?L("Вы","You"):WorldSkins.ActorName(p.Actor.Value,_language))+" · "+PlayerText.Money(p.CapitalMinor)+L(" · работников "," · workforce ")+p.Employed+(p.Actor==view.Participant.Id?"":"\n"+L("Предпочтение: ","Preference: ")+(p.PreferenceItem.Length==0?L("не объявлено","not declared"):PlayerText.Item(_language,p.PreferenceItem)))));
         _city.Text=Stage(city.Stage)+L(" · капитал города "," · city capital ")+PlayerText.Money(city.CapitalMinor)+"\n\n"+L("Население / занятые / безработные: ","Population / employed / unemployed: ")+$"{city.Population} / {city.Employed} / {city.Unemployed}\n"+L("Работают на вас: ","Working for you: ")+own.Employed+(city.Employed==0?"":$" ({100m*own.Employed/city.Employed:0.0}%)")+"\n"+L("Действующих производств: ","Active productions: ")+city.ActiveProductions+"\n"+L("Завершённый выпуск: ","Completed-period output: ")+PlayerText.Money(city.GrossOutputMinor)+"\n"+L("Период приёмки: ","Receipt period: ")+$"{city.PeriodStartTick}–{city.PeriodEndTick}\n"+L("Принято столицей: ","Capital receipts: ")+city.CapitalDeliveredQuantity+L(" · по договорам "," · contracted receipts ")+city.CapitalContractDeliveredQuantity+L(" · новых обязательств "," · new commitments ")+city.CapitalContractedQuantity;
         foreach(var system in view.Logistics.Where(l=>view.Demolition?.Receipts.Any(r=>!r.Construction&&r.Target==l.EnterpriseId.Value)==true))

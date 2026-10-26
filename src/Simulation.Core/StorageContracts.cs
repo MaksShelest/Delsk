@@ -11,5 +11,6 @@ public sealed record StorageRules(long GroundCapacity=70,long OverflowGraceTicks
 }
 public sealed record OverflowLot(long Id,long Owner,string ItemId,long Quantity,string Source,long CreatedTick,long ExpiresTick,int[] Warned);
 public sealed record GroundStorage(long PlotId,long InventoryId);
-public sealed record StorageConstruction(long Id,long Owner,Cell Position,string TypeId,int Level,long InventoryId,long BuildingId,long StartedTick,long CompletesTick,MaterialCost[] Materials,long PaidMinor,string CommandId);
+public sealed record StorageConstruction(long Id,long Owner,Cell Position,string TypeId,int Level,long InventoryId,long BuildingId,long StartedTick,long CompletesTick,MaterialCost[] Materials,long PaidMinor,string CommandId,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] DevelopmentProject? Development=null);
 public sealed record StorageState(GroundStorage[] Ground,StorageConstruction[] Construction);

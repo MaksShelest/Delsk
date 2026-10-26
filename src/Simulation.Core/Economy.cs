@@ -255,8 +255,10 @@ internal sealed class EconomyTransaction
     public void ReleaseStock(long id, string reservation)
     { if (!Inventory(id).Reservations.Remove(reservation)) throw new RuleViolation("MissingReservation"); }
     public void ReserveCapacity(long id, string hold, string item, long quantity)
+        => ReserveCapacityVolume(id,hold,Volume(item,quantity));
+    public void ReserveCapacityVolume(long id,string hold,long volume)
     {
-        long volume = Volume(item, quantity); var inv = Inventory(id);
+        Positive(volume);var inv = Inventory(id);
         if (inv.CapacityHolds.ContainsKey(hold)) throw new RuleViolation("DuplicateReservation");
         CheckSpace(inv, volume); inv.CapacityHolds.Add(hold, volume);
     }

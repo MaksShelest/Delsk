@@ -90,6 +90,7 @@ public sealed partial class AlgorithmicController
     }
     private IEnumerable<Candidate> RemoteCandidates(ControllerObservation o)
     {
+        foreach(var c in IndustryQuestCandidates(o))yield return c;
         foreach(var c in AuctionCandidates(o))yield return c;
         foreach(var p in SupportResponses(o))yield return p;
         foreach(var n in NegotiationResponses(o))yield return n;

@@ -153,7 +153,7 @@ public sealed partial class SimulationEngine
 
     private string VacancyReason(EnterpriseState e)
     {
-        if (!e.Enabled || PreparingDemolition(ProductionParent(e.Definition.Id)) && e.Batch is null) return "UserPaused";
+        if (!e.Enabled || (PreparingDemolition(ProductionParent(e.Definition.Id))||PreparingDevelopment(ProductionParent(e.Definition.Id))) && e.Batch is null) return "UserPaused";
         if ((e.Group.PendingWage ?? e.Group.Wage) <= 0 || e.Group.AttractionWage <= 0) return "NoPaidOffer";
         if (e.Batch is not null) return "Ready"; // WIP already owns its inputs and output hold.
         if (e.Recipe.Ingredients.Any(i=>_economy.Inventories[e.Input].Free(i.ItemId)<i.Quantity)) return "NoInputs";

@@ -14,6 +14,16 @@ public class DeveloperToolsTests
     {public Task<ModelReply> CompleteAsync(ModelRequest request,CancellationToken token)=>new TaskCompletionSource<ModelReply>().Task;}
     private static GameSession Session()=>new(new(StoppedElectionTests.Definition()));
     [Fact]
+    public void IndustryExperienceIsAuditedSavedAndReplayedWithoutFakeProduction()
+    {
+        var d=ExpansionD2Tests.Definition(false);var s=new GameSession(new(d));using var tools=new DeveloperTools(s,new(1));
+        tools.IndustryExperience(new(1),"woodworking",600);Assert.Equal(2,s.Engine.DevelopmentOf(new(1))!.Experience.Single(x=>x.Industry=="woodworking").TechnologyLevel);
+        tools.IndustryExperience(new(1),"woodworking",650);Assert.Equal(0,s.Engine.DevelopmentOf(new(1))!.Experience.Single(x=>x.Industry=="woodworking").ProductionXp);
+        s.Step();var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());
+        Assert.Equal(s.Engine.ComputeStateHash(),GameSession.Replay(d,s.CommandTape,s.Engine.Tick,s.Engine.ResearchModifications.ToArray()).Engine.ComputeStateHash());
+        Assert.True(s.Engine.ResearchModified);Assert.Equal(2,s.Engine.ResearchModifications.Length);Assert.Throws<ArgumentException>(()=>tools.IndustryExperience(new(1),"missing",1));
+    }
+    [Fact]
     public void CashAndStockEditsAreAuditedConservedAndDoNotPretendToBeProduction()
     {
         var s=Session();using var tools=new DeveloperTools(s,new(1));var actor=s.Engine.Observe(new(1)).Participant;

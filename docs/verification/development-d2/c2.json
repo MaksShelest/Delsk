@@ -1,0 +1,14 @@
+{
+  "status": "succeeded",
+  "processChecks": 16,
+  "checkpointCuts": [
+    794,
+    795,
+    796,
+    1994
+  ],
+  "finalTick": 1996,
+  "exports": 10,
+  "comparisonPairs": 9,
+  "scope": "Real C# effects, private researcher demolition export, prepared material sources; no D1"
+}

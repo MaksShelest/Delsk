@@ -37,6 +37,8 @@ public sealed partial class SimulationEngine
         if (!ParallelWorkshops || !_buildings.TryGetValue(parent.Definition.Id, out var b) || b.Type.WorkshopOutfit is not { } outfit)
             throw new RuleViolation("NotAvailable");
         RequireIdle(actor); RequireActionLocation(actor, c.Action);
+        if(PreparingDevelopment(b.Id))throw new RuleViolation("PreparingDevelopment");
+        if(StorageWorkAt(b.Position))throw new RuleViolation("ConstructionInProgress");
         if (UnitsFor(b.Id).Count() + _workshopInstallations.Values.Count(w => w.Enterprise.Value == b.Id) >= ReadyWorkshopSlots(b))
             throw new RuleViolation("NoReadyWorkshopSlot");
         long id = _nextId, next = checked(id + 1), end = checked(Tick + outfit.Ticks);
@@ -84,7 +86,7 @@ public sealed partial class SimulationEngine
     {
         var recipes=ProductionRecipes(parent).AsEnumerable();
         if(ParallelWorkshops&&_buildings.TryGetValue(parent.Definition.Id,out var b))
-            recipes=b.Type.Levels.Where(l=>l.Level<=b.Level).SelectMany(l=>l.UnlockedRecipes).Distinct(StringComparer.Ordinal).Select(id=>_config.Recipes.Single(r=>r.Id==id));
+            recipes=b.Type.Levels.SelectMany(l=>l.UnlockedRecipes).Distinct(StringComparer.Ordinal).Where(id=>Development is not null?IndustryRecipeAvailable(b.Type.Id,id,Experience(b.Owner,b.Type.Id).TechnologyLevel):b.Type.Levels.Any(l=>l.Level<=b.Level&&l.UnlockedRecipes.Contains(id,StringComparer.Ordinal))).Select(id=>_config.Recipes.Single(r=>r.Id==id));
         return recipes.Select(r=>r.OutputItem).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray();
     }
 
@@ -131,7 +133,7 @@ public sealed partial class SimulationEngine
                 Demolished(parentId) && (e.Enabled || e.Batch is not null || e.Group.Headcount != 0)) throw new CheckpointException("InvalidWorkshopReference");
             if (e != parent && (!_buildings.ContainsKey(parentId) || !_events.Any(v => v.Type == "WorkshopOutfitCompleted" && v.EntityId == parentId && v.Quantity == e.Definition.Id)))
                 throw new CheckpointException("UnpaidWorkshop");
-            if (_buildings.TryGetValue(parentId, out var b) && !b.Type.Levels.Where(l => l.Level <= b.Level).SelectMany(l => l.UnlockedRecipes).Contains(e.Recipe.Id, StringComparer.Ordinal))
+            if (_buildings.TryGetValue(parentId, out var b) && !(Development is not null?IndustryRecipeAvailable(b.Type.Id,e.Recipe.Id,Experience(b.Owner,b.Type.Id).TechnologyLevel):b.Type.Levels.Where(l => l.Level <= b.Level).SelectMany(l => l.UnlockedRecipes).Contains(e.Recipe.Id, StringComparer.Ordinal)))
                 throw new CheckpointException("InvalidWorkshopRecipe");
             if (e.Batch is { } batch && (batch.Terms is not { } terms || terms.WageMinor < 0 || terms.ServiceMinorPerFullTick != _config.Economy!.Workshops!.ServiceMinorPerFullTick ||
                 ScenarioValidation.Hash(terms.Recipe) != ScenarioValidation.Hash(e.Recipe) || batch.WorkRequired != checked(e.Recipe.FullStaffTicks * 100) || !_events.Any(v=>v.Type=="WorkshopBatchStarted"&&v.EntityId==batch.Id&&v.ItemId==e.Recipe.Id&&v.AmountMinor==terms.WageMinor&&v.Quantity==terms.ServiceMinorPerFullTick&&v.ReasonCode==e.Definition.Id.ToString(System.Globalization.CultureInfo.InvariantCulture))))
@@ -165,7 +167,7 @@ public static partial class ScenarioValidation
             foreach (var l in t.Levels)
             {
                 int cells = l.WorkshopSlots == 1 ? 1 : l.WorkshopSlots + 1;
-                if (l.WorkshopSlots is < 1 or > 5 || t.Footprint.Length < cells || l.StaffCapacity != 5 || l.WorkRateMultiplier != 1)
+                if (l.WorkshopSlots is < 1 or > 5 || (l.Footprint.IsDefault?t.Footprint.Length:l.Footprint.Length) < cells || l.StaffCapacity != 5 || l.WorkRateMultiplier != 1)
                     throw new ArgumentException("Invalid ready workshop places or staffing");
             }
             if (t.WorkshopOutfit is { } o && (o.PriceMinor <= 0 || o.Ticks is < 1 or > 1000000 || o.Materials.IsDefaultOrEmpty ||

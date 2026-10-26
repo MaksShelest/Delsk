@@ -17,7 +17,7 @@ public sealed partial class AlgorithmicController
             long Net(RecipeDefinition r)=>checked(r.OutputQuantity*offer.UnitPriceMinor-RecipeInputValue(o,r)-r.EnergyPerBatchMinor-
                 e.StaffCapacity*group.WageMinor*Duration(r));
             var best=current;
-            foreach(string id in o.BuildingTypes.Single(t=>t.Id==b.TypeId).Levels.Where(l=>l.Level<=b.Level).SelectMany(l=>l.UnlockedRecipes).Distinct(StringComparer.Ordinal))
+            foreach(string id in o.BuildingTypes.Single(t=>t.Id==b.TypeId).Levels.Where(l=>l.Level<=(o.Development?.Experience.Single(x=>x.Industry==b.TypeId).TechnologyLevel??b.Level)).SelectMany(l=>l.UnlockedRecipes).Distinct(StringComparer.Ordinal))
             {
                 var r=o.Map.Recipes.Single(r=>r.Id==id);if(r.OutputItem!=current.OutputItem || Net(r)<=0)continue;
                 if((Int128)Net(r)*Duration(best)>(Int128)Net(best)*Duration(r))best=r;

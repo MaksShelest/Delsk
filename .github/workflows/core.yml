@@ -5,7 +5,7 @@ on:
 permissions:
   contents: read
 jobs:
-  verify:
+  core:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -16,6 +16,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: CI partition and import-cache boundaries
+        run: python scripts/run_check.py --name ci-tools-unit --timeout 30 --log-directory artifacts/gate-checks -- python -m unittest discover -s tests/Checks -v
       - name: Research laboratory startup, queue and HTTP boundaries
         run: python scripts/run_check.py --name research-lab-unit --timeout 60 --log-directory artifacts/gate-checks -- python -m unittest discover -s tests/Research.Lab -v
       - name: Reproducible vNext catalog extraction
@@ -41,12 +43,42 @@ jobs:
         run: python scripts/run_check.py --name demolition-c2 --timeout 240 --log-directory artifacts/gate-checks -- python scripts/check_demolition_c2.py --output artifacts/demolition-c2
       - name: D1 parallel workshops, real outfit, payroll and checkpoint replay
         run: python scripts/run_check.py --name workshops-d1 --timeout 240 --log-directory artifacts/gate-checks -- python scripts/check_workshops_d1.py --output artifacts/workshops-d1
-      - name: Bounded Developer tests and forbidden Release gate
-        env:
-          DOTNET_PROCESSOR_COUNT: '2'
-        run: python scripts/run_check.py --name developer --timeout 600 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --output artifacts/developer
+      - name: D2 shared experience, funded quests and paid projects
+        run: python scripts/run_check.py --name development-d2 --timeout 240 --log-directory artifacts/gate-checks -- python scripts/check_development_d2.py --fixtures artifacts/headless/d2-fixtures --output artifacts/development-d2
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: core-checks-and-runs
           path: artifacts/
+  developer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Bounded Developer tests and forbidden Release gate
+        run: python scripts/run_check.py --name developer --timeout 600 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --output artifacts/developer
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: developer-checks-and-runs
+          path: artifacts/
+  # Preserve the existing required check: it must include the separate Developer job.
+  verify:
+    if: ${{ always() }}
+    needs: [core, developer]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    steps:
+      - name: Require both complete suites
+        env:
+          CORE_RESULT: ${{ needs.core.result }}
+          DEVELOPER_RESULT: ${{ needs.developer.result }}
+        run: test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success

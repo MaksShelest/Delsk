@@ -1,0 +1,20 @@
+{
+  "status": "succeeded",
+  "runs": [
+    {
+      "map": "small_river",
+      "tick": 30,
+      "status": "succeeded",
+      "recording": "validated",
+      "sourceSha256": "3f43dfc24e285efcda52ece4d451d61e10ba151fa9a856cccb635db2abc0fc0c"
+    },
+    {
+      "map": "large_districts",
+      "tick": 30,
+      "status": "succeeded",
+      "recording": "validated",
+      "sourceSha256": "2ce25ee5f91ccd52faec52cdb758f8eaf7b569b5c239f2275571c906d7837e42"
+    }
+  ],
+  "scope": "Actual Chromium controls, lab queue, C# validators and runner; explicit research composition, no LLM"
+}

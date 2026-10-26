@@ -10,10 +10,9 @@ def check(name,timeout,cmd,expected=0):
  return r.returncode
 check('developer-restore',180,[a.dotnet,'restore','Delsk.sln','-p:DelskDeveloper=true','--locked-mode','--disable-parallel','-m:1'])
 check('developer-build',180,[a.dotnet,'build','Delsk.sln','-c','Debug','-p:DelskDeveloper=true','--no-restore','--disable-build-servers','-m:1'])
-check('developer-tests',180,[a.dotnet,'tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll','-noColor','-noLogo','-parallelMode','none','-result-trx',str(out/'tests.trx')])
-import xml.etree.ElementTree as ET
-counters=next(e for e in ET.parse(out/'tests.trx').iter() if e.tag.endswith('Counters')).attrib
-assert int(counters['passed'])>=886 and int(counters['failed'])==0 and int(counters.get('notExecuted',0))==0
+from test_partitions import run_suite
+partitions=run_suite(check,a.dotnet,'tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll',out,prefix='developer-tests',timeout=180)
+assert sum(p['passed'] for p in partitions)>=1164
 check('forbidden-developer-release',60,[a.dotnet,'build','src/Simulation.Core/Simulation.Core.csproj','-c','Release','-p:DelskDeveloper=true','--no-restore','--disable-build-servers','-m:1'],1)
 assert 'forbidden in Release' in (out/'checks/forbidden-developer-release.stdout.log').read_text()
-(out/'developer-check.json').write_text(json.dumps({'status':'succeeded','release_negative_build':'expected rejection','scope':'Developer variant; ordinary release/client metadata checked separately'},indent=2)+'\n')
+(out/'developer-check.json').write_text(json.dumps({'status':'succeeded','testsPassed':sum(p['passed'] for p in partitions),'testPartitions':partitions,'release_negative_build':'expected rejection','scope':'Developer variant; ordinary release/client metadata checked separately'},indent=2)+'\n')

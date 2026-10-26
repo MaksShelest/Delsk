@@ -2,7 +2,7 @@ namespace Simulation.Core;
 
 public static partial class ScenarioValidation
 {
-    internal static Cell[] FootprintCells(Cell anchor, BuildingTypeDefinition type) => type.Footprint
+    internal static Cell[] FootprintCells(Cell anchor, BuildingTypeDefinition type,int level=1) => (type.Levels.Single(l=>l.Level==level).Footprint.IsDefault?type.Footprint:type.Levels.Single(l=>l.Level==level).Footprint.ToArray())
         .Select(c => new Cell(checked(anchor.X + c.X), checked(anchor.Z + c.Z)))
         .OrderBy(c => c.X).ThenBy(c => c.Z).ToArray();
 
@@ -53,7 +53,7 @@ public static partial class ScenarioValidation
                 BuildingLevelDefinition? previous = null;
                 foreach (var level in type.Levels.OrderBy(l => l.Level))
                 {
-                    if (level.ConstructionTicks>0&&(s.Economy?.Storage is null||type.Kind!=BuildingKind.Warehouse) || level.ConstructionTicks<0 || level.ConstructionTicks>1000000 || (s.Economy?.Storage is not null && type.Kind==BuildingKind.Warehouse && (type.Footprint.Length!=1 || level.ConstructionTicks==0 || (type.Walls??[]).Length>0)) || level.PriceMinor < 0 || level.InputCapacity <= 0 || level.OutputCapacity < 0 ||
+                    if (level.ConstructionTicks>0&&(s.Economy?.Storage is null||(type.Kind!=BuildingKind.Warehouse&&s.Economy?.Development is null)) || level.ConstructionTicks<0 || level.ConstructionTicks>1000000 || (s.Economy?.Storage is not null && type.Kind==BuildingKind.Warehouse && (type.Footprint.Length!=1 || level.ConstructionTicks==0 || (type.Walls??[]).Length>0)) || level.PriceMinor < 0 || level.InputCapacity <= 0 || level.OutputCapacity < 0 ||
                         level.StaffCapacity is < 0 or > 1000000 || level.WageMinor < 0 ||
                         level.WorkRateMultiplier is < 1 or > 16 || level.Materials is null || level.Materials.Length > 32 ||
                         level.Materials.Any(m => m is null || !items.ContainsKey(m.ItemId) || m.Quantity <= 0) ||
@@ -105,7 +105,7 @@ public static partial class ScenarioValidation
                 if (type.Kind == BuildingKind.Shop &&
                     (!byCell.TryGetValue(building.Position, out var site) || !site.IsShopSite && site.ShopParticipantId != building.OwnerId))
                     throw new ArgumentException("Shop must use its assigned trading site");
-                foreach (var cell in FootprintCells(building.Position, type))
+                foreach (var cell in FootprintCells(building.Position, type,building.Level))
                     if (!byCell.TryGetValue(cell, out var plot) || plot.IsCorridor || plot.OwnerId != building.OwnerId ||
                         (plot.IsShopSite && type.Kind != BuildingKind.Shop) ||
                         (plot.ShopParticipantId.HasValue && (type.Kind != BuildingKind.Shop || plot.ShopParticipantId != building.OwnerId)) ||

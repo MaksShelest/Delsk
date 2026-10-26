@@ -1,0 +1,14 @@
+{
+  "status": "succeeded",
+  "processChecks": 24,
+  "checkpointCuts": [
+    34,
+    37,
+    1084,
+    1087,
+    1690,
+    2289
+  ],
+  "finalTick": 2293,
+  "scope": "Real C# commands/transactions; prepared materials, no claim of D factories/import or target hardware"
+}

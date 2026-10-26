@@ -63,7 +63,7 @@ jobs:
       - name: Verify HUD and Developer god mode
         shell: pwsh
         run: |
-          python scripts/check_hud_god_ui.py --godot "$env:DELSK_GODOT" --output artifacts/hud-god-ui
+          python scripts/check_hud_god_ui.py --godot "$env:DELSK_GODOT" --output artifacts/hud-god-ui --import-cache src/Client.Godot
           exit $LASTEXITCODE
       - name: Preserve files at the release cleanup boundary
         shell: pwsh

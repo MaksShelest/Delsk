@@ -12,6 +12,7 @@ public sealed partial class SimulationEngine
             throw new ArgumentException("InvalidIntervention");
         long old=kind switch
         {
+            "IndustryExperience" when Development?.Industries.Any(i=>i.Id==item)==true=>Experience(actor.Value,item).Total,
             "Money"=>_economy.Accounts[owner.Account].Balance,
             "Stock" when _economy.Inventories.TryGetValue(inventory.Value,out var inv) && inv.Owner==actor.Value && _items.ContainsKey(item) && !_logistics.Values.Any(l=>l.Cargo==inventory.Value)=>inv.Count(item),
             "WageExponent"=>EconomyRules.WageAttractionExponent,
@@ -20,6 +21,8 @@ public sealed partial class SimulationEngine
         };
         if(kind=="WageExponent" && newValue is <1 or >5)throw new ArgumentException("InvalidWageExponent");
         if(kind=="HumanSelfBallot" && newValue!=1)throw new ArgumentException("InvalidHumanPolicy");
+        if(kind=="IndustryExperience"&&ProductionUnits().Where(e=>e.Definition.OwnerId==actor.Value&&e.Definition.BuildingTypeId==item).Any(e=>!IndustryRecipeAvailable(item,e.Recipe.Id,DevelopmentRules.Technology(newValue))))
+            throw new ArgumentException("ExperienceWouldLockSelectedRecipe");
         var modification=new ResearchModification(_researchModifications.Count+1,Tick,afterCommandCount,kind,actor,inventory,item,old,newValue);
         if(expected is not null && modification!=expected)throw new CheckpointException("InterventionReplayMismatch");
         long delta=checked(newValue-old);

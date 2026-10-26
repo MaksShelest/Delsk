@@ -18,7 +18,7 @@ internal sealed class BuildingState(long id, long owner, Cell position, Building
     public int Level { get; set; } = level;
     public long Input { get; } = input;
     public long? Output { get; } = output;
-    public Cell[] Footprint { get; } = footprint;
+    public Cell[] Footprint { get; set; } = footprint;
 }
 
 public sealed partial class SimulationEngine
@@ -28,7 +28,7 @@ public sealed partial class SimulationEngine
     private readonly Dictionary<string, BuildingTypeDefinition> _buildingTypes = new(StringComparer.Ordinal);
     private readonly Dictionary<long, BuildingState> _buildings = [];
 
-    private static bool IsManagement(ActionKind kind) => kind is ActionKind.OutfitWorkshop or ActionKind.AssignWorkshopWorkers or ActionKind.PrepareDemolition or ActionKind.CancelDemolitionPreparation or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.StopHarvest or ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.SetVoteChoice or ActionKind.ContinueAfterVictory or ActionKind.SetProductionEnabled or
+    private static bool IsManagement(ActionKind kind) => kind is ActionKind.PrepareEnterpriseExpansion or ActionKind.CancelExpansionPreparation or ActionKind.AcceptIndustryQuest or ActionKind.AbandonIndustryQuest or ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.AssignWorkshopWorkers or ActionKind.PrepareDemolition or ActionKind.CancelDemolitionPreparation or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.StopHarvest or ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.SetVoteChoice or ActionKind.ContinueAfterVictory or ActionKind.SetProductionEnabled or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.CancelPlotReservation or ActionKind.Build or
         ActionKind.UpgradeBuilding or ActionKind.SetRecipe or ActionKind.SetWage or ActionKind.BuyEquipment or
         ActionKind.UpgradeEquipment or ActionKind.SetEquipmentMode or ActionKind.CreateSellOffer or
@@ -50,7 +50,7 @@ public sealed partial class SimulationEngine
             tx.CreateInventory(input, definition.OwnerId, definition.Position, level.InputCapacity);
             if (output.HasValue) tx.CreateInventory(output.Value, definition.OwnerId, definition.Position, level.OutputCapacity);
             tx.Commit();
-            var footprint = ScenarioValidation.FootprintCells(definition.Position, type);
+            var footprint = ScenarioValidation.FootprintCells(definition.Position, type,definition.Level);
             var building = new BuildingState(definition.Id, definition.OwnerId, definition.Position, type,
                 definition.Level, input, output, footprint);
             _buildings.Add(building.Id, building);
@@ -68,14 +68,15 @@ public sealed partial class SimulationEngine
         _enterprises.Add(b.Id, new(definition, b.Input, b.Output!.Value, recipe));
     }
 
-    private PlotState AccessiblePlot(ActorState actor, PlotId id)
+    private PlotState AccessiblePlot(ActorState actor, PlotId id,GameAction? accessAction=null)
     {
         RequireIdle(actor);
         if (!_plots.TryGetValue(id.Value, out var plot)) throw new RuleViolation("NotAvailable");
         if (plot.Definition.IsCorridor) throw new RuleViolation("ProtectedCorridor");
         if (plot.Definition.ShopParticipantId.HasValue && plot.Definition.ShopParticipantId != actor.Id)
             throw new RuleViolation("NotAvailable");
-        RequireActionLocation(actor, new(ActionKind.BuyPlot, Plot: id));
+        RequireActionLocation(actor, accessAction??new(ActionKind.BuyPlot, Plot: id));
+        if(ExpansionClaim(plot.Definition.Position) is {} claim&&claim.Owner!=actor.Id)throw new RuleViolation("ExpansionRightHeld");
         if (plot.Definition.IsShopSite && _plots.Values.Any(p => p.Definition.IsShopSite && p != plot && (p.Owner == actor.Id || p.ReservedBy == actor.Id)))
             throw new RuleViolation("ShopSiteLimit");
         return plot;
@@ -83,7 +84,7 @@ public sealed partial class SimulationEngine
 
     private void ReservePlot(ActorState actor, CommandEnvelope c)
     {
-        var plot = AccessiblePlot(actor, c.Action.Plot);
+        var plot = AccessiblePlot(actor, c.Action.Plot,c.Action.Kind==ActionKind.BuyExpansionLand?c.Action:null);
         if (plot.Owner.HasValue) throw new RuleViolation("PlotOwned");
         if (plot.ReservedBy.HasValue) throw new RuleViolation("PlotReserved");
         if (_plots.Values.Count(p => p.ReservedBy == actor.Id) >= _config.MaxActivePlotReservations)
@@ -98,7 +99,7 @@ public sealed partial class SimulationEngine
 
     private void BuyPlot(ActorState actor, CommandEnvelope c)
     {
-        var plot = AccessiblePlot(actor, c.Action.Plot);
+        var plot = AccessiblePlot(actor, c.Action.Plot,c.Action.Kind==ActionKind.BuyExpansionLand?c.Action:null);
         if (plot.Owner.HasValue) throw new RuleViolation("PlotOwned");
         if (plot.ReservedBy.HasValue && plot.ReservedBy != actor.Id) throw new RuleViolation("PlotReserved");
         long groundId=_nextId,next=!HasGroundStorage?_nextId:checked(_nextId+1);
@@ -134,6 +135,8 @@ public sealed partial class SimulationEngine
         RequireIdle(actor);
         if (!_buildingTypes.TryGetValue(c.Action.BuildingTypeId, out var type)) throw new RuleViolation("UnknownBuildingType");
         RequireActionLocation(actor, c.Action);
+        if(ExpansionClaim(c.Action.Target) is not null)throw new RuleViolation("ExpansionRightHeld");
+        if(Development is not null&&type.Kind==BuildingKind.Production){StartDevelopmentConstruction(actor,c);return;}
         if(Storage is not null&&type.Kind==BuildingKind.Warehouse){StartWarehouseConstruction(actor,c);return;}
         if(StorageWorkAt(c.Action.Target))throw new RuleViolation("ConstructionInProgress");
         var footprint = ScenarioValidation.FootprintCells(c.Action.Target, type);
@@ -188,6 +191,7 @@ public sealed partial class SimulationEngine
     private void UpgradeBuilding(ActorState actor, CommandEnvelope c)
     {
         var b = OwnBuilding(actor, c.Action.Building);
+        if(Development is not null&&b.Type.Kind==BuildingKind.Production){StartDevelopmentConstruction(actor,c,b);return;}
         if (ParallelWorkshops && b.Type.Kind == BuildingKind.Production) throw new RuleViolation("WorkshopExpansionNotAvailable");
         if(Storage is not null&&b.Type.Kind==BuildingKind.Warehouse){StartWarehouseConstruction(actor,c,b);return;}
         RequireActionLocation(actor, c.Action);
@@ -235,7 +239,7 @@ public sealed partial class SimulationEngine
         var e = OwnProductionUnit(actor, c.Action);
         if (e.Enabled || e.Batch is not null) throw new RuleViolation("ProductionNotSafe");
         bool unlocked = _buildings.TryGetValue(ProductionParent(e.Definition.Id), out var b)
-            ? b.Type.Levels.Any(l => l.Level <= b.Level && l.UnlockedRecipes.Contains(c.Action.RecipeId,StringComparer.Ordinal))
+            ? Development is not null ? IndustryRecipeAvailable(b.Type.Id,c.Action.RecipeId,Experience(actor.Id,b.Type.Id).TechnologyLevel) : b.Type.Levels.Any(l => l.Level <= b.Level && l.UnlockedRecipes.Contains(c.Action.RecipeId,StringComparer.Ordinal))
             : c.Action.RecipeId == e.Recipe.Id;
         if (!unlocked) throw new RuleViolation("RecipeLocked");
         var recipe = _config.Recipes.Single(r => r.Id == c.Action.RecipeId);
@@ -250,7 +254,7 @@ public sealed partial class SimulationEngine
         new(p.Definition.Id), p.Definition.Position, p.Definition.PriceMinor, p.Definition.IsCorridor,
         p.Owner.HasValue ? new ParticipantId(p.Owner.Value) : null, p.ReservedBy.HasValue ? new ParticipantId(p.ReservedBy.Value) : null,
         p.Until, p.Building.HasValue ? new BuildingId(p.Building.Value) : null,
-        p.Definition.ShopParticipantId.HasValue ? new ParticipantId(p.Definition.ShopParticipantId.Value) : null, p.Definition.IsShopSite)).ToArray();
+        p.Definition.ShopParticipantId.HasValue ? new ParticipantId(p.Definition.ShopParticipantId.Value) : null, p.Definition.IsShopSite,ExpansionClaim(p.Definition.Position)?.Id)).ToArray();
     private BuildingView[] BuildingViews(bool all=false) => _buildings.Values.Where(b=>all||!Demolished(b.Id)).OrderBy(b => b.Id).Select(b => new BuildingView(
         new(b.Id), new(b.Owner), b.Type.Id, b.Type.Kind, b.Level, b.Position, b.Footprint.ToArray(), new(b.Input),
         b.Output.HasValue ? new InventoryId(b.Output.Value) : null)).ToArray();

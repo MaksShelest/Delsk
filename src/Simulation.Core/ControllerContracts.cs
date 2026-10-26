@@ -10,7 +10,9 @@ public record ControllerBuilding(BuildingId Id, string TypeId, BuildingKind Kind
 public record ControllerBuildingLevel(int Level, string RecipeId, long PriceMinor,
     ImmutableArray<MaterialCost> Materials, long InputCapacity, long OutputCapacity, int StaffCapacity,
     long WageMinor, int WorkRateMultiplier, [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] ImmutableArray<string> AdditionalRecipeIds = default,
-    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] int WorkshopSlots=0)
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] int WorkshopSlots=0,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] ImmutableArray<Cell> Footprint=default,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long ConstructionTicks=0)
 {
     [System.Text.Json.Serialization.JsonIgnore]
     public IEnumerable<string> UnlockedRecipes => string.IsNullOrEmpty(RecipeId) ? [] : new[]{RecipeId}.Concat(AdditionalRecipeIds.IsDefault ? [] : AdditionalRecipeIds);
@@ -38,6 +40,8 @@ public record ControllerObservation(long Tick, ParticipantView Participant, Acco
 {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public ControllerEconomics? Economics {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public DevelopmentObservation? Development {get;init;}
     public System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources { get; init; } = [];
     public System.Collections.Immutable.ImmutableArray<TradeNegotiation> Negotiations {get;init;}=[];
     public NegotiationSettings NegotiationRules {get;init;}=new();
@@ -88,11 +92,11 @@ public sealed partial class SimulationEngine
             o.BuildingTypes.Select(t => new ControllerBuildingType(t.Id, t.Kind, [.. t.Footprint],
                 t.Levels.Select(l => new ControllerBuildingLevel(l.Level, l.RecipeId, l.PriceMinor,
                     [.. l.Materials], l.InputCapacity, l.OutputCapacity, l.StaffCapacity,
-                    l.WageMinor, l.WorkRateMultiplier, l.AdditionalRecipeIds,l.WorkshopSlots)).ToImmutableArray(),t.WorkshopOutfit)).ToImmutableArray(),
+                    l.WageMinor, l.WorkRateMultiplier, l.AdditionalRecipeIds,l.WorkshopSlots,l.Footprint,Development is null?0:l.ConstructionTicks)).ToImmutableArray(),t.WorkshopOutfit)).ToImmutableArray(),
             [.. o.OwnEmploymentGroups], [.. o.LaborMarket], o.Population, o.Unemployed, [.. o.OwnEquipment],
             o.EquipmentTypes.Select(t => new ControllerEquipmentType(t.Id, t.ItemId, [.. t.Levels])).ToImmutableArray(),
             new(_config.MapWidth, _config.MapHeight, BlockedCells(), [.. _config.ResourceNodes],
                 [.. _config.Items], [.. _config.Recipes], _config.MoveTicksPerCell,
-                _config.HarvestTicksPerUnit, _config.TradeWindowTicks), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules, o.CapitalPrices, o.CapitalPriceHistory, o.Elections, o.Support, o.City) { Economics=new(Labor,EconomyRules.Handling??new(),EconomyRules.WageAttractionExponent,_config.Economy?.Workshops),Resources = o.Resources,Negotiations=o.Negotiations,NegotiationRules=o.NegotiationRules,TradingParticipants=o.TradingParticipants };
+                _config.HarvestTicksPerUnit, _config.TradeWindowTicks), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules, o.CapitalPrices, o.CapitalPriceHistory, o.Elections, o.Support, o.City) { Development=DevelopmentOf(actor),Economics=new(Labor,EconomyRules.Handling??new(),EconomyRules.WageAttractionExponent,_config.Economy?.Workshops),Resources = o.Resources,Negotiations=o.Negotiations,NegotiationRules=o.NegotiationRules,TradingParticipants=o.TradingParticipants };
     }
 }

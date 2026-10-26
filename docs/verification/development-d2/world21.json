@@ -1,0 +1,32 @@
+{
+  "status": "succeeded",
+  "source": "Actual D1 World21 checkpoint at tick158 from PR63 implementation workspace",
+  "finalTick": 353,
+  "stateHash": "34438952e27b08bbb6b5294feaef7ac1a158d9fd0573e3912f4d87037990bcc7",
+  "exactFiles": [
+    "final-state.json",
+    "ledger.jsonl",
+    "events.jsonl",
+    "commands.jsonl",
+    "metrics.csv",
+    "labor.csv",
+    "controllers.json",
+    "decisions.jsonl",
+    "agents.csv",
+    "market.json",
+    "scenario.json",
+    "delivery.json",
+    "logistics.json",
+    "capital-demand.json",
+    "elections.json",
+    "support.json",
+    "public-events.jsonl",
+    "model-decisions.jsonl",
+    "public-economy.json",
+    "research-modifications.json",
+    "physical-state.json",
+    "negotiations.json",
+    "workshops.json",
+    "demolition.json"
+  ]
+}

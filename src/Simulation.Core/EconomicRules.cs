@@ -8,12 +8,13 @@ public sealed record EconomicRules(long PlayerWageStepMinor = 100, int Reservati
     int DemandWeightMinimumBasisPoints = 5000, int DemandWeightMaximumBasisPoints = 15000, CityProgression? City = null, HandlingRules? Handling = null,NegotiationSettings? Negotiations=null,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] StorageRules? Storage=null,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] DemolitionRules? Demolition=null,
-    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] WorkshopRules? Workshops=null)
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] WorkshopRules? Workshops=null,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] DevelopmentRules? Development=null)
 {
     public long ReservationFee(long price) => checked((long)(((Int128)price * ReservationFeeBasisPoints + 9999) / 10000));
     public void Validate()
     {
-        Storage?.Validate();Demolition?.Validate();Workshops?.Validate();
+        Storage?.Validate();Demolition?.Validate();Workshops?.Validate();Development?.Validate();
         (Negotiations??new()).Validate();
         (City ?? new()).Validate(); (Handling ?? new()).Validate();
         if (PlayerWageStepMinor is < 1 or > 10000 || ReservationFeeBasisPoints is < 0 or > 10000 || WageAttractionExponent is < 1 or > 5)

@@ -10,6 +10,7 @@ from pathlib import Path
 parser = argparse.ArgumentParser()
 parser.add_argument("--godot", required=True)
 parser.add_argument("--output", type=Path, required=True)
+parser.add_argument("--import-cache", type=Path, help="Already verified source project imports; asset bytes must match the isolated stage")
 args = parser.parse_args()
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 sys.stderr.reconfigure(encoding="utf-8", errors="replace")
@@ -53,11 +54,17 @@ check("hud-god-build", 180, ["dotnet", "build", project / "Delsk.Client.csproj",
       "-p:DelskDeveloper=true", "-p:DelskDeveloperPackage=true", "--no-restore", "--disable-build-servers", "-m:1"])
 # Explicit quit also bounds the editor lifecycle after the synchronous import.
 # Windows 4.7.2 can finish importing yet retain an editor process without it.
-check("hud-god-import", 120, [args.godot, "--headless", "--path", project, "--editor", "--import", "--quit"])
+if args.import_cache:
+    # Windows Mono editor can hang on shutdown after a successful import. Reuse the
+    # ordinary project's already verified imports; never accept a timed-out process.
+    check("hud-god-import", 30, [sys.executable, root / "scripts/reuse_godot_imports.py", "--source", args.import_cache,
+          "--target", project, "--report", output / "import-cache.json"])
+else:
+    check("hud-god-import", 120, [args.godot, "--headless", "--path", project, "--editor", "--import", "--quit"])
 check("hud-god-controls", 60, [args.godot, "--headless", "--audio-driver", "Dummy", "--path", project,
       "res://HudGodProbe.tscn", "--", "--output", output, "--windowed"])
 report = json.loads((output / "hud-god-check.json").read_text(encoding="utf-8"))
-if report.get("status") != "succeeded" or len(report.get("checks", [])) < 17:
+if report.get("status") != "succeeded" or len(report.get("checks", [])) < 20:
     raise SystemExit("Incomplete HUD/God-mode report")
 print("Native HUD and God-mode checks passed:", len(report["checks"]))
 
@@ -79,7 +86,7 @@ export_output.mkdir(exist_ok=True)
 check("hud-god-export-controls", 60, [args.godot, "--headless", "--audio-driver", "Dummy", "--path", project,
       "res://HudGodProbe.tscn", "--", "--output", export_output, "--windowed"])
 export_report = json.loads((export_output / "hud-god-check.json").read_text(encoding="utf-8"))
-if export_report.get("status") != "succeeded" or len(export_report.get("checks", [])) < 17:
+if export_report.get("status") != "succeeded" or len(export_report.get("checks", [])) < 20:
     raise SystemExit("Incomplete ExportDebug HUD/God-mode report")
 check("hud-god-export-logs", 30, [sys.executable, root / "scripts/verify_platform_probe.py",
       "--log-prefix", output / "checks/hud-god-controls", "--log-prefix", output / "checks/hud-god-export-controls"])

@@ -39,6 +39,7 @@ public sealed class DeveloperTools : IDisposable
     }
     public ResearchModification Money(ParticipantId actor,long target)=>_session.DeveloperModify("Money",actor,target);
     public ResearchModification Stock(ParticipantId actor,InventoryId inventory,string item,long target)=>_session.DeveloperModify("Stock",actor,target,inventory,item);
+    public ResearchModification IndustryExperience(ParticipantId actor,string industry,long target)=>_session.DeveloperModify("IndustryExperience",actor,target,item:industry);
     public ResearchModification WageExponent(int value)=>_session.DeveloperModify("WageExponent",_human,value);
     public void StartAdvance(long target,bool humanSelf=false)
     {

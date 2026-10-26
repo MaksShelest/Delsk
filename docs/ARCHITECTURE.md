@@ -950,3 +950,31 @@ Limited reader20/19/18 допускает только старый мир бе�
 Rules production-recipes-1, Session2/Envelope2 прежние, механика выбирается
 сохранённым resolved config. Own DTO immutable, чужие цеха не передаются политикам;
 полный workshops.json доступен исследователю. См. WORKSHOPS_D1.md.
+
+## D2: развитие на прежнем executor
+
+IndustryDevelopment хранит append-only grants Production(batch ID)/Quest(quest ID)
+и задания, привязанные к реальному DeliveryContract. Награда после фактического
+DeliveredQuantity сверх baseline; обновление phase7 после доставки/expiry.
+Production XP фиксируется после успешного выпуска, preflight арифметики до tx.
+Пороги600/3000/12000/40000 проверяются по actor+industry, не b.Level/production count.
+Поддержанный контент рецептов ограничивает выбор независимо от общего XP.
+
+EnterpriseExpansion хранит contour rights и реальные DemolitionCell levels;
+Level.Footprint отражает отдельные физические ступени. Земля оплачивается BuyPlot
+через проверенный BuyExpansionLand, материалы со входа (initial с ground70).
+StorageConstruction.Development использует тот же executor/экономические tx.
+ReservedCapacity development:job защищает новые клетки до completion/cancel и
+участвует в reverse-hold validation. Старый корпус/ёмкости не меняются до конца.
+Cancel возвращает C2долю реальных затрат, старая фабрика/население/XP сохраняются.
+
+Состояния XP/quest/project/preparing/contour/holds входят в World22 canonical hash,
+snapshot, validation, replay и researcher development.json. Controller/PlayerView
+получает только свои immutable development projections; Industry events скрыты
+из public stream. NPC имеет прежние persistent plans и обычные команды, никаких
+ссылок на WorldState. Staging исключает целевой склад как источник, иначе возможна
+бесконечная перекладка тех же материалов. Developer XP — только conditional API
+и исследовательский аудит. Старые config без Development не меняют семантику/hash.
+
+UX/граница D3: DEVELOPMENT_D2.md; решения60. Native probes не входят в клиент,
+AssemblyAudit запрещает DevelopmentProbe. Полный контент и V2/V3 не активируются.

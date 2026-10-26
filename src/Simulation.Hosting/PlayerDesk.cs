@@ -74,7 +74,7 @@ public static class PlayerDesk
             seen.CapitalOffers, seen.Account.AvailableMinor, engine.HarvestOf(actor), engine.EconomyRules,
             new(seen.MarketOffers, seen.OwnMarketBids, seen.OwnMarketAllocations, seen.MarketRules, engine.PublicShops()),
             seen.OwnEquipment, seen.OwnDeliveryContracts, seen.BuyOffers, seen.OwnSupplyRequests, seen.City)
-            { Demolition=engine.DemolitionOf(actor),Storage=engine.HasGroundStorage?engine.StorageOf(actor):null,Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))] };
+            { Development=engine.DevelopmentOf(actor),Demolition=engine.DemolitionOf(actor),Storage=engine.HasGroundStorage?engine.StorageOf(actor):null,Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))] };
     }
 }
 
@@ -84,6 +84,7 @@ public record PlayerView(long Tick, ParticipantView Participant, long CashMinor,
     CapitalOfferView[] CapitalOffers, long AvailableCashMinor, OwnHarvest? Harvest = null, EconomicRules? Economy = null, PlayerMarketView? Market = null, EquipmentView[]? Equipment = null, DeliveryContractView[]? Contracts = null,
     BuyOfferView[]? BuyOffers = null, SupplyRequest[]? SupplyRequests = null, CityEconomy? City = null)
 {
+    public DevelopmentObservation? Development {get;init;}
     public DemolitionState? Demolition {get;init;}
     public StorageState? Storage {get;init;}
     public System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources {get;init;}=[];
@@ -110,6 +111,19 @@ public static class PlayerText
 
     private static Dictionary<string, string> Ru() => new(StringComparer.Ordinal)
     {
+        ["reason.IndustryTechnologyRequired"]="Недостаточно отраслевого опыта для этой ступени.",
+        ["reason.StaleDevelopmentLevel"]="Ступень уже изменилась. Откройте актуальный расчёт.",
+        ["reason.StaleQuestReview"]="Предложение задания устарело. Выберите его заново.",
+        ["reason.QuestSlotsFull"]="Оба слота заданий заняты.",
+        ["reason.QuestNotAvailable"]="Задание недоступно: проверьте договор, срок и оставшийся спрос.",
+        ["reason.IndustrialContourRequired"]="Предприятие строится на промышленном контуре.",
+        ["reason.BuildAtContourAnchor"]="Начните стройку с северо-западной клетки контура.",
+        ["reason.InvalidDevelopmentContour"]="Контур пересекает дорогу или другой защищённый объект.",
+        ["reason.DevelopmentContourUnavailable"]="В контуре есть чужая земля, бронь или другое предприятие.",
+        ["reason.ExpansionRightHeld"]="Клетка закреплена за расширением другого корпуса.",
+        ["reason.GroundNotEmpty"]="Сначала вывезите товар с новых клеток и завершите переносы.",
+        ["reason.PreparingDevelopment"]="Предприятие готовится к расширению. Новые партии остановлены.",
+
         ["reason.ShopRequired"]="Для сделки обоим участникам нужна построенная лавочка.",
         ["reason.InvalidTradeTerms"]="Проверьте стороны, источник, получателя и числовые условия.",
         ["reason.StaleNegotiationVersion"]="Версия условий устарела. Откройте последнюю версию.",
@@ -274,6 +288,19 @@ public static class PlayerText
 
     private static Dictionary<string, string> En() => new(StringComparer.Ordinal)
     {
+        ["reason.IndustryTechnologyRequired"]="More industry experience is required for this tier.",
+        ["reason.StaleDevelopmentLevel"]="The tier has changed. Open the current development preview.",
+        ["reason.StaleQuestReview"]="The quest offer is stale. Select a current offer.",
+        ["reason.QuestSlotsFull"]="Both quest slots are occupied.",
+        ["reason.QuestNotAvailable"]="Quest unavailable: check the contract, deadline and remaining demand.",
+        ["reason.IndustrialContourRequired"]="A factory requires an industrial contour.",
+        ["reason.BuildAtContourAnchor"]="Start construction at the northwest cell of the contour.",
+        ["reason.InvalidDevelopmentContour"]="The contour crosses a road or another protected site.",
+        ["reason.DevelopmentContourUnavailable"]="The contour contains foreign land, a reservation or another building.",
+        ["reason.ExpansionRightHeld"]="This cell is held for another building’s expansion.",
+        ["reason.GroundNotEmpty"]="Empty the new cells and finish their transfers first.",
+        ["reason.PreparingDevelopment"]="The factory is preparing for expansion. New batches are stopped.",
+
         ["reason.ShopRequired"]="Both parties need a built shop to trade.",
         ["reason.InvalidTradeTerms"]="Check parties, source, destination and numeric terms.",
         ["reason.StaleNegotiationVersion"]="Terms are stale. Open the latest version.",
