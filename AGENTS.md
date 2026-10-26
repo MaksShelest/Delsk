@@ -1,3 +1,16 @@
+## CI follow-up D2,26.10.2026
+
+- PR64 исходныеfailures: CorexUnit120s, HUDMonoeditor shutdown120s; push15min
+  wholejob наDeveloper. Не выдаватьtimeout124 заsuccess; игровыеassertнепадали.
+- Полныеordinary/Developer suites разделены test_partitions.py наbase/integration/
+  D2, exhaustiveness/skip/overlap проверяютсяTRX. Deadline120/180 прежние.
+- Core/Developer jobsраздельны, aggregateverify requiresbothsuccess. Не ослаблять
+  существующуюобязательнуюпроверку. WindowsHUD используетverifiedrootimports при
+  точныхbytes/source_md5/cachefiles; managedstageassembliesнекопируются.
+- Исправлена настоящая DeveloperPanellegacyXP orphanwidget/RID leak: lazycreation
+  толькодляDevelopment.20nativechecksDebug+ExportDebug, legacyabsence/D2SetAddXP,
+  cleanup истрогиеGodotlogs. Подробно CI_D2_FIX.md/worklog/evidence.
+
 ## D2,26.10.2026
 
 - Основа29cb58b/PR63merged. Пользователь явно ограничил D2: XP/задания/контуры/

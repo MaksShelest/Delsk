@@ -32,18 +32,10 @@ check('restore', 180, [args.dotnet, 'restore', 'Delsk.sln', '--locked-mode', '--
 check('build', 180, [args.dotnet, 'build', 'Delsk.sln', '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1'])
 os.environ['DELSK_RETURN_ARTIFACTS'] = str(out)
 os.environ['DELSK_D2_EVIDENCE'] = str(out/'d2-fixtures')
-check('tests', 120, [args.dotnet, 'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',
-    '-noColor', '-noLogo', '-parallelMode', 'none', '-class-', 'Simulation.Tests.DevelopmentD2Tests', '-class-', 'Simulation.Tests.ExpansionD2Tests', '-result-trx', out/'tests.trx'])
-# Keep every test while preserving the measured per-process 120s deadline.
-check('tests-d2',120,[args.dotnet,'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',
-    '-noColor','-noLogo','-parallelMode','none','-class','Simulation.Tests.DevelopmentD2Tests','-class','Simulation.Tests.ExpansionD2Tests','-result-trx',out/'tests-d2.trx'])
-import xml.etree.ElementTree as ET
-trx=ET.parse(out/'tests.trx').getroot()
-counters=next(e for e in trx.iter() if e.tag.endswith('Counters'))
-if int(counters.attrib['passed']) < 880 or int(counters.attrib['failed']) != 0 or int(counters.attrib.get('notExecuted',0)) != 0:
-    raise SystemExit('Incomplete test suite')
-d2c=next(e for e in ET.parse(out/'tests-d2.trx').iter() if e.tag.endswith('Counters')).attrib
-if int(d2c['passed'])<33 or int(d2c['failed']) or int(d2c.get('notExecuted',0)):raise SystemExit('Incomplete D2 suite')
+from test_partitions import run_suite
+partitions=run_suite(check,args.dotnet,'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',out)
+passed=sum(p['passed'] for p in partitions)
+if passed<1153:raise SystemExit('Incomplete test suite')
 runner = [args.dotnet, 'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll']
 scenarios = {'cycle':'economic-cycle', 'recovery':'zero-cash-recovery', 'development':'land-and-content',
              'labor':'labor-dynamics', 'equipment':'equipment-cycle', 'autonomous':'autonomous-economy', 'market':'market-window', 'pickup':'pickup-lifecycle', 'delivery':'delivery-lifecycle', 'capital-delivery':'capital-delivery', 'logistics':'logistics-cycle', 'logistics-upgrade':'logistics-upgrade', 'own-storage':'own-storage-cycle', 'inbound':'inbound-cycle', 'own-production':'own-production-cycle', 'logistics-queue':'logistics-queue', 'capital-demand':'capital-demand-cycle', 'autonomous-demand':'autonomous-demand', 'elections':'elections', 'support':'support-cycle','stopped-elections':'stopped-elections','physical-automation':'physical-automation','participant-trade':'participant-trade','food-chain':'food-chain'}
@@ -129,7 +121,7 @@ manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases
             'baseline_cases':{name:{'final_tick':horizon,'checkpoint_tick':cut} for name,(horizon,cut) in baseline_cases.items()},
             'model_safety':{'checkpoint_tick':6,'final_tick':60,'valid':1,'forged_actor':1,'late_reply':1},
             'model_off':'exact world equality with baseline-economy and the same headless timing label',
-            'testsPassed':int(counters.attrib['passed'])+int(d2c['passed']), 'testPartitions':['tests.trx','tests-d2.trx'], 'exports':len(folders), 'replays':replays, 'comparison_pairs':comparison_pairs,
+            'testsPassed':passed, 'testPartitions':partitions, 'exports':len(folders), 'replays':replays, 'comparison_pairs':comparison_pairs,
             'scope':'Package8 software and full previous economic/controller regression; laboratory/study/window/platform gates separate',
             'author':'Шелестов Максим Евгеньевич'}
 (out/'headless-check.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')

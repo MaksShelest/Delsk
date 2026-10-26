@@ -1,0 +1,49 @@
+{
+  "commit": "be695e0",
+  "pr": 64,
+  "coreRun": 40250853143,
+  "windowsRun": 40250853139,
+  "pushRun": 40250783306,
+  "failures": {
+    "core-test-timeout": {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class-",
+        "Simulation.Tests.DevelopmentD2Tests",
+        "-class-",
+        "Simulation.Tests.ExpansionD2Tests",
+        "-result-trx",
+        "/home/runner/work/Delsk/Delsk/artifacts/headless/tests.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-26T00:45:54.985149+00:00",
+      "timed_out": true,
+      "exit_code": 124,
+      "elapsed_seconds": 120.032,
+      "finished_at": "2026-10-26T00:47:55.017654+00:00"
+    },
+    "windows-editor-timeout": {
+      "command": [
+        "D:\\a\\Delsk\\Delsk\\.tools\\godot\\Godot_v4.7.2-stable_mono_win64\\Godot_v4.7.2-stable_mono_win64_console.exe",
+        "--headless",
+        "--path",
+        "D:\\a\\Delsk\\Delsk\\artifacts\\hud-god-ui\\client\\source\\src\\Client.Godot",
+        "--editor",
+        "--import",
+        "--quit"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-26T00:49:31.386407+00:00",
+      "timed_out": true,
+      "exit_code": 124,
+      "elapsed_seconds": 120.125,
+      "finished_at": "2026-10-26T00:51:31.504800+00:00"
+    }
+  },
+  "pushCancellation": "All checks through D2 succeeded; 15-minute job deadline cancelled Developer step."
+}

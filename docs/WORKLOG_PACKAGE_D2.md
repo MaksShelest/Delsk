@@ -233,3 +233,38 @@ remote still29cb58b atlastls-remote. Commitsalreadyccad0c0/2ef6410; authorconfir
 Шелестов Максим Евгеньевич <314023140a@gmail.com>. Do not redo code or startD3.
 Natural all-tier material availability, full content/import/V2,V3, longbalance,
 Windows/Androidhardware andrealLLM remain explicitlyunverified/outofscope.
+
+## Follow-up CI после PR64
+
+Пользователь показал2fail+1cancel и запросил исправить реальные причины. Ветка
+прежняяfeat/vnext-package-d2, HEADbe695e0, чистаядоисправлений. Проверены реальные
+GitHubjobs121342200117/121342200253 иpush121341991455; artifacts скачаны в
+/workspace/work/delsk-d2-ci/core,windows. CorePR timeout120, WindowsHUDstageEditor
+shutdown timeout120, pushполностьюпрошёлдоD2 иупёрсявобщие15minнаDeveloper.
+
+Реализованы scripts/test_partitions.py (base/integration/D2 exhaustive+TRXchecks),
+Developer отдельныйjob, aggregateverify требуетобаjobgreen (не ослаблять required
+check). WindowsHUD --import-cache:96проверенныхrootassets сbytes/source_md5 и всеми
+бинарями; ownDeveloperassemblies untouched, nativeDebug/ExportDebug обязательны.
+Нельзя трактовать124/timeoutкакsuccess.7tests/Checks зеленые.
+
+Найдена настоящаяD2UIутечка: _industry/_experience/_experienceCurrent создавались
+вlegacyпрофиле, ноникогданеAddChild; verboseGodot показалorphanOptionButton/SpinBox/
+Label иRID. Исправленаlazyconstruction толькоDevelopment!=null. NativeProbe
+добавилреальныеD2XP Set/Add иlegacyabsence +deferredcleanup;20checksDebug и20ExportDebug
+зелёные, теперьнетRIDerrors/старыхwarnings. Productправила не менялись.
+
+Локальный headless /workspace/work/delsk-d2-ci/local/headless:1153/102exports/
+14replay/69pairs green; partitions1062+55+36 проходятпримернопо58/58/17s. Новый
+Developer run /workspace/work/delsk-d2-ci/local/developer ещёrunning. HUD full
+/workspace/work/delsk-d2-ci/local/hud-full green. Evidence/docs CI_D2_FIX.md.
+
+Осталось: дождатьсяDeveloper, updateevidence/docs,commit/push втотжеPR64, дождаться
+реальныхGitHubchecks иисправитьеслипокажутновуюпричину. НикакойD3/merge. Автор
+Шелестов Максим Евгеньевич <314023140a@gmail.com>. Никакихsubagentsнеиспользовать.
+
+Local follow-up done:1160Developer(1069+55+36), allstepsgreen, negativeRelease
+expectedreject. NativeHUDfull20Debug+20ExportDebug withrealD2Set/Add andlegacy
+absence; noGodotlogerrors. Core1153/102/14/69,7infraPython. YAML parsed, aggregate
+verifyneedsbothjobs. Readycommit/pushsamePR64; thenwaitactualGitHubWindows/Core/
+Developer, noautomaticmerge. Portableevidence development-d2-ci/.

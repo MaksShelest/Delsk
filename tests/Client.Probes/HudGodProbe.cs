@@ -47,6 +47,7 @@ public partial class HudGodProbe : Control
             var overlay = Named<Control>(game, "DeveloperOverlay");
             var panel = Named<DeveloperPanel>(game, "DeveloperPanel");
             Check(overlay.Visible && panel.IsVisibleInTree(), "God mode did not open from Debug");
+            Check(!All(panel).Any(n=>n.Name=="GodIndustry"),"Legacy profile unexpectedly has industry XP controls");
             var actor = Named<OptionButton>(panel, "GodActor");
             Check(actor.GetSelectedId() == 1, "God mode did not default to the human");
             Named<SpinBox>(panel, "GodMoneyTarget").Value = 123.45;
@@ -106,11 +107,34 @@ public partial class HudGodProbe : Control
             Press(panel, "DeveloperClose");
             Check(!overlay.Visible && session.Paused, "Close button did not preserve Debug pause");
             session.Engine.ValidateInvariants();
+            // Drain deferred frees from HUD rebuilds and dispose the owned client
+            // before terminating the test process; immediate Quit leaves RIDs pending.
+            game.QueueFree();
+            for(int i=0;i<4;i++)await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);
+            Check(!GodotObject.IsInstanceValid(game),"Probe client was not released");
+            string Embedded(string name)
+            {
+                using var stream=typeof(Playfield).Assembly.GetManifestResourceStream(name)??throw new InvalidOperationException(name);
+                using var reader=new System.IO.StreamReader(stream);return reader.ReadToEnd();
+            }
+            var developmentProfile=EconomyProfile.Read(Embedded("Play.d2-development.json"));
+            var developmentMap=JsonSerializer.Deserialize<ScenarioDefinition>(Embedded("Play.small-river.json"),SimulationJson.Options)!;
+            var developmentSession=new GameSession(new SimulationEngine(developmentProfile.Apply(developmentMap)));
+            using var developmentTools=new DeveloperTools(developmentSession,new(1));
+            var experiencePanel=new DeveloperPanel(developmentTools,developmentSession,new(1),"ru",()=>{});AddChild(experiencePanel);
+            var industryChoice=Named<OptionButton>(experiencePanel,"GodIndustry");
+            string industryId=developmentSession.Engine.Configuration().Economy!.Development!.Industries[industryChoice.Selected].Id;
+            Named<SpinBox>(experiencePanel,"GodExperienceTarget").Value=600;Press(experiencePanel,"GodExperienceApply");
+            Check(developmentSession.Engine.DevelopmentOf(new(1))!.Experience.Single(e=>e.Industry==industryId).Total==600,"Native XP set failed");
+            Named<SpinBox>(experiencePanel,"GodExperienceTarget").Value=50;Press(experiencePanel,"GodExperienceAdd");
+            Check(developmentSession.Engine.DevelopmentOf(new(1))!.Experience.Single(e=>e.Industry==industryId).Total==650&&developmentSession.Engine.ResearchModified,"Native XP add/audit failed");
+            experiencePanel.QueueFree();for(int i=0;i<4;i++)await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);
+            Check(!GodotObject.IsInstanceValid(experiencePanel),"Experience controls were not released");
             var report = new
             {
                 status = "succeeded", platform = OS.GetName(), display = DisplayServer.GetName(),
                 checks = new[] { "debug-entry", "human-default", "coin-conversion", "stock-edit", "capacity-rejection-atomic", "actor-switch",
-                    "empty-hidden", "zero-filter", "chain-pairs", "reserved-physical-stock", "hud-cache", "54px-height", "new-and-unknown-stock", "localized-tooltip", "escape-cancel", "close-keeps-debug-pause", "invariants" },
+                    "empty-hidden", "zero-filter", "chain-pairs", "reserved-physical-stock", "hud-cache", "54px-height", "new-and-unknown-stock", "localized-tooltip", "escape-cancel", "close-keeps-debug-pause", "invariants", "probe-cleanup", "legacy-xp-controls-absent", "industry-xp-set-add" },
                 scope = "Native headless Godot controls and real Developer transactions; no screenshot, hardware FPS or visual acceptance claim"
             };
             System.IO.File.WriteAllText(System.IO.Path.Combine(output, "hud-god-check.json"), JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }));

@@ -14,9 +14,8 @@ public partial class DeveloperPanel : PanelContainer
     private readonly OptionButton _inventory = new() { Name = "GodInventory", FocusMode = FocusModeEnum.None };
     private readonly OptionButton _item = new() { Name = "GodItem", FocusMode = FocusModeEnum.None };
     private readonly SpinBox _money = new() { Name = "GodMoneyTarget", MinValue = 0, MaxValue = 10000000000, Step = 0.01, UpdateOnTextChanged = true, CustomMinimumSize = new(180, 0) };
-    private readonly OptionButton _industry=new(){Name="GodIndustry"};
-    private readonly SpinBox _experience=new(){Name="GodExperienceTarget",MinValue=0,MaxValue=1000000000000,Step=1,CustomMinimumSize=new(150,0)};
-    private readonly Label _experienceCurrent=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};
+    private readonly OptionButton? _industry;
+    private readonly Label? _experienceCurrent;
     private readonly SpinBox _stock = new() { Name = "GodStockTarget", MinValue = 0, MaxValue = 1000000000000, Step = 1, UpdateOnTextChanged = true, CustomMinimumSize = new(150, 0) };
     private readonly SpinBox _exponent = new() { MinValue = 1, MaxValue = 5, Step = 1 };
     private readonly SpinBox _target = new() { MinValue = 1, MaxValue = 1000000, Step = 1, Value = 600 };
@@ -71,12 +70,14 @@ public partial class DeveloperPanel : PanelContainer
             () => _tools.Stock(Actor, _inventories[_inventory.Selected], SelectedItem, (long)_stock.Value), "GodStockApply");
         if(session.Engine.Configuration().Economy?.Development is {} development)
         {
+            _industry=new(){Name="GodIndustry"};_experienceCurrent=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};
+            var experienceInput=new SpinBox{Name="GodExperienceTarget",MinValue=0,MaxValue=1000000000000,Step=1,CustomMinimumSize=new(150,0)};
             edit.AddChild(_industry);foreach(var industry in development.Industries)_industry.AddItem(PlayerText.Building(language,industry.Id));edit.AddChild(_experienceCurrent);_industry.ItemSelected+=_=>RefreshData();
-            Row(edit,L("Опыт отрасли, всего","Industry experience, total"),_experience,()=>_tools.IndustryExperience(Actor,development.Industries[_industry.Selected].Id,(long)_experience.Value),"GodExperienceApply");
+            Row(edit,L("Опыт отрасли, всего","Industry experience, total"),experienceInput,()=>_tools.IndustryExperience(Actor,development.Industries[_industry.Selected].Id,(long)experienceInput.Value),"GodExperienceApply");
             Button(edit,L("Прибавить указанное количество XP","Add the entered XP amount"),()=>Guard(()=>
             {
                 string industry=development.Industries[_industry.Selected].Id;long current=_session.Engine.DevelopmentOf(Actor)!.Experience.Single(e=>e.Industry==industry).Total;
-                _tools.IndustryExperience(Actor,industry,checked(current+(long)_experience.Value));
+                _tools.IndustryExperience(Actor,industry,checked(current+(long)experienceInput.Value));
             }),"GodExperienceAdd");
         }
         _exponent.Value = session.Engine.EconomyRules.WageAttractionExponent;
@@ -158,7 +159,7 @@ public partial class DeveloperPanel : PanelContainer
                 " · " + L("объём хранилища: ", "storage volume: ") + inventory.OccupiedVolume + "/" + inventory.Capacity;
             if (_loadStock) { _stock.Value = quantity; _loadStock = false; }
         }
-        if(_session.Engine.DevelopmentOf(Actor) is {} development&&_industry.Selected>=0)
+        if(_session.Engine.DevelopmentOf(Actor) is {} development&&_industry is {Selected:>=0}&&_experienceCurrent is not null)
         {
             string industry=_session.Engine.Configuration().Economy!.Development!.Industries[_industry.Selected].Id;
             var xp=development.Experience.Single(e=>e.Industry==industry);_experienceCurrent.Text=PlayerText.Building(_language,industry)+$": {xp.Total} XP · "+L("технология ","technology ")+xp.TechnologyLevel;

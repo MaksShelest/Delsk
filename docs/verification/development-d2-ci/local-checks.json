@@ -1,0 +1,50 @@
+{
+  "status": "succeeded",
+  "checks": {
+    "headless": {
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--output",
+        "/workspace/work/delsk-d2-ci/local/headless"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-26T07:51:11.294309+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 428.906,
+      "finished_at": "2026-10-26T07:58:20.200215+00:00"
+    },
+    "developer": {
+      "command": [
+        "python",
+        "scripts/check_developer.py",
+        "--output",
+        "/workspace/work/delsk-d2-ci/local/developer"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-26T08:02:51.389967+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 228.97,
+      "finished_at": "2026-10-26T08:06:40.360118+00:00"
+    },
+    "hud-full": {
+      "command": [
+        "python",
+        "scripts/check_hud_god_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--import-cache",
+        "src/Client.Godot",
+        "--output",
+        "/workspace/work/delsk-d2-ci/local/hud-full"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-26T08:02:30.145191+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 93.992,
+      "finished_at": "2026-10-26T08:04:04.137469+00:00"
+    }
+  },
+  "pythonInfrastructureTests": 7,
+  "github": "pending new commit push"
+}
