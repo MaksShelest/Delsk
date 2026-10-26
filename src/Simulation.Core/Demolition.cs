@@ -25,7 +25,7 @@ public sealed partial class SimulationEngine
         else if(!_buildings.TryGetValue(target,out building)||building.Owner!=actor.Value||Demolished(target))return null;
         var cells=building is null?(job!.Development?.Cells.ToArray()??new[]{new DemolitionCell(job.Position,job.Level)}):DemolitionCells(building);
         // Journal entries describe actual committed investments; initial scenario assets have none.
-        var commands=construction?new HashSet<string>([job!.CommandId],StringComparer.Ordinal):_events.Where(e=>e.EntityId==target&&e.Type is "BuildingConstructed" or "BuildingUpgraded" or "WorkshopOutfitStarted").Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal);
+        var commands=construction?new HashSet<string>([job!.CommandId],StringComparer.Ordinal):_events.Where(e=>e.EntityId==target&&e.Type is "BuildingConstructed" or "BuildingUpgraded" or "WorkshopOutfitStarted" or "WorkshopModernizationStarted").Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal);
         var invested=_events.Where(e=>e.Type=="ConstructionMaterialConsumed"&&e.CommandId is {} id&&commands.Contains(id)).GroupBy(e=>e.ItemId,StringComparer.Ordinal).OrderBy(g=>g.Key,StringComparer.Ordinal).Select(g=>new MaterialCost(g.Key,g.Sum(e=>e.Quantity))).ToArray();
         var recovery=invested.Select(m=>new MaterialCost(m.ItemId,checked((long)((Int128)m.Quantity*DemolitionRules.RecoveryBasisPoints/10000)))).Where(m=>m.Quantity>0).ToArray();
         long[] inventories=building is null?[job!.InventoryId]:BuildingInventories(building);
@@ -34,7 +34,7 @@ public sealed partial class SimulationEngine
         if(building is not null)
         {
             if(!PreparingDemolition(target))blockers.Add("PrepareFirst");
-            if(_storageConstruction.Values.Any(c=>c.BuildingId==target)||_workshopInstallations.Values.Any(w=>w.Enterprise.Value==target))blockers.Add("ConstructionInProgress");
+            if(_modernizations.Values.Any(m=>m.Enterprise==target)||_storageConstruction.Values.Any(c=>c.BuildingId==target)||_workshopInstallations.Values.Any(w=>w.Enterprise.Value==target))blockers.Add("ConstructionInProgress");
             if(UnitsFor(target).Any(e=>e.Batch is not null))blockers.Add("ProductionBatch");
         }
         if(_transfers.Values.Any(t=>inventories.Contains(t.Source)||inventories.Contains(t.Destination)))blockers.Add("ManualTransfer");
@@ -123,7 +123,7 @@ public sealed partial class SimulationEngine
     {
         if(a.Kind is ActionKind.PrepareDemolition or ActionKind.CancelDemolitionPreparation or ActionKind.DemolishBuilding or ActionKind.CancelConstruction)return;
         bool RestrictedInventory(long id)=>_economy.Inventories.TryGetValue(id,out var inv)&&inv.Owner==actor&&DemolitionInventory(id);
-        bool change=a.Kind is ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.AssignWorkshopWorkers or ActionKind.Build or ActionKind.UpgradeBuilding or ActionKind.SetRecipe or ActionKind.BuyLogistics||a.Kind==ActionKind.SetProductionEnabled&&a.Enabled;
+        bool change=a.Kind is ActionKind.ModernizeWorkshop or ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.AssignWorkshopWorkers or ActionKind.Build or ActionKind.UpgradeBuilding or ActionKind.SetRecipe or ActionKind.BuyLogistics||a.Kind==ActionKind.SetProductionEnabled&&a.Enabled;
         long target=a.Building.Value!=0?a.Building.Value:a.Enterprise.Value;
         if(change&&target!=0&&_buildings.TryGetValue(target,out var owned)&&owned.Owner==actor&&(Demolished(target)||PreparingDemolition(target)&&!(a.Kind==ActionKind.SetProductionEnabled&&UnitsFor(target).Any(w=>w.Definition.Id==(a.WorkshopId==0?target:a.WorkshopId)&&w.Batch is not null))))throw new RuleViolation("PreparingDemolition");
         if(a.Kind==ActionKind.Build&&_preparingDemolition.Any(id=>_buildings[id].Owner==actor&&_buildings[id].Footprint.Contains(a.Target)))throw new RuleViolation("PreparingDemolition");
@@ -152,7 +152,7 @@ public sealed partial class SimulationEngine
         foreach(var flow in _flows.Values)if(flow.ConstructionRecovered<0||flow.ConstructionRecovered!=_events.Where(e=>e.Type=="DemolitionMaterialRecovered"&&e.ItemId==flow.Id).Sum(e=>e.Quantity))throw new CheckpointException("InvalidConstructionRecovery");
         foreach(var r in _demolitionReceipts)
         {
-            var commands=r.Construction?_events.Where(e=>e.EntityId==r.Target&&e.Type=="StorageConstructionStarted").Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal):_events.Where(e=>e.EntityId==r.Target&&e.Type is "BuildingConstructed" or "BuildingUpgraded" or "WorkshopOutfitStarted").Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal);
+            var commands=r.Construction?_events.Where(e=>e.EntityId==r.Target&&e.Type=="StorageConstructionStarted").Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal):_events.Where(e=>e.EntityId==r.Target&&e.Type is "BuildingConstructed" or "BuildingUpgraded" or "WorkshopOutfitStarted" or "WorkshopModernizationStarted").Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal);
             var actual=_events.Where(e=>e.Type=="ConstructionMaterialConsumed"&&e.CommandId is {} id&&commands.Contains(id)).GroupBy(e=>e.ItemId,StringComparer.Ordinal).OrderBy(g=>g.Key,StringComparer.Ordinal).Select(g=>new MaterialCost(g.Key,g.Sum(e=>e.Quantity))).ToArray();
             if(!actual.SequenceEqual(r.Invested))throw new CheckpointException("InvalidActualInvestment");
             if(r.Tick<1||r.Tick>Tick||(r.GroundInventories.Length!=r.Cells.Length&&!(r.Construction&&r.GroundInventories.Length==1))||r.Cells.Length==0||r.PriceMinor!=r.Cells.Sum(c=>checked(DemolitionRules.CellPriceMinor+(c.Level-1)*DemolitionRules.ExtraLevelPriceMinor))||!r.Recovery.SequenceEqual(r.Invested.Select(m=>new MaterialCost(m.ItemId,checked((long)((Int128)m.Quantity*DemolitionRules.RecoveryBasisPoints/10000)))).Where(m=>m.Quantity>0))||!_events.Any(e=>e.Type==(r.Construction?"StorageConstructionCancelled":"BuildingDemolished")&&e.EntityId==r.Target&&e.Tick==r.Tick&&e.ActorId?.Value==r.Owner&&e.AmountMinor==r.PriceMinor))throw new CheckpointException("InvalidDemolitionReceipt");

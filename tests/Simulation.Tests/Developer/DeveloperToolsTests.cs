@@ -10,6 +10,22 @@ namespace Simulation.Tests;
 
 public class DeveloperToolsTests
 {
+    [Theory][InlineData(0)][InlineData(1)][InlineData(5)][InlineData(9)]
+    public void PausedGodEditsApplyAtTheCurrentTravelQuantumWithoutEconomicWork(int quantum)
+    {
+        var d=ProductionD3Tests.Prepared();var s=new GameSession(new(d));
+        for(int i=0;i<quantum;i++)s.AdvanceTravelQuantum();s.SetPaused(true);
+        long tick=s.Engine.Tick;var previous=s.Engine.Inspect();using var tools=new DeveloperTools(s,new(1));
+        tools.Money(new(1),123456);tools.Stock(new(1),s.Engine.Observe(new(1)).Participant.InventoryId,"wood",3);tools.IndustryExperience(new(1),"woodworking",12000);
+        Assert.Equal(tick,s.Engine.Tick);Assert.Equal(quantum,s.Engine.TravelQuantum);Assert.True(s.Paused);
+        Assert.Equal(previous.Flows.Select(f=>f.Produced),s.Engine.Inspect().Flows.Select(f=>f.Produced));Assert.Equal(previous.Population,s.Engine.Inspect().Population);
+        Assert.Equal(123456,s.Engine.Observe(new(1)).Account.BalanceMinor);Assert.Equal(12000,s.Engine.DevelopmentOf(new(1))!.Experience.Single(x=>x.Industry=="woodworking").Total);
+        Assert.All(s.Engine.ResearchModifications,m=>Assert.Equal(quantum,m.TravelQuantum));
+        var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());
+        Assert.Equal(s.Engine.ComputeStateHash(),GameSession.Replay(d,s.CommandTape,tick,s.Engine.ResearchModifications.ToArray()).Engine.ComputeStateHash());
+        s.SetPaused(false);s.CompleteTravelTick();copy.SetPaused(false);copy.CompleteTravelTick();Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());
+        Assert.Equal(s.Engine.ComputeStateHash(),GameSession.Replay(d,s.CommandTape,s.Engine.Tick,s.Engine.ResearchModifications.ToArray()).Engine.ComputeStateHash());
+    }
     private sealed class WaitingAdapter:ILocalModelAdapter
     {public Task<ModelReply> CompleteAsync(ModelRequest request,CancellationToken token)=>new TaskCompletionSource<ModelReply>().Task;}
     private static GameSession Session()=>new(new(StoppedElectionTests.Definition()));
@@ -53,7 +69,7 @@ public class DeveloperToolsTests
         tools.WageExponent(5);Assert.Equal(5,s.Engine.EconomyRules.WageAttractionExponent);Assert.Equal(config,s.Engine.ConfigHash);
         var hash=s.Engine.ComputeStateHash();Assert.Throws<ArgumentException>(()=>tools.WageExponent(6));Assert.Equal(hash,s.Engine.ComputeStateHash());
         Assert.Throws<ArgumentException>(()=>s.DeveloperModify("Capacity",new(1),1));Assert.Equal(hash,s.Engine.ComputeStateHash());
-        s.AdvanceTravelQuantum();Assert.Throws<InvalidOperationException>(()=>tools.WageExponent(4));
+        s.AdvanceTravelQuantum();long tick=s.Engine.Tick;int quantum=s.Engine.TravelQuantum;tools.WageExponent(4);Assert.Equal(tick,s.Engine.Tick);Assert.Equal(quantum,s.Engine.TravelQuantum);
         s.CompleteTravelTick();s.AdvanceTo(3);Assert.Throws<InvalidOperationException>(()=>tools.Money(new(1),100000));
     }
     [Fact]

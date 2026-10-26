@@ -38,7 +38,7 @@ public sealed partial class AlgorithmicController
             long land=plots.Where(p=>p!.OwnerId is null).Sum(p=>p!.PriceMinor);
             if(o.Account.AvailableMinor<next.PriceMinor+land+settings.CashReserveMinor)continue;
             // Require a reachable source before stopping a working business.
-            bool materialsPossible=next.Materials.All(m=>Free(input,m.ItemId)+Free(carrier,m.ItemId)>=m.Quantity||o.Inventories.Any(i=>i.Id!=input.Id&&Free(i,m.ItemId)>0)||o.Map.ResourceNodes.Any(n=>n.ItemId==m.ItemId&&AvailableResource(o,n)));
+            bool materialsPossible=next.Materials.All(m=>Free(input,m.ItemId)+Free(carrier,m.ItemId)>=m.Quantity||o.Inventories.Any(i=>i.Id!=input.Id&&Free(i,m.ItemId)>0)||o.Map.ResourceNodes.Any(n=>n.ItemId==m.ItemId&&AvailableResource(o,n))||o.ProductionContent?.Imports.Any(i=>i.ItemId==m.ItemId&&i.Remaining>0)==true);
             if(!materialsPossible)continue;
             if(!d.Preparing.Contains(b.Id.Value)&&(enterprise.Workshops.Any(w=>w.Enabled||w.BatchId!=0)))
             {yield return One("ExpandEnterprise","Prepare:"+b.Id.Value,155000,new(ActionKind.PrepareEnterpriseExpansion,Building:b.Id));continue;}

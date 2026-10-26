@@ -29,7 +29,7 @@ class PartitionsTests(unittest.TestCase):
                 ET.SubElement(ET.SubElement(root,'ResultSummary'),'Counters',passed='2',failed='0',notExecuted='0')
                 ET.ElementTree(root).write(target)
             reports=run_suite(write,'dotnet','assembly',folder)
-            self.assertEqual(sum(p['passed'] for p in reports),6)
+            self.assertEqual(sum(p['passed'] for p in reports),2*len(PARTITIONS))
             def wrong(name,timeout,cmd):
                 write(name,timeout,cmd);p=Path(cmd[-1]);root=ET.parse(p);next(e for e in root.iter() if e.tag=='Counters').set('notExecuted','1');root.write(p)
             with self.assertRaisesRegex(SystemExit,'Incomplete'):run_suite(wrong,'dotnet','assembly',folder)

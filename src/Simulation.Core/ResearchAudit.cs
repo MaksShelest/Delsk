@@ -4,7 +4,8 @@ namespace Simulation.Core;
 
 /// <summary>Audit data only. The mutation entry points are absent from ordinary builds.</summary>
 public record ResearchModification(long Sequence,long Tick,long AfterCommandCount,string Kind,ParticipantId Actor,
-    InventoryId Inventory,string Item,long OldValue,long NewValue);
+    InventoryId Inventory,string Item,long OldValue,long NewValue,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] int TravelQuantum=0);
 
 public sealed partial class SimulationEngine
 {
@@ -26,7 +27,7 @@ public sealed partial class SimulationEngine
         if(ResearchModified)throw new CheckpointException("DeveloperSessionUnsupported");
 #endif
         if(_researchModifications.Count>1024 || _researchModifications.Where((m,i)=>m.Sequence!=i+1 || m.Tick<0 || m.Tick>Tick ||
-            m.AfterCommandCount<0 || m.OldValue<0 || m.NewValue<0 || !_actors.ContainsKey(m.Actor.Value) ||
+            m.TravelQuantum is <0 or >=SimulationEngine.TravelQuantaPerTick || m.AfterCommandCount<0 || m.OldValue<0 || m.NewValue<0 || !_actors.ContainsKey(m.Actor.Value) ||
             (m.Kind!="Money" && m.Kind!="Stock" && m.Kind!="WageExponent" && m.Kind!="HumanSelfBallot" && m.Kind!="IndustryExperience") ||
             (m.Kind=="IndustryExperience" && (Development is null || !Development.Industries.Any(i=>i.Id==m.Item))) ||
             (m.Kind=="Stock" && (!_items.ContainsKey(m.Item) || !_economy.Inventories.TryGetValue(m.Inventory.Value,out var inv) || inv.Owner!=m.Actor.Value)) ||

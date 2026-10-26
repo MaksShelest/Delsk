@@ -145,7 +145,7 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
             throw new ArgumentException("Invalid replay horizon");
         var session = new GameSession(new SimulationEngine(definition), "replay");
         session._researchPlayback=modifications??[];
-        bool travel = tape.Any(x => x.Command.Action.Kind == ActionKind.SetTravelHeading);
+        bool travel = tape.Any(x => x.Command.Action.Kind == ActionKind.SetTravelHeading)||(modifications??[]).Any(m=>m.TravelQuantum!=0);
         session.ConfigurePlayback(travel ? tape.Where(x => x.Command.Action.Kind != ActionKind.SetTravelHeading).ToArray() : tape, finalTick);
         if (travel) session.UseHeadingPlayback(tape);
         while (session.Engine.Tick < finalTick)
@@ -158,6 +158,9 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
         }
         session.SubmitPlaybackInputs(); // Preserve inputs submitted at the final published barrier.
         if (travel) session.ApplyHeadingPlayback();
+        int finalQuantum=(modifications??[]).Where(m=>m.Tick==finalTick).Select(m=>m.TravelQuantum).DefaultIfEmpty(0).Max();
+        while(session.Engine.TravelQuantum<finalQuantum)session.AdvanceTravelQuantum();
+        session.PumpResearchPlayback();
         return session;
     }
 }

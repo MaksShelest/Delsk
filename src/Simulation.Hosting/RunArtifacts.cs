@@ -52,6 +52,7 @@ public static class RunArtifacts
         WriteJson("logistics.json", new { Systems = state.Logistics });
         WriteJson("capital-demand.json", state.CapitalDemand!);
         WriteJson("elections.json", state.Elections);
+        if(session.Engine.InspectProductionContent() is {} content)WriteJson("production-content.json",content);
         WriteJson("support.json", session.Engine.InspectSupport());
         WriteJson("negotiations.json", session.Engine.InspectNegotiations());
         WriteLines("public-events.jsonl", session.Engine.PublicEventsSince(0));

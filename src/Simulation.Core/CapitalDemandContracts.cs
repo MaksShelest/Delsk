@@ -10,7 +10,8 @@ public record MarketPricePoint(string ItemId, long UnitPriceMinor, long Publishe
 public record DemandCommodityView(string ItemId, long Harvested, long Produced, long Consumed,
     long Exported, long StockChange, long DemandQuantity, long UnitPriceMinor,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long Lost=0,
-    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long ConstructionRecovered=0);
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long ConstructionRecovered=0,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long Imported=0);
 public record DemandPeriodView(long Period, long Tick, long GrossOutputBaseMinor, long InternalConsumptionBaseMinor,
     long StockChangeBaseMinor, long SmoothedOutputBaseMinor, int SmoothingRemainder,
     long TargetBaseMinor, long OrderedBaseMinor, long MonetaryBudgetMinor, long ExternalFundingMinor,

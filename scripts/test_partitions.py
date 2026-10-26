@@ -20,7 +20,9 @@ class Partition:
     def filters(self):
         return [v for flag, names in (('-class', self.include), ('-class-', self.exclude)) for name in names for v in (flag, name)]
 
-PARTITIONS = (Partition('', exclude=INTEGRATION + DEVELOPMENT), Partition('-integration', include=INTEGRATION), Partition('-d2', include=DEVELOPMENT))
+PRODUCTION = ('Simulation.Tests.ProductionD3Tests',)
+START = ('Simulation.Tests.ProductionD3StartTests',)
+PARTITIONS = (Partition('', exclude=INTEGRATION + DEVELOPMENT + PRODUCTION + START), Partition('-integration', include=INTEGRATION), Partition('-d2', include=DEVELOPMENT), Partition('-d3', include=PRODUCTION), Partition('-d3-start', include=START))
 
 def run_suite(check, dotnet, assembly, output, prefix='tests', timeout=120):
     """All future classes enter the base partition. Reject skips, failures and overlaps in actual TRX."""

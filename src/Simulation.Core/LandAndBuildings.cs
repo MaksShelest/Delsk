@@ -28,7 +28,7 @@ public sealed partial class SimulationEngine
     private readonly Dictionary<string, BuildingTypeDefinition> _buildingTypes = new(StringComparer.Ordinal);
     private readonly Dictionary<long, BuildingState> _buildings = [];
 
-    private static bool IsManagement(ActionKind kind) => kind is ActionKind.PrepareEnterpriseExpansion or ActionKind.CancelExpansionPreparation or ActionKind.AcceptIndustryQuest or ActionKind.AbandonIndustryQuest or ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.AssignWorkshopWorkers or ActionKind.PrepareDemolition or ActionKind.CancelDemolitionPreparation or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.StopHarvest or ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.SetVoteChoice or ActionKind.ContinueAfterVictory or ActionKind.SetProductionEnabled or
+    private static bool IsManagement(ActionKind kind) => kind is ActionKind.BuyImport or ActionKind.ModernizeWorkshop or ActionKind.PrepareEnterpriseExpansion or ActionKind.CancelExpansionPreparation or ActionKind.AcceptIndustryQuest or ActionKind.AbandonIndustryQuest or ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.AssignWorkshopWorkers or ActionKind.PrepareDemolition or ActionKind.CancelDemolitionPreparation or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.StopHarvest or ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.SetVoteChoice or ActionKind.ContinueAfterVictory or ActionKind.SetProductionEnabled or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.CancelPlotReservation or ActionKind.Build or
         ActionKind.UpgradeBuilding or ActionKind.SetRecipe or ActionKind.SetWage or ActionKind.BuyEquipment or
         ActionKind.UpgradeEquipment or ActionKind.SetEquipmentMode or ActionKind.CreateSellOffer or
@@ -241,6 +241,8 @@ public sealed partial class SimulationEngine
         bool unlocked = _buildings.TryGetValue(ProductionParent(e.Definition.Id), out var b)
             ? Development is not null ? IndustryRecipeAvailable(b.Type.Id,c.Action.RecipeId,Experience(actor.Id,b.Type.Id).TechnologyLevel) : b.Type.Levels.Any(l => l.Level <= b.Level && l.UnlockedRecipes.Contains(c.Action.RecipeId,StringComparer.Ordinal))
             : c.Action.RecipeId == e.Recipe.Id;
+        if (Modernizing(e.Definition.Id))throw new RuleViolation("ConstructionInProgress");
+        if (RecipeVersion(c.Action.RecipeId)>WorkshopVersion(e.Definition.Id))throw new RuleViolation("WorkshopVersionLocked");
         if (!unlocked) throw new RuleViolation("RecipeLocked");
         var recipe = _config.Recipes.Single(r => r.Id == c.Action.RecipeId);
         _ = checked(e.Group.Capacity * e.Group.Wage + recipe.EnergyPerBatchMinor);

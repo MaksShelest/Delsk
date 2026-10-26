@@ -40,11 +40,12 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] StorageState? Storage=null,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] DemolitionState? Demolition=null,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] WorkshopCheckpoint? Workshops=null,
-    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] DevelopmentState? Development=null);
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] DevelopmentState? Development=null,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ProductionContentState? ProductionContent=null);
 
 public sealed partial class SimulationEngine
 {
-    public const int CheckpointSchemaVersion = 22;
+    public const int CheckpointSchemaVersion = 23;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
@@ -78,7 +79,7 @@ public sealed partial class SimulationEngine
                     r.Reservation, r.CommandId)).ToArray(), o.SupplyRequests.Values.OrderBy(r => r.Supplier.Value).ToArray(), o.Window)).ToArray(), world.Flows, world.Settlements,
             _completedPersonalJobs.Order().ToArray(), _seenCommands.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(),
             _results.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(), _pending.Select(c => c.CommandId).ToArray(),
-            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum, _cityStage,_researchModifications.ToArray(),IsDeveloperBuild,ResourceSites(),_resourceClaims.Values.OrderBy(c=>c.JobId).ToArray(),_transfers.Values.OrderBy(t=>t.Id).ToArray(),InspectNegotiations(),!HasGroundStorage?null:CaptureStorage(),CaptureDemolition(),CaptureWorkshops(),InspectDevelopment());
+            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum, _cityStage,_researchModifications.ToArray(),IsDeveloperBuild,ResourceSites(),_resourceClaims.Values.OrderBy(c=>c.JobId).ToArray(),_transfers.Values.OrderBy(t=>t.Id).ToArray(),InspectNegotiations(),!HasGroundStorage?null:CaptureStorage(),CaptureDemolition(),CaptureWorkshops(),InspectDevelopment(),InspectProductionContent());
         return JsonSerializer.Serialize(saved, SimulationJson.Options);
     }
     private static string MigrateTravel(string json)
@@ -122,9 +123,10 @@ public sealed partial class SimulationEngine
         {
             var s = JsonSerializer.Deserialize<WorldCheckpoint>(MigrateTravel(json), SimulationJson.Options)
                 ?? throw new CheckpointException("EmptyCheckpoint");
-            if(s.SchemaVersion<CheckpointSchemaVersion && (s.Development is not null||s.Config.Economy?.Development is not null||s.Config.BuildingTypes?.Any(t=>t.Levels.Any(l=>!l.Footprint.IsDefault))==true||s.Storage?.Construction.Any(c=>c.Development is not null)==true))throw new CheckpointException("UnknownWorldSchema");
+            if(s.SchemaVersion<23&&(s.ProductionContent is not null||s.Config.Economy?.ProductionContent is not null))throw new CheckpointException("UnknownWorldSchema");
+            if(s.SchemaVersion<22 && (s.Development is not null||s.Config.Economy?.Development is not null||s.Config.BuildingTypes?.Any(t=>t.Levels.Any(l=>!l.Footprint.IsDefault))==true||s.Storage?.Construction.Any(c=>c.Development is not null)==true))throw new CheckpointException("UnknownWorldSchema");
             if (s.SchemaVersion < 21 && (s.Workshops is not null || s.Config.Economy?.Workshops is not null || s.Enterprises.Any(e=>e.Batch?.Terms is not null) || s.Equipment.Any(e=>e.Batch?.Terms is not null))) throw new CheckpointException("UnknownWorldSchema");
-            if (s.SchemaVersion != CheckpointSchemaVersion && s.SchemaVersion!=21 && s.SchemaVersion!=20 && !(s.SchemaVersion==19&&s.Demolition is null&&s.Config.Economy?.Demolition is null&&s.Flows.All(f=>f.ConstructionRecovered==0))&&!(s.SchemaVersion==18&&s.Demolition is null&&s.Config.Economy?.Storage is null&&s.Storage is null&&s.Inventories.All(i=>i.Overflow is null)&&s.Flows.All(f=>f.Lost==0&&f.ConstructionRecovered==0))) throw new CheckpointException("UnknownWorldSchema");
+            if (s.SchemaVersion != CheckpointSchemaVersion && s.SchemaVersion!=22 && s.SchemaVersion!=21 && s.SchemaVersion!=20 && !(s.SchemaVersion==19&&s.Demolition is null&&s.Config.Economy?.Demolition is null&&s.Flows.All(f=>f.ConstructionRecovered==0))&&!(s.SchemaVersion==18&&s.Demolition is null&&s.Config.Economy?.Storage is null&&s.Storage is null&&s.Inventories.All(i=>i.Overflow is null)&&s.Flows.All(f=>f.Lost==0&&f.ConstructionRecovered==0))) throw new CheckpointException("UnknownWorldSchema");
             if (s.RulesVersion != RulesVersion) throw new CheckpointException("UnknownRulesVersion");
             var e = new SimulationEngine(s.Config); // Only validates/configures a fresh, unpublished instance.
             if (e.ConfigHash != s.ConfigHash) throw new CheckpointException("ConfigurationHashMismatch");
@@ -222,7 +224,7 @@ public sealed partial class SimulationEngine
         }
         _groundStorage.Clear();foreach(var g in s.Storage?.Ground??[])_groundStorage.Add(g.PlotId,g.InventoryId);
         _storageConstruction.Clear();foreach(var c in s.Storage?.Construction??[])_storageConstruction.Add(c.Id,c);
-        RestoreDevelopment(s.Development);
+        RestoreDevelopment(s.Development);RestoreProductionContent(s.ProductionContent);
         if(s.Plots.Any(p=>p.ExpansionFor!=ExpansionClaim(p.Position)?.Id))throw new CheckpointException("InvalidExpansionClaim");
         ApplyBuildingObstacles();
         RestoreCapitalDemand(s.CapitalDemand);
@@ -249,7 +251,8 @@ public sealed partial class SimulationEngine
         }
         foreach (var r in s.Results) _results.Add(r.CommandId, r);
         foreach (string id in s.Pending) _pending.Add(_seenCommands[id]);
-        _events.Clear(); _events.AddRange(s.Events);
+        _events.Clear(); _events.AddRange(s.Events);IndexImports();
+        if(s.Flows.Any(f=>f.Imported!=ImportQuantity(f.ItemId)))throw new CheckpointException("InvalidImportFlow");
         RestoreMarket(s.MarketOffers, s.MarketAllocations, s.MarketRandom);
         RestoreDelivery(s.BuyOffers, s.DeliveryContracts, s.CapitalCompensation);
         RestoreLogistics(s.Logistics);

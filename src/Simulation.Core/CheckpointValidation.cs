@@ -169,7 +169,7 @@ public sealed partial class SimulationEngine
                     throw new CheckpointException("OrphanMoneyReservation");
         if (expectedCapacity.Count + expectedStock.Count + expectedMoney.Count != 0) throw new CheckpointException("MissingReservation");
         long maximum = _economy.Accounts.Keys.Concat(_economy.Inventories.Keys).Concat(_enterprises.Keys).Concat(_equipment.Keys)
-            .Concat(_additionalWorkshops.Keys).Concat(_workshopInstallations.Keys).Concat(_offers.Keys).Concat(_logistics.Keys).Concat(_logistics.Values.Where(l => l.Trip is not null).Select(l => l.Trip!.Id))
+            .Concat(_modernizations.Keys).Concat(_additionalWorkshops.Keys).Concat(_workshopInstallations.Keys).Concat(_offers.Keys).Concat(_logistics.Keys).Concat(_logistics.Values.Where(l => l.Trip is not null).Select(l => l.Trip!.Id))
             .Concat(_buildings.Keys).Concat(_buyOffers.Keys).Concat(_deliveryContracts.Select(d => d.Id)).Concat(_marketOffers.Keys).Concat(_marketAllocations.Select(a => a.Id)).Concat(_completedPersonalJobs).Concat(_events.Select(e => e.EntityId))
             .Concat(_actors.Values.Where(a => a.Job != null).Select(a => a.Job!.Id)).DefaultIfEmpty(0).Max();
         if (_nextId <= maximum) throw new CheckpointException("NextIdWouldDuplicateEntity");

@@ -62,7 +62,7 @@ public static partial class ScenarioValidation
                         (previous is not null && (level.InputCapacity < previous.InputCapacity ||
                             level.OutputCapacity < previous.OutputCapacity || level.StaffCapacity < previous.StaffCapacity)))
                         throw new ArgumentException("Invalid building level/costs");
-                    if(!level.AdditionalRecipeIds.IsDefault && (level.AdditionalRecipeIds.Length>8 || level.AdditionalRecipeIds.Any(id=>id is null || !recipes.ContainsKey(id)) ||
+                    if(!level.AdditionalRecipeIds.IsDefault && (level.AdditionalRecipeIds.Length>(s.Economy?.ProductionContent is null?8:64) || level.AdditionalRecipeIds.Any(id=>id is null || !recipes.ContainsKey(id)) ||
                         level.UnlockedRecipes.Distinct(StringComparer.Ordinal).Count()!=1+level.AdditionalRecipeIds.Length))throw new ArgumentException("Invalid additional recipes");
                     if (type.Kind == BuildingKind.Production)
                     {

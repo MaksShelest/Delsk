@@ -13,6 +13,7 @@ public class ProjectionPortabilityTests
     [InlineData("economy.c1-storage.json")]
     [InlineData("economy.d1-workshops.json")]
     [InlineData("economy.d2-development.json")]
+    [InlineData("economy.d3-production.json")]
     public void CheckedProfilesHaveTheSameCanonicalPayloadWithEitherInputLineEnding(string resource)
     {
         string lf=OrdinaryNewGameTests.Text(resource).Replace("\r\n","\n",StringComparison.Ordinal);

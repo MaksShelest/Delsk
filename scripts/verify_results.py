@@ -34,7 +34,7 @@ def verify(folder):
         assert int(sample['population']) == int(sample['unemployed']) + employed[tick]
     for flow in summary['flows']:
         physical = sum(stock['quantity'] for inventory in state['inventories'] for stock in inventory['stock'] if stock['itemId']==flow['itemId']) + sum(lot['quantity'] for inventory in state['inventories'] for lot in (inventory.get('overflow') or []) if lot['itemId']==flow['itemId'])
-        assert physical == flow['initial']+flow['harvested']+flow['produced']+sum(m['newValue']-m['oldValue'] for m in modifications if m['kind']=='Stock' and m['item']==flow['itemId'])-flow['recipeInput']-flow['exported']-flow.get('constructionInput',0)-flow.get('lost',0)+flow.get('constructionRecovered',0)
+        assert physical == flow['initial']+flow.get('imported',0)+flow['harvested']+flow['produced']+sum(m['newValue']-m['oldValue'] for m in modifications if m['kind']=='Stock' and m['item']==flow['itemId'])-flow['recipeInput']-flow['exported']-flow.get('constructionInput',0)-flow.get('lost',0)+flow.get('constructionRecovered',0)
     for inv in state['inventories']:
         assert inv['occupiedVolume']+inv['reservedCapacity'] <= inv['capacity']
         assert all(0 <= item['reserved'] <= item['quantity'] for item in inv['stock'])
@@ -167,7 +167,7 @@ def verify(folder):
             consumed = sum(g['consumed'] * bases[g['itemId']] for g in goods)
             stock_delta = sum(g['stockChange'] * bases[g['itemId']] for g in goods)
             assert gross == period['grossOutputBaseMinor'] and consumed == period['internalConsumptionBaseMinor'] and stock_delta == period['stockChangeBaseMinor']
-            assert all(g['stockChange'] == g['harvested'] + g['produced'] - g['consumed'] - g['exported'] for g in goods)
+            assert all(g['stockChange'] == g.get('imported',0) + g['harvested'] + g['produced'] - g['consumed'] - g['exported'] - g.get('lost',0) + g.get('constructionRecovered',0) for g in goods)
             smooth, carry = divmod(smooth + gross + carry, 2)
             assert smooth == period['smoothedOutputBaseMinor'] and carry == period['smoothingRemainder']
             assert period['targetBaseMinor'] == max(rules['bootstrapBaseBudgetMinor'], smooth * rules['demandNumerator'] // rules['demandDenominator'])

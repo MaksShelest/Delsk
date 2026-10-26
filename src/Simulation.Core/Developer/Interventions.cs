@@ -6,7 +6,7 @@ public sealed partial class SimulationEngine
     public ResearchModification DeveloperModify(string kind,ParticipantId actor,long newValue,long afterCommandCount,
         InventoryId inventory=default,string item="",ResearchModification? expected=null)
     {
-        if(_stepping || !HasCommittedBoundary() || _travelQuantum!=0 || WaitingForBallots)
+        if(_stepping || !HasCommittedBoundary() || WaitingForBallots)
             throw new InvalidOperationException("UnsafeInterventionBoundary");
         if(newValue<0 || newValue>1000000000000L || afterCommandCount<0 || !_actors.TryGetValue(actor.Value,out var owner) || _researchModifications.Count>=1024)
             throw new ArgumentException("InvalidIntervention");
@@ -23,7 +23,7 @@ public sealed partial class SimulationEngine
         if(kind=="HumanSelfBallot" && newValue!=1)throw new ArgumentException("InvalidHumanPolicy");
         if(kind=="IndustryExperience"&&ProductionUnits().Where(e=>e.Definition.OwnerId==actor.Value&&e.Definition.BuildingTypeId==item).Any(e=>!IndustryRecipeAvailable(item,e.Recipe.Id,DevelopmentRules.Technology(newValue))))
             throw new ArgumentException("ExperienceWouldLockSelectedRecipe");
-        var modification=new ResearchModification(_researchModifications.Count+1,Tick,afterCommandCount,kind,actor,inventory,item,old,newValue);
+        var modification=new ResearchModification(_researchModifications.Count+1,Tick,afterCommandCount,kind,actor,inventory,item,old,newValue,_travelQuantum);
         if(expected is not null && modification!=expected)throw new CheckpointException("InterventionReplayMismatch");
         long delta=checked(newValue-old);
         long valueDelta=kind=="Money"?delta:kind=="Stock"?checked(delta*_items[item].BasePriceMinor):0;
