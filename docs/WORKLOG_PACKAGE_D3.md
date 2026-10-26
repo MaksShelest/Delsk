@@ -148,3 +148,15 @@ python scripts/check_hud_god_ui.py --godot GODOT --import-cache src/Client.Godot
 
 Все игровые процессы в скриптах bounded. Локально тяжёлые gates запускать
 последовательно, чтобы не повторять исходный CPU/memory contention.
+
+## Windows CI follow-up после cc74ea8
+
+Serial importer+--import/--quit всё ещё завис на pre-loop shutdown (CI40357580894,
+job121694060588 exit124). Это не pass и не меняет зелёный local game gate.
+CI теперь запускает обычный editor startup с serial import и --quit-after30,
+а не выход внутри import initialization. Перед smoke отдельно проверяются все
+96 importable resources: sidecars, cached files, source_md5, byte identity;
+verify-only не пишет ресурсы. Missing sidecar/partial import — failure.
+Новый unit test доказывает readonly и отказ на недоимпортированном ресурсе.
+Время120s неизменно, source project.godot восстанавливается exact finally.
+Локальный lifecycle запуск проверен; окончательный Windows result — только CI.

@@ -57,6 +57,16 @@ class ImportCacheTests(unittest.TestCase):
         self.assertEqual((self.target/'.godot/imported/icon.svg-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.ctex').read_bytes(),b'imported texture')
         self.assertTrue((self.target/'art/icon.svg.import').is_file())
 
+    def test_verification_is_read_only_and_rejects_unimported_assets(self):
+        before={p.relative_to(self.source):p.read_bytes() for p in self.source.rglob('*') if p.is_file()}
+        report=reuse(self.source,self.source,verify_only=True)
+        self.assertTrue(report['verifyOnly']);self.assertEqual(len(report['assets']),1)
+        self.assertEqual(before,{p.relative_to(self.source):p.read_bytes() for p in self.source.rglob('*') if p.is_file()})
+        (self.source/'art/not-imported.wav').write_bytes(b'raw audio')
+        with self.assertRaisesRegex(ValueError,'Missing import metadata'):reuse(self.source,self.source,verify_only=True)
+        with self.assertRaisesRegex(ValueError,'Missing import metadata'):reuse(self.source,self.target)
+        self.assertFalse((self.target/'art/icon.svg.import').exists())
+
     def test_changed_source_refuses_cache_before_copying_anything(self):
         (self.target/'art/icon.svg').write_text('changed')
         with self.assertRaisesRegex(ValueError,'differs'):reuse(self.source,self.target)
@@ -74,6 +84,6 @@ class ImportCacheTests(unittest.TestCase):
         (self.source/'art/icon.svg.import').write_text('source_file="res://another.svg"')
         with self.assertRaisesRegex(ValueError,'Invalid import source'):reuse(self.source,self.target)
         (self.source/'art/icon.svg.import').unlink()
-        with self.assertRaisesRegex(ValueError,'No verified'):reuse(self.source,self.target)
+        with self.assertRaisesRegex(ValueError,'Missing import metadata'):reuse(self.source,self.target)
 
 if __name__=='__main__':unittest.main()

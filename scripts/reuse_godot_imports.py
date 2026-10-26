@@ -10,10 +10,15 @@ import re
 import shutil
 
 
-def reuse(source, target):
+def reuse(source, target, *, verify_only=False):
     source, target = Path(source).resolve(), Path(target).resolve()
-    if source == target or not (source / '.godot/imported').is_dir():
+    if (source == target and not verify_only) or not (source / '.godot/imported').is_dir():
         raise ValueError('A separate previously imported source project is required')
+    # An early editor quit must not look successful merely because some sidecars exist.
+    importable = {'.svg', '.ttf', '.otf', '.wav', '.ogg', '.mp3', '.png', '.webp', '.jpg', '.jpeg', '.glb', '.gltf'}
+    for asset in source.rglob('*'):
+        if asset.is_file() and '.godot' not in asset.relative_to(source).parts and asset.suffix.lower() in importable and not Path(str(asset)+'.import').is_file():
+            raise ValueError('Missing import metadata: '+str(asset.relative_to(source)))
     plans = []
     for sidecar in sorted(source.rglob('*.import')):
         relative = sidecar.relative_to(source)
@@ -50,15 +55,17 @@ def reuse(source, target):
         plans.append((sidecar, target / relative, cached, asset, hashlib.sha256(original.read_bytes()).hexdigest()))
     if not plans:
         raise ValueError('No verified imported assets')
-    for sidecar, destination, cached, asset, digest in plans:
-        for original, dest in [(sidecar, destination), *cached]:
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(original, dest)
-    return dict(status='succeeded',assets=[dict(path=asset.as_posix(),sha256=digest,resources=len(cached)) for _,_,cached,asset,digest in plans],scope='Identical source assets and their existing imports only; no editor state or managed assemblies copied. Native controls remain mandatory.')
+    if not verify_only:
+        for sidecar, destination, cached, asset, digest in plans:
+            for original, dest in [(sidecar, destination), *cached]:
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(original, dest)
+    return dict(status='succeeded',assets=[dict(path=asset.as_posix(),sha256=digest,resources=len(cached)) for _,_,cached,asset,digest in plans],scope='All importable assets require metadata, cached resources and matching source digests; no editor state or managed assemblies copied. Native controls remain mandatory.',verifyOnly=verify_only)
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--source',required=True,type=Path);p.add_argument('--target',required=True,type=Path);p.add_argument('--report',required=True,type=Path);a=p.parse_args()
-    report=reuse(a.source,a.target);a.report.parent.mkdir(parents=True,exist_ok=True);a.report.write_text(json.dumps(report,indent=2)+'\n');print('Verified imported assets:',len(report['assets']))
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--source',required=True,type=Path);p.add_argument('--target',type=Path);p.add_argument('--verify-only',action='store_true');p.add_argument('--report',required=True,type=Path);a=p.parse_args()
+    if not a.verify_only and a.target is None:p.error('--target is required unless --verify-only')
+    report=reuse(a.source,a.target or a.source,verify_only=a.verify_only);a.report.parent.mkdir(parents=True,exist_ok=True);a.report.write_text(json.dumps(report,indent=2)+'\n');print('Verified imported assets:',len(report['assets']))
 
 if __name__=='__main__':main()

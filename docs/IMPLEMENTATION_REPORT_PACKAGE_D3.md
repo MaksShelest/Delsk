@@ -58,7 +58,7 @@ Developer XP уже существовал в D2, но изменение зап
 | Native UI | четыре EN1100×800/RU800×720 сценария с настоящими mouse controls/командами, оплатой/120ticks/V2↔V1/физическим pickup; screenshots и native-recovered.json |
 | God mode |20Debug +20standard ExportDebug, реальный D3-профиль, money/stock/XP на frozen quantum5, audit и cleanup; не визуальная/hardware приёмка |
 | Godot Linux |1132runner hash comparisons,35restores +frozen voting10; linux-recovered.json |
-| CI |отдельный D3runner job, обязательный verify требует core+developer+production; Windows serial import только в disposable checkout с восстановлением project.godot bytes |
+| CI |отдельный D3runner job, обязательный verify требует core+developer+production; Windows serial editor startup/30frames и отдельная проверка полноты96imports только в disposable checkout с восстановлением project.godot bytes |
 
 Существенные уточнения и ограничения:
 

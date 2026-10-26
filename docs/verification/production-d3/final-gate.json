@@ -1,7 +1,7 @@
 {
   "status": "succeeded-local-software",
   "scope": "D3 only; E not started; preserved evidence explicitly marked, changed gates rerun.",
-  "sourceFilesSha256": "548ae73fe1a2729e9a593f6c6a2ec627e8b52407a3230629379c6f1d5c75a18f",
+  "sourceFilesSha256": "575a4fe37252a7ec173a710f25cb62b1b32d5b16d434f6a76ad164cc17b12669",
   "sourceFileCount": 708,
   "recoveryCommit": "ac9e706310d47ee8de8a0b145507057bf7471c0a",
   "pr": "https://github.com/MaksShelest/Delsk/pull/65",
@@ -23,7 +23,7 @@
     "negativeRelease": "expected rejection"
   },
   "python": {
-    "checks": 12,
+    "checks": 13,
     "researchLab": 37,
     "malformedImportSubcases": 15
   },
@@ -63,7 +63,8 @@
     "status": "pending-final-push",
     "initialRecoveryCore": "success",
     "initialRecoveryDeveloper": "success",
-    "initialRecoveryWindows": "import exit timeout, fixed in disposable workflow; final Windows result pending"
+    "initialRecoveryWindows": "import exit timeout, fixed in disposable workflow; final Windows result pending",
+    "windowsFollowup": "Serial --import/--quit still timed out on cc74ea8. Normal editor startup/30frames followed by independent96-asset completeness verification; exact project bytes restored; Windows run pending."
   },
   "limitations": [
     "Prepared recipe/modernization fixtures are not natural endgame progression",

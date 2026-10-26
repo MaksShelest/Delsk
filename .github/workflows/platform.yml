@@ -53,11 +53,15 @@ jobs:
             $original = [System.Text.Encoding]::UTF8.GetString($projectBytes)
             $serial = $original.Replace('[application]', "[editor]`nimport/use_multiple_threads=false`n`n[application]")
             [System.IO.File]::WriteAllText($projectPath, $serial, [System.Text.UTF8Encoding]::new($false))
-            python scripts/run_check.py --name godot-import --timeout 120 -- $env:DELSK_GODOT --headless --path src/Client.Godot --editor --import --quit
+            # --import exits during editor initialization in Windows Mono4.7.2.
+            # Let startup/import finish and service editor frames before normal exit.
+            python scripts/run_check.py --name godot-import --timeout 120 -- $env:DELSK_GODOT --headless --path src/Client.Godot --editor --quit-after 30
             if ($LASTEXITCODE -ne 0) { throw 'Godot import did not complete successfully' }
           } finally {
             [System.IO.File]::WriteAllBytes($projectPath, $projectBytes)
           }
+          python scripts/run_check.py --name godot-import-completeness --timeout 30 -- python scripts/reuse_godot_imports.py --source src/Client.Godot --verify-only --report artifacts/import-completeness.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/run_check.py --name godot-smoke --timeout 30 -- $env:DELSK_GODOT --headless --path src/Client.Godot -- --smoke --report "$env:GITHUB_WORKSPACE/artifacts/platform-probe.json"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/verify_platform_probe.py --report artifacts/platform-probe.json --log-prefix artifacts/checks/godot-import --log-prefix artifacts/checks/godot-smoke
