@@ -14,7 +14,7 @@ public sealed partial class SimulationEngine
         {
             "IndustryExperience" when Development?.Industries.Any(i=>i.Id==item)==true=>Experience(actor.Value,item).Total,
             "Money"=>_economy.Accounts[owner.Account].Balance,
-            "Stock" when _economy.Inventories.TryGetValue(inventory.Value,out var inv) && inv.Owner==actor.Value && _items.ContainsKey(item) && !_logistics.Values.Any(l=>l.Cargo==inventory.Value)=>inv.Count(item),
+            "Stock" when _economy.Inventories.TryGetValue(inventory.Value,out var inv) && inv.Owner==actor.Value && _items.ContainsKey(item) && !_logistics.Values.Any(l=>l.Cargo==inventory.Value) && !_vehicles.Values.Any(v=>v.CargoInventory==inventory && !MaterialAllowed(v,item))=>inv.Count(item),
             "WageExponent"=>EconomyRules.WageAttractionExponent,
             "HumanSelfBallot"=>0,
             _=>throw new ArgumentException("UnsupportedIntervention")
