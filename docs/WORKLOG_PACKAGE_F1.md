@@ -31,3 +31,14 @@
   третье место лавки; во второй fixture покупатель шёл к грузу после подписания и
   закономерно терял допустимый срок. Исправлены исходные условия/порядок подготовки,
   игровые сроки не повышались. Финальные24 ещё проверяются.
+
+- unit-6:24/24 ordinary pass, реальные300volume→5рейсов и два разных заказчика,
+  paid-pickup reuse, no-money atomic rejection. Core и24 Developer также прошли
+  в первом CI-снимке30a98b4 (финальный CI ещё ждёт следующих правок).
+- native-2: RU/EN прошли все реальные клики/диск/save/queued pause/refund;
+  после визуального просмотра улучшены подписи координат, пустые списки и описание ETA.
+- Python first:1failure у старого assertion про объединение трёх suites;
+  расширен на четвёртый services с сохранением disjoint/exhaustive и старых9 partitions.
+  Lab first:7socket PermissionError без network entitlement; повтор с loopback доступом.
+- Добавлены независимые corruption tests цены, числа рейсов, дублей lease/accept/funding,
+  ранней выплаты и утечки public event. Runner audit расширяется на новые реальные fixtures.

@@ -30,8 +30,9 @@ public partial class ServicePanel : VBoxContainer
     private void Field(string name,Control control){AddChild(new Label{Text=name});AddChild(control);}
     private void Invalidate(){_quote=null;_request.Disabled=true;_quoteText.Text=L("Нажмите «Рассчитать» для текущих условий.","Calculate the current terms.");}
     private static long Id(OptionButton b)=>b.Selected<0?0:b.GetItemMetadata(b.Selected).AsInt64();
-    private static void Fill(OptionButton b,IEnumerable<(long Id,string Text)> rows)
-    {long old=Id(b);b.Clear();int n=0;foreach(var row in rows){b.AddItem(row.Text);b.SetItemMetadata(n,row.Id);if(row.Id==old)b.Select(n);n++;}}
+    private void Fill(OptionButton b,IEnumerable<(long Id,string Text)> rows)
+    {long old=Id(b);b.Clear();int n=0;foreach(var row in rows){b.AddItem(row.Text);b.SetItemMetadata(n,row.Id);if(row.Id==old)b.Select(n);n++;}if(n==0){b.AddItem(L("Нет доступных вариантов","No available options"));b.SetItemMetadata(0,0L);b.SetItemDisabled(0,true);}}
+    private static string Position(Cell c)=>$"({c.X},{c.Z})";
     private void Calculate()
     {
         if(_query is null||_item.Selected<0)return;
@@ -41,7 +42,7 @@ public partial class ServicePanel : VBoxContainer
         _quoteText.Text=L("Рейсов: ","Trips: ")+q.Trips+L(" · за рейс до "," · up to ")+q.QuantityPerTrip+L(" шт.\nСтоимость: "," units/trip\nFee: ")+PlayerText.Money(q.FeeMinor)+L(" · время ≈ "," · ETA ≈ ")+q.EtaTicks+L(" тиков (погрузка/разгрузка "," ticks (handling ")+q.HandlingTicks+").\n"+
             L("Срок: тик принятия + ","Due: acceptance tick + ")+(q.EtaTicks+q.BufferTicks)+L(". Порожних возвратов: ",". Empty return legs: ")+(q.Trips-1)+".\n"+
             L("Склад: занято ","Storage: occupied ")+q.DestinationOccupiedVolume+" / "+q.DestinationCapacity+L("; ожидается ещё ","; expected inbound ")+q.ExpectedIncomingVolume+L(" + этот заказ "," + this order ")+q.Volume+L(". Прогноз не резервирует вместимость; переполнение остановит приём.",". Forecast does not reserve capacity; overflow will stop receipt.")+"\n"+
-            (q.CargoRightsDeadline>0?L("Право на груз до t","Cargo rights through t")+q.CargoRightsDeadline+"\n":"")+L("Маршрут: ","Route: ")+q.VehiclePosition+" → "+q.SourcePosition+" → "+q.DestinationPosition+L(". Выплата — после доставки.",". Payout follows actual delivery.");
+            (q.CargoRightsDeadline>0?L("Право на груз до t","Cargo rights through t")+q.CargoRightsDeadline+"\n":"")+L("Маршрут: ","Route: ")+Position(q.VehiclePosition)+" → "+Position(q.SourcePosition)+" → "+Position(q.DestinationPosition)+L(". Оценка предполагает свободный путь и текущие средства погрузки. Выплата — после доставки.",". Estimate assumes clear roads and current handling resources. Payout follows actual delivery.");
     }
     private static void Clear(Container host){foreach(Node n in host.GetChildren()){host.RemoveChild(n);n.QueueFree();}}
     private void Button(Container host,string name,string text,GameAction action){var b=new Button{Name=name,Text=text,FocusMode=FocusModeEnum.None};b.Pressed+=()=>_submit(action);host.AddChild(b);_buttons.Add((b,action));}
@@ -55,14 +56,14 @@ public partial class ServicePanel : VBoxContainer
             foreach(var car in view.Fleet?.Vehicles??[])
             {var v=car.Vehicle;var model=view.Fleet!.Models.Single(m=>m.Id==v.ModelId);if(model.MaterialsOnly)continue;bool listed=data.OwnListings.Contains(v.Id);Button(_owned,"ServiceOffer_"+v.Id,model.Name+" #"+v.Id+" · "+(listed?L("Снять с линии","Stop accepting"):L("Принимать заказы доставки","Accept delivery orders")),new(ActionKind.SetDeliveryService,VehicleId:v.Id,Enabled:!listed));}
             Fill(_vehicle,data.Catalog.Where(c=>c.Carrier!=view.Participant.Id).Select(c=>(c.VehicleId,$"#{c.Carrier.Value} · {view.Fleet?.Models.FirstOrDefault(m=>m.Id==c.ModelId)?.Name??c.ModelId} #{c.VehicleId} · {c.CapacityVolume} · "+(c.Available?L("Свободна","Available"):L("Занята","Busy")))));
-            Fill(_source,data.OwnPoints.Where(p=>p.CanSource).Select(p=>(p.Inventory.Value,$"#{p.Inventory.Value} · #{p.Owner.Value} · {p.Position}")));
-            Fill(_dest,data.OwnPoints.Where(p=>p.CanReceive||view.Contracts?.Any(d=>d.Supplier==view.Participant.Id&&d.DestinationInventory==p.Inventory&&d.ClosedTick is null)==true).Select(p=>(p.Inventory.Value,$"#{p.Inventory.Value} · {p.Position}")));
+            Fill(_source,data.OwnPoints.Where(p=>p.CanSource).Select(p=>(p.Inventory.Value,$"#{p.Inventory.Value} · #{p.Owner.Value} · {Position(p.Position)}")));
+            Fill(_dest,data.OwnPoints.Where(p=>p.CanReceive||view.Contracts?.Any(d=>d.Supplier==view.Participant.Id&&d.DestinationInventory==p.Inventory&&d.ClosedTick is null)==true).Select(p=>(p.Inventory.Value,$"#{p.Inventory.Value} · {Position(p.Position)}")));
             Fill(_purchase,new[]{(0L,L("Свой груз","Own goods"))}.Concat((view.Market?.Allocations??[]).Where(a=>a.Buyer==view.Participant.Id&&a.ClosedTick is null).Select(a=>(a.Id,$"#{a.Id} · {a.ItemId} ×{a.RemainingQuantity} · t{a.DeadlineTick}"))));
             Fill(_contract,new[]{(0L,L("Свой получатель","Own recipient"))}.Concat((view.Contracts??[]).Where(d=>d.Supplier==view.Participant.Id&&d.ClosedTick is null).Select(d=>(d.Id,$"#{d.Id} · {d.ItemId} · t{d.DeadlineTick}"))));
             foreach(var order in data.OwnOrders.Reverse())
             {
                 var row=new VBoxContainer();_orders.AddChild(TabletDesign.Wrap(row));bool carrier=order.Carrier==view.Participant.Id;bool seen=carrier?order.CarrierViewed:order.CustomerViewed;
-                row.AddChild(new Label{Text=(seen?"":"● ")+"#"+order.Id+" · "+State(order.State)+$" · #{order.Customer.Value} → #{order.Carrier.Value} · {PlayerText.Item(_language,order.Quote.Terms.ItemId)} ×{order.Quote.Terms.Quantity} · {order.Quote.Trips} "+L("рейсов","trips")+" · "+PlayerText.Money(order.Quote.FeeMinor)+" · ≈"+order.Quote.EtaTicks+"t · "+L("ответ до t","reply through t")+order.RespondByTick+" · "+L("срок t","due t")+order.DeadlineTick+"\n"+order.Quote.SourcePosition+" → "+order.Quote.DestinationPosition+" · "+L("срок от принятия +","due after acceptance +")+(order.Quote.EtaTicks+order.Quote.BufferTicks)+(order.Quote.CargoRightsDeadline>0?L(" · право на груз до t"," · cargo rights through t")+order.Quote.CargoRightsDeadline:"")+"\n"+TabletText.Reason(_language,order.Reason),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+                row.AddChild(new Label{Text=(seen?"":"● ")+"#"+order.Id+" · "+State(order.State)+$" · #{order.Customer.Value} → #{order.Carrier.Value} · {PlayerText.Item(_language,order.Quote.Terms.ItemId)} ×{order.Quote.Terms.Quantity} · {order.Quote.Trips} "+L("рейсов","trips")+" · "+PlayerText.Money(order.Quote.FeeMinor)+" · ≈"+order.Quote.EtaTicks+"t · "+L("ответ до t","reply through t")+order.RespondByTick+" · "+L("срок t","due t")+order.DeadlineTick+"\n"+Position(order.Quote.SourcePosition)+" → "+Position(order.Quote.DestinationPosition)+" · "+L("срок от принятия +","due after acceptance +")+(order.Quote.EtaTicks+order.Quote.BufferTicks)+(order.Quote.CargoRightsDeadline>0?L(" · право на груз до t"," · cargo rights through t")+order.Quote.CargoRightsDeadline:"")+"\n"+TabletText.Reason(_language,order.Reason),AutowrapMode=TextServer.AutowrapMode.WordSmart});
                 if(order.State is "Pending" or "Requote"){var time=new Label();var bar=new ProgressBar{Name="ServiceResponse_"+order.Id,MaxValue=data.Rules.ResponseTicks,ShowPercentage=false,CustomMinimumSize=new(0,12)};row.AddChild(time);row.AddChild(bar);_responses.Add(order.Id,(time,bar));}
                 if(!seen)Button(row,"ServiceView_"+order.Id,L("Отметить просмотренным","Mark viewed"),new(ActionKind.ViewDeliveryService,ServiceId:order.Id));
                 if(carrier&&order.State=="Pending")Button(row,"ServiceAccept_"+order.Id,L("Принять","Accept"),new(ActionKind.AcceptDeliveryService,ServiceId:order.Id));
@@ -72,8 +73,8 @@ public partial class ServicePanel : VBoxContainer
             }
         }
         foreach(var order in data.OwnOrders.Where(o=>o.State is "Pending" or "Requote")){if(_responses.TryGetValue(order.Id,out var response)){long left=Math.Max(0,order.RespondByTick-view.Tick);response.Label.Text=L("Осталось активных тиков: ","Active ticks remaining: ")+left;response.Bar.Value=left;}}
-        _catalog.Text=L("Каталог: ","Catalog: ")+string.Join(" · ",data.Catalog.Select(c=>$"#{c.Carrier.Value}/{c.VehicleId} · {c.CapacityVolume} · {c.Position} · "+(c.Available?L("Свободна","Available"):L("Занята","Busy"))));
-        foreach(var (button,_) in _buttons)button.Disabled=pending;_calculate.Disabled=pending;_request.Disabled=pending||_quote is null;
+        _catalog.Text=L("Каталог: ","Catalog: ")+string.Join(" · ",data.Catalog.Select(c=>$"#{c.Carrier.Value} · {view.Fleet?.Models.FirstOrDefault(m=>m.Id==c.ModelId)?.Name??c.ModelId} #{c.VehicleId} · "+L("объём ","volume ")+c.CapacityVolume+" · "+Position(c.Position)+" · "+(c.Available?L("Свободна","Available"):L("Занята","Busy"))));
+        foreach(var (button,_) in _buttons)button.Disabled=pending;_calculate.Disabled=pending||Id(_vehicle)==0||Id(_source)==0||Id(_dest)==0;_request.Disabled=pending||_quote is null;
     }
     private string State(string state)=>state switch{"Pending"=>L("Ожидает перевозчика","Awaiting carrier"),"Requote"=>L("Нужно подтверждение новых условий","Reconfirmation required"),"Accepted"=>L("Принят · ожидает погрузки","Accepted · awaiting pickup"),"Rejected"=>L("Отклонён","Rejected"),"Expired"=>L("Время ответа истекло","Response expired"),_=>L("Отменён","Cancelled")};
 }

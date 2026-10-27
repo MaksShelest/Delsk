@@ -32,6 +32,9 @@ def verify(folder):
             assert (o['deadlineTick'] if status=='Accepted' else o['respondByTick'])>state['tick']
             if not t['purchaseId']:
                 stock=next(s for s in inventories[t['source']['value']]['stock'] if s['itemId']==t['itemId']);assert stock['reserved']>=t['quantity']
+        accepted=[e for e in events if e['type']=='ServiceAccepted' and e['entityId']==o['id']]
+        assert len(accepted)==bool(o['escrowAccount'])
+        if accepted:assert accepted[0]['tick']==o['acceptedTick'] and accepted[0]['amountMinor']==q['feeMinor']
         funded=[l for l in ledger if l['reason']=='ServiceFunding:'+str(o['id'])];refunded=[l for l in ledger if l['reason']=='ServiceRefund:'+str(o['id'])]
         if o['escrowAccount']:
             assert len(funded)==1 and funded[0]['amountMinor']==q['feeMinor'] and funded[0]['creditAccount']['value']==o['escrowAccount']
@@ -46,3 +49,7 @@ def verify(folder):
     public=[json.loads(l) for l in (folder/'public-events.jsonl').read_text().splitlines()]
     assert not any(e['type'].startswith('Service') for e in public)
     print(f'{folder}: F1 quotes, exclusive leases, frozen terms, escrow/refunds and private events verified')
+
+if __name__=='__main__':
+    import sys
+    for folder in sys.argv[1:]:verify(folder)

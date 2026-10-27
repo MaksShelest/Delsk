@@ -11,7 +11,7 @@ if out.exists() and any(out.iterdir()):p.error('Use a new/empty output')
 out.mkdir(parents=True,exist_ok=True);runner=['dotnet',ROOT/'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll'];checks=[];folders=[];pairs=0;cases={}
 def check(name,command,timeout=120):
     subprocess.run([sys.executable,ROOT/'scripts/run_check.py','--name',name,'--timeout',str(timeout),'--log-directory',out/'checks','--',*map(str,command)],cwd=ROOT,check=True);checks.append(name)
-plans={'pending':'ServiceRequested','rejected':'ServiceClosed','accepted':'ServiceAccepted','refunded':'ServiceClosed','expired':'ServiceClosed','competition':'ServiceRequested','requote':'ServiceRequoted','reconfirmed':'ServiceAccepted','offline':'ServiceAccepted','busy':'ServiceClosed'}
+plans={'pending':'ServiceRequested','rejected':'ServiceClosed','accepted':'ServiceAccepted','refunded':'ServiceClosed','expired':'ServiceClosed','competition':'ServiceRequested','requote':'ServiceRequoted','reconfirmed':'ServiceAccepted','offline':'ServiceAccepted','busy':'ServiceClosed','five-trips':'ServiceRequested','two-customers':'ServiceRequested','paid-claim':'ServiceAccepted','claim-refund':'ServiceClosed','npc-carrier':'ServiceAccepted'}
 for name,event in plans.items():
     tick=int((fixtures/(name+'.tick')).read_text());common=[*runner,'--scenario',fixtures/(name+'.json'),'--replay',fixtures/(name+'.commands.jsonl'),'--ticks',tick]
     base=out/name;check(name,common+['--output',base]);folders.append(base)
