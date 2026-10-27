@@ -31,9 +31,10 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
         ArgumentOutOfRangeException.ThrowIfNegative(ttlTicks);
         long sequence = checked(_sequences.GetValueOrDefault(actor.Value) + 1);
         bool ballot = Engine.WaitingForBallots && action.Kind == ActionKind.SetVoteChoice;
-        long notBefore = ballot ? Engine.Tick : checked(Engine.Tick + delayTicks);
+        bool serviceDecision=Paused&&Engine.HasDeliveryServices&&Engine.Tick>0&&ActionPolicy.IsServiceDecision(action.Kind);
+        long notBefore = ballot||serviceDecision ? Engine.Tick : checked(Engine.Tick + delayTicks);
         var envelope = new CommandEnvelope($"{SessionId}:{actor.Value}:{sequence}", actor, sequence,
-            Engine.Tick, notBefore, ballot ? notBefore : checked(notBefore + ttlTicks), action);
+            Engine.Tick, notBefore, ballot||serviceDecision ? notBefore : checked(notBefore + ttlTicks), action);
         var immediate = Submit(actor, envelope);
         if (immediate is { Status: ResultStatus.Rejected } && Engine.Result(envelope.CommandId) is null)
             throw new InvalidOperationException($"Submission rejected: {immediate.ReasonCode}");
@@ -45,7 +46,17 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
         _sequences[actor.Value] = Math.Max(_sequences.GetValueOrDefault(actor.Value), command.LocalSequence);
         var result = Engine.Enqueue(actor, command);
         if (result is not null && _samples.Count > 0 && _samples[^1].Tick == Engine.Tick)
-            _samples[^1] = _samples[^1] with { StateHash = Engine.ComputeStateHash() };
+        {
+            var sample=_samples[^1] with {StateHash=Engine.ComputeStateHash()};
+            if(command.NotBeforeTick==Engine.Tick&&ActionPolicy.IsServiceDecision(command.Action.Kind))
+            {
+                var state=Engine.Inspect();sample=sample with{
+                    ParticipantCashMinor=state.Accounts.Single(a=>a.Id==state.Participants[0].AccountId).BalanceMinor,
+                    WageExpenseMinor=state.Accounts.Single(a=>a.Kind=="WagesSink").BalanceMinor,
+                    EnergyExpenseMinor=state.Accounts.Single(a=>a.Kind=="Treasury").BalanceMinor};
+            }
+            _samples[^1]=sample;
+        }
         return result;
     }
     public void Step()

@@ -81,4 +81,20 @@ public class ServiceRightsF1Tests
         ServiceF1Tests.Step(s,new(ActionKind.CancelDeliveryService,ServiceId:order.Id),2);Assert.Equal(10,StorageC1Tests.Inventory(s,source).Stock.Single().Reserved);ServiceF1Tests.Exact(s,"claim-refund");
     }
 
+    [Fact]public void PausedResponseBarrierChangesOnlyOrderAndFundsAndReplaysAtExactTravelQuantum()
+    {
+        var(s,_,terms)=ServiceF1Tests.Prepare();var order=ServiceF1Tests.Request(s,terms);ServiceF1Tests.Step(s,new(ActionKind.SetDeliveryService,VehicleId:terms.VehicleId,Enabled:false),2);s.AdvanceTravelQuantum();s.AdvanceTravelQuantum();s.SetPaused(true);
+        long tick=s.Engine.Tick;int quantum=s.Engine.TravelQuantum;long carrier=s.Engine.Observe(new(2)).Account.BalanceMinor;var flows=s.Engine.Inspect().Flows;
+        string view=s.Send(new(2),new(ActionKind.ViewDeliveryService,ServiceId:order.Id));Assert.Equal(ResultStatus.Accepted,s.Engine.Result(view)!.Status);
+        string accepted=s.Send(new(2),new(ActionKind.AcceptDeliveryService,ServiceId:order.Id));Assert.Equal(ResultStatus.Accepted,s.Engine.Result(accepted)!.Status);
+        Assert.Equal(tick,s.Engine.Tick);Assert.Equal(quantum,s.Engine.TravelQuantum);Assert.Equal(flows,s.Engine.Inspect().Flows);Assert.Equal(carrier,s.Engine.Observe(new(2)).Account.BalanceMinor);
+        Assert.Equal("Accepted",s.Engine.InspectServices()!.Orders.Single().State);Assert.Equal(s.Engine.Observe(new(1)).Account.BalanceMinor,s.Samples.Last().ParticipantCashMinor);var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());
+        var command=s.CommandTape.Single(c=>c.Command.CommandId==accepted).Command;string hash=copy.Engine.ComputeStateHash();copy.Engine.Enqueue(new(2),command);Assert.Equal(hash,copy.Engine.ComputeStateHash());
+        string retry=s.Send(new(2),new(ActionKind.AcceptDeliveryService,ServiceId:order.Id));Assert.Equal(ResultStatus.Rejected,s.Engine.Result(retry)!.Status);Assert.Single(s.Engine.Ledger(),l=>l.Reason=="ServiceFunding:"+order.Id);
+        for(int n=0;n<4;n++){string seen=s.Send(new(2),new(ActionKind.ViewDeliveryService,ServiceId:order.Id));Assert.Equal(ResultStatus.Accepted,s.Engine.Result(seen)!.Status);}
+        string excess=s.Send(new(2),new(ActionKind.ViewDeliveryService,ServiceId:order.Id));Assert.Equal("CommandBudgetExceeded",s.Engine.Result(excess)!.ReasonCode);
+        string cancel=s.Send(new(1),new(ActionKind.CancelDeliveryService,ServiceId:order.Id));Assert.Equal(ResultStatus.Accepted,s.Engine.Result(cancel)!.Status);Assert.Equal(tick,s.Engine.Tick);Assert.Equal(quantum,s.Engine.TravelQuantum);
+        s.SetPaused(false);ServiceF1Tests.Exact(s,"paused-response");
+    }
+
 }

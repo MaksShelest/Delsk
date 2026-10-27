@@ -11,6 +11,7 @@ public sealed record ActionAccess(ActionReach Reach, ImmutableArray<Cell> Locati
 /// <summary>Exhaustive command geometry. Ownership, resources and deadlines remain in their validators.</summary>
 public static class ActionPolicy
 {
+    public static bool IsServiceDecision(ActionKind kind)=>kind is ActionKind.AcceptDeliveryService or ActionKind.RejectDeliveryService or ActionKind.ConfirmDeliveryService or ActionKind.CancelDeliveryService or ActionKind.ViewDeliveryService;
     public static ActionReach Reach(ActionKind kind) => kind switch
     {
         ActionKind.SetRoadWork or ActionKind.TurnVehicle or ActionKind.BuyVehicle or ActionKind.BoardVehicle or ActionKind.AssignVehicle or ActionKind.InstallVehicleKit or ActionKind.BuildLoadingPlatform or ActionKind.BuyImport or ActionKind.ModernizeWorkshop or ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.TakeOverflow or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or

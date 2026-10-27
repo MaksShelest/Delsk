@@ -2,6 +2,25 @@ namespace Simulation.Core;
 
 public sealed partial class SimulationEngine
 {
+    public bool HasDeliveryServices=>Services is not null;
+    private bool IsImmediateServiceDecision(CommandEnvelope c)=>HasDeliveryServices&&ActionPolicy.IsServiceDecision(c.Action.Kind)&&
+        c.IssuedAtTick>0&&c.IssuedAtTick==c.NotBeforeTick&&c.ExpiresAtTick==c.NotBeforeTick;
+    private CommandResult ApplyServiceDecision(CommandEnvelope command)
+    {
+        int previousPhase=_phase;
+        try
+        {
+            _phase=1;
+            if(_results.Values.Count(r=>r.Tick==Tick&&_seenCommands[r.CommandId].ActorId==command.ActorId)>=_config.MaxCommandsPerActorTick)Reject(command,"CommandBudgetExceeded");
+            else Execute(command);
+            ValidateInvariants();return _results[command.CommandId];
+        }
+        finally{_phase=previousPhase;}
+    }
+
+    private bool IsServiceControlEvent(SimulationEvent e)=>HasDeliveryServices&&e.Tick==Tick&&e.Phase==1&&
+        (e.Type is "ServiceAccepted" or "ServiceClosed" or "ServiceRequoted" or "ServiceViewed" or "CommandAccepted" or "CommandRejected")&&
+        e.CommandId is {} id&&_seenCommands.TryGetValue(id,out var command)&&IsImmediateServiceDecision(command)&&command.IssuedAtTick==Tick&&_results.ContainsKey(id);
     private void ServiceCommand(ActorState actor,CommandEnvelope command)
     {
         if(Services is null)throw new RuleViolation("ServiceUnavailable");var action=command.Action;
@@ -17,9 +36,9 @@ public sealed partial class SimulationEngine
         if(action.Kind==ActionKind.ViewDeliveryService)
         {_serviceOrders[order.Id]=order with{CustomerViewed=order.Customer.Value==actor.Id||order.CustomerViewed,CarrierViewed=order.Carrier.Value==actor.Id||order.CarrierViewed};Emit("ServiceViewed",actor.Id,order.Id,command:command.CommandId);return;}
         if(!order.Active)throw new RuleViolation("ServiceOrderClosed");
-        if(action.Kind==ActionKind.CancelDeliveryService){CloseService(order,"Cancelled","CancelledBeforePickup");return;}
+        if(action.Kind==ActionKind.CancelDeliveryService){CloseService(order,"Cancelled","CancelledBeforePickup",command.CommandId);return;}
         if(action.Kind==ActionKind.RejectDeliveryService)
-        {if(order.Carrier.Value!=actor.Id||order.State=="Accepted")throw new RuleViolation("ServiceOrderUnavailable");CloseService(order,"Rejected","CarrierRejected");return;}
+        {if(order.Carrier.Value!=actor.Id||order.State=="Accepted")throw new RuleViolation("ServiceOrderUnavailable");CloseService(order,"Rejected","CarrierRejected",command.CommandId);return;}
         if(action.Kind==ActionKind.AcceptDeliveryService)
         {
             if(order.Carrier.Value!=actor.Id||order.State!="Pending"||Tick>order.RespondByTick)throw new RuleViolation("ServiceOrderUnavailable");
@@ -27,10 +46,10 @@ public sealed partial class SimulationEngine
             {
                 var quote=CalculateServiceQuote(order.Customer.Value,order.Quote.Terms,order.Id);
                 if(quote.FeeMinor>order.Quote.FeeMinor||quote.EtaTicks>order.Quote.EtaTicks||quote.BufferTicks>order.Quote.BufferTicks)
-                {_serviceOrders[order.Id]=order with{State="Requote",ProposedQuote=quote,RespondByTick=checked(Tick+Services.ResponseTicks),Reason="CustomerReconfirmation",CarrierViewed=true,CustomerViewed=false};Emit("ServiceRequoted",actor.Id,order.Id,money:quote.FeeMinor);}
-                else AcceptService(order,quote);
+                {_serviceOrders[order.Id]=order with{State="Requote",ProposedQuote=quote,RespondByTick=checked(Tick+Services.ResponseTicks),Reason="CustomerReconfirmation",CarrierViewed=true,CustomerViewed=false};Emit("ServiceRequoted",actor.Id,order.Id,money:quote.FeeMinor,command:command.CommandId);}
+                else AcceptService(order,quote,command.CommandId);
             }
-            catch(RuleViolation ex){CloseService(order,"Rejected",ex.ReasonCode);}return;
+            catch(RuleViolation ex){CloseService(order,"Rejected",ex.ReasonCode,command.CommandId);}return;
         }
         if(action.Kind==ActionKind.ConfirmDeliveryService)
         {
@@ -39,10 +58,10 @@ public sealed partial class SimulationEngine
             {
                 var quote=CalculateServiceQuote(order.Customer.Value,order.Quote.Terms,order.Id);
                 if(quote.FeeMinor>order.ProposedQuote!.FeeMinor||quote.EtaTicks>order.ProposedQuote.EtaTicks||quote.BufferTicks>order.ProposedQuote.BufferTicks)
-                {_serviceOrders[order.Id]=order with{ProposedQuote=quote,RespondByTick=checked(Tick+Services.ResponseTicks),CustomerViewed=false};Emit("ServiceRequoted",order.Carrier.Value,order.Id,money:quote.FeeMinor);}
-                else AcceptService(order,quote);
+                {_serviceOrders[order.Id]=order with{ProposedQuote=quote,RespondByTick=checked(Tick+Services.ResponseTicks),CustomerViewed=false};Emit("ServiceRequoted",order.Carrier.Value,order.Id,money:quote.FeeMinor,command:command.CommandId);}
+                else AcceptService(order,quote,command.CommandId);
             }
-            catch(RuleViolation ex){CloseService(order,"Rejected",ex.ReasonCode);}return;
+            catch(RuleViolation ex){CloseService(order,"Rejected",ex.ReasonCode,command.CommandId);}return;
         }
         throw new RuleViolation("UnknownAction");
     }
@@ -61,15 +80,15 @@ public sealed partial class SimulationEngine
         if(delivery is not null)_deliveryContracts[_deliveryContracts.IndexOf(delivery)]=delivery with{PreparedQuantity=prepared};
         Emit("ServiceRequested",actor.Id,id,terms.ItemId,terms.Quantity,quote.FeeMinor,command:command.CommandId);
     }
-    private void AcceptService(ServiceOrder order,ServiceQuote quote)
+    private void AcceptService(ServiceOrder order,ServiceQuote quote,string? command=null)
     {
         long escrow=_nextId,account=_actors[order.Customer.Value].Account;var tx=_economy.Begin(Tick);
         if(order.Quote.FeeMinor!=quote.FeeMinor){tx.ReleaseMoney(account,order.MoneyHold);tx.HoldMoney(account,order.MoneyHold,quote.FeeMinor);}
         tx.CreateAccount(escrow,"DeliveryServiceEscrow");tx.Pay(account,escrow,quote.FeeMinor,"ServiceFunding:"+order.Id,order.MoneyHold);
         var next=order with{State="Accepted",Quote=quote,ProposedQuote=null,AcceptedTick=Tick,DeadlineTick=quote.EstimatedDeadline(Tick),EscrowAccount=escrow,Reason="AcceptedAwaitingPickup",CarrierViewed=true,CustomerViewed=false};
-        tx.Commit();_nextId=checked(escrow+1);_serviceOrders[order.Id]=next;Emit("ServiceAccepted",order.Carrier.Value,order.Id,money:quote.FeeMinor);
+        tx.Commit();_nextId=checked(escrow+1);_serviceOrders[order.Id]=next;Emit("ServiceAccepted",order.Carrier.Value,order.Id,money:quote.FeeMinor,command:command);
     }
-    private void CloseService(ServiceOrder order,string state,string reason)
+    private void CloseService(ServiceOrder order,string state,string reason,string? command=null)
     {
         var terms=order.Quote.Terms;var tx=_economy.Begin(Tick);long account=_actors[order.Customer.Value].Account;
         if(order.State=="Accepted")tx.Pay(order.EscrowAccount,account,order.Quote.FeeMinor,"ServiceRefund:"+order.Id);
@@ -80,7 +99,7 @@ public sealed partial class SimulationEngine
         tx.Commit();
         if(d is not null&&d.ClosedTick is null)_deliveryContracts[_deliveryContracts.IndexOf(d)]=d with{PreparedQuantity=d.PreparedQuantity-terms.Quantity};
         _serviceOrders[order.Id]=order with{State=state,ClosedTick=Tick,Reason=reason,CustomerViewed=false,CarrierViewed=false};
-        Emit("ServiceClosed",order.Customer.Value,order.Id,money:order.Quote.FeeMinor,reason:reason);
+        Emit("ServiceClosed",order.Customer.Value,order.Id,money:order.Quote.FeeMinor,reason:reason,command:command);
     }
     private void AdvanceServices()
     {

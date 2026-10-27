@@ -42,3 +42,16 @@
   Lab first:7socket PermissionError без network entitlement; повтор с loopback доступом.
 - Добавлены независимые corruption tests цены, числа рейсов, дублей lease/accept/funding,
   ранней выплаты и утечки public event. Runner audit расширяется на новые реальные fixtures.
+
+- Native-3: CS0108 — formatter Position скрывал Control.Position; переименован
+  Coordinates. Проверка сборки не считалась успешной; сохранены process record и
+  build logs в attempts/native3. Изменено ошибочное UI-пояснение про overflow:
+  переполнение запрещает новые заказы, не отменяет уже обещанную поставку.
+- При финальной сверке §2 выявлен обязательный paused response barrier. Добавлен
+  обычный authenticated envelope на текущем quantum только для решений по уже
+  эксклюзивной заявке (не для создания/конкуренции). Tick/physics/production/wages
+  не продвигаются, общий8command budget сохраняется, samples cash обновляется.
+- unit-7:24pass/1fail — новый save поймал NotCommittedTick; добавлена узкая проверка
+  linked committed service control events. Незавершённые экономические фазы по-прежнему
+  нельзя сохранить. unit-8:25/25pass, включая partial-quantum save/retry/replay.
+  Финальный прогон также закрепляет assertion cash sample и общий command budget.

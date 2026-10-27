@@ -27,7 +27,7 @@ public partial class ServiceProbe : Control
     }
     private async Task Commit()
     {
-        var copy=CheckpointStore.Decode(CheckpointStore.Encode(_session));_session.SetPaused(false);copy.SetPaused(false);_session.Step();copy.Step();Check(_session.Engine.ComputeStateHash()==copy.Engine.ComputeStateHash(),"Native pending command restore differs");_session.SetPaused(true);Refresh();await Frames();
+        var copy=CheckpointStore.Decode(CheckpointStore.Encode(_session));if(_session.Engine.Result(_session.CommandTape.Last().Command.CommandId) is null){_session.SetPaused(false);copy.SetPaused(false);_session.Step();copy.Step();}Check(_session.Engine.ComputeStateHash()==copy.Engine.ComputeStateHash(),"Native pending command restore differs");_session.SetPaused(true);Refresh();await Frames();
     }
     private void Select(string name,long identity)
     {var b=Named<OptionButton>(name);int n=Enumerable.Range(0,b.ItemCount).Single(i=>b.GetItemMetadata(i).AsInt64()==identity);b.Select(n);b.EmitSignal(OptionButton.SignalName.ItemSelected,(long)n);}
@@ -42,7 +42,7 @@ public partial class ServiceProbe : Control
                 _language=language;GetWindow().Size=language=="ru"?new(800,720):new(1100,800);GetWindow().ContentScaleSize=GetWindow().Size;
                 _session=CheckpointStore.Decode(System.IO.File.ReadAllText(fixtures+"/pending.save.json"));_session.SetPaused(true);var order=_session.Engine.InspectServices()!.Orders.Single();long tick=_session.Engine.Tick;
                 await Panel(2);Check(Named<ProgressBar>("ServiceResponse_"+order.Id).Value>0,"Missing response countdown");
-                await Click("ServiceView_"+order.Id);Check(_session.Engine.Tick==tick&&!_session.Engine.InspectServices()!.Orders.Single().CarrierViewed,"Paused view changed state");await Commit();
+                await Click("ServiceView_"+order.Id);Check(_session.Engine.Tick==tick&&_session.Engine.InspectServices()!.Orders.Single().CarrierViewed,"Paused view barrier failed");await Commit();
                 await Click("ServiceReject_"+order.Id);await Commit();Check(_session.Engine.InspectServices()!.Orders.Single().State=="Rejected","Reject failed");
                 await Panel(1);var terms=order.Quote.Terms;Select("ServiceVehicle",terms.VehicleId);Select("ServiceSource",terms.Source.Value);Select("ServiceDestination",terms.Destination.Value);
                 var item=Named<OptionButton>("ServiceItem");int index=Array.FindIndex(_session.Engine.Configuration().Items,i=>i.Id==terms.ItemId);item.Select(index);item.EmitSignal(OptionButton.SignalName.ItemSelected,(long)index);Named<SpinBox>("ServiceQuantity").Value=terms.Quantity;

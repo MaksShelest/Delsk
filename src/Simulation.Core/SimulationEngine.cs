@@ -118,15 +118,17 @@ public sealed partial class SimulationEngine
             return previous == command ? _results.GetValueOrDefault(command.CommandId)
                 : new(command.CommandId, ResultStatus.Rejected, "CommandIdConflict", Tick);
         if (command.LocalSequence <= 0 || command.IssuedAtTick < 0 || command.IssuedAtTick > Tick ||
-            (command.NotBeforeTick <= command.IssuedAtTick && !IsImmediateBallot(command)) || command.ExpiresAtTick < command.NotBeforeTick ||
+            (command.NotBeforeTick <= command.IssuedAtTick && !IsImmediateBallot(command)&&!IsImmediateServiceDecision(command)) || command.ExpiresAtTick < command.NotBeforeTick ||
             command.NotBeforeTick > _config.MaxTicks || !Enum.IsDefined(command.Action.Kind))
             return new(command.CommandId, ResultStatus.Rejected, "InvalidEnvelope", Tick);
         if (WaitingForBallots && !IsImmediateBallot(command)) return new(command.CommandId, ResultStatus.Rejected, "ElectionInProgress", Tick);
         if (IsImmediateBallot(command) && (!WaitingForBallots || command.IssuedAtTick != Tick))
             return new(command.CommandId, ResultStatus.Rejected, "ElectionClosed", Tick);
+        if(IsImmediateServiceDecision(command)&&(command.IssuedAtTick!=Tick||_stepping||!HasCommittedBoundary()))return new(command.CommandId,ResultStatus.Rejected,"InvalidEnvelope",Tick);
         if (!_actorSequences.Add((command.ActorId.Value, command.LocalSequence)))
             return new(command.CommandId, ResultStatus.Rejected, "SequenceReused", Tick);
         _seenCommands.Add(command.CommandId, command);
+        if(IsImmediateServiceDecision(command))return ApplyServiceDecision(command);
         if (WaitingForBallots)
         {
             _phase = 9; Execute(command); ValidateInvariants(); return _results[command.CommandId];
