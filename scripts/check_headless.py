@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -10,7 +11,11 @@ import sys
 parser = argparse.ArgumentParser()
 parser.add_argument('--dotnet', default='dotnet', help='SDK executable or absolute path')
 parser.add_argument('--output', type=Path, default=Path('artifacts/headless-p22'))
+parser.add_argument('--phase',choices=['all','tests','runs'],default='all',help='Separate exhaustive unit and runner gates without changing their deadlines')
+parser.add_argument('--unit-artifacts',type=Path,help='Completed unit gate fixtures, required by --phase runs')
 args = parser.parse_args()
+if args.phase=='runs' and args.unit_artifacts is None:parser.error('--phase runs requires --unit-artifacts')
+if args.phase!='runs' and args.unit_artifacts is not None:parser.error('--unit-artifacts belongs to --phase runs')
 root = Path(__file__).resolve().parents[1]
 out = args.output.resolve()
 
@@ -30,14 +35,30 @@ def check(name, timeout, command):
 
 check('restore', 180, [args.dotnet, 'restore', 'Delsk.sln', '--locked-mode', '--disable-parallel', '-m:1'])
 check('build', 180, [args.dotnet, 'build', 'Delsk.sln', '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1'])
-os.environ['DELSK_RETURN_ARTIFACTS'] = str(out)
-os.environ['DELSK_D2_EVIDENCE'] = str(out/'d2-fixtures')
-os.environ['DELSK_D3_EVIDENCE'] = str(out/'d3-fixtures')
-os.environ['DELSK_E1_EVIDENCE'] = str(out/'e1-fixtures')
-from test_partitions import run_suite
-partitions=run_suite(check,args.dotnet,'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',out)
-passed=sum(p['passed'] for p in partitions)
-if passed<1157:raise SystemExit('Incomplete test suite')
+partitions=[];passed=0
+if args.phase!='runs':
+    os.environ['DELSK_RETURN_ARTIFACTS'] = str(out)
+    os.environ['DELSK_D2_EVIDENCE'] = str(out/'d2-fixtures')
+    os.environ['DELSK_D3_EVIDENCE'] = str(out/'d3-fixtures')
+    os.environ['DELSK_E1_EVIDENCE'] = str(out/'e1-fixtures')
+    from test_partitions import run_suite
+    partitions=run_suite(check,args.dotnet,'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',out)
+    passed=sum(p['passed'] for p in partitions)
+    if passed<1157:raise SystemExit('Incomplete test suite')
+    unit={'status':'succeeded','testsPassed':passed,'testPartitions':partitions,'scope':'Exhaustive ordinary unit phase; runner checks are a separate required gate'}
+    (out/'unit-check.json').write_text(json.dumps(unit,indent=2)+'\n')
+    if args.phase=='tests':
+        print(f'Exhaustive unit gate succeeded; results={out}');raise SystemExit(0)
+else:
+    source=args.unit_artifacts.resolve();unit=json.loads((source/'unit-check.json').read_text())
+    from test_partitions import PARTITIONS
+    assert unit['status']=='succeeded' and unit['testsPassed']>=1157
+    assert {p['file'] for p in unit['testPartitions']}=={'tests'+p.name+'.trx' for p in PARTITIONS}
+    assert sum(p['passed'] for p in unit['testPartitions'])==unit['testsPassed']
+    for name in ['late-return-at-expiry','late-return']:
+        shutil.copytree(source/name,out/name)
+    for name in ['late-return.save.json','late-return-fault.json']:
+        shutil.copyfile(source/name,out/name)
 runner = [args.dotnet, 'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll']
 scenarios = {'cycle':'economic-cycle', 'recovery':'zero-cash-recovery', 'development':'land-and-content',
              'labor':'labor-dynamics', 'equipment':'equipment-cycle', 'autonomous':'autonomous-economy', 'market':'market-window', 'pickup':'pickup-lifecycle', 'delivery':'delivery-lifecycle', 'capital-delivery':'capital-delivery', 'logistics':'logistics-cycle', 'logistics-upgrade':'logistics-upgrade', 'own-storage':'own-storage-cycle', 'inbound':'inbound-cycle', 'own-production':'own-production-cycle', 'logistics-queue':'logistics-queue', 'capital-demand':'capital-demand-cycle', 'autonomous-demand':'autonomous-demand', 'elections':'elections', 'support':'support-cycle','stopped-elections':'stopped-elections','physical-automation':'physical-automation','participant-trade':'participant-trade','food-chain':'food-chain'}
@@ -123,7 +144,7 @@ manifest = {'status':'succeeded', 'scenarios':list(scenarios), 'checkpoint_cases
             'baseline_cases':{name:{'final_tick':horizon,'checkpoint_tick':cut} for name,(horizon,cut) in baseline_cases.items()},
             'model_safety':{'checkpoint_tick':6,'final_tick':60,'valid':1,'forged_actor':1,'late_reply':1},
             'model_off':'exact world equality with baseline-economy and the same headless timing label',
-            'testsPassed':passed, 'testPartitions':partitions, 'exports':len(folders), 'replays':replays, 'comparison_pairs':comparison_pairs,
+            'testsPassed':passed if args.phase=='all' else None, 'testPartitions':partitions, 'phase':args.phase, 'unitArtifacts':str(args.unit_artifacts) if args.unit_artifacts else None, 'exports':len(folders), 'replays':replays, 'comparison_pairs':comparison_pairs,
             'scope':'Package8 software and full previous economic/controller regression; laboratory/study/window/platform gates separate',
             'author':'Шелестов Максим Евгеньевич'}
 (out/'headless-check.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')

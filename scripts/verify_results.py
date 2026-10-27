@@ -205,6 +205,12 @@ def verify(folder):
         rules = config.get('logistics') or {'cargoCapacity':10, 'crewCapacity':2}
         level = system['level']; assert level in [1, 2]
         characteristics = rules if level == 1 else rules['upgrade']
+        if system.get('vehicleId',0):
+            fleet=json.loads((folder/'fleet.json').read_text())
+            vehicle=next(v for v in fleet['vehicles'] if v['id']==system['vehicleId'])
+            model=next(m for m in config['economy']['fleet']['models'] if m['id']==vehicle['modelId'])
+            assert vehicle['cargoInventory']==system['cargoInventory'] and vehicle['owner']==system['ownerId']
+            characteristics={'cargoCapacity':model['capacityVolume'],'crewCapacity':1}
         assert cargo['capacity'] == characteristics['cargoCapacity']
         own = system['ownDestination']['value']
         if own:
@@ -214,7 +220,8 @@ def verify(folder):
             assert building['id'] != system['enterpriseId']
         group = next(g for g in state['employmentGroups'] if g['id'] == system['groupId'])
         assert group['capacity'] == characteristics['crewCapacity']
-        if system['trip'] is None: assert not cargo['stock']
+        if system['trip'] is None:
+            if not system.get('vehicleId',0):assert not cargo['stock']
         else:
             trip = system['trip']; assert trip['position'] == cargo['position']
             job = next(j for j in queue if j['key'] == trip['jobKey'])
