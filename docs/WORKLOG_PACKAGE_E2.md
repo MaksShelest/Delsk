@@ -108,3 +108,19 @@ Windows attempt1: build/ordinary metadata success, root editor import timeout124
 обе имеют неизменные120s и обязаны exit0. Финальные completeness/replay/logs,
 Release/Developer/HUD gates сохранены, добавлен вывод failed check logs.
 Это не принятие timeout и не изменение игрового кода. Проверка продолжается.
+
+1084714 Windows prime --import тоже timeout124; stderr показал
+EditorSettings not instantiated during early Mono editor shutdown. Не принят.
+Этот способ удалён. Вместо загрузки C# проекта редактор импортирует отдельную
+копию96 тех же assets с теми же import settings. Прежний reuse verifier
+проверяет bytes/source_md5/полноту и переносит только реальные imports,
+не managed assemblies/editor state. Обычный Mono runtime/replay, Release
+metadata, Developer/HUD/cleanup проверки остаются обязательными.
+
+Локальный эксперимент: asset editor exit0 за6.7s в120s; независимые96imports
+прошли, затем C# runtime без editor cache прошёл1132tick/hash проверки и
+strict logs. Checks20/20 включают защиту staged bytes/settings и чужого output.
+Игровой код с97f0538 не менялся. Native-ready также passed136s; runner-ready
+51process/35exports/24comparisons passed328s, unit-ready27/27 passed403s.
+Настоящий E1 World24/348 checkpoint SHA0e92b388... продолжен, все выгрузки
+побайтно совпали с исходным E1 manual-cargo. Финальная Windows CI ещё ожидается.
