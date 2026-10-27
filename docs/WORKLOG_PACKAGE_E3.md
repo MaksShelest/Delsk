@@ -53,3 +53,36 @@
 - unit-3 остановлен на новом receipt test: автопомощник E2 уже начал физически
   освобождать долго занятый проезд; LeaveVehicle закономерно отклонён в движении.
   Fixture ждёт законного завершения манёвра перед выходом; busy guard не ослаблен.
+
+- b09b72812f2ed565b6c83599bc24e418f271699d: полный CI E3 ordinary22/22;
+  unit CI40526926126 job122268907581 с настоящими counters в logs. E2 ordinary/
+  Developer и previous ordinary/Developer прошли на том же snapshot; Core runners
+  продолжаются. Windows40526926355/job122268907559 success. Это пока не итоговый
+  combined verify. PR68 остаётся draft.
+- unit-4:22/22 locally,562.182s/780, все8partitions без skips/overlap.
+  Receipt fixture после выхода обнаружил истёкшие первоначальные столичные
+  заказы (подготовленный period10000 при TTL180). Этот fixture явно сохраняет
+  один первоначальный funded order до10000; новые деньги/спрос вручную не выдаются.
+  Повтор прошёл; это prepared source/finance evidence, не natural progression.
+- Native1: настоящий MonoGodot4.7.2, RU800×720/EN1100×800, view/no debit,
+  paused pending commands,0.01principal, actual cash, disk restore, auto toggle,
+  paid state; strict logs прошли. Источник /workspace/work/e3/native-1.
+  После visual inspection уточнены только scoped colours и paper-host probe;
+  повтор native запланирован, первый проход не выдаётся за итог этих новых bytes.
+- Runner E3: /workspace/work/e3/runner-1,600s outer deadline, ordinary tapes из
+  unit-4/e3-fixtures. На время этой записи ещё выполняется; не считать pass.
+  Нужны final audit, actual World25 continuation, native2, exact source digests
+  и окончательные Core/Windows CI, затем итоговый report/plan/ready PR без merge.
+
+- Runner1 завершён успешно:48process checks/33exports/22exact pairs,
+  585.429s/600. Deadline не повышался, все individual процессы<=120s.
+- CI b09 runner обнаружил исторический unconditional capacity assertion в
+  verify_results: активный C1 forecast ошибочно проверялся как обычный hold.
+  Core StageDelivery/CapacityForecast и следующий inventory assertion уже
+  различали эти случаи. Исправлена только ошибочная строка аудита: forecast
+  требует действующие Storage rules, normal contracts по-прежнему требуют hold.
+  Все3 escrow continuation exports после исправления прошли обе независимые
+  проверки; полный Runner1 тоже прошёл. No gameplay waiver/deadline increase.
+- Independent billing audit теперь отклоняет missing billing.json у E3,
+  неожиданный E3 export/payment у старых профилей, начисление вне дороги;
+  новые corruption mutations прошли вместе со всеми прежними Python22checks.

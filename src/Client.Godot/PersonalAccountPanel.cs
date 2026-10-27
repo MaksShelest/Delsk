@@ -18,7 +18,7 @@ public partial class PersonalAccountPanel : VBoxContainer
     public PersonalAccountPanel(string language,Action<GameAction> submit,Func<int,int,PersonalAccount>? query=null)
     {
         Name="PersonalAccount";_language=language;_submit=submit;_query=query;AddChild(TabletDesign.Heading(L("Личный счёт","Personal account")));
-        AddChild(_summary);_auto.Text=L("Автоплата из свободных денег","Auto pay from available funds");AddChild(_auto);
+        AddChild(_summary);foreach(string color in new[]{"font_color","font_hover_color","font_pressed_color","font_hover_pressed_color"})_auto.AddThemeColorOverride(color,TabletDesign.Ink);_auto.Text=L("Автоплата из свободных денег","Auto pay from available funds");AddChild(_auto);
         _auto.Toggled+=enabled=>{if(!_refreshing)_submit(new(ActionKind.SetAutoPay,Enabled:enabled));};
         var bills=TabletDesign.Flow();bills.AddChild(_invoices);bills.AddChild(_billNewer);bills.AddChild(_billOlder);AddChild(bills);
         _billNewer.Text=L("‹ Новее","‹ Newer");_billOlder.Text=L("Старее ›","Older ›");
@@ -43,7 +43,7 @@ public partial class PersonalAccountPanel : VBoxContainer
     {
         if(_data is null)return;var data=_query?.Invoke(_offset,_billOffset)??_data;_data=data;
         _summary.Text=L("Баланс / свободно / резерв: ","Balance / available / reserved: ")+string.Join(" / ",new[]{data.Account.BalanceMinor,data.Account.AvailableMinor,data.Account.ReservedMinor}.Select(PlayerText.Money))+"\n"+
-            L("Escrow договоров: ","Contract escrow: ")+PlayerText.Money(data.EscrowMinor)+"\n"+
+            L("Деньги в расчётах по договорам: ","Funds in contract escrow: ")+PlayerText.Money(data.EscrowMinor)+"\n"+
             L("Доходы / расходы: ","Income / expenses: ")+PlayerText.Money(data.IncomeMinor)+" / "+PlayerText.Money(data.ExpensesMinor)+"\n"+
             L("Долг / ещё не выставлено / к получению: ","Debt / unbilled / receivable: ")+PlayerText.Money(data.DebtMinor)+" / "+PlayerText.Money(data.AccruedMinor)+" / "+PlayerText.Money(data.ReceivableMinor);
         _refreshing=true;_auto.SetPressedNoSignal(data.AutoPay);_auto.Disabled=_pending||data.Rules is null;_refreshing=false;
@@ -66,7 +66,7 @@ public partial class PersonalAccountPanel : VBoxContainer
         if(kind.StartsWith("RoadRevenue:",StringComparison.Ordinal))return L("Доход дороги","Road income");
         if(kind.StartsWith("RoadPenalty:",StringComparison.Ordinal))return L("Пени","Penalty");
         return kind switch
-        {"Wages" or "EquipmentTravelWages" or "LogisticsWages" or "RoadWages" or "HandlingWages"=>L("Зарплата","Wages"),"VehiclePurchase"=>L("Покупка машины","Vehicle purchase"),"RoadConstruction"=>L("Дорожные материалы и работа","Road construction"),"RoadOrderReward"=>L("Городское дорожное задание","City road task"),"Energy"=>L("Производственная услуга","Production service"),"Import" or "ImportPurchase"=>L("Импорт","Import"),"PlotPurchase"=>L("Покупка земли","Land purchase"),"PlotReservation"=>L("Бронь земли","Land reservation"),"Construction"=>L("Строительство","Construction"),"BuildingUpgrade"=>L("Улучшение здания","Building upgrade"),"Demolition"=>L("Снос","Demolition"),
+        {"Wages" or "EquipmentTravelWages" or "LogisticsWages" or "RoadWages" or "HandlingWages"=>L("Зарплата","Wages"),"VehiclePurchase"=>L("Покупка машины","Vehicle purchase"),"RoadConstruction"=>L("Запуск дорожных работ","Starting road works"),"RoadOrderReward"=>L("Городское дорожное задание","City road task"),"Energy"=>L("Производственная услуга","Production service"),"Import" or "ImportPurchase"=>L("Импорт","Import"),"PlotPurchase"=>L("Покупка земли","Land purchase"),"PlotReservation"=>L("Бронь земли","Land reservation"),"Construction"=>L("Строительство","Construction"),"BuildingUpgrade"=>L("Улучшение здания","Building upgrade"),"Demolition"=>L("Снос","Demolition"),
         "ResourcePurchase"=>L("Покупка месторождения","Resource purchase"),"ResourceLease"=>L("Аренда месторождения","Resource lease"),"EquipmentPurchase"=>L("Покупка добывающей техники","Equipment purchase"),"EquipmentUpgrade"=>L("Улучшение техники","Equipment upgrade"),"LogisticsPurchase"=>L("Оснащение логистики","Logistics purchase"),"LogisticsUpgrade"=>L("Улучшение логистики","Logistics upgrade"),
         "CapitalSettlement" or "DeliveryPayment" or "PickupPayment"=>L("Расчёт за товар","Goods settlement"),"CapitalEscrow" or "MarketEscrow" or "DeliveryFunding"=>L("Финансирование договора","Contract funding"),"DeliveryBond"=>L("Залог поставки","Delivery bond"),"DeliveryBondReturn"=>L("Возврат залога","Bond return"),"DeliveryRefund" or "PickupRefund"=>L("Возврат оплаты","Payment refund"),"DeliveryFine" or "PickupFine"=>L("Штраф договора","Contract fine"),
         "HandlingService"=>L("Услуга погрузки","Handling service"),"WorkshopOutfit"=>L("Оснащение цеха","Workshop outfit"),"WorkshopModernization"=>L("Модернизация цеха","Workshop modernization"),_=>L("Операция по счёту","Account operation")};
@@ -77,8 +77,8 @@ public partial class PersonalAccountPanel : VBoxContainer
         if(bill is null){_invoice.Text=L("Счетов пока нет.","No invoices yet.");return;}
         _invoice.Text=$"#{bill.Id} · t{bill.CreatedTick} · "+(bill.Viewed?L("Просмотрен","Viewed"):L("● Новый","● New"))+" · "+(bill.Remaining==0?L("Оплачен","Paid"):L("Не погашен","Unpaid"))+"\n"+
             L("Основной долг / пени: ","Principal / penalties: ")+PlayerText.Money(bill.PrincipalRemaining)+" / "+PlayerText.Money(bill.PenaltyRemaining)+"\n"+
-            L("До конца льготного срока: ","Grace remaining: ")+Math.Max(0,bill.DueTick-_data!.Tick)+L(" с активного времени. "," active seconds. ")+L("Без пеней до t","Penalty-free through t")+bill.DueTick+L(" включительно; следующая пеня t"," inclusive; next penalty t")+bill.NextPenaltyTick+"\n"+
+            L("До конца льготного срока: ","Grace remaining: ")+Math.Max(0,bill.DueTick-_data!.Tick)+L(" с активного времени. "," active seconds. ")+L("Без пеней до t","Penalty-free through t")+bill.DueTick+L(" включительно. "," inclusive. ")+(bill.PrincipalRemaining>0?L("Следующая пеня t","Next penalty t")+bill.NextPenaltyTick:L("Новые пени не начисляются.","No new penalties accrue."))+"\n"+
             string.Join(" · ",bill.Claims.Select(c=>(c.Recipient.Value==0?L("Город","City"):L("Участник #","Participant #")+c.Recipient.Value)+": "+PlayerText.Money(c.PrincipalMinor-c.PaidMinor)));
-        _invoice.Modulate=bill.Viewed?Colors.White:new Color("ff7777");
+        _invoice.AddThemeColorOverride("font_color",bill.Viewed?TabletDesign.Ink:new Color("bb3030"));
     }
 }

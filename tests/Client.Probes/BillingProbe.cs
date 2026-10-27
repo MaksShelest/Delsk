@@ -37,8 +37,10 @@ public partial class BillingProbe : Control
                 GetWindow().Size=language=="ru"?new(800,720):new(1100,800);GetWindow().ContentScaleSize=GetWindow().Size;
                 foreach(Node child in _scroll.GetChildren()){_scroll.RemoveChild(child);child.QueueFree();}await Frames();
                 _session=CheckpointStore.Decode(System.IO.File.ReadAllText(fixtures+"/before-penalty.save.json"));_session.SetPaused(true);
-                _panel=new(language,a=>_session.Send(new(1),a),(offset,bills)=>_session.Engine.AccountOf(new(1),offset,20,bills)){SizeFlagsHorizontal=SizeFlags.ExpandFill};_scroll.AddChild(_panel);Refresh();await Frames();
-                var invoice=_session.Engine.AccountOf(new(1)).Invoices.First();long id=invoice.Id,tick=_session.Engine.Tick,balance=_session.Engine.Observe(new(1)).Account.BalanceMinor;
+                _panel=new(language,a=>_session.Send(new(1),a),(offset,bills)=>_session.Engine.AccountOf(new(1),offset,20,bills)){SizeFlagsHorizontal=SizeFlags.ExpandFill};_scroll.AddChild(TabletDesign.Wrap(_panel));Refresh();await Frames();
+                var invoices=_session.Engine.AccountOf(new(1)).Invoices;var invoice=invoices.First(i=>i.PrincipalRemaining>1);
+                int selected=Array.FindIndex(invoices.ToArray(),i=>i.Id==invoice.Id);var selector=Named<OptionButton>("AccountInvoice");selector.Select(selected);selector.EmitSignal(OptionButton.SignalName.ItemSelected,(long)selected);await Frames();
+                long id=invoice.Id,tick=_session.Engine.Tick,balance=_session.Engine.Observe(new(1)).Account.BalanceMinor;
                 Check(!invoice.Viewed&&invoice.PrincipalRemaining>1,"Need actual new unpaid invoice");
                 await Click("AccountViewInvoice");Check(!_session.Engine.AccountOf(new(1)).Invoices.Single(i=>i.Id==id).Viewed&&_session.Engine.Tick==tick,"Paused view click changed simulation");await Commit();
                 Check(_session.Engine.AccountOf(new(1)).Invoices.Single(i=>i.Id==id).Viewed,"Viewed mark not persisted");

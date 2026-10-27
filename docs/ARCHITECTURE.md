@@ -1075,3 +1075,41 @@ Roads входят в canonical hash/restore/валидацию/replay/roads.jso
 Новые исчерпывающие E2 suites выполняются отдельными обязательными CI jobs;
 previous+roads — непересекающееся покрытие всех partitions, старые deadlines
 не увеличены. E3 дорожных счетов/платежей за проезд здесь нет.
+
+
+## E3: личный счёт и дорожные обязательства,27.10.2026
+
+`EconomicRules.Billing` — optional active rules, `vnext-e3-accounts-1` — новый
+профиль двух designed games/lab. World26, limited25–18 только без Billing;
+старый resolved config не заменяется. Деньги остаются в `EconomyStore`.
+`BillingState` хранит accrual units per payer/recipient, immutable invoices/claims,
+частичные paid amounts, basis-point penalty remainder, сроки, Viewed и AutoPay.
+Технический RoadClearing имеет нулевые баланс/holds после каждой транзакции.
+
+`TrafficTravel` начисляет только допущенный физический прогресс существующего
+RoadBody. Покрытие и append-only builders исходной клетки определяют получателей
+при проезде; дробь недошедшего кванта на центре не тарифицируется. Масштаб units
+800×10000×10000 на копейку, class/share из typedBALANCE. Городская основа100%,
+частные ступени10/90. Нового inventory/машины/второго движения нет.
+
+В конце существующей фазы7, после текущих receipts/refunds/освобождения holds,
+каждый120 создаются целые счета. Их требования распределены методом наибольших
+остатков; signed carry получателя сохраняется, общий carry меньше копейки.
+Затем автоплата oldest-first из frozen свободных бюджетов; доходы внутри этой
+фазы доступны автоплате следующего tick. Затем пени по20% открытого principal.
+Grace1000 включительно, первый срок+1001, затем+1000; пользователь явно заменил
+старые500/500. Никаких процентов на пени. Manual remote payments — phase1,
+principal first. Полная оплата распределяется атомарно через clearing, включая
+возврат собственной дорожной доли. Простой/пауза/ожидание кадров не создают fees.
+
+`AccountOf` — immutable owner projection: bounded pages, own ledger operations
+с локальной нумерацией, настоящие контрагенты, balances/holds/escrow, счета и
+настройка. Billing events/командные отказы не публикуются чужим. Claims и долг
+симметричны в public capital; cash до оплаты не выдаётся. Полные Billing,
+остатки и deadlines входят в hash/checkpoint/replay/billing.json; независимый
+Python audit восстанавливает их из физического журнала и проводок.
+
+Клиентский PersonalAccountPanel использует только owner DTO/обычные команды,
+RU/EN,20строк/страницу, отдельные viewed/paid состояния и красный новый счёт.
+BillingProbe разрешён только в isolated ordinary probe stage. Услуги доставки
+не добавлены; существующие Freight и добывающая техника сохраняются.

@@ -26,7 +26,7 @@ class BillingAuditTests(unittest.TestCase):
             claims,debt=capital(folder);self.assertEqual(sum(claims.values()),sum(debt.values()))
     def test_actual_split_signed_residue_partial_principal_and_zero_fractional_penalty(self):self.check(self.fixture())
     def test_distance_rights_interest_replay_payout_and_privacy_corruption_is_rejected(self):
-        mutations=[lambda d:d['events.jsonl'][1].update(quantity=40),lambda d:d['events.jsonl'][0]['actorId'].update(value=3),lambda d:d['billing.json']['invoices'][0].update(penaltyMinor=1),lambda d:d['events.jsonl'][-3].update(tick=1120),lambda d:d['events.jsonl'].append(copy.deepcopy(d['events.jsonl'][-1])),lambda d:d['ledger.jsonl'].append(copy.deepcopy(d['ledger.jsonl'][-1])),lambda d:d['billing.json']['accruals'][0].update(units=0),lambda d:d['public-events.jsonl'].append(dict(type='BillingInvoiceCreated'))]
+        mutations=[lambda d:d.pop('billing.json'),lambda d:d['scenario.json']['economy'].update(billing=None),lambda d:d['events.jsonl'][1].update(quantity=40),lambda d:d['events.jsonl'][0]['actorId'].update(value=3),lambda d:d['billing.json']['invoices'][0].update(penaltyMinor=1),lambda d:d['events.jsonl'][-3].update(tick=1120),lambda d:d['events.jsonl'].append(copy.deepcopy(d['events.jsonl'][-1])),lambda d:d['ledger.jsonl'].append(copy.deepcopy(d['ledger.jsonl'][-1])),lambda d:d['billing.json']['accruals'][0].update(units=0),lambda d:d['public-events.jsonl'].append(dict(type='BillingInvoiceCreated'))]
         for n,mutate in enumerate(mutations):
             with self.subTest(n=n):
                 data=copy.deepcopy(self.fixture());mutate(data)

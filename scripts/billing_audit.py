@@ -21,9 +21,14 @@ def split_units(units):
 
 def verify(folder):
     folder=Path(folder)
-    if not (folder/'billing.json').exists():return
     load=lambda name:json.loads((folder/name).read_text())
-    config=load('scenario.json');state=load('billing.json');rules=config['economy']['billing']
+    config=load('scenario.json');enabled=(config.get('economy') or {}).get('billing') is not None
+    if not enabled:
+        assert not (folder/'billing.json').exists(),'Unexpected E3 state in an older profile'
+        assert not any(json.loads(line)['reason'].startswith(('RoadPrincipal:','RoadRevenue:','RoadPenalty:')) for line in (folder/'ledger.jsonl').read_text().splitlines()),'E3 payments in an older profile'
+        return
+    assert (folder/'billing.json').is_file(),'Missing E3 accounting export'
+    state=load('billing.json');rules=config['economy']['billing']
     world=load('final-state.json');fleet=load('fleet.json')
     ledger=[json.loads(s) for s in (folder/'ledger.jsonl').read_text().splitlines()]
     events=[json.loads(s) for s in (folder/'events.jsonl').read_text().splitlines()]
@@ -39,7 +44,7 @@ def verify(folder):
             cell=tuple(map(int,e['reasonCode'].split(',')));old=layers.setdefault(cell,[])
             assert len(old)+1==e['quantity'];old.append(actor)
         elif kind=='BillingDistance':
-            cell=tuple(map(int,e['reasonCode'].split(',')));assert 0<e['quantity']<=80
+            cell=tuple(map(int,e['reasonCode'].split(',')));assert cell in layers and 0<e['quantity']<=80
             model=vehicle.get(identity);assert actor==(model['owner']['value'] if model else machine[identity]['ownerId']['value'])
             factor=rules['classFactors'][model['modelId']] if model else 10000
             units=e['quantity']*factor*rules['lightIncrementMinor']
