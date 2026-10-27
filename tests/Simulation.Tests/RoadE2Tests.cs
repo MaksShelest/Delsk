@@ -119,4 +119,20 @@ public class RoadE2Tests
         var batch=s.Engine.InspectRoads()!.Works.Single(w=>w.VehicleId==second.Id).Batch!;s.AdvanceTo(batch.StartedTick+32);
         Assert.Equal(new long[]{0,1,2},s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==new Cell(10,1)).Contributions.Select(c=>c.Builder.Value));Exact(s);
     }
+    [Fact]public void NoMoneyDoesNotConsumeRoadMaterialsOrStartFreeWork()
+    {
+        var d=Prepared();d=d with{Participants=[..d.Participants.Select(p=>p.Id==1?p with{CashMinor=1200000}:p)]};
+        var s=new GameSession(new(d));var v=Paver(s);long before=FleetE1Tests.Stock(s,v.CargoInventory,"gravel");
+        Step(s,Work(v));Assert.Equal("NoMoney",s.Engine.InspectRoads()!.Works.Single().Reason);Assert.Null(s.Engine.InspectRoads()!.Works.Single().Batch);
+        Assert.Equal(before,FleetE1Tests.Stock(s,v.CargoInventory,"gravel"));Assert.DoesNotContain(s.Engine.Ledger(),l=>l.Reason=="RoadConstruction");Exact(s);
+    }
+    [Fact]public void AutomaticPaverTravelChargesItsActualCrewAndRetainsOneCargo()
+    {
+        var s=new GameSession(new(Prepared()));var v=Paver(s);Step(s,new(ActionKind.LeaveVehicle));
+        Step(s,Work(v,mode:EquipmentMode.Automatic,target:new(11,1)));int bound=80;
+        while(s.Engine.InspectRoads()!.Works.Single().Batch is null&&bound-->0)s.Step();
+        Assert.True(bound>0);Assert.Equal(new Cell(11,1),StorageC1Tests.Inventory(s,v.CargoInventory).Position);
+        var events=s.Engine.EventsSince(0).Where(e=>e.Type=="RoadWorkTravelled").ToArray();Assert.NotEmpty(events);
+        Assert.All(events,e=>Assert.Equal(40,e.AmountMinor));Assert.Equal(events.Sum(e=>e.AmountMinor),s.Engine.Ledger().Where(l=>l.Reason=="RoadWages").Sum(l=>l.AmountMinor));Exact(s);
+    }
 }

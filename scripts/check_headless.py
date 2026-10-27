@@ -11,6 +11,7 @@ import sys
 parser = argparse.ArgumentParser()
 parser.add_argument('--dotnet', default='dotnet', help='SDK executable or absolute path')
 parser.add_argument('--output', type=Path, default=Path('artifacts/headless-p22'))
+parser.add_argument('--suite',choices=['all','previous','roads'],default='all',help='Explicit disjoint suites preserve pre-E2 aggregate deadlines')
 parser.add_argument('--phase',choices=['all','tests','runs'],default='all',help='Separate exhaustive unit and runner gates without changing their deadlines')
 parser.add_argument('--unit-artifacts',type=Path,help='Completed unit gate fixtures, required by --phase runs')
 args = parser.parse_args()
@@ -43,18 +44,18 @@ if args.phase!='runs':
     os.environ['DELSK_E1_EVIDENCE'] = str(out/'e1-fixtures')
     os.environ['DELSK_E2_EVIDENCE'] = str(out/'e2-fixtures')
     from test_partitions import run_suite
-    partitions=run_suite(check,args.dotnet,'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',out)
+    partitions=run_suite(check,args.dotnet,'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',out,suite=args.suite)
     passed=sum(p['passed'] for p in partitions)
-    if passed<1157:raise SystemExit('Incomplete test suite')
-    unit={'status':'succeeded','testsPassed':passed,'testPartitions':partitions,'scope':'Exhaustive ordinary unit phase; runner checks are a separate required gate'}
+    if passed<(25 if args.suite=='roads' else 1157):raise SystemExit('Incomplete test suite')
+    unit={'suite':args.suite,'status':'succeeded','testsPassed':passed,'testPartitions':partitions,'scope':'Exhaustive ordinary unit phase; runner checks are a separate required gate'}
     (out/'unit-check.json').write_text(json.dumps(unit,indent=2)+'\n')
     if args.phase=='tests':
         print(f'Exhaustive unit gate succeeded; results={out}');raise SystemExit(0)
 else:
     source=args.unit_artifacts.resolve();unit=json.loads((source/'unit-check.json').read_text())
-    from test_partitions import PARTITIONS
+    from test_partitions import selected_partitions
     assert unit['status']=='succeeded' and unit['testsPassed']>=1157
-    assert {p['file'] for p in unit['testPartitions']}=={'tests'+p.name+'.trx' for p in PARTITIONS}
+    assert {p['file'] for p in unit['testPartitions']}=={'tests'+p.name+'.trx' for p in selected_partitions(unit.get('suite','all'))}
     assert sum(p['passed'] for p in unit['testPartitions'])==unit['testsPassed']
     for name in ['late-return-at-expiry','late-return']:
         shutil.copytree(source/name,out/name)

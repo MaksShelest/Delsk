@@ -65,6 +65,25 @@ public class RoadTrafficE2Tests
         for(int i=0;i<90;i++){s.Step();copy.Step();Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());}
         Assert.Equal(new Cell(13,1),s.Engine.Observe(new(2)).Participant.Position);Assert.Empty(s.Engine.InspectRoads()!.Bypasses);RoadE2Tests.Exact(s);
     }
+    [Theory]
+    [InlineData(2UL)]
+    [InlineData(7UL)]
+    [InlineData(19UL)]
+    public void OppositeBypassEntrancesDoNotEnterAnOccupiedExitOrDeadlock(ulong seed)
+    {
+        var s=new GameSession(new(RoadE2Tests.Prepared(seed)));var paver=RoadE2Tests.Paver(s);RoadE2Tests.Step(s,new(ActionKind.LeaveVehicle));
+        RoadE2Tests.Step(s,RoadE2Tests.Work(paver,mode:EquipmentMode.Automatic));RunUntil(s,()=>s.Engine.InspectRoads()!.Works.Single().Batch is not null);
+        RoadE2Tests.Step(s,RoadE2Tests.Work(paver,mode:EquipmentMode.Automatic,enabled:false));
+        Car(s,"muravey70",new(6,1),1);StorageC1Tests.Move(s,new(8,1));Car(s,"eger70",new(12,1),2);
+        s.Send(new(1),new(ActionKind.MoveTo,Target:new(14,1)));s.Send(new(2),new(ActionKind.MoveTo,Target:new(6,1)));s.Step();
+        int bound=700;while((s.Engine.Observe(new(1)).Participant.Busy||s.Engine.Observe(new(2)).Participant.Busy)&&bound-->0)
+        {
+            s.Step();var vehicles=s.Engine.InspectFleet()!.Vehicles;var inventories=s.Engine.Inspect().Inventories;
+            Assert.Equal(vehicles.Length,vehicles.Select(v=>inventories.Single(i=>i.Id==v.CargoInventory).Position).Distinct().Count());
+        }
+        if(bound<=0&&Environment.GetEnvironmentVariable("DELSK_E2_DEBUG") is {} debug){System.IO.Directory.CreateDirectory(debug);System.IO.File.WriteAllText(System.IO.Path.Combine(debug,"bypass-head-on-"+seed+".json"),s.Engine.CreateCheckpointJson());}
+        Assert.True(bound>0,"Opposing bypass entrances did not clear");RoadE2Tests.Exact(s,"narrow-"+seed);
+    }
     [Fact]public void SteeringRequiresWholeTickExitAndReleaseCancelsWithoutEconomicSteps()
     {
         var s=new GameSession(new(RoadE2Tests.Prepared()));var v=Car(s,"sputnik20",new(12,1),1);

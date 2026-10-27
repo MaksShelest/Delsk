@@ -34,10 +34,10 @@ public sealed partial class SimulationEngine
         l.Trip=t=t with{LoadTick=load,ArrivalTick=arrival,EndTick=Math.Max(Math.Max(t.EndTick,arrival),Tick+1)};
         if(l.Group.PendingWage is not null){l.Group.PayEffectiveTick=Math.Max(l.Group.PayEffectiveTick??0,t.EndTick+1);l.Group.AttractionEffectiveTick=Math.Max(l.Group.AttractionEffectiveTick??0,t.EndTick+1);}
         if(!EnsureRoadFreightFunds(l))return;t=l.Trip!;
-        var vehicle=_vehicles[l.VehicleId];var before=Traffic(vehicle.Id);bool arrived;
+        var vehicle=_vehicles[l.VehicleId];var before=Traffic(vehicle.Id);var beforePosition=VehicleCargo(vehicle).Position;bool arrived;
         try{arrived=TrafficTravel(vehicle,t.Path[^1]);}
         catch(RuleViolation ex){l.Reason=ex.ReasonCode;return;}
-        var after=Traffic(vehicle.Id);bool worked=before!=after&&(before.Progress!=after.Progress||before.Index!=after.Index||before.Path.Length==0&&after.Progress>0);
+        var after=Traffic(vehicle.Id);bool worked=before.Progress!=after.Progress||beforePosition!=VehicleCargo(vehicle).Position;
         string state=arrived?t.State switch{"FetchingEmpty"=>"Loading","Outbound" or "ReturningInput"=>"Unloading","ReturningCargo"=>"UnloadingReturn",_=>"Finishing"}:t.State;
         l.Trip=t with{Position=VehicleCargo(vehicle).Position,PathIndex=arrived?t.Path.Length-1:0,SegmentTicks=0,State=state,
             Freight=f with{LastWorkedTick=worked?Tick:f.LastWorkedTick,StageStartedTick=state==t.State?f.StageStartedTick:Tick}};

@@ -52,7 +52,7 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
     {
         if (Engine.WaitingForBallots) { SubmitPlaybackInputs(); PumpVoting(); return; }
         if (Paused) return;
-        if (!_closingTravelTick && PlaybackUsesTravel) { CompleteTravelTick(); return; }
+        if (!_closingTravelTick && (PlaybackUsesTravel||Engine.UsesRoadTraffic)) { CompleteTravelTick(); return; }
         beforeStep?.Invoke();
         SubmitPlaybackInputs();
         bool measured = StepMeasured is not null;

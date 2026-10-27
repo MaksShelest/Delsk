@@ -44,14 +44,14 @@ public sealed partial class SimulationEngine
             if(w.Batch is {} batch)Require(w.Cursor<w.Route.Length&&batch.Cell==w.Route[w.Cursor]&&batch.Level==w.Level&&RoadLevel(batch.Cell)==batch.Level-1&&batch.StartedTick>=1&&batch.StartedTick<=Tick&&batch.Work>=0&&batch.Work<2L*Roads.Stages[batch.Level-1].Ticks&&
                 VehicleCargo(v!).Position==batch.Cell&&batch.Bypass.Length>2&&batch.Bypass.All(PublicRoadCell)&&!batch.Bypass.Contains(batch.Cell)&&_bypasses.Count(b=>b.VehicleId==v!.Id&&!b.Closing&&b.WorkCell==batch.Cell&&b.Path.SequenceEqual(batch.Bypass))==1);
         }
-        foreach(var b in _bypasses)Require(_vehicles.ContainsKey(b.VehicleId)&&b.Path.Length>2&&b.Path.All(PublicRoadCell)&&!b.Path.Contains(b.WorkCell)&&b.Path.Zip(b.Path.Skip(1)).All(p=>Manhattan(p.First,p.Second)==1)&&
+        foreach(var b in _bypasses)Require(_vehicles.ContainsKey(b.VehicleId)&&!b.Users.IsDefault&&b.Users.Distinct().Count()==b.Users.Length&&b.Users.All(id=>FindBody(id) is not null)&&b.Path.Length>2&&b.Path.All(PublicRoadCell)&&!b.Path.Contains(b.WorkCell)&&b.Path.Zip(b.Path.Skip(1)).All(p=>Manhattan(p.First,p.Second)==1)&&
             (b.Closing||_roadWorks.GetValueOrDefault(b.VehicleId)?.Batch?.Cell==b.WorkCell));
         var reserved=new HashSet<Cell>();
         foreach(var t in _traffic.Values)
         {
-            Require(_vehicles.ContainsKey(t.VehicleId)&&t.Progress is >=0 and <800&&t.Index>=0&&(t.Path.Length==0?t.Index==0&&t.Progress==0:t.Index<t.Path.Length)&&t.WaitingSince>=0&&t.WaitingSince<=Tick&&t.StoppedSince>=0&&t.StoppedSince<=Tick&&
+            Require(FindBody(t.VehicleId) is not null&&t.Progress is >=0 and <800&&t.Index>=0&&(t.Path.Length==0?t.Index==0&&t.Progress==0:t.Index<t.Path.Length)&&t.WaitingSince>=0&&t.WaitingSince<=Tick&&t.StoppedSince>=0&&t.StoppedSince<=Tick&&
                 t.ExitQuanta>=0&&t.Priority>=0&&t.AdvancedTick>=0&&t.AdvancedTick<=Tick+1&&t.AdvancedQuanta is >=0 and <=10&&t.Path.Skip(t.Index).All(_map.Walkable)&&t.Path.Zip(t.Path.Skip(1)).All(p=>Manhattan(p.First,p.Second)==1));
-            if(t.Path.Length>0)Require(VehicleCargo(_vehicles[t.VehicleId]).Position==t.Path[t.Index]);
+            if(t.Path.Length>0)Require(VehicleCargo(FindBody(t.VehicleId)!).Position==t.Path[t.Index]);
             if(t.Progress>0)Require(t.Index<t.Path.Length-1&&reserved.Add(t.Path[t.Index+1])&&!ReservedByOther(t.VehicleId,t.Path[t.Index+1]));
             if(t.Resume is {} r)Require(_map.Walkable(r)&&t.YieldTo>=0);
         }

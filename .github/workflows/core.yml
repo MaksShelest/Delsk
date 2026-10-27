@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Exhaustive ordinary unit gate with unchanged partition deadlines
-        run: python scripts/run_check.py --name unit --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --phase tests --output artifacts/unit
+        run: python scripts/run_check.py --name unit --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --phase tests --suite previous --output artifacts/unit
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -92,6 +92,83 @@ jobs:
             artifacts/unit/e1-fixtures/*.jsonl
             artifacts/unit/e1-fixtures/*.tick
             !artifacts/unit/e1-fixtures/*.save.json
+  road-unit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exhaustive disjoint E2 ordinary suite
+        run: python scripts/run_check.py --name road-unit --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --phase tests --suite roads --output artifacts/road-unit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: road-unit-checks-and-fixtures
+          path: artifacts/road-unit/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: road-command-fixtures
+          path: |
+            artifacts/road-unit/e2-fixtures/*.json
+            artifacts/road-unit/e2-fixtures/*.jsonl
+            artifacts/road-unit/e2-fixtures/*.tick
+            !artifacts/road-unit/e2-fixtures/*.save.json
+  road-developer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Complete E2 Developer suite and forbidden Release
+        run: python scripts/run_check.py --name road-developer --timeout 600 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --suite roads --output artifacts/road-developer
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: road-developer-checks
+          path: artifacts/
+  roads:
+    needs: [core, road-unit]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: road-command-fixtures
+          path: artifacts/road-fixtures
+      - name: Bounded runner restore and build
+        run: |
+          python scripts/run_check.py --name roads-restore --timeout 180 -- dotnet restore src/Research.Runner/Research.Runner.csproj --locked-mode --disable-parallel -m:1
+          python scripts/run_check.py --name roads-build --timeout 180 -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
+      - name: E2 physical works, traffic, continuation and independent audits
+        run: python scripts/run_check.py --name roads-e2 --timeout 600 -- python scripts/check_road_e2.py --fixtures artifacts/road-fixtures --output artifacts/roads-e2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: roads-checks-and-runs
+          path: artifacts/
   fleet:
     needs: [core]
     runs-on: ubuntu-24.04
@@ -164,7 +241,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Bounded Developer tests and forbidden Release gate
-        run: python scripts/run_check.py --name developer --timeout 600 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --output artifacts/developer
+        run: python scripts/run_check.py --name developer --timeout 600 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --suite previous --output artifacts/developer
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -173,7 +250,7 @@ jobs:
   # Preserve the required check and require every suite, including D3's independent audit.
   verify:
     if: ${{ always() }}
-    needs: [unit, core, developer, production, fleet]
+    needs: [unit, core, developer, production, fleet, road-unit, road-developer, roads]
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
@@ -183,5 +260,8 @@ jobs:
           CORE_RESULT: ${{ needs.core.result }}
           DEVELOPER_RESULT: ${{ needs.developer.result }}
           PRODUCTION_RESULT: ${{ needs.production.result }}
+          ROAD_UNIT_RESULT: ${{ needs.road-unit.result }}
+          ROAD_DEVELOPER_RESULT: ${{ needs.road-developer.result }}
+          ROADS_RESULT: ${{ needs.roads.result }}
           FLEET_RESULT: ${{ needs.fleet.result }}
-        run: test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success
+        run: test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success && test "$ROADS_RESULT" = success && test "$ROAD_UNIT_RESULT" = success && test "$ROAD_DEVELOPER_RESULT" = success

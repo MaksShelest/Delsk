@@ -28,7 +28,10 @@ public sealed partial class SimulationEngine
     private TrafficVehicle Traffic(long vehicle)
     {
         if(!_traffic.TryGetValue(vehicle,out var t))
-        {t=new(vehicle,[],StoppedSince:Tick,Priority:(long)(_roadRandom!.Next()&long.MaxValue));_traffic.Add(vehicle,t);}
+        {
+            t=new(vehicle,[],StoppedSince:Tick,Priority:(long)(_roadRandom!.Next()&long.MaxValue));_traffic.Add(vehicle,t);
+            if(_equipment.TryGetValue(vehicle,out var equipment))Emit("EquipmentTrafficRegistered",equipment.Owner,equipment.Id,reason:equipment.Position.X+","+equipment.Position.Z);
+        }
         return t;
     }
     private void CancelTrafficRoute(long vehicle)
@@ -56,22 +59,24 @@ public sealed partial class SimulationEngine
         return [];
     }
     private bool WorkBlocks(long vehicle,Cell cell)=>_roadWorks.Values.Any(w=>w.Vehicle!=vehicle&&w.Batch?.Cell==cell);
-    private bool ReservedByOther(long vehicle,Cell cell)=>_vehicles.Values.Any(v=>v.Id!=vehicle&&VehicleCargo(v).Position==cell)||
+    private bool ReservedByOther(long vehicle,Cell cell)=>RoadBodies().Any(v=>v.Id!=vehicle&&VehicleCargo(v).Position==cell)||
         _dealerStock.Any(v=>v.Position==cell)||_traffic.Values.Any(t=>t.VehicleId!=vehicle&&t.Progress>0&&t.Index<t.Path.Length-1&&t.Path[t.Index+1]==cell);
-    private Cell[] VehiclePath(OwnedVehicle v,Cell target,bool avoidVehicles=false)
+    private Cell[] VehiclePath(OwnedVehicle v,Cell target,bool avoidVehicles=false)=>VehiclePath(Body(v),target,avoidVehicles);
+    private Cell[] VehiclePath(RoadBody v,Cell target,bool avoidVehicles=false)
     {
         var source=VehicleCargo(v).Position;var current=Traffic(v.Id);
         bool corridorOnly=_config.Layout!.RoadCorridorCells.Contains(source)&&_config.Layout.RoadCorridorCells.Contains(target);
         bool Allow(Cell c)=>_map.Walkable(c)&&!WorkBlocks(v.Id,c)&&(!avoidVehicles||!ReservedByOther(v.Id,c))&&
             (!corridorOnly||PublicRoadCell(c))&&
             (PublicRoadCell(c)||c==source||c==target||!_roadWorks.Values.Any(w=>w.Batch is {} batch&&Manhattan(c,batch.Cell)<=2))&&
-            !_bypasses.Any(b=>b.Closing&&b.Path.Contains(c)&&c!=source&&!current.Path.Skip(current.Index).Any(b.Path.Contains));
+            !_bypasses.Any(b=>b.Closing&&b.Path.Skip(1).SkipLast(1).Contains(c)&&c!=source&&!b.Users.Contains(v.Id));
         int Cost(Cell c)=>RoadLevel(c)>0?80/Roads!.Stages.Single(s=>s.Level==RoadLevel(c)).Speed+1:12;
         var path=FindRoadPath(source,target,Allow,Cost);
         if(path.Length==0)throw new RuleViolation("NoSafeVehiclePath");
         return path;
     }
-    private bool MayTurn(OwnedVehicle v,Cell cell)=>!PublicRoadCell(cell)||_config.Layout!.TurnCells.Contains(cell)||
+    private bool MayTurn(OwnedVehicle v,Cell cell)=>MayTurn(Body(v),cell);
+    private bool MayTurn(RoadBody v,Cell cell)=>!PublicRoadCell(cell)||_config.Layout!.TurnCells.Contains(cell)||
         !_config.Layout.RoadCenterCells.Contains(cell)||RoadNeighbors(cell).Count(c=>RoadLevel(c)>0)>=3;
     private void TurnVehicle(ActorState actor,CommandEnvelope c)
     {
@@ -81,7 +86,8 @@ public sealed partial class SimulationEngine
         actor.FacingX=-v.FacingX;actor.FacingZ=-v.FacingZ;actor.HeadingX=actor.HeadingZ=0;
         SyncDrivenVehicle(actor);Emit("VehicleTurned",actor.Id,v.Id,command:c.CommandId);
     }
-    private bool TrafficTravel(OwnedVehicle vehicle,Cell target,int quanta=10,bool quotaAlreadyCounted=false)
+    private bool TrafficTravel(OwnedVehicle vehicle,Cell target,int quanta=10,bool quotaAlreadyCounted=false)=>TrafficTravel(Body(vehicle),target,quanta,quotaAlreadyCounted);
+    private bool TrafficTravel(RoadBody vehicle,Cell target,int quanta=10,bool quotaAlreadyCounted=false)
     {
         var t=Traffic(vehicle.Id);var at=VehicleCargo(vehicle).Position;
         if(at==target&&t.Progress==0){_traffic[vehicle.Id]=t with{Path=[],Index=0,Reason="Arrived",WaitingSince=0};return true;}
@@ -103,7 +109,7 @@ public sealed partial class SimulationEngine
             {
                 if(t.Resume is {} resume)
                 {
-                    var other=_vehicles.GetValueOrDefault(t.YieldTo);
+                    var other=FindBody(t.YieldTo);
                     if(other is not null&&(Manhattan(VehicleCargo(other).Position,at)<3||
                         _traffic.TryGetValue(other.Id,out var priority)&&priority.Path.Skip(priority.Index).Contains(t.Path[0])))
                     {_traffic[vehicle.Id]=t with{Reason="YieldingInBay"};return false;}
@@ -112,12 +118,14 @@ public sealed partial class SimulationEngine
                 return at==target;
             }
             var next=t.Path[t.Index+1];int dx=next.X-at.X,dz=next.Z-at.Z;
+            if(t.Progress==0&&_bypasses.Any(b=>b.Closing&&b.Path.Skip(1).SkipLast(1).Contains(next)&&!b.Users.Contains(vehicle.Id)))
+            {TryReplan(vehicle,target);return false;}
             if(t.Progress==0&&(WorkBlocks(vehicle.Id,next)||ReservedByOther(vehicle.Id,next)||NarrowEntryBlocked(vehicle.Id,at,next)))
             {
                 long since=t.WaitingSince==0?Tick:t.WaitingSince;
                 _traffic[vehicle.Id]=t with{WaitingSince=since,Reason=WorkBlocks(vehicle.Id,next)?"PaverBypass":"TrafficWaiting"};
                 if(WorkBlocks(vehicle.Id,next))TryReplan(vehicle,target);
-                else if(_dealerStock.Any(s=>s.Position==next)||_vehicles.Values.Any(v=>v.Id!=vehicle.Id&&VehicleCargo(v).Position==next&&
+                else if(_dealerStock.Any(s=>s.Position==next)||RoadBodies().Any(v=>v.Id!=vehicle.Id&&VehicleCargo(v).Position==next&&
                     (!_traffic.TryGetValue(v.Id,out var moving)||moving.Index>=moving.Path.Length-1&&moving.Resume is null)))
                 {
                     try{_traffic[vehicle.Id]=Traffic(vehicle.Id) with{Path=[..VehiclePath(vehicle,target,true)],Index=0,Reason="Detour"};}
@@ -128,18 +136,27 @@ public sealed partial class SimulationEngine
             }
             if(t.Progress==0&&dx==-vehicle.FacingX&&dz==-vehicle.FacingZ&&!MayTurn(vehicle,at))
             {if(!TryForwardTurn(vehicle,target)){_traffic[vehicle.Id]=t with{Reason="NoFreeTurn"};return false;}continue;}
-            int speed=FleetSpeed(at,next,Model(vehicle.ModelId));int progress=checked(t.Progress+speed);
-            _vehicles[vehicle.Id]=vehicle=vehicle with{FacingX=dx,FacingZ=dz};
+            int speed=RoadBodySpeed(at,next,vehicle);int progress=checked(t.Progress+speed);
+            for(int i=0;i<_bypasses.Count;i++)
+            {
+                var b=_bypasses[i];if(!b.Closing&&!b.Users.Contains(vehicle.Id)&&b.Path.Skip(1).SkipLast(1).Contains(next))
+                    _bypasses[i]=b with{Users=[..b.Users.Append(vehicle.Id).Order()]};
+            }
+            vehicle=vehicle with{FacingX=dx,FacingZ=dz};
+            if(_vehicles.TryGetValue(vehicle.Id,out var owned))_vehicles[vehicle.Id]=owned with{FacingX=dx,FacingZ=dz};
+            else _traffic[vehicle.Id]=t=t with{FacingX=dx,FacingZ=dz};
             if(vehicle.Driver!=0){_actors[vehicle.Driver].FacingX=dx;_actors[vehicle.Driver].FacingZ=dz;}
             if(progress>=800)
             {
                 // Both cells and the edge were exclusive until arrival at the next centre.
                 progress-=800;VehicleCargo(vehicle).Position=next;
+                if(_equipment.TryGetValue(vehicle.Id,out var equipment))equipment.Position=next;
                 Emit("TrafficCellEntered",vehicle.Owner.Value,vehicle.Id,quantity:speed,reason:at.X+","+at.Z+">"+next.X+","+next.Z);
                 if(vehicle.Driver!=0)
                 {
                     var actor=_actors[vehicle.Driver];actor.Position=next;actor.OffsetX=actor.OffsetZ=TravelCenter;
                     actor.FacingX=dx;actor.FacingZ=dz;_economy.Inventories[actor.Inventory].Position=next;
+                    foreach(var transfer in _transfers.Values.Where(t=>t.Owner.Value==actor.Id).ToArray())CancelTransfer(transfer,"LeftTransferLocation");
                 }
                 t=t with{Index=t.Index+1,Progress=0,WaitingSince=0,StoppedSince=0,Reason="Moving"};
                 // Carry fractional distance only along the same reserved straight edge on the next quantum.
@@ -151,7 +168,7 @@ public sealed partial class SimulationEngine
         }
         t=Traffic(vehicle.Id);return t.Resume is null&&t.Index==t.Path.Length-1&&VehicleCargo(vehicle).Position==target;
     }
-    private void TryReplan(OwnedVehicle v,Cell target)
+    private void TryReplan(RoadBody v,Cell target)
     {
         var t=Traffic(v.Id);if(t.Progress!=0)return;
         try{_traffic[v.Id]=t with{Path=[..VehiclePath(v,target)],Index=0,Reason="Detour"};}
@@ -169,7 +186,7 @@ public sealed partial class SimulationEngine
             var route=Traffic(vehicle);
             if(route.Path.Skip(route.Index+1).Contains(exit)&&ReservedByOther(vehicle,exit))return true;
             var inside=b.Path.Skip(1).SkipLast(1).ToHashSet();
-            if(_vehicles.Values.Any(v=>v.Id!=vehicle&&inside.Contains(VehicleCargo(v).Position))||
+            if(RoadBodies().Any(v=>v.Id!=vehicle&&inside.Contains(VehicleCargo(v).Position))||
                 _traffic.Values.Any(t=>t.VehicleId!=vehicle&&t.Progress>0&&t.Index<t.Path.Length-1&&inside.Contains(t.Path[t.Index+1])))return true;
         }
         return false;
@@ -182,11 +199,11 @@ public sealed partial class SimulationEngine
             if(from==b.Path[0]&&next==b.Path[1])exit=b.Path[^1];
             else if(from==b.Path[^1]&&next==b.Path[^2])exit=b.Path[0];
             else continue;
-            return _vehicles.Values.FirstOrDefault(v=>v.Id!=vehicle&&VehicleCargo(v).Position==exit)?.Id??0;
+            return RoadBodies().FirstOrDefault(v=>v.Id!=vehicle&&VehicleCargo(v).Position==exit)?.Id??0;
         }
         return 0;
     }
-    private bool TryForwardTurn(OwnedVehicle v,Cell target)
+    private bool TryForwardTurn(RoadBody v,Cell target)
     {
         var at=VehicleCargo(v).Position;
         // Reach a free designated turn or lateral bay facing forward, turn there, then resume.
@@ -203,9 +220,9 @@ public sealed partial class SimulationEngine
         }
         return false;
     }
-    private void TryTrafficYield(OwnedVehicle v,Cell target,Cell blocked,long blocker=0)
+    private void TryTrafficYield(RoadBody v,Cell target,Cell blocked,long blocker=0)
     {
-        var t=Traffic(v.Id);var other=blocker!=0?_vehicles.GetValueOrDefault(blocker):_vehicles.Values.FirstOrDefault(o=>o.Id!=v.Id&&VehicleCargo(o).Position==blocked);
+        var t=Traffic(v.Id);var other=blocker!=0?FindBody(blocker):RoadBodies().FirstOrDefault(o=>o.Id!=v.Id&&VehicleCargo(o).Position==blocked);
         if(other is null)return;
         var ot=Traffic(other.Id);var at=VehicleCargo(v).Position;
         if(ot.Resume is not null&&ot.YieldTo==v.Id)return;
@@ -216,7 +233,8 @@ public sealed partial class SimulationEngine
         if(opposing&&priority){if(ot.Progress==0)TryBay(other,ot.Path[^1],v.Id);return;}
         TryBay(v,target,other.Id);
     }
-    private bool TryBay(OwnedVehicle v,Cell resume,long other)
+    private bool TryBay(OwnedVehicle v,Cell resume,long other)=>TryBay(Body(v),resume,other);
+    private bool TryBay(RoadBody v,Cell resume,long other)
     {
         var t=Traffic(v.Id);if(t.Progress!=0||t.Resume is not null)return false;
         var at=VehicleCargo(v).Position;
@@ -258,7 +276,8 @@ public sealed partial class SimulationEngine
     private bool RoadVehicleWorking(long vehicle)=>_roadWorks.TryGetValue(vehicle,out var w)&&w.Batch is not null;
     public TravelState VehicleTravelOf(long vehicle)
     {
-        var v=_vehicles[vehicle];int x=v.OffsetX,z=v.OffsetZ;
+        var v=FindBody(vehicle)??throw new ArgumentException("Unknown moving body");int x=TravelCenter,z=TravelCenter;
+        if(_vehicles.TryGetValue(vehicle,out var owned)){x=owned.OffsetX;z=owned.OffsetZ;}
         if(Roads is not null&&_traffic.TryGetValue(vehicle,out var t)&&t.Progress>0&&t.Index<t.Path.Length-1)
         {
             var at=t.Path[t.Index];var next=t.Path[t.Index+1];x=TravelCenter+(next.X-at.X)*t.Progress*TravelUnitsPerCell/800;

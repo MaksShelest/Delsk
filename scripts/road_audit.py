@@ -27,6 +27,12 @@ def verify_roads(folder):
     initial={cell(c) for c in config['layout']['initialCityDirtCells']};built={c:[(1,0,0,0)] for c in initial}
     vehicles={v['id']:v for v in fleet['vehicles']};models={m['id']:m for m in config['economy']['fleet']['models']}
     inventory={i['id']['value']:i for i in state['inventories']};positions={};listings={};work={};mode={};starts=[];paid={}
+    equipment_initial={e['entityId']:point(e['reasonCode']) for e in events if e['type']=='EquipmentTrafficRegistered'}
+    for machine in state['equipment']:
+        identity=machine['id']['value'];model='extractor:'+machine['typeId']
+        models[model]=dict(speed=max(1,80//config['moveTicksPerCell']),materialsOnly=False)
+        vehicles[identity]=dict(id=identity,owner=machine['ownerId'],modelId=model,cargoInventory=machine['storageId'])
+        positions[identity]=equipment_initial.get(identity,cell(machine['position']))
     for e in events:
         kind=e['type'];identity=e['entityId'];tick=e['tick']
         if kind in ('DealerInitialStock','DealerSupply'):listings[identity]=point(e['reasonCode'])
@@ -67,7 +73,7 @@ def verify_roads(folder):
     assert actual==built,'Road contributions erased or invented'
     assert all(c['level']==len(c['contributions']) for c in roads['cells'])
     assert sum(e['amountMinor'] for e in starts)==sum(l['amountMinor'] for l in ledger if l['reason']=='RoadConstruction')
-    assert sum(e['amountMinor'] for e in events if e['type']=='RoadWorkAdvanced')==sum(l['amountMinor'] for l in ledger if l['reason']=='RoadWages')
+    assert sum(e['amountMinor'] for e in events if e['type'] in ('RoadWorkAdvanced','RoadWorkTravelled'))==sum(l['amountMinor'] for l in ledger if l['reason']=='RoadWages')
     for w in roads['works']:
         assert w['group']['id']['value']==w['vehicleId'] and w['group']['role']=='RoadWorks' and w['group']['capacity']==2
         assert w['group']['ownerId']==vehicles[w['vehicleId']]['owner']
@@ -91,7 +97,7 @@ def verify_roads(folder):
         if o['id'] in paid:assert paid[o['id']]==(o['assignee'],o['reward']) and o['paidTick']>0
     assert sum(v[1] for v in paid.values())==sum(l['amountMinor'] for l in ledger if l['reason']=='RoadOrderReward')
     public=[json.loads(s) for s in (folder/'public-events.jsonl').read_text().splitlines()]
-    assert not any(e['type'].startswith('RoadWork') for e in public)
+    assert not any(e['type'].startswith('RoadWork') or e['type'] in ('RoadCrewCreated','FreightBudgetExtended') for e in public)
     assert not any(l['reason'] in ('RoadTax','RoadInvoice','RoadToll') for l in ledger),'E3 charges are not part of E2'
     print(str(folder)+': E2 sequential layers, actual materials/work/money, physical paths and privacy verified')
 

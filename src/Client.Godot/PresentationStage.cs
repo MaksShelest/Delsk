@@ -46,7 +46,7 @@ public partial class PresentationStage : Node3D
     public override void _Process(double delta)
     {
         if (_frozen) return;
-        foreach (var mover in _actors.Values.Concat(_trips.Values).Concat(_fleet.Values))
+        foreach (var mover in _actors.Values.Concat(_trips.Values).Concat(_fleet.Values).Concat(_roadEquipment.Values.Select(e=>e.Mover)))
         {
             mover.Elapsed = Mathf.Min(mover.Duration, mover.Elapsed + (float)delta);
             mover.Node.Position = mover.From.Lerp(mover.To, Mathf.Clamp(mover.Elapsed / mover.Duration, 0, 1));
@@ -68,7 +68,7 @@ public partial class PresentationStage : Node3D
             _staticKey = staticKey;
             RebuildStatic(frame);
         }
-        ShowWarehouseStock(frame);ShowRoads(frame);ShowFleet(frame,snap);
+        ShowWarehouseStock(frame);ShowRoads(frame);ShowFleet(frame,snap);ShowRoadEquipment(frame,snap,appearanceChanged);
         var liveActors = new System.Collections.Generic.HashSet<long>();
         foreach (var actor in frame.Actors)
         {
@@ -193,7 +193,7 @@ public partial class PresentationStage : Node3D
 
     public void ResetMotion()
     {
-        foreach (var mover in _actors.Values.Concat(_trips.Values).Concat(_fleet.Values))
+        foreach (var mover in _actors.Values.Concat(_trips.Values).Concat(_fleet.Values).Concat(_roadEquipment.Values.Select(e=>e.Mover)))
         { mover.From = mover.To = mover.Node.Position; mover.Elapsed = mover.Duration; }
         _frozen = true;
     }

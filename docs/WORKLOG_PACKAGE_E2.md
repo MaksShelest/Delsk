@@ -46,3 +46,19 @@ traffic-tests6:5/5, exit0, реальные head-on/yield, обход/closing, 3
 съезд/restore/replay и explicit turn. build9 также exit0. Новые theory20/40/60,
 второй строитель и Freight+укладчик добавлены и ещё проходят проверку.
 Сохраняется WIP checkpoint в Git; это не финальная приёмка.
+
+Следующий recovery snapshot: shared traffic также охватывает прежнюю добывающую
+машину через вычисляемый RoadBody, без второго inventory/vehicle. Автоматический
+переезд Тракта оплачивает фактическую группу; закрытие объезда хранит фактических
+Users, а не все будущие маршруты. Дубли quanta/Step устранены в общем Hosting.
+
+build11 failed (shadowed locals), build12 passed; road-tests9 launch до готового
+Debug assembly failed, не test pass. road-tests10 9/10: неверная карта4участников/
+2лавки в новой electoral fixture. build13 failed (имя ResourceNodes/analyzer в
+новом тесте), build14 passed. e2-unit-1 остановлен правильным map validator:
+добавленные места лавок отсутствовали в Layout. Фикстура исправлена целиком.
+E2-unit-2 уже прошёл history1/1 и roads10/10; traffic/freight ещё выполняются.
+Python Checks18/18. WIP CI40467554767 failure (unit/developer), platform
+40467554757 success; это не финальная приёмка. Новые E2 suites выделены
+в отдельные required ordinary/Developer jobs, previous+roads дают все partitions;
+прежние individual/aggregate deadlines сохранены, старые тесты не исключены.

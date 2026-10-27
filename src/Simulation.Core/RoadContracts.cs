@@ -10,13 +10,13 @@ public sealed record RoadCell(Cell Cell, int Level, ImmutableArray<RoadContribut
 public sealed record RoadBatch(Cell Cell, int Level, long StartedTick, long Work, ImmutableArray<Cell> Bypass);
 public sealed record RoadWork(long VehicleId, EquipmentMode Mode, bool Enabled, int Level, ImmutableArray<Cell> Route,
     int Cursor, RoadBatch? Batch, EmploymentView Group, string Reason);
-public sealed record RoadBypass(long VehicleId, Cell WorkCell, ImmutableArray<Cell> Path, bool Closing);
+public sealed record RoadBypass(long VehicleId, Cell WorkCell, ImmutableArray<Cell> Path, bool Closing, ImmutableArray<long> Users);
 public sealed record RoadOrder(long Id, Cell Cell, int Level, long Reward, long CreatedTick,
     long Assignee=0, long AcceptedTick=0, long PaidTick=0);
 public sealed record TrafficVehicle(long VehicleId, ImmutableArray<Cell> Path, int Index=0, int Progress=0,
     long WaitingSince=0, long StoppedSince=0, int ExitX=0, int ExitZ=0, int ExitQuanta=0,
     string Reason="Parked", Cell? Resume=null, long Priority=0, long YieldTo=0,
-    long AdvancedTick=0, int AdvancedQuanta=0, bool Assistance=false);
+    long AdvancedTick=0, int AdvancedQuanta=0, bool Assistance=false, int FacingX=0, int FacingZ=-1);
 public sealed record RoadsState(ulong RandomState, long NextOrderTick, ImmutableArray<RoadCell> Cells,
     ImmutableArray<RoadWork> Works, ImmutableArray<RoadBypass> Bypasses,
     ImmutableArray<RoadOrder> Orders, ImmutableArray<TrafficVehicle> Traffic);

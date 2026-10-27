@@ -24,6 +24,7 @@ public sealed partial class AlgorithmicController
         if(work?.Batch is not null||work is {Enabled:true,Reason:not ("NoRoadMaterials" or "NoMoney" or "PreviousRoadStageRequired")})yield break;
         var rule=roads.Rules.Stages[order.Level-1];
         long normative=rule.PriceMinor+rule.Materials.Sum(m=>m.Quantity*BasePrice(o,m.ItemId))+2L*rule.Ticks*roads.Rules.WageMinor;
+        normative=checked(normative+Math.Max(0,Distance(o.Map,paver.Position,order.Cell))*10L*2*roads.Rules.WageMinor);
         if(order.Reward<=normative||o.Account.AvailableMinor<rule.PriceMinor+2L*rule.Ticks*roads.Rules.WageMinor)yield break;
         var steps=new List<PlanStep>();Move(steps,o.Participant.Position,paver.Position);
         if(work is {Enabled:true})

@@ -39,6 +39,7 @@ public sealed partial class SimulationEngine
             throw new RuleViolation("NoResourceRights");
         var path = _map.FindPath(e.Position, destination);
         if (path.Length == 1) return;
+        if(Roads is not null)CancelTrafficRoute(e.Id);
         e.Motion = new([.. path], 0, 0, Tick); e.Reason = "MovingEquipment";
     }
     private void ConsiderExtractionRoute(EquipmentState e)
@@ -70,6 +71,7 @@ public sealed partial class SimulationEngine
             if (e.Motion is not { } motion || motion.StartedTick >= Tick) continue;
             if (e.Mode != EquipmentMode.Automatic) { e.Reason = "UserPaused"; continue; }
             if (e.Group.Headcount < e.Characteristics.MinimumCrew) { e.Reason = "BelowMinimumCrew"; continue; }
+            if(Roads is not null){AdvanceRoadEquipment(e,motion);continue;}
             try
             {
                 long wage = checked(e.Group.Headcount * e.Group.Wage);
@@ -94,7 +96,7 @@ public sealed partial class SimulationEngine
                 r.Stops.Any(c => !_resources.TryGetValue((c,e.Type.ItemId), out var s) || s.Owner != e.Owner || s.Definition.ItemId != e.Type.ItemId)))
                 throw new InvalidOperationException("Invalid extraction route");
             if (e.Motion is { } m && (e.Batch is not null || e.PersonalJobId != 0 || m.Path.IsDefaultOrEmpty ||
-                m.Index < 0 || m.Index >= m.Path.Length - 1 || m.Path[m.Index] != e.Position || m.Path.Any(c => !_map.Walkable(c)) ||
+                m.Index < 0 || m.Index >= m.Path.Length - 1 || (Roads is null && m.Path[m.Index] != e.Position) || m.Path.Any(c => !_map.Walkable(c)) ||
                 m.SegmentTicks < 0 || m.SegmentTicks >= _config.MoveTicksPerCell || m.StartedTick < 1 || m.StartedTick > Tick ||
                 m.Path.Zip(m.Path.Skip(1)).Any(p => Math.Abs(p.First.X-p.Second.X)+Math.Abs(p.First.Z-p.Second.Z)!=1) ||
                 !_resources.TryGetValue((m.Path[^1],e.Type.ItemId), out var target) || target.Owner != e.Owner || target.Definition.ItemId != e.Type.ItemId))

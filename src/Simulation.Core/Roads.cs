@@ -5,6 +5,7 @@ namespace Simulation.Core;
 public sealed partial class SimulationEngine
 {
     private RoadRules? Roads=>_config.Economy?.Roads;
+    public bool UsesRoadTraffic=>Roads is not null;
     private readonly Dictionary<Cell,RoadCell> _roads=[];
     private readonly Dictionary<long,RoadWorkState> _roadWorks=[];
     private readonly List<RoadBypass> _bypasses=[];
@@ -33,11 +34,13 @@ public sealed partial class SimulationEngine
             route.Any(p=>!PublicRoadCell(p))||route.Zip(route.Skip(1)).Any(p=>Manhattan(p.First,p.Second)!=1)||level is <1 or >3))throw new RuleViolation("InvalidRoadRoute");
         if(c.Action.Enabled&&route.Any(p=>RoadLevel(p)!=level&&RoadLevel(p)!=level-1))throw new RuleViolation("PreviousRoadStageRequired");
         if(c.Action.Mode==EquipmentMode.Personal&&v.Driver!=actor.Id||c.Action.Mode==EquipmentMode.Automatic&&v.Driver!=0)throw new RuleViolation("PaverOperatorRequired");
-        if(!_roadWorks.TryGetValue(v.Id,out var w))w=new(v.Id,actor.Id,Roads.WageMinor);
+        bool created=false;if(!_roadWorks.TryGetValue(v.Id,out var w)){w=new(v.Id,actor.Id,Roads.WageMinor);created=true;}
         if(w.Batch is not null&&(w.Mode!=c.Action.Mode||!w.Route.SequenceEqual(route)||w.Level!=level))throw new RuleViolation("RoadBatchInProgress");
         if(w.Batch is null){w.Route=route;w.Cursor=0;w.Level=level;CancelTrafficRoute(v.Id);}
         w.Mode=c.Action.Mode;w.Enabled=c.Action.Enabled&&w.Mode!=EquipmentMode.Off;_roadWorks[v.Id]=w;
-        w.Reason=w.Enabled?"Ready":"UserPaused";Emit("RoadWorkConfigured",actor.Id,v.Id,quantity:level,reason:w.Mode.ToString(),command:c.CommandId);
+        w.Reason=w.Enabled?"Ready":"UserPaused";
+        if(created)Emit("RoadCrewCreated",actor.Id,v.Id,command:c.CommandId);
+        Emit("RoadWorkConfigured",actor.Id,v.Id,quantity:level,reason:w.Mode.ToString(),command:c.CommandId);
     }
     private string RoadReadiness(RoadWorkState w)
     {
@@ -66,7 +69,19 @@ public sealed partial class SimulationEngine
                 if(cargo.Position!=target)
                 {
                     if(w.Mode==EquipmentMode.Personal){w.Reason="MovePaverToWork";continue;}
-                    try{if(TrafficTravel(v,target)){w.Reason="Arrived";}else w.Reason=Traffic(v.Id).Reason;}
+                    long travelWage=checked(staff*w.Group.Wage);
+                    if(_economy.Accounts[actor.Account].Available<travelWage){w.Reason="NoMoney";continue;}
+                    var beforeTravel=Traffic(v.Id);var beforePosition=cargo.Position;
+                    try
+                    {
+                        if(TrafficTravel(v,target))w.Reason="Arrived";else w.Reason=Traffic(v.Id).Reason;
+                        var after=Traffic(v.Id);
+                        if(beforeTravel.Progress!=after.Progress||beforePosition!=cargo.Position)
+                        {
+                            if(travelWage>0){var travelTx=_economy.Begin(Tick);travelTx.Pay(actor.Account,_wages,travelWage,"RoadWages");travelTx.Commit();}
+                            Emit("RoadWorkTravelled",actor.Id,v.Id,quantity:staff,money:travelWage);
+                        }
+                    }
                     catch(RuleViolation ex){w.Reason=ex.ReasonCode;}
                     continue;
                 }
@@ -82,7 +97,7 @@ public sealed partial class SimulationEngine
                 foreach(var m in rule.Materials)tx.RemoveFreeStock(cargo.Id,m.ItemId,m.Quantity);
                 tx.Commit();foreach(var x in consumed)_flows[x.Key].ConstructionInput=x.Value;
                 EmitMaterialConsumption(actor.Id,v.Id,rule.Materials.ToArray(),"road:"+v.Id+":"+Tick);
-                w.Batch=new(target,w.Level,Tick,0,bypass);_bypasses.Add(new(v.Id,target,bypass,false));
+                w.Batch=new(target,w.Level,Tick,0,bypass);_bypasses.Add(new(v.Id,target,bypass,false,[]));
                 actor.HeadingX=actor.HeadingZ=0;CancelTrafficRoute(v.Id);
                 Emit("RoadWorkStarted",actor.Id,v.Id,quantity:w.Level,money:rule.PriceMinor,reason:target.X+","+target.Z);w.Reason="Working";continue;
             }
@@ -101,8 +116,14 @@ public sealed partial class SimulationEngine
             int bypassIndex=_bypasses.FindIndex(b=>b.VehicleId==v.Id&&!b.Closing);
             _bypasses[bypassIndex]=_bypasses[bypassIndex] with{Closing=true};
         }
-        // A committed trajectory keeps the temporary corridor until its last user leaves.
-        _bypasses.RemoveAll(b=>b.Closing&&!_traffic.Values.Any(t=>t.Index<t.Path.Length-1&&t.Path.Skip(t.Index).Any(b.Path.Contains)));
+        // Only actual entrants retain the temporary lane; its permanent road endpoints never close.
+        for(int i=0;i<_bypasses.Count;i++)
+        {
+            var b=_bypasses[i];var inside=b.Path.Skip(1).SkipLast(1).ToHashSet();
+            _bypasses[i]=b with{Users=[..b.Users.Where(id=>FindBody(id) is {} body&&(inside.Contains(VehicleCargo(body).Position)||
+                _traffic.TryGetValue(id,out var t)&&t.Progress>0&&t.Index<t.Path.Length-1&&inside.Contains(t.Path[t.Index+1])))]};
+        }
+        _bypasses.RemoveAll(b=>b.Closing&&b.Users.IsEmpty);
     }
     private ImmutableArray<Cell> RoadWorkBypass(Cell cell)
     {
@@ -111,7 +132,8 @@ public sealed partial class SimulationEngine
         foreach(var a in neighbors)foreach(var b in neighbors.Where(b=>b!=a))
         {
             if(Manhattan(a,b)!=2)continue;
-            var path=PublicCorridorPath(a,b,c=>c!=cell&&!_roadWorks.Values.Any(w=>w.Batch?.Cell==c));
+            var path=PublicCorridorPath(a,b,c=>c!=cell&&!_roadWorks.Values.Any(w=>w.Batch?.Cell==c)&&
+                (c==a||c==b||!ReservedByOther(0,c)));
             if(path.Length>2&&path.Length<=12)return [..path];
         }
         return [];
@@ -151,7 +173,7 @@ public sealed partial class SimulationEngine
         [.._roads.Values.OrderBy(c=>c.Cell.Z).ThenBy(c=>c.Cell.X)],[.._roadWorks.Values.OrderBy(w=>w.Vehicle).Select(w=>w.View())],
         [.._bypasses],[.._roadOrders],[.._traffic.Values.OrderBy(t=>t.VehicleId)]);
     public RoadObservation? RoadsOf(ParticipantId actor)=>InspectRoads() is {} r?new(r.Cells,[..r.Works.Where(w=>w.Group.OwnerId==actor)],r.Bypasses,
-        r.Orders,[..r.Traffic.Where(t=>_vehicles[t.VehicleId].Owner==actor)],Roads!):null;
+        r.Orders,[..r.Traffic.Where(t=>FindBody(t.VehicleId)?.Owner==actor)],Roads!):null;
     private long RoadCapital(ParticipantId actor)
     {
         if(Roads is null)return 0;
