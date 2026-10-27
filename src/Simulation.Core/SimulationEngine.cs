@@ -82,7 +82,7 @@ public sealed partial class SimulationEngine
         InitializeCapitalDemand();
         InitializeElections();
         InitializeSupport();
-        InitializeStorage();InitializeDevelopmentBuildings();InitializeProductionContent();InitializeFleet();InitializeRoads();
+        InitializeStorage();InitializeDevelopmentBuildings();InitializeProductionContent();InitializeFleet();InitializeRoads();InitializeBilling();
         Emit("WorldCreated");
         ValidateInvariants();
     }
@@ -163,7 +163,7 @@ public sealed partial class SimulationEngine
             _phase = 4; AdvanceHarvests(); AdvanceWork(); AdvanceRoadWorks();
             _phase = 5; AdvanceLabor();
             _phase = 6; CloseVehiclePurchases(); CloseCapitalWindows(); AdvanceMarketWindows(); CloseBuyWindows(); AdvanceCapitalDemand();
-            _phase = 7; AdvanceOverflow(true); ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders(); ExpireSupport(); ExpireNegotiations();AdvanceIndustryQuests();
+            _phase = 7; AdvanceOverflow(true); ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders(); ExpireSupport(); ExpireNegotiations();AdvanceIndustryQuests();AdvanceBilling();
             _phase = 8; AdvanceElections();
             _phase = 9; AdvanceCityStage(); ValidateInvariants(); Emit("TickCommitted");
         }
@@ -187,6 +187,7 @@ public sealed partial class SimulationEngine
                 throw new RuleViolation(access.ReasonCode);
             switch (c.Action.Kind)
             {
+                case ActionKind.PayInvoice: case ActionKind.ViewInvoice: case ActionKind.SetAutoPay: BillingCommand(actor,c); break;
                 case ActionKind.BuyVehicle: BuyVehicle(actor,c); break;
                 case ActionKind.SetRoadWork: SetRoadWork(actor,c); break;
                 case ActionKind.AcceptRoadOrder: AcceptRoadOrder(actor,c); break;
@@ -429,6 +430,7 @@ public sealed partial class SimulationEngine
         if(InspectProductionContent() is {} content)payload=new{Payload=payload,ProductionContent=content};
         if(InspectFleet() is {} fleet)payload=new{Payload=payload,Fleet=fleet};
         if(InspectRoads() is {} roads)payload=new{Payload=payload,Roads=roads};
+        if(InspectBilling() is {} billing)payload=new{Payload=payload,Billing=billing};
         if(InspectDevelopment() is {} development)payload=new{Payload=payload,Development=development};
         var travel = TravelDeviation();
         return ScenarioValidation.Hash(travel is null ? payload : new { Payload = payload, Travel = travel });

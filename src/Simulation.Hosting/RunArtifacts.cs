@@ -54,6 +54,7 @@ public static class RunArtifacts
         WriteJson("elections.json", state.Elections);
         if(session.Engine.InspectFleet() is {} fleet)WriteJson("fleet.json",fleet);
         if(session.Engine.InspectRoads() is {} roads)WriteJson("roads.json",roads);
+        if(session.Engine.InspectBilling() is {} billing)WriteJson("billing.json",billing);
         if(session.Engine.InspectProductionContent() is {} content)WriteJson("production-content.json",content);
         WriteJson("support.json", session.Engine.InspectSupport());
         WriteJson("negotiations.json", session.Engine.InspectNegotiations());

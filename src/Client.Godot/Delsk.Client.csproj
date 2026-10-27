@@ -17,6 +17,7 @@
     <EmbeddedResource Include="../../config/vnext/economy.d1-workshops.json" LogicalName="Play.d1-workshops.json" />
     <EmbeddedResource Include="../../config/vnext/economy.e1-fleet.json" LogicalName="Play.e1-fleet.json" />
     <EmbeddedResource Include="../../config/vnext/economy.e2-roads.json" LogicalName="Play.e2-roads.json" />
+    <EmbeddedResource Include="../../config/vnext/economy.e3-accounts.json" LogicalName="Play.e3-accounts.json" />
     <EmbeddedResource Include="../../config/vnext/economy.d3-production.json" LogicalName="Play.d3-production.json" />
     <EmbeddedResource Include="../../config/vnext/economy.d2-development.json" LogicalName="Play.d2-development.json" />
     <EmbeddedResource Include="../../config/vnext/economy.b1-supported.json" LogicalName="Play.vnext-supported.json" />

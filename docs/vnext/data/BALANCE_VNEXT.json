@@ -47,8 +47,8 @@
     "delivery_fixed_minor": 200,
     "delivery_block_minor": 10,
     "transport_invoice_period": 120,
-    "invoice_grace": 500,
-    "penalty_period": 500,
+    "invoice_grace": 1000,
+    "penalty_period": 1000,
     "penalty_bp": 2000,
     "city_private_road_share_bp": 1000,
     "road_speed_caps": [

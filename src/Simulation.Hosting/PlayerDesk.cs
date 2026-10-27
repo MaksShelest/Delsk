@@ -74,7 +74,7 @@ public static class PlayerDesk
             seen.CapitalOffers, seen.Account.AvailableMinor, engine.HarvestOf(actor), engine.EconomyRules,
             new(seen.MarketOffers, seen.OwnMarketBids, seen.OwnMarketAllocations, seen.MarketRules, engine.PublicShops()),
             seen.OwnEquipment, seen.OwnDeliveryContracts, seen.BuyOffers, seen.OwnSupplyRequests, seen.City)
-            { Roads=engine.RoadsOf(actor),Fleet=engine.FleetOf(actor),ProductionContent=engine.ProductionContentOf(actor),Development=engine.DevelopmentOf(actor),Demolition=engine.DemolitionOf(actor),Storage=engine.HasGroundStorage?engine.StorageOf(actor):null,Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))] };
+            { PersonalAccount=engine.AccountOf(actor),Roads=engine.RoadsOf(actor),Fleet=engine.FleetOf(actor),ProductionContent=engine.ProductionContentOf(actor),Development=engine.DevelopmentOf(actor),Demolition=engine.DemolitionOf(actor),Storage=engine.HasGroundStorage?engine.StorageOf(actor):null,Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))] };
     }
 }
 
@@ -87,6 +87,7 @@ public record PlayerView(long Tick, ParticipantView Participant, long CashMinor,
     public DevelopmentObservation? Development {get;init;}
     public FleetObservation? Fleet {get;init;}
     public RoadObservation? Roads {get;init;}
+    public PersonalAccount? PersonalAccount {get;init;}
     public ProductionContentObservation? ProductionContent {get;init;}
     public DemolitionState? Demolition {get;init;}
     public StorageState? Storage {get;init;}
@@ -115,6 +116,9 @@ public static class PlayerText
     private static Dictionary<string, string> Ru() => new(StringComparer.Ordinal)
     {
         ["reason.PaverRequired"] = "Нужен собственный Тракт-Д1.",
+        ["reason.BillingUnavailable"] = "Дорожные счета выключены в правилах этой партии.",
+        ["reason.InvoiceUnavailable"] = "Счёт недоступен.",
+        ["reason.InvoicePaid"] = "Счёт уже полностью оплачен.",
         ["reason.InvalidRoadRoute"] = "Нужен маршрут из соседних публичных клеток коридора, до 64.",
         ["reason.PreviousRoadStageRequired"] = "Сначала завершите предыдущую ступень дороги.",
         ["reason.PaverOperatorRequired"] = "Лично сядьте в Тракт; для автоматики выйдите и наймите группу.",
@@ -338,6 +342,9 @@ public static class PlayerText
     private static Dictionary<string, string> En() => new(StringComparer.Ordinal)
     {
         ["reason.PaverRequired"] = "An owned Trakt-D1 is required.",
+        ["reason.BillingUnavailable"] = "Road invoices are disabled in this game.",
+        ["reason.InvoiceUnavailable"] = "Invoice unavailable.",
+        ["reason.InvoicePaid"] = "The invoice is already paid in full.",
         ["reason.InvalidRoadRoute"] = "Use up to 64 adjacent public corridor cells.",
         ["reason.PreviousRoadStageRequired"] = "Complete the previous road stage first.",
         ["reason.PaverOperatorRequired"] = "Board for personal work; leave and hire the crew for automatic work.",

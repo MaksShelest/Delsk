@@ -1,0 +1,53 @@
+{
+  "status": "succeeded",
+  "processChecks": 48,
+  "exports": 33,
+  "comparisonPairs": 22,
+  "cases": {
+    "distance-vector200": {
+      "finalTick": 246,
+      "cut": 239
+    },
+    "fractional": {
+      "finalTick": 149,
+      "cut": 119
+    },
+    "highway100": {
+      "finalTick": 1339,
+      "cut": 1320
+    },
+    "frozen-rights": {
+      "finalTick": 1083,
+      "cut": 479
+    },
+    "auto-holds": {
+      "finalTick": 246,
+      "cut": 241
+    },
+    "freight-accounting": {
+      "finalTick": 850,
+      "cut": 399
+    },
+    "mining-accounting": {
+      "finalTick": 286,
+      "cut": 163
+    },
+    "auto-receipt-escrow": {
+      "finalTick": 421,
+      "cut": 247
+    },
+    "small-rounding": {
+      "finalTick": 2043,
+      "cut": 479
+    },
+    "simple-penalties": {
+      "finalTick": 3124,
+      "cut": 1120
+    },
+    "boundary-1000": {
+      "finalTick": 1123,
+      "cut": 1119
+    }
+  },
+  "scope": "Actual ordinary commands, exact billing/all exports, independent distance/rights/rounding/principal/penalty/payment/money/capital/privacy audits. Prepared geography, materials and money; not long-run ROI or device acceptance. Delivery services excluded."
+}

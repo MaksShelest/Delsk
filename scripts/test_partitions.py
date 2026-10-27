@@ -39,11 +39,14 @@ ROAD_HISTORY = ('Simulation.Tests.RoadHistoryE2Tests',)
 ROADS = ('Simulation.Tests.RoadE2Tests',)
 TRAFFIC = ('Simulation.Tests.RoadTrafficE2Tests',)
 ROAD_FREIGHT = ('Simulation.Tests.RoadFreightE2Tests',)
-PARTITIONS = (Partition('', exclude=ROAD_HISTORY + ROADS + TRAFFIC + ROAD_FREIGHT + INTEGRATION + DEVELOPMENT + PRODUCTION + START + FLEET + FLEET_STOCK + PHYSICAL + MODELS), Partition('-integration', include=INTEGRATION), Partition('-d2', include=DEVELOPMENT), Partition('-d3', include=PRODUCTION), Partition('-d3-start', include=START), Partition('-e1', include=FLEET), Partition('-e1-stock', include=FLEET_STOCK), Partition('-physical', include=PHYSICAL), Partition('-models', include=MODELS), Partition('-e2-history',include=ROAD_HISTORY), Partition('-e2-roads',include=ROADS), Partition('-e2-traffic',include=TRAFFIC), Partition('-e2-freight',include=ROAD_FREIGHT))
+BILLING_TIMING = tuple("Simulation.Tests."+n for n in ("BillingPenaltyE3Tests","BillingBoundaryE3Tests","BillingPauseE3Tests","BillingReceiptE3Tests","BillingRoundingE3Tests","BillingTrafficE3Tests"))
+BILLING = ("Simulation.Tests.BillingE3Tests",)
+BILLING_DISTRIBUTION = ("Simulation.Tests.BillingDistributionE3Tests",)
+PARTITIONS = (Partition('', exclude=BILLING_TIMING + BILLING + BILLING_DISTRIBUTION + ROAD_HISTORY + ROADS + TRAFFIC + ROAD_FREIGHT + INTEGRATION + DEVELOPMENT + PRODUCTION + START + FLEET + FLEET_STOCK + PHYSICAL + MODELS), Partition('-integration', include=INTEGRATION), Partition('-d2', include=DEVELOPMENT), Partition('-d3', include=PRODUCTION), Partition('-d3-start', include=START), Partition('-e1', include=FLEET), Partition('-e1-stock', include=FLEET_STOCK), Partition('-physical', include=PHYSICAL), Partition('-models', include=MODELS), Partition('-e2-history',include=ROAD_HISTORY), Partition('-e2-roads',include=ROADS), Partition('-e2-traffic',include=TRAFFIC), Partition('-e2-freight',include=ROAD_FREIGHT),Partition('-e3-accounts',include=BILLING),Partition('-e3-distribution',include=BILLING_DISTRIBUTION),*(Partition('-e3-timing-'+str(n),include=(name,)) for n,name in enumerate(BILLING_TIMING)))
 
 def selected_partitions(suite='all'):
-    if suite not in ('all','previous','roads'):raise ValueError('Unknown suite')
-    return tuple(p for p in PARTITIONS if suite=='all' or p.name.startswith('-e2-')==(suite=='roads'))
+    if suite not in ('all','previous','roads','billing'):raise ValueError('Unknown suite')
+    return tuple(p for p in PARTITIONS if suite=='all' or suite=='roads' and p.name.startswith('-e2-') or suite=='billing' and p.name.startswith('-e3-') or suite=='previous' and not p.name.startswith(('-e2-','-e3-')))
 
 def run_suite(check, dotnet, assembly, output, prefix='tests', timeout=120, suite='all'):
     """All future classes enter the base partition. Reject skips, failures and overlaps in actual TRX."""

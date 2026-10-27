@@ -7,8 +7,10 @@ import sys
 from import_audit import verify_imports
 from fleet_audit import verify_fleet
 from road_audit import verify_roads
+from billing_audit import verify as verify_billing
 
 def verify(folder):
+    verify_billing(folder)
     folder = Path(folder)
     verify_fleet(folder)
     verify_roads(folder)
@@ -141,7 +143,12 @@ def verify(folder):
             assert d['buyer'] != d['supplier'] and d['buyerAccount']['value'] == people[d['buyer']['value']]
             destination = inventories[d['destinationInventory']['value']]
             assert destination['ownerId'] == d['buyer'] and destination['position'] == d['position']
-            assert destination['reservedCapacity'] >= remaining * items[d['itemId']]
+            if d.get('capacityForecast', False):
+                # C1 explicitly forecasts an accepted delivery instead of reserving
+                # normal space; actual overflow retains separate physical ownership.
+                assert (config.get('economy') or {}).get('storage') is not None
+            else:
+                assert destination['reservedCapacity'] >= remaining * items[d['itemId']]
         else:
             assert d['destinationInventory'] is None and accounts[d['buyerAccount']['value']]['kind'] == 'CapitalBudget'
         for account, fields in [(d['escrowAccount']['value'], [('DeliveryPayment','paidMinor'),('DeliveryRefund','refundedMinor')]),

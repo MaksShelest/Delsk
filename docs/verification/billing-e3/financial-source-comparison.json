@@ -1,0 +1,7 @@
+{
+  "status": "succeeded",
+  "unitSnapshot": "b09b72812f2ed565b6c83599bc24e418f271699d",
+  "finalRuntime": "79e8589a04b280707380b453cdf45e1be3d968cf",
+  "checkedFiles": 367,
+  "scope": "Financial Core/Hosting/Runner/agents/config/upstream and C# test inputs unchanged after the accepted local unit/runner inputs."
+}

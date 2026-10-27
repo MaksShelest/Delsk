@@ -6,6 +6,8 @@ import sys
 
 def verify(folder):
     folder = Path(folder)
+    from billing_audit import capital
+    claims,debts=capital(folder)
     city = json.loads((folder/'public-economy.json').read_text())
     state = json.loads((folder/'final-state.json').read_text())
     config = json.loads((folder/'scenario.json').read_text())
@@ -17,7 +19,7 @@ def verify(folder):
     assert city['employed'] == sum(g['headcount'] for g in state['employmentGroups'])
     assert city['labor']['employedRate'] == {'weightedMinor':sum(g['headcount']*g['wageMinor'] for g in state['employmentGroups']), 'weight':city['employed']}
     assert city['labor']['vacancyRate'] == {'weightedMinor':sum(o['vacancies']*o['attractionWageMinor'] for o in city['labor']['offers']), 'weight':sum(o['vacancies'] for o in city['labor']['offers'])}
-    assert city['municipalMinor'] == sum(a['balanceMinor'] for a in state['accounts'] if a['kind']=='Treasury')
+    assert city['municipalMinor'] == sum(a['balanceMinor'] for a in state['accounts'] if a['kind']=='Treasury')+claims[0]
     assert city['capitalMinor'] == city['municipalMinor'] + sum(p['capitalMinor'] for p in city['participants'])
     assert len({p['actor']['value'] for p in city['participants']}) == len(config['participants'])
     types = {b['id']:b for b in config.get('buildingTypes') or []}
@@ -63,7 +65,7 @@ def verify(folder):
                 r=stages[level];return r['priceMinor']+sum(m['quantity']*prices[m['itemId']] for m in r['materials'])
             buildings+=sum(road_cost(c['level']) for cell in roads['cells'] for c in cell['contributions'] if c['builder']['value']==actor)
             buildings+=sum(road_cost(w['batch']['level']) for w in roads['works'] if w['group']['ownerId']['value']==actor and w['batch'])
-        assert participant['capitalMinor']==cash+stock+wip+land+buildings+equipment, (folder,actor,'capital')
+        assert participant['capitalMinor']==cash+stock+wip+land+buildings+equipment+claims[actor]-debts[actor], (folder,actor,'capital')
         assert participant['employed']==sum(g['headcount'] for g in state['employmentGroups'] if g['ownerId']['value']==actor)
     latest = [json.loads(line) for line in (folder/'events.jsonl').read_text().splitlines() if json.loads(line)['type']=='CityStageUpdated']
     assert city['stage']==(latest[-1]['entityId'] if latest else 0)

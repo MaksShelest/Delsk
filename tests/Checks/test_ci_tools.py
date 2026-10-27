@@ -18,7 +18,8 @@ class PartitionsTests(unittest.TestCase):
             self.assertEqual(sum(p.matches(name) for p in PARTITIONS),1,name)
 
     def test_disjoint_jobs_preserve_every_partition_and_deadlines(self):
-        old=set(selected_partitions('previous'));new=set(selected_partitions('roads'))
+        old=set(selected_partitions('previous'));roads=set(selected_partitions('roads'));billing=set(selected_partitions('billing'));new=roads|billing
+        self.assertFalse(roads&billing);self.assertTrue(billing)
         self.assertFalse(old&new);self.assertEqual(old|new,set(PARTITIONS))
         self.assertTrue(new);self.assertEqual(len(old),9)
 

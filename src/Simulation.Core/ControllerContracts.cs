@@ -45,6 +45,8 @@ public record ControllerObservation(long Tick, ParticipantView Participant, Acco
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public FleetObservation? Fleet {get;init;}
     public RoadObservation? Roads {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public PersonalAccount? PersonalAccount {get;init;}
     public ProductionContentObservation? ProductionContent {get;init;}
     public System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources { get; init; } = [];
     public System.Collections.Immutable.ImmutableArray<TradeNegotiation> Negotiations {get;init;}=[];
@@ -101,6 +103,6 @@ public sealed partial class SimulationEngine
             o.EquipmentTypes.Select(t => new ControllerEquipmentType(t.Id, t.ItemId, [.. t.Levels])).ToImmutableArray(),
             new(_config.MapWidth, _config.MapHeight, BlockedCells(), [.. _config.ResourceNodes],
                 [.. _config.Items], [.. _config.Recipes], _config.MoveTicksPerCell,
-                _config.HarvestTicksPerUnit, _config.TradeWindowTicks), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules, o.CapitalPrices, o.CapitalPriceHistory, o.Elections, o.Support, o.City) { Roads=RoadsOf(actor),Fleet=FleetOf(actor),ProductionContent=ProductionContentOf(actor),Development=DevelopmentOf(actor),Economics=new(Labor,EconomyRules.Handling??new(),EconomyRules.WageAttractionExponent,_config.Economy?.Workshops),Resources = o.Resources,Negotiations=o.Negotiations,NegotiationRules=o.NegotiationRules,TradingParticipants=o.TradingParticipants };
+                _config.HarvestTicksPerUnit, _config.TradeWindowTicks), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules, o.CapitalPrices, o.CapitalPriceHistory, o.Elections, o.Support, o.City) { PersonalAccount=Billing is null?null:AccountOf(actor),Roads=RoadsOf(actor),Fleet=FleetOf(actor),ProductionContent=ProductionContentOf(actor),Development=DevelopmentOf(actor),Economics=new(Labor,EconomyRules.Handling??new(),EconomyRules.WageAttractionExponent,_config.Economy?.Workshops),Resources = o.Resources,Negotiations=o.Negotiations,NegotiationRules=o.NegotiationRules,TradingParticipants=o.TradingParticipants };
     }
 }
