@@ -55,7 +55,7 @@ public sealed partial class SimulationEngine
         PublishRoadOrders();
         foreach(var w in _roadWorks.Values.OrderBy(w=>w.Vehicle))
         {
-            if(!w.Enabled){w.Reason="UserPaused";continue;}
+            if(!w.Enabled){w.Reason=w.Route.Length>0&&w.Cursor>=w.Route.Length?"RouteCompleted":"UserPaused";continue;}
             if(w.Cursor>=w.Route.Length){w.Enabled=false;w.Reason="RouteCompleted";continue;}
             var v=_vehicles[w.Vehicle];var cargo=VehicleCargo(v);var actor=_actors[v.Owner.Value];
             int staff=w.Mode==EquipmentMode.Personal?(v.Driver==actor.Id?1:0):w.Group.Headcount;

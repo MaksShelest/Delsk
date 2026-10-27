@@ -55,7 +55,7 @@ public partial class RoadProbe : Control
                 await Drive(5);string save=CheckpointStore.Encode(_session);System.IO.File.WriteAllText(_output+"/road-in-use-"+language+".save.json",save);_session=CheckpointStore.Decode(save);Refresh();
                 long work=_session.Engine.InspectRoads()!.Works.Single().Batch!.Work;await Click("RoadStop");await Drive(3);Check(_session.Engine.InspectRoads()!.Works.Single().Batch!.Work==work,"Paused work progressed");
                 await Click("RoadStart");await Drive(1);int bound=50;while(_session.Engine.InspectRoads()!.Works.Single().Batch is not null&&bound-->0)await Drive(1);Check(bound>0,"Road work did not finish");
-                var road=_session.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==new Cell(10,1));Check(_session.Engine.InspectRoads()!.Works.Single().Reason=="RouteCompleted","Completed work still appears active");
+                var road=_session.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==new Cell(10,1));await Drive(1);Check(_session.Engine.InspectRoads()!.Works.Single().Reason=="RouteCompleted","Completed work still appears active or paused on the next tick");
                 Check(road.Level==2&&road.Contributions.Select(c=>c.Builder.Value).SequenceEqual(new long[]{0,1}),"City base or private contribution lost");
                 Check(!_stage.GetNode<Node3D>("Actor_1").Visible,"Mounted road operator was duplicated");
                 Check(_stage.GetChildren().OfType<Node3D>().Count(n=>n.Name.ToString()=="Vehicle_"+v.Id)==1,"Physical paver duplicated");

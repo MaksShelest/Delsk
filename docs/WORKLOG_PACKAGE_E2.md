@@ -152,3 +152,9 @@ atomic protected/materials test. Это единственный последу�
 замены Route/Cursor/Level: отказ VehicleMoving не меняет прежнее намерение.
 Personal test теперь проверяет это настоящим travel quantum и rejected Stop.
 Количество E2 cases27 сохранено, существующий сценарий усилен, не исключён.
+
+Completed status теперь сохраняется и на следующих disabled тиках вместо
+UserPaused; добавлены post-tick assertions в automatic test/native probe.
+Финальный code freeze, новые gates выполняются на этом снимке. Дальнейший
+объём ограничен E2; подготовленные ранее runner/native/CI records остаются
+историей и не подменяют свежие подтверждения этого снимка.

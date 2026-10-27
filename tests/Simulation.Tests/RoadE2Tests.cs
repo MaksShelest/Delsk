@@ -81,7 +81,7 @@ public class RoadE2Tests
         var work=s.Engine.InspectRoads()!.Works.Single();Assert.Equal(staff,work.Group.Headcount);Assert.NotNull(work.Batch);
         var start=work.Batch!;long cash=s.Engine.Observe(new(1)).Account.BalanceMinor;
         s.AdvanceTo(start.StartedTick+24/staff);Assert.Equal(2,s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==start.Cell).Level);
-        Assert.Equal(cash-480,s.Engine.Observe(new(1)).Account.BalanceMinor);s.Step();cash=s.Engine.Observe(new(1)).Account.BalanceMinor;s.AdvanceTo(s.Engine.Tick+5);Assert.Equal(cash,s.Engine.Observe(new(1)).Account.BalanceMinor);
+        Assert.Equal(cash-480,s.Engine.Observe(new(1)).Account.BalanceMinor);s.Step();Assert.Equal("RouteCompleted",s.Engine.InspectRoads()!.Works.Single().Reason);cash=s.Engine.Observe(new(1)).Account.BalanceMinor;s.AdvanceTo(s.Engine.Tick+5);Assert.Equal(cash,s.Engine.Observe(new(1)).Account.BalanceMinor);
         Assert.Equal(staff,s.Engine.Inspect().Unemployed+s.Engine.Inspect().EmploymentGroups.Sum(g=>(long)g.Headcount));Exact(s,"automatic-"+staff);
     }
     [Fact]public void MissingMaterialsAndProtectedPrivateCellsDoNotSpendMoneyOrCreateRoads()
