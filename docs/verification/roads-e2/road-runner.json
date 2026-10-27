@@ -1,0 +1,76 @@
+{
+  "status": "succeeded",
+  "processChecks": 51,
+  "exports": 35,
+  "comparisonPairs": 24,
+  "cases": {
+    "minimum-crew": {
+      "finalTick": 573,
+      "cuts": [
+        541
+      ]
+    },
+    "dirt": {
+      "finalTick": 569,
+      "cuts": [
+        566
+      ]
+    },
+    "personal": {
+      "finalTick": 601,
+      "cuts": [
+        539,
+        563
+      ]
+    },
+    "automatic": {
+      "finalTick": 561,
+      "cuts": [
+        541
+      ]
+    },
+    "builders": {
+      "finalTick": 1031,
+      "cuts": [
+        562
+      ]
+    },
+    "public-task": {
+      "finalTick": 650,
+      "cuts": [
+        645
+      ]
+    },
+    "opposing": {
+      "finalTick": 361,
+      "cuts": [
+        234
+      ]
+    },
+    "bypass": {
+      "finalTick": 835,
+      "cuts": [
+        742
+      ]
+    },
+    "freight": {
+      "finalTick": 1568,
+      "cuts": [
+        1176
+      ]
+    },
+    "extraction": {
+      "finalTick": 858,
+      "cuts": [
+        835
+      ]
+    },
+    "npc": {
+      "finalTick": 637,
+      "cuts": [
+        623
+      ]
+    }
+  },
+  "scope": "Real ordinary E2 command tapes, exact whole exports including roads.json, independent material/money/work/physical traffic/contribution/privacy audits. Prepared geography, material sources and money, not natural progression or device acceptance. E3 excluded."
+}

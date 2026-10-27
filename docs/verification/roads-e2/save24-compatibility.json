@@ -1,0 +1,37 @@
+{
+  "status": "succeeded",
+  "source": "Actual pre-E2 E1 runner checkpoint, not a version-only edited current save",
+  "schema": 24,
+  "tick": 348,
+  "sha256": "0e92b388576e38f0c2756747b8412437de6d72f02eeacfaef836c2307bd164f0",
+  "comparison": "All exports compared byte-for-byte against original E1 manual-cargo",
+  "load": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e1/fleet-runner/manual-cargo-348.save.json",
+      "--output",
+      "/workspace/work/e2/e1-save24-accepted"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:54:26.706377+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 6.842,
+    "finished_at": "2026-10-27T09:54:33.548200+00:00"
+  },
+  "compare": {
+    "command": [
+      "python3",
+      "scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e1/fleet-runner/manual-cargo",
+      "/workspace/work/e2/e1-save24-accepted"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T09:54:33.624230+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.066,
+    "finished_at": "2026-10-27T09:54:33.690522+00:00"
+  },
+  "testedCode": "25f668958d41fe37da490d6805d302e87d1cc938"
+}

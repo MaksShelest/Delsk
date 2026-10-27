@@ -1,0 +1,2360 @@
+{
+  "asset-import-trial": {
+    "command": [
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--headless",
+      "--path",
+      "/workspace/work/e2/asset-import-trial",
+      "--editor",
+      "--import"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:14:01.475001+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 6.684,
+    "finished_at": "2026-10-27T09:14:08.159454+00:00"
+  },
+  "asset-reuse-trial": {
+    "command": [
+      "python3",
+      "scripts/reuse_godot_imports.py",
+      "--source",
+      "/workspace/work/e2/asset-import-trial",
+      "--target",
+      "/workspace/work/e2/asset-runtime-trial",
+      "--report",
+      "/workspace/work/e2/asset-reuse-trial.json"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T09:15:22.588957+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.165,
+    "finished_at": "2026-10-27T09:15:22.754180+00:00"
+  },
+  "asset-runtime-logs-trial": {
+    "command": [
+      "python3",
+      "scripts/verify_platform_probe.py",
+      "--report",
+      "/workspace/work/e2/asset-runtime-trial.json",
+      "--log-prefix",
+      "/workspace/work/e2/checks/asset-import-trial",
+      "--log-prefix",
+      "/workspace/work/e2/checks/asset-runtime-trial"
+    ],
+    "timeout_seconds": 15,
+    "started_at": "2026-10-27T09:15:35.194977+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.068,
+    "finished_at": "2026-10-27T09:15:35.263404+00:00"
+  },
+  "asset-runtime-trial": {
+    "command": [
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--headless",
+      "--path",
+      "/workspace/work/e2/asset-runtime-trial",
+      "--",
+      "--smoke",
+      "--report",
+      "/workspace/work/e2/asset-runtime-trial.json"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T09:15:22.827361+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 12.311,
+    "finished_at": "2026-10-27T09:15:35.138355+00:00"
+  },
+  "asset-verify-trial": {
+    "command": [
+      "python3",
+      "scripts/reuse_godot_imports.py",
+      "--source",
+      "/workspace/work/e2/asset-import-trial",
+      "--verify-only",
+      "--report",
+      "/workspace/work/e2/asset-verify-trial.json"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T09:14:08.211559+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.115,
+    "finished_at": "2026-10-27T09:14:08.326716+00:00"
+  },
+  "build-final-direction": {
+    "command": [
+      "dotnet",
+      "build",
+      "tests/Simulation.Tests",
+      "-c",
+      "Release",
+      "--no-restore",
+      "-m:1",
+      "-p:UseSharedCompilation=false"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T09:44:45.488506+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 55.392,
+    "finished_at": "2026-10-27T09:45:40.881091+00:00"
+  },
+  "build11": {
+    "command": [
+      "dotnet",
+      "build",
+      "tests/Simulation.Tests",
+      "--no-restore",
+      "-m:1",
+      "-p:UseSharedCompilation=false"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T08:11:45.949166+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 23.547,
+    "finished_at": "2026-10-27T08:12:09.496113+00:00"
+  },
+  "build12": {
+    "command": [
+      "dotnet",
+      "build",
+      "tests/Simulation.Tests",
+      "--no-restore",
+      "-m:1",
+      "-p:UseSharedCompilation=false"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T08:12:40.845800+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 65.563,
+    "finished_at": "2026-10-27T08:13:46.409236+00:00"
+  },
+  "build13": {
+    "command": [
+      "dotnet",
+      "build",
+      "tests/Simulation.Tests",
+      "-c",
+      "Release",
+      "--no-restore",
+      "-m:1",
+      "-p:UseSharedCompilation=false"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T08:15:46.960527+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 83.387,
+    "finished_at": "2026-10-27T08:17:10.347646+00:00"
+  },
+  "build14": {
+    "command": [
+      "dotnet",
+      "build",
+      "tests/Simulation.Tests",
+      "-c",
+      "Release",
+      "--no-restore",
+      "-m:1",
+      "-p:UseSharedCompilation=false"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T08:17:41.990507+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 24.715,
+    "finished_at": "2026-10-27T08:18:06.705715+00:00"
+  },
+  "build15": {
+    "command": [
+      "dotnet",
+      "build",
+      "tests/Simulation.Tests",
+      "-c",
+      "Release",
+      "--no-restore",
+      "-m:1",
+      "-p:UseSharedCompilation=false"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T08:34:59.776435+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 40.538,
+    "finished_at": "2026-10-27T08:35:40.314937+00:00"
+  },
+  "build16": {
+    "command": [
+      "dotnet",
+      "build",
+      "tests/Simulation.Tests",
+      "-c",
+      "Release",
+      "--no-restore",
+      "-m:1",
+      "-p:UseSharedCompilation=false"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T08:37:24.841580+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 26.172,
+    "finished_at": "2026-10-27T08:37:51.013476+00:00"
+  },
+  "build17": {
+    "command": [
+      "dotnet",
+      "build",
+      "tests/Simulation.Tests",
+      "-c",
+      "Release",
+      "--no-restore",
+      "-m:1",
+      "-p:UseSharedCompilation=false"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T08:39:09.728062+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 28.074,
+    "finished_at": "2026-10-27T08:39:37.802556+00:00"
+  },
+  "build18": {
+    "command": [
+      "dotnet",
+      "build",
+      "tests/Simulation.Tests",
+      "-c",
+      "Release",
+      "--no-restore",
+      "-m:1",
+      "-p:UseSharedCompilation=false"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T08:40:21.638698+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 27.559,
+    "finished_at": "2026-10-27T08:40:49.198033+00:00"
+  },
+  "ci-python-1": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/Checks",
+      "-v"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T08:19:43.577434+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.478,
+    "finished_at": "2026-10-27T08:19:44.055650+00:00"
+  },
+  "ci-python-2": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/Checks",
+      "-v"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T08:26:48.017771+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.423,
+    "finished_at": "2026-10-27T08:26:48.441262+00:00"
+  },
+  "ci-python-asset-stage": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/Checks",
+      "-v"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T09:16:13.630195+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.475,
+    "finished_at": "2026-10-27T09:16:14.107083+00:00"
+  },
+  "ci-python-final": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/Checks",
+      "-v"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T08:50:37.708455+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.217,
+    "finished_at": "2026-10-27T08:50:37.925228+00:00"
+  },
+  "ci-python-utf8": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/Checks",
+      "-v"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T09:20:44.211940+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.216,
+    "finished_at": "2026-10-27T09:20:44.428000+00:00"
+  },
+  "core-build-1": {
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T05:47:18.778184+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 59.428,
+    "finished_at": "2026-10-27T05:48:18.206135+00:00"
+  },
+  "core-build-10": {
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T07:44:45.968223+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 99.128,
+    "finished_at": "2026-10-27T07:46:25.096640+00:00"
+  },
+  "core-build-2": {
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T05:50:04.534156+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 63.627,
+    "finished_at": "2026-10-27T05:51:08.160998+00:00"
+  },
+  "core-build-3": {
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T05:52:18.452126+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 60.453,
+    "finished_at": "2026-10-27T05:53:18.904903+00:00"
+  },
+  "core-build-4": {
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T05:55:20.520793+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 43.744,
+    "finished_at": "2026-10-27T05:56:04.265094+00:00"
+  },
+  "core-build-5": {
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T06:02:06.564796+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 59.826,
+    "finished_at": "2026-10-27T06:03:06.391078+00:00"
+  },
+  "core-build-6": {
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T06:08:01.844315+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 76.57,
+    "finished_at": "2026-10-27T06:09:18.414949+00:00"
+  },
+  "core-build-7": {
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T06:13:46.378438+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 60.173,
+    "finished_at": "2026-10-27T06:14:46.551886+00:00"
+  },
+  "core-build-8": {
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T07:14:35.676409+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 81.228,
+    "finished_at": "2026-10-27T07:15:56.905058+00:00"
+  },
+  "core-build-9": {
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T07:25:57.864851+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 57.331,
+    "finished_at": "2026-10-27T07:26:55.196319+00:00"
+  },
+  "e1-save24-accepted-compare": {
+    "command": [
+      "python3",
+      "scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e1/fleet-runner/manual-cargo",
+      "/workspace/work/e2/e1-save24-accepted"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T09:54:33.624230+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.066,
+    "finished_at": "2026-10-27T09:54:33.690522+00:00"
+  },
+  "e1-save24-accepted": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e1/fleet-runner/manual-cargo-348.save.json",
+      "--output",
+      "/workspace/work/e2/e1-save24-accepted"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:54:26.706377+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 6.842,
+    "finished_at": "2026-10-27T09:54:33.548200+00:00"
+  },
+  "e1-save24-compare": {
+    "command": [
+      "python3",
+      "scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e1/fleet-runner/manual-cargo",
+      "/workspace/work/e2/e1-save24-loaded"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T09:09:06.043237+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.093,
+    "finished_at": "2026-10-27T09:09:06.136493+00:00"
+  },
+  "e1-save24-load": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e1/fleet-runner/manual-cargo-348.save.json",
+      "--output",
+      "/workspace/work/e2/e1-save24-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:09:00.301310+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 5.647,
+    "finished_at": "2026-10-27T09:09:05.948269+00:00"
+  },
+  "e2-added-tests-7": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noLogo",
+      "-noColor",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadE2Tests",
+      "-class",
+      "Simulation.Tests.RoadFreightE2Tests",
+      "-class",
+      "Simulation.Tests.RoadTrafficE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/e2-added-tests-7.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T07:30:40.400300+00:00",
+    "timed_out": true,
+    "exit_code": 124,
+    "elapsed_seconds": 120.035,
+    "finished_at": "2026-10-27T07:32:40.435150+00:00"
+  },
+  "e2-tests-3": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noLogo",
+      "-noColor",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadE2Tests",
+      "-class",
+      "Simulation.Tests.RoadTrafficE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/e2-tests-3.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T06:03:31.607494+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 77.629,
+    "finished_at": "2026-10-27T06:04:49.236401+00:00"
+  },
+  "e2-tests-4": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noLogo",
+      "-noColor",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadE2Tests",
+      "-class",
+      "Simulation.Tests.RoadTrafficE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/e2-tests-4.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T06:10:15.093125+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 73.849,
+    "finished_at": "2026-10-27T06:11:28.942559+00:00"
+  },
+  "e2-unit-1": {
+    "command": [
+      "python3",
+      "scripts/check_headless.py",
+      "--phase",
+      "tests",
+      "--suite",
+      "roads",
+      "--output",
+      "/workspace/work/e2/unit-1"
+    ],
+    "timeout_seconds": 780,
+    "started_at": "2026-10-27T08:19:00.970099+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 10.835,
+    "finished_at": "2026-10-27T08:19:11.805269+00:00"
+  },
+  "e2-unit-2": {
+    "command": [
+      "python3",
+      "scripts/check_headless.py",
+      "--phase",
+      "tests",
+      "--suite",
+      "roads",
+      "--output",
+      "/workspace/work/e2/unit-2"
+    ],
+    "timeout_seconds": 780,
+    "started_at": "2026-10-27T08:19:32.499535+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 230.731,
+    "finished_at": "2026-10-27T08:23:23.230263+00:00"
+  },
+  "e2-unit-3": {
+    "command": [
+      "python3",
+      "scripts/check_headless.py",
+      "--phase",
+      "tests",
+      "--suite",
+      "roads",
+      "--output",
+      "/workspace/work/e2/unit-3"
+    ],
+    "timeout_seconds": 780,
+    "started_at": "2026-10-27T08:23:55.806680+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 282.91,
+    "finished_at": "2026-10-27T08:28:38.717298+00:00"
+  },
+  "e2-unit-4": {
+    "command": [
+      "python3",
+      "scripts/check_headless.py",
+      "--phase",
+      "tests",
+      "--suite",
+      "roads",
+      "--output",
+      "/workspace/work/e2/unit-4"
+    ],
+    "timeout_seconds": 780,
+    "started_at": "2026-10-27T08:28:58.782340+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 301.539,
+    "finished_at": "2026-10-27T08:34:00.321651+00:00"
+  },
+  "e2-unit-accepted": {
+    "command": [
+      "python3",
+      "scripts/check_headless.py",
+      "--phase",
+      "tests",
+      "--suite",
+      "roads",
+      "--output",
+      "/workspace/work/e2/unit-accepted"
+    ],
+    "timeout_seconds": 780,
+    "started_at": "2026-10-27T09:46:26.436671+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 201.457,
+    "finished_at": "2026-10-27T09:49:47.893574+00:00"
+  },
+  "e2-unit-final-freeze": {
+    "command": [
+      "python3",
+      "scripts/check_headless.py",
+      "--phase",
+      "tests",
+      "--suite",
+      "roads",
+      "--output",
+      "/workspace/work/e2/unit-final-freeze"
+    ],
+    "timeout_seconds": 780,
+    "started_at": "2026-10-27T09:39:54.422139+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 168.38,
+    "finished_at": "2026-10-27T09:42:42.802598+00:00"
+  },
+  "e2-unit-final": {
+    "command": [
+      "python3",
+      "scripts/check_headless.py",
+      "--phase",
+      "tests",
+      "--suite",
+      "roads",
+      "--output",
+      "/workspace/work/e2/unit-final"
+    ],
+    "timeout_seconds": 780,
+    "started_at": "2026-10-27T08:44:52.386906+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 326.814,
+    "finished_at": "2026-10-27T08:50:19.200565+00:00"
+  },
+  "e2-unit-ready": {
+    "command": [
+      "python3",
+      "scripts/check_headless.py",
+      "--phase",
+      "tests",
+      "--suite",
+      "roads",
+      "--output",
+      "/workspace/work/e2/unit-ready"
+    ],
+    "timeout_seconds": 780,
+    "started_at": "2026-10-27T08:56:49.096648+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 402.776,
+    "finished_at": "2026-10-27T09:03:31.872879+00:00"
+  },
+  "e2-unit-validated": {
+    "command": [
+      "python3",
+      "scripts/check_headless.py",
+      "--phase",
+      "tests",
+      "--suite",
+      "roads",
+      "--output",
+      "/workspace/work/e2/unit-validated"
+    ],
+    "timeout_seconds": 780,
+    "started_at": "2026-10-27T09:33:45.916249+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 296.286,
+    "finished_at": "2026-10-27T09:38:42.201933+00:00"
+  },
+  "fetch-base": {
+    "command": [
+      "git",
+      "fetch",
+      "origin",
+      "feat/economic-cycle-p00-p05"
+    ],
+    "timeout_seconds": 60,
+    "started_at": "2026-10-27T05:39:16.759008+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.319,
+    "finished_at": "2026-10-27T05:39:18.078327+00:00"
+  },
+  "freight-tests15": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadFreightE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/freight-tests15.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T08:35:40.396726+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 64.934,
+    "finished_at": "2026-10-27T08:36:45.330481+00:00"
+  },
+  "freight-tests16": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadFreightE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/freight-tests16.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T08:37:51.091123+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 44.084,
+    "finished_at": "2026-10-27T08:38:35.174786+00:00"
+  },
+  "lab-python": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/Research.Lab",
+      "-v"
+    ],
+    "timeout_seconds": 60,
+    "started_at": "2026-10-27T08:27:37.810050+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 5.284,
+    "finished_at": "2026-10-27T08:27:43.094304+00:00"
+  },
+  "legacy-native-accepted-logs": {
+    "command": [
+      "python3",
+      "scripts/verify_platform_probe.py",
+      "--report",
+      "/workspace/work/e2/legacy-native-accepted.json",
+      "--log-prefix",
+      "/workspace/work/e2/checks/legacy-native-accepted"
+    ],
+    "timeout_seconds": 15,
+    "started_at": "2026-10-27T09:57:12.253159+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.065,
+    "finished_at": "2026-10-27T09:57:12.317894+00:00"
+  },
+  "legacy-native-accepted": {
+    "command": [
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--headless",
+      "--path",
+      "/workspace/work/e2/native-accepted/source/src/Client.Godot",
+      "--",
+      "--smoke",
+      "--report",
+      "/workspace/work/e2/legacy-native-accepted.json"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T09:57:00.104590+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 12.088,
+    "finished_at": "2026-10-27T09:57:12.192658+00:00"
+  },
+  "mining-test17": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-method",
+      "Simulation.Tests.RoadFreightE2Tests.ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad",
+      "-result-trx",
+      "/workspace/work/e2/mining-test17.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T08:39:37.879655+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 16.431,
+    "finished_at": "2026-10-27T08:39:54.310939+00:00"
+  },
+  "mining-test18": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-method",
+      "Simulation.Tests.RoadFreightE2Tests.ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad",
+      "-result-trx",
+      "/workspace/work/e2/mining-test18.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T08:40:49.272096+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 20.31,
+    "finished_at": "2026-10-27T08:41:09.582883+00:00"
+  },
+  "native-1": {
+    "command": [
+      "python3",
+      "scripts/check_development_ui.py",
+      "--probe",
+      "RoadProbe",
+      "--godot",
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--fixtures",
+      "/workspace/work/e2/native-fixtures",
+      "--xorg",
+      "/usr/lib/xorg/Xorg",
+      "--output",
+      "/workspace/work/e2/native-1"
+    ],
+    "timeout_seconds": 600,
+    "started_at": "2026-10-27T08:41:34.094884+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 132.077,
+    "finished_at": "2026-10-27T08:43:46.171546+00:00"
+  },
+  "native-accepted": {
+    "command": [
+      "python3",
+      "scripts/check_development_ui.py",
+      "--probe",
+      "RoadProbe",
+      "--godot",
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--fixtures",
+      "/workspace/work/e2/unit-accepted/e2-fixtures",
+      "--xorg",
+      "/usr/lib/xorg/Xorg",
+      "--output",
+      "/workspace/work/e2/native-accepted"
+    ],
+    "timeout_seconds": 600,
+    "started_at": "2026-10-27T09:54:33.753387+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 122.204,
+    "finished_at": "2026-10-27T09:56:35.957263+00:00"
+  },
+  "native-ready": {
+    "command": [
+      "python3",
+      "scripts/check_development_ui.py",
+      "--probe",
+      "RoadProbe",
+      "--godot",
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--fixtures",
+      "/workspace/work/e2/unit-ready/e2-fixtures",
+      "--xorg",
+      "/usr/lib/xorg/Xorg",
+      "--output",
+      "/workspace/work/e2/native-ready"
+    ],
+    "timeout_seconds": 600,
+    "started_at": "2026-10-27T09:09:06.196229+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 136.048,
+    "finished_at": "2026-10-27T09:11:22.243947+00:00"
+  },
+  "personal-final-direction": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-method",
+      "Simulation.Tests.RoadE2Tests.PersonalPaverConsumesRealCargoWorksHalfSpeedAndKeepsEveryContribution",
+      "-result-trx",
+      "/workspace/work/e2/personal-final-direction.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:45:41.084235+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 17.327,
+    "finished_at": "2026-10-27T09:45:58.411623+00:00"
+  },
+  "profile-1": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--export-road-profile",
+      "config/vnext/economy.b1-supported.json",
+      "--balance",
+      "config/vnext/balance.b1.json",
+      "--output",
+      "/workspace/work/e2/profile-1"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T07:11:41.829773+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 6.803,
+    "finished_at": "2026-10-27T07:11:48.632606+00:00"
+  },
+  "push-wip": {
+    "command": [
+      "git",
+      "push",
+      "-u",
+      "origin",
+      "feat/vnext-e2-roads"
+    ],
+    "timeout_seconds": 60,
+    "started_at": "2026-10-27T07:28:20.958556+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 2.283,
+    "finished_at": "2026-10-27T07:28:23.241322+00:00"
+  },
+  "remote-base": {
+    "command": [
+      "git",
+      "ls-remote",
+      "origin",
+      "refs/heads/feat/economic-cycle-p00-p05",
+      "refs/heads/feat/vnext-e1-fleet"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T05:39:01.611064+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.776,
+    "finished_at": "2026-10-27T05:39:02.386888+00:00"
+  },
+  "road-tests-1": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noLogo",
+      "-noColor",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/road-tests-1.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T05:54:15.478777+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 10.579,
+    "finished_at": "2026-10-27T05:54:26.057560+00:00"
+  },
+  "road-tests-2": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noLogo",
+      "-noColor",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/road-tests-2.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T05:56:16.811583+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 20.012,
+    "finished_at": "2026-10-27T05:56:36.824139+00:00"
+  },
+  "road-tests10": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Debug/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/road-tests10.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T08:14:09.491807+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 77.082,
+    "finished_at": "2026-10-27T08:15:26.573534+00:00"
+  },
+  "road-tests9": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Debug/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/road-tests9.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T08:13:02.188285+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 0.27,
+    "finished_at": "2026-10-27T08:13:02.459178+00:00"
+  },
+  "roads-runner-1": {
+    "command": [
+      "python3",
+      "scripts/check_road_e2.py",
+      "--fixtures",
+      "/workspace/work/e2/unit-final/e2-fixtures",
+      "--output",
+      "/workspace/work/e2/roads-runner-1"
+    ],
+    "timeout_seconds": 600,
+    "started_at": "2026-10-27T08:50:36.067700+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 313.395,
+    "finished_at": "2026-10-27T08:55:49.463507+00:00"
+  },
+  "roads-runner-accepted": {
+    "command": [
+      "python3",
+      "scripts/check_road_e2.py",
+      "--fixtures",
+      "/workspace/work/e2/unit-accepted/e2-fixtures",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted"
+    ],
+    "timeout_seconds": 600,
+    "started_at": "2026-10-27T09:49:47.972623+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 278.675,
+    "finished_at": "2026-10-27T09:54:26.647665+00:00"
+  },
+  "roads-runner-ready": {
+    "command": [
+      "python3",
+      "scripts/check_road_e2.py",
+      "--fixtures",
+      "/workspace/work/e2/unit-ready/e2-fixtures",
+      "--output",
+      "/workspace/work/e2/roads-runner-ready"
+    ],
+    "timeout_seconds": 600,
+    "started_at": "2026-10-27T09:03:31.944631+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 328.232,
+    "finished_at": "2026-10-27T09:09:00.176831+00:00"
+  },
+  "traffic-tests-5": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noLogo",
+      "-noColor",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadTrafficE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/traffic-tests-5.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T07:11:00.206976+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 31.237,
+    "finished_at": "2026-10-27T07:11:31.444199+00:00"
+  },
+  "traffic-tests-6": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noLogo",
+      "-noColor",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadTrafficE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/traffic-tests-6.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T07:17:59.879201+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 22.301,
+    "finished_at": "2026-10-27T07:18:22.180509+00:00"
+  },
+  "traffic-tests-8": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noLogo",
+      "-noColor",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadTrafficE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/traffic-tests-8.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T07:47:13.051887+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 68.301,
+    "finished_at": "2026-10-27T07:48:21.353455+00:00"
+  },
+  "unit-accepted/build": {
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T09:46:28.428558+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 5.569,
+    "finished_at": "2026-10-27T09:46:33.997853+00:00"
+  },
+  "unit-accepted/restore": {
+    "command": [
+      "dotnet",
+      "restore",
+      "Delsk.sln",
+      "--locked-mode",
+      "--disable-parallel",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T09:46:26.529939+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.835,
+    "finished_at": "2026-10-27T09:46:28.364666+00:00"
+  },
+  "unit-accepted/tests-e2-freight": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadFreightE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/unit-accepted/tests-e2-freight.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:49:10.714484+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 37.134,
+    "finished_at": "2026-10-27T09:49:47.848825+00:00"
+  },
+  "unit-accepted/tests-e2-history": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadHistoryE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/unit-accepted/tests-e2-history.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:46:34.065333+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 23.234,
+    "finished_at": "2026-10-27T09:46:57.299819+00:00"
+  },
+  "unit-accepted/tests-e2-roads": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/unit-accepted/tests-e2-roads.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:46:57.354390+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 60.087,
+    "finished_at": "2026-10-27T09:47:57.441599+00:00"
+  },
+  "unit-accepted/tests-e2-traffic": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.RoadTrafficE2Tests",
+      "-result-trx",
+      "/workspace/work/e2/unit-accepted/tests-e2-traffic.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:47:57.532985+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 73.126,
+    "finished_at": "2026-10-27T09:49:10.659040+00:00"
+  },
+  "roads-runner-accepted/automatic-compare-541": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e2/roads-runner-accepted/automatic",
+      "/workspace/work/e2/roads-runner-accepted/automatic-saved-541",
+      "/workspace/work/e2/roads-runner-accepted/automatic",
+      "/workspace/work/e2/roads-runner-accepted/automatic-loaded-541"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:51:21.621088+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.066,
+    "finished_at": "2026-10-27T09:51:21.686879+00:00"
+  },
+  "roads-runner-accepted/automatic-load-541": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e2/roads-runner-accepted/automatic-541.save.json",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/automatic-loaded-541"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:51:17.042080+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 4.355,
+    "finished_at": "2026-10-27T09:51:21.397407+00:00"
+  },
+  "roads-runner-accepted/automatic-save-541": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/automatic-2.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/automatic-2.commands.jsonl",
+      "--ticks",
+      "561",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/automatic-saved-541",
+      "--checkpoint",
+      "/workspace/work/e2/roads-runner-accepted/automatic-541.save.json",
+      "--checkpoint-at",
+      "541"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:51:09.488498+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 7.498,
+    "finished_at": "2026-10-27T09:51:16.986347+00:00"
+  },
+  "roads-runner-accepted/automatic": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/automatic-2.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/automatic-2.commands.jsonl",
+      "--ticks",
+      "561",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/automatic"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:50:55.274856+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 14.14,
+    "finished_at": "2026-10-27T09:51:09.415076+00:00"
+  },
+  "roads-runner-accepted/balances-and-roads": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_results.py",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew-saved-541",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew-loaded-541",
+      "/workspace/work/e2/roads-runner-accepted/dirt",
+      "/workspace/work/e2/roads-runner-accepted/dirt-saved-566",
+      "/workspace/work/e2/roads-runner-accepted/dirt-loaded-566",
+      "/workspace/work/e2/roads-runner-accepted/personal",
+      "/workspace/work/e2/roads-runner-accepted/personal-saved-539",
+      "/workspace/work/e2/roads-runner-accepted/personal-loaded-539",
+      "/workspace/work/e2/roads-runner-accepted/personal-saved-563",
+      "/workspace/work/e2/roads-runner-accepted/personal-loaded-563",
+      "/workspace/work/e2/roads-runner-accepted/automatic",
+      "/workspace/work/e2/roads-runner-accepted/automatic-saved-541",
+      "/workspace/work/e2/roads-runner-accepted/automatic-loaded-541",
+      "/workspace/work/e2/roads-runner-accepted/builders",
+      "/workspace/work/e2/roads-runner-accepted/builders-saved-562",
+      "/workspace/work/e2/roads-runner-accepted/builders-loaded-562",
+      "/workspace/work/e2/roads-runner-accepted/public-task",
+      "/workspace/work/e2/roads-runner-accepted/public-task-saved-645",
+      "/workspace/work/e2/roads-runner-accepted/public-task-loaded-645",
+      "/workspace/work/e2/roads-runner-accepted/opposing",
+      "/workspace/work/e2/roads-runner-accepted/opposing-saved-234",
+      "/workspace/work/e2/roads-runner-accepted/opposing-loaded-234",
+      "/workspace/work/e2/roads-runner-accepted/bypass",
+      "/workspace/work/e2/roads-runner-accepted/bypass-saved-742",
+      "/workspace/work/e2/roads-runner-accepted/bypass-loaded-742",
+      "/workspace/work/e2/roads-runner-accepted/freight",
+      "/workspace/work/e2/roads-runner-accepted/freight-saved-1176",
+      "/workspace/work/e2/roads-runner-accepted/freight-loaded-1176",
+      "/workspace/work/e2/roads-runner-accepted/extraction",
+      "/workspace/work/e2/roads-runner-accepted/extraction-saved-835",
+      "/workspace/work/e2/roads-runner-accepted/extraction-loaded-835",
+      "/workspace/work/e2/roads-runner-accepted/npc",
+      "/workspace/work/e2/roads-runner-accepted/npc-saved-623",
+      "/workspace/work/e2/roads-runner-accepted/npc-loaded-623"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:54:16.655355+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 6.24,
+    "finished_at": "2026-10-27T09:54:22.894997+00:00"
+  },
+  "roads-runner-accepted/builders-compare-562": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e2/roads-runner-accepted/builders",
+      "/workspace/work/e2/roads-runner-accepted/builders-saved-562",
+      "/workspace/work/e2/roads-runner-accepted/builders",
+      "/workspace/work/e2/roads-runner-accepted/builders-loaded-562"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:51:50.311023+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.065,
+    "finished_at": "2026-10-27T09:51:50.375999+00:00"
+  },
+  "roads-runner-accepted/builders-load-562": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e2/roads-runner-accepted/builders-562.save.json",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/builders-loaded-562"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:51:41.541145+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.694,
+    "finished_at": "2026-10-27T09:51:50.235547+00:00"
+  },
+  "roads-runner-accepted/builders-save-562": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/ASecondBuildersHighwayRetainsCityBaseAndFirstBuildersRoadRights.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/ASecondBuildersHighwayRetainsCityBaseAndFirstBuildersRoadRights.commands.jsonl",
+      "--ticks",
+      "1031",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/builders-saved-562",
+      "--checkpoint",
+      "/workspace/work/e2/roads-runner-accepted/builders-562.save.json",
+      "--checkpoint-at",
+      "562"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:51:31.366524+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 10.106,
+    "finished_at": "2026-10-27T09:51:41.473115+00:00"
+  },
+  "roads-runner-accepted/builders": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/ASecondBuildersHighwayRetainsCityBaseAndFirstBuildersRoadRights.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/ASecondBuildersHighwayRetainsCityBaseAndFirstBuildersRoadRights.commands.jsonl",
+      "--ticks",
+      "1031",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/builders"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:51:21.760763+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 9.534,
+    "finished_at": "2026-10-27T09:51:31.295242+00:00"
+  },
+  "roads-runner-accepted/bypass-compare-742": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e2/roads-runner-accepted/bypass",
+      "/workspace/work/e2/roads-runner-accepted/bypass-saved-742",
+      "/workspace/work/e2/roads-runner-accepted/bypass",
+      "/workspace/work/e2/roads-runner-accepted/bypass-loaded-742"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:52:50.358782+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.066,
+    "finished_at": "2026-10-27T09:52:50.425269+00:00"
+  },
+  "roads-runner-accepted/bypass-load-742": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e2/roads-runner-accepted/bypass-742.save.json",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/bypass-loaded-742"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:52:45.905317+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 4.372,
+    "finished_at": "2026-10-27T09:52:50.277916+00:00"
+  },
+  "roads-runner-accepted/bypass-save-742": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/VehicleTakesRealBypassAndCompletionRetainsItsCommittedPath.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/VehicleTakesRealBypassAndCompletionRetainsItsCommittedPath.commands.jsonl",
+      "--ticks",
+      "835",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/bypass-saved-742",
+      "--checkpoint",
+      "/workspace/work/e2/roads-runner-accepted/bypass-742.save.json",
+      "--checkpoint-at",
+      "742"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:52:36.270130+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 9.576,
+    "finished_at": "2026-10-27T09:52:45.845993+00:00"
+  },
+  "roads-runner-accepted/bypass": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/VehicleTakesRealBypassAndCompletionRetainsItsCommittedPath.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/VehicleTakesRealBypassAndCompletionRetainsItsCommittedPath.commands.jsonl",
+      "--ticks",
+      "835",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/bypass"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:52:27.870618+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.325,
+    "finished_at": "2026-10-27T09:52:36.195545+00:00"
+  },
+  "roads-runner-accepted/dirt-compare-566": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e2/roads-runner-accepted/dirt",
+      "/workspace/work/e2/roads-runner-accepted/dirt-saved-566",
+      "/workspace/work/e2/roads-runner-accepted/dirt",
+      "/workspace/work/e2/roads-runner-accepted/dirt-loaded-566"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:50:23.261973+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.065,
+    "finished_at": "2026-10-27T09:50:23.326537+00:00"
+  },
+  "roads-runner-accepted/dirt-load-566": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e2/roads-runner-accepted/dirt-566.save.json",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/dirt-loaded-566"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:50:21.019214+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 2.177,
+    "finished_at": "2026-10-27T09:50:23.196494+00:00"
+  },
+  "roads-runner-accepted/dirt-save-566": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/EmptyPublicCorridorCanBecomeDirtBeforeRoadOne.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/EmptyPublicCorridorCanBecomeDirtBeforeRoadOne.commands.jsonl",
+      "--ticks",
+      "569",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/dirt-saved-566",
+      "--checkpoint",
+      "/workspace/work/e2/roads-runner-accepted/dirt-566.save.json",
+      "--checkpoint-at",
+      "566"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:50:12.913370+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.023,
+    "finished_at": "2026-10-27T09:50:20.936278+00:00"
+  },
+  "roads-runner-accepted/dirt": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/EmptyPublicCorridorCanBecomeDirtBeforeRoadOne.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/EmptyPublicCorridorCanBecomeDirtBeforeRoadOne.commands.jsonl",
+      "--ticks",
+      "569",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/dirt"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:50:05.988486+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 6.856,
+    "finished_at": "2026-10-27T09:50:12.844387+00:00"
+  },
+  "roads-runner-accepted/extraction-compare-835": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e2/roads-runner-accepted/extraction",
+      "/workspace/work/e2/roads-runner-accepted/extraction-saved-835",
+      "/workspace/work/e2/roads-runner-accepted/extraction",
+      "/workspace/work/e2/roads-runner-accepted/extraction-loaded-835"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:53:56.554798+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.117,
+    "finished_at": "2026-10-27T09:53:56.671484+00:00"
+  },
+  "roads-runner-accepted/extraction-load-835": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e2/roads-runner-accepted/extraction-835.save.json",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/extraction-loaded-835"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:53:52.443760+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 4.045,
+    "finished_at": "2026-10-27T09:53:56.488434+00:00"
+  },
+  "roads-runner-accepted/extraction-save-835": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad.commands.jsonl",
+      "--ticks",
+      "858",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/extraction-saved-835",
+      "--checkpoint",
+      "/workspace/work/e2/roads-runner-accepted/extraction-835.save.json",
+      "--checkpoint-at",
+      "835"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:53:41.370005+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 10.994,
+    "finished_at": "2026-10-27T09:53:52.363651+00:00"
+  },
+  "roads-runner-accepted/extraction": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad.commands.jsonl",
+      "--ticks",
+      "858",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/extraction"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:53:30.214388+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 10.999,
+    "finished_at": "2026-10-27T09:53:41.215069+00:00"
+  },
+  "roads-runner-accepted/freight-compare-1176": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e2/roads-runner-accepted/freight",
+      "/workspace/work/e2/roads-runner-accepted/freight-saved-1176",
+      "/workspace/work/e2/roads-runner-accepted/freight",
+      "/workspace/work/e2/roads-runner-accepted/freight-loaded-1176"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:53:30.062130+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.065,
+    "finished_at": "2026-10-27T09:53:30.126855+00:00"
+  },
+  "roads-runner-accepted/freight-load-1176": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e2/roads-runner-accepted/freight-1176.save.json",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/freight-loaded-1176"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:53:21.808276+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.171,
+    "finished_at": "2026-10-27T09:53:29.979041+00:00"
+  },
+  "roads-runner-accepted/freight-save-1176": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/ExistingFreightCarriesOneRealCargoThroughPaverBypassAndRestoresEveryStage.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/ExistingFreightCarriesOneRealCargoThroughPaverBypassAndRestoresEveryStage.commands.jsonl",
+      "--ticks",
+      "1568",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/freight-saved-1176",
+      "--checkpoint",
+      "/workspace/work/e2/roads-runner-accepted/freight-1176.save.json",
+      "--checkpoint-at",
+      "1176"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:53:08.562976+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 13.18,
+    "finished_at": "2026-10-27T09:53:21.742803+00:00"
+  },
+  "roads-runner-accepted/freight": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/ExistingFreightCarriesOneRealCargoThroughPaverBypassAndRestoresEveryStage.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/ExistingFreightCarriesOneRealCargoThroughPaverBypassAndRestoresEveryStage.commands.jsonl",
+      "--ticks",
+      "1568",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/freight"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:52:50.488166+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 17.885,
+    "finished_at": "2026-10-27T09:53:08.373392+00:00"
+  },
+  "roads-runner-accepted/minimum-crew-compare-541": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew-saved-541",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew-loaded-541"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:50:05.852157+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.065,
+    "finished_at": "2026-10-27T09:50:05.917391+00:00"
+  },
+  "roads-runner-accepted/minimum-crew-load-541": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew-541.save.json",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew-loaded-541"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:50:03.296006+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 2.498,
+    "finished_at": "2026-10-27T09:50:05.793615+00:00"
+  },
+  "roads-runner-accepted/minimum-crew-save-541": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/automatic-1.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/automatic-1.commands.jsonl",
+      "--ticks",
+      "573",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew-saved-541",
+      "--checkpoint",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew-541.save.json",
+      "--checkpoint-at",
+      "541"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:49:55.917070+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 7.31,
+    "finished_at": "2026-10-27T09:50:03.227121+00:00"
+  },
+  "roads-runner-accepted/minimum-crew": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/automatic-1.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/automatic-1.commands.jsonl",
+      "--ticks",
+      "573",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:49:48.077170+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 7.779,
+    "finished_at": "2026-10-27T09:49:55.856532+00:00"
+  },
+  "roads-runner-accepted/npc-compare-623": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e2/roads-runner-accepted/npc",
+      "/workspace/work/e2/roads-runner-accepted/npc-saved-623",
+      "/workspace/work/e2/roads-runner-accepted/npc",
+      "/workspace/work/e2/roads-runner-accepted/npc-loaded-623"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:54:16.508657+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.066,
+    "finished_at": "2026-10-27T09:54:16.574427+00:00"
+  },
+  "roads-runner-accepted/npc-load-623": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e2/roads-runner-accepted/npc-623.save.json",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/npc-loaded-623"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:54:14.326649+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 2.124,
+    "finished_at": "2026-10-27T09:54:16.450288+00:00"
+  },
+  "roads-runner-accepted/npc-save-623": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/NpcResumesItsOrdinaryFundedRoadPlanAndBuildsWithRealWorkers.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/NpcResumesItsOrdinaryFundedRoadPlanAndBuildsWithRealWorkers.commands.jsonl",
+      "--ticks",
+      "637",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/npc-saved-623",
+      "--checkpoint",
+      "/workspace/work/e2/roads-runner-accepted/npc-623.save.json",
+      "--checkpoint-at",
+      "623"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:54:06.597370+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 7.67,
+    "finished_at": "2026-10-27T09:54:14.267599+00:00"
+  },
+  "roads-runner-accepted/npc": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/NpcResumesItsOrdinaryFundedRoadPlanAndBuildsWithRealWorkers.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/NpcResumesItsOrdinaryFundedRoadPlanAndBuildsWithRealWorkers.commands.jsonl",
+      "--ticks",
+      "637",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/npc"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:53:56.774271+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 9.736,
+    "finished_at": "2026-10-27T09:54:06.510711+00:00"
+  },
+  "roads-runner-accepted/opposing-compare-234": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e2/roads-runner-accepted/opposing",
+      "/workspace/work/e2/roads-runner-accepted/opposing-saved-234",
+      "/workspace/work/e2/roads-runner-accepted/opposing",
+      "/workspace/work/e2/roads-runner-accepted/opposing-loaded-234"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:52:27.737598+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.066,
+    "finished_at": "2026-10-27T09:52:27.803397+00:00"
+  },
+  "roads-runner-accepted/opposing-load-234": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e2/roads-runner-accepted/opposing-234.save.json",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/opposing-loaded-234"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:52:22.396533+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 5.265,
+    "finished_at": "2026-10-27T09:52:27.661459+00:00"
+  },
+  "roads-runner-accepted/opposing-save-234": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/OpposingVehiclesYieldThroughDeclaredCorridorWithoutOverlapAndRestoreExactly.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/OpposingVehiclesYieldThroughDeclaredCorridorWithoutOverlapAndRestoreExactly.commands.jsonl",
+      "--ticks",
+      "361",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/opposing-saved-234",
+      "--checkpoint",
+      "/workspace/work/e2/roads-runner-accepted/opposing-234.save.json",
+      "--checkpoint-at",
+      "234"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:52:13.937227+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.31,
+    "finished_at": "2026-10-27T09:52:22.247420+00:00"
+  },
+  "roads-runner-accepted/opposing": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/OpposingVehiclesYieldThroughDeclaredCorridorWithoutOverlapAndRestoreExactly.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/OpposingVehiclesYieldThroughDeclaredCorridorWithoutOverlapAndRestoreExactly.commands.jsonl",
+      "--ticks",
+      "361",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/opposing"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:52:07.377123+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 6.479,
+    "finished_at": "2026-10-27T09:52:13.856069+00:00"
+  },
+  "roads-runner-accepted/personal-compare-539": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e2/roads-runner-accepted/personal",
+      "/workspace/work/e2/roads-runner-accepted/personal-saved-539",
+      "/workspace/work/e2/roads-runner-accepted/personal",
+      "/workspace/work/e2/roads-runner-accepted/personal-loaded-539"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:50:42.964779+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.066,
+    "finished_at": "2026-10-27T09:50:43.030331+00:00"
+  },
+  "roads-runner-accepted/personal-compare-563": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e2/roads-runner-accepted/personal",
+      "/workspace/work/e2/roads-runner-accepted/personal-saved-563",
+      "/workspace/work/e2/roads-runner-accepted/personal",
+      "/workspace/work/e2/roads-runner-accepted/personal-loaded-563"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:50:55.139894+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.065,
+    "finished_at": "2026-10-27T09:50:55.204580+00:00"
+  },
+  "roads-runner-accepted/personal-load-539": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e2/roads-runner-accepted/personal-539.save.json",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/personal-loaded-539"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:50:39.664264+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 3.228,
+    "finished_at": "2026-10-27T09:50:42.893009+00:00"
+  },
+  "roads-runner-accepted/personal-load-563": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e2/roads-runner-accepted/personal-563.save.json",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/personal-loaded-563"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:50:51.619103+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 3.461,
+    "finished_at": "2026-10-27T09:50:55.080347+00:00"
+  },
+  "roads-runner-accepted/personal-save-539": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/PersonalPaverConsumesRealCargoWorksHalfSpeedAndKeepsEveryContribution.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/PersonalPaverConsumesRealCargoWorksHalfSpeedAndKeepsEveryContribution.commands.jsonl",
+      "--ticks",
+      "601",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/personal-saved-539",
+      "--checkpoint",
+      "/workspace/work/e2/roads-runner-accepted/personal-539.save.json",
+      "--checkpoint-at",
+      "539"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:50:30.986242+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.622,
+    "finished_at": "2026-10-27T09:50:39.608780+00:00"
+  },
+  "roads-runner-accepted/personal-save-563": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/PersonalPaverConsumesRealCargoWorksHalfSpeedAndKeepsEveryContribution.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/PersonalPaverConsumesRealCargoWorksHalfSpeedAndKeepsEveryContribution.commands.jsonl",
+      "--ticks",
+      "601",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/personal-saved-563",
+      "--checkpoint",
+      "/workspace/work/e2/roads-runner-accepted/personal-563.save.json",
+      "--checkpoint-at",
+      "563"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:50:43.094390+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.469,
+    "finished_at": "2026-10-27T09:50:51.563758+00:00"
+  },
+  "roads-runner-accepted/personal": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/PersonalPaverConsumesRealCargoWorksHalfSpeedAndKeepsEveryContribution.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/PersonalPaverConsumesRealCargoWorksHalfSpeedAndKeepsEveryContribution.commands.jsonl",
+      "--ticks",
+      "601",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/personal"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:50:23.387605+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 7.536,
+    "finished_at": "2026-10-27T09:50:30.923713+00:00"
+  },
+  "roads-runner-accepted/profile-0": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--export-road-profile",
+      "/workspace/Delsk/config/vnext/economy.b1-supported.json",
+      "--balance",
+      "/workspace/Delsk/config/vnext/balance.b1.json",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/profile-0"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:54:24.853534+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.022,
+    "finished_at": "2026-10-27T09:54:25.875899+00:00"
+  },
+  "roads-runner-accepted/profile-1": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--export-road-profile",
+      "/workspace/Delsk/config/vnext/economy.b1-supported.json",
+      "--balance",
+      "/workspace/Delsk/config/vnext/balance.b1.json",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/profile-1"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:54:25.944719+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.669,
+    "finished_at": "2026-10-27T09:54:26.613579+00:00"
+  },
+  "roads-runner-accepted/public-economy": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_public_economy.py",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew-saved-541",
+      "/workspace/work/e2/roads-runner-accepted/minimum-crew-loaded-541",
+      "/workspace/work/e2/roads-runner-accepted/dirt",
+      "/workspace/work/e2/roads-runner-accepted/dirt-saved-566",
+      "/workspace/work/e2/roads-runner-accepted/dirt-loaded-566",
+      "/workspace/work/e2/roads-runner-accepted/personal",
+      "/workspace/work/e2/roads-runner-accepted/personal-saved-539",
+      "/workspace/work/e2/roads-runner-accepted/personal-loaded-539",
+      "/workspace/work/e2/roads-runner-accepted/personal-saved-563",
+      "/workspace/work/e2/roads-runner-accepted/personal-loaded-563",
+      "/workspace/work/e2/roads-runner-accepted/automatic",
+      "/workspace/work/e2/roads-runner-accepted/automatic-saved-541",
+      "/workspace/work/e2/roads-runner-accepted/automatic-loaded-541",
+      "/workspace/work/e2/roads-runner-accepted/builders",
+      "/workspace/work/e2/roads-runner-accepted/builders-saved-562",
+      "/workspace/work/e2/roads-runner-accepted/builders-loaded-562",
+      "/workspace/work/e2/roads-runner-accepted/public-task",
+      "/workspace/work/e2/roads-runner-accepted/public-task-saved-645",
+      "/workspace/work/e2/roads-runner-accepted/public-task-loaded-645",
+      "/workspace/work/e2/roads-runner-accepted/opposing",
+      "/workspace/work/e2/roads-runner-accepted/opposing-saved-234",
+      "/workspace/work/e2/roads-runner-accepted/opposing-loaded-234",
+      "/workspace/work/e2/roads-runner-accepted/bypass",
+      "/workspace/work/e2/roads-runner-accepted/bypass-saved-742",
+      "/workspace/work/e2/roads-runner-accepted/bypass-loaded-742",
+      "/workspace/work/e2/roads-runner-accepted/freight",
+      "/workspace/work/e2/roads-runner-accepted/freight-saved-1176",
+      "/workspace/work/e2/roads-runner-accepted/freight-loaded-1176",
+      "/workspace/work/e2/roads-runner-accepted/extraction",
+      "/workspace/work/e2/roads-runner-accepted/extraction-saved-835",
+      "/workspace/work/e2/roads-runner-accepted/extraction-loaded-835",
+      "/workspace/work/e2/roads-runner-accepted/npc",
+      "/workspace/work/e2/roads-runner-accepted/npc-saved-623",
+      "/workspace/work/e2/roads-runner-accepted/npc-loaded-623"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:54:22.950260+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.837,
+    "finished_at": "2026-10-27T09:54:24.786992+00:00"
+  },
+  "roads-runner-accepted/public-task-compare-645": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e2/roads-runner-accepted/public-task",
+      "/workspace/work/e2/roads-runner-accepted/public-task-saved-645",
+      "/workspace/work/e2/roads-runner-accepted/public-task",
+      "/workspace/work/e2/roads-runner-accepted/public-task-loaded-645"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:52:07.253174+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.065,
+    "finished_at": "2026-10-27T09:52:07.317716+00:00"
+  },
+  "roads-runner-accepted/public-task-load-645": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e2/roads-runner-accepted/public-task-645.save.json",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/public-task-loaded-645"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:52:04.775232+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 2.424,
+    "finished_at": "2026-10-27T09:52:07.199761+00:00"
+  },
+  "roads-runner-accepted/public-task-save-645": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/PublicRoadOrderHoldsExistingTreasuryAndPaysExactlyOnceAfterCompletion.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/PublicRoadOrderHoldsExistingTreasuryAndPaysExactlyOnceAfterCompletion.commands.jsonl",
+      "--ticks",
+      "650",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/public-task-saved-645",
+      "--checkpoint",
+      "/workspace/work/e2/roads-runner-accepted/public-task-645.save.json",
+      "--checkpoint-at",
+      "645"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:51:57.171422+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 7.548,
+    "finished_at": "2026-10-27T09:52:04.719003+00:00"
+  },
+  "roads-runner-accepted/public-task": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/PublicRoadOrderHoldsExistingTreasuryAndPaysExactlyOnceAfterCompletion.json",
+      "--replay",
+      "/workspace/work/e2/unit-accepted/e2-fixtures/PublicRoadOrderHoldsExistingTreasuryAndPaysExactlyOnceAfterCompletion.commands.jsonl",
+      "--ticks",
+      "650",
+      "--output",
+      "/workspace/work/e2/roads-runner-accepted/public-task"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:51:50.432875+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 6.657,
+    "finished_at": "2026-10-27T09:51:57.090079+00:00"
+  },
+  "native-accepted/build": {
+    "command": [
+      "dotnet",
+      "build",
+      "/workspace/work/e2/native-accepted/source/src/Client.Godot/Delsk.Client.csproj",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T09:54:38.455614+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 59.338,
+    "finished_at": "2026-10-27T09:55:37.793305+00:00"
+  },
+  "native-accepted/import": {
+    "command": [
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--headless",
+      "--path",
+      "/workspace/work/e2/native-accepted/source/src/Client.Godot",
+      "--editor",
+      "--import"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T09:55:37.865690+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.684,
+    "finished_at": "2026-10-27T09:55:46.556937+00:00"
+  },
+  "native-accepted/logs-storage-3": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/verify_platform_probe.py",
+      "--log-prefix",
+      "/workspace/work/e2/native-accepted/checks/native-storage-3"
+    ],
+    "timeout_seconds": 15,
+    "started_at": "2026-10-27T09:56:35.848746+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.065,
+    "finished_at": "2026-10-27T09:56:35.913367+00:00"
+  },
+  "native-accepted/native-storage-3": {
+    "command": [
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--path",
+      "/workspace/work/e2/native-accepted/source/src/Client.Godot",
+      "--rendering-method",
+      "gl_compatibility",
+      "--audio-driver",
+      "Dummy",
+      "res://RoadProbe.tscn",
+      "--",
+      "--output",
+      "/workspace/work/e2/native-accepted/storage-3",
+      "--fixtures",
+      "/workspace/work/e2/unit-accepted/e2-fixtures",
+      "--windowed"
+    ],
+    "timeout_seconds": 150,
+    "started_at": "2026-10-27T09:55:47.125941+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 48.636,
+    "finished_at": "2026-10-27T09:56:35.762498+00:00"
+  },
+  "native-accepted/restore": {
+    "command": [
+      "dotnet",
+      "restore",
+      "/workspace/work/e2/native-accepted/source/src/Client.Godot/Delsk.Client.csproj",
+      "--locked-mode",
+      "--disable-parallel",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T09:54:34.057554+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 4.326,
+    "finished_at": "2026-10-27T09:54:38.383744+00:00"
+  }
+}

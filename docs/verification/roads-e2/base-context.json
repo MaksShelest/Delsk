@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/MaksShelest/Delsk",
+  "baseBranch": "feat/economic-cycle-p00-p05",
+  "baseCommit": "26aeaab6fa0cc91bfe7f97ebd9b07fbbd12f3a6b",
+  "containedFinalE1": "716359848bca585071a55add7c8301b3d0870840",
+  "previousPr": 66,
+  "initialGit": "clean",
+  "branch": "feat/vnext-e2-roads",
+  "previousFinalE1Checks": {
+    "core": 40444910806,
+    "windows": 40444910803,
+    "conclusion": "success"
+  },
+  "authorization": "Explicit separate E2 task; E3 excluded"
+}

@@ -1,0 +1,41 @@
+{
+  "status": "failures preserved, not accepted",
+  "attempts": [
+    {
+      "sha": "97f0538",
+      "run": 40476826017,
+      "job": 122096999857,
+      "attempt": 1,
+      "check": "godot-import",
+      "exit": 124,
+      "reason": "Mono editor initialization/shutdown exceeded unchanged120s"
+    },
+    {
+      "sha": "97f0538",
+      "run": 40476826017,
+      "job": 122099527817,
+      "attempt": 2,
+      "check": "godot-import-completeness",
+      "exit": 1,
+      "reason": "Normal editor exit left incomplete imports"
+    },
+    {
+      "sha": "1084714",
+      "run": 40478252740,
+      "job": 122101752794,
+      "check": "godot-import-prime",
+      "exit": 124,
+      "reason": "EditorSettings not instantiated during early Mono shutdown"
+    },
+    {
+      "sha": "cd827d2",
+      "run": 40479689622,
+      "job": 122106580629,
+      "check": "godot-asset-stage",
+      "exit": 1,
+      "reason": "Windows cp1252 tried to read UTF-8 project; fixed explicitly"
+    }
+  ],
+  "acceptedRun": 40483124741,
+  "acceptedSha": "25f668958d41fe37da490d6805d302e87d1cc938"
+}

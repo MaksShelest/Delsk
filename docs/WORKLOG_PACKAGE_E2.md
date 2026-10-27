@@ -164,3 +164,13 @@ deb748e Windows все steps success. Локальный freeze suite12 roads:11
 штатно затормозил, поэтому Stop был принят. Это неверная постановка теста,
 не отказ runtime. Он теперь берёт настоящий forward heading и явно требует
 Progress>0 перед rejected Stop. Gameplay deb748e не менялся.
+
+Итог после окончательной проверки25f6689: все9 Core jobs40483124762 success,
+Windows40483124741 success. Локально unit-accepted27/27 за201.5s/780s;
+runner-accepted51process/35exports/24pairs за278.7s/600s; native-accepted
+RU/EN+extraction за122.2s/600s, complete сохраняется после следующего тика.
+Actual World24 снова exact. Свежий legacy native на accepted assemblies:
+1132tick/hash checks/35file restores, strict logs success. Сверены656
+native inputs и823точных source hashes именно25f6689, дальнейших runtime/
+CI/test/config изменений нет. Финальный отчёт/plan/AGENTS и evidence обновлены.
+Следующий ограниченный шаг — review PR67, без auto merge. E3 не начат.
