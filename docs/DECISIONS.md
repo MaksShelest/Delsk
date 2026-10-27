@@ -819,3 +819,9 @@ Developer XP входит в прежний ResearchModification, не в обы
 - Ранние timeout/нулевые тесты/failed fixtures не являются pass. Явные исчерпывающие
   test partitions сохраняют прежние deadlines и все тесты. E1 не означает E2,
   F, длительный баланс, аппаратную приёмку или полный vNext.
+
+Уточнение проверки E1: покупка использует прежний money transfer в казну,
+без нового денежного сектора автосалона. Unit и runner gates разделены на
+обязательные jobs с прежними deadlines; факт успешных unit TRX не скрывает
+последующий aggregate timeout. Старый cargo verifier сохраняет legacy10/crew2,
+а purchased fleet сверяет с моделью/реальным общим cargo, не отключает проверку.

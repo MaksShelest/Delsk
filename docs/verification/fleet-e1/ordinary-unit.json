@@ -1,0 +1,43 @@
+{
+  "status": "succeeded",
+  "testsPassed": 1219,
+  "testPartitions": [
+    {
+      "file": "tests.trx",
+      "passed": 292
+    },
+    {
+      "file": "tests-integration.trx",
+      "passed": 55
+    },
+    {
+      "file": "tests-d2.trx",
+      "passed": 36
+    },
+    {
+      "file": "tests-d3.trx",
+      "passed": 38
+    },
+    {
+      "file": "tests-d3-start.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-e1.trx",
+      "passed": 20
+    },
+    {
+      "file": "tests-e1-stock.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-physical.trx",
+      "passed": 644
+    },
+    {
+      "file": "tests-models.trx",
+      "passed": 132
+    }
+  ],
+  "scope": "Completed exhaustive unit phase recovered from actual successful TRX/exit records. Later aggregate runner timeout remains failed; runner phase must pass separately."
+}

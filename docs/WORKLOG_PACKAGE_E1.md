@@ -84,3 +84,44 @@ E2, дорожные работы, новый помощник, счета и с
 - Python checks15/15, включая11 намеренных повреждений fleet-аудита.
   Research Lab37/37 с разрешёнными localhost sockets; первый network-denied
   запуск сохранён как неуспешный, не принят за проверку.
+
+На code snapshot `c62352b` GitHub `unit` и `developer` уже success
+(Core run40443103322); Developer gate реально выполнил полный набор и
+отрицательную Release build за438s в прежнем600s лимите. Windows run40443103227
+success: ordinary metadata,1132 shared-core hashes/35 restores, Release audit,
+20 HUD/God checks в Debug и ещё20 в стандартном ExportDebug, cleanup.
+На предыдущем8215894 Windows run40441604092 завершился на проверке полноты
+import-cache exit1, не на игровых assertions. Следующий свежий checkout
+прошёл ту же проверку без изменения import скриптов/deadlines. Причина того
+одиночного сбоя не изолирована; не считать его успешным. Выгрузить его artifact
+в локальную среду через доступный download не удалось (403), статус/steps/log
+получены GitHub connector. Старые Core runs при следующих pushes cancelled,
+не являются доказательствами полного gate.
+
+Native source сравнен с текущим checkout:216 одинаковых C# файлов; различия
+только в четырёх NPC planning/estimate файлах, HelpOverlay и conditional God
+intervention guard. FleetPanel/PresentationStage/Fleet/handling/transfer handlers
+совпадают byte-for-byte. Для последующих NPC/Developer изменений используются
+свежие unit/CI проверки; native pass не выдан за их тест.
+
+Локальный повтор Developer достиг aggregate600s (exit124), успев завершить
+309base/55integration/36D2/38D3/1start/20E1/1stock. Остальные local partitions
+не засчитываются; после deadline проверено отсутствие оставшегося test process.
+Не запускать этот полный набор заново только ради локального green: тот же
+полный Developer gate уже реально success в CI40443103322/121987852578.
+Локально запущен отдельно `headless-runs --phase runs` с подтверждёнными
+`headless-ready` unit artifacts; CI runner-фаза также уже success, дальнейшие
+старые C1/C2/D1/D2 process gates ещё проверяются.
+
+Финал CI на `c62352b`: **все** unit/core/developer/production/fleet/verify
+success, Core40443103322; Windows40443103227 success. Финальный `verify` реально
+требует все пять suites. Новый полный E1job прошёл без локального reuse.
+CI source724 digests и snapshots сохранены в docs/verification/fleet-e1.
+Дальнейший итоговый commit содержит только документы/evidence.
+
+Локальный `headless-runs --phase runs` завершён exit0 за490,514s:102exports,
+14replay/69pairs, полный independent balances/public economy audit. Этот
+runner результат вместе с1219 завершёнными unit tests и свежим полным CI
+закрывает software regression; исходный aggregate timeout остаётся failure.
+E1 завершён; E2 и следующие пакеты не начинались. Итоговый отчёт и небольшие
+manifest/exit records сохранены в Git, большие run folders не коммитятся.

@@ -1,0 +1,25 @@
+{
+  "commit": "c62352b35ecdefd8e2c5680c5f229bb0efd9b6e7",
+  "workflow_runs": [
+    {
+      "id": 40443103227,
+      "name": "Godot platform probe",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 99,
+      "jobs_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/40443103227/jobs",
+      "logs_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/40443103227/logs",
+      "workflow_id": 383698805
+    },
+    {
+      "id": 40443103322,
+      "name": "Core and research slice",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 278,
+      "jobs_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/40443103322/jobs",
+      "logs_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/40443103322/logs",
+      "workflow_id": 383684930
+    }
+  ]
+}

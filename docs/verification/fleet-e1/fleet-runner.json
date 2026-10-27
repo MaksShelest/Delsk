@@ -1,0 +1,66 @@
+{
+  "status": "succeeded",
+  "processChecks": 34,
+  "exports": 22,
+  "comparisonPairs": 16,
+  "cases": {
+    "manual-cargo": [
+      2,
+      348
+    ],
+    "freight": [
+      542,
+      573
+    ],
+    "platforms": [
+      719
+    ],
+    "kit": [
+      265
+    ],
+    "handling75": [
+      929
+    ],
+    "dealer": [
+      2500
+    ]
+  },
+  "checks": [
+    "manual-cargo-load-2",
+    "kit-load-265",
+    "freight",
+    "manual-cargo-load-348",
+    "manual-cargo-save-348",
+    "dealer-compare-2500",
+    "profile-0",
+    "kit",
+    "handling75-save-929",
+    "freight-save-573",
+    "kit-compare-265",
+    "dealer-load-2500",
+    "dealer",
+    "platforms-load-719",
+    "freight-compare-573",
+    "kit-save-265",
+    "dealer-save-2500",
+    "handling75",
+    "balances-and-fleet-final",
+    "freight-load-573",
+    "manual-cargo-compare-2",
+    "handling75-compare-929",
+    "manual-cargo-compare-348",
+    "freight-load-542",
+    "manual-cargo",
+    "public-economy",
+    "freight-compare-542",
+    "profile-1",
+    "platforms-save-719",
+    "platforms",
+    "platforms-compare-719",
+    "freight-save-542",
+    "manual-cargo-save-2",
+    "handling75-load-929"
+  ],
+  "reused": "30 completed execution/comparison processes from initial attempt; audits rerun after verifier-only fix; original failed audit retained",
+  "scope": "Prepared resources/geography/cash; E1 exact save/load and independent audits, not natural progression/device/E2 acceptance"
+}
