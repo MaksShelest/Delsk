@@ -63,7 +63,7 @@ public sealed partial class SimulationEngine
             if(w.Batch is null)
             {
                 var target=w.Route[w.Cursor];int before=RoadLevel(target);
-                if(before==w.Level){w.Cursor++;continue;}
+                if(before==w.Level){w.Cursor++;if(w.Cursor==w.Route.Length){w.Enabled=false;w.Reason="RouteCompleted";}continue;}
                 if(before!=w.Level-1){w.Reason="PreviousRoadStageRequired";continue;}
                 if(!PublicRoadCell(target)){w.Reason="ProtectedRoadCell";continue;}
                 if(cargo.Position!=target)
@@ -113,6 +113,7 @@ public sealed partial class SimulationEngine
             _roads[batch.Cell]=new(batch.Cell,batch.Level,[..contributions,new(batch.Cell,batch.Level,v.Owner,Tick,v.Id,stage.PriceMinor)]);
             Emit("RoadStageCompleted",actor.Id,v.Id,quantity:batch.Level,reason:batch.Cell.X+","+batch.Cell.Z);
             PayRoadOrder(batch.Cell,batch.Level,actor.Id);w.Batch=null;w.Cursor++;
+            if(w.Cursor==w.Route.Length){w.Enabled=false;w.Reason="RouteCompleted";}
             int bypassIndex=_bypasses.FindIndex(b=>b.VehicleId==v.Id&&!b.Closing);
             _bypasses[bypassIndex]=_bypasses[bypassIndex] with{Closing=true};
         }

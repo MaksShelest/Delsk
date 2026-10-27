@@ -88,3 +88,14 @@ Mining18:1/1 pass, actual bypass + restore inside + subsequent real output,
 одна старая Equipment/Storage, без нового Vehicle. Добавлена отдельная
 проверка минимального1 рабочего/половинной мощности, полная повторная suite
 и runner audit ещё ожидаются. NativeRoadProbe запущен в обычном isolated stage.
+
+8bec5d6: итоговая ordinary E2 suite27/27, без skips/overlap, локально326.8s
+в780s. На том же code snapshot CI previous ordinary/Developer, road ordinary/
+Developer и Windows success. Native1 passed RU/EN/one extraction body,
+132.1s, strict logs;654 stage/runtime files совпали. Runner1 ещё выполняется.
+
+Нативный скриншот выявил последнюю неточность: Cursor1/1 уже завершён, но
+Reason Working/Enabled ещё жили до следующего тика. Исправляется в Core:
+последняя клетка сразу завершает маршрут и освобождает машину. Добавлены
+semantic/native assertions; предыдущие passes не выдаются за проверку этого
+исправления, source gates повторяются. E3 по-прежнему не реализуется.

@@ -63,7 +63,7 @@ public class RoadE2Tests
         Assert.Equal(0,start.Work);Assert.Equal(gravel-2,FleetE1Tests.Stock(s,v.CargoInventory,"gravel"));
         Assert.Equal(cash-400,s.Engine.Observe(new(1)).Account.BalanceMinor);Exact(s);
         s.AdvanceTo(start.StartedTick+23);Assert.Equal(1,s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==start.Cell).Level);s.Step();
-        var road=s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==start.Cell);Assert.Equal(2,road.Level);Assert.Equal(new long[]{0,1},road.Contributions.Select(c=>c.Builder.Value));
+        var road=s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==start.Cell);Assert.Equal(2,road.Level);Assert.False(s.Engine.InspectRoads()!.Works.Single().Enabled);Assert.Equal("RouteCompleted",s.Engine.InspectRoads()!.Works.Single().Reason);Assert.Equal(new long[]{0,1},road.Contributions.Select(c=>c.Builder.Value));
         Step(s,Work(v,3));start=s.Engine.InspectRoads()!.Works.Single().Batch!;s.AdvanceTo(start.StartedTick+32);
         road=s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==start.Cell);Assert.Equal(3,road.Level);Assert.Equal(3,road.Contributions.Length);Exact(s);
     }
