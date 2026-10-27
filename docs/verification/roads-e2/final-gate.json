@@ -1,0 +1,85 @@
+{
+  "status": "succeeded",
+  "scope": "E2/P70 software only; E3 excluded",
+  "author": "Шелестов Максим Евгеньевич / MaksShelest",
+  "branch": "feat/vnext-e2-roads",
+  "pullRequest": "https://github.com/MaksShelest/Delsk/pull/67",
+  "base": "26aeaab6fa0cc91bfe7f97ebd9b07fbbd12f3a6b",
+  "runtimeTestedCode": "25f668958d41fe37da490d6805d302e87d1cc938",
+  "sourceInputs": "823 exact tracked runtime/config/upstream/test/tool/CI hashes; no input changes after verified snapshot.",
+  "ordinaryTests": {
+    "previous": 1219,
+    "e2": 27,
+    "total": 1246,
+    "coreCi": "success",
+    "localE2": "27/27",
+    "localSeconds": 201.457,
+    "aggregateDeadline": 780,
+    "partitionDeadline": 120
+  },
+  "developerTests": {
+    "previous": 1226,
+    "e2": 27,
+    "total": 1253,
+    "coreCi": "success"
+  },
+  "roadRunner": {
+    "processChecks": 51,
+    "exports": 35,
+    "comparisonPairs": 24,
+    "localSeconds": 278.675,
+    "deadline": 600,
+    "independentAudits": "all35 exports passed roads/fleet/import/money/goods/population/capital/privacy"
+  },
+  "native": {
+    "status": "succeeded",
+    "languages": [
+      "RU800x720",
+      "EN1100x800"
+    ],
+    "seconds": 122.204,
+    "deadline": 600,
+    "matchedSourceFiles": 656,
+    "scope": "Actual ordinary mouse controls and 3D; prepared paid paver/materials; pause, save/load, route completion and no duplicated extraction body"
+  },
+  "legacyNative": {
+    "checkedTicks": 1132,
+    "fileRestores": 35,
+    "strictLogs": "passed",
+    "actualVerifiedAssets": 96
+  },
+  "oldSave24": {
+    "status": "exact byte-for-byte continuation",
+    "tick": 348,
+    "evidence": "save24-compatibility.json"
+  },
+  "python": {
+    "checks": 20,
+    "laboratory": 37,
+    "actual": "passed"
+  },
+  "ci": {
+    "core": {
+      "sha": "25f668958d41fe37da490d6805d302e87d1cc938",
+      "run": 40483124762,
+      "conclusion": "success",
+      "url": "https://github.com/MaksShelest/Delsk/actions/runs/40483124762"
+    },
+    "windows": {
+      "sha": "25f668958d41fe37da490d6805d302e87d1cc938",
+      "run": 40483124741,
+      "conclusion": "success",
+      "url": "https://github.com/MaksShelest/Delsk/actions/runs/40483124741"
+    }
+  },
+  "failedAttempts": "Preserved in process-records.json, windows-failed-attempts.json and WORKLOG_PACKAGE_E2.md; never accepted as success",
+  "limitations": [
+    "Prepared sources/geography/cash and prepositioned profitable NPC task, not natural progression or long-run ROI.",
+    "Bounded opposing traffic and three narrow-lane seeds, not proof against all possible jams.",
+    "No refund/cancel of an active road cell: pause preserves work/bypass/busy state until completion.",
+    "Old resolved profiles stay unchanged; E2 is opt-in for new designed-map parties.",
+    "Software/native/Windows checks do not establish device acceptance.",
+    "E3 invoices, accrual and passage payments not implemented."
+  ],
+  "next": "Review PR67, no auto merge and no automatic E3"
+}

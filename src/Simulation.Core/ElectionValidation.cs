@@ -69,8 +69,10 @@ public sealed partial class SimulationEngine
             while (cursor < _events.Count && _events[cursor].Tick <= r.VotingTick)
             {
                 var e = _events[cursor++];
-                if ((e.Type is "EquipmentPurchased" or "LogisticsPurchased" or "BuildingConstructed") && known.ContainsKey(e.EntityId))
+                if ((e.Type is "RoadCrewCreated" or "LoadingPlatformCreated" or "EquipmentPurchased" or "LogisticsPurchased" or "BuildingConstructed") && known.ContainsKey(e.EntityId))
                     counts.Add(e.EntityId, 0);
+                else if(e.Type=="WorkshopOutfitCompleted"&&known.ContainsKey(e.Quantity))counts.Add(e.Quantity,0);
+                else if(e.Type=="VehicleAssigned"&&known.ContainsKey(e.Quantity))counts.TryAdd(e.Quantity,0);
                 else if (e.Type == "EmploymentChanged") counts[e.EntityId] = checked(counts[e.EntityId] + (int)e.Quantity);
                 else if (e.Type == "PopulationGrew") population = checked(population + e.Quantity);
                 else if (e.Type == "VoteChoiceChanged") choices[e.ActorId!.Value.Value] = long.Parse(e.ReasonCode, CultureInfo.InvariantCulture);

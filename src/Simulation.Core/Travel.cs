@@ -13,6 +13,7 @@ public sealed partial class SimulationEngine
     public TravelState TravelOf(ParticipantId actor)
     {
         var state = _actors[actor.Value];
+        if(Roads is not null&&DrivenVehicle(state.Id) is {} vehicle)return VehicleTravelOf(vehicle.Id) with{HeadingX=state.HeadingX,HeadingZ=state.HeadingZ};
         return new(state.OffsetX, state.OffsetZ, state.HeadingX, state.HeadingZ, state.FacingX, state.FacingZ);
     }
 
@@ -23,6 +24,12 @@ public sealed partial class SimulationEngine
         if (_stepping) throw new InvalidOperationException("Step is not reentrant");
         if (x is < -1 or > 1 || z is < -1 or > 1) throw new ArgumentOutOfRangeException(nameof(x));
         if (!_actors.TryGetValue(actor.Value, out var state)) throw new ArgumentException("Participant not available");
+        if(Roads is not null&&DrivenVehicle(state.Id) is {} roadVehicle)
+        {
+            state.HeadingX=x;state.HeadingZ=z;
+            if(x==0&&z==0&&_traffic.TryGetValue(roadVehicle.Id,out var traffic))_traffic[roadVehicle.Id]=traffic with{ExitX=0,ExitZ=0,ExitQuanta=0};
+            return;
+        }
         state.HeadingX = x;
         state.HeadingZ = z;
         if (DrivenVehicle(state.Id) is {} turning && (x!=0 || z!=0) && x==-turning.FacingX && z==-turning.FacingZ) { state.HeadingX=state.HeadingZ=0; SyncDrivenVehicle(state); return; }
@@ -65,6 +72,8 @@ public sealed partial class SimulationEngine
 
     private void TravelActor(ActorState actor, int distance)
     {
+        if(Roads is not null&&DrivenVehicle(actor.Id) is not null)
+        {if(actor.Job is null&&!HasSale(actor.Id))ManualRoadTravel(actor);return;}
         if (actor.HeadingX == 0 && actor.HeadingZ == 0) return;
         if (DrivenVehicle(actor.Id) is {} vehicle && (vehicle.Installation is not null || VehicleTransferring(vehicle.CargoInventory.Value))) return;
         if (Fleet is not null) { var next = new Cell(actor.Position.X+actor.HeadingX,actor.Position.Z+actor.HeadingZ); int speed=FleetSpeed(actor.Position,next,DrivenVehicle(actor.Id) is {} v?Model(v.ModelId):null); distance=((_travelQuantum+1)*speed*TravelUnitsPerCell/(80*TravelQuantaPerTick))-(_travelQuantum*speed*TravelUnitsPerCell/(80*TravelQuantaPerTick)); }

@@ -57,6 +57,12 @@ def verify(folder):
                 if not any(b['id']['value']==platform['building'] for b in state['buildings']):continue
                 target=platform.get('installation',{});target=target['level'] if target else 0
                 buildings+=sum(u['priceMinor']+sum(m['quantity']*prices[m['itemId']] for m in u['materials']) for u in rules['platforms'] if u['level']<=platform['level'] or u['level']==target)
+        if (folder/'roads.json').exists():
+            roads=json.loads((folder/'roads.json').read_text()); stages={r['level']:r for r in config['economy']['roads']['stages']}
+            def road_cost(level):
+                r=stages[level];return r['priceMinor']+sum(m['quantity']*prices[m['itemId']] for m in r['materials'])
+            buildings+=sum(road_cost(c['level']) for cell in roads['cells'] for c in cell['contributions'] if c['builder']['value']==actor)
+            buildings+=sum(road_cost(w['batch']['level']) for w in roads['works'] if w['group']['ownerId']['value']==actor and w['batch'])
         assert participant['capitalMinor']==cash+stock+wip+land+buildings+equipment, (folder,actor,'capital')
         assert participant['employed']==sum(g['headcount'] for g in state['employmentGroups'] if g['ownerId']['value']==actor)
     latest = [json.loads(line) for line in (folder/'events.jsonl').read_text().splitlines() if json.loads(line)['type']=='CityStageUpdated']

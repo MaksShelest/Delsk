@@ -11,6 +11,7 @@ for original, loaded in zip(sys.argv[1::2], sys.argv[2::2]):
     names=['development.json', 'workshops.json', 'demolition.json', 'final-state.json', 'ledger.jsonl', 'events.jsonl', 'commands.jsonl', 'metrics.csv', 'labor.csv', 'controllers.json', 'decisions.jsonl', 'agents.csv', 'market.json', 'scenario.json', 'delivery.json', 'logistics.json', 'capital-demand.json', 'elections.json', 'support.json', 'public-events.jsonl', 'model-decisions.jsonl', 'public-economy.json', 'research-modifications.json', 'physical-state.json', 'negotiations.json']
     if (Path(original)/'production-content.json').exists() or (Path(loaded)/'production-content.json').exists(): names.append('production-content.json')
     if (Path(original)/'fleet.json').exists() or (Path(loaded)/'fleet.json').exists(): names.append('fleet.json')
+    if (Path(original)/'roads.json').exists() or (Path(loaded)/'roads.json').exists(): names.append('roads.json')
     for name in names:
         if world_only and name in ['controllers.json','decisions.jsonl','agents.csv','model-decisions.jsonl']: continue
         if (Path(original)/name).read_bytes() != (Path(loaded)/name).read_bytes():

@@ -1,0 +1,24 @@
+{
+  "suite": "roads",
+  "status": "succeeded",
+  "testsPassed": 27,
+  "testPartitions": [
+    {
+      "file": "tests-e2-history.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-e2-roads.trx",
+      "passed": 12
+    },
+    {
+      "file": "tests-e2-traffic.trx",
+      "passed": 11
+    },
+    {
+      "file": "tests-e2-freight.trx",
+      "passed": 3
+    }
+  ],
+  "scope": "Exhaustive ordinary unit phase; runner checks are a separate required gate"
+}

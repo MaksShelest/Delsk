@@ -1,3 +1,31 @@
+## E2,27.10.2026 — реализованный software-объём
+
+- Явное задание E2/P70, основа26aeaab/PR66 содержит финальный E1/7163598.
+  Ветка feat/vnext-e2-roads, PR67 без auto merge. E3/счета и услуги не начинать.
+  Итог: docs/IMPLEMENTATION_REPORT_PACKAGE_E2.md и verification/roads-e2/.
+- Gameplay25f6689: опциональный vnext-e2-roads-1 для новых designed maps/lab,
+  World25 limited24–18 без Roads, старые resolved profiles не подменять.
+  Ступени1/2/3 append-only с городом0, прежний Тракт/единственный cargo70,
+  реальные материалы/деньги/числовые группы capacity2, личный/1рабочий половина.
+  Пауза сохраняет batch/обход/занятость; после последней клетки сразу completed.
+- Traffic общий для Vehicle/Freight/Equipment, RoadBody только вычисляемая
+  spatial projection старых inventories. Fixed progress/один quota10quanta,
+  exclusive cells/edges, actual entry leases закрывающегося обхода. Без частной
+  земли/импульсов/reverse/teleport. Старые грузы, holds и numeric labour сохранять.
+- Новые состояния в hash/save/restore/replay/roads.json, own DTO и independent
+  road_audit обязательны вместе с прежними капиталом/flows/privacy. Задания
+  funded из казны, once percell/stage, не E3. Helper не обещает любой затор.
+- 27 E2 tests;51runner processes/35exports/24pairs; actual World24 exact;
+  nativeRU/EN/656 matched inputs, legacy1132hashes/35restores. Core25f6689
+  все9jobs success; Windows25f6689 success. CI-only follow-up импортирует96
+  идентичных assets отдельным Mono editor project, проверяет source_md5 и
+  переносит только verified resources, затем ordinary runtime/release/HUD.
+- Previous+roads — исчерпывающие непересекающиеся suites, отдельные required
+  jobs; прежние deadlines не увеличивать. Timeout/failure не считать pass;
+  исходные попытки сохранены в WORKLOG_PACKAGE_E2 и process records.
+  Prepared sources/cash не выдавать за natural progression/ROI/device acceptance.
+  Следующий шаг — review E2, не автоматический запуск E3.
+
 ## E1,27.10.2026 — реализованный software-объём
 
 - Пользователь явно разрешил E1 поверх финального PR65/ce8f0e3. Историческое

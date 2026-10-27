@@ -59,7 +59,7 @@ public sealed partial class SimulationEngine
                 !_economy.Inventories.TryGetValue(f.GoodsSource.Value,out var source) || source.Owner!=l.Owner ||
                 (t.ContractId!=0 ? d is null || d.ItemId!=t.ItemId || t.OwnDestination.Value!=0 :
                     !_buildings.Values.Any(b=>b.Owner==l.Owner && b.Input==f.Destination.Value)) ||
-                cargo.Position!=t.Position || t.Path.IsDefaultOrEmpty || t.PathIndex<0 || t.PathIndex>=t.Path.Length || t.Path[t.PathIndex]!=t.Position ||
+                cargo.Position!=t.Position || t.Path.IsDefaultOrEmpty || t.PathIndex<0 || t.PathIndex>=t.Path.Length || (Roads is null||l.VehicleId==0)&&t.Path[t.PathIndex]!=t.Position ||
                 t.SegmentTicks<0 || t.SegmentTicks>=(t.PathIndex<t.Path.Length-1?FreightMoveTicks(l,t.Path[t.PathIndex],t.Path[t.PathIndex+1]):1))
                 throw new InvalidOperationException("Invalid physical freight");
             if(t.State is "ReturningEmpty" or "Finishing" && (f.Cargo!=0 || FreightRemainingSource(t)!=0) ||
@@ -74,9 +74,10 @@ public sealed partial class SimulationEngine
             long volume=checked(t.Quantity*item.UnitVolume),handling=checked((volume-1)/(MinimumFreightHandling(l))+1);
             long approach=FreightTravelTicks(l,f.ToSource),delivery=FreightTravelTicks(l,f.ToDestination),returning=FreightTravelTicks(l,f.ToHome);
             long bound=checked(approach+delivery+(d is not null?Math.Max(returning,delivery+FreightTravelTicks(l,f.SourceToHome)):returning)+(d is not null?3:2)*handling);
-            if(t.WageBudgetMinor!=checked(bound*l.CrewCapacity*t.CommittedWageMinor) ||
+            long expectedBudget=Roads is not null&&l.VehicleId!=0?_events.Single(e=>e.Type=="LogisticsTripPrepared"&&e.EntityId==t.Id).AmountMinor+_events.Where(e=>e.Type=="FreightBudgetExtended"&&e.EntityId==t.Id).Sum(e=>e.AmountMinor):checked(bound*l.CrewCapacity*t.CommittedWageMinor);
+            if(t.WageBudgetMinor!=expectedBudget ||
                 l.Group.PayEffectiveTick is {} effective && effective<Math.Max(Tick+1,t.EndTick+1) ||
-                !_events.Any(e=>e.Type=="LogisticsTripPrepared" && e.EntityId==t.Id && e.AmountMinor==t.WageBudgetMinor && e.Quantity==t.Quantity && e.ItemId==t.ItemId))
+                !_events.Any(e=>e.Type=="LogisticsTripPrepared" && e.EntityId==t.Id && (Roads is not null&&l.VehicleId!=0||e.AmountMinor==t.WageBudgetMinor) && e.Quantity==t.Quantity && e.ItemId==t.ItemId))
                 throw new InvalidOperationException("Freight committed parameters mismatch");
             if(t.State is "ReturningCargo" or "UnloadingReturn" || f.Returned>0)
             {

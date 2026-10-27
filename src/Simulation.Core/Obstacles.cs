@@ -15,6 +15,7 @@ public sealed partial class SimulationEngine
         if(walls.Count==0)return;
         if (_actors.Values.Any(a=>walls.Contains(a.Position) || a.Job is { Kind:"Move" } j && j.Path.Skip(j.PathIndex).Any(walls.Contains)) ||
             _equipment.Values.Any(e=>walls.Contains(e.Position) || e.Motion is {} m && m.Path.Skip(m.Index).Any(walls.Contains)) ||
+            _traffic.Values.Any(t=>t.Path.Skip(t.Index).Any(walls.Contains)) ||
             _logistics.Values.Any(l=>l.Trip is {} t && (t.Path.Any(walls.Contains) || t.Freight is {} f && f.ToSource.Concat(f.ToDestination).Concat(f.ToHome).Concat(f.ToGoodsSource).Concat(f.SourceToHome).Any(walls.Contains))) ||
             _economy.Inventories.Values.Any(i=>walls.Contains(i.Position))) throw new RuleViolation("RouteWouldBeBlocked");
         var anchors=_actors.Values.Select(a=>a.Position).Concat(_resources.Keys.Select(k=>k.Position))

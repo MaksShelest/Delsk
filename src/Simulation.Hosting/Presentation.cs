@@ -19,7 +19,8 @@ public record PresentationMarker(string Kind, int X, int Z, string Label, long E
 public record PresentationTrip(long LogisticsId, long OwnerId, string ItemId, string State, int X, int Z, bool Loaded = false);
 public record PresentationFrame(long Tick, int MapWidth, int MapHeight, PresentationActor[] Actors,
     PresentationMarker[] Markers, PresentationTrip[] Trips)
-{public MapLayout? Layout {get;init;} public System.Collections.Immutable.ImmutableArray<PresentationVehicle> Vehicles {get;init;}=[];};
+{public MapLayout? Layout {get;init;} public System.Collections.Immutable.ImmutableArray<PresentationEquipment> EquipmentTraffic {get;init;}=[]; public System.Collections.Immutable.ImmutableArray<RoadCell> RoadCells {get;init;}=[]; public System.Collections.Immutable.ImmutableArray<RoadBypass> Bypasses {get;init;}=[]; public System.Collections.Immutable.ImmutableArray<PresentationVehicle> Vehicles {get;init;}=[];};
+public sealed record PresentationEquipment(long Id,long Owner,string ItemId,int Level,int X,int Z,int OffsetX,int OffsetZ,int FacingX,int FacingZ);
 public sealed record PresentationVehicle(long Id,long Owner,string ModelId,int X,int Z,int OffsetX,int OffsetZ,int FacingX,int FacingZ,bool ForSale);
 
 /// <summary>Публичная картинка сцены. Чужие договоры поддержки сюда не входят.</summary>
@@ -94,7 +95,7 @@ public static class Presentation
         foreach (var equipment in world.Equipment.OrderBy(e => e.Id.Value))
         {
             string item = scenario.EquipmentTypes!.Single(t => t.Id == equipment.TypeId).ItemId;
-            markers.Add(new("equipment", equipment.Position.X, equipment.Position.Z, item, equipment.Id.Value, equipment.OwnerId.Value){Level=equipment.Level});
+            if(!engine.UsesRoadTraffic)markers.Add(new("equipment", equipment.Position.X, equipment.Position.Z, item, equipment.Id.Value, equipment.OwnerId.Value){Level=equipment.Level});
         }
         foreach (var logistics in world.Logistics.Where(l=>l.VehicleId==0).OrderBy(l => l.Id.Value))
         {
@@ -103,7 +104,7 @@ public static class Presentation
         }
         var trips = world.Logistics.Where(l => l.Trip is not null && l.VehicleId==0).OrderBy(l => l.Id.Value).Select(l =>
             new PresentationTrip(l.Id.Value, l.OwnerId.Value, l.Trip!.ItemId, l.Trip.State, l.Trip.Position.X, l.Trip.Position.Z, world.Inventories.Single(i=>i.Id==l.CargoInventory).Stock.Any(s=>s.Quantity>0))).ToArray();
-        return new(world.Tick, scenario.MapWidth, scenario.MapHeight, actors, markers.ToArray(), trips){Layout=scenario.Layout,Vehicles=fleet is null?[]:[..fleet.Stock.Select(v=>new PresentationVehicle(v.Id,0,v.ModelId,v.Position.X,v.Position.Z,500,500,0,-1,true)).Concat(fleet.Vehicles.Select(v=>{var position=world.Inventories.Single(i=>i.Id==v.CargoInventory).Position;return new PresentationVehicle(v.Id,v.Owner.Value,v.ModelId,position.X,position.Z,v.OffsetX,v.OffsetZ,v.FacingX,v.FacingZ,false);}))]};
+        return new(world.Tick, scenario.MapWidth, scenario.MapHeight, actors, markers.ToArray(), trips){Layout=scenario.Layout,EquipmentTraffic=!engine.UsesRoadTraffic?[]:[..world.Equipment.Select(e=>{var travel=engine.VehicleTravelOf(e.Id.Value);return new PresentationEquipment(e.Id.Value,e.OwnerId.Value,scenario.EquipmentTypes!.Single(t=>t.Id==e.TypeId).ItemId,e.Level,e.Position.X,e.Position.Z,travel.OffsetX,travel.OffsetZ,travel.FacingX,travel.FacingZ);})],RoadCells=engine.InspectRoads()?.Cells??[],Bypasses=engine.InspectRoads()?.Bypasses??[],Vehicles=fleet is null?[]:[..fleet.Stock.Select(v=>new PresentationVehicle(v.Id,0,v.ModelId,v.Position.X,v.Position.Z,500,500,0,-1,true)).Concat(fleet.Vehicles.Select(v=>{var position=world.Inventories.Single(i=>i.Id==v.CargoInventory).Position;var travel=engine.VehicleTravelOf(v.Id);return new PresentationVehicle(v.Id,v.Owner.Value,v.ModelId,position.X,position.Z,travel.OffsetX,travel.OffsetZ,travel.FacingX,travel.FacingZ,false);}))]};
     }
 }
 

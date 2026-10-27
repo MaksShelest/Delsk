@@ -13,11 +13,11 @@ public static class ActionPolicy
 {
     public static ActionReach Reach(ActionKind kind) => kind switch
     {
-        ActionKind.BuyVehicle or ActionKind.BoardVehicle or ActionKind.AssignVehicle or ActionKind.InstallVehicleKit or ActionKind.BuildLoadingPlatform or ActionKind.BuyImport or ActionKind.ModernizeWorkshop or ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.TakeOverflow or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
+        ActionKind.SetRoadWork or ActionKind.TurnVehicle or ActionKind.BuyVehicle or ActionKind.BoardVehicle or ActionKind.AssignVehicle or ActionKind.InstallVehicleKit or ActionKind.BuildLoadingPlatform or ActionKind.BuyImport or ActionKind.ModernizeWorkshop or ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.TakeOverflow or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.Build or ActionKind.UpgradeBuilding or
         ActionKind.SetWage or ActionKind.BuyEquipment or ActionKind.UpgradeEquipment or ActionKind.CollectPurchase or
         ActionKind.DeliverContract or ActionKind.BuyLogistics or ActionKind.UpgradeLogistics or ActionKind.SignSupport => ActionReach.AtLocation,
-        ActionKind.LeaveVehicle or ActionKind.PrepareEnterpriseExpansion or ActionKind.CancelExpansionPreparation or ActionKind.AcceptIndustryQuest or ActionKind.AbandonIndustryQuest or ActionKind.AssignWorkshopWorkers or ActionKind.PrepareDemolition or ActionKind.CancelDemolitionPreparation or ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.MoveTo or ActionKind.CancelCapitalSale or ActionKind.SetTravelHeading or ActionKind.StopHarvest or
+        ActionKind.AcceptRoadOrder or ActionKind.LeaveVehicle or ActionKind.PrepareEnterpriseExpansion or ActionKind.CancelExpansionPreparation or ActionKind.AcceptIndustryQuest or ActionKind.AbandonIndustryQuest or ActionKind.AssignWorkshopWorkers or ActionKind.PrepareDemolition or ActionKind.CancelDemolitionPreparation or ActionKind.ProposeTrade or ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade or ActionKind.MoveEquipment or ActionKind.SetExtractionRoute or ActionKind.SetTransportRoute or ActionKind.StopTransfer or ActionKind.MoveTo or ActionKind.CancelCapitalSale or ActionKind.SetTravelHeading or ActionKind.StopHarvest or
         ActionKind.SetProductionEnabled or ActionKind.CancelPlotReservation or ActionKind.SetRecipe or ActionKind.SetEquipmentMode or
         ActionKind.CreateSellOffer or ActionKind.SubmitBuyRequest or ActionKind.RaiseBid or ActionKind.WithdrawBid or
         ActionKind.CreateBuyOffer or ActionKind.AcceptDeliveryQuantity or ActionKind.WithdrawSupplyRequest or ActionKind.CancelBuyOffer or
@@ -50,7 +50,7 @@ public sealed partial class SimulationEngine
         Cell[]? locations = action.Kind switch
         {
             ActionKind.BuyVehicle=>Fleet is null?null:[Dealer.Entry],
-            ActionKind.BoardVehicle or ActionKind.InstallVehicleKit=>_vehicles.TryGetValue(action.VehicleId,out var vehicle)&&vehicle.Owner.Value==actor.Id?[VehicleCargo(vehicle).Position]:null,
+            ActionKind.SetRoadWork or ActionKind.TurnVehicle or ActionKind.BoardVehicle or ActionKind.InstallVehicleKit=>_vehicles.TryGetValue(action.VehicleId,out var vehicle)&&vehicle.Owner.Value==actor.Id?[VehicleCargo(vehicle).Position]:null,
             ActionKind.AssignVehicle=>_enterprises.TryGetValue(action.Enterprise.Value,out var assigning)&&assigning.Definition.OwnerId==actor.Id?[assigning.Definition.Position]:null,
             ActionKind.BuildLoadingPlatform=>_buildings.TryGetValue(action.Building.Value,out var platformBuilding)&&platformBuilding.Owner==actor.Id&&!Demolished(platformBuilding.Id)?[platformBuilding.Position]:null,
             ActionKind.BuyImport=>Content is null?null:[ImportTerminal],
@@ -92,6 +92,7 @@ public sealed partial class SimulationEngine
         if (enterprise is not null) return [enterprise.Definition.Position];
         if (_equipment.TryGetValue(group, out var machine) && machine.Owner == actor) return [machine.Position];
         if (_logistics.TryGetValue(group, out var logistics) && logistics.Owner == actor) return [_enterprises[logistics.Enterprise].Definition.Position];
+        if (_roadWorks.TryGetValue(group,out var road) && road.Group.Owner==actor) return [VehicleCargo(_vehicles[group]).Position];
         if (_platforms.TryGetValue(group,out var p) && p.Group.Owner==actor) return [_buildings[p.Building].Position];
         return null;
     }

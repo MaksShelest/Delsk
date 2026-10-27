@@ -1,0 +1,8 @@
+{
+  "status": "succeeded",
+  "testedCode": "25f668958d41fe37da490d6805d302e87d1cc938",
+  "checkedFiles": 656,
+  "probeSha256": "b98b55b23d51d9ce5c89db34414800ed5f04fdccf53439fef7cd56a449b0c500",
+  "differences": [],
+  "scope": "Exact ordinary native source/config/assets/upstream inputs; only known serial import suffix removed, implementation-plan status prose excluded."
+}

@@ -35,14 +35,22 @@ PRODUCTION = ('Simulation.Tests.ProductionD3Tests',)
 START = ('Simulation.Tests.ProductionD3StartTests',)
 FLEET = ('Simulation.Tests.FleetE1Tests',)
 FLEET_STOCK = ('Simulation.Tests.FleetE1StockTests',)
-PARTITIONS = (Partition('', exclude=INTEGRATION + DEVELOPMENT + PRODUCTION + START + FLEET + FLEET_STOCK + PHYSICAL + MODELS), Partition('-integration', include=INTEGRATION), Partition('-d2', include=DEVELOPMENT), Partition('-d3', include=PRODUCTION), Partition('-d3-start', include=START), Partition('-e1', include=FLEET), Partition('-e1-stock', include=FLEET_STOCK), Partition('-physical', include=PHYSICAL), Partition('-models', include=MODELS))
+ROAD_HISTORY = ('Simulation.Tests.RoadHistoryE2Tests',)
+ROADS = ('Simulation.Tests.RoadE2Tests',)
+TRAFFIC = ('Simulation.Tests.RoadTrafficE2Tests',)
+ROAD_FREIGHT = ('Simulation.Tests.RoadFreightE2Tests',)
+PARTITIONS = (Partition('', exclude=ROAD_HISTORY + ROADS + TRAFFIC + ROAD_FREIGHT + INTEGRATION + DEVELOPMENT + PRODUCTION + START + FLEET + FLEET_STOCK + PHYSICAL + MODELS), Partition('-integration', include=INTEGRATION), Partition('-d2', include=DEVELOPMENT), Partition('-d3', include=PRODUCTION), Partition('-d3-start', include=START), Partition('-e1', include=FLEET), Partition('-e1-stock', include=FLEET_STOCK), Partition('-physical', include=PHYSICAL), Partition('-models', include=MODELS), Partition('-e2-history',include=ROAD_HISTORY), Partition('-e2-roads',include=ROADS), Partition('-e2-traffic',include=TRAFFIC), Partition('-e2-freight',include=ROAD_FREIGHT))
 
-def run_suite(check, dotnet, assembly, output, prefix='tests', timeout=120):
+def selected_partitions(suite='all'):
+    if suite not in ('all','previous','roads'):raise ValueError('Unknown suite')
+    return tuple(p for p in PARTITIONS if suite=='all' or p.name.startswith('-e2-')==(suite=='roads'))
+
+def run_suite(check, dotnet, assembly, output, prefix='tests', timeout=120, suite='all'):
     """All future classes enter the base partition. Reject skips, failures and overlaps in actual TRX."""
     output = Path(output)
     reports = []
     seen = set()
-    for part in PARTITIONS:
+    for part in selected_partitions(suite):
         path = output / ('tests' + part.name + '.trx')
         check(prefix + part.name, timeout, [dotnet, str(assembly), '-noColor', '-noLogo', '-parallelMode', 'none', *part.filters(), '-result-trx', str(path)])
         root = ET.parse(path).getroot()

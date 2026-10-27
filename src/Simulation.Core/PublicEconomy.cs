@@ -92,6 +92,7 @@ public sealed partial class SimulationEngine
         equipment=checked(equipment+_vehicles.Values.Where(v=>v.Owner==actor).Sum(v=>Model(v.ModelId).PriceMinor+VehicleKitInvestment(v.Id)));
         buildings=checked(buildings+_platforms.Values.Where(p=>p.Group.Owner==actor.Value&&!Demolished(p.Building)).Sum(p=>Fleet!.Platforms.Where(u=>u.Level<=p.Level||p.Installation?.Level==u.Level).Sum(u=>checked(u.PriceMinor+u.Materials.Sum(m=>m.Quantity*_items[m.ItemId].BasePriceMinor)))));
         // Current contracts are fully funded. Unrecognised promises and contingent fines are not debt/assets.
+        buildings=checked(buildings+RoadCapital(actor));
         return new(money, stock, wip, land, buildings, equipment, 0);
     }
 
