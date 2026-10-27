@@ -84,7 +84,7 @@ public class RoadE2Tests
     {
         var s=new GameSession(new(Prepared()));var v=Paver(s,false);long cash=s.Engine.Observe(new(1)).Account.BalanceMinor;
         Step(s,Work(v));Assert.Equal("NoRoadMaterials",s.Engine.InspectRoads()!.Works.Single().Reason);Assert.Equal(cash,s.Engine.Observe(new(1)).Account.BalanceMinor);
-        Step(s,Work(v,target:new(4,4)),accepted:false);Assert.DoesNotContain(s.Engine.InspectRoads()!.Cells,c=>c.Cell==new Cell(4,4));Exact(s);
+        Step(s,Work(v,target:new(4,4)),accepted:false);Step(s,Work(v,target:new(4,4),enabled:false),accepted:false);Step(s,Work(v,level:0,enabled:false),accepted:false);Assert.DoesNotContain(s.Engine.InspectRoads()!.Cells,c=>c.Cell==new Cell(4,4));Exact(s);
     }
     [Fact]public void PublicRoadOrderHoldsExistingTreasuryAndPaysExactlyOnceAfterCompletion()
     {

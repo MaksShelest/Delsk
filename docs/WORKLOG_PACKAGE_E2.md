@@ -130,3 +130,20 @@ helper: Path.read_text использовал Windows cp1252 для UTF-8 projec
 русским авторством. Исправлено явное UTF-8; boundary fixture содержит кириллицу.
 Checks20/20 повторно passed. Это ошибка подготовки CI, gameplay97f0538 неизменен.
 Все9 Core jobs именно97f0538 завершены success, включая production/fleet/roads/verify.
+
+Финальный software gate: gameplay97f0538, все9 Core jobs40476826094 success;
+Windows14ddbb1/40480084256 success включая ordinary/cache/runtime/release/HUD/
+cleanup. Последующие изменения только asset-import CI/helper/two tests:
+проверено823 input hashes,656 exact native-source inputs, никакого gameplay/
+баланса/existing test изменения. Итог27 E2 tests,51runnerprocess/35exports/
+24pairs, nativeRU/EN, actualWorld24exact,1132legacyhashes/35restores,Python20+37.
+Все исходные failed attempts/timeout сохранены, deadlines не увеличивались.
+Документы/plan/AGENTS отражают E2/P70 software, не весь vNext/длительный баланс/
+устройства. Дальше только review PR67. E3 не начат, auto merge не выполняется.
+
+Контрольный просмотр перед final docs выявил слабую проверку disabled route:
+неверные Stops/level при Pause без активного batch могли попасть в состояние
+и упасть на invariant. Guard теперь одинаков для Start/Stop, пустой маршрут
+допустим только disabled. Добавлены реальные rejected-команды в существующий
+atomic protected/materials test. Это единственный последующий gameplay delta,
+отказ invalid input; валидные сценарии/баланс не меняются. Приёмка обновляется.

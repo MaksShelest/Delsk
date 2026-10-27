@@ -30,8 +30,8 @@ public sealed partial class SimulationEngine
         if(v.Installation is not null||VehicleTransferring(v.CargoInventory.Value)||VehicleLogistics(v.Id) is not null)throw new RuleViolation("VehicleBusy");
         if(c.Action.Mode is not (EquipmentMode.Personal or EquipmentMode.Automatic or EquipmentMode.Off))throw new RuleViolation("InvalidMode");
         var route=c.Action.Stops??[];int level=c.Action.EquipmentLevel;
-        if(c.Action.Enabled&&(route.IsDefaultOrEmpty||route.Length>64||route.Distinct().Count()!=route.Length||
-            route.Any(p=>!PublicRoadCell(p))||route.Zip(route.Skip(1)).Any(p=>Manhattan(p.First,p.Second)!=1)||level is <1 or >3))throw new RuleViolation("InvalidRoadRoute");
+        if(level is <1 or >3||route.IsDefault||route.Length>64||route.Distinct().Count()!=route.Length||
+            route.Any(p=>!PublicRoadCell(p))||route.Zip(route.Skip(1)).Any(p=>Manhattan(p.First,p.Second)!=1)||c.Action.Enabled&&route.IsEmpty)throw new RuleViolation("InvalidRoadRoute");
         if(c.Action.Enabled&&route.Any(p=>RoadLevel(p)!=level&&RoadLevel(p)!=level-1))throw new RuleViolation("PreviousRoadStageRequired");
         if(c.Action.Mode==EquipmentMode.Personal&&v.Driver!=actor.Id||c.Action.Mode==EquipmentMode.Automatic&&v.Driver!=0)throw new RuleViolation("PaverOperatorRequired");
         bool created=false;if(!_roadWorks.TryGetValue(v.Id,out var w)){w=new(v.Id,actor.Id,Roads.WageMinor);created=true;}
