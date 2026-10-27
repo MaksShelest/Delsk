@@ -135,4 +135,12 @@ public class RoadE2Tests
         var events=s.Engine.EventsSince(0).Where(e=>e.Type=="RoadWorkTravelled").ToArray();Assert.NotEmpty(events);
         Assert.All(events,e=>Assert.Equal(40,e.AmountMinor));Assert.Equal(events.Sum(e=>e.AmountMinor),s.Engine.Ledger().Where(l=>l.Reason=="RoadWages").Sum(l=>l.AmountMinor));Exact(s);
     }
+    [Fact]public void EmptyPublicCorridorCanBecomeDirtBeforeRoadOne()
+    {
+        var s=new GameSession(new(Prepared()));var v=Paver(s);var at=new Cell(10,2);StorageC1Tests.Move(s,at);
+        Step(s,Work(v,level:2,target:at),accepted:false);Step(s,Work(v,level:1,target:at));
+        var batch=s.Engine.InspectRoads()!.Works.Single().Batch!;Assert.DoesNotContain(at,batch.Bypass);
+        s.AdvanceTo(batch.StartedTick+16);Assert.Equal(1,s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==at).Level);
+        Assert.Equal(1,Assert.Single(s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==at).Contributions).Builder.Value);Exact(s);
+    }
 }

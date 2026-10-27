@@ -28,8 +28,8 @@ public class RoadFreightE2Tests
     [Fact]public void ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad()
     {
         var d=RoadE2Tests.Prepared();var source=d.ResourceNodes.Single(r=>r.ItemId=="wood");var target=new Cell(20,3);
-        d=d with{ResourceNodes=[..d.ResourceNodes.Select(r=>r==source?r with{Rules=new(Public:true,InitialOwner:2)}:r),source with{Position=target,Rules=new(Public:false,InitialOwner:2)}],
-            Layout=d.Layout! with{ResourceDistricts=[..d.Layout!.ResourceDistricts,new("wood-second","wood","wood",[target],[])]}};
+        d=d with{ResourceNodes=[..d.ResourceNodes.Select(r=>r==source?r with{Rules=new(Public:false,InitialOwner:2)}:r),source with{Position=target,Rules=new(Public:false,InitialOwner:2)}],
+            Layout=d.Layout! with{ResourceDistricts=[..d.Layout!.ResourceDistricts.Select(r=>r.Item=="wood"?r with{PublicCells=[]}:r),new("wood-second","wood","wood",[target],[])]}};
         var s=new GameSession(new(d));var paver=RoadE2Tests.Paver(s);RoadE2Tests.Step(s,new(ActionKind.LeaveVehicle));
         RoadE2Tests.Step(s,RoadE2Tests.Work(paver,mode:EquipmentMode.Automatic));while(s.Engine.InspectRoads()!.Works.Single().Batch is null)s.Step();
         RoadE2Tests.Step(s,RoadE2Tests.Work(paver,mode:EquipmentMode.Automatic,enabled:false));

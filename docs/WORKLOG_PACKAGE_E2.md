@@ -62,3 +62,12 @@ Python Checks18/18. WIP CI40467554767 failure (unit/developer), platform
 40467554757 success; это не финальная приёмка. Новые E2 suites выделены
 в отдельные required ordinary/Developer jobs, previous+roads дают все partitions;
 прежние individual/aggregate deadlines сохранены, старые тесты не исключены.
+
+E2-unit-2: history1/1,roads10/10,traffic11/11 passed; freight2/3 passed
+(реальный Freight и NPC task). Mining fixture ошибочно задавала public+owner,
+отклонена ResourceValidation до запуска. Исправлены права/география ресурса.
+Добавлен отдельный тест создания грунтовки в пустом публичном коридоре:
+допустимый обход может иметь грунтовые концы, готовое полотно предпочитается.
+Дорожные работы не должны требовать уже готовую дорогу с двух сторон для
+первой грунтовки. Closing test теперь явно проверяет фактического Users при
+completion. Финальные gates ещё впереди.

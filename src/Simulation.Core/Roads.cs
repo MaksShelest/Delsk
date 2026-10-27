@@ -127,7 +127,7 @@ public sealed partial class SimulationEngine
     }
     private ImmutableArray<Cell> RoadWorkBypass(Cell cell)
     {
-        var neighbors=RoadNeighbors(cell).Where(PublicRoadCell).Where(c=>RoadLevel(c)>0).ToArray();
+        var neighbors=RoadNeighbors(cell).Where(PublicRoadCell).OrderByDescending(c=>RoadLevel(c)>0).ToArray();
         if(neighbors.Length<2)return [];
         foreach(var a in neighbors)foreach(var b in neighbors.Where(b=>b!=a))
         {

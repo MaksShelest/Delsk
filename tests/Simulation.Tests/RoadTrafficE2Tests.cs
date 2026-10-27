@@ -61,6 +61,7 @@ public class RoadTrafficE2Tests
         RoadE2Tests.Exact(s);
         RoadE2Tests.Step(s,RoadE2Tests.Work(paver));
         RunUntil(s,()=>s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==new Cell(10,1)).Level==2);
+        Assert.Contains(s.Engine.InspectRoads()!.Bypasses,b=>b.Closing&&b.Users.Contains(car.Id));
         var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));
         for(int i=0;i<90;i++){s.Step();copy.Step();Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());}
         Assert.Equal(new Cell(13,1),s.Engine.Observe(new(2)).Participant.Position);Assert.Empty(s.Engine.InspectRoads()!.Bypasses);RoadE2Tests.Exact(s);
