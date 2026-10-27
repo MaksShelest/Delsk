@@ -66,7 +66,8 @@ public class RoadE2Tests
         var road=s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==start.Cell);Assert.Equal(2,road.Level);Assert.False(s.Engine.InspectRoads()!.Works.Single().Enabled);Assert.Equal("RouteCompleted",s.Engine.InspectRoads()!.Works.Single().Reason);Assert.Equal(new long[]{0,1},road.Contributions.Select(c=>c.Builder.Value));
         Step(s,Work(v,3));start=s.Engine.InspectRoads()!.Works.Single().Batch!;s.AdvanceTo(start.StartedTick+32);
         road=s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==start.Cell);Assert.Equal(3,road.Level);Assert.Equal(3,road.Contributions.Length);
-        var completed=s.Engine.InspectRoads()!.Works.Single();s.SetTravelHeading(new(1),1,0);s.AdvanceTravelQuantum();
+        var completed=s.Engine.InspectRoads()!.Works.Single();var facing=s.Engine.InspectFleet()!.Vehicles.Single().FacingX;
+        s.SetTravelHeading(new(1),facing==0?1:facing,0);s.AdvanceTravelQuantum();Assert.True(s.Engine.InspectRoads()!.Traffic.Single(t=>t.VehicleId==v.Id).Progress>0);
         Step(s,Work(v,level:2,enabled:false,target:new(11,1)),accepted:false);
         var unchanged=s.Engine.InspectRoads()!.Works.Single();Assert.Equal(completed.Route,unchanged.Route);Assert.Equal(completed.Cursor,unchanged.Cursor);Assert.Equal(completed.Level,unchanged.Level);
         s.SetTravelHeading(new(1),0,0);s.CompleteTravelTick();Exact(s);

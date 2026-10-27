@@ -158,3 +158,9 @@ UserPaused; добавлены post-tick assertions в automatic test/native pro
 Финальный code freeze, новые gates выполняются на этом снимке. Дальнейший
 объём ограничен E2; подготовленные ранее runner/native/CI records остаются
 историей и не подменяют свежие подтверждения этого снимка.
+
+deb748e Windows все steps success. Локальный freeze suite12 roads:11/12;
+новый moving-stop тест подал обратный курс уже смотрящего влево Тракта,
+штатно затормозил, поэтому Stop был принят. Это неверная постановка теста,
+не отказ runtime. Он теперь берёт настоящий forward heading и явно требует
+Progress>0 перед rejected Stop. Gameplay deb748e не менялся.
