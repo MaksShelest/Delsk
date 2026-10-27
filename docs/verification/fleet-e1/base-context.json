@@ -1,0 +1,16 @@
+{
+  "base": "ce8f0e3",
+  "previousFinalD3": "a616649c1a9d0532c3413086fa7d86a1d44f4a90",
+  "d3IsAncestor": true,
+  "d3CI": {
+    "core": 40362781390,
+    "godot": 40362781514,
+    "conclusions": "success"
+  },
+  "inputs": {
+    "docs/vnext/DELSK_SPECIFICATION_VNEXT.md": "24f09851835ff15e7f1f84fd2d865f6215070af5d48dcddd572a110ed3f4adef",
+    "docs/vnext/data/BALANCE_VNEXT.json": "4b12d705acd4c7f4e9d44f540eb3f600edd75b983b1ffdd52c71a15e8a42c9d2",
+    "docs/IMPLEMENTATION_REPORT_PACKAGE_D3.md": "5bc37e970a6d6b6857b5261d9a6fc6521ff7f2aa5886a543f528f54552259616",
+    "docs/verification/production-d3/final-gate.json": "94b5112d9c2f28135bb64b06ec38704584e74bb1c69e87e3b99dec7743fea0df"
+  }
+}

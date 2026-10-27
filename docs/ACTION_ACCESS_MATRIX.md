@@ -91,3 +91,21 @@ Developer XP отсутствует в ActionKind и доступен тольк
 
 Industry XP в режиме бога остаётся conditional research intervention,
 не обычной ActionKind. Money/stock/XP не требуют Step на паузе, не обходят holds.
+
+### E1
+
+| Действие | Доступ | Условия |
+| --- | --- | --- |
+| BuyVehicle | AtLocation: вход автосалона | Idle, конечный доступный экземпляр, свободные деньги; общий inclusive5tick window и реальный money hold для всех участников |
+| BoardVehicle | AtLocation: своя машина | Свободна от водителя/передачи/монтажа/рейса; оба направления связанной автоматики выключены |
+| LeaveVehicle | Remote: текущая управляемая машина | Нет незавершённой работы/передачи; позиция и груз остаются у машины |
+| AssignVehicle | AtLocation: своё предприятие | Пустая машина там же, без driver/монтажа/передачи/назначения; прежний executor stopped/noTrip; Тракт исключён |
+| InstallVehicleKit | AtLocation: своя машина | Совместимая модель, idle, реальные материалы в кузове/деньги;60 активных тиков |
+| BuildLoadingPlatform | AtLocation: своё действующее здание | Допустимый уровень и stopped project, реальные input materials/деньги; I не создаёт штат, II/III ждут монтаж |
+| Transfer с кузовом | AtLocation: общая клетка | Свои права на товар/место, реальный объём/holds, материалы Тракта; несовместимые задачи машины блокируются |
+
+Для E1 BuyLogistics возвращает VehicleRequired: выбирается купленная машина,
+а не второй скрытый грузовик. Остальные прежние команды очереди/маршрутов/Stop
+используются после AssignVehicle. Старые профили сохраняют BuyLogistics.
+Человек и NPC проходят один ActionAccess и обычные команды. Полный будущий
+ассортимент/PRNG/чужие holds не попадают в ControllerObservation.

@@ -1,0 +1,69 @@
+{
+  "status": "succeeded",
+  "scope": "E1/P69 software only",
+  "author": "Шелестов Максим Евгеньевич / MaksShelest",
+  "branch": "feat/vnext-e1-fleet",
+  "pullRequest": "https://github.com/MaksShelest/Delsk/pull/66",
+  "base": "ce8f0e3",
+  "testedCode": "c62352b35ecdefd8e2c5680c5f229bb0efd9b6e7",
+  "followup": "Documentation/evidence-only commit; source-digests.json verifies all724 runtime/test/config/tool/CI inputs",
+  "ordinaryTestsPassed": 1219,
+  "e1TestsPassed": 21,
+  "headless": {
+    "exports": 102,
+    "replays": 14,
+    "comparisonPairs": 69,
+    "localExit": 0,
+    "seconds": 490.514
+  },
+  "fleetRunner": {
+    "processChecks": 34,
+    "exports": 22,
+    "comparisonPairs": 16,
+    "localAcceptedAuditsExit": 0,
+    "freshCI": "success"
+  },
+  "native": {
+    "status": "succeeded",
+    "languages": [
+      "ru",
+      "en"
+    ],
+    "wholeTickLoad": true,
+    "saveInUse": true,
+    "singlePhysicalModel": true,
+    "scope": "Isolated ordinary stage; native-source-comparison.json scopes later NPC/help/Developer-only differences"
+  },
+  "pythonChecksPassed": 15,
+  "labTestsPassed": 37,
+  "ci": {
+    "coreRun": 40443103322,
+    "godotRun": 40443103227,
+    "requiredSuites": [
+      "unit",
+      "core",
+      "developer",
+      "production",
+      "fleet",
+      "verify"
+    ],
+    "allSucceeded": true
+  },
+  "failedAttemptsPreserved": [
+    "headless-ready aggregate124 after completed ordinary units",
+    "developer-final local aggregate124; complete CI Developer gate succeeded in438s",
+    "initial fleet audit1; fixed verifier and reran audits, then fresh CI gate succeeded",
+    "earlier failed fixtures, zero-test DLL and import-completeness1 are described in worklog"
+  ],
+  "notStarted": [
+    "E2 road works",
+    "new movement helper",
+    "P71 invoices",
+    "P72/P73 external delivery services"
+  ],
+  "limitations": [
+    "Prepared resources/cash/geography do not establish natural progression or long-run ROI",
+    "One inherited automatic logistics executor per enterprise",
+    "No device/lifecycle/FPS/touch acceptance, no current live LLM or full vNext acceptance"
+  ]
+}

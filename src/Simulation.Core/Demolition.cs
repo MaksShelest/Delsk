@@ -16,6 +16,7 @@ public sealed partial class SimulationEngine
     public DemolitionState? DemolitionOf(ParticipantId actor)=>Storage is null?null:new(_preparingDemolition.Where(id=>_buildings[id].Owner==actor.Value).Order().ToArray(),_demolitionReceipts.Where(r=>r.Owner==actor.Value).Select(CopyReceipt).ToArray());
     private static DemolitionReceipt CopyReceipt(DemolitionReceipt r)=>r with{Cells=r.Cells.ToArray(),Invested=r.Invested.ToArray(),Recovery=r.Recovery.ToArray(),GroundInventories=r.GroundInventories.ToArray()};
     private DemolitionState? CaptureDemolition()=>_preparingDemolition.Count+_demolitionReceipts.Count==0?null:new(_preparingDemolition.Order().ToArray(),_demolitionReceipts.Select(CopyReceipt).ToArray());
+    private bool BuildingInvestment(SimulationEvent e,long target) => e.EntityId==target&&e.Type is "BuildingConstructed" or "BuildingUpgraded" or "WorkshopOutfitStarted" or "WorkshopModernizationStarted" || e.Type=="LoadingPlatformStarted"&&_platforms.TryGetValue(e.EntityId,out var platform)&&platform.Building==target;
     private long[] BuildingInventories(BuildingState b)=>b.Output is {} output?[b.Input,output]:[b.Input];
     public DemolitionQuote? QuoteDemolition(ParticipantId actor,long target,bool construction=false)
     {
@@ -25,7 +26,7 @@ public sealed partial class SimulationEngine
         else if(!_buildings.TryGetValue(target,out building)||building.Owner!=actor.Value||Demolished(target))return null;
         var cells=building is null?(job!.Development?.Cells.ToArray()??new[]{new DemolitionCell(job.Position,job.Level)}):DemolitionCells(building);
         // Journal entries describe actual committed investments; initial scenario assets have none.
-        var commands=construction?new HashSet<string>([job!.CommandId],StringComparer.Ordinal):_events.Where(e=>e.EntityId==target&&e.Type is "BuildingConstructed" or "BuildingUpgraded" or "WorkshopOutfitStarted" or "WorkshopModernizationStarted").Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal);
+        var commands=construction?new HashSet<string>([job!.CommandId],StringComparer.Ordinal):_events.Where(e=>BuildingInvestment(e,target)).Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal);
         var invested=_events.Where(e=>e.Type=="ConstructionMaterialConsumed"&&e.CommandId is {} id&&commands.Contains(id)).GroupBy(e=>e.ItemId,StringComparer.Ordinal).OrderBy(g=>g.Key,StringComparer.Ordinal).Select(g=>new MaterialCost(g.Key,g.Sum(e=>e.Quantity))).ToArray();
         var recovery=invested.Select(m=>new MaterialCost(m.ItemId,checked((long)((Int128)m.Quantity*DemolitionRules.RecoveryBasisPoints/10000)))).Where(m=>m.Quantity>0).ToArray();
         long[] inventories=building is null?[job!.InventoryId]:BuildingInventories(building);
@@ -35,6 +36,7 @@ public sealed partial class SimulationEngine
         {
             if(!PreparingDemolition(target))blockers.Add("PrepareFirst");
             if(_modernizations.Values.Any(m=>m.Enterprise==target)||_storageConstruction.Values.Any(c=>c.BuildingId==target)||_workshopInstallations.Values.Any(w=>w.Enterprise.Value==target))blockers.Add("ConstructionInProgress");
+            if(_platforms.Values.Any(p=>p.Building==target&&p.Installation is not null))blockers.Add("ConstructionInProgress");
             if(UnitsFor(target).Any(e=>e.Batch is not null))blockers.Add("ProductionBatch");
         }
         if(_transfers.Values.Any(t=>inventories.Contains(t.Source)||inventories.Contains(t.Destination)))blockers.Add("ManualTransfer");
@@ -103,6 +105,7 @@ public sealed partial class SimulationEngine
         for(int n=0;n<cells.Length;n++){var plot=_plotsByCell[cells[n]];plot.Building=null;_groundStorage[plot.Definition.Id]=grounds[n];}
         if(building is not null)
         {
+            foreach(var p in _platforms.Values.Where(p=>p.Building==id))ReleaseDemolitionWorkers(p.Group);
             foreach(var e in UnitsFor(id)){e.Enabled=false;ReleaseDemolitionWorkers(e.Group);}
             foreach(var l in _logistics.Values.Where(l=>l.Enterprise==id)){ReleaseDemolitionWorkers(l.Group);l.Enabled=false;l.InboundEnabled=false;l.Queue.Clear();l.Contract=0;l.Destination=0;l.InboundSource=0;l.Reason="ParkedAfterDemolition";}
             _preparingDemolition.Remove(id);ReleaseDevelopmentRights(id);
@@ -152,7 +155,7 @@ public sealed partial class SimulationEngine
         foreach(var flow in _flows.Values)if(flow.ConstructionRecovered<0||flow.ConstructionRecovered!=_events.Where(e=>e.Type=="DemolitionMaterialRecovered"&&e.ItemId==flow.Id).Sum(e=>e.Quantity))throw new CheckpointException("InvalidConstructionRecovery");
         foreach(var r in _demolitionReceipts)
         {
-            var commands=r.Construction?_events.Where(e=>e.EntityId==r.Target&&e.Type=="StorageConstructionStarted").Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal):_events.Where(e=>e.EntityId==r.Target&&e.Type is "BuildingConstructed" or "BuildingUpgraded" or "WorkshopOutfitStarted" or "WorkshopModernizationStarted").Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal);
+            var commands=r.Construction?_events.Where(e=>e.EntityId==r.Target&&e.Type=="StorageConstructionStarted").Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal):_events.Where(e=>BuildingInvestment(e,r.Target)).Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal);
             var actual=_events.Where(e=>e.Type=="ConstructionMaterialConsumed"&&e.CommandId is {} id&&commands.Contains(id)).GroupBy(e=>e.ItemId,StringComparer.Ordinal).OrderBy(g=>g.Key,StringComparer.Ordinal).Select(g=>new MaterialCost(g.Key,g.Sum(e=>e.Quantity))).ToArray();
             if(!actual.SequenceEqual(r.Invested))throw new CheckpointException("InvalidActualInvestment");
             if(r.Tick<1||r.Tick>Tick||(r.GroundInventories.Length!=r.Cells.Length&&!(r.Construction&&r.GroundInventories.Length==1))||r.Cells.Length==0||r.PriceMinor!=r.Cells.Sum(c=>checked(DemolitionRules.CellPriceMinor+(c.Level-1)*DemolitionRules.ExtraLevelPriceMinor))||!r.Recovery.SequenceEqual(r.Invested.Select(m=>new MaterialCost(m.ItemId,checked((long)((Int128)m.Quantity*DemolitionRules.RecoveryBasisPoints/10000)))).Where(m=>m.Quantity>0))||!_events.Any(e=>e.Type==(r.Construction?"StorageConstructionCancelled":"BuildingDemolished")&&e.EntityId==r.Target&&e.Tick==r.Tick&&e.ActorId?.Value==r.Owner&&e.AmountMinor==r.PriceMinor))throw new CheckpointException("InvalidDemolitionReceipt");

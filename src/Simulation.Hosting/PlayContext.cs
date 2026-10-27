@@ -103,10 +103,13 @@ public static class PlayContext
         if (tablets)
             foreach (var machine in (view.Equipment ?? []).Where(e => e.Position == cell))
                 choices.Add(new("object:equipment:" + machine.Id.Value,L(language,"Открыть карточку техники","Open equipment card"),null));
+        if(view.Fleet is {} fleet)
+            foreach(var v in fleet.Vehicles.Where(v=>v.Position==cell))
+                choices.Add(new("vehicle:"+v.Vehicle.Id,v.Model.Name+" · "+(v.Vehicle.Driver==0?L(language,"сесть","board"):L(language,"выйти","leave")),new(v.Vehicle.Driver==0?ActionKind.BoardVehicle:ActionKind.LeaveVehicle,VehicleId:v.Vehicle.Id),!view.Participant.Busy));
         if(tablets && scenario.Layout?.CivicObjects.Single(c=>c.Kind=="town_hall").Entry==cell)
             choices.Add(new("city",L(language,"Ратуша · город и выборы","Town hall · city and elections"),null));
         if(tablets && scenario.Layout?.CivicObjects.Single(c=>c.Kind=="dealership").Entry==cell)
-            choices.Add(new("dealership",L(language,"Автосалон · информация","Vehicle dealer · information"),null));
+            choices.Add(new("dealership",L(language,"Автосалон и автопарк","Vehicle dealer and fleet"),null));
         if (tablets && TabletState.IsCapital(scenario, cell))
         {
             choices.Add(new("exchange", L(language, "Открыть биржу", "Open exchange"), null));
@@ -186,7 +189,7 @@ public static class PlayContext
                 "plot" or "plot-free" => PlotLine(view, marker, language),
                 "plot-own" or "plot-foreign" or "plot-reserved" or "shop-plot" => PlotLine(view, marker, language),
                 "production" or "warehouse" or "shop" => BuildingHint(view, marker, language),
-                "civic"=>marker.Label switch {"town_hall"=>L(language,"Ратуша · город и выборы","Town hall · city and elections"),"dealership"=>L(language,"Будущий автосалон · продажи в пакете E","Future vehicle dealer · sales in package E"),_=>L(language,"Столичный терминал","Capital terminal")},
+                "civic"=>marker.Label switch {"town_hall"=>L(language,"Ратуша · город и выборы","Town hall · city and elections"),"dealership"=>L(language,"Автосалон · конечный ассортимент","Vehicle dealer · limited stock"),_=>L(language,"Столичный терминал","Capital terminal")},
                 _ => marker.Kind
             });
         if (!here && markers.Any(m => m.Kind is "resource" or "resource-depleted" or "plot" or "plot-free" or "plot-own" or "production" or "warehouse" or "shop"))

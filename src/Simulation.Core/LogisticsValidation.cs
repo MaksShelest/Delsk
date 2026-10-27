@@ -40,7 +40,7 @@ public sealed partial class SimulationEngine
                 l.Contract!=0 && !_deliveryContracts.Any(d=>d.Id==l.Contract && d.Supplier.Value==l.Owner))throw new InvalidOperationException("Invalid logistics system");
             var home=_economy.Inventories[l.Source].Position;
             if(l.Trip is not {} t)
-            {if(cargo.Stock.Count!=0 || cargo.Reservations.Count!=0 || cargo.Position!=home)throw new InvalidOperationException("Idle cargo retained");continue;}
+            {if(l.VehicleId==0 && (cargo.Stock.Count!=0 || cargo.Reservations.Count!=0 || cargo.Position!=home))throw new InvalidOperationException("Idle cargo retained");continue;}
             var f=t.Freight??throw new InvalidOperationException("Missing freight state");
             var job=l.Queue.Single(j=>j.Key==t.JobKey);
             long expectedSource=job.Source.Value!=0?job.Source.Value:job.InboundSource.Value!=0?job.InboundSource.Value:l.Source;
@@ -60,20 +60,20 @@ public sealed partial class SimulationEngine
                 (t.ContractId!=0 ? d is null || d.ItemId!=t.ItemId || t.OwnDestination.Value!=0 :
                     !_buildings.Values.Any(b=>b.Owner==l.Owner && b.Input==f.Destination.Value)) ||
                 cargo.Position!=t.Position || t.Path.IsDefaultOrEmpty || t.PathIndex<0 || t.PathIndex>=t.Path.Length || t.Path[t.PathIndex]!=t.Position ||
-                t.SegmentTicks<0 || t.SegmentTicks>=Logistics.MoveTicksPerCell)
+                t.SegmentTicks<0 || t.SegmentTicks>=(t.PathIndex<t.Path.Length-1?FreightMoveTicks(l,t.Path[t.PathIndex],t.Path[t.PathIndex+1]):1))
                 throw new InvalidOperationException("Invalid physical freight");
             if(t.State is "ReturningEmpty" or "Finishing" && (f.Cargo!=0 || FreightRemainingSource(t)!=0) ||
                 t.State is "Outbound" or "ReturningInput" && (FreightRemainingSource(t)!=0 || f.Cargo<=0))
                 throw new InvalidOperationException("Freight stage contradicts goods");
             var destination=d?.Position??_economy.Inventories[f.Destination.Value].Position;
-            ValidateFreightPath(f.ToSource,home,source.Position);ValidateFreightPath(f.ToDestination,source.Position,destination);
+            ValidateFreightPath(f.ToSource,l.VehicleId==0?home:f.ToSource[0],source.Position);ValidateFreightPath(f.ToDestination,source.Position,destination);
             ValidateFreightPath(f.ToHome,destination,home);ValidateFreightPath(f.ToGoodsSource,destination,source.Position);ValidateFreightPath(f.SourceToHome,source.Position,home);
             var expected=t.State switch {"FetchingEmpty"=>f.ToSource,"Loading"=>f.ToSource,"Outbound" or "ReturningInput" or "Unloading"=>f.ToDestination,
                 "ReturningCargo"=>f.ToGoodsSource,_=>t.Path};
             if(!t.Path.SequenceEqual(expected) || t.Path.Any(c=>!_map.Walkable(c)) || t.State=="UnloadingReturn" && t.Position!=source.Position)throw new InvalidOperationException("Freight path mismatch");
-            long volume=checked(t.Quantity*item.UnitVolume),handling=checked((volume-1)/(Handling.WorkerVolumePerTick*l.Level)+1);
-            long approach=f.ToSource.Length-1L,delivery=f.ToDestination.Length-1L,returning=f.ToHome.Length-1L;
-            long bound=checked((approach+delivery+(d is not null?Math.Max(returning,delivery+approach):returning))*Logistics.MoveTicksPerCell+(d is not null?3:2)*handling);
+            long volume=checked(t.Quantity*item.UnitVolume),handling=checked((volume-1)/(MinimumFreightHandling(l))+1);
+            long approach=FreightTravelTicks(l,f.ToSource),delivery=FreightTravelTicks(l,f.ToDestination),returning=FreightTravelTicks(l,f.ToHome);
+            long bound=checked(approach+delivery+(d is not null?Math.Max(returning,delivery+FreightTravelTicks(l,f.SourceToHome)):returning)+(d is not null?3:2)*handling);
             if(t.WageBudgetMinor!=checked(bound*l.CrewCapacity*t.CommittedWageMinor) ||
                 l.Group.PayEffectiveTick is {} effective && effective<Math.Max(Tick+1,t.EndTick+1) ||
                 !_events.Any(e=>e.Type=="LogisticsTripPrepared" && e.EntityId==t.Id && e.AmountMinor==t.WageBudgetMinor && e.Quantity==t.Quantity && e.ItemId==t.ItemId))

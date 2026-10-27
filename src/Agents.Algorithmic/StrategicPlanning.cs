@@ -59,7 +59,7 @@ public sealed partial class AlgorithmicController
             if(a.OfferId!=0)keys.Add("capital:"+a.OfferId);if(a.MarketOfferId!=0)keys.Add("market:"+a.MarketOfferId);
             if(a.Enterprise.Value!=0)keys.Add("enterprise:"+a.Enterprise.Value);if(a.Group.Value!=0)keys.Add("group:"+a.Group.Value);
             if(a.Source.Value!=0)keys.Add("inventory:"+a.Source.Value);if(a.Destination.Value!=0)keys.Add("inventory:"+a.Destination.Value);
-            if(a.Kind is ActionKind.BuyPlot or ActionKind.Build or ActionKind.BuyEquipment or ActionKind.BuyLogistics or ActionKind.SubmitBuyRequest or ActionKind.SetWage or ActionKind.ProposeTrade)keys.Add("cash");
+            if(a.Kind is ActionKind.BuyPlot or ActionKind.Build or ActionKind.BuyEquipment or ActionKind.BuyVehicle or ActionKind.BuyLogistics or ActionKind.SubmitBuyRequest or ActionKind.SetWage or ActionKind.ProposeTrade)keys.Add("cash");
         }
         return keys;
     }
@@ -95,6 +95,7 @@ public sealed partial class AlgorithmicController
             }
             if(a.Kind==ActionKind.OutfitWorkshop){var b=o.Buildings.Single(b=>b.Id.Value==a.Enterprise.Value);var outfit=o.BuildingTypes.Single(t=>t.Id==b.TypeId).WorkshopOutfit!;capital+=outfit.PriceMinor+outfit.Materials.Sum(m=>checked(m.Quantity*BasePrice(o,m.ItemId)));}
             if(a.Kind==ActionKind.BuyLogistics)capital+=o.LogisticsRules.PurchasePriceMinor;
+            if(a.Kind==ActionKind.BuyVehicle)capital+=o.Fleet!.Models.Single(m=>m.Id==o.Fleet.Stock.Single(v=>v.Id==a.VehicleId).ModelId).PriceMinor;
             if(a.Kind==ActionKind.AcceptDeliveryQuantity && o.BuyOffers.FirstOrDefault(b=>b.Id==a.BuyOfferId) is {} buy)
             {
                 capital+=(Int128)a.Quantity*buy.UnitPriceMinor*o.DeliveryRules.FineBasisPoints/10000;

@@ -62,11 +62,12 @@ public sealed partial class SimulationEngine
         foreach (var t in _transfers.Values.OrderBy(t => t.Id).ToArray())
         {
             var actor = _actors[t.Owner.Value];
+            if (Fleet is not null && Tick <= t.StartedTick) continue;
             if (actor.Position != t.Position) { CancelTransfer(t, "LeftTransferLocation"); continue; }
             if (t.Kind == "Pickup" && !_marketAllocations.Any(a => a.Id == t.Contract && a.ClosedTick is null && Tick <= a.DeadlineTick) ||
                 t.Kind == "Delivery" && !_deliveryContracts.Any(d => d.Id == t.Contract && d.ClosedTick is null && Tick <= d.DeadlineTick))
             { CancelTransfer(t, "ContractClosed"); continue; }
-            var work = VolumeWork.Advance(t.WorkRemainder, Handling.PersonalVolumePerTick, _items[t.ItemId].UnitVolume, t.Remaining);
+            var work = VolumeWork.Advance(t.WorkRemainder, TransferHandlingPower(t), _items[t.ItemId].UnitVolume, t.Remaining);
             if (work.Units > 0)
             {
                 if (t.Kind == "Pickup") CompletePickupTransfer(actor, t, work.Units);
@@ -131,8 +132,8 @@ public sealed partial class SimulationEngine
             !_events.Any(e=>e.Type=="TransferStarted" && e.EntityId==t.Id && e.CommandId==t.CommandId && e.ItemId==t.ItemId && e.Quantity==t.Quantity))return false;
         if(t.Kind=="Stock")return action.Kind==ActionKind.Transfer && action.Source.Value==t.Source && action.Destination.Value==t.Destination &&
             action.ItemId==t.ItemId && source.Owner==actor.Id && _economy.Inventories.TryGetValue(t.Destination,out var target) && target.Owner==actor.Id &&
-            source.Position==t.Position && target.Position==t.Position && (source.Id==actor.Inventory || target.Id==actor.Inventory) &&
-            !_logistics.Values.Any(l=>l.Cargo==source.Id || l.Cargo==target.Id);
+            source.Position==t.Position && target.Position==t.Position && (TransferCarrier(actor,source.Id) || TransferCarrier(actor,target.Id)) &&
+            !_logistics.Values.Any(l=>l.VehicleId==0 && (l.Cargo==source.Id || l.Cargo==target.Id)) && CanTransferVehicle(actor,source.Id,t.ItemId) && CanTransferVehicle(actor,target.Id,t.ItemId);
         if(t.Kind=="Overflow")return action.Kind==ActionKind.TakeOverflow && action.Source.Value==t.Source && action.OfferId==t.Contract && action.ItemId==t.ItemId && source.Owner==actor.Id && source.Position==t.Position && t.Destination==actor.Inventory && source.Overflow.TryGetValue(t.Contract,out var lot)&&lot.Quantity>=t.Remaining;
         if(t.Kind=="Pickup")return action.Kind==ActionKind.CollectPurchase && action.PurchaseId==t.Contract && t.Destination==actor.Inventory &&
             _marketAllocations.Any(a=>a.Id==t.Contract && a.Buyer.Value==actor.Id && a.SourceInventory.Value==t.Source && a.ItemId==t.ItemId &&

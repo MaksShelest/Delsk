@@ -10,6 +10,19 @@ namespace Simulation.Tests;
 
 public class DeveloperToolsTests
 {
+    [Fact] public void GodStockCannotPutOrdinaryFreightIntoTraktOrLeaveAPartialInvalidWorld()
+    {
+        var s=new GameSession(new(FleetE1Tests.Prepared()));var v=FleetE1Tests.Buy(s,"trakt_d1");using var tools=new DeveloperTools(s,new(1));
+        string before=s.Engine.ComputeStateHash();Assert.Throws<ArgumentException>(()=>tools.Stock(new(1),v.CargoInventory,"wood",1));Assert.Equal(before,s.Engine.ComputeStateHash());
+        Assert.Empty(s.Engine.ResearchModifications);s.Engine.ValidateInvariants();
+    }
+    [Fact] public void GodRoadMaterialsInAFreeTraktRemainAuditedAndReplayable()
+    {
+        var d=FleetE1Tests.Prepared();var s=new GameSession(new(d));var v=FleetE1Tests.Buy(s,"trakt_d1");using var tools=new DeveloperTools(s,new(1));
+        tools.Stock(new(1),v.CargoInventory,"gravel",7);Assert.Equal(7,FleetE1Tests.Stock(s,v.CargoInventory,"gravel"));
+        var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());
+        Assert.Equal(s.Engine.ComputeStateHash(),GameSession.Replay(d,s.CommandTape,s.Engine.Tick,s.Engine.ResearchModifications.ToArray()).Engine.ComputeStateHash());
+    }
     [Theory][InlineData(0)][InlineData(1)][InlineData(5)][InlineData(9)]
     public void PausedGodEditsApplyAtTheCurrentTravelQuantumWithoutEconomicWork(int quantum)
     {

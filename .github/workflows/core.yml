@@ -5,7 +5,29 @@ on:
 permissions:
   contents: read
 jobs:
+  unit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+      DELSK_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exhaustive ordinary unit gate with unchanged partition deadlines
+        run: python scripts/run_check.py --name unit --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --phase tests --output artifacts/unit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-checks-and-fixtures
+          path: artifacts/unit/
   core:
+    needs: [unit]
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -24,11 +46,15 @@ jobs:
         run: python scripts/run_check.py --name catalog-source --timeout 15 --log-directory artifacts/gate-checks -- python scripts/extract_vnext_catalog.py --check
       - name: Reproducible full vNext balance extraction
         run: python scripts/run_check.py --name balance-source --timeout 15 --log-directory artifacts/gate-checks -- python scripts/extract_vnext_balance.py --check
+      - uses: actions/download-artifact@v4
+        with:
+          name: unit-checks-and-fixtures
+          path: artifacts/unit
       - name: Bounded complete headless gate (P00-P22)
         env:
           DELSK_COMMIT: ${{ github.sha }}
           DOTNET_PROCESSOR_COUNT: '2'
-        run: python scripts/run_check.py --name headless --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --output artifacts/headless
+        run: python scripts/run_check.py --name headless --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --phase runs --unit-artifacts artifacts/unit --output artifacts/headless
       - name: Catalog-only CLI and legacy save/load/replay
         run: python scripts/run_check.py --name catalog-cli --timeout 180 --log-directory artifacts/gate-checks -- python scripts/check_vnext_catalog.py --output artifacts/vnext-catalog
       - name: Full B1 semantic CLI, supported production and WIP save/load/replay
@@ -44,7 +70,7 @@ jobs:
       - name: D1 parallel workshops, real outfit, payroll and checkpoint replay
         run: python scripts/run_check.py --name workshops-d1 --timeout 240 --log-directory artifacts/gate-checks -- python scripts/check_workshops_d1.py --output artifacts/workshops-d1
       - name: D2 shared experience, funded quests and paid projects
-        run: python scripts/run_check.py --name development-d2 --timeout 240 --log-directory artifacts/gate-checks -- python scripts/check_development_d2.py --fixtures artifacts/headless/d2-fixtures --output artifacts/development-d2
+        run: python scripts/run_check.py --name development-d2 --timeout 240 --log-directory artifacts/gate-checks -- python scripts/check_development_d2.py --fixtures artifacts/unit/d2-fixtures --output artifacts/development-d2
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -54,10 +80,47 @@ jobs:
         with:
           name: production-command-fixtures
           path: |
-            artifacts/headless/d3-fixtures/*.json
-            artifacts/headless/d3-fixtures/*.jsonl
-            artifacts/headless/d3-fixtures/*.tick
-            !artifacts/headless/d3-fixtures/*.save.json
+            artifacts/unit/d3-fixtures/*.json
+            artifacts/unit/d3-fixtures/*.jsonl
+            artifacts/unit/d3-fixtures/*.tick
+            !artifacts/unit/d3-fixtures/*.save.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fleet-command-fixtures
+          path: |
+            artifacts/unit/e1-fixtures/*.json
+            artifacts/unit/e1-fixtures/*.jsonl
+            artifacts/unit/e1-fixtures/*.tick
+            !artifacts/unit/e1-fixtures/*.save.json
+  fleet:
+    needs: [core]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: fleet-command-fixtures
+          path: artifacts/fleet-fixtures
+      - name: Bounded runner restore and build
+        run: |
+          python scripts/run_check.py --name fleet-restore --timeout 180 -- dotnet restore src/Research.Runner/Research.Runner.csproj --locked-mode --disable-parallel -m:1
+          python scripts/run_check.py --name fleet-build --timeout 180 -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
+      - name: E1 purchases, physical fleet, handling and independent audits
+        run: python scripts/run_check.py --name fleet-e1 --timeout 600 -- python scripts/check_fleet_e1.py --fixtures artifacts/fleet-fixtures --output artifacts/fleet-e1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fleet-checks-and-runs
+          path: artifacts/
   production:
     needs: [core]
     runs-on: ubuntu-24.04
@@ -110,13 +173,15 @@ jobs:
   # Preserve the required check and require every suite, including D3's independent audit.
   verify:
     if: ${{ always() }}
-    needs: [core, developer, production]
+    needs: [unit, core, developer, production, fleet]
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
       - name: Require all complete suites
         env:
+          UNIT_RESULT: ${{ needs.unit.result }}
           CORE_RESULT: ${{ needs.core.result }}
           DEVELOPER_RESULT: ${{ needs.developer.result }}
           PRODUCTION_RESULT: ${{ needs.production.result }}
-        run: test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success
+          FLEET_RESULT: ${{ needs.fleet.result }}
+        run: test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success

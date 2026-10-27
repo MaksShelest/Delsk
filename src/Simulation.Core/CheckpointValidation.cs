@@ -100,11 +100,11 @@ public sealed partial class SimulationEngine
             if (j.Kind == "Move")
             {
                 if (j.Path.Length < 2 || j.PathIndex < 0 || j.PathIndex >= j.Path.Length - 1 ||
-                    j.SegmentTicks < 0 || j.SegmentTicks >= _config.MoveTicksPerCell || j.Path[j.PathIndex] != actor.Position ||
+                    j.SegmentTicks < 0 || j.SegmentTicks >= PersonalMoveTicks(actor,j.Path[j.PathIndex],j.Path[j.PathIndex+1]) || j.Path[j.PathIndex] != actor.Position ||
                     j.Path.Any(c => !_map.Walkable(c)) || j.Path.Zip(j.Path.Skip(1)).Any(p =>
                         Math.Abs(p.First.X - p.Second.X) + Math.Abs(p.First.Z - p.Second.Z) != 1) ||
-                    j.CompletionTick != checked(j.StartTick + (j.Path.Length - 1L) * _config.MoveTicksPerCell) ||
-                    Tick - j.StartTick != checked((long)j.PathIndex * _config.MoveTicksPerCell + j.SegmentTicks))
+                    j.CompletionTick != checked(j.StartTick + j.Path.Zip(j.Path.Skip(1)).Sum(p=>(long)PersonalMoveTicks(actor,p.First,p.Second))) ||
+                    Tick - j.StartTick != checked(j.Path.Take(j.PathIndex+1).Zip(j.Path.Skip(1).Take(j.PathIndex)).Sum(p=>(long)PersonalMoveTicks(actor,p.First,p.Second)) + j.SegmentTicks))
                     throw new CheckpointException("InvalidPathProgress");
             }
             else if (IsHarvest(j))
@@ -153,7 +153,7 @@ public sealed partial class SimulationEngine
         AddExpectedSupportHolds(expectedStock);
         AddExpectedMarketHolds(expectedStock, expectedMoney);
         AddExpectedDeliveryHolds(expectedCapacity, expectedMoney);
-        AddExpectedLogisticsHolds(expectedCapacity, expectedStock, expectedMoney);
+        AddExpectedLogisticsHolds(expectedCapacity, expectedStock, expectedMoney);AddExpectedFleetHolds(expectedMoney);
         foreach (var inv in _economy.Inventories.Values)
         {
             foreach (var h in inv.CapacityHolds)
@@ -169,7 +169,7 @@ public sealed partial class SimulationEngine
                     throw new CheckpointException("OrphanMoneyReservation");
         if (expectedCapacity.Count + expectedStock.Count + expectedMoney.Count != 0) throw new CheckpointException("MissingReservation");
         long maximum = _economy.Accounts.Keys.Concat(_economy.Inventories.Keys).Concat(_enterprises.Keys).Concat(_equipment.Keys)
-            .Concat(_modernizations.Keys).Concat(_additionalWorkshops.Keys).Concat(_workshopInstallations.Keys).Concat(_offers.Keys).Concat(_logistics.Keys).Concat(_logistics.Values.Where(l => l.Trip is not null).Select(l => l.Trip!.Id))
+            .Concat(_vehicles.Keys).Concat(_dealerStock.Select(s=>s.Id)).Concat(_platforms.Keys).Concat(_modernizations.Keys).Concat(_additionalWorkshops.Keys).Concat(_workshopInstallations.Keys).Concat(_offers.Keys).Concat(_logistics.Keys).Concat(_logistics.Values.Where(l => l.Trip is not null).Select(l => l.Trip!.Id))
             .Concat(_buildings.Keys).Concat(_buyOffers.Keys).Concat(_deliveryContracts.Select(d => d.Id)).Concat(_marketOffers.Keys).Concat(_marketAllocations.Select(a => a.Id)).Concat(_completedPersonalJobs).Concat(_events.Select(e => e.EntityId))
             .Concat(_actors.Values.Where(a => a.Job != null).Select(a => a.Job!.Id)).DefaultIfEmpty(0).Max();
         if (_nextId <= maximum) throw new CheckpointException("NextIdWouldDuplicateEntity");

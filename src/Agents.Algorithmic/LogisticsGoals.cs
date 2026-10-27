@@ -12,7 +12,7 @@ public sealed partial class AlgorithmicController
             var r=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);var output=Inventory(o,e.OutputId);var input=Inventory(o,e.InputId);
             var system=o.OwnLogistics.FirstOrDefault(l=>l.EnterpriseId==e.Id);
             var contract=o.OwnDeliveryContracts.Where(c=>c.Supplier==Actor && c.ClosedTick is null && c.UnprovidedQuantity>0 && c.ItemId==r.OutputItem &&
-                Distance(o.Map,output.Position,c.Position)>=0 && checked((long)Distance(o.Map,output.Position,c.Position)*o.LogisticsRules.MoveTicksPerCell+4)<=c.DeadlineTick-o.Tick)
+                Distance(o.Map,output.Position,c.Position)>=0 && checked((long)Distance(o.Map,output.Position,c.Position)*FreightCellEstimate(o)+4)<=c.DeadlineTick-o.Tick)
                 .OrderBy(c=>c.DeadlineTick).ThenBy(c=>c.Id).FirstOrDefault();
             var destination=o.Buildings.Where(b=>b.Kind is BuildingKind.Warehouse or BuildingKind.Shop && FreeVolume(Inventory(o,b.InputId))>=Volume(o,r.OutputItem))
                 .OrderBy(b=>Distance(o.Map,output.Position,b.Position)).ThenBy(b=>b.Id.Value).FirstOrDefault();
@@ -21,6 +21,7 @@ public sealed partial class AlgorithmicController
                 if(o.Account.AvailableMinor>=checked(o.LogisticsRules.PurchasePriceMinor+_state.Settings.CashReserveMinor) &&
                     (Free(output,r.OutputItem)>=r.OutputQuantity || e.CompletedBatches>0) && (contract is not null || destination is not null))
                 {
+                    if(o.Fleet is not null){var fleet=AcquireFleetLogistics(o,e,output.Position);if(fleet is not null)yield return fleet;continue;}
                     var steps=new List<PlanStep>();Move(steps,o.Participant.Position,output.Position);steps.Add(new(new(ActionKind.BuyLogistics,Enterprise:e.Id)));
                     yield return new("BuyLogistics",e.Id.Value.ToString(System.Globalization.CultureInfo.InvariantCulture),240000*_state.Settings.ExpansionWeight/100,steps.ToArray());
                 }

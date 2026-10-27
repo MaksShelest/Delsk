@@ -10,11 +10,11 @@ import xml.etree.ElementTree as ET
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'scripts'))
 from reuse_godot_imports import reuse
-from test_partitions import PARTITIONS, INTEGRATION, DEVELOPMENT, run_suite
+from test_partitions import PARTITIONS, INTEGRATION, DEVELOPMENT, PHYSICAL, MODELS, FLEET, FLEET_STOCK, run_suite
 
 class PartitionsTests(unittest.TestCase):
     def test_every_class_including_future_and_developer_has_exactly_one_partition(self):
-        for name in (*INTEGRATION,*DEVELOPMENT,'Simulation.Tests.FutureNewTests','Simulation.Tests.Developer.DeveloperToolsTests'):
+        for name in (*INTEGRATION,*DEVELOPMENT,*PHYSICAL,*MODELS,*FLEET,*FLEET_STOCK,'Simulation.Tests.FutureNewTests','Simulation.Tests.Developer.DeveloperToolsTests'):
             self.assertEqual(sum(p.matches(name) for p in PARTITIONS),1,name)
 
     def test_all_actual_theory_rows_count_and_bad_result_is_rejected(self):

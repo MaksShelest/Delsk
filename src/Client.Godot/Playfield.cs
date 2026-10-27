@@ -381,7 +381,7 @@ public partial class Playfield : Control
         if (choice.Key.StartsWith("market:", StringComparison.Ordinal))
         { OpenMarketTablet(long.Parse(choice.Key[7..], CultureInfo.InvariantCulture)); return; }
         if(choice.Key=="city"){_playerTab=3;OpenPlayerTablet();return;}
-        if(choice.Key=="dealership"){OpenHelp("dealership");return;}
+        if(choice.Key=="dealership"){if(_scenario.Economy?.Fleet is not null){_playerTab=0;OpenPlayerTablet();}else OpenHelp("dealership");return;}
         if (choice.Key == "exchange") { OpenCapitalTablet(); return; }
         if (choice.Command is { } action) Offer(action);
     }

@@ -1,0 +1,12 @@
+{
+  "equalFiles": 216,
+  "changedFiles": [
+    "src/Agents.Algorithmic/EconomicWages.cs",
+    "src/Agents.Algorithmic/FleetGoals.cs",
+    "src/Agents.Algorithmic/LogisticsGoals.cs",
+    "src/Agents.Algorithmic/ObligationGoals.cs",
+    "src/Client.Godot/HelpOverlay.cs",
+    "src/Simulation.Core/Developer/Interventions.cs"
+  ],
+  "scope": "Native staged source compared with final checkout; only listed differences must be scoped explicitly"
+}

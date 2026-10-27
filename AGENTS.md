@@ -1,3 +1,36 @@
+## E1,27.10.2026 — реализованный software-объём
+
+- Пользователь явно разрешил E1 поверх финального PR65/ce8f0e3. Историческое
+  «пакет E не начинать» ниже не блокирует это задание. E2/дороги/новый помощник,
+  счета и сторонние услуги не начинать автоматически.
+- Ветка feat/vnext-e1-fleet, PR66 без автоматического merge. Итог:
+  docs/IMPLEMENTATION_REPORT_PACKAGE_E1.md, docs/verification/fleet-e1/final-gate.json;
+  восстановление/failed attempts: docs/WORKLOG_PACKAGE_E1.md. Проверенный code
+  snapshot c62352b; последующие изменения отчёта не меняют его runtime inputs.
+  Перед следующей итерацией проверить наличие финального E1 в выбранной основе.
+- E1 отдельным vnext-e1-fleet-1 только для новых двух designed maps/lab presets;
+  D3 и прежние профили/сохранённый resolved config не подменять. World24,
+  limited23–18 только без E1 fields. Rules/Session/Envelope прежние.
+- Один Vehicle cargo inventory. Actor/Logistics.Trip используют ту же позицию
+  и груз; BuyLogistics на E1 требует купленную машину. Freight/queue/holds/crew
+  переиспользуются, free large-body handling запрещён. Staff числовой.
+- Конечные6, поставка500, непроданный минимум2500, purchased не заменять;
+  покупка через общий inclusive5tick window с реальным money hold/seeded tie.
+  Будущие модели/PRNG доступны только исследователю, own DTO immutable.
+- Дорога определяется InitialCityDirtCells, коридор ещё не покрытие. Без топлива.
+  Площадки/комплекты оплачиваются материалами/деньгами, монтаж сохраняется;
+  мощность независимых людей складывается без двойного счёта водителя.
+- Independent scripts/fleet_audit.py и fleet.json обязательны вместе с прежними
+  балансами/капиталом; native FleetProbe только isolated stage, ordinary audit
+  запрещает его. Не ослаблять deadlines или вычёркивать тесты; partitions
+  исчерпывающие, проверяют skips/overlap по TRX. Heavy gates последовательно.
+- 1219 ordinary,21 E1; E1 runner34process/22exports/16pairs, native RU/EN;
+  CI unit/core/developer/production/fleet/verify и Windows ordinary/Release/God
+  tools success на c62352b: Core40443103322, Windows40443103227.
+  Unit/runs отдельные обязательные jobs, исходные timeout124 сохранены как failure.
+  Prepared fixtures не доказывают natural progression/ROI/device acceptance.
+  Следующий ограниченный шаг — review PR66; E2 только отдельным заданием.
+
 ## D3 и восстановление,26.10.2026
 
 - Основа28a41a7/PR64. Ветка feat/vnext-package-d3, recovery ac9e706 сохранён

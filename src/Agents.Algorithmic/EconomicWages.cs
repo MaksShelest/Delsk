@@ -26,7 +26,7 @@ public sealed partial class AlgorithmicController
         }
         // Extraction/transport threshold crews: evaluate the whole group against a finite funded job,
         // never an average wage race. Existing obligations remain the first executor priority.
-        foreach(var group in o.EmploymentGroups.Where(g=>g.Role!=EmploymentRole.Production && g.Ready && g.PendingWageMinor is null && g.Headcount<g.Capacity))
+        foreach(var group in o.EmploymentGroups.Where(g=>g.Role is EmploymentRole.Extraction or EmploymentRole.Logistics && g.Ready && g.PendingWageMinor is null && g.Headcount<g.Capacity))
         {
             long wage=Math.Min(settings.MaximumWageMinor,Math.Max(settings.BaseWageMinor,group.WageMinor+settings.WageRaiseMinor));
             int target=HiringEconomics.ExpectedStaff(o,group,wage);
@@ -41,12 +41,12 @@ public sealed partial class AlgorithmicController
             }
             else
             {
-                var truck=o.OwnLogistics.Single(l=>l.GroupId==group.Id);int minimum=truck.Level==2?o.LogisticsRules.Upgrade!.MinimumCrew:o.LogisticsRules.MinimumCrew;
+                var truck=o.OwnLogistics.Single(l=>l.GroupId==group.Id);int minimum=FleetCrewMinimum(o,truck);
                 if(group.Headcount>=minimum || target<minimum || truck.Trip is not null)continue;
                 var job=o.OwnDeliveryContracts.Where(c=>c.Supplier==Actor && c.ClosedTick is null && c.UnprovidedQuantity>0).OrderBy(c=>c.DeadlineTick).FirstOrDefault();if(job is null)continue;
-                var source=Inventory(o,truck.SourceInventory);long q=Math.Min(Free(source,job.ItemId),Math.Min(job.UnprovidedQuantity,(truck.Level==2?o.LogisticsRules.Upgrade!.CargoCapacity:o.LogisticsRules.CargoCapacity)/Volume(o,job.ItemId)));
+                var source=Inventory(o,truck.SourceInventory);long q=Math.Min(Free(source,job.ItemId),Math.Min(job.UnprovidedQuantity,FleetCargoCapacity(o,truck)/Volume(o,job.ItemId)));
                 int distance=Distance(o.Map,source.Position,job.Position);if(q<=0 || distance<0)continue;
-                long ticks=2L*distance*o.LogisticsRules.MoveTicksPerCell+2*q*Volume(o,job.ItemId)/Math.Max(1,o.Economics?.Handling.WorkerVolumePerTick??1)+2;
+                long ticks=2L*distance*FreightCellEstimate(o)+2*q*Volume(o,job.ItemId)/Math.Max(1,o.Economics?.Handling.WorkerVolumePerTick??1)+2;
                 if(o.Tick+ticks+(o.Economics?.Labor.SalaryChangeDelayTicks??20)>job.DeadlineTick)continue;
                 revenue=q*job.UnitPriceMinor;cost=ticks*target*wage;reason="FundedDeliveryThreshold";
             }

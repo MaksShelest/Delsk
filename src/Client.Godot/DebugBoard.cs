@@ -43,7 +43,8 @@ public partial class DebugBoard : Control
         if(_frame.Layout is {} layout)foreach(var c in layout.InitialCityDirtCells)DrawRect(new Rect2(c.X*cell,c.Z*cell,cell,cell),new Color("a39578"));
         foreach (var marker in _frame.Markers)
             if (marker.Kind != "truck-home" || !_frame.Trips.Any(t => t.LogisticsId == marker.EntityId)) DrawMarker(marker, cell);
-        foreach (var actor in _frame.Actors)
+        foreach(var v in _frame.Vehicles)MapSymbols.Draw(this,"truck-home",new Rect2((v.X+.1f)*cell,(v.Z+.1f)*cell,cell*.8f,cell*.8f),v.ModelId);
+        foreach (var actor in _frame.Actors.Where(a=>a.VehicleId==0))
             DrawActor(actor, cell, font);
         foreach (var trip in _frame.Trips)
             DrawCargo(trip, cell);
