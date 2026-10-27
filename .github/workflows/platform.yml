@@ -53,6 +53,11 @@ jobs:
             $original = [System.Text.Encoding]::UTF8.GetString($projectBytes)
             $serial = $original.Replace('[application]', "[editor]`nimport/use_multiple_threads=false`n`n[application]")
             [System.IO.File]::WriteAllText($projectPath, $serial, [System.Text.UTF8Encoding]::new($false))
+            # Prime editor initialization in a separate, required normal process.
+            # Mono4.7.2 may finish --import before all editor startup work is ready;
+            # the following editor pass and completeness verifier remain mandatory.
+            python scripts/run_check.py --name godot-import-prime --timeout 120 -- $env:DELSK_GODOT --headless --path src/Client.Godot --editor --import
+            if ($LASTEXITCODE -ne 0) { throw 'Godot import initialization did not exit normally' }
             # --import exits during editor initialization in Windows Mono4.7.2.
             # Let startup/import finish and service editor frames before normal exit.
             python scripts/run_check.py --name godot-import --timeout 120 -- $env:DELSK_GODOT --headless --path src/Client.Godot --editor --quit-after 30
@@ -64,7 +69,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/run_check.py --name godot-smoke --timeout 30 -- $env:DELSK_GODOT --headless --path src/Client.Godot -- --smoke --report "$env:GITHUB_WORKSPACE/artifacts/platform-probe.json"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python scripts/verify_platform_probe.py --report artifacts/platform-probe.json --log-prefix artifacts/checks/godot-import --log-prefix artifacts/checks/godot-smoke
+          python scripts/verify_platform_probe.py --report artifacts/platform-probe.json --log-prefix artifacts/checks/godot-import-prime --log-prefix artifacts/checks/godot-import --log-prefix artifacts/checks/godot-smoke
           exit $LASTEXITCODE
       - name: Release excludes the Debug menu
         shell: pwsh
@@ -80,6 +85,12 @@ jobs:
         run: |
           python scripts/check_hud_god_ui.py --godot "$env:DELSK_GODOT" --output artifacts/hud-god-ui --import-cache src/Client.Godot
           exit $LASTEXITCODE
+      - name: Failed check diagnostics
+        if: failure()
+        shell: pwsh
+        run: |
+          Get-ChildItem artifacts/checks -Filter '*.stderr.log' | ForEach-Object { Write-Output $_.Name; Get-Content $_.FullName -Tail 40 }
+          Get-ChildItem artifacts/checks -Filter '*.stdout.log' | ForEach-Object { Write-Output $_.Name; Get-Content $_.FullName -Tail 40 }
       - name: Preserve files at the release cleanup boundary
         shell: pwsh
         run: |

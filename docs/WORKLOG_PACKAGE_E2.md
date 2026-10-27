@@ -99,3 +99,12 @@ Reason Working/Enabled ещё жили до следующего тика. Ис�
 последняя клетка сразу завершает маршрут и освобождает машину. Добавлены
 semantic/native assertions; предыдущие passes не выдаются за проверку этого
 исправления, source gates повторяются. E3 по-прежнему не реализуется.
+
+97f0538: new27/27 локально и обе ordinary/Developer suites в CI success.
+Windows attempt1: build/ordinary metadata success, root editor import timeout124
+на прежних120s. Один повтор натомжеSHA: import exit0, completeness exit1.
+Обе попытки сохранены как failure, не pass. Добавлена отдельная обязательная
+фаза нормального запуска Monoeditor --import перед прежним --quit-after30;
+обе имеют неизменные120s и обязаны exit0. Финальные completeness/replay/logs,
+Release/Developer/HUD gates сохранены, добавлен вывод failed check logs.
+Это не принятие timeout и не изменение игрового кода. Проверка продолжается.
