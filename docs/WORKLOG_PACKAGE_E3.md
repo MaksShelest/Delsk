@@ -86,3 +86,15 @@
 - Independent billing audit теперь отклоняет missing billing.json у E3,
   неожиданный E3 export/payment у старых профилей, начисление вне дороги;
   новые corruption mutations прошли вместе со всеми прежними Python22checks.
+
+- Итог79e8589: Core40531261453 все12jobs success, включая required verify и
+  actual E3 counters22ordinary/22Developer/48processes33exports22pairs.
+  Windows40531262344/job122284378968 success. Код после79e8589 не меняется.
+- Native2:139.025s/600,RU/EN actual mouse controls/partial/diskload/auto/paid,
+  strict logs.662точных native inputs и probe SHA совпали с79e8589.
+  Свежий legacy native:1132hash checks/35restores, strict logs passed.
+- Actual old World25 freight save1176→1568: exact compared files и audit passed,
+  оригинал retained, Schema25/SHA в save25-compatibility. No Billing backfill.
+- Подготовлены849точных входных SHA,367financial inputs совпали с unit snapshot,
+  полный список process records и финансовый пример из настоящего журнала.
+  Далее только отчёт/статусы/evidence, push и ready PR68 без merge/F.

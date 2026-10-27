@@ -1,0 +1,42 @@
+{
+  "headSha": "79e8589a04b280707380b453cdf45e1be3d968cf",
+  "runId": 40531261453,
+  "suite": "billing",
+  "status": "succeeded",
+  "testsPassed": 22,
+  "testPartitions": [
+    {
+      "file": "tests-e3-accounts.trx",
+      "passed": 10
+    },
+    {
+      "file": "tests-e3-distribution.trx",
+      "passed": 4
+    },
+    {
+      "file": "tests-e3-timing-0.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-e3-timing-1.trx",
+      "passed": 2
+    },
+    {
+      "file": "tests-e3-timing-2.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-e3-timing-3.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-e3-timing-4.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-e3-timing-5.trx",
+      "passed": 2
+    }
+  ],
+  "scope": "Exhaustive ordinary unit phase; runner checks are a separate required gate"
+}

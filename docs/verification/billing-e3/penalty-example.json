@@ -1,0 +1,116 @@
+{
+  "invoice": {
+    "id": 1061,
+    "payer": {
+      "value": 1
+    },
+    "createdTick": 120,
+    "dueTick": 1120,
+    "nextPenaltyTick": 3121,
+    "claims": [
+      {
+        "recipient": {
+          "value": 0
+        },
+        "principalMinor": 9,
+        "paidMinor": 9
+      }
+    ],
+    "penaltyMinor": 3,
+    "penaltyPaidMinor": 0,
+    "penaltyRemainder": 0,
+    "viewed": false,
+    "principalMinor": 9,
+    "principalRemaining": 0,
+    "penaltyRemaining": 3,
+    "remaining": 3
+  },
+  "events": [
+    {
+      "sequence": 787,
+      "tick": 120,
+      "phase": 7,
+      "type": "BillingInvoiceCreated",
+      "actorId": {
+        "value": 1
+      },
+      "entityId": 1061,
+      "itemId": "",
+      "quantity": 0,
+      "amountMinor": 9,
+      "reasonCode": "",
+      "commandId": null,
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 4561,
+      "tick": 1121,
+      "phase": 7,
+      "type": "BillingPenaltyAccrued",
+      "actorId": {
+        "value": 1
+      },
+      "entityId": 1061,
+      "itemId": "",
+      "quantity": 0,
+      "amountMinor": 1,
+      "reasonCode": "",
+      "commandId": null,
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 4569,
+      "tick": 1124,
+      "phase": 1,
+      "type": "BillingInvoicePaid",
+      "actorId": {
+        "value": 1
+      },
+      "entityId": 1061,
+      "itemId": "",
+      "quantity": 3,
+      "amountMinor": 3,
+      "reasonCode": "",
+      "commandId": null,
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 7574,
+      "tick": 2121,
+      "phase": 7,
+      "type": "BillingPenaltyAccrued",
+      "actorId": {
+        "value": 1
+      },
+      "entityId": 1061,
+      "itemId": "",
+      "quantity": 0,
+      "amountMinor": 2,
+      "reasonCode": "",
+      "commandId": null,
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 7576,
+      "tick": 2122,
+      "phase": 1,
+      "type": "BillingInvoicePaid",
+      "actorId": {
+        "value": 1
+      },
+      "entityId": 1061,
+      "itemId": "",
+      "quantity": 6,
+      "amountMinor": 6,
+      "reasonCode": "",
+      "commandId": null,
+      "support": null,
+      "negotiation": null
+    }
+  ],
+  "scope": "Actual 9-minor principal, grace1120 inclusive/first1121, partial3, next2121, simple penalty total3, no new penalty after principal paid. Not a synthetic calculation."
+}

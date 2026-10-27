@@ -1,0 +1,27 @@
+{
+  "acceptedRuntime": "79e8589a04b280707380b453cdf45e1be3d968cf",
+  "acceptedCoreRun": 40531261453,
+  "attempts": [
+    {
+      "code": "7031b01",
+      "issue": "Initial selective staging omitted changed BALANCE source; corrected immediately in 5484a86. No CI success claimed for the incomplete source snapshot."
+    },
+    {
+      "code": "5484a86",
+      "coreRun": 40524903656,
+      "billingUnitJob": 122261693370,
+      "billingDeveloperJob": 122261693352,
+      "conclusion": "failure",
+      "localReproduction": "Receipt fixture attempted to leave a car during its legal E2 clearing manoeuvre; fixed by waiting, without weakening busy guards. A subsequent local attempt found expired prepared capital orders; fixture now explicitly retains the originally funded order."
+    },
+    {
+      "code": "b09b728",
+      "coreRun": 40526926126,
+      "billingRunnerJob": 122276214204,
+      "conclusion": "failure",
+      "actualFailure": "verify_results.py line146 required a normal capacity hold for an active C1 CapacityForecast contract.",
+      "correction": "Audit now requires active Storage rules for forecast and retains the capacity requirement for normal contracts; all 33 exports passed both independent audits afterwards."
+    }
+  ],
+  "localFailures": "All bounded exit codes/timeouts remain in process-records.json and WORKLOG_PACKAGE_E3.md; none counted as successful gates."
+}

@@ -1,0 +1,2108 @@
+{
+  "build-initial": {
+    "command": [
+      "dotnet",
+      "build",
+      "tests/Simulation.Tests/Simulation.Tests.csproj",
+      "-c",
+      "Release",
+      "--no-restore",
+      "-m:1",
+      "/p:UseSharedCompilation=false"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T14:24:54.158718+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 56.153,
+    "finished_at": "2026-10-27T14:25:50.311848+00:00"
+  },
+  "build-profiles": {
+    "command": [
+      "dotnet",
+      "build",
+      "src/Research.Runner/Research.Runner.csproj",
+      "-c",
+      "Release",
+      "--no-restore",
+      "-m:1",
+      "/p:UseSharedCompilation=false"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T14:26:13.092137+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 67.203,
+    "finished_at": "2026-10-27T14:27:20.295516+00:00"
+  },
+  "e2-save25-audit": {
+    "command": [
+      "python",
+      "scripts/verify_results.py",
+      "/workspace/work/e3/e2-save25-continuation"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T15:34:05.036302+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.667,
+    "finished_at": "2026-10-27T15:34:05.703692+00:00"
+  },
+  "e2-save25-compare": {
+    "command": [
+      "python",
+      "scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e2/roads-runner-accepted/freight",
+      "/workspace/work/e3/e2-save25-continuation"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T15:34:04.847477+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.117,
+    "finished_at": "2026-10-27T15:34:04.964679+00:00"
+  },
+  "e2-save25-load": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e2/roads-runner-accepted/freight-1176.save.json",
+      "--output",
+      "/workspace/work/e3/e2-save25-continuation"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:31:52.447255+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 11.112,
+    "finished_at": "2026-10-27T15:32:03.559248+00:00"
+  },
+  "e3-accounts-1": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/e3-accounts-1.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T14:35:07.099323+00:00",
+    "timed_out": true,
+    "exit_code": 124,
+    "elapsed_seconds": 120.067,
+    "finished_at": "2026-10-27T14:37:07.166871+00:00"
+  },
+  "e3-build-targeted": {
+    "command": [
+      "dotnet",
+      "build",
+      "tests/Simulation.Tests/Simulation.Tests.csproj",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T14:54:43.232189+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 114.437,
+    "finished_at": "2026-10-27T14:56:37.669299+00:00"
+  },
+  "e3-build-tests-2": {
+    "command": [
+      "dotnet",
+      "build",
+      "tests/Simulation.Tests/Simulation.Tests.csproj",
+      "-c",
+      "Release",
+      "--no-restore",
+      "-m:1",
+      "/p:UseSharedCompilation=false"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T14:32:09.605138+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 130.682,
+    "finished_at": "2026-10-27T14:34:20.287598+00:00"
+  },
+  "e3-build-tests": {
+    "command": [
+      "dotnet",
+      "build",
+      "tests/Simulation.Tests/Simulation.Tests.csproj",
+      "-c",
+      "Release",
+      "--no-restore",
+      "-m:1",
+      "/p:UseSharedCompilation=false"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T14:29:53.787356+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 102.014,
+    "finished_at": "2026-10-27T14:31:35.801386+00:00"
+  },
+  "e3-native-1": {
+    "command": [
+      "python",
+      "scripts/check_development_ui.py",
+      "--probe",
+      "BillingProbe",
+      "--godot",
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--fixtures",
+      "/workspace/work/e3/unit-4/e3-fixtures",
+      "--xorg",
+      "/usr/lib/xorg/Xorg",
+      "--output",
+      "/workspace/work/e3/native-1"
+    ],
+    "timeout_seconds": 600,
+    "started_at": "2026-10-27T15:10:29.702086+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 161.766,
+    "finished_at": "2026-10-27T15:13:11.468322+00:00"
+  },
+  "e3-native-2": {
+    "command": [
+      "python",
+      "scripts/check_development_ui.py",
+      "--probe",
+      "BillingProbe",
+      "--godot",
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--fixtures",
+      "/workspace/work/e3/unit-4/e3-fixtures",
+      "--xorg",
+      "/usr/lib/xorg/Xorg",
+      "--reuse-stage",
+      "--output",
+      "/workspace/work/e3/native-2"
+    ],
+    "timeout_seconds": 600,
+    "started_at": "2026-10-27T15:28:06.244141+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 139.025,
+    "finished_at": "2026-10-27T15:30:25.269603+00:00"
+  },
+  "e3-runner-1": {
+    "command": [
+      "python",
+      "scripts/check_billing_e3.py",
+      "--fixtures",
+      "/workspace/work/e3/unit-4/e3-fixtures",
+      "--output",
+      "/workspace/work/e3/runner-1"
+    ],
+    "timeout_seconds": 600,
+    "started_at": "2026-10-27T15:16:43.540237+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 585.429,
+    "finished_at": "2026-10-27T15:26:28.969581+00:00"
+  },
+  "e3-unit-2": {
+    "command": [
+      "python",
+      "scripts/check_headless.py",
+      "--phase",
+      "tests",
+      "--suite",
+      "billing",
+      "--output",
+      "/workspace/work/e3/unit-2"
+    ],
+    "timeout_seconds": 780,
+    "started_at": "2026-10-27T14:37:23.066771+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 369.858,
+    "finished_at": "2026-10-27T14:43:32.925006+00:00"
+  },
+  "e3-unit-3": {
+    "command": [
+      "python",
+      "scripts/check_headless.py",
+      "--phase",
+      "tests",
+      "--suite",
+      "billing",
+      "--output",
+      "/workspace/work/e3/unit-3"
+    ],
+    "timeout_seconds": 780,
+    "started_at": "2026-10-27T14:45:19.829709+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 441.488,
+    "finished_at": "2026-10-27T14:52:41.318226+00:00"
+  },
+  "e3-unit-4": {
+    "command": [
+      "python",
+      "scripts/check_headless.py",
+      "--phase",
+      "tests",
+      "--suite",
+      "billing",
+      "--output",
+      "/workspace/work/e3/unit-4"
+    ],
+    "timeout_seconds": 780,
+    "started_at": "2026-10-27T15:00:20.558118+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 562.182,
+    "finished_at": "2026-10-27T15:09:42.740390+00:00"
+  },
+  "escrow-c1-audit": {
+    "command": [
+      "python",
+      "scripts/verify_results.py",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow-saved",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow-loaded"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T15:25:02.396253+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.755,
+    "finished_at": "2026-10-27T15:25:03.151671+00:00"
+  },
+  "escrow-capital-audit": {
+    "command": [
+      "python",
+      "scripts/verify_public_economy.py",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow-saved",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow-loaded"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T15:25:03.242383+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.35,
+    "finished_at": "2026-10-27T15:25:03.592140+00:00"
+  },
+  "legacy-native-logs": {
+    "command": [
+      "python",
+      "scripts/verify_platform_probe.py",
+      "--report",
+      "/workspace/work/e3/legacy-native.json",
+      "--log-prefix",
+      "/workspace/work/e3/checks/legacy-native"
+    ],
+    "timeout_seconds": 15,
+    "started_at": "2026-10-27T15:36:23.105276+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.117,
+    "finished_at": "2026-10-27T15:36:23.222402+00:00"
+  },
+  "legacy-native": {
+    "command": [
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--headless",
+      "--path",
+      "/workspace/work/e3/native-2/source/src/Client.Godot",
+      "--",
+      "--smoke",
+      "--report",
+      "/workspace/work/e3/legacy-native.json"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T15:34:05.777218+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 15.403,
+    "finished_at": "2026-10-27T15:34:21.180611+00:00"
+  },
+  "profile-billing-2": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--export-billing-profile",
+      "config/vnext/economy.b1-supported.json",
+      "--balance",
+      "config/vnext/balance.b1.json",
+      "--output",
+      "/workspace/work/e3/profile-billing-2"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T14:47:51.306677+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 3.536,
+    "finished_at": "2026-10-27T14:47:54.842912+00:00"
+  },
+  "profile-billing": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--export-billing-profile",
+      "config/vnext/economy.b1-supported.json",
+      "--balance",
+      "config/vnext/balance.b1.json",
+      "--output",
+      "/workspace/work/e3/profiles/billing"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T14:31:40.283695+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.921,
+    "finished_at": "2026-10-27T14:31:41.204397+00:00"
+  },
+  "profile-development": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--export-development-profile",
+      "config/vnext/economy.b1-supported.json",
+      "--balance",
+      "config/vnext/balance.b1.json",
+      "--output",
+      "/workspace/work/e3/profiles/development"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T14:31:33.283716+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 2.857,
+    "finished_at": "2026-10-27T14:31:36.140618+00:00"
+  },
+  "profile-fleet": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--export-fleet-profile",
+      "config/vnext/economy.b1-supported.json",
+      "--balance",
+      "config/vnext/balance.b1.json",
+      "--output",
+      "/workspace/work/e3/profiles/fleet"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T14:31:37.525792+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.187,
+    "finished_at": "2026-10-27T14:31:38.713026+00:00"
+  },
+  "profile-production": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--export-production-profile",
+      "config/vnext/economy.b1-supported.json",
+      "--balance",
+      "config/vnext/balance.b1.json",
+      "--output",
+      "/workspace/work/e3/profiles/production"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T14:31:36.236878+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.173,
+    "finished_at": "2026-10-27T14:31:37.410116+00:00"
+  },
+  "profile-road": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--export-road-profile",
+      "config/vnext/economy.b1-supported.json",
+      "--balance",
+      "config/vnext/balance.b1.json",
+      "--output",
+      "/workspace/work/e3/profiles/road"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T14:31:38.774987+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.442,
+    "finished_at": "2026-10-27T14:31:40.216577+00:00"
+  },
+  "profile-storage": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--export-storage-profile",
+      "config/vnext/economy.b1-supported.json",
+      "--balance",
+      "config/vnext/balance.b1.json",
+      "--output",
+      "/workspace/work/e3/profiles/storage"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T14:31:19.209841+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 9.142,
+    "finished_at": "2026-10-27T14:31:28.352401+00:00"
+  },
+  "profile-workshop": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--export-workshop-profile",
+      "config/vnext/economy.b1-supported.json",
+      "--balance",
+      "config/vnext/balance.b1.json",
+      "--output",
+      "/workspace/work/e3/profiles/workshop"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T14:31:28.975088+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 3.929,
+    "finished_at": "2026-10-27T14:31:32.904624+00:00"
+  },
+  "python-checks-2": {
+    "command": [
+      "python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/Checks",
+      "-v"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T15:13:28.900210+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.37,
+    "finished_at": "2026-10-27T15:13:29.270622+00:00"
+  },
+  "python-checks-3": {
+    "command": [
+      "python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/Checks",
+      "-v"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T15:16:24.050064+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.368,
+    "finished_at": "2026-10-27T15:16:24.417733+00:00"
+  },
+  "python-checks": {
+    "command": [
+      "python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/Checks",
+      "-v"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T15:00:21.955125+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.424,
+    "finished_at": "2026-10-27T15:00:22.379454+00:00"
+  },
+  "research-lab": {
+    "command": [
+      "python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/Research.Lab",
+      "-v"
+    ],
+    "timeout_seconds": 60,
+    "started_at": "2026-10-27T14:48:25.853244+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 10.293,
+    "finished_at": "2026-10-27T14:48:36.146736+00:00"
+  },
+  "supported-profile": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--validate-vnext-balance",
+      "config/vnext/balance.b1.json",
+      "--source",
+      "docs/vnext/data/BALANCE_VNEXT.json",
+      "--catalog",
+      "config/vnext/catalog.b1.json",
+      "--baseline-economy",
+      "config/economy.json",
+      "--output",
+      "/workspace/work/e3/profiles-supported"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T14:30:24.259683+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.638,
+    "finished_at": "2026-10-27T14:30:25.898205+00:00"
+  },
+  "targeted-BillingReceiptE3Tests": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingReceiptE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/targeted-BillingReceiptE3Tests.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T14:57:05.598336+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 14.021,
+    "finished_at": "2026-10-27T14:57:19.619639+00:00"
+  },
+  "targeted-BillingTrafficE3Tests": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingTrafficE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/targeted-BillingTrafficE3Tests.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T14:58:22.318126+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 38.814,
+    "finished_at": "2026-10-27T14:59:01.131762+00:00"
+  },
+  "unit-2/build": {
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T14:37:28.561465+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 88.241,
+    "finished_at": "2026-10-27T14:38:56.802582+00:00"
+  },
+  "unit-2/restore": {
+    "command": [
+      "dotnet",
+      "restore",
+      "Delsk.sln",
+      "--locked-mode",
+      "--disable-parallel",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T14:37:23.215196+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 5.248,
+    "finished_at": "2026-10-27T14:37:28.463102+00:00"
+  },
+  "unit-2/tests-e3-accounts": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-2/tests-e3-accounts.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T14:38:56.950485+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 33.918,
+    "finished_at": "2026-10-27T14:39:30.868348+00:00"
+  },
+  "unit-2/tests-e3-distribution": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingDistributionE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-2/tests-e3-distribution.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T14:39:30.967566+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 70.033,
+    "finished_at": "2026-10-27T14:40:41.000758+00:00"
+  },
+  "unit-2/tests-e3-timing-0": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingPenaltyE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-2/tests-e3-timing-0.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T14:40:41.163620+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 99.437,
+    "finished_at": "2026-10-27T14:42:20.601150+00:00"
+  },
+  "unit-2/tests-e3-timing-1": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingBoundaryE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-2/tests-e3-timing-1.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T14:42:20.751008+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 41.67,
+    "finished_at": "2026-10-27T14:43:02.420715+00:00"
+  },
+  "unit-2/tests-e3-timing-2": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingPauseE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-2/tests-e3-timing-2.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T14:43:02.565057+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 30.311,
+    "finished_at": "2026-10-27T14:43:32.875935+00:00"
+  },
+  "unit-3/build": {
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T14:45:25.662522+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 160.546,
+    "finished_at": "2026-10-27T14:48:06.208408+00:00"
+  },
+  "unit-3/restore": {
+    "command": [
+      "dotnet",
+      "restore",
+      "Delsk.sln",
+      "--locked-mode",
+      "--disable-parallel",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T14:45:20.383564+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 5.156,
+    "finished_at": "2026-10-27T14:45:25.539378+00:00"
+  },
+  "unit-3/tests-e3-accounts": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-3/tests-e3-accounts.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T14:48:06.344115+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 52.796,
+    "finished_at": "2026-10-27T14:48:59.140627+00:00"
+  },
+  "unit-3/tests-e3-distribution": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingDistributionE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-3/tests-e3-distribution.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T14:48:59.245258+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 69.26,
+    "finished_at": "2026-10-27T14:50:08.505559+00:00"
+  },
+  "unit-3/tests-e3-timing-0": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingPenaltyE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-3/tests-e3-timing-0.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T14:50:08.625092+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 64.15,
+    "finished_at": "2026-10-27T14:51:12.775555+00:00"
+  },
+  "unit-3/tests-e3-timing-1": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingBoundaryE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-3/tests-e3-timing-1.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T14:51:12.856480+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 46.23,
+    "finished_at": "2026-10-27T14:51:59.086238+00:00"
+  },
+  "unit-3/tests-e3-timing-2": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingPauseE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-3/tests-e3-timing-2.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T14:51:59.181194+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 32.859,
+    "finished_at": "2026-10-27T14:52:32.040301+00:00"
+  },
+  "unit-3/tests-e3-timing-3": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingReceiptE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-3/tests-e3-timing-3.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T14:52:32.177953+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 9.088,
+    "finished_at": "2026-10-27T14:52:41.266409+00:00"
+  },
+  "unit-4/build": {
+    "command": [
+      "dotnet",
+      "build",
+      "Delsk.sln",
+      "-c",
+      "Release",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T15:00:23.566652+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 66.091,
+    "finished_at": "2026-10-27T15:01:29.658119+00:00"
+  },
+  "unit-4/restore": {
+    "command": [
+      "dotnet",
+      "restore",
+      "Delsk.sln",
+      "--locked-mode",
+      "--disable-parallel",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T15:00:20.806042+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 2.689,
+    "finished_at": "2026-10-27T15:00:23.494693+00:00"
+  },
+  "unit-4/tests-e3-accounts": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-4/tests-e3-accounts.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:01:29.805594+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 68.597,
+    "finished_at": "2026-10-27T15:02:38.402485+00:00"
+  },
+  "unit-4/tests-e3-distribution": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingDistributionE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-4/tests-e3-distribution.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:02:38.486897+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 79.903,
+    "finished_at": "2026-10-27T15:03:58.389532+00:00"
+  },
+  "unit-4/tests-e3-timing-0": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingPenaltyE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-4/tests-e3-timing-0.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:03:58.462304+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 94.672,
+    "finished_at": "2026-10-27T15:05:33.134199+00:00"
+  },
+  "unit-4/tests-e3-timing-1": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingBoundaryE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-4/tests-e3-timing-1.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:05:33.289214+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 74.161,
+    "finished_at": "2026-10-27T15:06:47.450313+00:00"
+  },
+  "unit-4/tests-e3-timing-2": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingPauseE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-4/tests-e3-timing-2.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:06:47.537232+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 53.761,
+    "finished_at": "2026-10-27T15:07:41.298530+00:00"
+  },
+  "unit-4/tests-e3-timing-3": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingReceiptE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-4/tests-e3-timing-3.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:07:41.397253+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 15.908,
+    "finished_at": "2026-10-27T15:07:57.305461+00:00"
+  },
+  "unit-4/tests-e3-timing-4": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingRoundingE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-4/tests-e3-timing-4.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:07:57.377535+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 76.407,
+    "finished_at": "2026-10-27T15:09:13.784474+00:00"
+  },
+  "unit-4/tests-e3-timing-5": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noColor",
+      "-noLogo",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.BillingTrafficE3Tests",
+      "-result-trx",
+      "/workspace/work/e3/unit-4/tests-e3-timing-5.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:09:13.889320+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 28.789,
+    "finished_at": "2026-10-27T15:09:42.678343+00:00"
+  },
+  "runner-1/auto-holds-compare": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e3/runner-1/auto-holds",
+      "/workspace/work/e3/runner-1/auto-holds-saved",
+      "/workspace/work/e3/runner-1/auto-holds",
+      "/workspace/work/e3/runner-1/auto-holds-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:19:38.226028+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.118,
+    "finished_at": "2026-10-27T15:19:38.344184+00:00"
+  },
+  "runner-1/auto-holds-load": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e3/runner-1/auto-holds-241.save.json",
+      "--output",
+      "/workspace/work/e3/runner-1/auto-holds-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:19:34.741761+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 3.388,
+    "finished_at": "2026-10-27T15:19:38.129950+00:00"
+  },
+  "runner-1/auto-holds-save": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/auto-holds.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/auto-holds.commands.jsonl",
+      "--ticks",
+      "246",
+      "--output",
+      "/workspace/work/e3/runner-1/auto-holds-saved",
+      "--checkpoint",
+      "/workspace/work/e3/runner-1/auto-holds-241.save.json",
+      "--checkpoint-at",
+      "241"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:19:26.399801+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.245,
+    "finished_at": "2026-10-27T15:19:34.645101+00:00"
+  },
+  "runner-1/auto-holds": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/auto-holds.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/auto-holds.commands.jsonl",
+      "--ticks",
+      "246",
+      "--output",
+      "/workspace/work/e3/runner-1/auto-holds"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:19:19.458348+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 6.817,
+    "finished_at": "2026-10-27T15:19:26.275872+00:00"
+  },
+  "runner-1/auto-receipt-escrow-compare": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow-saved",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:21:22.200298+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.065,
+    "finished_at": "2026-10-27T15:21:22.265628+00:00"
+  },
+  "runner-1/auto-receipt-escrow-load": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow-247.save.json",
+      "--output",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:21:13.573008+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.564,
+    "finished_at": "2026-10-27T15:21:22.136916+00:00"
+  },
+  "runner-1/auto-receipt-escrow-save": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/auto-receipt-escrow.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/auto-receipt-escrow.commands.jsonl",
+      "--ticks",
+      "421",
+      "--output",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow-saved",
+      "--checkpoint",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow-247.save.json",
+      "--checkpoint-at",
+      "247"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:21:03.217621+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 10.256,
+    "finished_at": "2026-10-27T15:21:13.473375+00:00"
+  },
+  "runner-1/auto-receipt-escrow": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/auto-receipt-escrow.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/auto-receipt-escrow.commands.jsonl",
+      "--ticks",
+      "421",
+      "--output",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:20:52.564268+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 10.551,
+    "finished_at": "2026-10-27T15:21:03.115208+00:00"
+  },
+  "runner-1/boundary-1000-compare": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e3/runner-1/boundary-1000",
+      "/workspace/work/e3/runner-1/boundary-1000-saved",
+      "/workspace/work/e3/runner-1/boundary-1000",
+      "/workspace/work/e3/runner-1/boundary-1000-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:25:55.786366+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.116,
+    "finished_at": "2026-10-27T15:25:55.903159+00:00"
+  },
+  "runner-1/boundary-1000-load": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e3/runner-1/boundary-1000-1119.save.json",
+      "--output",
+      "/workspace/work/e3/runner-1/boundary-1000-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:25:51.428244+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 4.247,
+    "finished_at": "2026-10-27T15:25:55.675439+00:00"
+  },
+  "runner-1/boundary-1000-save": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/boundary-1000.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/boundary-1000.commands.jsonl",
+      "--ticks",
+      "1123",
+      "--output",
+      "/workspace/work/e3/runner-1/boundary-1000-saved",
+      "--checkpoint",
+      "/workspace/work/e3/runner-1/boundary-1000-1119.save.json",
+      "--checkpoint-at",
+      "1119"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:25:35.145275+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 16.174,
+    "finished_at": "2026-10-27T15:25:51.319695+00:00"
+  },
+  "runner-1/boundary-1000": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/boundary-1000.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/boundary-1000.commands.jsonl",
+      "--ticks",
+      "1123",
+      "--output",
+      "/workspace/work/e3/runner-1/boundary-1000"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:25:20.807784+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 14.203,
+    "finished_at": "2026-10-27T15:25:35.010927+00:00"
+  },
+  "runner-1/capital-and-privacy": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_public_economy.py",
+      "/workspace/work/e3/runner-1/distance-vector200",
+      "/workspace/work/e3/runner-1/distance-vector200-saved",
+      "/workspace/work/e3/runner-1/distance-vector200-loaded",
+      "/workspace/work/e3/runner-1/fractional",
+      "/workspace/work/e3/runner-1/fractional-saved",
+      "/workspace/work/e3/runner-1/fractional-loaded",
+      "/workspace/work/e3/runner-1/highway100",
+      "/workspace/work/e3/runner-1/highway100-saved",
+      "/workspace/work/e3/runner-1/highway100-loaded",
+      "/workspace/work/e3/runner-1/frozen-rights",
+      "/workspace/work/e3/runner-1/frozen-rights-saved",
+      "/workspace/work/e3/runner-1/frozen-rights-loaded",
+      "/workspace/work/e3/runner-1/auto-holds",
+      "/workspace/work/e3/runner-1/auto-holds-saved",
+      "/workspace/work/e3/runner-1/auto-holds-loaded",
+      "/workspace/work/e3/runner-1/freight-accounting",
+      "/workspace/work/e3/runner-1/freight-accounting-saved",
+      "/workspace/work/e3/runner-1/freight-accounting-loaded",
+      "/workspace/work/e3/runner-1/mining-accounting",
+      "/workspace/work/e3/runner-1/mining-accounting-saved",
+      "/workspace/work/e3/runner-1/mining-accounting-loaded",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow-saved",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow-loaded",
+      "/workspace/work/e3/runner-1/small-rounding",
+      "/workspace/work/e3/runner-1/small-rounding-saved",
+      "/workspace/work/e3/runner-1/small-rounding-loaded",
+      "/workspace/work/e3/runner-1/simple-penalties",
+      "/workspace/work/e3/runner-1/simple-penalties-saved",
+      "/workspace/work/e3/runner-1/simple-penalties-loaded",
+      "/workspace/work/e3/runner-1/boundary-1000",
+      "/workspace/work/e3/runner-1/boundary-1000-saved",
+      "/workspace/work/e3/runner-1/boundary-1000-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:26:18.577272+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 7.019,
+    "finished_at": "2026-10-27T15:26:25.596670+00:00"
+  },
+  "runner-1/distance-vector200-compare": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e3/runner-1/distance-vector200",
+      "/workspace/work/e3/runner-1/distance-vector200-saved",
+      "/workspace/work/e3/runner-1/distance-vector200",
+      "/workspace/work/e3/runner-1/distance-vector200-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:17:02.977320+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.167,
+    "finished_at": "2026-10-27T15:17:03.144648+00:00"
+  },
+  "runner-1/distance-vector200-load": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e3/runner-1/distance-vector200-239.save.json",
+      "--output",
+      "/workspace/work/e3/runner-1/distance-vector200-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:16:59.842248+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 2.982,
+    "finished_at": "2026-10-27T15:17:02.824451+00:00"
+  },
+  "runner-1/distance-vector200-save": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/distance-vector200.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/distance-vector200.commands.jsonl",
+      "--ticks",
+      "246",
+      "--output",
+      "/workspace/work/e3/runner-1/distance-vector200-saved",
+      "--checkpoint",
+      "/workspace/work/e3/runner-1/distance-vector200-239.save.json",
+      "--checkpoint-at",
+      "239"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:16:50.860427+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.902,
+    "finished_at": "2026-10-27T15:16:59.762777+00:00"
+  },
+  "runner-1/distance-vector200": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/distance-vector200.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/distance-vector200.commands.jsonl",
+      "--ticks",
+      "246",
+      "--output",
+      "/workspace/work/e3/runner-1/distance-vector200"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:16:43.686255+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 7.034,
+    "finished_at": "2026-10-27T15:16:50.720741+00:00"
+  },
+  "runner-1/fractional-compare": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e3/runner-1/fractional",
+      "/workspace/work/e3/runner-1/fractional-saved",
+      "/workspace/work/e3/runner-1/fractional",
+      "/workspace/work/e3/runner-1/fractional-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:17:21.713285+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.116,
+    "finished_at": "2026-10-27T15:17:21.829474+00:00"
+  },
+  "runner-1/fractional-load": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e3/runner-1/fractional-119.save.json",
+      "--output",
+      "/workspace/work/e3/runner-1/fractional-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:17:17.655638+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 3.986,
+    "finished_at": "2026-10-27T15:17:21.641251+00:00"
+  },
+  "runner-1/fractional-save": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/fractional.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/fractional.commands.jsonl",
+      "--ticks",
+      "149",
+      "--output",
+      "/workspace/work/e3/runner-1/fractional-saved",
+      "--checkpoint",
+      "/workspace/work/e3/runner-1/fractional-119.save.json",
+      "--checkpoint-at",
+      "119"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:17:09.483235+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 7.987,
+    "finished_at": "2026-10-27T15:17:17.470670+00:00"
+  },
+  "runner-1/fractional": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/fractional.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/fractional.commands.jsonl",
+      "--ticks",
+      "149",
+      "--output",
+      "/workspace/work/e3/runner-1/fractional"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:17:03.231187+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 6.118,
+    "finished_at": "2026-10-27T15:17:09.349251+00:00"
+  },
+  "runner-1/freight-accounting-compare": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e3/runner-1/freight-accounting",
+      "/workspace/work/e3/runner-1/freight-accounting-saved",
+      "/workspace/work/e3/runner-1/freight-accounting",
+      "/workspace/work/e3/runner-1/freight-accounting-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:20:26.557860+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.117,
+    "finished_at": "2026-10-27T15:20:26.674736+00:00"
+  },
+  "runner-1/freight-accounting-load": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e3/runner-1/freight-accounting-399.save.json",
+      "--output",
+      "/workspace/work/e3/runner-1/freight-accounting-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:20:13.681771+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 12.781,
+    "finished_at": "2026-10-27T15:20:26.462561+00:00"
+  },
+  "runner-1/freight-accounting-save": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/freight-accounting.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/freight-accounting.commands.jsonl",
+      "--ticks",
+      "850",
+      "--output",
+      "/workspace/work/e3/runner-1/freight-accounting-saved",
+      "--checkpoint",
+      "/workspace/work/e3/runner-1/freight-accounting-399.save.json",
+      "--checkpoint-at",
+      "399"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:19:53.269393+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 20.284,
+    "finished_at": "2026-10-27T15:20:13.553680+00:00"
+  },
+  "runner-1/freight-accounting": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/freight-accounting.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/freight-accounting.commands.jsonl",
+      "--ticks",
+      "850",
+      "--output",
+      "/workspace/work/e3/runner-1/freight-accounting"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:19:38.408573+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 14.7,
+    "finished_at": "2026-10-27T15:19:53.108157+00:00"
+  },
+  "runner-1/frozen-rights-compare": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e3/runner-1/frozen-rights",
+      "/workspace/work/e3/runner-1/frozen-rights-saved",
+      "/workspace/work/e3/runner-1/frozen-rights",
+      "/workspace/work/e3/runner-1/frozen-rights-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:19:19.263657+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.115,
+    "finished_at": "2026-10-27T15:19:19.378735+00:00"
+  },
+  "runner-1/frozen-rights-load": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e3/runner-1/frozen-rights-479.save.json",
+      "--output",
+      "/workspace/work/e3/runner-1/frozen-rights-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:18:58.803922+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 20.362,
+    "finished_at": "2026-10-27T15:19:19.166186+00:00"
+  },
+  "runner-1/frozen-rights-save": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/frozen-rights.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/frozen-rights.commands.jsonl",
+      "--ticks",
+      "1083",
+      "--output",
+      "/workspace/work/e3/runner-1/frozen-rights-saved",
+      "--checkpoint",
+      "/workspace/work/e3/runner-1/frozen-rights-479.save.json",
+      "--checkpoint-at",
+      "479"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:18:27.389298+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 31.318,
+    "finished_at": "2026-10-27T15:18:58.707222+00:00"
+  },
+  "runner-1/frozen-rights": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/frozen-rights.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/frozen-rights.commands.jsonl",
+      "--ticks",
+      "1083",
+      "--output",
+      "/workspace/work/e3/runner-1/frozen-rights"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:18:11.919580+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 15.306,
+    "finished_at": "2026-10-27T15:18:27.225894+00:00"
+  },
+  "runner-1/highway100-compare": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e3/runner-1/highway100",
+      "/workspace/work/e3/runner-1/highway100-saved",
+      "/workspace/work/e3/runner-1/highway100",
+      "/workspace/work/e3/runner-1/highway100-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:18:11.768318+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.066,
+    "finished_at": "2026-10-27T15:18:11.834848+00:00"
+  },
+  "runner-1/highway100-load": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e3/runner-1/highway100-1320.save.json",
+      "--output",
+      "/workspace/work/e3/runner-1/highway100-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:18:06.790703+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 4.902,
+    "finished_at": "2026-10-27T15:18:11.692449+00:00"
+  },
+  "runner-1/highway100-save": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/highway100.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/highway100.commands.jsonl",
+      "--ticks",
+      "1339",
+      "--output",
+      "/workspace/work/e3/runner-1/highway100-saved",
+      "--checkpoint",
+      "/workspace/work/e3/runner-1/highway100-1320.save.json",
+      "--checkpoint-at",
+      "1320"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:17:41.645138+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 25.066,
+    "finished_at": "2026-10-27T15:18:06.710949+00:00"
+  },
+  "runner-1/highway100": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/highway100.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/highway100.commands.jsonl",
+      "--ticks",
+      "1339",
+      "--output",
+      "/workspace/work/e3/runner-1/highway100"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:17:21.907115+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 19.327,
+    "finished_at": "2026-10-27T15:17:41.234698+00:00"
+  },
+  "runner-1/independent-accounting": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_results.py",
+      "/workspace/work/e3/runner-1/distance-vector200",
+      "/workspace/work/e3/runner-1/distance-vector200-saved",
+      "/workspace/work/e3/runner-1/distance-vector200-loaded",
+      "/workspace/work/e3/runner-1/fractional",
+      "/workspace/work/e3/runner-1/fractional-saved",
+      "/workspace/work/e3/runner-1/fractional-loaded",
+      "/workspace/work/e3/runner-1/highway100",
+      "/workspace/work/e3/runner-1/highway100-saved",
+      "/workspace/work/e3/runner-1/highway100-loaded",
+      "/workspace/work/e3/runner-1/frozen-rights",
+      "/workspace/work/e3/runner-1/frozen-rights-saved",
+      "/workspace/work/e3/runner-1/frozen-rights-loaded",
+      "/workspace/work/e3/runner-1/auto-holds",
+      "/workspace/work/e3/runner-1/auto-holds-saved",
+      "/workspace/work/e3/runner-1/auto-holds-loaded",
+      "/workspace/work/e3/runner-1/freight-accounting",
+      "/workspace/work/e3/runner-1/freight-accounting-saved",
+      "/workspace/work/e3/runner-1/freight-accounting-loaded",
+      "/workspace/work/e3/runner-1/mining-accounting",
+      "/workspace/work/e3/runner-1/mining-accounting-saved",
+      "/workspace/work/e3/runner-1/mining-accounting-loaded",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow-saved",
+      "/workspace/work/e3/runner-1/auto-receipt-escrow-loaded",
+      "/workspace/work/e3/runner-1/small-rounding",
+      "/workspace/work/e3/runner-1/small-rounding-saved",
+      "/workspace/work/e3/runner-1/small-rounding-loaded",
+      "/workspace/work/e3/runner-1/simple-penalties",
+      "/workspace/work/e3/runner-1/simple-penalties-saved",
+      "/workspace/work/e3/runner-1/simple-penalties-loaded",
+      "/workspace/work/e3/runner-1/boundary-1000",
+      "/workspace/work/e3/runner-1/boundary-1000-saved",
+      "/workspace/work/e3/runner-1/boundary-1000-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:25:56.037121+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 22.43,
+    "finished_at": "2026-10-27T15:26:18.466958+00:00"
+  },
+  "runner-1/mining-accounting-compare": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e3/runner-1/mining-accounting",
+      "/workspace/work/e3/runner-1/mining-accounting-saved",
+      "/workspace/work/e3/runner-1/mining-accounting",
+      "/workspace/work/e3/runner-1/mining-accounting-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:20:52.393571+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.067,
+    "finished_at": "2026-10-27T15:20:52.460487+00:00"
+  },
+  "runner-1/mining-accounting-load": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e3/runner-1/mining-accounting-163.save.json",
+      "--output",
+      "/workspace/work/e3/runner-1/mining-accounting-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:20:44.387939+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 7.914,
+    "finished_at": "2026-10-27T15:20:52.301583+00:00"
+  },
+  "runner-1/mining-accounting-save": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/mining-accounting.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/mining-accounting.commands.jsonl",
+      "--ticks",
+      "286",
+      "--output",
+      "/workspace/work/e3/runner-1/mining-accounting-saved",
+      "--checkpoint",
+      "/workspace/work/e3/runner-1/mining-accounting-163.save.json",
+      "--checkpoint-at",
+      "163"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:20:35.614770+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.69,
+    "finished_at": "2026-10-27T15:20:44.305287+00:00"
+  },
+  "runner-1/mining-accounting": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/mining-accounting.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/mining-accounting.commands.jsonl",
+      "--ticks",
+      "286",
+      "--output",
+      "/workspace/work/e3/runner-1/mining-accounting"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:20:26.749242+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.768,
+    "finished_at": "2026-10-27T15:20:35.517149+00:00"
+  },
+  "runner-1/profile-0": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--export-billing-profile",
+      "/workspace/Delsk/config/vnext/economy.b1-supported.json",
+      "--balance",
+      "/workspace/Delsk/config/vnext/balance.b1.json",
+      "--output",
+      "/workspace/work/e3/runner-1/profile-0"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:26:25.785283+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.477,
+    "finished_at": "2026-10-27T15:26:27.262122+00:00"
+  },
+  "runner-1/profile-1": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--export-billing-profile",
+      "/workspace/Delsk/config/vnext/economy.b1-supported.json",
+      "--balance",
+      "/workspace/Delsk/config/vnext/balance.b1.json",
+      "--output",
+      "/workspace/work/e3/runner-1/profile-1"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:26:27.351789+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.553,
+    "finished_at": "2026-10-27T15:26:28.904939+00:00"
+  },
+  "runner-1/simple-penalties-compare": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e3/runner-1/simple-penalties",
+      "/workspace/work/e3/runner-1/simple-penalties-saved",
+      "/workspace/work/e3/runner-1/simple-penalties",
+      "/workspace/work/e3/runner-1/simple-penalties-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:25:20.493061+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.218,
+    "finished_at": "2026-10-27T15:25:20.711571+00:00"
+  },
+  "runner-1/simple-penalties-load": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e3/runner-1/simple-penalties-1120.save.json",
+      "--output",
+      "/workspace/work/e3/runner-1/simple-penalties-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:24:53.699630+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 26.652,
+    "finished_at": "2026-10-27T15:25:20.351864+00:00"
+  },
+  "runner-1/simple-penalties-save": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/simple-penalties.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/simple-penalties.commands.jsonl",
+      "--ticks",
+      "3124",
+      "--output",
+      "/workspace/work/e3/runner-1/simple-penalties-saved",
+      "--checkpoint",
+      "/workspace/work/e3/runner-1/simple-penalties-1120.save.json",
+      "--checkpoint-at",
+      "1120"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:24:04.588609+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 49.033,
+    "finished_at": "2026-10-27T15:24:53.622120+00:00"
+  },
+  "runner-1/simple-penalties": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/simple-penalties.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/simple-penalties.commands.jsonl",
+      "--ticks",
+      "3124",
+      "--output",
+      "/workspace/work/e3/runner-1/simple-penalties"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:23:07.181759+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 57.164,
+    "finished_at": "2026-10-27T15:24:04.345742+00:00"
+  },
+  "runner-1/small-rounding-compare": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e3/runner-1/small-rounding",
+      "/workspace/work/e3/runner-1/small-rounding-saved",
+      "/workspace/work/e3/runner-1/small-rounding",
+      "/workspace/work/e3/runner-1/small-rounding-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:23:06.807616+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.166,
+    "finished_at": "2026-10-27T15:23:06.973505+00:00"
+  },
+  "runner-1/small-rounding-load": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e3/runner-1/small-rounding-479.save.json",
+      "--output",
+      "/workspace/work/e3/runner-1/small-rounding-loaded"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:22:38.842592+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 27.814,
+    "finished_at": "2026-10-27T15:23:06.657409+00:00"
+  },
+  "runner-1/small-rounding-save": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/small-rounding.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/small-rounding.commands.jsonl",
+      "--ticks",
+      "2043",
+      "--output",
+      "/workspace/work/e3/runner-1/small-rounding-saved",
+      "--checkpoint",
+      "/workspace/work/e3/runner-1/small-rounding-479.save.json",
+      "--checkpoint-at",
+      "479"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:21:58.683846+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 40.08,
+    "finished_at": "2026-10-27T15:22:38.763847+00:00"
+  },
+  "runner-1/small-rounding": {
+    "command": [
+      "dotnet",
+      "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--scenario",
+      "/workspace/work/e3/unit-4/e3-fixtures/small-rounding.json",
+      "--replay",
+      "/workspace/work/e3/unit-4/e3-fixtures/small-rounding.commands.jsonl",
+      "--ticks",
+      "2043",
+      "--output",
+      "/workspace/work/e3/runner-1/small-rounding"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:21:22.363131+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 36.129,
+    "finished_at": "2026-10-27T15:21:58.492070+00:00"
+  },
+  "native-1/build": {
+    "command": [
+      "dotnet",
+      "build",
+      "/workspace/work/e3/native-1/source/src/Client.Godot/Delsk.Client.csproj",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T15:10:38.528567+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 117.805,
+    "finished_at": "2026-10-27T15:12:36.333826+00:00"
+  },
+  "native-1/import": {
+    "command": [
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--headless",
+      "--path",
+      "/workspace/work/e3/native-1/source/src/Client.Godot",
+      "--editor",
+      "--import"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:12:36.419933+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 9.315,
+    "finished_at": "2026-10-27T15:12:45.735032+00:00"
+  },
+  "native-1/logs-storage-3": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_platform_probe.py",
+      "--log-prefix",
+      "/workspace/work/e3/native-1/checks/native-storage-3"
+    ],
+    "timeout_seconds": 15,
+    "started_at": "2026-10-27T15:13:11.258175+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.117,
+    "finished_at": "2026-10-27T15:13:11.375092+00:00"
+  },
+  "native-1/native-storage-3": {
+    "command": [
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--path",
+      "/workspace/work/e3/native-1/source/src/Client.Godot",
+      "--rendering-method",
+      "gl_compatibility",
+      "--audio-driver",
+      "Dummy",
+      "res://BillingProbe.tscn",
+      "--",
+      "--output",
+      "/workspace/work/e3/native-1/storage-3",
+      "--fixtures",
+      "/workspace/work/e3/unit-4/e3-fixtures",
+      "--windowed"
+    ],
+    "timeout_seconds": 150,
+    "started_at": "2026-10-27T15:12:45.929455+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 25.232,
+    "finished_at": "2026-10-27T15:13:11.161282+00:00"
+  },
+  "native-1/restore": {
+    "command": [
+      "dotnet",
+      "restore",
+      "/workspace/work/e3/native-1/source/src/Client.Godot/Delsk.Client.csproj",
+      "--locked-mode",
+      "--disable-parallel",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T15:10:30.150344+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.305,
+    "finished_at": "2026-10-27T15:10:38.455102+00:00"
+  },
+  "native-2/build": {
+    "command": [
+      "dotnet",
+      "build",
+      "/workspace/work/e3/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T15:28:10.790843+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 96.889,
+    "finished_at": "2026-10-27T15:29:47.679782+00:00"
+  },
+  "native-2/import": {
+    "command": [
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--headless",
+      "--path",
+      "/workspace/work/e3/native-2/source/src/Client.Godot",
+      "--editor",
+      "--import"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:29:47.774596+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 10.616,
+    "finished_at": "2026-10-27T15:29:58.391686+00:00"
+  },
+  "native-2/logs-storage-3": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/Delsk/scripts/verify_platform_probe.py",
+      "--log-prefix",
+      "/workspace/work/e3/native-2/checks/native-storage-3"
+    ],
+    "timeout_seconds": 15,
+    "started_at": "2026-10-27T15:30:25.097564+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.116,
+    "finished_at": "2026-10-27T15:30:25.213922+00:00"
+  },
+  "native-2/native-storage-3": {
+    "command": [
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--path",
+      "/workspace/work/e3/native-2/source/src/Client.Godot",
+      "--rendering-method",
+      "gl_compatibility",
+      "--audio-driver",
+      "Dummy",
+      "res://BillingProbe.tscn",
+      "--",
+      "--output",
+      "/workspace/work/e3/native-2/storage-3",
+      "--fixtures",
+      "/workspace/work/e3/unit-4/e3-fixtures",
+      "--windowed"
+    ],
+    "timeout_seconds": 150,
+    "started_at": "2026-10-27T15:29:58.613580+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 26.387,
+    "finished_at": "2026-10-27T15:30:25.000135+00:00"
+  },
+  "native-2/restore": {
+    "command": [
+      "dotnet",
+      "restore",
+      "/workspace/work/e3/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+      "--locked-mode",
+      "--disable-parallel",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-10-27T15:28:06.771754+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 3.947,
+    "finished_at": "2026-10-27T15:28:10.718652+00:00"
+  }
+}

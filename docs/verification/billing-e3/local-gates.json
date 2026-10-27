@@ -1,0 +1,55 @@
+{
+  "status": "succeeded",
+  "runtimeTestedCode": "79e8589a04b280707380b453cdf45e1be3d968cf",
+  "sourceFiles": 849,
+  "financialFiles": 367,
+  "nativeFiles": 662,
+  "ordinaryTests": 22,
+  "unitSeconds": 562.182,
+  "runnerProcesses": 48,
+  "exports": 33,
+  "exactComparisonPairs": 22,
+  "runnerSeconds": 585.429,
+  "native": {
+    "command": [
+      "python",
+      "scripts/check_development_ui.py",
+      "--probe",
+      "BillingProbe",
+      "--godot",
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--fixtures",
+      "/workspace/work/e3/unit-4/e3-fixtures",
+      "--xorg",
+      "/usr/lib/xorg/Xorg",
+      "--reuse-stage",
+      "--output",
+      "/workspace/work/e3/native-2"
+    ],
+    "timeout_seconds": 600,
+    "started_at": "2026-10-27T15:28:06.244141+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 139.025,
+    "finished_at": "2026-10-27T15:30:25.269603+00:00"
+  },
+  "legacyNative": {
+    "command": [
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--headless",
+      "--path",
+      "/workspace/work/e3/native-2/source/src/Client.Godot",
+      "--",
+      "--smoke",
+      "--report",
+      "/workspace/work/e3/legacy-native.json"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T15:34:05.777218+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 15.403,
+    "finished_at": "2026-10-27T15:34:21.180611+00:00"
+  },
+  "pythonChecks": 22,
+  "researchLabChecks": 37,
+  "scope": "Local actual gates only. CI is recorded separately; no claim of natural progression, long-run ROI, dense traffic performance or device acceptance."
+}

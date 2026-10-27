@@ -1,0 +1,59 @@
+{
+  "status": "succeeded",
+  "scope": "E3/P71 software only; delivery services excluded.",
+  "runtimeTestedCode": "79e8589a04b280707380b453cdf45e1be3d968cf",
+  "base": "d9e17e308ea325118e4af665152c2899cbd97549",
+  "pullRequest": "https://github.com/MaksShelest/Delsk/pull/68",
+  "sourceInputs": 849,
+  "financialInputsUnchangedSinceUnitSnapshot": 367,
+  "nativeInputs": 662,
+  "ordinaryE3": 22,
+  "developerE3": 22,
+  "runner": {
+    "processChecks": 48,
+    "exports": 33,
+    "exactComparisonPairs": 22,
+    "seconds": 585.429,
+    "deadline": 600
+  },
+  "native": {
+    "languages": [
+      "ru",
+      "en"
+    ],
+    "sizes": [
+      "800x720",
+      "1100x800"
+    ],
+    "seconds": 139.025,
+    "deadline": 600,
+    "legacyHashChecks": 1132,
+    "legacyRestores": 35
+  },
+  "saveCompatibility": {
+    "actualSchema": 25,
+    "fromTick": 1176,
+    "toTick": 1568,
+    "exactComparedExports": true
+  },
+  "pythonChecks": 22,
+  "researchLabChecks": 37,
+  "ci": {
+    "core": {
+      "run": 40531261453,
+      "jobs": 12,
+      "conclusion": "success"
+    },
+    "windows": {
+      "run": 40531262344,
+      "conclusion": "success"
+    }
+  },
+  "limitations": [
+    "Prepared geography/material sources/cash and one extended funded capital-order lifetime in a fixture; not natural progression or ROI.",
+    "Existing E2 games keep resolved E2 rules; no in-progress migration enabling taxes.",
+    "Sub-minor money carries forward; signed recipient rounding residues are not negative cash.",
+    "Full history, long dense traffic/performance and physical device acceptance are not established.",
+    "Only E3; no fuel or delivery-service implementation."
+  ]
+}

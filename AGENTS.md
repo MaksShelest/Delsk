@@ -1,27 +1,36 @@
-## E3,27.10.2026 — явное текущее задание
+## E3,27.10.2026 — реализованный software-объём
 
-- Пользователь разрешил только E3/P71 поверх финального E2. Основа d9e17e3
-  (mergePR67) содержит2ca4b12/проверенный25f6689. Ветка feat/vnext-e3-accounts.
-  Услуги доставки не начинать автоматически. Прежние запреты автоматического
-  старта E3 ниже не блокируют это явное задание.
-- Новое правило владельца заменяет старые500/500: grace1000 active ticks inclusive,
-  первая пеня t+1001, затем+1000. Source BALANCE и §15/P71 синхронизированы.
-- Worklog: docs/WORKLOG_PACKAGE_E3.md. Реальные gates/evidence фиксировать после
-  выполнения, WIP/compile failures/timeout не считать итогом. Никакого auto merge.
-- Переиспользовать RoadBody/TrafficTravel и EconomyTransaction/holds/escrow.
-  Счёт не создаёт cash. Class/share/ставки из typedBALANCE, fixedinteger остатки,
-  principal first, пени без капитализации. Вклады фиксируются при фактическом
-  движении; собственные и NPC машины не дублировать.
-- E3 optional profile vnext-e3-accounts-1 для новых designed games, World26,
-  limited25–18 без Billing. Старые resolved profiles не подменять. Новые
-  billing.json/hash/save/replay/privacy и independent billing_audit обязательны.
-- Signed rounding residues per payer/recipient сохраняют10/90 при мелких счетах;
-  все целые копейки общего накопления выставляются каждые120. Clearing всегда0,
-  это не второй кошелёк. Автоплата из frozen free budgets перед пенями после
-  текущих receipts/refunds. Доход этой же autofase доступен следующему tick.
-- Previous/E2/E3 suites исчерпывающие и непересекающиеся, отдельные requiredjobs.
-  Не повышать старые deadlines и не удалять тесты. BillingProbe только isolated
-  stage, запрещён обычным AssemblyAudit; ordinary client/God flags сохранять.
+- Явное задание E3/P71 поверх d9e17e3/PR67 с финальным E2/2ca4b12.
+  Ветка feat/vnext-e3-accounts, PR68 без auto merge. Услуги доставки F не начинать.
+  Итог docs/IMPLEMENTATION_REPORT_PACKAGE_E3.md, usage ACCOUNTS_E3.md,
+  восстановление WORKLOG_PACKAGE_E3.md, evidence verification/billing-e3/.
+- Проверенный runtime/test/CI79e8589, последующие изменения только документы.
+  Source BALANCE/§15/P71 синхронизированы с новым явным1000/1000:
+  graceinclusive, первая пеняt+1001, затем+1000. Старые500/500 не возвращать.
+- Optional vnext-e3-accounts-1 для новых designed maps/lab, World26 limited25–18
+  без Billing. Старые resolved profiles не подменять, no retroactive E2 taxes.
+  Общий RoadBody/TrafficTravel и прежний EconomyTransaction/holds/escrow.
+- Тарификация допущенного физического прогресса по исходной клетке/её builders,
+  class/share из typedBALANCE, scale800×10000×10000, без денежных операций накадрах.
+  Счёт раз120 по целому общему накоплению; signed residue по payer/recipient
+  сохраняет10/90 при мелких счетах. Это не отрицательные деньги/автокредит.
+- Получатели fixed при проезде, cash только после оплаты. Principal first,
+  proportional open claims+largest residual/fixed invoice tie. Clearing всегда0,
+  не второй личный кошелёк. Простые20% от principal с BP carry, пени только городу.
+  Автоплата из frozen free budgets после receipts/refunds, перед пенями; receipts
+  внутри её фазы доступны следующему tick. Holds/escrow не трогать, debt не busy.
+- Own immutable AccountOf/страницы/локальные ordinals, viewed отдельно от paid,
+  all Billing private events/command outcomes filtered. Debt/claims симметричны
+  в capital. Billing/hash/save/replay/export и independent billing_audit обязательны.
+  Missing E3 export/неожиданные E3 платежи в old profile отвергать.
+-22ordinary+22Developer E3,48runner processes/33exports/22pairs, nativeRU/EN139s,
+  662matched native inputs,1132legacy hashes/35restores, actual World25 t1176→1568
+  exact.849source hashes/367unchanged financial inputs. Core40531261453 все12jobs
+  success, Windows40531262344 success на79e8589. Python22/Lab37 прошли.
+- Previous/E2/E3 suites исчерпывающие/непересекающиеся, отдельные requiredjobs;
+  старые deadlines не повышать, failures/timeout не считать pass. BillingProbe
+  только isolatedstage, запрещён ordinary AssemblyAudit. Native/CI software не
+  закрывают устройства/long balance/ROI. Следующий шаг review PR68, не пакетF.
 
 ## E2,27.10.2026 — реализованный software-объём
 

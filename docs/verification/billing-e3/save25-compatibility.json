@@ -1,0 +1,50 @@
+{
+  "status": "succeeded",
+  "testedCode": "79e8589a04b280707380b453cdf45e1be3d968cf",
+  "original": "/workspace/work/e2/roads-runner-accepted/freight-1176.save.json",
+  "sourceSchema": 25,
+  "sourceTick": 1176,
+  "continuedTick": 1568,
+  "sourceSha256": "18cd2aadef69741bd83990a67ff4bf8e4127179ff992457572c73012589ba83f",
+  "load": {
+    "command": [
+      "dotnet",
+      "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+      "--load",
+      "/workspace/work/e2/roads-runner-accepted/freight-1176.save.json",
+      "--output",
+      "/workspace/work/e3/e2-save25-continuation"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-27T15:31:52.447255+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 11.112,
+    "finished_at": "2026-10-27T15:32:03.559248+00:00"
+  },
+  "compare": {
+    "command": [
+      "python",
+      "scripts/verify_checkpoint_exports.py",
+      "/workspace/work/e2/roads-runner-accepted/freight",
+      "/workspace/work/e3/e2-save25-continuation"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T15:34:04.847477+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.117,
+    "finished_at": "2026-10-27T15:34:04.964679+00:00"
+  },
+  "audit": {
+    "command": [
+      "python",
+      "scripts/verify_results.py",
+      "/workspace/work/e3/e2-save25-continuation"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-10-27T15:34:05.036302+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.667,
+    "finished_at": "2026-10-27T15:34:05.703692+00:00"
+  },
+  "scope": "Actual final E2 freight-in-use save retained; every file selected by the full existing export comparer matches the original E2 continuous run, including all tick hashes and road state. No retroactive Billing."
+}
