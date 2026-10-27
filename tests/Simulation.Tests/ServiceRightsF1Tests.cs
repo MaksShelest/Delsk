@@ -97,4 +97,12 @@ public class ServiceRightsF1Tests
         s.SetPaused(false);ServiceF1Tests.Exact(s,"paused-response");
     }
 
+    [Fact]public void NpcOffersOnlyAnUnboundEmptyVehicleThroughOrdinaryCommands()
+    {
+        var(s,vehicle,_)=ServiceF1Tests.Prepare();ServiceF1Tests.Step(s,new(ActionKind.SetDeliveryService,VehicleId:vehicle.Id,Enabled:false),2);
+        var controller=new AlgorithmicController(new(2,"wood"),42,[1,2]);var decision=controller.Decide(s.Engine.ObserveController(new(2)),[]);
+        var action=Assert.Single(decision.Actions);Assert.Equal(ActionKind.SetDeliveryService,action.Kind);Assert.Equal(vehicle.Id,action.VehicleId);ServiceF1Tests.Step(s,action,2);
+        Assert.True(s.Engine.ServicesOf(new(2))!.Catalog.Single().Available);ServiceF1Tests.Exact(s,"npc-offer");
+    }
+
 }

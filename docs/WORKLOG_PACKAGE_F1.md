@@ -55,3 +55,13 @@
   linked committed service control events. Незавершённые экономические фазы по-прежнему
   нельзя сохранить. unit-8:25/25pass, включая partial-quantum save/retry/replay.
   Финальный прогон также закрепляет assertion cash sample и общий command budget.
+
+- unit-9 выявил CS1061 в новом budget guard: поле результата называется AppliedTick,
+  исправлено. CI f589453 также остановился на этой ошибке, не считается pass.
+- unit-10: bounded build timeout124 на180.039s, игровых assertions не было.
+  Deadline не повышен; выполняется отдельная bounded подготовка tests build и
+  повтор обычного полного gate. Ограничение/исходные process records сохранены.
+- NPC публикует свободную пустую unbound технику обычной командой; при плане своей
+  логистики исключает ServiceReserved. Реальные рейсы/оплата частей остаются F2.
+- Independent audit дополнительно суммирует service stock/money commitments,
+  чтобы несколько машин не могли скрыть нехватку совокупных резервов.

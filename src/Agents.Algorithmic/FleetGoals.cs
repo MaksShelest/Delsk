@@ -10,7 +10,7 @@ public sealed partial class AlgorithmicController
     private Candidate? AcquireFleetLogistics(ControllerObservation o,EnterpriseView enterprise,Cell home)
     {
         var f=o.Fleet!;
-        var free=f.Vehicles.Where(v=>!v.Model.MaterialsOnly&&v.Vehicle.Driver==0&&v.Vehicle.Installation is null&&v.Logistics.Value==0&&Inventory(o,v.Vehicle.CargoInventory).OccupiedVolume==0)
+        var free=f.Vehicles.Where(v=>v.State!="ServiceReserved"&&!v.Model.MaterialsOnly&&v.Vehicle.Driver==0&&v.Vehicle.Installation is null&&v.Logistics.Value==0&&Inventory(o,v.Vehicle.CargoInventory).OccupiedVolume==0)
             .OrderBy(v=>Distance(o.Map,o.Participant.Position,v.Position)).ThenBy(v=>v.Vehicle.Id).FirstOrDefault();
         if(free is not null)
         {

@@ -127,6 +127,10 @@ public sealed partial class AlgorithmicController
     private IEnumerable<Candidate> ServiceResponses(ControllerObservation o)
     {
         if(o.Services is not {} services)yield break;
+        if(_state.Settings.LogisticsEnabled&&o.Fleet is {} fleet)
+            foreach(var car in fleet.Vehicles.Where(v=>v.State=="Parked"&&!v.Model.MaterialsOnly&&v.Vehicle.Driver==0&&v.Vehicle.Installation is null&&v.Logistics.Value==0&&
+                Inventory(o,v.Vehicle.CargoInventory).OccupiedVolume==0&&!services.OwnListings.Contains(v.Vehicle.Id)))
+                yield return One("OfferDeliveryService",car.Vehicle.Id.ToString(),400000,new(ActionKind.SetDeliveryService,VehicleId:car.Vehicle.Id,Enabled:true));
         foreach(var order in services.OwnOrders.Where(x=>x.Carrier==Actor&&x.State=="Pending"&&x.RespondByTick>o.Tick))
         {
             var q=order.Quote;

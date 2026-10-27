@@ -14,7 +14,7 @@ def verify(folder):
     services=json.loads(path.read_text());state=json.loads((folder/'final-state.json').read_text());fleet=json.loads((folder/'fleet.json').read_text())
     vehicles={v['id']:v for v in fleet['vehicles']};models={m['id']:m for m in config['economy']['fleet']['models']};items={i['id']:i for i in config['items']}
     accounts={a['id']['value']:a for a in state['accounts']};actors={p['id']['value']:p for p in state['participants']};inventories={i['id']['value']:i for i in state['inventories']}
-    events=[json.loads(l) for l in (folder/'events.jsonl').read_text().splitlines()];active=[]
+    events=[json.loads(l) for l in (folder/'events.jsonl').read_text().splitlines()];active=[];stock_needed=Counter();money_needed=Counter()
     for identity in services['listedVehicles']:assert identity in vehicles and not models[vehicles[identity]['modelId']]['materialsOnly']
     for o in services['orders']:
         q=o['quote'];t=q['terms'];model=models[vehicles[t['vehicleId']]['modelId']];volume=t['quantity']*items[t['itemId']]['unitVolume'];per=model['capacityVolume']//items[t['itemId']]['unitVolume'];trips=(t['quantity']+per-1)//per
@@ -29,6 +29,8 @@ def verify(folder):
         status=o['state'];is_active=status in ('Pending','Requote','Accepted')
         if is_active:
             active.append(t['vehicleId']);assert not o['closedTick']
+            if status!='Accepted':money_needed[o['customer']['value']]+=q['feeMinor']
+            if not t['purchaseId']:stock_needed[(t['source']['value'],t['itemId'])]+=t['quantity']
             assert (o['deadlineTick'] if status=='Accepted' else o['respondByTick'])>state['tick']
             if not t['purchaseId']:
                 stock=next(s for s in inventories[t['source']['value']]['stock'] if s['itemId']==t['itemId']);assert stock['reserved']>=t['quantity']
@@ -45,6 +47,8 @@ def verify(folder):
             assert all(l['creditAccount']['value']==actors[o['customer']['value']]['accountId']['value'] for l in refunded)
             assert all(l['reason']=='ServiceRefund:'+str(o['id']) for l in ledger if l['debitAccount']['value']==o['escrowAccount'])
         else:assert not funded and not refunded and status!='Accepted'
+    for (inventory,item),quantity in stock_needed.items():assert next(s for s in inventories[inventory]['stock'] if s['itemId']==item)['reserved']>=quantity
+    for actor,amount in money_needed.items():assert accounts[actors[actor]['accountId']['value']]['reservedMinor']>=amount
     assert len(active)==len(set(active))
     public=[json.loads(l) for l in (folder/'public-events.jsonl').read_text().splitlines()]
     assert not any(e['type'].startswith('Service') for e in public)

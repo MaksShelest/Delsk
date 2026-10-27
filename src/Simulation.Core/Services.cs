@@ -11,7 +11,7 @@ public sealed partial class SimulationEngine
         try
         {
             _phase=1;
-            if(_results.Values.Count(r=>r.Tick==Tick&&_seenCommands[r.CommandId].ActorId==command.ActorId)>=_config.MaxCommandsPerActorTick)Reject(command,"CommandBudgetExceeded");
+            if(_results.Values.Count(r=>r.AppliedTick==Tick&&_seenCommands[r.CommandId].ActorId==command.ActorId)>=_config.MaxCommandsPerActorTick)Reject(command,"CommandBudgetExceeded");
             else Execute(command);
             ValidateInvariants();return _results[command.CommandId];
         }
