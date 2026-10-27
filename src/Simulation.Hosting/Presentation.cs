@@ -4,7 +4,8 @@ namespace Simulation.Hosting;
 
 public readonly record struct PresentationPoint(float X, float Z);
 public record PresentationActor(long Id, bool Human, int X, int Z, bool Busy,
-    int OffsetX = SimulationEngine.TravelCenter, int OffsetZ = SimulationEngine.TravelCenter, int FacingX = 0, int FacingZ = -1);
+    int OffsetX = SimulationEngine.TravelCenter, int OffsetZ = SimulationEngine.TravelCenter, int FacingX = 0, int FacingZ = -1)
+{ public long VehicleId {get;init;} }
 public record PresentationMarker(string Kind, int X, int Z, string Label, long EntityId, long OwnerId)
 {
     public int Level {get;init;}=1;
@@ -18,7 +19,8 @@ public record PresentationMarker(string Kind, int X, int Z, string Label, long E
 public record PresentationTrip(long LogisticsId, long OwnerId, string ItemId, string State, int X, int Z, bool Loaded = false);
 public record PresentationFrame(long Tick, int MapWidth, int MapHeight, PresentationActor[] Actors,
     PresentationMarker[] Markers, PresentationTrip[] Trips)
-{public MapLayout? Layout {get;init;}};
+{public MapLayout? Layout {get;init;} public System.Collections.Immutable.ImmutableArray<PresentationVehicle> Vehicles {get;init;}=[];};
+public sealed record PresentationVehicle(long Id,long Owner,string ModelId,int X,int Z,int OffsetX,int OffsetZ,int FacingX,int FacingZ,bool ForSale);
 
 /// <summary>Публичная картинка сцены. Чужие договоры поддержки сюда не входят.</summary>
 public static class Presentation
@@ -32,12 +34,12 @@ public static class Presentation
 
     public static PresentationFrame Read(ScenarioDefinition scenario, SimulationEngine engine, long humanId)
     {
-        var world = engine.Inspect();
+        var world = engine.Inspect();var fleet=engine.InspectFleet();
         var actors = world.Participants.OrderBy(p => p.Id.Value).Select(p =>
         {
             var travel = engine.TravelOf(p.Id);
             return new PresentationActor(p.Id.Value, p.Id.Value == humanId, p.Position.X, p.Position.Z, p.Busy,
-                travel.OffsetX, travel.OffsetZ, travel.FacingX, travel.FacingZ);
+                travel.OffsetX, travel.OffsetZ, travel.FacingX, travel.FacingZ){VehicleId=fleet?.Vehicles.FirstOrDefault(v=>v.Driver==p.Id.Value)?.Id??0};
         }).ToArray();
         var markers = new List<PresentationMarker>();
         var blocked = new HashSet<Cell>(engine.BlockedCells());
@@ -94,14 +96,14 @@ public static class Presentation
             string item = scenario.EquipmentTypes!.Single(t => t.Id == equipment.TypeId).ItemId;
             markers.Add(new("equipment", equipment.Position.X, equipment.Position.Z, item, equipment.Id.Value, equipment.OwnerId.Value){Level=equipment.Level});
         }
-        foreach (var logistics in world.Logistics.OrderBy(l => l.Id.Value))
+        foreach (var logistics in world.Logistics.Where(l=>l.VehicleId==0).OrderBy(l => l.Id.Value))
         {
             var home = world.Inventories.Single(i => i.Id == logistics.SourceInventory).Position;
             markers.Add(new("truck-home", home.X, home.Z, "", logistics.Id.Value, logistics.OwnerId.Value));
         }
-        var trips = world.Logistics.Where(l => l.Trip is not null).OrderBy(l => l.Id.Value).Select(l =>
+        var trips = world.Logistics.Where(l => l.Trip is not null && l.VehicleId==0).OrderBy(l => l.Id.Value).Select(l =>
             new PresentationTrip(l.Id.Value, l.OwnerId.Value, l.Trip!.ItemId, l.Trip.State, l.Trip.Position.X, l.Trip.Position.Z, world.Inventories.Single(i=>i.Id==l.CargoInventory).Stock.Any(s=>s.Quantity>0))).ToArray();
-        return new(world.Tick, scenario.MapWidth, scenario.MapHeight, actors, markers.ToArray(), trips){Layout=scenario.Layout};
+        return new(world.Tick, scenario.MapWidth, scenario.MapHeight, actors, markers.ToArray(), trips){Layout=scenario.Layout,Vehicles=fleet is null?[]:[..fleet.Stock.Select(v=>new PresentationVehicle(v.Id,0,v.ModelId,v.Position.X,v.Position.Z,500,500,0,-1,true)).Concat(fleet.Vehicles.Select(v=>{var position=world.Inventories.Single(i=>i.Id==v.CargoInventory).Position;return new PresentationVehicle(v.Id,v.Owner.Value,v.ModelId,position.X,position.Z,v.OffsetX,v.OffsetZ,v.FacingX,v.FacingZ,false);}))]};
     }
 }
 

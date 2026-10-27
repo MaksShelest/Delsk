@@ -5,9 +5,11 @@ import json
 from pathlib import Path
 import sys
 from import_audit import verify_imports
+from fleet_audit import verify_fleet
 
 def verify(folder):
     folder = Path(folder)
+    verify_fleet(folder)
     summary = json.loads((folder/'summary.json').read_text(encoding='utf-8'))
     modifications = json.loads((folder/'research-modifications.json').read_text()) if (folder/'research-modifications.json').exists() else []
     if summary['status'] != 'succeeded':

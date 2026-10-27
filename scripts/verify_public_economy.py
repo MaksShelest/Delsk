@@ -37,11 +37,26 @@ def verify(folder):
         buildings = sum(l['priceMinor']+sum(m['quantity']*prices[m['itemId']] for m in l['materials']) for b in state['buildings'] if b['ownerId']['value']==actor for l in types[b['typeId']]['levels'] if l['level']<=b['level'])
         equipment = sum(l['priceMinor'] for e in state['equipment'] if e['ownerId']['value']==actor for l in machines[e['typeId']]['levels'] if l['level']<=e['level'])
         for system in state['logistics']:
-            if system['ownerId']['value']!=actor: continue
+            if system['ownerId']['value']!=actor or system.get('vehicleId',0): continue
             settings=config.get('logistics') or {'purchasePriceMinor':20000,'upgrade':None}
             equipment+=settings['purchasePriceMinor']
             if system['level']>1:
                 upgrade=settings['upgrade'];equipment+=upgrade['priceMinor']+sum(m['quantity']*prices[m['itemId']] for m in upgrade['materials'])
+        if (folder/'fleet.json').exists():
+            fleet=json.loads((folder/'fleet.json').read_text());rules=config['economy']['fleet']
+            models={m['id']:m for m in rules['models']}
+            journal=[json.loads(line) for line in (folder/'events.jsonl').read_text().splitlines()]
+            for vehicle in fleet['vehicles']:
+                if vehicle['owner']['value']!=actor:continue
+                equipment+=models[vehicle['modelId']]['priceMinor']
+                jobs=[e for e in journal if e['type']=='VehicleKitStarted' and e['entityId']==vehicle['id']]
+                commands={e['commandId'] for e in jobs}
+                equipment+=sum(e['amountMinor'] for e in jobs)+sum(e['quantity']*prices[e['itemId']] for e in journal if e['type']=='ConstructionMaterialConsumed' and e.get('commandId') in commands)
+            for platform in fleet['platforms']:
+                if platform['group']['ownerId']['value']!=actor:continue
+                if not any(b['id']['value']==platform['building'] for b in state['buildings']):continue
+                target=platform.get('installation',{});target=target['level'] if target else 0
+                buildings+=sum(u['priceMinor']+sum(m['quantity']*prices[m['itemId']] for m in u['materials']) for u in rules['platforms'] if u['level']<=platform['level'] or u['level']==target)
         assert participant['capitalMinor']==cash+stock+wip+land+buildings+equipment, (folder,actor,'capital')
         assert participant['employed']==sum(g['headcount'] for g in state['employmentGroups'] if g['ownerId']['value']==actor)
     latest = [json.loads(line) for line in (folder/'events.jsonl').read_text().splitlines() if json.loads(line)['type']=='CityStageUpdated']

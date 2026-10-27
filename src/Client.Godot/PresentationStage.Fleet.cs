@@ -1,0 +1,24 @@
+using Godot;
+using Simulation.Hosting;
+
+public partial class PresentationStage
+{
+    private readonly Dictionary<long,Mover> _fleet=[];
+    private void ShowFleet(PresentationFrame frame,bool snap)
+    {
+        foreach(var v in frame.Vehicles)
+        {
+            if(!_fleet.TryGetValue(v.Id,out var mover))
+            {
+                var body=new Node3D{Name="Vehicle_"+v.Id};body.AddChild(WorldModels.Vehicle(v.ModelId));
+                var caption=new Label3D{Text=v.ModelId+" #"+v.Id,Position=new(0,.95f,0),FontSize=22,PixelSize=.004f,Billboard=BaseMaterial3D.BillboardModeEnum.Enabled};body.AddChild(caption);AddChild(body);mover=new(body,Vector3.Zero);_fleet.Add(v.Id,mover);
+            }
+            int slot=frame.Vehicles.Count(other=>other.X==v.X&&other.Z==v.Z&&other.Id<v.Id);
+            float side=v.ForSale?(slot%2==0?-.23f:.23f):.18f;
+            var at=new Vector3(v.X+(v.OffsetX-500)/1000f+side,.07f,v.Z+(v.OffsetZ-500)/1000f+.18f);
+            Target(mover,at,.1f,snap||mover.From==Vector3.Zero);
+            if(v.FacingX!=0||v.FacingZ!=0)mover.Node.Rotation=new(0,Mathf.Atan2(-v.FacingX,-v.FacingZ),0);
+        }
+        foreach(long id in _fleet.Keys.Where(id=>!frame.Vehicles.Any(v=>v.Id==id)).ToArray()){_fleet[id].Node.QueueFree();_fleet.Remove(id);}
+    }
+}

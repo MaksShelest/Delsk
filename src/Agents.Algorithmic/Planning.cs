@@ -12,6 +12,7 @@ public sealed partial class AlgorithmicController
         Cell location = group.Role switch
         {
             EmploymentRole.Production => Inventory(o,o.Enterprises.Single(e=>e.Id.Value==group.Id.Value||!e.Workshops.IsDefault&&e.Workshops.Any(w=>w.GroupId==group.Id)).InputId).Position,
+            EmploymentRole.Handling => o.Buildings.Single(b=>b.Id.Value==o.Fleet!.Platforms.Single(p=>p.Group.Id==group.Id).Building).Position,
             EmploymentRole.Extraction => o.Equipment.Single(e=>e.GroupId==group.Id).Position,
             _ => Inventory(o,o.Enterprises.Single(e=>e.Id==o.OwnLogistics.Single(l=>l.GroupId==group.Id).EnterpriseId).InputId).Position
         };

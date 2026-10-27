@@ -74,7 +74,7 @@ public static class PlayerDesk
             seen.CapitalOffers, seen.Account.AvailableMinor, engine.HarvestOf(actor), engine.EconomyRules,
             new(seen.MarketOffers, seen.OwnMarketBids, seen.OwnMarketAllocations, seen.MarketRules, engine.PublicShops()),
             seen.OwnEquipment, seen.OwnDeliveryContracts, seen.BuyOffers, seen.OwnSupplyRequests, seen.City)
-            { ProductionContent=engine.ProductionContentOf(actor),Development=engine.DevelopmentOf(actor),Demolition=engine.DemolitionOf(actor),Storage=engine.HasGroundStorage?engine.StorageOf(actor):null,Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))] };
+            { Fleet=engine.FleetOf(actor),ProductionContent=engine.ProductionContentOf(actor),Development=engine.DevelopmentOf(actor),Demolition=engine.DemolitionOf(actor),Storage=engine.HasGroundStorage?engine.StorageOf(actor):null,Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))] };
     }
 }
 
@@ -85,6 +85,7 @@ public record PlayerView(long Tick, ParticipantView Participant, long CashMinor,
     BuyOfferView[]? BuyOffers = null, SupplyRequest[]? SupplyRequests = null, CityEconomy? City = null)
 {
     public DevelopmentObservation? Development {get;init;}
+    public FleetObservation? Fleet {get;init;}
     public ProductionContentObservation? ProductionContent {get;init;}
     public DemolitionState? Demolition {get;init;}
     public StorageState? Storage {get;init;}
@@ -237,6 +238,16 @@ public static class PlayerText
         ["reason.NoResourceNode"] = "Подойдите к точке ресурса.",
         ["reason.NotAtLocation"] = "Подойдите к нужному месту.",
         ["reason.NoPath"] = "Сюда пройти нельзя.",
+        ["reason.VehicleBusy"] = "Машина занята: завершите передачу, рейс или монтаж и остановите новые отправки.",
+        ["reason.VehicleRequired"] = "Купите машину в автосалоне и назначьте её предприятию.",
+        ["reason.VehicleLoaded"] = "В кузове есть груз. Разгрузите его перед автоматическим рейсом.",
+        ["reason.VehiclePurchasePending"] = "Ваша заявка на покупку уже ожидает распределения.",
+        ["reason.RoadVehicleOnly"] = "Тракт-Д1 перевозит дорожные материалы; обычные грузовые рейсы недоступны.",
+        ["reason.LeaveVehicleFirst"] = "Сначала выйдите из машины.",
+        ["reason.PlatformBusy"] = "Площадка занята передачей, рейсом или монтажом.",
+        ["reason.PlatformRequired"] = "Сначала откройте ручную площадку I.",
+        ["reason.UseVehicleKit"] = "Для этой машины установите погрузочный комплект в разделе «Автопарк».",
+        ["reason.IncompatibleEquipment"] = "Этот комплект не подходит выбранной машине или уже установлен.",
         ["reason.NotAvailable"] = "Сейчас это действие недоступно.",
         ["reason.PlotOwned"] = "Участок уже куплен.",
         ["reason.PlotReserved"] = "Участок забронирован другим участником.",
@@ -419,6 +430,16 @@ public static class PlayerText
         ["reason.NoResourceNode"] = "Move to the resource.",
         ["reason.NotAtLocation"] = "Move to the right place.",
         ["reason.NoPath"] = "That cell cannot be reached.",
+        ["reason.VehicleBusy"] = "Vehicle busy: finish the transfer, trip or installation and stop new dispatches.",
+        ["reason.VehicleRequired"] = "Buy a vehicle at the dealer and assign it to the enterprise.",
+        ["reason.VehicleLoaded"] = "Unload the cargo before starting an automatic trip.",
+        ["reason.VehiclePurchasePending"] = "Your purchase request is already awaiting allocation.",
+        ["reason.RoadVehicleOnly"] = "Trakt-D1 carries road materials; ordinary freight trips are unavailable.",
+        ["reason.LeaveVehicleFirst"] = "Leave the vehicle first.",
+        ["reason.PlatformBusy"] = "The platform has an active transfer, trip or installation.",
+        ["reason.PlatformRequired"] = "Open a manual level I platform first.",
+        ["reason.UseVehicleKit"] = "Install a handling kit for this vehicle in Fleet.",
+        ["reason.IncompatibleEquipment"] = "This kit is incompatible or already installed.",
         ["reason.NotAvailable"] = "That action is not available now.",
         ["reason.PlotOwned"] = "The plot is already owned.",
         ["reason.PlotReserved"] = "Another participant has reserved the plot.",

@@ -46,7 +46,7 @@ public partial class PresentationStage : Node3D
     public override void _Process(double delta)
     {
         if (_frozen) return;
-        foreach (var mover in _actors.Values.Concat(_trips.Values))
+        foreach (var mover in _actors.Values.Concat(_trips.Values).Concat(_fleet.Values))
         {
             mover.Elapsed = Mathf.Min(mover.Duration, mover.Elapsed + (float)delta);
             mover.Node.Position = mover.From.Lerp(mover.To, Mathf.Clamp(mover.Elapsed / mover.Duration, 0, 1));
@@ -68,7 +68,7 @@ public partial class PresentationStage : Node3D
             _staticKey = staticKey;
             RebuildStatic(frame);
         }
-        ShowWarehouseStock(frame);
+        ShowWarehouseStock(frame);ShowFleet(frame,snap);
         var liveActors = new System.Collections.Generic.HashSet<long>();
         foreach (var actor in frame.Actors)
         {
@@ -89,6 +89,7 @@ public partial class PresentationStage : Node3D
                 if(prior is not null){mover.Node.RemoveChild(prior);prior.QueueFree();}
                 mover.Node.AddChild(WorldSkins.Person(actor.Id,actor.Human,you,language));
             }
+            mover.Node.Visible=actor.VehicleId==0;
             Target(mover, at, actor.Human ? 0.1f : 1, snap, !actor.Human);
             int labelRow = frame.Actors.Count(other => other.X == actor.X && other.Z == actor.Z && other.Id < actor.Id);
             var caption=mover.Node.GetNodeOrNull<Label3D>("Appearance/Caption");
@@ -192,7 +193,7 @@ public partial class PresentationStage : Node3D
 
     public void ResetMotion()
     {
-        foreach (var mover in _actors.Values.Concat(_trips.Values))
+        foreach (var mover in _actors.Values.Concat(_trips.Values).Concat(_fleet.Values))
         { mover.From = mover.To = mover.Node.Position; mover.Elapsed = mover.Duration; }
         _frozen = true;
     }

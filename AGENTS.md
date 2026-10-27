@@ -1,3 +1,28 @@
+## E1,27.10.2026 — текущая разрешённая итерация
+
+- Пользователь явно разрешил E1 поверх финального PR65/ce8f0e3. Историческое
+  «пакет E не начинать» ниже не блокирует это задание. E2/дороги/новый помощник,
+  счета и сторонние услуги не начинать автоматически.
+- Ветка feat/vnext-e1-fleet. Восстановление и реальные промежуточные статусы:
+  docs/WORKLOG_PACKAGE_E1.md. До итогового отчёта не считать текущий snapshot
+  принятым только по наличию реализации или одному green тесту.
+- E1 отдельным vnext-e1-fleet-1 только для новых двух designed maps/lab presets;
+  D3 и прежние профили/сохранённый resolved config не подменять. World24,
+  limited23–18 только без E1 fields. Rules/Session/Envelope прежние.
+- Один Vehicle cargo inventory. Actor/Logistics.Trip используют ту же позицию
+  и груз; BuyLogistics на E1 требует купленную машину. Freight/queue/holds/crew
+  переиспользуются, free large-body handling запрещён. Staff числовой.
+- Конечные6, поставка500, непроданный минимум2500, purchased не заменять;
+  покупка через общий inclusive5tick window с реальным money hold/seeded tie.
+  Будущие модели/PRNG доступны только исследователю, own DTO immutable.
+- Дорога определяется InitialCityDirtCells, коридор ещё не покрытие. Без топлива.
+  Площадки/комплекты оплачиваются материалами/деньгами, монтаж сохраняется;
+  мощность независимых людей складывается без двойного счёта водителя.
+- Independent scripts/fleet_audit.py и fleet.json обязательны вместе с прежними
+  балансами/капиталом; native FleetProbe только isolated stage, ordinary audit
+  запрещает его. Не ослаблять deadlines или вычёркивать тесты; partitions
+  исчерпывающие, проверяют skips/overlap по TRX. Heavy gates последовательно.
+
 ## D3 и восстановление,26.10.2026
 
 - Основа28a41a7/PR64. Ветка feat/vnext-package-d3, recovery ac9e706 сохранён

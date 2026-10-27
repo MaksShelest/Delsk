@@ -16,7 +16,7 @@ public readonly record struct Cell(int X, int Z);
 
 public enum ActionKind { MoveTo, Harvest, Transfer, SetProductionEnabled, SellAvailableToCapital, CancelCapitalSale, SetTravelHeading,
     ReservePlot, BuyPlot, CancelPlotReservation, Build, UpgradeBuilding, SetRecipe, SetWage, BuyEquipment, UpgradeEquipment, SetEquipmentMode, CreateSellOffer, SubmitBuyRequest, RaiseBid, WithdrawBid, CollectPurchase, CreateBuyOffer, AcceptDeliveryQuantity, WithdrawSupplyRequest, CancelBuyOffer, DeliverContract, BuyLogistics, SetLogisticsContract, UpgradeLogistics, SetLogisticsStorage, SetLogisticsInbound, SetLogisticsProduction, QueueLogisticsJob, SetLogisticsEnabled, SetVoteChoice, ContinueAfterVictory, ProposeSupport, AcceptSupport, RejectSupport, SignSupport, StartHarvesting, StopHarvest,
-    BuyResource, LeaseResource, StopTransfer, MoveEquipment, SetExtractionRoute, SetTransportRoute,ProposeTrade,CounterTrade,AcceptTrade,RejectTrade,TakeOverflow,PrepareDemolition,CancelDemolitionPreparation,DemolishBuilding,CancelConstruction,OutfitWorkshop,AssignWorkshopWorkers,AcceptIndustryQuest,AbandonIndustryQuest,BuyExpansionLand,PrepareEnterpriseExpansion,CancelExpansionPreparation,BuyImport,ModernizeWorkshop }
+    BuyResource, LeaseResource, StopTransfer, MoveEquipment, SetExtractionRoute, SetTransportRoute,ProposeTrade,CounterTrade,AcceptTrade,RejectTrade,TakeOverflow,PrepareDemolition,CancelDemolitionPreparation,DemolishBuilding,CancelConstruction,OutfitWorkshop,AssignWorkshopWorkers,AcceptIndustryQuest,AbandonIndustryQuest,BuyExpansionLand,PrepareEnterpriseExpansion,CancelExpansionPreparation,BuyImport,ModernizeWorkshop, BuyVehicle, BoardVehicle, LeaveVehicle, AssignVehicle, InstallVehicleKit, BuildLoadingPlatform }
 public enum ResultStatus { Accepted, Rejected }
 public record GameAction(ActionKind Kind, Cell Target = default, string ItemId = "", long Quantity = 0,
     InventoryId Source = default, InventoryId Destination = default, EnterpriseId Enterprise = default,
@@ -24,7 +24,8 @@ public record GameAction(ActionKind Kind, Cell Target = default, string ItemId =
     string BuildingTypeId = "", string RecipeId = "", EmploymentGroupId Group = default, long WageMinor = 0, EquipmentId Equipment = default,
     string EquipmentTypeId = "", int EquipmentLevel = 1, EquipmentMode Mode = EquipmentMode.Personal, long MarketOfferId = 0, long UnitPriceMinor = 0, long MaximumPriceMinor = 0, int MarketRound = 0, long PurchaseId = 0, long BuyOfferId = 0, int OfferWindow = 1, long ContractId = 0, LogisticsId Logistics = default, LogisticsDirection Direction = LogisticsDirection.Output, ElectionId Election = default, ParticipantId Candidate = default, ParticipantId SupportSeller = default, long SupportProposalId = 0, System.Collections.Immutable.ImmutableArray<MaterialCost>? Compensation = null, System.Collections.Immutable.ImmutableArray<Cell>? Stops = null, bool Repeat = false,long NegotiationId=0,int NegotiationVersion=0,TradeTerms? Terms=null,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? DemolitionQuote=null,
-    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] long WorkshopId=0);
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] long WorkshopId=0,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] long VehicleId=0);
 public record CommandEnvelope(string CommandId, ParticipantId ActorId, long LocalSequence,
     long IssuedAtTick, long NotBeforeTick, long ExpiresAtTick, GameAction Action)
 {
@@ -87,7 +88,7 @@ public record LaborSettings(int StepTicks = 10, int SalaryChangeDelayTicks = 20,
     int MobilityNumerator = 1, int MobilityDenominator = 10,
     int GrowthPeriodTicks = 120, long GrowthPerPeriod = 1,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] long? MaximumPopulation = null);
-public enum EmploymentRole { Production, Logistics, Extraction }
+public enum EmploymentRole { Production, Logistics, Extraction, Handling }
 public record ScenarioDefinition(string Id, ulong Seed, int MapWidth, int MapHeight, Cell[] BlockedCells,
     ItemDefinition[] Items, RecipeDefinition[] Recipes, ParticipantDefinition[] Participants,
     EnterpriseDefinition[] Enterprises, CapitalOfferDefinition[] CapitalOffers, ResourceNodeDefinition[] ResourceNodes,

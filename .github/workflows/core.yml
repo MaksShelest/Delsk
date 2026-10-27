@@ -58,6 +58,43 @@ jobs:
             artifacts/headless/d3-fixtures/*.jsonl
             artifacts/headless/d3-fixtures/*.tick
             !artifacts/headless/d3-fixtures/*.save.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fleet-command-fixtures
+          path: |
+            artifacts/headless/e1-fixtures/*.json
+            artifacts/headless/e1-fixtures/*.jsonl
+            artifacts/headless/e1-fixtures/*.tick
+            !artifacts/headless/e1-fixtures/*.save.json
+  fleet:
+    needs: [core]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: fleet-command-fixtures
+          path: artifacts/fleet-fixtures
+      - name: Bounded runner restore and build
+        run: |
+          python scripts/run_check.py --name fleet-restore --timeout 180 -- dotnet restore src/Research.Runner/Research.Runner.csproj --locked-mode --disable-parallel -m:1
+          python scripts/run_check.py --name fleet-build --timeout 180 -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
+      - name: E1 purchases, physical fleet, handling and independent audits
+        run: python scripts/run_check.py --name fleet-e1 --timeout 600 -- python scripts/check_fleet_e1.py --fixtures artifacts/fleet-fixtures --output artifacts/fleet-e1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fleet-checks-and-runs
+          path: artifacts/
   production:
     needs: [core]
     runs-on: ubuntu-24.04
@@ -110,7 +147,7 @@ jobs:
   # Preserve the required check and require every suite, including D3's independent audit.
   verify:
     if: ${{ always() }}
-    needs: [core, developer, production]
+    needs: [core, developer, production, fleet]
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
@@ -119,4 +156,5 @@ jobs:
           CORE_RESULT: ${{ needs.core.result }}
           DEVELOPER_RESULT: ${{ needs.developer.result }}
           PRODUCTION_RESULT: ${{ needs.production.result }}
-        run: test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success
+          FLEET_RESULT: ${{ needs.fleet.result }}
+        run: test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success

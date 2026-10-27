@@ -25,28 +25,31 @@ public record LogisticsView(LogisticsId Id, ParticipantId OwnerId, EnterpriseId 
     InventoryId SourceInventory, InventoryId CargoInventory, EmploymentGroupId GroupId,
     bool Enabled, long ContractId, string ReasonCode, long CompletedTrips, LogisticsTripView? Trip, int Level,
     InventoryId OwnDestination, InventoryId InboundSource, bool InboundEnabled,
-    ImmutableArray<LogisticsJobView> Queue, long DispatchCount);
+    ImmutableArray<LogisticsJobView> Queue, long DispatchCount,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long VehicleId=0);
 internal record SavedLogistics(LogisticsView View, EmploymentView Group);
 internal sealed class LogisticsState(long id, long owner, long enterprise, long source, long cargo,
-    LogisticsSettings settings, int level = 1)
+    LogisticsSettings settings, int level = 1, VehicleModel? vehicle=null, long vehicleId=0)
 {
     public long Id { get; } = id;
     public long Owner { get; } = owner;
     public long Enterprise { get; } = enterprise;
     public long Source { get; } = source;
-    public long Cargo { get; } = cargo;
+    public long Cargo { get; set; } = cargo;
+    public VehicleModel? Vehicle { get; set; } = vehicle;
+    public long VehicleId { get; set; } = vehicleId;
     public int Level { get; set; } = level;
-    public long CargoCapacity => Level switch { 1 => settings.CargoCapacity,
+    public long CargoCapacity => Vehicle?.CapacityVolume ?? (Level switch { 1 => settings.CargoCapacity,
         2 when settings.Upgrade is { } upgrade => upgrade.CargoCapacity,
-        _ => throw new InvalidOperationException("Invalid logistics level") };
-    public int MinimumCrew => Level switch { 1 => settings.MinimumCrew,
+        _ => throw new InvalidOperationException("Invalid logistics level") });
+    public int MinimumCrew => Vehicle is not null ? 1 : (Level switch { 1 => settings.MinimumCrew,
         2 when settings.Upgrade is { } upgrade => upgrade.MinimumCrew,
-        _ => throw new InvalidOperationException("Invalid logistics level") };
-    public int CrewCapacity => Level switch { 1 => settings.CrewCapacity,
+        _ => throw new InvalidOperationException("Invalid logistics level") });
+    public int CrewCapacity => Vehicle is not null ? 1 : (Level switch { 1 => settings.CrewCapacity,
         2 when settings.Upgrade is { } upgrade => upgrade.CrewCapacity,
-        _ => throw new InvalidOperationException("Invalid logistics level") };
+        _ => throw new InvalidOperationException("Invalid logistics level") });
     public EmploymentGroup Group { get; } = new(id, owner, 0,
-        level == 2 && settings.Upgrade is { } upgrade ? upgrade.CrewCapacity : settings.CrewCapacity,
+        vehicle is not null ? 1 : level == 2 && settings.Upgrade is { } upgrade ? upgrade.CrewCapacity : settings.CrewCapacity,
         settings.WageMinor, EmploymentRole.Logistics);
     public bool Enabled { get; set; }
     public long Contract { get; set; }
@@ -60,5 +63,5 @@ internal sealed class LogisticsState(long id, long owner, long enterprise, long 
     public LogisticsTripView? Trip { get; set; }
     public LogisticsView View() => new(new(Id), new(Owner), new(Enterprise), new(Source), new(Cargo), new(Id),
         Enabled, Contract, Reason, Completed, Trip, Level, new(Destination), new(InboundSource), InboundEnabled,
-        [.. Queue.OrderBy(j => j.Key, StringComparer.Ordinal)], DispatchCount);
+        [.. Queue.OrderBy(j => j.Key, StringComparer.Ordinal)], DispatchCount, VehicleId);
 }

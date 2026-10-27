@@ -20,9 +20,22 @@ class Partition:
     def filters(self):
         return [v for flag, names in (('-class', self.include), ('-class-', self.exclude)) for name in names for v in (flag, name)]
 
+# Separate existing long-running physical and model scenarios without changing any test or deadline.
+PHYSICAL = tuple('Simulation.Tests.'+name for name in (
+    'EconomicCycleTests','CommandsAndEconomyTests','TimingAndMarketTests','LandAndContentTests','LaborTests',
+    'EquipmentTests','CheckpointTests','MarketTests','PickupTests','DeliveryTests','CapitalDemandTests',
+    'ElectionTests','StoppedElectionTests','SupportTests','LogisticsTests','LogisticsUpgradeTests',
+    'LogisticsQueueTests','LogisticsReturnTests','OwnStorageTests','OwnProductionTests','InboundTests',
+    'PhysicalResourcesTests','PhysicalMapTests','PhysicalAutomationTests','VolumeContractTests',
+    'TravelTests','ManualHarvestTests','DemolitionC2Tests','WorkshopD1Tests'))
+MODELS = tuple('Simulation.Tests.'+name for name in (
+    'HybridControllerTests','ModelRuntimeTests','ModelIntentTests','OllamaAdapterTests','OrdinaryModelTests',
+    'BallotModelTests','StrategicPlanningTests','DifficultyTests','HiringEconomicsTests','NegotiationPolicyTests','BaselineTests'))
 PRODUCTION = ('Simulation.Tests.ProductionD3Tests',)
 START = ('Simulation.Tests.ProductionD3StartTests',)
-PARTITIONS = (Partition('', exclude=INTEGRATION + DEVELOPMENT + PRODUCTION + START), Partition('-integration', include=INTEGRATION), Partition('-d2', include=DEVELOPMENT), Partition('-d3', include=PRODUCTION), Partition('-d3-start', include=START))
+FLEET = ('Simulation.Tests.FleetE1Tests',)
+FLEET_STOCK = ('Simulation.Tests.FleetE1StockTests',)
+PARTITIONS = (Partition('', exclude=INTEGRATION + DEVELOPMENT + PRODUCTION + START + FLEET + FLEET_STOCK + PHYSICAL + MODELS), Partition('-integration', include=INTEGRATION), Partition('-d2', include=DEVELOPMENT), Partition('-d3', include=PRODUCTION), Partition('-d3-start', include=START), Partition('-e1', include=FLEET), Partition('-e1-stock', include=FLEET_STOCK), Partition('-physical', include=PHYSICAL), Partition('-models', include=MODELS))
 
 def run_suite(check, dotnet, assembly, output, prefix='tests', timeout=120):
     """All future classes enter the base partition. Reject skips, failures and overlaps in actual TRX."""

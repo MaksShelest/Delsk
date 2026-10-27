@@ -86,9 +86,11 @@ public sealed partial class SimulationEngine
         buildings=checked(buildings+_additionalWorkshops.Values.Where(e=>e.Definition.OwnerId==actor.Value&&!Demolished(ProductionParent(e.Definition.Id))).Sum(e=>{var o=_buildings[ProductionParent(e.Definition.Id)].Type.WorkshopOutfit!;return checked(o.PriceMinor+o.Materials.Sum(m=>checked(m.Quantity*_items[m.ItemId].BasePriceMinor)));}));
         long equipment = _equipment.Values.Where(e => e.Owner == actor.Value)
             .Sum(e => e.Type.Levels.Where(l => l.Level <= e.Level).Sum(l => l.PriceMinor));
-        foreach (var logistics in _logistics.Values.Where(l => l.Owner == actor.Value))
+        foreach (var logistics in _logistics.Values.Where(l => l.Owner == actor.Value && l.VehicleId==0))
             equipment = checked(equipment + Logistics.PurchasePriceMinor + (logistics.Level > 1 && Logistics.Upgrade is { } upgrade
                 ? checked(upgrade.PriceMinor + upgrade.Materials.Sum(m => checked(m.Quantity * _items[m.ItemId].BasePriceMinor))) : 0));
+        equipment=checked(equipment+_vehicles.Values.Where(v=>v.Owner==actor).Sum(v=>Model(v.ModelId).PriceMinor+VehicleKitInvestment(v.Id)));
+        buildings=checked(buildings+_platforms.Values.Where(p=>p.Group.Owner==actor.Value&&!Demolished(p.Building)).Sum(p=>Fleet!.Platforms.Where(u=>u.Level<=p.Level||p.Installation?.Level==u.Level).Sum(u=>checked(u.PriceMinor+u.Materials.Sum(m=>m.Quantity*_items[m.ItemId].BasePriceMinor)))));
         // Current contracts are fully funded. Unrecognised promises and contingent fines are not debt/assets.
         return new(money, stock, wip, land, buildings, equipment, 0);
     }

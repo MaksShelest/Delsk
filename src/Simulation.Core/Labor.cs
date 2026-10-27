@@ -79,13 +79,14 @@ public sealed partial class SimulationEngine
     private LaborSettings Labor => _config.Labor ?? new();
 
     private IEnumerable<EmploymentGroup> EmploymentGroups() => ProductionUnits().Select(e => e.Group)
-        .Concat(_equipment.Values.Select(e => e.Group)).Concat(_logistics.Values.Select(e => e.Group));
+        .Concat(_equipment.Values.Select(e => e.Group)).Concat(_logistics.Values.Select(e => e.Group)).Concat(_platforms.Values.Select(p=>p.Group));
     private LaborWorkplace[] LaborWorkplaces() => ProductionUnits()
         .Select(e => new LaborWorkplace(e.Group, ParallelWorkshops ? 1 : e.Recipe.MinimumStaff, VacancyReason(e), n => NextWorkCost(e, n)))
         .Concat(_equipment.Values.Select(e => new LaborWorkplace(e.Group, e.Characteristics.MinimumCrew,
             EquipmentVacancyReason(e), n => NextEquipmentCost(e, n))))
         .Concat(_logistics.Values.Select(e => new LaborWorkplace(e.Group, e.MinimumCrew,
             LogisticsVacancyReason(e), n => NextLogisticsCost(e))))
+        .Concat(_platforms.Values.Select(p=>new LaborWorkplace(p.Group,1, !Demolished(p.Building) && p.Installation is null && p.Level<3 && p.Group.Wage>0 ? "Ready":"UserPaused", n=>checked(n*p.Group.Wage))))
         .OrderBy(e => e.Group.Id).ToArray();
 
     private void SetWage(ActorState actor, CommandEnvelope c)

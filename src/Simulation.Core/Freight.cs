@@ -20,16 +20,17 @@ public sealed partial class SimulationEngine
         long handling=checked((capacity-1)/rate+1);
         return checked(4L*(scenario.MapWidth*scenario.MapHeight-1L)*(scenario.Logistics??new()).MoveTicksPerCell+3*handling);
     }
+    private long MinimumFreightHandling(LogisticsState l) => l.VehicleId==0 ? checked(Handling.WorkerVolumePerTick*l.Level) : VehicleHandlingPower(_vehicles[l.VehicleId]);
     private long FreightRemainingSource(LogisticsTripView t) => checked(t.Quantity-t.Freight!.Loaded-t.Freight.Cancelled);
     private long FreightCost(LogisticsState l,LogisticsPlanData p,bool committed=false)
     {
         var source=_economy.Inventories[p.GoodsSource];var home=_economy.Inventories[l.Source].Position;
         var destination=p.Index>=0?_deliveryContracts[p.Index].Position:_economy.Inventories[p.OwnDestination].Position;
-        long approach=_map.FindPath(home,source.Position).LongLength-1,delivery=_map.FindPath(source.Position,destination).LongLength-1;
-        long returning=_map.FindPath(destination,home).LongLength-1;
-        long travel=checked((approach+delivery+(p.Index>=0?Math.Max(returning,delivery+approach):returning))*Logistics.MoveTicksPerCell);
+        long approach=FreightTravelTicks(l,_map.FindPath(l.VehicleId==0?home:_economy.Inventories[l.Cargo].Position,source.Position)),delivery=FreightTravelTicks(l,_map.FindPath(source.Position,destination));
+        long returning=FreightTravelTicks(l,_map.FindPath(destination,home));
+        long travel=checked(approach+delivery+(p.Index>=0?Math.Max(returning,delivery+FreightTravelTicks(l,_map.FindPath(source.Position,home))):returning));
         long volume=checked(p.Quantity*_items[p.ItemId].UnitVolume);
-        long handling=checked((volume-1)/checked(Handling.WorkerVolumePerTick*l.Level)+1);
+        long handling=checked((volume-1)/checked(MinimumFreightHandling(l))+1);
         return checked(l.CrewCapacity*(committed?l.Group.Wage:l.Group.PendingWage??l.Group.Wage)*checked(travel+(p.Index>=0?3:2)*handling));
     }
     private void PrepareFreight(LogisticsState l)
@@ -41,16 +42,15 @@ public sealed partial class SimulationEngine
             var p=LogisticsPlan(l);if(Storage is not null&&p.OwnDestination!=0&&HasOverflow(p.OwnDestination))throw new RuleViolation("DestinationOverflow");var source=_economy.Inventories[p.GoodsSource];var home=_economy.Inventories[l.Source].Position;
             var destination=p.Index>=0?_deliveryContracts[p.Index].Position:_economy.Inventories[p.OwnDestination].Position;
             long id=_nextId,next=checked(id+1),budget=FreightCost(l,p,true);
-            var f=new FreightState(new(p.GoodsSource),new(p.OwnDestination),[.._map.FindPath(home,source.Position)],
+            var f=new FreightState(new(p.GoodsSource),new(p.OwnDestination),[.._map.FindPath(l.VehicleId==0?home:_economy.Inventories[l.Cargo].Position,source.Position)],
                 [.._map.FindPath(source.Position,destination)],[.._map.FindPath(destination,home)],
                 [.._map.FindPath(destination,source.Position)],[.._map.FindPath(source.Position,home)],StageStartedTick:Tick);
-            long handling=checked((p.Quantity*_items[p.ItemId].UnitVolume-1)/checked(Handling.WorkerVolumePerTick*l.Level*l.MinimumCrew)+1);
-            long estimatedReceipt=checked(Tick+Math.Max(0,f.ToSource.Length-1L)*Logistics.MoveTicksPerCell+
-                handling+(f.ToDestination.Length-1L)*Logistics.MoveTicksPerCell+handling);
+            long handling=checked((p.Quantity*_items[p.ItemId].UnitVolume-1)/checked(MinimumFreightHandling(l)*l.MinimumCrew)+1);
+            long estimatedReceipt=checked(Tick+FreightTravelTicks(l,f.ToSource)+handling+FreightTravelTicks(l,f.ToDestination)+handling);
             if(p.Index>=0 && estimatedReceipt>_deliveryContracts[p.Index].DeadlineTick)throw new RuleViolation("ArrivalAfterDeadline");
             var t=new LogisticsTripView(id,p.Index>=0?_deliveryContracts[p.Index].Id:0,p.ItemId,p.Quantity,
-                f.ToSource.Length==1?"Loading":"FetchingEmpty",Tick,checked(Tick+(f.ToSource.Length-1L)*Logistics.MoveTicksPerCell+handling),estimatedReceipt,
-                checked(estimatedReceipt+(f.ToHome.Length-1L)*Logistics.MoveTicksPerCell),home,f.ToSource,0,0,l.Group.Wage,budget,0,
+                f.ToSource.Length==1?"Loading":"FetchingEmpty",Tick,checked(Tick+FreightTravelTicks(l,f.ToSource)+handling),estimatedReceipt,
+                checked(estimatedReceipt+FreightTravelTicks(l,f.ToHome)),f.ToSource[0],f.ToSource,0,0,l.Group.Wage,budget,0,
                 $"logistics-stock:{id}",$"logistics-return:{id}",$"logistics-wage:{id}",new(p.OwnDestination),new(p.InboundSource),p.JobKey) {Freight=f};
             var tx=_economy.Begin(Tick);tx.ReserveStock(p.GoodsSource,t.StockHold,p.ItemId,p.Quantity);
             if(p.OwnDestination!=0)tx.ReserveCapacity(p.OwnDestination,t.DestinationHold,p.ItemId,p.Quantity);
@@ -73,8 +73,9 @@ public sealed partial class SimulationEngine
     {
         if(l.Trip is not {Freight:{} f} t || t.State is not ("FetchingEmpty" or "Outbound" or "ReturningInput" or "ReturningEmpty" or "ReturningCargo"))return;
         if(Tick<=f.StageStartedTick)return;
+        if(l.VehicleId!=0 && l.Group.Headcount==0){l.Reason="NoStaff";return;}
         int index=t.PathIndex,segment=t.SegmentTicks;
-        if(t.Path.Length>1){if(++segment==Logistics.MoveTicksPerCell){segment=0;++index;}}
+        if(t.Path.Length>1){if(++segment==FreightMoveTicks(l,t.Path[index],t.Path[index+1])){segment=0;++index;}}
         string state=t.State;
         if(index==t.Path.Length-1)state=t.State switch {"FetchingEmpty"=>"Loading","Outbound" or "ReturningInput"=>"Unloading","ReturningCargo"=>"UnloadingReturn",_=>"Finishing"};
         l.Trip=t with {PathIndex=index,SegmentTicks=segment,Position=t.Path[index],State=state,
@@ -91,14 +92,14 @@ public sealed partial class SimulationEngine
         long remaining=loading?FreightRemainingSource(t):f.Cargo;
         if(!loading && t.ContractId!=0 && !returning && _deliveryContracts.Single(d=>d.Id==t.ContractId).ClosedTick is not null)
         {
-            long handling=checked((f.Cargo*_items[t.ItemId].UnitVolume-1)/(Handling.WorkerVolumePerTick*l.Level)+1);
-            long end=checked(Tick+(f.ToGoodsSource.Length+f.SourceToHome.Length-2L)*Logistics.MoveTicksPerCell+handling);
+            long handling=checked((f.Cargo*_items[t.ItemId].UnitVolume-1)/(MinimumFreightHandling(l))+1);
+            long end=checked(Tick+FreightTravelTicks(l,f.ToGoodsSource)+FreightTravelTicks(l,f.SourceToHome)+handling);
             l.Trip=t with {EndTick=end,ArrivalTick=Tick};FreightPath(l,f.ToGoodsSource,"ReturningCargo");
             if(l.Group.PendingWage is not null){l.Group.PayEffectiveTick=checked(end+1);l.Group.AttractionEffectiveTick=Math.Max(end+1,l.Group.AttractionEffectiveTick??0);}
             Emit("LogisticsDeliveryRejected",l.Owner,t.Id,t.ItemId,f.Cargo);return;
         }
         if(remaining<=0)throw new InvalidOperationException("Empty freight handling stage");
-        var work=VolumeWork.Advance(f.WorkRemainder,checked(Handling.WorkerVolumePerTick*l.Level*l.Group.Headcount),_items[t.ItemId].UnitVolume,remaining);
+        var work=VolumeWork.Advance(f.WorkRemainder,FreightHandlingPower(l,loading,returning,f),_items[t.ItemId].UnitVolume,remaining);
         if(work.Units>0)
         {
             var tx=_economy.Begin(Tick);

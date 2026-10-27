@@ -25,7 +25,9 @@ public sealed partial class SimulationEngine
         if (!_actors.TryGetValue(actor.Value, out var state)) throw new ArgumentException("Participant not available");
         state.HeadingX = x;
         state.HeadingZ = z;
+        if (DrivenVehicle(state.Id) is {} turning && (x!=0 || z!=0) && x==-turning.FacingX && z==-turning.FacingZ) { state.HeadingX=state.HeadingZ=0; SyncDrivenVehicle(state); return; }
         if (x != 0 || z != 0) { state.FacingX = x; state.FacingZ = z; }
+        SyncDrivenVehicle(state);
     }
 
     /// <summary>Один квант текущего тика. true означает, что бюджет тика исчерпан и пора вызвать Step.</summary>
@@ -64,11 +66,14 @@ public sealed partial class SimulationEngine
     private void TravelActor(ActorState actor, int distance)
     {
         if (actor.HeadingX == 0 && actor.HeadingZ == 0) return;
+        if (DrivenVehicle(actor.Id) is {} vehicle && (vehicle.Installation is not null || VehicleTransferring(vehicle.CargoInventory.Value))) return;
+        if (Fleet is not null) { var next = new Cell(actor.Position.X+actor.HeadingX,actor.Position.Z+actor.HeadingZ); int speed=FleetSpeed(actor.Position,next,DrivenVehicle(actor.Id) is {} v?Model(v.ModelId):null); distance=((_travelQuantum+1)*speed*TravelUnitsPerCell/(80*TravelQuantaPerTick))-(_travelQuantum*speed*TravelUnitsPerCell/(80*TravelQuantaPerTick)); }
         if ((actor.Job is not null && !IsHarvest(actor.Job)) || HasSale(actor.Id)) return;
         int step = actor.HeadingX != 0 && actor.HeadingZ != 0 ? checked(distance * 707 / 1000) : distance;
         var before = actor.Position;
         MoveAxis(actor, checked(actor.HeadingX * step), alongX: true);
         MoveAxis(actor, checked(actor.HeadingZ * step), alongX: false);
+        SyncDrivenVehicle(actor);
         if (actor.Position != before)
         {
             _economy.Inventories[actor.Inventory].Position = actor.Position;

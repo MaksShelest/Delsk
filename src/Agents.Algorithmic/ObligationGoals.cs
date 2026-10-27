@@ -19,10 +19,10 @@ public sealed partial class AlgorithmicController
         foreach(var c in o.OwnDeliveryContracts.Where(c=>c.Supplier==Actor && c.ClosedTick is null && c.UnprovidedQuantity>0).OrderBy(c=>c.DeadlineTick))
         {
             bool automatic=o.OwnLogistics.Any(l=>l.Enabled && l.Queue.Any(j=>j.Enabled && j.ContractId==c.Id) && l.ReasonCode!="NoMoney" &&
-                o.EmploymentGroups.Any(g=>g.Id==l.GroupId && g.Headcount>=(l.Level==2?o.LogisticsRules.Upgrade!.MinimumCrew:o.LogisticsRules.MinimumCrew)) &&
+                o.EmploymentGroups.Any(g=>g.Id==l.GroupId && g.Headcount>=FleetCrewMinimum(o,l)) &&
                 Free(Inventory(o,l.SourceInventory),c.ItemId)>0 &&
                 Distance(o.Map,Inventory(o,l.SourceInventory).Position,c.Position)>=0 &&
-                (long)Distance(o.Map,Inventory(o,l.SourceInventory).Position,c.Position)*o.LogisticsRules.MoveTicksPerCell+2<=c.DeadlineTick-o.Tick);
+                (long)Distance(o.Map,Inventory(o,l.SourceInventory).Position,c.Position)*FreightCellEstimate(o)+2<=c.DeadlineTick-o.Tick);
             if(automatic)continue;
             long carried=Free(carrier,c.ItemId);
             long stock=o.Inventories.Where(i=>i.Id!=carrier.Id).Select(i=>Free(i,c.ItemId)).DefaultIfEmpty(0).Max();
@@ -44,15 +44,15 @@ public sealed partial class AlgorithmicController
             {
                 var e=o.Enterprises.Single(e=>e.Id==system.EnterpriseId);var recipe=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);
                 var source=Inventory(o,system.SourceInventory);var crew=o.EmploymentGroups.Single(g=>g.Id==system.GroupId);
-                long cargo=(system.Level==2?o.LogisticsRules.Upgrade!.CargoCapacity:o.LogisticsRules.CargoCapacity)/Volume(o,recipe.OutputItem);
+                long cargo=FleetCargoCapacity(o,system)/Volume(o,recipe.OutputItem);
                 foreach(var offer in o.CapitalOffers.Where(a=>a.ItemId==recipe.OutputItem && a.RemainingQuantity>0))
                 {
                     long q=Math.Min(offer.RemainingQuantity,Math.Min(cargo,Free(source,offer.ItemId)));
                     if(q<Math.Min(_state.Settings.BatchQuantity,Math.Max(1,cargo/2)))continue;
                     int distance=Distance(o.Map,source.Position,offer.Position);if(distance<0)continue;
                     long waiting=Math.Max(0,(system.Trip?.EndTick??o.Tick)-o.Tick);
-                    if(waiting+o.Map.TradeWindowTicks+3+(long)distance*o.LogisticsRules.MoveTicksPerCell>o.DeliveryRules.ContractTtlTicks)continue;
-                    long payroll=checked(crew.Capacity*(crew.PendingWageMinor??crew.WageMinor)*Math.Max(2L,2L*distance*o.LogisticsRules.MoveTicksPerCell));
+                    if(waiting+o.Map.TradeWindowTicks+3+(long)distance*FreightCellEstimate(o)>o.DeliveryRules.ContractTtlTicks)continue;
+                    long payroll=checked(crew.Capacity*(crew.PendingWageMinor??crew.WageMinor)*Math.Max(2L,2L*distance*FreightCellEstimate(o)));
                     long bond=checked((long)((Int128)q*offer.UnitPriceMinor*o.DeliveryRules.FineBasisPoints/10000));
                     long unitCost=checked((RecipeInputValue(o,recipe)+recipe.EnergyPerBatchMinor+
                         recipe.RequiredStaff*_state.Settings.BaseWageMinor*recipe.FullStaffTicks)/recipe.OutputQuantity);

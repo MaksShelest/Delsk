@@ -13,6 +13,7 @@ public sealed partial class SimulationEngine
     {
         if (x is < -1 or > 1 || z is < -1 or > 1) throw new ArgumentOutOfRangeException(nameof(x));
         if (!_actors.TryGetValue(actor.Value, out var state)) throw new ArgumentException("Participant not available");
+        if (DrivenVehicle(state.Id) is {} v && (v.Installation is not null || VehicleTransferring(v.CargoInventory.Value))) return false;
         if ((state.Job is not null && !IsHarvest(state.Job)) || HasSale(state.Id)) return false;
         return CanAxis(x, state.OffsetX, new(state.Position.X + x, state.Position.Z)) ||
             CanAxis(z, state.OffsetZ, new(state.Position.X, state.Position.Z + z));

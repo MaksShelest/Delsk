@@ -209,6 +209,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         var system = view.Logistics.SingleOrDefault(l => l.EnterpriseId == enterprise.Id);
         if (system is null)
         {
+            if(view.Fleet is not null){_delivery.Text=L("Купите машину в автосалоне, привезите сюда и назначьте её в разделе «Автопарк» планшета игрока.","Buy a vehicle at the dealer, drive it here and assign it in the player tablet Fleet section.");return;}
             add("truck", L("Купить грузовик — ", "Buy truck — ") + PlayerText.Money((_scenario.Logistics ?? new()).PurchasePriceMinor), PlayerDesk.BuyLogistics(_id), true); return;
         }
         _delivery.Text = L("Доставка · уровень ", "Logistics · level ") + system.Level + L(" · вместимость ", " · capacity ") + view.Inventories.Single(i=>i.Id==system.CargoInventory).Capacity + "\n" + (system.Trip is { } trip
@@ -218,7 +219,7 @@ public partial class HouseholdObjectCard : VBoxContainer
             : TabletText.Reason(_language, system.ReasonCode)) + "\n" + string.Join("\n", system.Queue.Select(j => (j.Enabled ? "✓ " : "— ") + Route(view, j)));
         add("output", system.Enabled ? L("Остановить отправку", "Stop outbound") : L("Включить отправку", "Enable outbound"), PlayerDesk.Supplies(system.Id.Value, LogisticsDirection.Output, !system.Enabled), true);
         add("inbound", system.InboundEnabled ? L("Остановить подвоз", "Stop inbound") : L("Включить подвоз", "Enable inbound"), PlayerDesk.Supplies(system.Id.Value, LogisticsDirection.Inbound, !system.InboundEnabled), true);
-        if (system.Level == 1 && _scenario.Logistics?.Upgrade is { } upgrade)
+        if (system.VehicleId==0 && system.Level == 1 && _scenario.Logistics?.Upgrade is { } upgrade)
             add("truck-upgrade", L("Улучшить грузовик — ", "Upgrade truck — ") + PlayerText.Money(upgrade.PriceMinor), new(ActionKind.UpgradeLogistics, Logistics: system.Id), system.Trip is null && !system.Enabled && !system.InboundEnabled);
         foreach (var b in view.Buildings.Where(b => b.Id.Value != _id))
         {

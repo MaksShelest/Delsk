@@ -9,6 +9,7 @@ public sealed partial class SimulationEngine
     private void BuyLogistics(ActorState actor, CommandEnvelope c)
     {
         RequireIdle(actor);
+        if (Fleet is not null) throw new RuleViolation("VehicleRequired");
         if (!_enterprises.TryGetValue(c.Action.Enterprise.Value, out var enterprise) || enterprise.Definition.OwnerId != actor.Id)
             throw new RuleViolation("NotAvailable");
         RequireActionLocation(actor, c.Action);
@@ -41,6 +42,7 @@ public sealed partial class SimulationEngine
         var enterprise = _enterprises[l.Enterprise];
         RequireActionLocation(actor, c.Action);
         if (l.Enabled || l.InboundEnabled || l.Trip is not null) throw new RuleViolation("LogisticsNotSafe");
+        if (l.VehicleId != 0) throw new RuleViolation("UseVehicleKit");
         var upgrade = Logistics.Upgrade;
         if (l.Level != 1 || upgrade is null) throw new RuleViolation("MaxLogisticsLevel");
         long maximumTicks = MaximumFreightTicks(_config,upgrade.CargoCapacity,2);
@@ -127,6 +129,8 @@ public sealed partial class SimulationEngine
     }
     private string LogisticsVacancyReason(LogisticsState l)
     {
+        if (l.VehicleId != 0 && (_vehicles[l.VehicleId].Driver != 0 || _vehicles[l.VehicleId].Installation is not null || VehicleTransferring(l.Cargo))) return "VehicleBusy";
+        if (l.Trip is null && l.VehicleId!=0 && _economy.Inventories[l.Cargo].Stock.Count!=0) return "VehicleLoaded";
         if (l.Trip is not null) return "Ready"; // Payroll already funded, even when free cash is zero.
         if ((l.Group.PendingWage ?? l.Group.Wage) <= 0 || l.Group.AttractionWage <= 0) return "NoPaidOffer";
         try { LogisticsPlan(l); return "Ready"; } catch (RuleViolation ex) { return ex.ReasonCode; }
@@ -152,7 +156,7 @@ public sealed partial class SimulationEngine
         foreach (var s in saved)
         {
             var v = s.View; var l = new LogisticsState(v.Id.Value, v.OwnerId.Value, v.EnterpriseId.Value,
-                v.SourceInventory.Value, v.CargoInventory.Value, Logistics, v.Level)
+                v.SourceInventory.Value, v.CargoInventory.Value, Logistics, v.Level, v.VehicleId==0?null:Model(_vehicles[v.VehicleId].ModelId), v.VehicleId)
                 { Enabled = v.Enabled, Contract = v.ContractId, Destination = v.OwnDestination.Value,
                     InboundSource = v.InboundSource.Value, InboundEnabled = v.InboundEnabled,
                     Reason = v.ReasonCode, Completed = v.CompletedTrips, Trip = v.Trip, DispatchCount = v.DispatchCount };

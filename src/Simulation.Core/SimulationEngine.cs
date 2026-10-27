@@ -82,7 +82,7 @@ public sealed partial class SimulationEngine
         InitializeCapitalDemand();
         InitializeElections();
         InitializeSupport();
-        InitializeStorage();InitializeDevelopmentBuildings();InitializeProductionContent();
+        InitializeStorage();InitializeDevelopmentBuildings();InitializeProductionContent();InitializeFleet();
         Emit("WorldCreated");
         ValidateInvariants();
     }
@@ -141,7 +141,7 @@ public sealed partial class SimulationEngine
         _stepping = true;
         try
         {
-            ++Tick; _phase = 0; AdvanceStorageConstruction(); AdvanceWorkshopInstallations(); AdvanceProductionContent(); AdvanceOverflow(); AdvanceResourceIntervals(); ApplyWages();
+            ++Tick; _phase = 0; AdvanceFleet(); AdvanceStorageConstruction(); AdvanceWorkshopInstallations(); AdvanceProductionContent(); AdvanceOverflow(); AdvanceResourceIntervals(); ApplyWages();
             var due = _pending.Where(c => c.NotBeforeTick <= Tick).ToArray();
             foreach (var c in due) _pending.Remove(c);
             var actors = due.Select(c => c.ActorId.Value).Distinct().Order().ToArray();
@@ -162,7 +162,7 @@ public sealed partial class SimulationEngine
             AdvanceTransfers(); AdvanceOverflow(); ReserveSupportResources();
             _phase = 4; AdvanceHarvests(); AdvanceWork();
             _phase = 5; AdvanceLabor();
-            _phase = 6; CloseCapitalWindows(); AdvanceMarketWindows(); CloseBuyWindows(); AdvanceCapitalDemand();
+            _phase = 6; CloseVehiclePurchases(); CloseCapitalWindows(); AdvanceMarketWindows(); CloseBuyWindows(); AdvanceCapitalDemand();
             _phase = 7; AdvanceOverflow(true); ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders(); ExpireSupport(); ExpireNegotiations();AdvanceIndustryQuests();
             _phase = 8; AdvanceElections();
             _phase = 9; AdvanceCityStage(); ValidateInvariants(); Emit("TickCommitted");
@@ -187,6 +187,12 @@ public sealed partial class SimulationEngine
                 throw new RuleViolation(access.ReasonCode);
             switch (c.Action.Kind)
             {
+                case ActionKind.BuyVehicle: BuyVehicle(actor,c); break;
+                case ActionKind.BoardVehicle: BoardVehicle(actor,c); break;
+                case ActionKind.LeaveVehicle: LeaveVehicle(actor,c); break;
+                case ActionKind.AssignVehicle: BindVehicle(actor,c); break;
+                case ActionKind.InstallVehicleKit: InstallVehicleKit(actor,c); break;
+                case ActionKind.BuildLoadingPlatform: BuildLoadingPlatform(actor,c); break;
                 case ActionKind.SetTransportRoute: SetTransportRoute(actor,c); break;
                 case ActionKind.StopTransfer: StopTransfer(actor, c); break;
                 case ActionKind.MoveEquipment: MoveEquipment(actor, c); break;
@@ -268,18 +274,20 @@ public sealed partial class SimulationEngine
     {
         if (actor.Job is not null && !IsHarvest(actor.Job) || HasSale(actor.Id)) RequireIdle(actor);
         Cell[] path = _map.FindPath(actor.Position, c.Action.Target);
-        long arrival = checked(Tick + checked((long)(path.Length - 1) * _config.MoveTicksPerCell));
+        long arrival = checked(Tick + path.Zip(path.Skip(1)).Sum(p => (long)PersonalMoveTicks(actor,p.First,p.Second)));
         if (path.Length > 1) foreach (var t in _transfers.Values.Where(t=>t.Owner.Value==actor.Id).ToArray()) CancelTransfer(t,"MovementStarted");
         if (path.Length > 1 && IsHarvest(actor.Job)) CancelHarvest(actor, "MovementStarted");
         actor.HeadingX = 0; actor.HeadingZ = 0; actor.OffsetX = TravelCenter; actor.OffsetZ = TravelCenter;
-        if (path.Length == 1) return;
+        if (path.Length == 1) { SyncDrivenVehicle(actor); return; }
         actor.FacingX = Math.Sign(path[1].X - path[0].X); actor.FacingZ = Math.Sign(path[1].Z - path[0].Z);
         actor.Job = new(_nextId++, "Move", Tick, arrival, path, "", 0, "", c.CommandId);
+        SyncDrivenVehicle(actor);
         Emit("MovementStarted", actor.Id, actor.Job.Id, reason: arrival.ToString(System.Globalization.CultureInfo.InvariantCulture), command: c.CommandId);
     }
     private void StartHarvest(ActorState actor, CommandEnvelope c)
     {
         RequireIdle(actor);
+        if (DrivenVehicle(actor.Id) is not null) throw new RuleViolation("LeaveVehicleFirst");
         if (c.Action.Quantity <= 0) throw new RuleViolation("InvalidQuantity");
         if (c.Action.Equipment.Value != 0) { StartEquipmentHarvest(actor, c); return; }
         RequireActionLocation(actor, c.Action, "NoResourceNode");
@@ -299,11 +307,12 @@ public sealed partial class SimulationEngine
             !_economy.Inventories.TryGetValue(c.Action.Destination.Value, out var destination) ||
             source.Owner != actor.Id || destination.Owner != actor.Id)
             throw new RuleViolation("NotAvailable");
-        if (_logistics.Values.Any(l => l.Cargo == source.Id || l.Cargo == destination.Id))
+        if (_logistics.Values.Any(l => l.VehicleId == 0 && (l.Cargo == source.Id || l.Cargo == destination.Id)))
             throw new RuleViolation("ManagedCargo");
         RequireActionLocation(actor, c.Action);
-        if((IsGround(source.Id)||IsGround(destination.Id))&&source.Id!=actor.Inventory&&destination.Id!=actor.Inventory)throw new RuleViolation("GroundManualOnly");
+        if((IsGround(source.Id)||IsGround(destination.Id))&&!TransferCarrier(actor,source.Id)&&!TransferCarrier(actor,destination.Id))throw new RuleViolation("GroundManualOnly");
         if (_equipment.Values.Any(e => (e.Storage==source.Id || e.Storage==destination.Id) && e.Motion is not null)) throw new RuleViolation("EquipmentBusy");
+        if (!CanTransferVehicle(actor,source.Id,c.Action.ItemId) || !CanTransferVehicle(actor,destination.Id,c.Action.ItemId)) throw new RuleViolation("VehicleBusy");
         RequireProductionItem(destination.Id,c.Action.ItemId);
         BeginTransfer(actor,c,source.Id,destination.Id,c.Action.ItemId,c.Action.Quantity);
     }
@@ -323,10 +332,10 @@ public sealed partial class SimulationEngine
         {
             if (actor.Job is not { Kind: "Move" } job || job.StartTick >= Tick) continue;
             ++job.SegmentTicks;
-            if (job.SegmentTicks < _config.MoveTicksPerCell) continue;
+            if (job.SegmentTicks < PersonalMoveTicks(actor,job.Path[job.PathIndex],job.Path[job.PathIndex+1])) continue;
             job.SegmentTicks = 0; ++job.PathIndex; actor.Position = job.Path[job.PathIndex];
             actor.OffsetX = TravelCenter; actor.OffsetZ = TravelCenter;
-            _economy.Inventories[actor.Inventory].Position = actor.Position;
+            _economy.Inventories[actor.Inventory].Position = actor.Position; SyncDrivenVehicle(actor);
             if (Tick >= job.CompletionTick) CompleteMovement(actor.Id, job.Id);
         }
     }
@@ -335,7 +344,7 @@ public sealed partial class SimulationEngine
         if (!_actors.TryGetValue(actorId, out var actor) || actor.Job is not { Kind: "Move" } job ||
             job.Id != jobId || Tick < job.CompletionTick || !_completedPersonalJobs.Add(jobId)) return false;
         actor.Position = job.Path[^1]; actor.OffsetX = TravelCenter; actor.OffsetZ = TravelCenter;
-        _economy.Inventories[actor.Inventory].Position = actor.Position;
+        _economy.Inventories[actor.Inventory].Position = actor.Position; SyncDrivenVehicle(actor);
         actor.Job = null;
         Emit("MovementArrived", actor.Id, jobId, command: job.CommandId); return true;
     }
@@ -411,6 +420,7 @@ public sealed partial class SimulationEngine
         if(CaptureDemolition() is {} demolition)payload=new{Payload=payload,Demolition=demolition,RetiredBuildings=BuildingViews(true).Where(b=>Demolished(b.Id.Value)).ToArray(),RetiredEnterprises=_enterprises.Values.Where(e=>Demolished(e.Definition.Id)).OrderBy(e=>e.Definition.Id).Select(e=>new{e.Definition,e.Input,e.Output,Recipe=e.Recipe.Id,e.Enabled,e.Completed,e.EnergyPaid,Group=e.Group.View()}).ToArray()};
         if (CaptureWorkshops() is {} workshops) payload = new { Payload = payload, Workshops = workshops };
         if(InspectProductionContent() is {} content)payload=new{Payload=payload,ProductionContent=content};
+        if(InspectFleet() is {} fleet)payload=new{Payload=payload,Fleet=fleet};
         if(InspectDevelopment() is {} development)payload=new{Payload=payload,Development=development};
         var travel = TravelDeviation();
         return ScenarioValidation.Hash(travel is null ? payload : new { Payload = payload, Travel = travel });

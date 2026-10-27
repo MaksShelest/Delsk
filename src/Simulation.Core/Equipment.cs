@@ -169,7 +169,8 @@ public sealed partial class SimulationEngine
     {
         if (g.Role == EmploymentRole.Production) AdvanceProduction(ProductionUnit(g.Id));
         else if (g.Role == EmploymentRole.Extraction) AdvanceEquipment(_equipment[g.Id]);
-        else AdvanceLogisticsWork(_logistics[g.Id]);
+        else if (g.Role == EmploymentRole.Logistics) AdvanceLogisticsWork(_logistics[g.Id]);
+        // Handling groups contribute and get paid only inside a real transfer.
     }
     private long NextEquipmentCost(EquipmentState e, int staff) => checked(staff * (e.Group.PendingWage ?? e.Group.Wage));
     private string EquipmentVacancyReason(EquipmentState e)

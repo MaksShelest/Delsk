@@ -225,7 +225,7 @@ public static partial class ScenarioValidation
             foreach (var e in s.Enterprises) _ = checked(e.Capacity * e.WageMinor + recipes[e.RecipeId].EnergyPerBatchMinor);
         }
         catch (OverflowException ex) { throw new ArgumentException("Scenario arithmetic overflow", ex); }
-        ValidateMapLayout(s);ValidateWorkshopContent(s);ValidateDevelopmentContent(s);ValidateProductionContent(s);
+        ValidateMapLayout(s);ValidateFleetRules(s);ValidateWorkshopContent(s);ValidateDevelopmentContent(s);ValidateProductionContent(s);
     }
     internal static string Hash<T>(T value) => Convert.ToHexString(SHA256.HashData(
         JsonSerializer.SerializeToUtf8Bytes(value, SimulationJson.Options))).ToLowerInvariant();
