@@ -11,7 +11,7 @@ class RoadAuditTests(unittest.TestCase):
         point=lambda x,z:dict(x=x,z=z)
         a,b=point(0,0),point(1,0)
         contributions=[dict(level=1,builder=dict(value=0),tick=0,vehicleId=0)]
-        return {'scenario.json':dict(economy=dict(roads=dict(stages=[dict(level=n,speed=s,priceMinor=n*200,ticks=n*8,materials=[]) for n,s in enumerate([20,40,60],1)]),fleet=dict(models=[dict(id='car',speed=60,materialsOnly=False)])),layout=dict(roadCorridorCells=[a,b],initialCityDirtCells=[a,b],civicObjects=[]),plots=[]),
+        return {'scenario.json':dict(items=[],economy=dict(roads=dict(stages=[dict(level=n,speed=s,priceMinor=n*200,ticks=n*8,materials=[]) for n,s in enumerate([20,40,60],1)]),fleet=dict(models=[dict(id='car',speed=60,materialsOnly=False)])),layout=dict(roadCorridorCells=[a,b],initialCityDirtCells=[a,b],civicObjects=[]),plots=[]),
             'roads.json':dict(cells=[dict(cell=c,level=1,contributions=contributions) for c in [a,b]],works=[],bypasses=[],orders=[],traffic=[dict(vehicleId=1,path=[a,b],index=1,progress=0,advancedQuanta=10)]),
             'fleet.json':dict(vehicles=[dict(id=1,owner=dict(value=1),modelId='car',cargoInventory=dict(value=2))]),
             'final-state.json':dict(equipment=[],inventories=[dict(id=dict(value=2),position=b)]),

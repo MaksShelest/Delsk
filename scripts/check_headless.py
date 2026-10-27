@@ -32,6 +32,9 @@ def check(name, timeout, command):
     result = subprocess.run([sys.executable, str(root/'scripts/run_check.py'), '--name', name,
         '--timeout', str(timeout), '--log-directory', str(out/'checks'), '--', *map(str, command)], cwd=root, check=False)
     if result.returncode:
+        for suffix in ('stdout','stderr'):
+            log=out/'checks'/f'{name}.{suffix}.log'
+            if log.exists():print(log.read_text(errors='replace')[-18000:],file=sys.stderr)
         raise SystemExit(f'{name} failed (exit={result.returncode}); inspect {out/"checks"}')
 
 check('restore', 180, [args.dotnet, 'restore', 'Delsk.sln', '--locked-mode', '--disable-parallel', '-m:1'])

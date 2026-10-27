@@ -26,6 +26,7 @@ def verify_roads(folder):
     assert list(stages)==[1,2,3] and [s['speed'] for s in stages.values()]==[20,40,60]
     initial={cell(c) for c in config['layout']['initialCityDirtCells']};built={c:[(1,0,0,0)] for c in initial}
     vehicles={v['id']:v for v in fleet['vehicles']};models={m['id']:m for m in config['economy']['fleet']['models']}
+    prices={i['id']:i['basePriceMinor'] for i in config['items']}
     inventory={i['id']['value']:i for i in state['inventories']};positions={};listings={};work={};mode={};starts=[];paid={}
     equipment_initial={e['entityId']:point(e['reasonCode']) for e in events if e['type']=='EquipmentTrafficRegistered'}
     for machine in state['equipment']:
@@ -83,6 +84,8 @@ def verify_roads(folder):
     for b in roads['bypasses']:
         p=list(map(cell,b['path']));assert len(p)>2 and set(p)<=legal and cell(b['workCell']) not in p
         assert all(sum(abs(a-b) for a,b in zip(x,y))==1 for x,y in zip(p,p[1:]))
+        assert len(b['users'])==len(set(b['users'])) and all(v in vehicles for v in b['users'])
+        if b['closing']:assert b['users']
     reserved=set()
     for t in roads['traffic']:
         p=list(map(cell,t['path']));i=t['index'];assert 0<=t['progress']<800 and 0<=t['advancedQuanta']<=10
@@ -94,6 +97,8 @@ def verify_roads(folder):
     pairs=set()
     for o in roads['orders']:
         key=(cell(o['cell']),o['level']);assert key not in pairs;pairs.add(key)
+        rule=stages[o['level']];expected=(sum(m['quantity']*prices[m['itemId']] for m in rule['materials'])+2*rule['ticks']*rules['wageMinor'])*120//100
+        assert o['reward']==expected
         if o['id'] in paid:assert paid[o['id']]==(o['assignee'],o['reward']) and o['paidTick']>0
     assert sum(v[1] for v in paid.values())==sum(l['amountMinor'] for l in ledger if l['reason']=='RoadOrderReward')
     public=[json.loads(s) for s in (folder/'public-events.jsonl').read_text().splitlines()]

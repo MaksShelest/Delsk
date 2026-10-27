@@ -71,3 +71,20 @@ E2-unit-2: history1/1,roads10/10,traffic11/11 passed; freight2/3 passed
 Дорожные работы не должны требовать уже готовую дорогу с двух сторон для
 первой грунтовки. Closing test теперь явно проверяет фактического Users при
 completion. Финальные gates ещё впереди.
+
+E2-unit-3: не принята (3 встречных narrow failures на промежуточном выборе
+бокового конца). После предпочтения готового полотна E2-unit-4 прошла
+history1/1,roads11/11,traffic11/11; Freight/NPC2/3, ошибка только mining map.
+Малый native/copy stage ещё не является полной приёмкой. Checks18/18,
+Research.Lab37/37. На4c74712 предыдущие ordinary/Developer и Windows jobs
+success; новый road job покаfailure из-за fixture, не выдаётся за accepted.
+
+Mining attempts15/16/17: исправлены законная public/private география,
+актуальное extract_wood имя из каталога и направление реального проезда;
+checkpoint17 подтвердил штатное NoOutputSpace в полном источнике, а не
+движение: прежний ExtractionRoute переезжает при depletion. Тест теперь
+использует ограниченный собственный источник слева и собственный ресурс справа.
+Mining18:1/1 pass, actual bypass + restore inside + subsequent real output,
+одна старая Equipment/Storage, без нового Vehicle. Добавлена отдельная
+проверка минимального1 рабочего/половинной мощности, полная повторная suite
+и runner audit ещё ожидаются. NativeRoadProbe запущен в обычном isolated stage.

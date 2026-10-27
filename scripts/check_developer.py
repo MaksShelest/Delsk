@@ -6,7 +6,11 @@ p=argparse.ArgumentParser();p.add_argument('--dotnet',default='dotnet');p.add_ar
 root=Path(__file__).resolve().parents[1];out=a.output.resolve()
 def check(name,timeout,cmd,expected=0):
  r=subprocess.run([sys.executable,str(root/'scripts/run_check.py'),'--name',name,'--timeout',str(timeout),'--log-directory',str(out/'checks'),'--',*cmd],cwd=root)
- if r.returncode!=expected:raise SystemExit(name+' returned '+str(r.returncode))
+ if r.returncode!=expected:
+  for suffix in ('stdout','stderr'):
+   log=out/'checks'/f'{name}.{suffix}.log'
+   if log.exists():print(log.read_text(errors='replace')[-18000:],file=sys.stderr)
+  raise SystemExit(name+' returned '+str(r.returncode))
  return r.returncode
 check('developer-restore',180,[a.dotnet,'restore','Delsk.sln','-p:DelskDeveloper=true','--locked-mode','--disable-parallel','-m:1'])
 check('developer-build',180,[a.dotnet,'build','Delsk.sln','-c','Debug','-p:DelskDeveloper=true','--no-restore','--disable-build-servers','-m:1'])

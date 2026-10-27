@@ -12,8 +12,10 @@ out.mkdir(parents=True,exist_ok=True);runner=['dotnet',ROOT/'src/Research.Runner
 def check(name,command,timeout=120):
     subprocess.run([sys.executable,ROOT/'scripts/run_check.py','--name',name,'--timeout',str(timeout),'--log-directory',out/'checks','--',*map(str,command)],cwd=ROOT,check=True);checks.append(name)
 plans={
+    'minimum-crew':('automatic-1',['RoadWorkAdvanced']),
+    'dirt':('EmptyPublicCorridorCanBecomeDirtBeforeRoadOne',['RoadStageCompleted']),
     'personal':('PersonalPaverConsumesRealCargoWorksHalfSpeedAndKeepsEveryContribution',['RoadWorkStarted','RoadStageCompleted']),
-    'automatic':('AutomaticPaverHiresTwoRealWorkersAndChargesOnlyActualWork',['RoadWorkAdvanced']),
+    'automatic':('automatic-2',['RoadWorkAdvanced']),
     'builders':('ASecondBuildersHighwayRetainsCityBaseAndFirstBuildersRoadRights',['RoadStageCompleted']),
     'public-task':('PublicRoadOrderHoldsExistingTreasuryAndPaysExactlyOnceAfterCompletion',['RoadOrderPaid']),
     'opposing':('OpposingVehiclesYieldThroughDeclaredCorridorWithoutOverlapAndRestoreExactly',['TrafficYielded']),

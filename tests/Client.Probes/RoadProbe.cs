@@ -62,6 +62,11 @@ public partial class RoadProbe : Control
                 _scroll.ScrollVertical=0;await Frames();await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);GetViewport().GetTexture().GetImage().SavePng(_output+"/road-"+language+".png");
                 _checks.Add(language+":native-route-paid-materials-whole-ticks-pause-save-resume-layers-single-paver");
             }
+            _session=CheckpointStore.Decode(System.IO.File.ReadAllText(fixtures+"/ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad.save.json"));
+            var machine=_session.Engine.Inspect().Equipment.Single();Refresh();await Frames();
+            Check(_stage.GetNodeOrNull<Node3D>("RoadEquipment_"+machine.Id.Value) is not null,"Existing extraction equipment was not rendered on shared traffic");
+            Check(Presentation.Read(_session.Engine.Configuration(),_session.Engine,1).Markers.All(m=>m.Kind!="equipment"),"Extraction machine also rendered as a static marker");
+            _checks.Add("existing-extraction-one-dynamic-body");
             foreach(Node node in GetChildren()){RemoveChild(node);node.QueueFree();}await Frames(6);
             System.IO.File.WriteAllText(_output+"/roads-ui.json",JsonSerializer.Serialize(new{status="succeeded",checks=_checks,scope="Actual native mouse controls and 3D, prepared ordinary paid paver/cargo checkpoint; RU800x720 and EN1100x800. Not device or long-run balance acceptance."},SimulationJson.Options));GetTree().Quit();
         }

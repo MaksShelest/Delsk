@@ -67,15 +67,18 @@ public class RoadE2Tests
         Step(s,Work(v,3));start=s.Engine.InspectRoads()!.Works.Single().Batch!;s.AdvanceTo(start.StartedTick+32);
         road=s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==start.Cell);Assert.Equal(3,road.Level);Assert.Equal(3,road.Contributions.Length);Exact(s);
     }
-    [Fact]public void AutomaticPaverHiresTwoRealWorkersAndChargesOnlyActualWork()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void AutomaticPaverHiresRealWorkersAndChargesOnlyActualWork(int staff)
     {
-        var s=new GameSession(new(Prepared()));var v=Paver(s);Step(s,new(ActionKind.LeaveVehicle));Step(s,Work(v,mode:EquipmentMode.Automatic));
+        var s=new GameSession(new(Prepared() with{Population=staff}));var v=Paver(s);Step(s,new(ActionKind.LeaveVehicle));Step(s,Work(v,mode:EquipmentMode.Automatic));
         for(int i=0;i<10&&s.Engine.InspectRoads()!.Works.Single().Batch is null;i++)s.Step();
-        var work=s.Engine.InspectRoads()!.Works.Single();Assert.Equal(2,work.Group.Headcount);Assert.NotNull(work.Batch);
+        var work=s.Engine.InspectRoads()!.Works.Single();Assert.Equal(staff,work.Group.Headcount);Assert.NotNull(work.Batch);
         var start=work.Batch!;long cash=s.Engine.Observe(new(1)).Account.BalanceMinor;
-        s.AdvanceTo(start.StartedTick+12);Assert.Equal(2,s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==start.Cell).Level);
-        Assert.Equal(cash-12*40,s.Engine.Observe(new(1)).Account.BalanceMinor);s.Step();cash=s.Engine.Observe(new(1)).Account.BalanceMinor;s.AdvanceTo(s.Engine.Tick+5);Assert.Equal(cash,s.Engine.Observe(new(1)).Account.BalanceMinor);
-        Assert.Equal(10,s.Engine.Inspect().Unemployed+s.Engine.Inspect().EmploymentGroups.Sum(g=>(long)g.Headcount));Exact(s);
+        s.AdvanceTo(start.StartedTick+24/staff);Assert.Equal(2,s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==start.Cell).Level);
+        Assert.Equal(cash-480,s.Engine.Observe(new(1)).Account.BalanceMinor);s.Step();cash=s.Engine.Observe(new(1)).Account.BalanceMinor;s.AdvanceTo(s.Engine.Tick+5);Assert.Equal(cash,s.Engine.Observe(new(1)).Account.BalanceMinor);
+        Assert.Equal(staff,s.Engine.Inspect().Unemployed+s.Engine.Inspect().EmploymentGroups.Sum(g=>(long)g.Headcount));Exact(s,"automatic-"+staff);
     }
     [Fact]public void MissingMaterialsAndProtectedPrivateCellsDoNotSpendMoneyOrCreateRoads()
     {
