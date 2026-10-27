@@ -36,7 +36,7 @@ public sealed partial class SimulationEngine
         if(c.Action.Mode==EquipmentMode.Personal&&v.Driver!=actor.Id||c.Action.Mode==EquipmentMode.Automatic&&v.Driver!=0)throw new RuleViolation("PaverOperatorRequired");
         bool created=false;if(!_roadWorks.TryGetValue(v.Id,out var w)){w=new(v.Id,actor.Id,Roads.WageMinor);created=true;}
         if(w.Batch is not null&&(w.Mode!=c.Action.Mode||!w.Route.SequenceEqual(route)||w.Level!=level))throw new RuleViolation("RoadBatchInProgress");
-        if(w.Batch is null){w.Route=route;w.Cursor=0;w.Level=level;CancelTrafficRoute(v.Id);}
+        if(w.Batch is null){CancelTrafficRoute(v.Id);w.Route=route;w.Cursor=0;w.Level=level;}
         w.Mode=c.Action.Mode;w.Enabled=c.Action.Enabled&&w.Mode!=EquipmentMode.Off;_roadWorks[v.Id]=w;
         w.Reason=w.Enabled?"Ready":"UserPaused";
         if(created)Emit("RoadCrewCreated",actor.Id,v.Id,command:c.CommandId);

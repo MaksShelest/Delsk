@@ -147,3 +147,8 @@ cleanup. Последующие изменения только asset-import CI/
 допустим только disabled. Добавлены реальные rejected-команды в существующий
 atomic protected/materials test. Это единственный последующий gameplay delta,
 отказ invalid input; валидные сценарии/баланс не меняются. Приёмка обновляется.
+
+В той же проверке atomic stop перемещение CancelTrafficRoute поставлено до
+замены Route/Cursor/Level: отказ VehicleMoving не меняет прежнее намерение.
+Personal test теперь проверяет это настоящим travel quantum и rejected Stop.
+Количество E2 cases27 сохранено, существующий сценарий усилен, не исключён.
