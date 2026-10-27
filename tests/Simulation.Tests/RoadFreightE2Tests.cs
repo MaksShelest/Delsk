@@ -51,7 +51,7 @@ public class RoadFreightE2Tests
         Assert.True(FleetE1Tests.Stock(s,machine.StorageId,"wood")>0);Assert.Single(s.Engine.Inspect().Equipment);Assert.Single(s.Engine.InspectFleet()!.Vehicles);
         Assert.Contains(s.Engine.Ledger(),l=>l.Reason=="EquipmentTravelWages");RoadE2Tests.Exact(s);
     }
-    private static ScenarioDefinition Definition()
+    internal static ScenarioDefinition Definition()
     {
         var s=FleetE1Tests.FreightDefinition();var layout=s.Layout!;
         Cell[] cells=[new(36,4),new(37,4),new(36,5),new(37,5),new(36,6),new(37,6)];

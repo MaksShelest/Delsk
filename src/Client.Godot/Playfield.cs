@@ -514,6 +514,7 @@ public partial class Playfield : Control
         _feedbackLabel.Text = _feedback;
         UpdatePlayNotice();
         StorageNotice(view);
+        if(_accountNotice is not null&&view.PersonalAccount is {} accountNotice){_accountNotice.Text=accountNotice.UnreadCount>0?L("● Счета: ","● Invoices: ")+accountNotice.UnreadCount:L("Счёт","Account");_accountNotice.Modulate=accountNotice.UnreadCount>0?new Color("ff7777"):Colors.White;}
         if (_gameClock is not null) _gameClock.Text = L("Время ", "Time ") + GameTime(view.Tick) + (_session.Paused ? "  Ⅱ" : "  ▸");
         if (_cellLabel is not null) _cellLabel.Text = CellText(frame);
         string signature = _selectedEnterprise + "|" + CardSignature(view);

@@ -137,6 +137,7 @@ public sealed partial class SimulationEngine
             if(t.Progress==0&&dx==-vehicle.FacingX&&dz==-vehicle.FacingZ&&!MayTurn(vehicle,at))
             {if(!TryForwardTurn(vehicle,target)){_traffic[vehicle.Id]=t with{Reason="NoFreeTurn"};return false;}continue;}
             int speed=RoadBodySpeed(at,next,vehicle);int progress=checked(t.Progress+speed);
+            AccrueRoadTravel(vehicle,at,Math.Min(speed,800-t.Progress));
             for(int i=0;i<_bypasses.Count;i++)
             {
                 var b=_bypasses[i];if(!b.Closing&&!b.Users.Contains(vehicle.Id)&&b.Path.Skip(1).SkipLast(1).Contains(next))

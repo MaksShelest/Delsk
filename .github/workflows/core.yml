@@ -247,10 +247,87 @@ jobs:
         with:
           name: developer-checks-and-runs
           path: artifacts/
+  billing-unit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exhaustive disjoint E3 ordinary suite
+        run: python scripts/run_check.py --name billing-unit --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --phase tests --suite billing --output artifacts/billing-unit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: billing-unit-checks-and-fixtures
+          path: artifacts/billing-unit/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: billing-command-fixtures
+          path: |
+            artifacts/billing-unit/e3-fixtures/*.json
+            artifacts/billing-unit/e3-fixtures/*.jsonl
+            artifacts/billing-unit/e3-fixtures/*.tick
+            !artifacts/billing-unit/e3-fixtures/*.save.json
+  billing-developer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Complete E3 Developer suite and forbidden Release
+        run: python scripts/run_check.py --name billing-developer --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --suite billing --output artifacts/billing-developer
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: billing-developer-checks
+          path: artifacts/
+  billing:
+    needs: [core, billing-unit]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: billing-command-fixtures
+          path: artifacts/billing-fixtures
+      - name: Bounded runner restore and build
+        run: |
+          python scripts/run_check.py --name billing-restore --timeout 180 -- dotnet restore src/Research.Runner/Research.Runner.csproj --locked-mode --disable-parallel -m:1
+          python scripts/run_check.py --name billing-build --timeout 180 -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
+      - name: E3 invoices, payments, penalties, continuation and independent audits
+        run: python scripts/run_check.py --name billing-e3 --timeout 600 -- python scripts/check_billing_e3.py --fixtures artifacts/billing-fixtures --output artifacts/billing-e3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: billing-checks-and-runs
+          path: artifacts/
   # Preserve the required check and require every suite, including D3's independent audit.
   verify:
     if: ${{ always() }}
-    needs: [unit, core, developer, production, fleet, road-unit, road-developer, roads]
+    needs: [unit, core, developer, production, fleet, road-unit, road-developer, roads, billing-unit, billing-developer, billing]
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
@@ -263,5 +340,8 @@ jobs:
           ROAD_UNIT_RESULT: ${{ needs.road-unit.result }}
           ROAD_DEVELOPER_RESULT: ${{ needs.road-developer.result }}
           ROADS_RESULT: ${{ needs.roads.result }}
+          BILLING_UNIT_RESULT: ${{ needs.billing-unit.result }}
+          BILLING_DEVELOPER_RESULT: ${{ needs.billing-developer.result }}
+          BILLING_RESULT: ${{ needs.billing.result }}
           FLEET_RESULT: ${{ needs.fleet.result }}
-        run: test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success && test "$ROADS_RESULT" = success && test "$ROAD_UNIT_RESULT" = success && test "$ROAD_DEVELOPER_RESULT" = success
+        run: test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success && test "$ROADS_RESULT" = success && test "$ROAD_UNIT_RESULT" = success && test "$ROAD_DEVELOPER_RESULT" = success && test "$BILLING_UNIT_RESULT" = success && test "$BILLING_DEVELOPER_RESULT" = success && test "$BILLING_RESULT" = success

@@ -1,3 +1,28 @@
+## E3,27.10.2026 — явное текущее задание
+
+- Пользователь разрешил только E3/P71 поверх финального E2. Основа d9e17e3
+  (mergePR67) содержит2ca4b12/проверенный25f6689. Ветка feat/vnext-e3-accounts.
+  Услуги доставки не начинать автоматически. Прежние запреты автоматического
+  старта E3 ниже не блокируют это явное задание.
+- Новое правило владельца заменяет старые500/500: grace1000 active ticks inclusive,
+  первая пеня t+1001, затем+1000. Source BALANCE и §15/P71 синхронизированы.
+- Worklog: docs/WORKLOG_PACKAGE_E3.md. Реальные gates/evidence фиксировать после
+  выполнения, WIP/compile failures/timeout не считать итогом. Никакого auto merge.
+- Переиспользовать RoadBody/TrafficTravel и EconomyTransaction/holds/escrow.
+  Счёт не создаёт cash. Class/share/ставки из typedBALANCE, fixedinteger остатки,
+  principal first, пени без капитализации. Вклады фиксируются при фактическом
+  движении; собственные и NPC машины не дублировать.
+- E3 optional profile vnext-e3-accounts-1 для новых designed games, World26,
+  limited25–18 без Billing. Старые resolved profiles не подменять. Новые
+  billing.json/hash/save/replay/privacy и independent billing_audit обязательны.
+- Signed rounding residues per payer/recipient сохраняют10/90 при мелких счетах;
+  все целые копейки общего накопления выставляются каждые120. Clearing всегда0,
+  это не второй кошелёк. Автоплата из frozen free budgets перед пенями после
+  текущих receipts/refunds. Доход этой же autofase доступен следующему tick.
+- Previous/E2/E3 suites исчерпывающие и непересекающиеся, отдельные requiredjobs.
+  Не повышать старые deadlines и не удалять тесты. BillingProbe только isolated
+  stage, запрещён обычным AssemblyAudit; ordinary client/God flags сохранять.
+
 ## E2,27.10.2026 — реализованный software-объём
 
 - Явное задание E2/P70, основа26aeaab/PR66 содержит финальный E1/7163598.

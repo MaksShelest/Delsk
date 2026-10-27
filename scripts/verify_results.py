@@ -7,8 +7,10 @@ import sys
 from import_audit import verify_imports
 from fleet_audit import verify_fleet
 from road_audit import verify_roads
+from billing_audit import verify as verify_billing
 
 def verify(folder):
+    verify_billing(folder)
     folder = Path(folder)
     verify_fleet(folder)
     verify_roads(folder)

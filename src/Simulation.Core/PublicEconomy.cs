@@ -46,7 +46,7 @@ public sealed partial class SimulationEngine
     {
         var participants = _actors.Keys.Order().Select(id => new ParticipantCapital(new(id), CapitalOf(new(id)).TotalMinor,
             EmploymentGroups().Where(g => g.Owner == id).Sum(g => (long)g.Headcount), _config.Participants.Single(p => p.Id == id).PublicPreferenceItem)).ToImmutableArray();
-        long municipal = _economy.Accounts[_treasury].Balance;
+        long municipal = checked(_economy.Accounts[_treasury].Balance+BillingReceivable(0));
         long start = _config.CapitalDemand is { } demand ? Tick / demand.PeriodTicks * demand.PeriodTicks : 0;
         long end = _config.CapitalDemand is { } settings ? Math.Min(_config.MaxTicks, checked(start + settings.PeriodTicks)) : _config.MaxTicks;
         // The latest completed production period is distinct from current-period receipts.
@@ -93,7 +93,7 @@ public sealed partial class SimulationEngine
         buildings=checked(buildings+_platforms.Values.Where(p=>p.Group.Owner==actor.Value&&!Demolished(p.Building)).Sum(p=>Fleet!.Platforms.Where(u=>u.Level<=p.Level||p.Installation?.Level==u.Level).Sum(u=>checked(u.PriceMinor+u.Materials.Sum(m=>m.Quantity*_items[m.ItemId].BasePriceMinor)))));
         // Current contracts are fully funded. Unrecognised promises and contingent fines are not debt/assets.
         buildings=checked(buildings+RoadCapital(actor));
-        return new(money, stock, wip, land, buildings, equipment, 0);
+        return new(checked(money+BillingReceivable(actor.Value)), stock, wip, land, buildings, equipment, BillingDebt(actor.Value));
     }
 
     private PublicLabor LaborSummary()
