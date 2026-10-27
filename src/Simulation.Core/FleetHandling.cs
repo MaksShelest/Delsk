@@ -20,7 +20,7 @@ public sealed partial class SimulationEngine
         RequireIdle(actor); var v = OwnVehicle(actor, c.Action.VehicleId); RequireActionLocation(actor, c.Action);
         var kit = Fleet!.Kits.SingleOrDefault(k => k.Level == c.Action.EquipmentLevel) ?? throw new RuleViolation("NotAvailable");
         if (!CompatibleVehicleKit(v,kit.Level) || kit.Throughput > Model(v.ModelId).HandlingMax || kit.Level <= v.HandlingLevel) throw new RuleViolation("IncompatibleEquipment");
-        if (v.Driver != 0 || v.Installation is not null || VehicleTransferring(v.CargoInventory.Value) || VehicleLogistics(v.Id) is { } l && (l.Trip is not null || l.Enabled || l.InboundEnabled)) throw new RuleViolation("VehicleBusy");
+        if (RoadVehicleBusy(v.Id) || v.Driver != 0 || v.Installation is not null || VehicleTransferring(v.CargoInventory.Value) || VehicleLogistics(v.Id) is { } l && (l.Trip is not null || l.Enabled || l.InboundEnabled)) throw new RuleViolation("VehicleBusy");
         long inventory = c.Action.Source.Value == 0 ? actor.Inventory : c.Action.Source.Value;
         if (!_economy.Inventories.TryGetValue(inventory, out var source) || source.Owner != actor.Id || source.Position != actor.Position ||
             inventory != actor.Inventory && inventory != v.CargoInventory.Value && !_buildings.Values.Any(b => b.Owner == actor.Id && b.Input == inventory && !Demolished(b.Id))) throw new RuleViolation("NotAvailable");

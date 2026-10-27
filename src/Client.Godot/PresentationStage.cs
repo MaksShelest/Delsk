@@ -68,7 +68,7 @@ public partial class PresentationStage : Node3D
             _staticKey = staticKey;
             RebuildStatic(frame);
         }
-        ShowWarehouseStock(frame);ShowFleet(frame,snap);
+        ShowWarehouseStock(frame);ShowRoads(frame);ShowFleet(frame,snap);
         var liveActors = new System.Collections.Generic.HashSet<long>();
         foreach (var actor in frame.Actors)
         {

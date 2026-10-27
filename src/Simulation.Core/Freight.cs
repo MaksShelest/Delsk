@@ -74,6 +74,7 @@ public sealed partial class SimulationEngine
         if(l.Trip is not {Freight:{} f} t || t.State is not ("FetchingEmpty" or "Outbound" or "ReturningInput" or "ReturningEmpty" or "ReturningCargo"))return;
         if(Tick<=f.StageStartedTick)return;
         if(l.VehicleId!=0 && l.Group.Headcount==0){l.Reason="NoStaff";return;}
+        if(Roads is not null&&l.VehicleId!=0){AdvanceRoadFreight(l);return;}
         int index=t.PathIndex,segment=t.SegmentTicks;
         if(t.Path.Length>1){if(++segment==FreightMoveTicks(l,t.Path[index],t.Path[index+1])){segment=0;++index;}}
         string state=t.State;
@@ -88,6 +89,8 @@ public sealed partial class SimulationEngine
     {
         if(l.Trip is not {Freight:{} f} t || t.State is not ("Loading" or "Unloading" or "UnloadingReturn") || f.LastWorkedTick==Tick || Tick<=f.StageStartedTick)return;
         if(l.Group.Headcount==0){l.Reason="NoStaff";return;}
+        if(Roads is not null&&l.VehicleId!=0)
+        {if(!EnsureRoadFreightFunds(l))return;t=l.Trip!;f=t.Freight!;}
         bool loading=t.State=="Loading",returning=t.State=="UnloadingReturn";
         long remaining=loading?FreightRemainingSource(t):f.Cargo;
         if(!loading && t.ContractId!=0 && !returning && _deliveryContracts.Single(d=>d.Id==t.ContractId).ClosedTick is not null)

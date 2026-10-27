@@ -82,7 +82,7 @@ public sealed partial class SimulationEngine
         InitializeCapitalDemand();
         InitializeElections();
         InitializeSupport();
-        InitializeStorage();InitializeDevelopmentBuildings();InitializeProductionContent();InitializeFleet();
+        InitializeStorage();InitializeDevelopmentBuildings();InitializeProductionContent();InitializeFleet();InitializeRoads();
         Emit("WorldCreated");
         ValidateInvariants();
     }
@@ -141,7 +141,7 @@ public sealed partial class SimulationEngine
         _stepping = true;
         try
         {
-            ++Tick; _phase = 0; AdvanceFleet(); AdvanceStorageConstruction(); AdvanceWorkshopInstallations(); AdvanceProductionContent(); AdvanceOverflow(); AdvanceResourceIntervals(); ApplyWages();
+            ++Tick; _phase = 0; AdvanceFleet(); AdvanceStorageConstruction(); AdvanceWorkshopInstallations(); AdvanceProductionContent(); AdvanceOverflow(); AdvanceResourceIntervals(); MaintainRoadFreightTimes(); ApplyWages();
             var due = _pending.Where(c => c.NotBeforeTick <= Tick).ToArray();
             foreach (var c in due) _pending.Remove(c);
             var actors = due.Select(c => c.ActorId.Value).Distinct().Order().ToArray();
@@ -156,11 +156,11 @@ public sealed partial class SimulationEngine
                     else allowed.Add(c.c);
             _phase = 1;
             foreach (var c in allowed.Where(c => IsManagement(c.Action.Kind))) Execute(c);
-            _phase = 2; AdvanceEquipmentMovements(); AdvanceMovements(); AdvanceLogisticsMovements();
+            _phase = 2; AdvanceTrafficAssistance(); AdvanceEquipmentMovements(); AdvanceMovements(); AdvanceLogisticsMovements();
             _phase = 3; AcceptLogisticsArrivals(); ReserveSupportResources();
             foreach (var c in allowed.Where(c => !IsManagement(c.Action.Kind))) Execute(c);
             AdvanceTransfers(); AdvanceOverflow(); ReserveSupportResources();
-            _phase = 4; AdvanceHarvests(); AdvanceWork();
+            _phase = 4; AdvanceHarvests(); AdvanceWork(); AdvanceRoadWorks();
             _phase = 5; AdvanceLabor();
             _phase = 6; CloseVehiclePurchases(); CloseCapitalWindows(); AdvanceMarketWindows(); CloseBuyWindows(); AdvanceCapitalDemand();
             _phase = 7; AdvanceOverflow(true); ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders(); ExpireSupport(); ExpireNegotiations();AdvanceIndustryQuests();
@@ -188,6 +188,9 @@ public sealed partial class SimulationEngine
             switch (c.Action.Kind)
             {
                 case ActionKind.BuyVehicle: BuyVehicle(actor,c); break;
+                case ActionKind.SetRoadWork: SetRoadWork(actor,c); break;
+                case ActionKind.AcceptRoadOrder: AcceptRoadOrder(actor,c); break;
+                case ActionKind.TurnVehicle: TurnVehicle(actor,c); break;
                 case ActionKind.BoardVehicle: BoardVehicle(actor,c); break;
                 case ActionKind.LeaveVehicle: LeaveVehicle(actor,c); break;
                 case ActionKind.AssignVehicle: BindVehicle(actor,c); break;
@@ -272,6 +275,8 @@ public sealed partial class SimulationEngine
     { if (actor.Job is not null || HasSale(actor.Id) || HasTransfer(actor.Id)) throw new RuleViolation("ParticipantBusy"); }
     private void StartMove(ActorState actor, CommandEnvelope c)
     {
+        if(Roads is not null&&DrivenVehicle(actor.Id) is {} roadVehicle)
+        {StartRoadMove(actor,roadVehicle,c);return;}
         if (actor.Job is not null && !IsHarvest(actor.Job) || HasSale(actor.Id)) RequireIdle(actor);
         Cell[] path = _map.FindPath(actor.Position, c.Action.Target);
         long arrival = checked(Tick + path.Zip(path.Skip(1)).Sum(p => (long)PersonalMoveTicks(actor,p.First,p.Second)));
@@ -331,6 +336,8 @@ public sealed partial class SimulationEngine
         foreach (var actor in _actors.Values.OrderBy(a => a.Id))
         {
             if (actor.Job is not { Kind: "Move" } job || job.StartTick >= Tick) continue;
+            if(Roads is not null&&DrivenVehicle(actor.Id) is {} roadVehicle)
+            {AdvanceRoadMove(actor,roadVehicle,job);continue;}
             ++job.SegmentTicks;
             if (job.SegmentTicks < PersonalMoveTicks(actor,job.Path[job.PathIndex],job.Path[job.PathIndex+1])) continue;
             job.SegmentTicks = 0; ++job.PathIndex; actor.Position = job.Path[job.PathIndex];
@@ -421,6 +428,7 @@ public sealed partial class SimulationEngine
         if (CaptureWorkshops() is {} workshops) payload = new { Payload = payload, Workshops = workshops };
         if(InspectProductionContent() is {} content)payload=new{Payload=payload,ProductionContent=content};
         if(InspectFleet() is {} fleet)payload=new{Payload=payload,Fleet=fleet};
+        if(InspectRoads() is {} roads)payload=new{Payload=payload,Roads=roads};
         if(InspectDevelopment() is {} development)payload=new{Payload=payload,Development=development};
         var travel = TravelDeviation();
         return ScenarioValidation.Hash(travel is null ? payload : new { Payload = payload, Travel = travel });

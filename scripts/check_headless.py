@@ -41,6 +41,7 @@ if args.phase!='runs':
     os.environ['DELSK_D2_EVIDENCE'] = str(out/'d2-fixtures')
     os.environ['DELSK_D3_EVIDENCE'] = str(out/'d3-fixtures')
     os.environ['DELSK_E1_EVIDENCE'] = str(out/'e1-fixtures')
+    os.environ['DELSK_E2_EVIDENCE'] = str(out/'e2-fixtures')
     from test_partitions import run_suite
     partitions=run_suite(check,args.dotnet,'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',out)
     passed=sum(p['passed'] for p in partitions)

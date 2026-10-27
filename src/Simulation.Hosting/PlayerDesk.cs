@@ -74,7 +74,7 @@ public static class PlayerDesk
             seen.CapitalOffers, seen.Account.AvailableMinor, engine.HarvestOf(actor), engine.EconomyRules,
             new(seen.MarketOffers, seen.OwnMarketBids, seen.OwnMarketAllocations, seen.MarketRules, engine.PublicShops()),
             seen.OwnEquipment, seen.OwnDeliveryContracts, seen.BuyOffers, seen.OwnSupplyRequests, seen.City)
-            { Fleet=engine.FleetOf(actor),ProductionContent=engine.ProductionContentOf(actor),Development=engine.DevelopmentOf(actor),Demolition=engine.DemolitionOf(actor),Storage=engine.HasGroundStorage?engine.StorageOf(actor):null,Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))] };
+            { Roads=engine.RoadsOf(actor),Fleet=engine.FleetOf(actor),ProductionContent=engine.ProductionContentOf(actor),Development=engine.DevelopmentOf(actor),Demolition=engine.DemolitionOf(actor),Storage=engine.HasGroundStorage?engine.StorageOf(actor):null,Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))] };
     }
 }
 
@@ -86,6 +86,7 @@ public record PlayerView(long Tick, ParticipantView Participant, long CashMinor,
 {
     public DevelopmentObservation? Development {get;init;}
     public FleetObservation? Fleet {get;init;}
+    public RoadObservation? Roads {get;init;}
     public ProductionContentObservation? ProductionContent {get;init;}
     public DemolitionState? Demolition {get;init;}
     public StorageState? Storage {get;init;}
@@ -113,6 +114,37 @@ public static class PlayerText
 
     private static Dictionary<string, string> Ru() => new(StringComparer.Ordinal)
     {
+        ["reason.PaverRequired"] = "Нужен собственный Тракт-Д1.",
+        ["reason.InvalidRoadRoute"] = "Нужен маршрут из соседних публичных клеток коридора, до 64.",
+        ["reason.PreviousRoadStageRequired"] = "Сначала завершите предыдущую ступень дороги.",
+        ["reason.PaverOperatorRequired"] = "Лично сядьте в Тракт; для автоматики выйдите и наймите группу.",
+        ["reason.RoadBatchInProgress"] = "Сначала завершите начатую клетку; пауза сохраняет работу.",
+        ["reason.MovePaverToWork"] = "Подведите Тракт к следующей клетке маршрута.",
+        ["reason.NoRoadMaterials"] = "Доставьте материалы в кузов Тракта.",
+        ["reason.NoSafeBypass"] = "Нет безопасного обхода внутри публичного коридора.",
+        ["reason.ProtectedRoadCell"] = "Клетка защищена или находится вне дорожного коридора.",
+        ["reason.RoadCellBusy"] = "На клетке уже работают.",
+        ["reason.VehicleMoving"] = "Дождитесь безопасной остановки в клетке.",
+        ["reason.NoSafeVehiclePath"] = "Ждите освобождения законного пути.",
+        ["reason.NoFreeTurn"] = "Для разворота нужен свободный карман или разрешённый поворот.",
+        ["reason.TurnRequired"] = "Заднего хода нет. Развернитесь в свободном месте.",
+        ["reason.RoadExitPending"] = "Съезд с дороги… удерживайте направление 1 тик.",
+        ["reason.ObstacleBraking"] = "Торможение перед препятствием.",
+        ["reason.TrafficWaiting"] = "Ожидание свободного проезда.",
+        ["reason.PaverBypass"] = "Ожидание безопасного объезда укладчика.",
+        ["reason.WaitingForSafePath"] = "Ожидание безопасного маршрута.",
+        ["reason.YieldingInBay"] = "Уступаем в кармане.",
+        ["reason.YieldingToBay"] = "Следуем в карман для разъезда.",
+        ["reason.PassageWarning"] = "Освободите проезд; помощник попробует съехать после 60 тиков.",
+        ["reason.ClearingPassage"] = "Освобождаем проезд законным маршрутом.",
+        ["reason.ForwardTurn"] = "Разворот через свободный коридор.",
+        ["reason.RoadOrderClosed"] = "Эта ступень уже завершена.",
+        ["reason.Working"] = "Дорожные работы.",
+        ["reason.Moving"] = "Движение по маршруту.",
+        ["reason.Arrived"] = "Прибыли.",
+        ["reason.Parked"] = "На стоянке.",
+        ["reason.Resuming"] = "Возвращаемся к маршруту.",
+        ["reason.Detour"] = "Объезд по коридору.",
         ["reason.IndustryTechnologyRequired"]="Недостаточно отраслевого опыта для этой ступени.",
         ["reason.StaleDevelopmentLevel"]="Ступень уже изменилась. Откройте актуальный расчёт.",
         ["reason.StaleQuestReview"]="Предложение задания устарело. Выберите его заново.",
@@ -305,6 +337,37 @@ public static class PlayerText
 
     private static Dictionary<string, string> En() => new(StringComparer.Ordinal)
     {
+        ["reason.PaverRequired"] = "An owned Trakt-D1 is required.",
+        ["reason.InvalidRoadRoute"] = "Use up to 64 adjacent public corridor cells.",
+        ["reason.PreviousRoadStageRequired"] = "Complete the previous road stage first.",
+        ["reason.PaverOperatorRequired"] = "Board for personal work; leave and hire the crew for automatic work.",
+        ["reason.RoadBatchInProgress"] = "Finish the current cell first; pausing preserves progress.",
+        ["reason.MovePaverToWork"] = "Drive the Trakt to the next route cell.",
+        ["reason.NoRoadMaterials"] = "Deliver the required materials to the Trakt cargo.",
+        ["reason.NoSafeBypass"] = "No safe bypass exists within the public corridor.",
+        ["reason.ProtectedRoadCell"] = "The cell is protected or outside the road corridor.",
+        ["reason.RoadCellBusy"] = "Another paver is working on this cell.",
+        ["reason.VehicleMoving"] = "Wait until the vehicle safely reaches a cell centre.",
+        ["reason.NoSafeVehiclePath"] = "Wait for a legal path to become available.",
+        ["reason.NoFreeTurn"] = "Turning requires a free bay or designated turning place.",
+        ["reason.TurnRequired"] = "No reverse gear. Turn around in a free place.",
+        ["reason.RoadExitPending"] = "Leaving the road… hold the direction for 1 tick.",
+        ["reason.ObstacleBraking"] = "Braking before an obstacle.",
+        ["reason.TrafficWaiting"] = "Waiting for a free passage.",
+        ["reason.PaverBypass"] = "Waiting for a safe paver bypass.",
+        ["reason.WaitingForSafePath"] = "Waiting for a safe route.",
+        ["reason.YieldingInBay"] = "Yielding in a passing bay.",
+        ["reason.YieldingToBay"] = "Moving forward into a passing bay.",
+        ["reason.PassageWarning"] = "Clear the passage; the assistant will try after 60 ticks.",
+        ["reason.ClearingPassage"] = "Clearing the passage using a legal route.",
+        ["reason.ForwardTurn"] = "Forward turn through the free corridor.",
+        ["reason.RoadOrderClosed"] = "This stage has already been completed.",
+        ["reason.Working"] = "Road work in progress.",
+        ["reason.Moving"] = "Following the route.",
+        ["reason.Arrived"] = "Arrived.",
+        ["reason.Parked"] = "Parked.",
+        ["reason.Resuming"] = "Resuming the route.",
+        ["reason.Detour"] = "Detour through the corridor.",
         ["reason.IndustryTechnologyRequired"]="More industry experience is required for this tier.",
         ["reason.StaleDevelopmentLevel"]="The tier has changed. Open the current development preview.",
         ["reason.StaleQuestReview"]="The quest offer is stale. Select a current offer.",

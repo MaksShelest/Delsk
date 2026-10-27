@@ -18,7 +18,7 @@ public sealed partial class SimulationEngine
     private LogisticsState? VehicleLogistics(long id) => _logistics.Values.SingleOrDefault(l => l.VehicleId == id);
     private OwnedVehicle? DrivenVehicle(long actor) => _vehicles.Values.SingleOrDefault(v => v.Driver == actor);
     private bool VehicleInUse(long cargo) => _vehicles.Values.Any(v => v.CargoInventory.Value == cargo &&
-        (v.Installation is not null || VehicleLogistics(v.Id) is { Trip: not null } || v.Driver != 0 && _actors[v.Driver].Job is not null));
+        (RoadVehicleBusy(v.Id) || v.Installation is not null || VehicleLogistics(v.Id) is { Trip: not null } || v.Driver != 0 && _actors[v.Driver].Job is not null));
     private bool VehicleTransferring(long cargo) => _transfers.Values.Any(t => t.Source == cargo || t.Destination == cargo);
     private void InitializeFleet()
     {
@@ -120,7 +120,7 @@ public sealed partial class SimulationEngine
     private void BoardVehicle(ActorState actor, CommandEnvelope c)
     {
         RequireIdle(actor); RequireActionLocation(actor, c.Action); var v = OwnVehicle(actor, c.Action.VehicleId);
-        if (HasTransfer(actor.Id) || DrivenVehicle(actor.Id) is not null || v.Driver != 0 || v.Installation is not null || VehicleTransferring(v.CargoInventory.Value) ||
+        if (RoadVehicleBusy(v.Id) || HasTransfer(actor.Id) || DrivenVehicle(actor.Id) is not null || v.Driver != 0 || v.Installation is not null || VehicleTransferring(v.CargoInventory.Value) ||
             VehicleLogistics(v.Id) is { } l && (l.Trip is not null || l.Enabled || l.InboundEnabled)) throw new RuleViolation("VehicleBusy");
         _vehicles[v.Id] = v with { Driver = actor.Id };
         actor.OffsetX = v.OffsetX; actor.OffsetZ = v.OffsetZ; actor.FacingX = v.FacingX; actor.FacingZ = v.FacingZ; actor.HeadingX = actor.HeadingZ = 0;
@@ -129,7 +129,7 @@ public sealed partial class SimulationEngine
     private void LeaveVehicle(ActorState actor, CommandEnvelope c)
     {
         RequireIdle(actor); var v = DrivenVehicle(actor.Id) ?? throw new RuleViolation("NotAvailable");
-        if (HasTransfer(actor.Id) || VehicleTransferring(v.CargoInventory.Value)) throw new RuleViolation("VehicleBusy");
+        if (RoadVehicleBusy(v.Id) || HasTransfer(actor.Id) || VehicleTransferring(v.CargoInventory.Value)) throw new RuleViolation("VehicleBusy");
         actor.HeadingX = actor.HeadingZ = 0; _vehicles[v.Id] = v with { Driver = 0 };
         Emit("VehicleLeft", actor.Id, v.Id, command: c.CommandId);
     }
@@ -139,7 +139,7 @@ public sealed partial class SimulationEngine
         if (!_enterprises.TryGetValue(c.Action.Enterprise.Value, out var e) || e.Definition.OwnerId != actor.Id || Demolished(e.Definition.Id) || PreparingDemolition(e.Definition.Id)) throw new RuleViolation("NotAvailable");
         var cargo = VehicleCargo(v);
         if (Model(v.ModelId).MaterialsOnly) throw new RuleViolation("RoadVehicleOnly");
-        if (v.Driver != 0 || v.Installation is not null || VehicleLogistics(v.Id) is not null || cargo.Position != e.Definition.Position || cargo.Stock.Count != 0 || VehicleTransferring(cargo.Id)) throw new RuleViolation("VehicleBusy");
+        if (RoadVehicleBusy(v.Id) || v.Driver != 0 || v.Installation is not null || VehicleLogistics(v.Id) is not null || cargo.Position != e.Definition.Position || cargo.Stock.Count != 0 || VehicleTransferring(cargo.Id)) throw new RuleViolation("VehicleBusy");
         var l = _logistics.Values.SingleOrDefault(l => l.Enterprise == e.Definition.Id);
         if (l is not null && (l.Trip is not null || l.Enabled || l.InboundEnabled || _economy.Inventories[l.Cargo].Stock.Count != 0 || _vehicles[l.VehicleId].Driver != 0)) throw new RuleViolation("LogisticsNotSafe");
         if (l is null) { l = new(_nextId++, actor.Id, e.Definition.Id, e.Output, cargo.Id, Logistics, vehicle: Model(v.ModelId), vehicleId: v.Id); _logistics.Add(l.Id, l); }
@@ -154,11 +154,17 @@ public sealed partial class SimulationEngine
     }
     private int FleetSpeed(Cell from, Cell to, VehicleModel? model = null)
     {
+        if(Roads is not null)
+        {
+            int a=RoadLevel(from),b=RoadLevel(to);
+            int limit=a>0&&b>0?Roads.Stages.Single(s=>s.Level==Math.Min(a,b)).Speed:8;
+            return model is null?a>0&&b>0?20:16:Math.Min(model.Speed,limit);
+        }
         bool road = _config.Layout!.InitialCityDirtCells.Contains(from) && _config.Layout.InitialCityDirtCells.Contains(to);
         return model is null ? road ? 20 : 16 : Math.Min(model.Speed, road ? 20 : 8);
     }
     private int PersonalMoveTicks(ActorState actor, Cell from, Cell to) => Fleet is null ? _config.MoveTicksPerCell : 80 / FleetSpeed(from, to, DrivenVehicle(actor.Id) is { } v ? Model(v.ModelId) : null);
-    private int FreightMoveTicks(LogisticsState l, Cell from, Cell to) => l.Vehicle is null ? Logistics.MoveTicksPerCell : 80 / FleetSpeed(from, to, l.Vehicle);
+    private int FreightMoveTicks(LogisticsState l, Cell from, Cell to) => l.Vehicle is null ? Logistics.MoveTicksPerCell : Roads is null?80/FleetSpeed(from,to,l.Vehicle):(80+FleetSpeed(from,to,l.Vehicle)-1)/FleetSpeed(from,to,l.Vehicle);
     private long FreightTravelTicks(LogisticsState l, IEnumerable<Cell> path) { var cells = path.ToArray(); return cells.Zip(cells.Skip(1)).Sum(p => (long)FreightMoveTicks(l, p.First, p.Second)); }
     public FleetState? InspectFleet() => Fleet is null ? null : new(_fleetRandom!.State, _nextVehicleSupply,
         [.. _dealerStock.OrderBy(v => v.Id)], [.. _vehicles.Values.OrderBy(v => v.Id)], [.. _vehicleRequests.OrderBy(r => r.VehicleId).ThenBy(r => r.Actor.Value)],

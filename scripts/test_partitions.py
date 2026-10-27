@@ -35,7 +35,10 @@ PRODUCTION = ('Simulation.Tests.ProductionD3Tests',)
 START = ('Simulation.Tests.ProductionD3StartTests',)
 FLEET = ('Simulation.Tests.FleetE1Tests',)
 FLEET_STOCK = ('Simulation.Tests.FleetE1StockTests',)
-PARTITIONS = (Partition('', exclude=INTEGRATION + DEVELOPMENT + PRODUCTION + START + FLEET + FLEET_STOCK + PHYSICAL + MODELS), Partition('-integration', include=INTEGRATION), Partition('-d2', include=DEVELOPMENT), Partition('-d3', include=PRODUCTION), Partition('-d3-start', include=START), Partition('-e1', include=FLEET), Partition('-e1-stock', include=FLEET_STOCK), Partition('-physical', include=PHYSICAL), Partition('-models', include=MODELS))
+ROADS = ('Simulation.Tests.RoadE2Tests',)
+TRAFFIC = ('Simulation.Tests.RoadTrafficE2Tests',)
+ROAD_FREIGHT = ('Simulation.Tests.RoadFreightE2Tests',)
+PARTITIONS = (Partition('', exclude=ROADS + TRAFFIC + ROAD_FREIGHT + INTEGRATION + DEVELOPMENT + PRODUCTION + START + FLEET + FLEET_STOCK + PHYSICAL + MODELS), Partition('-integration', include=INTEGRATION), Partition('-d2', include=DEVELOPMENT), Partition('-d3', include=PRODUCTION), Partition('-d3-start', include=START), Partition('-e1', include=FLEET), Partition('-e1-stock', include=FLEET_STOCK), Partition('-physical', include=PHYSICAL), Partition('-models', include=MODELS), Partition('-e2-roads',include=ROADS), Partition('-e2-traffic',include=TRAFFIC), Partition('-e2-freight',include=ROAD_FREIGHT))
 
 def run_suite(check, dotnet, assembly, output, prefix='tests', timeout=120):
     """All future classes enter the base partition. Reject skips, failures and overlaps in actual TRX."""
