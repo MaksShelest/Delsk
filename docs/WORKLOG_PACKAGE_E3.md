@@ -40,3 +40,16 @@
 - e3-accounts-1: timeout124 после ошибки тестового направления (против facing
   без разворота). Направление исправлено; timing cases вынесены в отдельные
   исчерпывающие partitions с прежним120s. Не считать этот запуск pass.
+
+- Intermediate unit-2:18/18 ordinary прошли; исходники затем расширены signed
+  rounding, escrow receipt и traffic cases, поэтому это ещё не финальный gate.
+- Первичный push7031b01 пропустил изменённый исходный BALANCE при выборочном
+  staging;5484a86 добавляет1000/1000. Проверять CI на последнем полном snapshot,
+  не на7031b01. DraftPR68 открыт без merge.
+- Research.Lab первый локальный вызов без сетевого разрешения:7 socket errors
+  (localhost запрещён sandbox). Повтор с штатным network permission:37/37,
+  /workspace/work/e3/checks/research-lab. Auditors/PythonChecks22/22.
+
+- unit-3 остановлен на новом receipt test: автопомощник E2 уже начал физически
+  освобождать долго занятый проезд; LeaveVehicle закономерно отклонён в движении.
+  Fixture ждёт законного завершения манёвра перед выходом; busy guard не ослаблен.

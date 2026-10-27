@@ -262,6 +262,9 @@ jobs:
           python-version: '3.12'
       - name: Exhaustive disjoint E3 ordinary suite
         run: python scripts/run_check.py --name billing-unit --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --phase tests --suite billing --output artifacts/billing-unit
+      - name: Actual E3 counters and failed process diagnostics
+        if: always()
+        run: python scripts/report_check_results.py artifacts/billing-unit
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -290,6 +293,9 @@ jobs:
           python-version: '3.12'
       - name: Complete E3 Developer suite and forbidden Release
         run: python scripts/run_check.py --name billing-developer --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --suite billing --output artifacts/billing-developer
+      - name: Actual E3 counters and failed process diagnostics
+        if: always()
+        run: python scripts/report_check_results.py artifacts/billing-developer
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -319,6 +325,9 @@ jobs:
           python scripts/run_check.py --name billing-build --timeout 180 -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
       - name: E3 invoices, payments, penalties, continuation and independent audits
         run: python scripts/run_check.py --name billing-e3 --timeout 600 -- python scripts/check_billing_e3.py --fixtures artifacts/billing-fixtures --output artifacts/billing-e3
+      - name: Actual E3 counters and failed process diagnostics
+        if: always()
+        run: python scripts/report_check_results.py artifacts/billing-e3
       - uses: actions/upload-artifact@v4
         if: always()
         with:

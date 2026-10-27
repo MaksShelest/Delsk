@@ -14,7 +14,8 @@ public class BillingE3Tests
     {
         var s=RoadE2Tests.Prepared();return s with{Id="e3-prepared",Economy=Profile().World.Rules,Layout=s.Layout! with{TurnCells=s.Layout!.RoadCorridorCells}};
     }
-    internal static void Step(GameSession s,GameAction a,long actor=1,bool accepted=true)=>StorageC1Tests.Step(s,a,actor,accepted);
+    internal static void Step(GameSession s,GameAction a,long actor=1,bool accepted=true)
+    {string id=s.Send(new(actor),a);s.Step();var result=s.Engine.Result(id)!;Assert.True(result.Status==(accepted?ResultStatus.Accepted:ResultStatus.Rejected),a.Kind+": "+result.ReasonCode);}
     internal static OwnedVehicle Car(GameSession s,string model="sputnik20",long actor=1)
     {
         var v=FleetE1Tests.Buy(s,model,actor);StorageC1Tests.Move(s,s.Engine.FleetOf(new(actor))!.Vehicles.Single(x=>x.Vehicle.Id==v.Id).Position,actor);

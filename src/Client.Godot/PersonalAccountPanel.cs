@@ -14,7 +14,7 @@ public partial class PersonalAccountPanel : VBoxContainer
     private readonly Button _view=new(){Name="AccountViewInvoice"},_pay=new(){Name="AccountPayInvoice"};
     private readonly SpinBox _amount=new(){Name="AccountAmount",MinValue=0,MaxValue=1000000000000,Step=0.01,Value=0,CustomMinimumSize=new(160,0)};
     private readonly Button _older=new(){Name="AccountOlder"},_newer=new(){Name="AccountNewer"},_billOlder=new(){Name="AccountOlderBills"},_billNewer=new(){Name="AccountNewerBills"};
-    private PersonalAccount? _data;private bool _pending,_refreshing;private int _offset,_billOffset;private long[] _ids=[];
+    private PersonalAccount? _data;private bool _pending,_refreshing;private int _offset,_billOffset,_knownBillCount;private long[] _ids=[];
     public PersonalAccountPanel(string language,Action<GameAction> submit,Func<int,int,PersonalAccount>? query=null)
     {
         Name="PersonalAccount";_language=language;_submit=submit;_query=query;AddChild(TabletDesign.Heading(L("Личный счёт","Personal account")));
@@ -47,7 +47,10 @@ public partial class PersonalAccountPanel : VBoxContainer
             L("Доходы / расходы: ","Income / expenses: ")+PlayerText.Money(data.IncomeMinor)+" / "+PlayerText.Money(data.ExpensesMinor)+"\n"+
             L("Долг / ещё не выставлено / к получению: ","Debt / unbilled / receivable: ")+PlayerText.Money(data.DebtMinor)+" / "+PlayerText.Money(data.AccruedMinor)+" / "+PlayerText.Money(data.ReceivableMinor);
         _refreshing=true;_auto.SetPressedNoSignal(data.AutoPay);_auto.Disabled=_pending||data.Rules is null;_refreshing=false;
-        long selected=Selected;var invoices=data.Invoices.Take(20).ToArray();var ids=invoices.Select(i=>i.Id).ToArray();
+        long selected=Selected;
+        if(selected>0&&_query is not null&&_knownBillCount>0&&data.InvoiceCount>_knownBillCount&&!data.Invoices.Take(20).Any(i=>i.Id==selected))
+        {_billOffset+=data.InvoiceCount-_knownBillCount;data=_query(_offset,_billOffset);_data=data;}
+        _knownBillCount=data.InvoiceCount;var invoices=data.Invoices.Take(20).ToArray();var ids=invoices.Select(i=>i.Id).ToArray();
         // Keep selection and page during live updates; never rebuild the surrounding scroll.
         if(!_ids.SequenceEqual(ids)){_ids=ids;_invoices.Clear();foreach(var i in invoices)_invoices.AddItem("#"+i.Id);if(_ids.Length>0)_invoices.Select(Math.Max(0,Array.IndexOf(_ids,selected)));}
         _newer.Disabled=_offset==0;_older.Disabled=_query is null||_offset+20>=data.OperationCount;
