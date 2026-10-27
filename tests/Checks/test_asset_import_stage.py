@@ -8,7 +8,7 @@ class AssetImportStageTests(unittest.TestCase):
     def test_identical_assets_and_settings_without_managed_code_or_editor_cache(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);source=root/'source';source.mkdir()
-            (source/'project.godot').write_text('config_version=5\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n[dotnet]\nproject/assembly_name="Forbidden"\n')
+            (source/'project.godot').write_text('; Автор: Шелестов Максим\nconfig_version=5\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n[dotnet]\nproject/assembly_name="Forbidden"\n',encoding='utf-8')
             (source/'Main.cs').write_text('compiled elsewhere');(source/'Main.tscn').write_text('not an asset import input')
             (source/'icon.svg').write_bytes(b'<svg/>');(source/'icon.svg.import').write_text('actual import settings')
             (source/'.godot').mkdir();(source/'.godot/stale.png').write_bytes(b'cache')

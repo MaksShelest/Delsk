@@ -124,3 +124,9 @@ strict logs. Checks20/20 включают защиту staged bytes/settings и 
 51process/35exports/24comparisons passed328s, unit-ready27/27 passed403s.
 Настоящий E1 World24/348 checkpoint SHA0e92b388... продолжен, все выгрузки
 побайтно совпали с исходным E1 manual-cargo. Финальная Windows CI ещё ожидается.
+
+cd827d2 Windows дошёл до подготовки assets и выявил portability bug нового
+helper: Path.read_text использовал Windows cp1252 для UTF-8 project.godot с
+русским авторством. Исправлено явное UTF-8; boundary fixture содержит кириллицу.
+Checks20/20 повторно passed. Это ошибка подготовки CI, gameplay97f0538 неизменен.
+Все9 Core jobs именно97f0538 завершены success, включая production/fleet/roads/verify.
