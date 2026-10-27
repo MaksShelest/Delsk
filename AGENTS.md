@@ -1,3 +1,20 @@
+## F1,27.10.2026 — в работе
+
+- Явное задание F1/P72 поверх06ccbe7/PR68 содержит финальныйE3/79e8589.
+  Ветка feat/vnext-f1-delivery-offers, рабочий журнал WORKLOG_PACKAGE_F1.md.
+  Историческое «F не начинать» ниже не блокирует это явное задание. F2 не начинать.
+- Optional vnext-f1-delivery-offers-1 только новые designed maps/lab; old resolved
+  profiles сохранять. World27 limited26–18 без Services. E3 grace1000 прежний.
+- Одна active lease/vehicle, обычные команды для всех сторон; own stock hold или
+  закрепление уже оплаченного claim, money hold→service escrow только приaccept.
+  Нет cargo transfer/trip/payout в F1. До pickup cancel полностью возвращает fee.
+- Quotes pure: никакого Traffic()/PRNG/Payroll при чтении. Whole handling, Nloaded,
+  N−1empty, no final return. Fee округляется один раз. IncreasedETA/fee→reconfirm.
+- Deadline10 active, inclusive actions before expiry phase7. Notification неpause;
+  просмотр≠accept, offline≠cancel. Private orders неpublic. Hold/escrow капитал прежний.
+- Heavy gates serial, прежние partitions/deadlines не ослаблять; новые tests в
+  services suite. Фактические failures/timeouts сохранять. Итог после real gates.
+
 ## E3,27.10.2026 — реализованный software-объём
 
 - Явное задание E3/P71 поверх d9e17e3/PR67 с финальным E2/2ca4b12.

@@ -165,7 +165,7 @@ public sealed partial class SimulationEngine
     public void ValidateInvariants()
     {
         ValidateProductionContent();ValidateStorage();ValidateDemolition();ValidateWorkshops();ValidateIndustryDevelopment();ValidateDevelopmentBuildings();
-        ValidateFleet();ValidateRoads();ValidateBilling(); ValidateResearchAudit(); ValidateResources(); ValidateExtractionRoutes(); ValidateTransfers();
+        ValidateFleet();ValidateRoads();ValidateBilling();ValidateServices(); ValidateResearchAudit(); ValidateResources(); ValidateExtractionRoutes(); ValidateTransfers();
         if (_plots.Values.Where(p => p.Definition.IsShopSite).SelectMany(p => new[] { p.Owner, p.ReservedBy }.Where(a => a.HasValue))
             .GroupBy(a => a).Any(g => g.Count() > 1)) throw new InvalidOperationException("Shared shop site limit exceeded");
         _economy.Validate();

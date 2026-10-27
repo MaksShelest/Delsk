@@ -157,7 +157,7 @@ public sealed partial class SimulationEngine
         AddExpectedSupportHolds(expectedStock);
         AddExpectedMarketHolds(expectedStock, expectedMoney);
         AddExpectedDeliveryHolds(expectedCapacity, expectedMoney);
-        AddExpectedLogisticsHolds(expectedCapacity, expectedStock, expectedMoney);AddExpectedFleetHolds(expectedMoney);AddExpectedRoadHolds(expectedMoney);
+        AddExpectedLogisticsHolds(expectedCapacity, expectedStock, expectedMoney);AddExpectedFleetHolds(expectedMoney);AddExpectedRoadHolds(expectedMoney);AddExpectedServiceHolds(expectedStock,expectedMoney);
         foreach (var inv in _economy.Inventories.Values)
         {
             foreach (var h in inv.CapacityHolds)

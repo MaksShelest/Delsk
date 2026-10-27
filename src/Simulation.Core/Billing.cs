@@ -75,7 +75,7 @@ public sealed partial class SimulationEngine
             _roadInvoices.Values.Count(i=>i.Payer==participant),_economy.Ledger.Count(l=>l.DebitAccount==actor.Account||l.CreditAccount==actor.Account),
             _economy.Ledger.Where(l=>l.CreditAccount==actor.Account).Sum(l=>l.AmountMinor),_economy.Ledger.Where(l=>l.DebitAccount==actor.Account).Sum(l=>l.AmountMinor),
             checked(_marketAllocations.Where(a=>a.Buyer==participant).Sum(a=>_economy.Accounts[a.EscrowAccount.Value].Balance)+
-            _deliveryContracts.Sum(d=>(d.Buyer==participant?_economy.Accounts[d.EscrowAccount.Value].Balance:0)+(d.Supplier==participant?_economy.Accounts[d.BondAccount.Value].Balance:0))),Tick);
+            checked(ServiceEscrow(actor.Id)+_deliveryContracts.Sum(d=>(d.Buyer==participant?_economy.Accounts[d.EscrowAccount.Value].Balance:0)+(d.Supplier==participant?_economy.Accounts[d.BondAccount.Value].Balance:0)))),Tick);
     }
     private AccountOperation AccountOperationOf(ActorState owner,LedgerEntry entry,long ordinal)
     {
@@ -89,6 +89,8 @@ public sealed partial class SimulationEngine
         var delivery=_deliveryContracts.FirstOrDefault(c=>(c.EscrowAccount.Value==other||c.BondAccount.Value==other)&&(c.Buyer==new ParticipantId(owner.Id)||c.Supplier.Value==owner.Id));
         if(delivery is not null){counterparty=delivery.Buyer==new ParticipantId(owner.Id)?delivery.Supplier.Value:delivery.Buyer?.Value??0;otherKind=counterparty==0?"Capital":"Participant";}
         // No foreign account IDs, holds or unrelated ledger entries leave this projection.
+        var service=_serviceOrders.Values.FirstOrDefault(o=>o.EscrowAccount==other);
+        if(service is not null){counterparty=service.Customer.Value==owner.Id?service.Carrier.Value:service.Customer.Value;otherKind="Participant";}
         return new(ordinal,entry.Tick,incoming?entry.AmountMinor:-entry.AmountMinor,kind,
             counterparty is {} id?new ParticipantId(id):null,otherKind);
     }

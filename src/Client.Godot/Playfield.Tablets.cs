@@ -88,7 +88,7 @@ public partial class Playfield
         { StopHeading(); _waitRelease = true; _tabletState.SetTimeRunning(running); ApplyPause(); Refresh(); };
         if (_tabletState.Kind == TabletKind.Player)
         {
-            _playerTablet = new PlayerTablet(_scenario,_language,Submit,a => _session.Engine.AccessFor(_human,a),(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction),(offset,bills)=>_session.Engine.AccountOf(_human,offset,20,bills));
+            _playerTablet = new PlayerTablet(_scenario,_language,Submit,a => _session.Engine.AccessFor(_human,a),(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction),(offset,bills)=>_session.Engine.AccountOf(_human,offset,20,bills),terms=>_session.Engine.QuoteDeliveryService(_human,terms));
             _playerTablet.HelpRequested+=()=>OpenHelp("production");
             _tabletPanel.Body.AddChild(_playerTablet); _playerTablet.SelectedTab = _playerTab;
             if(_scenario.Layout is not null){_tabletPolitics=_playerTablet.PoliticsHost;FillPolitics(view,_tabletPolitics);}

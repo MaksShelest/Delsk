@@ -81,5 +81,5 @@ public partial class FleetPanel : VBoxContainer
         _transfer.Disabled=pending||view.Participant.Busy||nearby.Length<2||_item.ItemCount==0;
         if(f.OwnRequests.Length>0)_summary.Text+="\n"+L("Заявка ждёт распределения до тика ","Purchase request closes at tick ")+f.OwnRequests[0].CutoffTick;
     }
-    private string State(string state)=>state switch{"Parked"=>L("Свободна","Parked"),"Personal"=>L("Личное управление","Personal control"),"Installing"=>L("Монтаж","Installing"),_=>TabletText.Reason(_language,state)};
+    private string State(string state)=>state switch{"ServiceReserved"=>L("Закреплена за доставкой","Reserved for delivery"),"Parked"=>L("Свободна","Parked"),"Personal"=>L("Личное управление","Personal control"),"Installing"=>L("Монтаж","Installing"),_=>TabletText.Reason(_language,state)};
 }

@@ -1,5 +1,9 @@
 # Delsk — актуальный план: готовая основа P28–P60 и новые P61–P80
 
+F1/P72 реализуется в `feat/vnext-f1-delivery-offers` поверх финального E3/PR68.
+Каталог/расчёт/reserves/acceptance и UI подготовлены; итоговые проверки и границы
+фиксируются в `docs/IMPLEMENTATION_REPORT_PACKAGE_F1.md`. P73/F2 не начинался.
+
 Версия **2.7**, 27 октября 2026 года, Europe/Samara. Автор: Шелестов Максим Евгеньевич / MaksShelest.
 
 Основание: [требования 0.6/vNext](DELSK_SPECIFICATION_VNEXT.md), [проверка Git](VNEXT_GIT_AUDIT.md), runtime-профиль presentation-economy-v6 на `dfd6b8e170c83118f10ff19554e7fb3582c014dc`. B1 в приложениях — будущий баланс, не замена config/economy.json в этом PR.

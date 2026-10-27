@@ -7,7 +7,7 @@ public partial class Playfield
     private HelpOverlay? _helpOverlay;
     private DebugBoard? _miniMap;
     private Label? _gameClock;
-    private Button? _accountNotice;
+    private Button? _accountNotice;private Button? _serviceNotice;
     private readonly System.Collections.Generic.List<ContextActionButton> _harvestButtons = [];
     private string _harvestCycle = "";
     private double _harvestVisual;
@@ -72,6 +72,7 @@ public partial class Playfield
         tablet.Pressed += OpenPlayerTablet; row.AddChild(tablet);
         _accountNotice=new(){Name="AccountNotification",Text=L("Счёт","Account"),FocusMode=FocusModeEnum.None};
         _accountNotice.Pressed+=()=>{OpenPlayerTablet();_playerTablet?.OpenAccount();};row.AddChild(_accountNotice);
+        if(_scenario.Economy?.Services is not null){_serviceNotice=new(){Name="ServiceNotification",Text=L("Доставка","Delivery"),FocusMode=FocusModeEnum.None};_serviceNotice.Pressed+=()=>{OpenPlayerTablet();_playerTablet?.OpenServices();};row.AddChild(_serviceNotice);}
         var help = new Button { Text = "?", TooltipText = L("Справка", "Help"), FocusMode = FocusModeEnum.None, CustomMinimumSize = new Vector2(36, 36) };
         help.Pressed += () => OpenHelp(); row.AddChild(help);
         _gameClock = new Label { VerticalAlignment = VerticalAlignment.Center, CustomMinimumSize = new Vector2(185, 0) }; row.AddChild(_gameClock);

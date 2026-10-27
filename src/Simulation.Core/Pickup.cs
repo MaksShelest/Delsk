@@ -11,7 +11,7 @@ public sealed partial class SimulationEngine
         RequireIdle(actor);
         RequireActionLocation(actor, c.Action);
         long quantity = c.Action.Quantity;
-        if (quantity <= 0 || quantity > a.RemainingQuantity) throw new RuleViolation("InvalidQuantity");
+        if (quantity <= 0 || quantity > a.RemainingQuantity-PurchaseServiceQuantity(a.Id)) throw new RuleViolation("InvalidQuantity");
         BeginTransfer(actor,c,a.SourceInventory.Value,actor.Inventory,a.ItemId,quantity,"Pickup",a.Id);
     }
     private void CompletePickupTransfer(ActorState actor,TransferOperation transfer,long quantity)

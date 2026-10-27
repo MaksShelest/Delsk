@@ -90,6 +90,7 @@ public sealed partial class AlgorithmicController
     }
     private IEnumerable<Candidate> RemoteCandidates(ControllerObservation o)
     {
+        foreach(var c in ServiceResponses(o))yield return c;
         foreach(var c in IndustryQuestCandidates(o))yield return c;
         foreach(var c in AuctionCandidates(o))yield return c;
         foreach(var p in SupportResponses(o))yield return p;
@@ -123,4 +124,16 @@ public sealed partial class AlgorithmicController
                 yield return One("AuctionBid",offer.Id+":"+offer.Round,900000,new(ActionKind.RaiseBid,MarketOfferId:offer.Id,MarketRound:offer.Round,UnitPriceMinor:target));
         }
     }
+    private IEnumerable<Candidate> ServiceResponses(ControllerObservation o)
+    {
+        if(o.Services is not {} services)yield break;
+        foreach(var order in services.OwnOrders.Where(x=>x.Carrier==Actor&&x.State=="Pending"&&x.RespondByTick>o.Tick))
+        {
+            var q=order.Quote;
+            long cost=checked(services.Rules.DriverWageMinor*(q.EtaTicks+q.ExtraStaffTicks)+(q.RoadUnits+SimulationEngine.RoadAccrualScale-1)/SimulationEngine.RoadAccrualScale);
+            bool profitable=q.FeeMinor>cost;
+            yield return One("ServiceResponse",order.Id.ToString(),1900000,new(profitable?ActionKind.AcceptDeliveryService:ActionKind.RejectDeliveryService,ServiceId:order.Id));
+        }
+    }
+
 }

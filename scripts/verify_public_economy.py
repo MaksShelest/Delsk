@@ -32,6 +32,8 @@ def verify(folder):
         cash += sum(accounts[a['escrowAccount']['value']] for a in state['marketAllocations'] if a['buyer']['value']==actor)
         cash += sum(accounts[d['escrowAccount']['value']] for d in state['deliveryContracts'] if d['buyer'] and d['buyer']['value']==actor)
         cash += sum(accounts[d['bondAccount']['value']] for d in state['deliveryContracts'] if d['supplier']['value']==actor)
+        if (folder/'services.json').exists():
+            cash += sum(accounts[o['escrowAccount']] for o in json.loads((folder/'services.json').read_text())['orders'] if o['customer']['value']==actor and o['escrowAccount'])
         stock = sum(s['quantity']*prices[s['itemId']] for i in state['inventories'] if i['ownerId']['value']==actor for s in i['stock'])
         wip = sum(sum(i['quantity']*prices[i['itemId']] for i in e['batchInputs']) for e in state['enterprises'] if e['ownerId']['value']==actor and e['batchId'])
         land = sum(p['priceMinor'] for p in state['plots'] if p['ownerId'] and p['ownerId']['value']==actor)

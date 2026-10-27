@@ -74,7 +74,7 @@ public static class PlayerDesk
             seen.CapitalOffers, seen.Account.AvailableMinor, engine.HarvestOf(actor), engine.EconomyRules,
             new(seen.MarketOffers, seen.OwnMarketBids, seen.OwnMarketAllocations, seen.MarketRules, engine.PublicShops()),
             seen.OwnEquipment, seen.OwnDeliveryContracts, seen.BuyOffers, seen.OwnSupplyRequests, seen.City)
-            { PersonalAccount=engine.AccountOf(actor),Roads=engine.RoadsOf(actor),Fleet=engine.FleetOf(actor),ProductionContent=engine.ProductionContentOf(actor),Development=engine.DevelopmentOf(actor),Demolition=engine.DemolitionOf(actor),Storage=engine.HasGroundStorage?engine.StorageOf(actor):null,Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))] };
+            { Services=engine.ServicesOf(actor),PersonalAccount=engine.AccountOf(actor),Roads=engine.RoadsOf(actor),Fleet=engine.FleetOf(actor),ProductionContent=engine.ProductionContentOf(actor),Development=engine.DevelopmentOf(actor),Demolition=engine.DemolitionOf(actor),Storage=engine.HasGroundStorage?engine.StorageOf(actor):null,Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))] };
     }
 }
 
@@ -88,6 +88,7 @@ public record PlayerView(long Tick, ParticipantView Participant, long CashMinor,
     public FleetObservation? Fleet {get;init;}
     public RoadObservation? Roads {get;init;}
     public PersonalAccount? PersonalAccount {get;init;}
+    public ServiceObservation? Services {get;init;}
     public ProductionContentObservation? ProductionContent {get;init;}
     public DemolitionState? Demolition {get;init;}
     public StorageState? Storage {get;init;}
@@ -274,6 +275,25 @@ public static class PlayerText
         ["reason.NoResourceNode"] = "Подойдите к точке ресурса.",
         ["reason.NotAtLocation"] = "Подойдите к нужному месту.",
         ["reason.NoPath"] = "Сюда пройти нельзя.",
+        ["reason.ServiceUnavailable"] = "Услуги доставки недоступны в этом мире.",
+        ["reason.ServiceVehicleUnavailable"] = "Машина не свободна, снята с линии или не подходит для груза.",
+        ["reason.ServicePointRequired"] = "Нужны действующие здания и право получателя на приём товара. Пустая земля не подходит.",
+        ["reason.ServiceCargoUnavailable"] = "Прав на свободное количество товара недостаточно.",
+        ["reason.ServiceCargoDeadlineTooSoon"] = "До окончания права на груз не хватит времени на расчётную доставку.",
+        ["reason.DestinationOverflow"] = "У получателя есть переполнение. Новую доставку оформить нельзя.",
+        ["reason.StaleServiceQuote"] = "Условия изменились. Рассчитайте заказ ещё раз.",
+        ["reason.ServiceOrderUnavailable"] = "Заявка недоступна для этого действия или срок ответа истёк.",
+        ["reason.ServiceOrderClosed"] = "Заказ уже закрыт.",
+        ["reason.ServiceOrderLimit"] = "Достигнут предел одновременно открытых заказов.",
+        ["reason.DeliveryServiceCommitment"] = "Объект участвует в доставке. Сначала отмените заказ.",
+        ["reason.WaitingCarrier"] = "Ожидается ответ перевозчика.",
+        ["reason.CustomerReconfirmation"] = "Изменились цена или время. Требуется новое согласие заказчика.",
+        ["reason.AcceptedAwaitingPickup"] = "Принят. Оплата в escrow, груз ещё у источника.",
+        ["reason.CarrierRejected"] = "Перевозчик отказался. Резервы освобождены.",
+        ["reason.ResponseExpired"] = "Время ответа истекло. Резервы освобождены.",
+        ["reason.CancelledBeforePickup"] = "Отменён до погрузки. Оплата возвращена.",
+        ["reason.CargoRightsExpired"] = "Срок права на товар истёк. Заказ отменён, оплата услуги возвращена.",
+        ["reason.UnstartedServiceExpired"] = "Доставка не началась до срока. Оплата услуги возвращена.",
         ["reason.VehicleBusy"] = "Машина занята: завершите передачу, рейс или монтаж и остановите новые отправки.",
         ["reason.VehicleRequired"] = "Купите машину в автосалоне и назначьте её предприятию.",
         ["reason.VehicleLoaded"] = "В кузове есть груз. Разгрузите его перед автоматическим рейсом.",
@@ -500,6 +520,25 @@ public static class PlayerText
         ["reason.NoResourceNode"] = "Move to the resource.",
         ["reason.NotAtLocation"] = "Move to the right place.",
         ["reason.NoPath"] = "That cell cannot be reached.",
+        ["reason.ServiceUnavailable"] = "Delivery services are unavailable in this world.",
+        ["reason.ServiceVehicleUnavailable"] = "The vehicle is busy, offline or unsuitable for the cargo.",
+        ["reason.ServicePointRequired"] = "Active buildings and recipient consent are required. Empty land is not a service point.",
+        ["reason.ServiceCargoUnavailable"] = "Insufficient uncommitted cargo rights.",
+        ["reason.ServiceCargoDeadlineTooSoon"] = "Cargo rights expire before the estimated delivery can finish.",
+        ["reason.DestinationOverflow"] = "The recipient has overflow. A new service cannot be ordered.",
+        ["reason.StaleServiceQuote"] = "The terms changed. Calculate the order again.",
+        ["reason.ServiceOrderUnavailable"] = "The request is unavailable for this action or its response time expired.",
+        ["reason.ServiceOrderClosed"] = "The order is already closed.",
+        ["reason.ServiceOrderLimit"] = "The limit of active service orders has been reached.",
+        ["reason.DeliveryServiceCommitment"] = "The building is committed to a service. Cancel the order first.",
+        ["reason.WaitingCarrier"] = "Awaiting carrier response.",
+        ["reason.CustomerReconfirmation"] = "Price or time increased. Customer reconfirmation is required.",
+        ["reason.AcceptedAwaitingPickup"] = "Accepted. The fee is in escrow; cargo remains at the source.",
+        ["reason.CarrierRejected"] = "The carrier declined. Reservations were released.",
+        ["reason.ResponseExpired"] = "The response expired. Reservations were released.",
+        ["reason.CancelledBeforePickup"] = "Cancelled before pickup. The fee was refunded.",
+        ["reason.CargoRightsExpired"] = "Cargo rights expired. The service was cancelled and its fee refunded.",
+        ["reason.UnstartedServiceExpired"] = "The service did not start before its deadline. The fee was refunded.",
         ["reason.VehicleBusy"] = "Vehicle busy: finish the transfer, trip or installation and stop new dispatches.",
         ["reason.VehicleRequired"] = "Buy a vehicle at the dealer and assign it to the enterprise.",
         ["reason.VehicleLoaded"] = "Unload the cargo before starting an automatic trip.",

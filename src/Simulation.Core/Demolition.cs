@@ -39,6 +39,7 @@ public sealed partial class SimulationEngine
             if(_platforms.Values.Any(p=>p.Building==target&&p.Installation is not null))blockers.Add("ConstructionInProgress");
             if(UnitsFor(target).Any(e=>e.Batch is not null))blockers.Add("ProductionBatch");
         }
+        if(inventories.Any(ServicePointBusy))blockers.Add("DeliveryServiceCommitment");
         if(_transfers.Values.Any(t=>inventories.Contains(t.Source)||inventories.Contains(t.Destination)))blockers.Add("ManualTransfer");
         if(inventories.Any(id=>_economy.Inventories[id].Reservations.Count+_economy.Inventories[id].CapacityHolds.Count>0))blockers.Add("ReservedGoodsOrSpace");
         if(_deliveryContracts.Any(d=>d.ClosedTick is null&&(d.DestinationInventory is {} i&&inventories.Contains(i.Value)||building is not null&&_logistics.Values.Any(l=>l.Enterprise==target&&l.Queue.Any(j=>j.ContractId==d.Id)))))blockers.Add("DeliveryCommitment");
@@ -54,6 +55,7 @@ public sealed partial class SimulationEngine
     private void PrepareDemolition(ActorState actor,CommandEnvelope command)
     {
         long id=command.Action.Building.Value;if(QuoteDemolition(new(actor.Id),id) is null)throw new RuleViolation("NotAvailable");
+        if(BuildingInventories(_buildings[id]).Any(ServicePointBusy))throw new RuleViolation("DeliveryServiceCommitment");
         if(!_preparingDemolition.Add(id))return;
         var b=_buildings[id];long[] inventories=BuildingInventories(b);
         foreach(var production in UnitsFor(id))production.Enabled=production.Batch is not null;
