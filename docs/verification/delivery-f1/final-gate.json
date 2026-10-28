@@ -1,0 +1,157 @@
+{
+  "status": "succeeded",
+  "scope": "F1/P72 software only; accepted awaiting pickup. F2/P73 trips, pickup/unload and delivered-part settlement excluded.",
+  "runtimeTestedCode": "ba0f348a1c5cb3ff52428b6b38b219dbc75b9ced",
+  "base": "06ccbe7c6e3e1cf25de8283b290ef72edd131d51",
+  "pullRequest": "https://github.com/MaksShelest/Delsk/pull/69",
+  "ordinaryF1": 27,
+  "developerF1": 27,
+  "runner": {
+    "processChecks": 76,
+    "exports": 54,
+    "exactComparisonPairs": 36,
+    "seconds": 182.764,
+    "deadline": 600
+  },
+  "native": {
+    "languages": [
+      "ru",
+      "en"
+    ],
+    "sizes": [
+      "800x720",
+      "1100x800"
+    ],
+    "seconds": 61.655,
+    "deadline": 600,
+    "matchedInputs": 642,
+    "legacyHashChecks": 1132,
+    "legacyRestores": 35
+  },
+  "saveCompatibility": {
+    "status": "succeeded",
+    "actualSchema": 26,
+    "fromTick": 1120,
+    "toTick": 3124,
+    "processChecks": 4,
+    "exactComparedExports": true,
+    "sourceSaveSha256": "c403d69b69ad375fc85bc1589f50546c2517bef1cd64e83659675887dccdfe1b"
+  },
+  "sourceInputs": 852,
+  "existingFinancialInputsUnchanged": 82,
+  "pythonChecks": 24,
+  "researchLabChecks": 37,
+  "ci": {
+    "runtimeTestedCode": "ba0f348a1c5cb3ff52428b6b38b219dbc75b9ced",
+    "core": {
+      "id": 40628448975,
+      "url": "https://github.com/MaksShelest/Delsk/actions/runs/40628448975",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 122618927487,
+          "name": "unit",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 122618927674,
+          "name": "road-developer",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 122618927724,
+          "name": "services-developer",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 122618927779,
+          "name": "developer",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 122618927790,
+          "name": "road-unit",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 122618927798,
+          "name": "billing-developer",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 122618927853,
+          "name": "billing-unit",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 122618928039,
+          "name": "services-unit",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 122620613078,
+          "name": "core",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 122623833678,
+          "name": "billing",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 122623833681,
+          "name": "roads",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 122623833696,
+          "name": "production",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 122623833706,
+          "name": "services",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 122623833718,
+          "name": "fleet",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 122625230385,
+          "name": "verify",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    "windows": {
+      "id": 40628448996,
+      "url": "https://github.com/MaksShelest/Delsk/actions/runs/40628448996",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  },
+  "limitations": [
+    "F1 ends at acceptance; no F2 execution or carrier payout.",
+    "Service points are active building goods inventories; terminal pickup/sinks and mining equipment retain their existing own logistics.",
+    "ETA assumes clear roads and current handling resources; original goods-right deadlines are preserved.",
+    "Prepared cash/geography/materials do not prove natural progression, long-run ROI, real-device performance or 60FPS."
+  ]
+}

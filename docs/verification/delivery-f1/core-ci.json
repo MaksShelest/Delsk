@@ -1,0 +1,107 @@
+{
+  "runtimeTestedCode": "ba0f348a1c5cb3ff52428b6b38b219dbc75b9ced",
+  "core": {
+    "id": 40628448975,
+    "url": "https://github.com/MaksShelest/Delsk/actions/runs/40628448975",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 122618927487,
+        "name": "unit",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122618927674,
+        "name": "road-developer",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122618927724,
+        "name": "services-developer",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122618927779,
+        "name": "developer",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122618927790,
+        "name": "road-unit",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122618927798,
+        "name": "billing-developer",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122618927853,
+        "name": "billing-unit",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122618928039,
+        "name": "services-unit",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122620613078,
+        "name": "core",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122623833678,
+        "name": "billing",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122623833681,
+        "name": "roads",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122623833696,
+        "name": "production",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122623833706,
+        "name": "services",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122623833718,
+        "name": "fleet",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122625230385,
+        "name": "verify",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "windows": {
+    "id": 40628448996,
+    "url": "https://github.com/MaksShelest/Delsk/actions/runs/40628448996",
+    "status": "completed",
+    "conclusion": "success"
+  }
+}

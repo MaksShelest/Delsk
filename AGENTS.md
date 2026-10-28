@@ -1,19 +1,44 @@
-## F1,27.10.2026 — в работе
+## F1,28.10.2026 — реализованный software-объём
 
-- Явное задание F1/P72 поверх06ccbe7/PR68 содержит финальныйE3/79e8589.
-  Ветка feat/vnext-f1-delivery-offers, рабочий журнал WORKLOG_PACKAGE_F1.md.
-  Историческое «F не начинать» ниже не блокирует это явное задание. F2 не начинать.
-- Optional vnext-f1-delivery-offers-1 только новые designed maps/lab; old resolved
-  profiles сохранять. World27 limited26–18 без Services. E3 grace1000 прежний.
-- Одна active lease/vehicle, обычные команды для всех сторон; own stock hold или
-  закрепление уже оплаченного claim, money hold→service escrow только приaccept.
-  Нет cargo transfer/trip/payout в F1. До pickup cancel полностью возвращает fee.
-- Quotes pure: никакого Traffic()/PRNG/Payroll при чтении. Whole handling, Nloaded,
-  N−1empty, no final return. Fee округляется один раз. IncreasedETA/fee→reconfirm.
-- Deadline10 active, inclusive actions before expiry phase7. Notification неpause;
-  просмотр≠accept, offline≠cancel. Private orders неpublic. Hold/escrow капитал прежний.
-- Heavy gates serial, прежние partitions/deadlines не ослаблять; новые tests в
-  services suite. Фактические failures/timeouts сохранять. Итог после real gates.
+- Явное задание F1/P72 поверх06ccbe7/PR68 с финальнымE3/79e8589. Ветка
+  feat/vnext-f1-delivery-offers, PR69 без auto merge. Итог
+  docs/IMPLEMENTATION_REPORT_PACKAGE_F1.md, usage DELIVERY_F1.md, восстановление
+  WORKLOG_PACKAGE_F1.md, evidence verification/delivery-f1/. F2/P73 не начинать.
+- Runtime/test/CI ba0f348a1c5cb3ff52428b6b38b219dbc75b9ced; последующие изменения
+  итоговых документов не меняют закреплённые852 runtime/test/CI inputs.
+- Optional vnext-f1-delivery-offers-1 только новые designed maps/lab presets.
+  World27 limited26–18 без Services. Старые resolved profiles не подменять;
+  E3 grace1000/period1000 прежние.82 финансовых входа unchanged; world E3+Services.
+- Один active lease/vehicle; никакой копии кузова/груза. Own stock hold или часть
+  уже paid pickup claim, prepared quota underlying delivery contract. Forecast
+  последнего не удваивать текущим service volume, normal capacity сверх лимита
+  не резервировать. Чужой recipient только с действующим договорным согласием.
+- Quote pure, без Traffic()/PRNG/Payroll. Nloaded+N−1empty, whole handling по
+  текущим средствам/реальному штату, no final return, единственное ceil_minor.
+  Повышение ETA/fee→customer reconfirm, original hold до него прежний.
+-10 active ticks inclusive before phase7; уведомление не pause. На общей паузе
+  только decisions/view/cancel через ordinary authenticated envelope на текущем
+  quantum, shared8command budget, без Step/физики/производства/зарплат. Linked
+  committed control events сохраняемы, другие unfinished phases по-прежнему нет.
+  Cash sample синхронизировать с actual money, replay хранит точный quantum.
+- Accept money hold→DeliveryServiceEscrow, asset customer; carrier payout0.
+  Offline не cancel; cancel before pickup полностью refund. При истечении
+  unstarted/товарного права возврат услуги до прежнего товарного расчёта.
+  F1 заканчивается AcceptedAwaitingPickup; actual trips/partial payout — F2.
+- Own immutable DTO; service events и command outcomes private. NPC публикует
+  свободные unbound пустые машины, оценивает cost входящих ordinary commands;
+  ServiceReserved нельзя брать в план своей логистики. Числовой водитель не создан.
+-27ordinary/27Developer; runner76process/54exports/36exactpairs; nativeRU/EN,
+  1132legacy hashes/35restores; actualWorld26 t1120→3124 exact. Native probe
+  только isolatedstage, запрещён ordinary AssemblyAudit. Финальные CI IDs/status
+  закреплены final-gate.json. Source852/native642, обязательные checks не ослаблять.
+- Previous9/E2/E3 partitions/deadlines прежние; F1 lifecycle/rights/competition
+  отдельные disjoint partitions120s each. Timeout124/build180 сохранять failure;
+  исходные попытки и исправления — worklog/evidence. Heavy local gates serial.
+  Prepared money/geography не natural progression/ROI/device acceptance.
+- Пункты F1: товарные inventories действующих зданий. Терминальные pickup/sink и
+  добывающая техника не включены в каталог сторонних услуг, own logistics прежняя.
+  Следующий шаг review PR69, а не автоматическое начало F2.
 
 ## E3,27.10.2026 — реализованный software-объём
 

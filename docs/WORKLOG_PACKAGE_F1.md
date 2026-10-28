@@ -75,3 +75,22 @@
   разделены на естественные disjoint partitions с прежним120s each/780s aggregate;
   previous9/E2/E3 partitions и deadlines не менялись. Подтверждены quota/consent,
   prepared quantity, ручной double-delivery rejection и полный возврат quota.
+
+Финальный runtime/test/CI снимок ba0f348a1c5cb3ff52428b6b38b219dbc75b9ced.
+- Final runner:76process/54exports/36pairs,182.764s при600, все independent audits pass.
+- Final native: RU/EN реальные callbacks, immediate paused responses и disk save,
+ 61.655s;642 inputs matched stage, no missing inputs.
+- Actual World26 сохранение E3 до первой пени: t1120→3124, все exports exact;
+  независимые деньги/капитал pass. Старый resolved config не включает Services.
+- Legacy native первый вызов использовал ошибочный --reportfile: игра прошла,
+  verifier не нашёл требуемый файл и failed. Повтор с правильным --report прошёл
+  строгий verifier:1132 hashes/35 restores и frozen voting boundaries.
+- Python24/Lab37 pass. Весь runtime/test/CI source закреплён852 SHA256,
+  финансовые82 unchanged; новый world E3 отличается только Services.
+- Итоговые CI checks и mergeable state фиксируются непосредственно перед final.
+
+Итог: Core40628448975 все15jobs success, включая final verify и отдельные
+F1/E2/E3 unit/Developer/runner gates; Windows40628448996 success на ba0f348.
+CI F1 runner также76/54/36, отчёт совпал с local. Current runtime/test/CI852 SHA
+не изменены после проверок. Только итоговые docs/evidence следуют отдельным коммитом.
+PR69 готовится к review, merge не выполняется. F2 не начат.
