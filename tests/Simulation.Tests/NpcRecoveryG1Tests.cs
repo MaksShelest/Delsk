@@ -25,7 +25,7 @@ public class NpcRecoveryG1Tests
     }
     [Fact]public void PrivateExtractorIsPurchasedAndActuallyWorksWithFinitePaidCrew()
     {
-        var d=Fixtures.Cycle(cash:100000) with{Population=4,ResourceNodes=[new("wood",new(0,0),new(false,Capacity:100,RegenerationQuantity:2,RegenerationTicks:10,InitialOwner:1))],EquipmentTypes=[new("g1-wood", "wood",[new(1,1000,4,2,40,1,1,5)])],Labor=new(StepTicks:2,GrowthPerPeriod:0)};
+        var d=Fixtures.Cycle(cash:100000) with{MaxTicks=2000,CapitalOffers=[..Fixtures.Cycle().CapitalOffers.Select(o=>o.ItemId=="wood"?o with{Quantity=1000}:o)],Population=4,ResourceNodes=[new("wood",new(0,0),new(false,Capacity:100,RegenerationQuantity:2,RegenerationTicks:10,InitialOwner:1))],EquipmentTypes=[new("g1-wood", "wood",[new(1,1000,4,2,40,1,1,5)])],Labor=new(StepTicks:2,GrowthPerPeriod:0)};
         var s=new GameSession(new(d));Fixtures.Supply(s,20);Fixtures.UntilIdle(s);var c=new AlgorithmicController(new(1,"wood",Difficulty:NpcDifficulty.Medium,CoherentEconomy:true,FutureContractsEnabled:false),42,[1,2]);
         NpcEconomyG1Tests.Drive(s,c,()=>s.Engine.Inspect().Equipment.Any(e=>e.Mode==EquipmentMode.Automatic&&e.CompletedCycles>0),600);
         Assert.Contains(s.CommandTape,r=>r.Command.Action.Kind==ActionKind.BuyEquipment);Assert.Contains(s.CommandTape,r=>r.Command.Action.Kind==ActionKind.SetEquipmentMode);Assert.Equal(4,s.Engine.Inspect().Unemployed+s.Engine.Inspect().EmploymentGroups.Sum(g=>g.Headcount));

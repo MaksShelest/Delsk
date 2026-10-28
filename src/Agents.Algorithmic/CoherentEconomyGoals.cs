@@ -2,6 +2,20 @@ using Simulation.Core;
 namespace Agents.Algorithmic;
 public sealed partial class AlgorithmicController
 {
+    private void RememberMarketIntent(string goal,IEnumerable<GameAction> actions)
+    {
+        if(!UsesEconomicPlanning||goal!="StageOutputAtExchange")return;
+        string item=actions.First(a=>a.ItemId.Length>0).ItemId;_state=_state with{EconomyMemory=_state.EconomyMemory! with{MarketItem=item,MarketWaitUntil=0}};
+    }
+    private bool WaitForPublicDemand(ControllerObservation o)
+    {
+        if(!UsesEconomicPlanning||_state.EconomyMemory is not {MarketItem:{} item} memory)return false;
+        if(Free(Carrier(o),item)==0){_state=_state with{EconomyMemory=memory with{MarketItem=null,MarketWaitUntil=0}};return false;}
+        if(o.ProductionContent is not {} market||o.Participant.Position!=market.Terminal||HasObligations(o))return false;
+        if(memory.MarketWaitUntil==0){memory=memory with{MarketWaitUntil=checked(o.Tick+300)};_state=_state with{EconomyMemory=memory};}
+        if(o.Tick>=memory.MarketWaitUntil){_state=_state with{EconomyMemory=memory with{MarketItem=null,MarketWaitUntil=0}};return false;}
+        return BestOffer(o,item,Free(Carrier(o),item),o.Participant.Position) is null;
+    }
     private IEnumerable<Candidate> EconomicRemote(ControllerObservation o)
     {
         if(!UsesEconomicPlanning)yield break;
@@ -43,14 +57,25 @@ public sealed partial class AlgorithmicController
             if(PlanTicks(o,steps)<pile.Lot.ExpiresTick-o.Tick)yield return new("RescueOverflow",pile.Lot.Id.ToString(),1400000,steps.ToArray());
         }
         var outputs=o.Enterprises.SelectMany(ProductionWorkplaces).Select(l=>o.Map.Recipes.Single(r=>r.Id==l.Unit.RecipeId).OutputItem).ToHashSet(StringComparer.Ordinal);
-        foreach(var store in o.Buildings.Where(b=>b.Kind is BuildingKind.Warehouse or BuildingKind.Shop))
-        foreach(var stock in Inventory(o,store.InputId).Stock.Where(s=>s.Quantity>s.Reserved&&outputs.Contains(s.ItemId)))
+        foreach(var store in o.Inventories.Where(i=>o.Enterprises.Any(e=>e.OutputId==i.Id)||o.Buildings.Any(b=>b.Kind is BuildingKind.Warehouse or BuildingKind.Shop&&b.InputId==i.Id)))
+        foreach(var stock in store.Stock.Where(s=>s.Quantity>s.Reserved&&outputs.Contains(s.ItemId)))
         {
+            var producers=o.Enterprises.Where(e=>e.OutputId==store.Id).ToArray();
+            if(producers.Length>0&&stock.Quantity-stock.Reserved<Math.Max(1,_state.Settings.BatchQuantity/4)&&o.Account.AvailableMinor>=_state.Settings.CashReserveMinor&&producers.Any(e=>ProductionWorkplaces(e).Any(l=>l.Unit.Enabled))&&!producers.Any(e=>ProductionWorkplaces(e).Any(l=>l.Unit.ReasonCode=="NoOutputSpace")))continue;
             long protectedQuantity=o.Enterprises.SelectMany(ProductionWorkplaces).SelectMany(l=>o.Map.Recipes.Single(r=>r.Id==l.Unit.RecipeId).Ingredients).Where(i=>i.ItemId==stock.ItemId).Sum(i=>i.Quantity);
-            long q=Math.Min(Math.Max(0,stock.Quantity-stock.Reserved-protectedQuantity),Math.Min(_state.Settings.BatchQuantity,FreeVolume(carrier)/Volume(o,stock.ItemId)));var offer=BestOffer(o,stock.ItemId,q,store.Position);if(q<=0||offer is null)continue;q=Math.Min(q,offer.RemainingQuantity);
-            var steps=new List<PlanStep>();Move(steps,o.Participant.Position,store.Position);steps.Add(new(new(ActionKind.Transfer,Source:store.InputId,Destination:carrier.Id,ItemId:stock.ItemId,Quantity:q)));Move(steps,store.Position,offer.Position);steps.Add(new(new(ActionKind.SellAvailableToCapital,OfferId:offer.Id,ItemId:stock.ItemId,Quantity:q)));
-            yield return new("SellStoredOutput",store.Id.Value+":"+stock.ItemId,o.Account.AvailableMinor<_state.Settings.CashReserveMinor?260000:95000+Rate(o,offer,q,store.Position)*_state.Settings.CashWeight,steps.ToArray());
+            long q=Math.Min(Math.Max(0,stock.Quantity-stock.Reserved-protectedQuantity),Math.Min(_state.Settings.BatchQuantity,FreeVolume(carrier)/Volume(o,stock.ItemId)));if(q<=0)continue;
+            var offer=BestOffer(o,stock.ItemId,q,store.Position);var steps=new List<PlanStep>();Move(steps,o.Participant.Position,store.Position);steps.Add(new(new(ActionKind.Transfer,Source:store.Id,Destination:carrier.Id,ItemId:stock.ItemId,Quantity:offer is null?q:Math.Min(q,offer.RemainingQuantity))));
+            if(offer is not null)
+            {
+                q=Math.Min(q,offer.RemainingQuantity);Move(steps,store.Position,offer.Position);steps.Add(new(new(ActionKind.SellAvailableToCapital,OfferId:offer.Id,ItemId:stock.ItemId,Quantity:q)));
+                yield return new("SellStoredOutput",store.Id.Value+":"+stock.ItemId,o.Account.AvailableMinor<_state.Settings.CashReserveMinor?260000:95000+Rate(o,offer,q,store.Position)*_state.Settings.CashWeight,steps.ToArray());
+            }
+            else if(o.ProductionContent is {} market&&Reachable(o,market.Terminal)&&o.CapitalPrices.Any(p=>p.ItemId==stock.ItemId&&p.UnitPriceMinor>0))
+            {Move(steps,store.Position,market.Terminal);yield return new("StageOutputAtExchange",stock.ItemId,95000,steps.ToArray());}
         }
+        if(o.ProductionContent is {} exchange&&o.Participant.Position!=exchange.Terminal&&Reachable(o,exchange.Terminal))
+        foreach(var held in carrier.Stock.Where(s=>s.Quantity>s.Reserved&&outputs.Contains(s.ItemId)))
+            yield return new("StageOutputAtExchange",held.ItemId,95000,[new(new(ActionKind.MoveTo,Target:exchange.Terminal,ItemId:held.ItemId))]);
         foreach(var e in o.Enterprises)
         foreach(var line in ProductionWorkplaces(e))
         {
@@ -82,7 +107,7 @@ public sealed partial class AlgorithmicController
             long opportunity=checked(manualTicks*_state.Settings.BaseWageMinor);
             if(q.FeeMinor>=value||q.FeeMinor>=opportunity||q.DestinationOccupiedVolume+q.ExpectedIncomingVolume+q.Volume>q.DestinationCapacity)continue;
             if(contract&&q.FeeMinor>=t.Quantity*o.OwnDeliveryContracts.Single(d=>d.Id==t.ContractId).UnitPriceMinor)continue;
-            yield return One("PurchaseDelivery","FundedUsefulTrip:"+t.Source.Value+":"+t.Destination.Value,310000,new(ActionKind.RequestDeliveryService,VehicleId:t.VehicleId,Source:t.Source,Destination:t.Destination,ItemId:t.ItemId,Quantity:t.Quantity,PurchaseId:t.PurchaseId,ContractId:t.ContractId,ServiceQuote:q.Token));
+            yield return One("PurchaseDelivery","FundedUsefulTrip:"+t.Source.Value+":"+t.Destination.Value,contract||t.PurchaseId!=0?1250000:310000,new(ActionKind.RequestDeliveryService,VehicleId:t.VehicleId,Source:t.Source,Destination:t.Destination,ItemId:t.ItemId,Quantity:t.Quantity,PurchaseId:t.PurchaseId,ContractId:t.ContractId,ServiceQuote:q.Token));
         }
     }
 }

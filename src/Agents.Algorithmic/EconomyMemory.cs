@@ -2,13 +2,15 @@ using System.Collections.Immutable;
 using Simulation.Core;
 namespace Agents.Algorithmic;
 public sealed record RejectedIntent(string Key,int Failures,long RetryTick,string Reason);
-public sealed record EconomyMemory(ImmutableArray<RejectedIntent> Rejected=default,string ConstructionIndustry="");
+public sealed record EconomyMemory(ImmutableArray<RejectedIntent> Rejected=default,string ConstructionIndustry="",
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long MarketWaitUntil=0,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? MarketItem=null);
 public sealed partial class AlgorithmicController
 {
     private static void ValidateEconomyMemory(EconomyMemory? memory,bool enabled)
     {
         if(!enabled){if(memory is not null)throw new CheckpointException("UnexpectedEconomyMemory");return;}
-        if(memory is null||memory.ConstructionIndustry is null||memory.ConstructionIndustry.Length>64||!memory.Rejected.IsDefault&& (memory.Rejected.Length>64||memory.Rejected.Select(r=>r.Key).Distinct().Count()!=memory.Rejected.Length||memory.Rejected.Any(r=>r.Key.Length>256||r.Failures is <1 or >8||r.RetryTick<0||r.Reason.Length>80)))throw new CheckpointException("InvalidEconomyMemory");
+        if(memory is null||memory.ConstructionIndustry is null||memory.ConstructionIndustry.Length>64||memory.MarketWaitUntil<0||memory.MarketItem is {Length:>80}||!memory.Rejected.IsDefault&& (memory.Rejected.Length>64||memory.Rejected.Select(r=>r.Key).Distinct().Count()!=memory.Rejected.Length||memory.Rejected.Any(r=>r.Key.Length>256||r.Failures is <1 or >8||r.RetryTick<0||r.Reason.Length>80)))throw new CheckpointException("InvalidEconomyMemory");
     }
     private static string Intent(GameAction a)=>Digest(new{a.Kind,a.ItemId,a.Source,a.Destination,a.Building,a.Enterprise,a.WorkshopId,a.VehicleId,a.OfferId,a.ContractId,a.Plot,a.Target,a.Group,a.Equipment,a.ServiceId,a.PurchaseId});
     private void RememberEconomicSuccess(GameAction a)
@@ -27,6 +29,9 @@ public sealed partial class AlgorithmicController
         if(!UsesEconomicPlanning)return true;
         var blocked=_state.EconomyMemory!.Rejected;if(!blocked.IsDefault&&c.Steps.Any(s=>blocked.Any(r=>r.Key==Intent(s.Action)&&r.RetryTick>o.Tick)))return false;
         if(c.Steps.Any(s=>s.Action.Kind==ActionKind.Transfer&&(o.Fleet?.Vehicles.Any(v=>v.Vehicle.CargoInventory==s.Action.Source&&v.State=="ServiceReserved")==true)))return false;
+        if(o.Services?.OwnOrders.Any(order=>order.Customer==Actor&&order.Active&&c.Steps.Any(step=>
+            step.Action.Kind==ActionKind.CollectPurchase&&step.Action.PurchaseId==order.Quote.Terms.PurchaseId&&step.Action.PurchaseId!=0||
+            step.Action.Kind==ActionKind.DeliverContract&&step.Action.ContractId==order.Quote.Terms.ContractId&&step.Action.ContractId!=0))==true)return false;
         if(c.Goal=="SupplyProduction"&&o.Services is {} services)
         {
             var transfer=c.Steps.LastOrDefault(s=>s.Action.Kind==ActionKind.Transfer)?.Action;
@@ -37,7 +42,7 @@ public sealed partial class AlgorithmicController
         {
             var action=c.Steps.Last().Action;var parent=o.Enterprises.SingleOrDefault(e=>e.Id==action.Enterprise);
             if(parent is not null)
-            {var line=ProductionWorkplaces(parent).FirstOrDefault(l=>action.WorkshopId==0?l.Workshop==parent.Id.Value:l.Workshop==action.WorkshopId);if(line.Unit is not null&&!ProductionWorthRunning(o,line.Unit,line.Group))return false;}
+            {var line=ProductionWorkplaces(parent).FirstOrDefault(l=>action.WorkshopId==0?l.Workshop==0||l.Workshop==parent.Id.Value:l.Workshop==action.WorkshopId);if(line.Unit is not null&&!ProductionWorthRunning(o,line.Unit,line.Group))return false;}
         }
         var startup=StartupIndustry(o);long reserve=StartupReserve(o,startup);
         if(startup is not null)
@@ -45,10 +50,10 @@ public sealed partial class AlgorithmicController
             if(c.Goal=="BuyImport"&&!o.Enterprises.SelectMany(ProductionWorkplaces).Any(l=>o.Map.Recipes.Single(r=>r.Id==l.Unit.RecipeId).Ingredients.Any(i=>c.Reason.EndsWith(":"+i.ItemId,StringComparison.Ordinal)))&&(!startup.Levels[0].Materials.Any(m=>c.Reason.EndsWith(":"+m.ItemId,StringComparison.Ordinal))||o.Account.AvailableMinor<reserve))return false;
             if(c.Goal=="BuildProduction"&&o.Account.AvailableMinor<reserve)return false;
         }
-        if(c.Goal is "BuyExtraction" or "BuyLogistics" or "OutfitWorkshop" or "ExpandEnterprise")
+        if(c.Goal is "BuyExtraction" or "BuyLogistics" or "OutfitWorkshop" or "ExpandEnterprise" or "BuildShop")
         {
             if(o.Account.AvailableMinor<_state.Settings.CashReserveMinor+ExecutionReserve(o))return false;
-            if(o.Enterprises.Any(e=>ProductionWorkplaces(e).Any(l=>l.Unit.Enabled&&l.Unit.BatchId==0&&l.Unit.ReasonCode is "NoInputs" or "NoOutputSpace")))return false;
+            if(o.Enterprises.Any(e=>ProductionWorkplaces(e).Any(l=>l.Unit.CompletedBatches==0||l.Unit.Enabled&&l.Unit.BatchId==0&&(l.Unit.Staff==0||l.Unit.ReasonCode is "NoInputs" or "NoOutputSpace"))))return false;
         }
         return true;
     }

@@ -55,6 +55,7 @@ public sealed partial class AlgorithmicController
         if (o.Participant.Busy || Carrier(o).Stock.Any(s => s.Reserved > 0)) return Wait("ActiveJobOrSaleHold");
         if (!PlanRelevant(o) || (HasObligations(o) && !ObligationGoal(_state.Goal)))
             _state = _state with { Plan = [], NextStep = 0, NextDecisionTick = o.Tick };
+        if(WaitForPublicDemand(o))return Wait("AwaitingPublicDemandAtExchange");
         if (_state.NextStep < _state.Plan.Length)
             return new(_state.Goal, _state.Reason, [_state.Plan[_state.NextStep].Action],PlanStep:_state.NextStep);
         if (!completed && o.Tick < _state.NextDecisionTick) return Wait("DecisionInterval");
@@ -83,6 +84,7 @@ public sealed partial class AlgorithmicController
             );
         }
         var chosen=ranked[0].Candidate;
+        RememberMarketIntent(chosen.Goal,chosen.Steps.Select(s=>s.Action));
         if(UsesEconomicPlanning&&chosen.Goal=="BuildProduction"&&StartupIndustry(o) is {} planned)
             _state=_state with{EconomyMemory=_state.EconomyMemory! with{ConstructionIndustry=planned.Id}};
         if(_state.Settings.Difficulty==NpcDifficulty.Hard)_state=_state with {StrategyTrace=candidates.Where(c=>c.Assessment is not null).Select(c=>c.Assessment!).ToArray()};
@@ -207,7 +209,7 @@ public sealed partial class AlgorithmicController
                     60000 * settings.ExpansionWeight / 100 + margin - Math.Max(0, travel), steps.ToArray());
             }
         }
-        if (!recovery && o.Enterprises.Length > 0 && o.Equipment.Length == 0)
+        if (!UsesEconomicPlanning && !recovery && o.Enterprises.Length > 0 && o.Equipment.Length == 0)
         {
             var type = o.EquipmentTypes.FirstOrDefault(t => t.ItemId == settings.PreferredInput);
             var level = type?.Levels.Single(l => l.Level == 1);
