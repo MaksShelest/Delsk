@@ -16,9 +16,9 @@ public class NpcRecoveryG1Tests
     }
     [Fact]public void PaidWorkshopIsOutfittedAndRunsWithConservedStaff()
     {
-        var d=WorkshopD1Tests.Definition(ticks:10) with{CapitalOffers=[new(220,"plank",500,3000,new(15,2)),new(221,"bread",500,3000,new(15,2))]};var s=new GameSession(new(d));WorkshopD1Tests.Supply(s,30,0);var e=WorkshopD1Tests.Enterprise(s);
-        WorkshopD1Tests.Step(s,new(ActionKind.SetProductionEnabled,Enterprise:e.Id,Enabled:true));s.AdvanceTo(s.Engine.Tick+3);
-        StorageC1Tests.Harvest(s,"plank",6);StorageC1Tests.Put(s,e.InputId,"plank",6);StorageC1Tests.Harvest(s,"steel",1);StorageC1Tests.Put(s,e.InputId,"steel",1);
+        var d=WorkshopD1Tests.Definition(ticks:10) with{CapitalOffers=[new(220,"plank",500,3000,new(15,2)),new(221,"bread",500,3000,new(15,2))]};d=d with{ResourceNodes=[..d.ResourceNodes.Where(n=>n.ItemId!="plank")]};var s=new GameSession(new(d));WorkshopD1Tests.Supply(s,50,0);var e=WorkshopD1Tests.Enterprise(s);
+        WorkshopD1Tests.Step(s,new(ActionKind.SetProductionEnabled,Enterprise:e.Id,Enabled:true));s.AdvanceTo(s.Engine.Tick+35);
+        StorageC1Tests.Move(s,new(0,0));StorageC1Tests.Step(s,new(ActionKind.Transfer,Source:e.OutputId,Destination:StorageC1Tests.Carrier(s),ItemId:"plank",Quantity:6));StorageC1Tests.Idle(s);StorageC1Tests.Put(s,e.InputId,"plank",6);StorageC1Tests.Harvest(s,"steel",1);StorageC1Tests.Put(s,e.InputId,"steel",1);
         var c=new AlgorithmicController(new(1,"wood",Difficulty:NpcDifficulty.Medium,CoherentEconomy:true,FutureContractsEnabled:false),42,[1,2]);NpcEconomyG1Tests.Drive(s,c,()=>WorkshopD1Tests.Lines(s).Length==2&&WorkshopD1Tests.Lines(s).All(w=>w.CompletedBatches>0),1500);
         Assert.Contains(s.CommandTape,r=>r.Command.Action.Kind==ActionKind.OutfitWorkshop);Assert.Contains(s.CommandTape,r=>r.Command.Action.Kind==ActionKind.AssignWorkshopWorkers);
         Assert.Equal(s.Engine.Inspect().Population,s.Engine.Inspect().Unemployed+s.Engine.Inspect().EmploymentGroups.Sum(g=>g.Headcount));Assert.Contains(s.Engine.Ledger(),r=>r.Reason=="WorkshopOutfit");

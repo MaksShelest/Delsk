@@ -17,7 +17,13 @@ if out.exists() and any(out.iterdir()):p.error('Use a new/empty output')
 out.mkdir(parents=True,exist_ok=True)
 runner=['dotnet',ROOT/'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll'];checks=[]
 def check(name,cmd,timeout=600):
-    subprocess.run([sys.executable,ROOT/'scripts/run_check.py','--name',name,'--timeout',str(timeout),'--log-directory',out/'checks','--',*map(str,cmd)],cwd=ROOT,check=True);checks.append(name)
+    result=subprocess.run([sys.executable,ROOT/'scripts/run_check.py','--name',name,'--timeout',str(timeout),'--log-directory',out/'checks','--',*map(str,cmd)],cwd=ROOT,check=False)
+    if result.returncode:
+        for suffix in ['stdout','stderr']:
+            path=out/'checks'/f'{name}.{suffix}.log'
+            if path.exists():print(path.read_text(errors='replace')[-8000:],file=sys.stderr)
+        raise SystemExit(name+' failed')
+    checks.append(name)
 options=out/'options.json';options.write_text(json.dumps(dict(npcCount=a.bots,difficulty=a.difficulty,seed=42)))
 source=ROOT/f'scenarios/vnext/{a.map}.json';definition=json.loads(source.read_text());original_limit=definition['maxTicks']
 if a.ticks>original_limit:
@@ -31,12 +37,16 @@ check('replay-comparison',[sys.executable,ROOT/'scripts/verify_checkpoint_export
 check('accounting',[sys.executable,ROOT/'scripts/verify_results.py',base,loaded,replay],60)
 check('public-privacy',[sys.executable,ROOT/'scripts/verify_public_economy.py',base,loaded,replay],30)
 state=json.loads((base/'final-state.json').read_text());decisions=[json.loads(r) for r in (base/'decisions.jsonl').read_text().splitlines()];commands=[json.loads(r) for r in (base/'commands.jsonl').read_text().splitlines()];events=[json.loads(r) for r in (base/'events.jsonl').read_text().splitlines()]
-actors={str(r['actor']) for r in decisions}
-assert len(actors)==a.bots,(actors,a.bots)
+actors={r['actor']['value'] for r in decisions if r['actor']['value']!=1}
+assert actors==set(range(2,a.bots+2)),(actors,a.bots)
 assert not any(r['type']=='InvariantViolation' for r in events)
 summary=dict(status='succeeded',map=a.map,bots=a.bots,difficulty=a.difficulty,seed=42,ticks=a.ticks,checkpointTick=cut,processChecks=len(checks),exports=3,comparisonPairs=2,naturalStart=True,originalMapTickLimit=original_limit,horizonOnlyOverride=a.ticks>original_limit,
  goals=dict(Counter(r['decision']['goal'] for r in decisions)),actions=dict(Counter(r['command']['action']['kind'] for r in commands)),events=dict(Counter(r['type'] for r in events)),
  scope='One seed, natural start; exact controller/world continuation and ordinary-command replay. Not balance calibration or proof of difficulty superiority.')
+summary['npcCashMinor']=[r['balanceMinor'] for r in state['accounts'] if r['kind']=='Participant'][1:]
+summary['productionBuildings']=sum(r['kind']=='Production' for r in state['buildings'])
+summary['headcount']=sum(r['headcount'] for r in state['employmentGroups'])
+summary['completedBatches']=sum(r['completedBatches'] for r in state['enterprises'])
 summary['finalStateHash']=json.loads((base/'summary.json').read_text()).get('stateHash')
 (out/'gate.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n')
 print(json.dumps(summary,ensure_ascii=False))
