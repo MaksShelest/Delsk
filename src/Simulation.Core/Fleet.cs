@@ -120,7 +120,7 @@ public sealed partial class SimulationEngine
     private void BoardVehicle(ActorState actor, CommandEnvelope c)
     {
         RequireIdle(actor); RequireActionLocation(actor, c.Action); var v = OwnVehicle(actor, c.Action.VehicleId);
-        if (RoadVehicleBusy(v.Id) || HasTransfer(actor.Id) || DrivenVehicle(actor.Id) is not null || v.Driver != 0 || v.Installation is not null || VehicleTransferring(v.CargoInventory.Value) ||
+        if (RoadVehicleBusy(v.Id)&&!ServiceBoardAllowed(actor.Id,v.Id) || HasTransfer(actor.Id) || DrivenVehicle(actor.Id) is not null || v.Driver != 0 || v.Installation is not null || VehicleTransferring(v.CargoInventory.Value) ||
             VehicleLogistics(v.Id) is { } l && (l.Trip is not null || l.Enabled || l.InboundEnabled)) throw new RuleViolation("VehicleBusy");
         _vehicles[v.Id] = v with { Driver = actor.Id };
         actor.OffsetX = v.OffsetX; actor.OffsetZ = v.OffsetZ; actor.FacingX = v.FacingX; actor.FacingZ = v.FacingZ; actor.HeadingX = actor.HeadingZ = 0;
@@ -129,7 +129,7 @@ public sealed partial class SimulationEngine
     private void LeaveVehicle(ActorState actor, CommandEnvelope c)
     {
         RequireIdle(actor); var v = DrivenVehicle(actor.Id) ?? throw new RuleViolation("NotAvailable");
-        if (RoadVehicleBusy(v.Id) || HasTransfer(actor.Id) || VehicleTransferring(v.CargoInventory.Value)) throw new RuleViolation("VehicleBusy");
+        if (RoadVehicleBusy(v.Id)&&!ServiceBoardAllowed(actor.Id,v.Id) || HasTransfer(actor.Id) || VehicleTransferring(v.CargoInventory.Value)) throw new RuleViolation("VehicleBusy");
         actor.HeadingX = actor.HeadingZ = 0; _vehicles[v.Id] = v with { Driver = 0 };
         Emit("VehicleLeft", actor.Id, v.Id, command: c.CommandId);
     }

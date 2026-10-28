@@ -91,7 +91,7 @@ public sealed partial class SimulationEngine
     }
     private long ReceiveForecast(EconomyTransaction tx,long inventory,string item,long quantity,string source)
     {
-        if(Storage is null||!_buildings.Values.Any(b=>b.Input==inventory))throw new RuleViolation("NotAvailable");
+        if(Storage is null||!_buildings.Values.Any(b=>b.Input==inventory)&&!(ServiceExecution is not null&&ExecutionSite(inventory) is not null))throw new RuleViolation("NotAvailable");
         var inv=_economy.Inventories[inventory];var lot=new OverflowLot(_nextId,inv.Owner,item,quantity,source,Tick,checked(Tick+GroundRules.OverflowGraceTicks),[]);
         return tx.ReceiveForecast(inventory,item,quantity,lot).Excess;
     }
@@ -118,7 +118,7 @@ public sealed partial class SimulationEngine
         foreach(var flow in _flows.Values)if(flow.Lost<0||flow.Lost!=_events.Where(e=>e.Type=="OverflowLost"&&e.ItemId==flow.Id).Sum(e=>e.Quantity))throw new CheckpointException("OverflowLossMismatch");
         foreach(var i in _economy.Inventories.Values)foreach(var lot in i.Overflow.Values)
         {if(lot.Id<1000||lot.Owner!=i.Owner||lot.Quantity<=0||!_items.ContainsKey(lot.ItemId)||string.IsNullOrWhiteSpace(lot.Source)||lot.CreatedTick<1||lot.CreatedTick>Tick||lot.ExpiresTick!=checked(lot.CreatedTick+GroundRules.OverflowGraceTicks)||lot.ExpiresTick<=Tick||lot.Warned is null||lot.Warned.Distinct().Count()!=lot.Warned.Length||lot.Warned.Any(w=>!GroundRules.WarningOffsets!.Contains(w)))throw new CheckpointException("InvalidOverflowLot");
-            if(!lot.Source.StartsWith("demolition:",StringComparison.Ordinal)&&(!lot.Source.StartsWith("delivery:",StringComparison.Ordinal)||!long.TryParse(lot.Source[9..],out var delivery)||!_deliveryContracts.Any(d=>d.Id==delivery&&d.CapacityForecast&&d.Buyer?.Value==lot.Owner&&d.DestinationInventory?.Value==i.Id&&lot.CreatedTick>d.CreatedTick&&lot.CreatedTick<=d.DeadlineTick)||!_events.Any(e=>e.Type=="OverflowCreated"&&e.EntityId==lot.Id&&e.ItemId==lot.ItemId&&e.ActorId?.Value==lot.Owner&&e.Tick==lot.CreatedTick&&e.Quantity>=lot.Quantity)||!lot.Warned.ToHashSet().SetEquals(GroundRules.WarningOffsets!.Where(n=>lot.ExpiresTick-Tick<=n))))throw new CheckpointException("InvalidOverflowProvenance");
+            if(!ValidServiceOverflow(i.Id,lot)&&!lot.Source.StartsWith("demolition:",StringComparison.Ordinal)&&(!lot.Source.StartsWith("delivery:",StringComparison.Ordinal)||!long.TryParse(lot.Source[9..],out var delivery)||!_deliveryContracts.Any(d=>d.Id==delivery&&d.CapacityForecast&&d.Buyer?.Value==lot.Owner&&d.DestinationInventory?.Value==i.Id&&lot.CreatedTick>d.CreatedTick&&lot.CreatedTick<=d.DeadlineTick)||!_events.Any(e=>e.Type=="OverflowCreated"&&e.EntityId==lot.Id&&e.ItemId==lot.ItemId&&e.ActorId?.Value==lot.Owner&&e.Tick==lot.CreatedTick&&e.Quantity>=lot.Quantity)||!lot.Warned.ToHashSet().SetEquals(GroundRules.WarningOffsets!.Where(n=>lot.ExpiresTick-Tick<=n))))throw new CheckpointException("InvalidOverflowProvenance");
             if(lot.Source.StartsWith("demolition:",StringComparison.Ordinal)&&(!_demolitionReceipts.Any(r=>r.Owner==lot.Owner&&r.Tick==lot.CreatedTick&&r.GroundInventories.Contains(i.Id)&&lot.Source==$"demolition:{r.Target}")||!_events.Any(e=>e.Type=="OverflowCreated"&&e.EntityId==lot.Id&&e.Tick==lot.CreatedTick)))throw new CheckpointException("InvalidDemolitionOverflow");}
     }
 }

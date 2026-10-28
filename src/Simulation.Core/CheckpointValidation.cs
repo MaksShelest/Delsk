@@ -99,7 +99,8 @@ public sealed partial class SimulationEngine
                 !_seenCommands.ContainsKey(j.CommandId)) throw new CheckpointException("InvalidPersonalJob");
             if (j.Kind == "Move" && Roads is not null && DrivenVehicle(actor.Id) is {} movingVehicle)
             {
-                if(j.Path.Length<2 || j.Path.Any(c=>!_map.Walkable(c)) || !_traffic.TryGetValue(movingVehicle.Id,out var traffic) && actor.Position!=j.Path[0] || traffic is not null && traffic.Path.Length>0 && traffic.Path[^1]!=(traffic.Resume??j.Path[^1]) && traffic.Resume!=j.Path[^1])throw new CheckpointException("InvalidRoadMove");
+                bool serviceIntent=ExecutingService(movingVehicle.Id) is {} service&&_seenCommands[j.CommandId].Action.Kind==ActionKind.NavigateDeliveryService&&j.Path[^1]==ServiceTarget(service,_serviceRuns[service.Id]);
+                if(j.Path.Length<2 || j.Path.Any(c=>!_map.Walkable(c)) || !_traffic.TryGetValue(movingVehicle.Id,out var traffic) && actor.Position!=j.Path[0] || !serviceIntent && traffic is not null && traffic.Path.Length>0 && traffic.Path[^1]!=(traffic.Resume??j.Path[^1]) && traffic.Resume!=j.Path[^1])throw new CheckpointException("InvalidRoadMove");
             }
             else if (j.Kind == "Move")
             {
@@ -157,7 +158,7 @@ public sealed partial class SimulationEngine
         AddExpectedSupportHolds(expectedStock);
         AddExpectedMarketHolds(expectedStock, expectedMoney);
         AddExpectedDeliveryHolds(expectedCapacity, expectedMoney);
-        AddExpectedLogisticsHolds(expectedCapacity, expectedStock, expectedMoney);AddExpectedFleetHolds(expectedMoney);AddExpectedRoadHolds(expectedMoney);AddExpectedServiceHolds(expectedStock,expectedMoney);
+        AddExpectedLogisticsHolds(expectedCapacity, expectedStock, expectedMoney);AddExpectedFleetHolds(expectedMoney);AddExpectedRoadHolds(expectedMoney);AddExpectedServiceHolds(expectedStock,expectedMoney,expectedCapacity);
         foreach (var inv in _economy.Inventories.Values)
         {
             foreach (var h in inv.CapacityHolds)
@@ -173,7 +174,7 @@ public sealed partial class SimulationEngine
                     throw new CheckpointException("OrphanMoneyReservation");
         if (expectedCapacity.Count + expectedStock.Count + expectedMoney.Count != 0) throw new CheckpointException("MissingReservation");
         long maximum = _economy.Accounts.Keys.Concat(_economy.Inventories.Keys).Concat(_enterprises.Keys).Concat(_equipment.Keys)
-            .Concat(_roadOrders.Select(o=>o.Id)).Concat(_vehicles.Keys).Concat(_dealerStock.Select(s=>s.Id)).Concat(_platforms.Keys).Concat(_modernizations.Keys).Concat(_additionalWorkshops.Keys).Concat(_workshopInstallations.Keys).Concat(_offers.Keys).Concat(_logistics.Keys).Concat(_logistics.Values.Where(l => l.Trip is not null).Select(l => l.Trip!.Id))
+            .Concat(_serviceCrews.Values.Select(c=>c.Group.Id)).Concat(_roadOrders.Select(o=>o.Id)).Concat(_vehicles.Keys).Concat(_dealerStock.Select(s=>s.Id)).Concat(_platforms.Keys).Concat(_modernizations.Keys).Concat(_additionalWorkshops.Keys).Concat(_workshopInstallations.Keys).Concat(_offers.Keys).Concat(_logistics.Keys).Concat(_logistics.Values.Where(l => l.Trip is not null).Select(l => l.Trip!.Id))
             .Concat(_buildings.Keys).Concat(_buyOffers.Keys).Concat(_deliveryContracts.Select(d => d.Id)).Concat(_marketOffers.Keys).Concat(_marketAllocations.Select(a => a.Id)).Concat(_completedPersonalJobs).Concat(_events.Select(e => e.EntityId))
             .Concat(_actors.Values.Where(a => a.Job != null).Select(a => a.Job!.Id)).DefaultIfEmpty(0).Max();
         if (_nextId <= maximum) throw new CheckpointException("NextIdWouldDuplicateEntity");

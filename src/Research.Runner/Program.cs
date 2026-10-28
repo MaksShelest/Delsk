@@ -5,7 +5,7 @@ using Simulation.Core;
 using Agents.Algorithmic;
 using Simulation.Hosting;
 
-if(args.Contains("--export-service-profile",StringComparer.Ordinal)||args.Contains("--export-billing-profile",StringComparer.Ordinal)||args.Contains("--export-road-profile",StringComparer.Ordinal)||args.Contains("--export-fleet-profile",StringComparer.Ordinal)||args.Contains("--export-production-profile",StringComparer.Ordinal)||args.Contains("--export-storage-profile",StringComparer.Ordinal)||args.Contains("--export-workshop-profile",StringComparer.Ordinal)||args.Contains("--export-development-profile",StringComparer.Ordinal))return StorageProfileCommand.Run(args);
+if(args.Contains("--export-service-runs-profile",StringComparer.Ordinal)||args.Contains("--export-service-profile",StringComparer.Ordinal)||args.Contains("--export-billing-profile",StringComparer.Ordinal)||args.Contains("--export-road-profile",StringComparer.Ordinal)||args.Contains("--export-fleet-profile",StringComparer.Ordinal)||args.Contains("--export-production-profile",StringComparer.Ordinal)||args.Contains("--export-storage-profile",StringComparer.Ordinal)||args.Contains("--export-workshop-profile",StringComparer.Ordinal)||args.Contains("--export-development-profile",StringComparer.Ordinal))return StorageProfileCommand.Run(args);
 if(args.Contains("--export-map-design",StringComparer.Ordinal))return MapDesignCommand.Run(args);
 
 // Catalog-only commands must return before any model runtime, controller or world exists.

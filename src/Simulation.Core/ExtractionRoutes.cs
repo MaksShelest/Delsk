@@ -35,6 +35,7 @@ public sealed partial class SimulationEngine
     }
     private void BeginEquipmentMotion(EquipmentState e, Cell destination)
     {
+        if(ServicePointBusy(e.Storage))throw new RuleViolation("DeliveryServiceCommitment");
         if (!_resources.TryGetValue((destination,e.Type.ItemId), out var site) || site.Owner != e.Owner || site.Definition.ItemId != e.Type.ItemId)
             throw new RuleViolation("NoResourceRights");
         var path = _map.FindPath(e.Position, destination);
@@ -45,7 +46,7 @@ public sealed partial class SimulationEngine
     private void ConsiderExtractionRoute(EquipmentState e)
     {
         if (e.Route is not { Enabled: true } route || route.Stops.IsDefaultOrEmpty || e.Motion is not null ||
-            e.Batch is not null || e.PersonalJobId != 0 || EquipmentTransferBusy(e) || EquipmentFull(e)) return;
+            e.Batch is not null || e.PersonalJobId != 0 || EquipmentTransferBusy(e) || EquipmentFull(e) || ServicePointBusy(e.Storage)) return;
         for (int reviewed = 0; reviewed < route.Stops.Length; reviewed++)
         {
             int cursor = route.Cursor;

@@ -49,7 +49,7 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
 
 public sealed partial class SimulationEngine
 {
-    public const int CheckpointSchemaVersion = 27;
+    public const int CheckpointSchemaVersion = 28;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
@@ -127,6 +127,7 @@ public sealed partial class SimulationEngine
         {
             var s = JsonSerializer.Deserialize<WorldCheckpoint>(MigrateTravel(json), SimulationJson.Options)
                 ?? throw new CheckpointException("EmptyCheckpoint");
+            if(s.SchemaVersion<28&&(s.Services?.Execution is not null||s.Config.Economy?.ServiceExecution is not null))throw new CheckpointException("UnknownWorldSchema");
             if(s.SchemaVersion<27&&(s.Services is not null||s.Config.Economy?.Services is not null))throw new CheckpointException("UnknownWorldSchema");
             if(s.SchemaVersion<26&&(s.Billing is not null||s.Config.Economy?.Billing is not null))throw new CheckpointException("UnknownWorldSchema");
             if(s.SchemaVersion<25&&(s.Roads is not null||s.Config.Economy?.Roads is not null))throw new CheckpointException("UnknownWorldSchema");
@@ -134,7 +135,7 @@ public sealed partial class SimulationEngine
             if(s.SchemaVersion<23&&(s.ProductionContent is not null||s.Config.Economy?.ProductionContent is not null))throw new CheckpointException("UnknownWorldSchema");
             if(s.SchemaVersion<22 && (s.Development is not null||s.Config.Economy?.Development is not null||s.Config.BuildingTypes?.Any(t=>t.Levels.Any(l=>!l.Footprint.IsDefault))==true||s.Storage?.Construction.Any(c=>c.Development is not null)==true))throw new CheckpointException("UnknownWorldSchema");
             if (s.SchemaVersion < 21 && (s.Workshops is not null || s.Config.Economy?.Workshops is not null || s.Enterprises.Any(e=>e.Batch?.Terms is not null) || s.Equipment.Any(e=>e.Batch?.Terms is not null))) throw new CheckpointException("UnknownWorldSchema");
-            if (s.SchemaVersion != CheckpointSchemaVersion && s.SchemaVersion!=26 && s.SchemaVersion!=25 && s.SchemaVersion!=24 && s.SchemaVersion!=23 && s.SchemaVersion!=22 && s.SchemaVersion!=21 && s.SchemaVersion!=20 && !(s.SchemaVersion==19&&s.Demolition is null&&s.Config.Economy?.Demolition is null&&s.Flows.All(f=>f.ConstructionRecovered==0))&&!(s.SchemaVersion==18&&s.Demolition is null&&s.Config.Economy?.Storage is null&&s.Storage is null&&s.Inventories.All(i=>i.Overflow is null)&&s.Flows.All(f=>f.Lost==0&&f.ConstructionRecovered==0))) throw new CheckpointException("UnknownWorldSchema");
+            if (s.SchemaVersion != CheckpointSchemaVersion && s.SchemaVersion!=27 && s.SchemaVersion!=26 && s.SchemaVersion!=25 && s.SchemaVersion!=24 && s.SchemaVersion!=23 && s.SchemaVersion!=22 && s.SchemaVersion!=21 && s.SchemaVersion!=20 && !(s.SchemaVersion==19&&s.Demolition is null&&s.Config.Economy?.Demolition is null&&s.Flows.All(f=>f.ConstructionRecovered==0))&&!(s.SchemaVersion==18&&s.Demolition is null&&s.Config.Economy?.Storage is null&&s.Storage is null&&s.Inventories.All(i=>i.Overflow is null)&&s.Flows.All(f=>f.Lost==0&&f.ConstructionRecovered==0))) throw new CheckpointException("UnknownWorldSchema");
             if (s.RulesVersion != RulesVersion) throw new CheckpointException("UnknownRulesVersion");
             var e = new SimulationEngine(s.Config); // Only validates/configures a fresh, unpublished instance.
             if (e.ConfigHash != s.ConfigHash) throw new CheckpointException("ConfigurationHashMismatch");

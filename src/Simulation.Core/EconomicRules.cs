@@ -14,11 +14,13 @@ public sealed record EconomicRules(long PlayerWageStepMinor = 100, int Reservati
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] FleetRules? Fleet=null,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] RoadRules? Roads=null,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] BillingRules? Billing=null,
-    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ServiceRules? Services=null)
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ServiceRules? Services=null,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ServiceExecutionRules? ServiceExecution=null)
 {
     public long ReservationFee(long price) => checked((long)(((Int128)price * ReservationFeeBasisPoints + 9999) / 10000));
     public void Validate()
     {
+        ServiceExecution?.Validate();if(ServiceExecution is not null&&Services is null)throw new ArgumentException("Service execution requires offers");
         Services?.Validate();if(Services is not null&&(Billing is null||Fleet is null||Roads is null||Storage is null))throw new ArgumentException("Services require fleet/roads/billing/storage");
         Billing?.Validate();if(Billing is not null&&(Roads is null||Fleet is null||!Fleet.Models.All(m=>Billing.ClassFactors.ContainsKey(m.Id))))throw new ArgumentException("Billing requires roads");
         Storage?.Validate();Demolition?.Validate();Workshops?.Validate();Development?.Validate();

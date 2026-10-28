@@ -419,10 +419,96 @@ jobs:
         with:
           name: services-checks-and-runs
           path: artifacts/
+  service-runs-unit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exhaustive disjoint F2 ordinary suite
+        run: python scripts/run_check.py --name service-runs-unit --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --phase tests --suite runs --output artifacts/service-runs-unit
+      - name: Actual F2 counters and failed process diagnostics
+        if: always()
+        run: python scripts/report_check_results.py artifacts/service-runs-unit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: service-runs-unit-checks-and-fixtures
+          path: artifacts/service-runs-unit/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: service-runs-command-fixtures
+          path: |
+            artifacts/service-runs-unit/f2-fixtures/*.json
+            artifacts/service-runs-unit/f2-fixtures/*.jsonl
+            artifacts/service-runs-unit/f2-fixtures/*.tick
+            !artifacts/service-runs-unit/f2-fixtures/*.save.json
+  service-runs-developer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Complete F2 Developer suite and forbidden Release
+        run: python scripts/run_check.py --name service-runs-developer --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --suite runs --output artifacts/service-runs-developer
+      - name: Actual F2 counters and failed process diagnostics
+        if: always()
+        run: python scripts/report_check_results.py artifacts/service-runs-developer
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: service-runs-developer-checks
+          path: artifacts/
+  service-runs:
+    needs: [core, service-runs-unit]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: service-runs-command-fixtures
+          path: artifacts/service-runs-fixtures
+      - name: Bounded runner restore and build
+        run: |
+          python scripts/run_check.py --name services-restore --timeout 180 -- dotnet restore src/Research.Runner/Research.Runner.csproj --locked-mode --disable-parallel -m:1
+          python scripts/run_check.py --name services-build --timeout 180 -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
+      - name: F2 physical trips, partial payments, safe returns and independent audits
+        run: python scripts/run_check.py --name services-f2 --timeout 600 -- python scripts/check_services_f2.py --fixtures artifacts/service-runs-fixtures --output artifacts/services-f2
+      - name: Actual F2 counters and failed process diagnostics
+        if: always()
+        run: python scripts/report_check_results.py artifacts/services-f2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: service-runs-checks-and-runs
+          path: artifacts/
   # Preserve the required check and require every suite, including D3's independent audit.
   verify:
     if: ${{ always() }}
-    needs: [unit, core, developer, production, fleet, road-unit, road-developer, roads, billing-unit, billing-developer, billing, services-unit, services-developer, services]
+    needs: [unit, core, developer, production, fleet, road-unit, road-developer, roads, billing-unit, billing-developer, billing, services-unit, services-developer, services, service-runs-unit, service-runs-developer, service-runs]
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
@@ -440,6 +526,9 @@ jobs:
           BILLING_RESULT: ${{ needs.billing.result }}
           SERVICES_UNIT_RESULT: ${{ needs.services-unit.result }}
           SERVICES_DEVELOPER_RESULT: ${{ needs.services-developer.result }}
+          RUNS_UNIT_RESULT: ${{ needs.service-runs-unit.result }}
+          RUNS_DEVELOPER_RESULT: ${{ needs.service-runs-developer.result }}
+          RUNS_RESULT: ${{ needs.service-runs.result }}
           SERVICES_RESULT: ${{ needs.services.result }}
           FLEET_RESULT: ${{ needs.fleet.result }}
-        run: test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success && test "$ROADS_RESULT" = success && test "$ROAD_UNIT_RESULT" = success && test "$ROAD_DEVELOPER_RESULT" = success && test "$BILLING_UNIT_RESULT" = success && test "$BILLING_DEVELOPER_RESULT" = success && test "$BILLING_RESULT" = success && test "$SERVICES_UNIT_RESULT" = success && test "$SERVICES_DEVELOPER_RESULT" = success && test "$SERVICES_RESULT" = success
+        run: test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success && test "$ROADS_RESULT" = success && test "$ROAD_UNIT_RESULT" = success && test "$ROAD_DEVELOPER_RESULT" = success && test "$BILLING_UNIT_RESULT" = success && test "$BILLING_DEVELOPER_RESULT" = success && test "$BILLING_RESULT" = success && test "$SERVICES_UNIT_RESULT" = success && test "$SERVICES_DEVELOPER_RESULT" = success && test "$SERVICES_RESULT" = success && test "$RUNS_UNIT_RESULT" = success && test "$RUNS_DEVELOPER_RESULT" = success && test "$RUNS_RESULT" = success

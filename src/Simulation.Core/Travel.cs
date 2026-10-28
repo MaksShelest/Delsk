@@ -73,7 +73,7 @@ public sealed partial class SimulationEngine
     private void TravelActor(ActorState actor, int distance)
     {
         if(Roads is not null&&DrivenVehicle(actor.Id) is not null)
-        {if(actor.Job is null&&!HasSale(actor.Id))ManualRoadTravel(actor);return;}
+        {if(DrivenVehicle(actor.Id) is {} serviceVehicle&&ServiceHandlingVehicle(serviceVehicle.Id))return;if(actor.Job is null&&!HasSale(actor.Id))ManualRoadTravel(actor);return;}
         if (actor.HeadingX == 0 && actor.HeadingZ == 0) return;
         if (DrivenVehicle(actor.Id) is {} vehicle && (vehicle.Installation is not null || VehicleTransferring(vehicle.CargoInventory.Value))) return;
         if (Fleet is not null) { var next = new Cell(actor.Position.X+actor.HeadingX,actor.Position.Z+actor.HeadingZ); int speed=FleetSpeed(actor.Position,next,DrivenVehicle(actor.Id) is {} v?Model(v.ModelId):null); distance=((_travelQuantum+1)*speed*TravelUnitsPerCell/(80*TravelQuantaPerTick))-(_travelQuantum*speed*TravelUnitsPerCell/(80*TravelQuantaPerTick)); }

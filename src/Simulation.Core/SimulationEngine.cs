@@ -158,10 +158,10 @@ public sealed partial class SimulationEngine
                     else allowed.Add(c.c);
             _phase = 1;
             foreach (var c in allowed.Where(c => IsManagement(c.Action.Kind))) Execute(c);
-            _phase = 2; AdvanceTrafficAssistance(); AdvanceEquipmentMovements(); AdvanceMovements(); AdvanceLogisticsMovements();
+            _phase = 2; AdvanceServiceMovement(); AdvanceTrafficAssistance(); AdvanceEquipmentMovements(); AdvanceMovements(); AdvanceLogisticsMovements();
             _phase = 3; AcceptLogisticsArrivals(); ReserveSupportResources();
             foreach (var c in allowed.Where(c => !IsManagement(c.Action.Kind))) Execute(c);
-            AdvanceTransfers(); AdvanceOverflow(); ReserveSupportResources();
+            AdvanceTransfers(); AdvanceServiceHandling(); AdvanceOverflow(); ReserveSupportResources();
             _phase = 4; AdvanceHarvests(); AdvanceWork(); AdvanceRoadWorks();
             _phase = 5; AdvanceLabor();
             _phase = 6; CloseVehiclePurchases(); CloseCapitalWindows(); AdvanceMarketWindows(); CloseBuyWindows(); AdvanceCapitalDemand();
@@ -189,6 +189,7 @@ public sealed partial class SimulationEngine
                 throw new RuleViolation(access.ReasonCode);
             switch (c.Action.Kind)
             {
+                case ActionKind.StopDeliveryServiceHandling: case ActionKind.PickupDeliveryService: case ActionKind.UnloadDeliveryService: case ActionKind.NavigateDeliveryService: case ActionKind.SetServiceAutomation: case ActionKind.ForceCloseDeliveryService: ServiceExecutionCommand(actor,c); break;
                 case ActionKind.SetDeliveryService: case ActionKind.RequestDeliveryService: case ActionKind.AcceptDeliveryService: case ActionKind.RejectDeliveryService: case ActionKind.ConfirmDeliveryService: case ActionKind.CancelDeliveryService: case ActionKind.ViewDeliveryService: ServiceCommand(actor,c); break;
                 case ActionKind.PayInvoice: case ActionKind.ViewInvoice: case ActionKind.SetAutoPay: BillingCommand(actor,c); break;
                 case ActionKind.BuyVehicle: BuyVehicle(actor,c); break;

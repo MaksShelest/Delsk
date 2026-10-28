@@ -7,15 +7,16 @@ public sealed partial class SimulationEngine
     private readonly HashSet<long> _serviceListings=[];
     private readonly SortedDictionary<long,ServiceOrder> _serviceOrders=[];
     private bool ServiceVehicleBusy(long vehicle)=>_serviceOrders.Values.Any(o=>o.Active&&o.Quote.Terms.VehicleId==vehicle);
-    private bool ServicePointBusy(long inventory)=>_serviceOrders.Values.Any(o=>o.Active&&(o.Quote.Terms.Source.Value==inventory||o.Quote.Terms.Destination.Value==inventory));
+    private bool ServicePointBusy(long inventory)=>_serviceRuns.Values.Any(r=>r.ReturnInventory.Value==inventory&&_serviceOrders[r.Order].Active)||_serviceOrders.Values.Any(o=>o.Active&&(o.Quote.Terms.Source.Value==inventory||o.Quote.Terms.Destination.Value==inventory));
     private bool ServiceFree(OwnedVehicle v)=>v.Driver==0&&v.Installation is null&&VehicleLogistics(v.Id) is null&&
         !VehicleTransferring(v.CargoInventory.Value)&&!RoadVehicleWorking(v.Id)&&!(_roadWorks.TryGetValue(v.Id,out var w)&&w.Enabled)&&
         !(_traffic.TryGetValue(v.Id,out var t)&&(t.Progress>0||t.Resume is not null||t.Index<t.Path.Length-1))&&VehicleCargo(v).Stock.Count==0;
     private BuildingState? ServiceBuilding(long inventory)=>_buildings.Values.FirstOrDefault(b=>!Demolished(b.Id)&&!PreparingDemolition(b.Id)&&!PreparingDevelopment(b.Id)&&(b.Input==inventory||b.Output==inventory));
-    private long PurchaseServiceQuantity(long purchase,long except=0)=>_serviceOrders.Values.Where(o=>o.Active&&o.Id!=except&&o.Quote.Terms.PurchaseId==purchase).Sum(o=>o.Quote.Terms.Quantity);
+    private long PurchaseServiceQuantity(long purchase,long except=0)=>_serviceOrders.Values.Where(o=>o.Active&&o.Id!=except&&o.Quote.Terms.PurchaseId==purchase).Sum(o=>SourceRemaining(o));
     private void CheckServicePoints(long customer,ServiceTerms terms,long except=0)
     {
         if(Services is null)throw new RuleViolation("ServiceUnavailable");
+        if(ServiceExecution is not null){CheckExecutionPoints(customer,terms,except);return;}
         if(terms.Quantity<=0||!_items.ContainsKey(terms.ItemId))throw new RuleViolation("InvalidQuantity");
         var source=ServiceBuilding(terms.Source.Value);var destination=ServiceBuilding(terms.Destination.Value);
         if(source is null||destination is null||source.Position==destination.Position||terms.Source==terms.Destination||destination.Input!=terms.Destination.Value)throw new RuleViolation("ServicePointRequired");
@@ -66,7 +67,7 @@ public sealed partial class SimulationEngine
     {
         var inv=_economy.Inventories[destination];long total=inv.Incoming;
         total=checked(total+_deliveryContracts.Where(d=>d.ClosedTick is null&&d.CapacityForecast&&d.DestinationInventory?.Value==destination).Sum(d=>checked(d.RemainingQuantity*_items[d.ItemId].UnitVolume)));
-        total=checked(total+_serviceOrders.Values.Where(o=>o.Active&&o.Id!=except&&o.Quote.Terms.Destination.Value==destination&&o.Quote.Terms.ContractId==0).Sum(o=>o.Quote.Volume));
+        total=checked(total+_serviceOrders.Values.Where(o=>o.Active&&o.Id!=except&&o.Quote.Terms.Destination.Value==destination&&o.Quote.Terms.ContractId==0).Sum(o=>checked((SourceRemaining(o)+(_serviceRuns.GetValueOrDefault(o.Id)?.Cargo??0))*_items[o.Quote.Terms.ItemId].UnitVolume)));
         return total;
     }
     public ServiceQuoteResult QuoteDeliveryService(ParticipantId customer,ServiceTerms terms)
@@ -81,7 +82,7 @@ public sealed partial class SimulationEngine
             Model(vehicle.ModelId).MaterialsOnly||!ServiceFree(vehicle)||_serviceOrders.Values.Any(o=>o.Active&&o.Id!=except&&o.Quote.Terms.VehicleId==vehicle.Id))throw new RuleViolation("ServiceVehicleUnavailable");
         var model=Model(vehicle.ModelId);long unit=_items[terms.ItemId].UnitVolume,per=model.CapacityVolume/unit;if(per==0)throw new RuleViolation("NoCapacity");
         long trips=checked((terms.Quantity-1)/per+1),volume=checked(unit*terms.Quantity);
-        var at=VehicleCargo(vehicle).Position;var source=_economy.Inventories[terms.Source.Value].Position;var dest=_economy.Inventories[terms.Destination.Value].Position;
+        var at=VehicleCargo(vehicle).Position;var source=ServiceExecution is null?_economy.Inventories[terms.Source.Value].Position:ServiceAccessPoint(terms.Source.Value,vehicle.Id);var dest=terms.Destination.Value==0?ServiceCapitalTerminal:ServiceExecution is null?_economy.Inventories[terms.Destination.Value].Position:ServiceAccessPoint(terms.Destination.Value,vehicle.Id);
         var approach=ServicePath(at,source,vehicle.Id);var loaded=ServicePath(source,dest,vehicle.Id);var empty=trips>1?ServicePath(dest,source,vehicle.Id):[dest];
         long travel=checked(PathTicks(approach,model)+trips*PathTicks(loaded,model)+(trips-1)*PathTicks(empty,model));
         var a=ServicePlatform(terms.Source.Value,customer,vehicle.Owner.Value);var b=ServicePlatform(terms.Destination.Value,customer,vehicle.Owner.Value);
@@ -98,17 +99,18 @@ public sealed partial class SimulationEngine
         long buffer=Math.Max(rules.MinimumBufferTicks,checked((long)(((Int128)eta*rules.BufferBasisPoints+9999)/10000)));
         long rightsDeadline=new[]{terms.PurchaseId==0?long.MaxValue:_marketAllocations.Single(a=>a.Id==terms.PurchaseId).DeadlineTick,terms.ContractId==0?long.MaxValue:_deliveryContracts.Single(d=>d.Id==terms.ContractId).DeadlineTick}.Min();
         if(rightsDeadline<long.MaxValue&&checked(Tick+eta+(except==0?rules.ResponseTicks:0))>=rightsDeadline)throw new RuleViolation("ServiceCargoDeadlineTooSoon");
-        long expected=ExpectedServiceVolume(terms.Destination.Value,except);
-        if(terms.ContractId!=0)expected=checked(expected-volume); // This service fulfills an already forecast contract, not another arrival.
+        long expected=terms.Destination.Value==0?0:ExpectedServiceVolume(terms.Destination.Value,except);
+        if(terms.ContractId!=0&&terms.Destination.Value!=0)expected=checked(expected-volume); // This service fulfills an already forecast contract, not another arrival.
         var quote=new ServiceQuote(terms,volume,per,trips,loaded.Length-1,travel,handling,extra,eta,buffer,price,road,
-            expected,_economy.Inventories[terms.Destination.Value].Capacity,
-            _economy.Inventories[terms.Destination.Value].Occupied(_items),at,source,dest,[..approach],[..loaded],[..empty],""){CargoRightsDeadline=rightsDeadline==long.MaxValue?0:rightsDeadline};
+            expected,terms.Destination.Value==0?long.MaxValue:_economy.Inventories[terms.Destination.Value].Capacity,
+            terms.Destination.Value==0?0:_economy.Inventories[terms.Destination.Value].Occupied(_items),at,source,dest,[..approach],[..loaded],[..empty],""){ReturnInventory=ServiceExecution is null?null:ServiceReturnPoint(customer,terms,source,vehicle.Id),CargoRightsDeadline=rightsDeadline==long.MaxValue?0:rightsDeadline};
+        if(quote.ReturnInventory is {} ret)quote=quote with{ReturnPosition=ServiceAccessPoint(ret.Value,vehicle.Id)};
         return quote with{Token=ScenarioValidation.Hash(quote)};
     }
-    public ServicesState? InspectServices()=>Services is null?null:new([.._serviceListings.Order()],[.._serviceOrders.Values]);
+    public ServicesState? InspectServices()=>Services is null?null:new([.._serviceListings.Order()],[.._serviceOrders.Values]){Execution=InspectServiceExecution()};
     public ServiceObservation? ServicesOf(ParticipantId actor)=>Services is null?null:new(
         [.._serviceListings.Order().Select(id=>{var v=_vehicles[id];return new ServiceListing(id,v.Owner,v.ModelId,Model(v.ModelId).CapacityVolume,VehicleCargo(v).Position,ServiceFree(v)&&!ServiceVehicleBusy(id));})],
         [.._serviceListings.Where(id=>_vehicles[id].Owner==actor).Order()],
         [.._serviceOrders.Values.Where(o=>o.Customer==actor||o.Carrier==actor)],
-        [.._buildings.Values.Where(b=>(b.Owner==actor.Value||_deliveryContracts.Any(d=>d.Supplier==actor&&d.ClosedTick is null&&d.DestinationInventory?.Value==b.Input)||_marketAllocations.Any(a=>a.Buyer==actor&&a.ClosedTick is null&&(a.SourceInventory.Value==b.Input||a.SourceInventory.Value==b.Output)))&&!Demolished(b.Id)&&!PreparingDemolition(b.Id)).SelectMany(b=>new[]{new ServicePoint(new(b.Input),new(b.Owner),b.Position,b.Type.Kind,b.Owner==actor.Value||_marketAllocations.Any(a=>a.Buyer==actor&&a.ClosedTick is null&&a.SourceInventory.Value==b.Input),b.Owner==actor.Value||_deliveryContracts.Any(d=>d.Supplier==actor&&d.ClosedTick is null&&d.DestinationInventory?.Value==b.Input))}.Concat(b.Output is {} id?[new ServicePoint(new(id),new(b.Owner),b.Position,b.Type.Kind,b.Owner==actor.Value||_marketAllocations.Any(a=>a.Buyer==actor&&a.ClosedTick is null&&a.SourceInventory.Value==id),false)]:[]))],Services);
+        ServiceExecution is not null?ExecutionPoints(actor):[.._buildings.Values.Where(b=>(b.Owner==actor.Value||_deliveryContracts.Any(d=>d.Supplier==actor&&d.ClosedTick is null&&d.DestinationInventory?.Value==b.Input)||_marketAllocations.Any(a=>a.Buyer==actor&&a.ClosedTick is null&&(a.SourceInventory.Value==b.Input||a.SourceInventory.Value==b.Output)))&&!Demolished(b.Id)&&!PreparingDemolition(b.Id)).SelectMany(b=>new[]{new ServicePoint(new(b.Input),new(b.Owner),b.Position,b.Type.Kind,b.Owner==actor.Value||_marketAllocations.Any(a=>a.Buyer==actor&&a.ClosedTick is null&&a.SourceInventory.Value==b.Input),b.Owner==actor.Value||_deliveryContracts.Any(d=>d.Supplier==actor&&d.ClosedTick is null&&d.DestinationInventory?.Value==b.Input))}.Concat(b.Output is {} id?[new ServicePoint(new(id),new(b.Owner),b.Position,b.Type.Kind,b.Owner==actor.Value||_marketAllocations.Any(a=>a.Buyer==actor&&a.ClosedTick is null&&a.SourceInventory.Value==id),false)]:[]))],Services){Execution=ServiceExecutionOf(actor)};
 }
