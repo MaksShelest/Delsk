@@ -32,6 +32,14 @@ public class ServiceSettlementF2Tests
         var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));copy.SetPaused(false);s.SetPaused(false);s.Step();copy.Step();Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());
         Step(s,new(ActionKind.ForceCloseDeliveryService,ServiceId:o.Id),1);Assert.Equal(30,Run(s).Cargo);Deliver(s,o.Id);Assert.Equal(30,Run(s).Returned);Assert.Equal(o.Quote.FeeMinor,Run(s).RefundedMinor);Exact(s,"force-close");
     }
+    [Fact]public void CancellingAfterPartialReceiptKeepsEarnedPaymentAndReturnsOnlyRemainingCargo()
+    {
+        var(s,v,o)=Prepare(50);Board(s,v);Load(s,o.Id);Navigate(s,o.Id);Step(s,new(ActionKind.UnloadDeliveryService,ServiceId:o.Id));s.Step();
+        var before=Run(s);Assert.InRange(before.Delivered,1,34);Assert.True(before.PaidMinor>0);
+        Step(s,new(ActionKind.CancelDeliveryService,ServiceId:o.Id),1);Assert.Equal(before.PaidMinor,Run(s).PaidMinor);Deliver(s,o.Id);
+        Assert.Equal(before.Delivered,Run(s).Delivered);Assert.Equal(before.Cargo,Run(s).Returned);Assert.Equal(before.PaidMinor,Run(s).PaidMinor);
+        Assert.Equal(o.Quote.FeeMinor-before.PaidMinor,Run(s).RefundedMinor);Assert.Equal(50-before.Delivered,FleetE1Tests.Stock(s,o.Quote.Terms.Source,"wood"));Assert.Equal(before.Delivered,FleetE1Tests.Stock(s,o.Quote.Terms.Destination,"wood"));Exact(s,"cancel-after-receipt");
+    }
     [Fact]public void CancelDuringPartialLoadingReturnsOnlyRealUnitsAndReleasesRemainder()
     {
         var(s,v,o)=Prepare();Board(s,v);Navigate(s,o.Id);Step(s,new(ActionKind.PickupDeliveryService,ServiceId:o.Id));s.Step();long aboard=Run(s).Cargo;Assert.InRange(aboard,1,29);

@@ -36,6 +36,11 @@ public class ServiceControlF2Tests
         Assert.Equal("Loading",Run(s).Stage);Assert.Equal(0,Run(s).Loaded);Step(s,new(ActionKind.SetServiceAutomation,VehicleId:v.Id,Enabled:false));
         Assert.Equal("AwaitingPickup",Run(s).Stage);Step(s,new(ActionKind.BoardVehicle,VehicleId:v.Id));Load(s,o.Id);Deliver(s,o.Id);Assert.Equal(30,Run(s).Delivered);Exact(s,"handling-takeover");
     }
+    [Fact]public void MaterialsOnlyPaverCannotCreateAnOrdinaryDeliveryDriver()
+    {
+        var(s,_,_)=Prepare();var paver=FleetE1Tests.Buy(s,"trakt_d1",2);Step(s,new(ActionKind.SetServiceAutomation,VehicleId:paver.Id,Enabled:true),accepted:false);
+        Assert.Empty(s.Engine.InspectServices()!.Execution!.Crews);Exact(s,"materials-only-rejected");
+    }
     [Fact]public void BusyLeasePreventsConflictingTransfersAndRepeatPickupDoesNotDuplicateCargo()
     {
         var(s,v,o)=Prepare();Board(s,v);Load(s,o.Id);long cargo=Run(s).Cargo;

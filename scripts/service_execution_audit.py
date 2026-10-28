@@ -4,6 +4,7 @@ def verify_run(config,state,services,o,r,ledger,events,vehicles,inventories,acto
     cargo=r['loaded']-r['delivered']-r['returned'];remaining=quantity-r['loaded']-r['released']
     assert min(cargo,remaining,r['delivered'],r['returned'],r['released'])>=0
     assert r['returnInventory']==o['quote']['returnInventory']
+    if r['returnInventory']==t['destination'] and not t['contractId']:assert r['returned']==0, 'Actual receipt at agreed destination must settle delivery fee'
     assert inventories[r['returnInventory']['value']]['ownerId']==o['customer']
     delivered=gross=paid=late_gross=late_refund=0;last_tick=0
     for receipt in r['receipts']:

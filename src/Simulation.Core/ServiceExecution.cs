@@ -47,7 +47,7 @@ public sealed partial class SimulationEngine
         if(ServiceExecution is null)throw new RuleViolation("ServiceExecutionUnavailable");var action=command.Action;
         if(action.Kind==ActionKind.SetServiceAutomation)
         {
-            var v=OwnVehicle(actor,action.VehicleId);if(v.Driver!=0||action.Enabled&&ServiceHandlingVehicle(v.Id))throw new RuleViolation("VehicleBusy");
+            var v=OwnVehicle(actor,action.VehicleId);if(Model(v.ModelId).MaterialsOnly)throw new RuleViolation("ServiceVehicleUnavailable");if(v.Driver!=0||action.Enabled&&ServiceHandlingVehicle(v.Id))throw new RuleViolation("VehicleBusy");
             if(!_serviceCrews.TryGetValue(v.Id,out var crew)){crew=new(v.Id,new(_nextId++,actor.Id,0,1,Fleet!.WageMinor,EmploymentRole.DeliveryService));_serviceCrews.Add(v.Id,crew);}
             crew.Enabled=action.Enabled;
             if(!action.Enabled&&ExecutingService(v.Id) is {} active)

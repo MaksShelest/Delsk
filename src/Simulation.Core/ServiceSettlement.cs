@@ -71,6 +71,9 @@ public sealed partial class SimulationEngine
         ReleaseUnloadedServiceGoods(o);var r=_serviceRuns[o.Id];
         if(r.Cargo==0){CloseExecutedService(o,"Cancelled",reason,command);return;}
         bool canDeliver=o.Quote.Terms.ContractId==0||_deliveryContracts.Single(d=>d.Id==o.Quote.Terms.ContractId).ClosedTick is null&&Tick<=_deliveryContracts.Single(d=>d.Id==o.Quote.Terms.ContractId).DeadlineTick;
+        // A cancellation cannot turn receipt at the agreed destination into a free delivery.
+        bool sameRecipient=r.ReturnInventory==o.Quote.Terms.Destination&&o.Quote.ReturnPosition==o.Quote.DestinationPosition;
+        finishCurrent|=sameRecipient;
         _serviceRuns[o.Id]=r with{Cancellation=finishCurrent&&canDeliver?"FinishCurrent":"Return",Stage=finishCurrent&&canDeliver?"ToDestination":"Returning",WorkRemainder=0,StageStartedTick=Tick,Reason=reason};
         _serviceOrders[o.Id]=o with{CustomerViewed=false,CarrierViewed=false};Emit("ServiceCancellationRequested",o.Customer.Value,o.Id,reason:reason,command:command);
     }
