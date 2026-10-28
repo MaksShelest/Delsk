@@ -10,6 +10,7 @@ public sealed partial class AlgorithmicController
     private bool WaitForPublicDemand(ControllerObservation o)
     {
         if(!UsesEconomicPlanning||_state.EconomyMemory is not {MarketItem:{} item} memory)return false;
+        if(_state.Goal=="StageOutputAtExchange"&&_state.NextStep<_state.Plan.Length)return false;
         if(Free(Carrier(o),item)==0){_state=_state with{EconomyMemory=memory with{MarketItem=null,MarketWaitUntil=0}};return false;}
         if(o.ProductionContent is not {} market||o.Participant.Position!=market.Terminal||HasObligations(o))return false;
         if(memory.MarketWaitUntil==0){memory=memory with{MarketWaitUntil=checked(o.Tick+300)};_state=_state with{EconomyMemory=memory};}

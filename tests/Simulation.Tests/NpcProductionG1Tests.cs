@@ -25,10 +25,14 @@ public class NpcProductionG1Tests
     }
     [Fact]public void SmallBatchesReachExchangeAndSellDespiteShortLivedOffers()
     {
-        var d=ServiceF2Tests.Definition();d=d with{CapitalDemand=d.CapitalDemand! with{PeriodTicks=20}};var natural=NpcEconomyG1Tests.Profile().World.Resources!.Select(r=>r.ItemId).ToHashSet();
+        var d=ServiceF2Tests.Definition();d=d with{CapitalDemand=d.CapitalDemand! with{PeriodTicks=20,OrderTtlTicks=20}};var natural=NpcEconomyG1Tests.Profile().World.Resources!.Select(r=>r.ItemId).ToHashSet();
         d=d with{ResourceNodes=[..d.ResourceNodes.Where(r=>natural.Contains(r.ItemId))],Layout=d.Layout! with{ResourceDistricts=[..d.Layout.ResourceDistricts.Where(r=>natural.Contains(r.Item))]}};var s=new GameSession(new(d));var e=s.Engine.Observe(new(1)).OwnEnterprises.Single();StorageC1Tests.Harvest(s,"wood",20);StorageC1Tests.Put(s,e.InputId,"wood",20);
-        var c=NpcEconomyG1Tests.Controller(1);NpcEconomyG1Tests.Drive(s,c,()=>s.Engine.Inspect().Settlements.Any(r=>r.ItemId=="plank"&&r.PaidMinor>0)&&s.Engine.Observe(new(1)).OwnEnterprises.Single().CompletedBatches>=2,1800);
-        Assert.Contains(s.CommandTape,r=>r.Command.Action.Kind==ActionKind.Transfer&&r.Command.Action.Source==e.OutputId);Assert.Contains(s.CommandTape,r=>r.Command.Action.Kind==ActionKind.SellAvailableToCapital&&r.Command.Action.ItemId=="plank");NpcEconomyG1Tests.SameCheckpoint(c);
+        var c=NpcEconomyG1Tests.Controller(1);bool waitingPersisted=false;NpcEconomyG1Tests.Drive(s,c,()=>
+        {if(c.Capture().StateJson.Contains("marketWaitUntil")){waitingPersisted=true;NpcEconomyG1Tests.SameCheckpoint(c);}return s.Engine.Inspect().Settlements.Any(r=>r.ItemId=="plank"&&r.PaidMinor>0)&&s.Engine.Observe(new(1)).OwnEnterprises.Single().CompletedBatches>=2;},1800);
+        Assert.True(waitingPersisted,"The exchange wait must survive plan execution and capture");
+        // Existing own logistics may move output to a terminal before the owner collects it.
+        var carrier=s.Engine.Observe(new(1)).Participant.InventoryId;
+        Assert.Contains(s.CommandTape,r=>r.Command.Action.Kind==ActionKind.Transfer&&r.Command.Action.ItemId=="plank"&&r.Command.Action.Destination==carrier);Assert.Contains(s.CommandTape,r=>r.Command.Action.Kind==ActionKind.SellAvailableToCapital&&r.Command.Action.ItemId=="plank");NpcEconomyG1Tests.SameCheckpoint(c);
     }
     [Fact]public void ZeroWageWorkplaceIsFundedAndHiredThroughTheNormalLocalCommand()
     {
