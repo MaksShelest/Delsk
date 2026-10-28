@@ -28,6 +28,7 @@ public sealed partial class AlgorithmicController
             .Append(new("hold", "Hold", "WaitOneTick", 0, [], "hold")).ToImmutableArray();
     }
     public bool RequiresUninterruptedAlgorithm(ControllerObservation o) => HasObligations(o) ||
+        UsesEconomicPlanning&&(o.Services?.OwnOrders.Any(s=>s.Active)==true||o.EconomicOpportunities?.Overflow.Length>0) ||
         o.OwnMarketBids.Any(b => o.MarketOffers.Any(m => m.Id == b.OfferId && m.Status == MarketOfferStatus.Auction));
     private bool CanOfferModelOptions(ControllerObservation o) => _state.PendingCommandId is null &&
         _state.NextStep == 0 && _state.SuspendedPlan.Length == 0 && !o.Participant.Busy &&

@@ -1,0 +1,5161 @@
+{
+  "version": 1,
+  "id": "vnext-g1-npc-economy-1",
+  "world": {
+    "startingCashMinor": 20000,
+    "personalInventoryCapacity": 20,
+    "population": 20,
+    "plotPriceMinor": 10000,
+    "shopSitePriceMinor": 10000,
+    "harvestTicksPerUnit": 2,
+    "moveTicksPerCell": 1,
+    "tradeWindowTicks": 5,
+    "landReservationTicks": 120,
+    "maxActivePlotReservations": 4,
+    "maxTicks": 5000,
+    "items": [
+      {
+        "id": "wood",
+        "unitVolume": 2,
+        "basePriceMinor": 500
+      },
+      {
+        "id": "grain",
+        "unitVolume": 1,
+        "basePriceMinor": 300
+      },
+      {
+        "id": "stone",
+        "unitVolume": 1,
+        "basePriceMinor": 300
+      },
+      {
+        "id": "iron_ore",
+        "unitVolume": 1,
+        "basePriceMinor": 400
+      },
+      {
+        "id": "copper_ore",
+        "unitVolume": 1,
+        "basePriceMinor": 500
+      },
+      {
+        "id": "sand",
+        "unitVolume": 1,
+        "basePriceMinor": 200
+      },
+      {
+        "id": "beet",
+        "unitVolume": 1,
+        "basePriceMinor": 300
+      },
+      {
+        "id": "milk",
+        "unitVolume": 1,
+        "basePriceMinor": 400
+      },
+      {
+        "id": "coke",
+        "unitVolume": 1,
+        "basePriceMinor": 400
+      },
+      {
+        "id": "soda",
+        "unitVolume": 1,
+        "basePriceMinor": 300
+      },
+      {
+        "id": "limestone",
+        "unitVolume": 1,
+        "basePriceMinor": 200
+      },
+      {
+        "id": "cement",
+        "unitVolume": 1,
+        "basePriceMinor": 500
+      },
+      {
+        "id": "bitumen",
+        "unitVolume": 1,
+        "basePriceMinor": 600
+      },
+      {
+        "id": "plank",
+        "unitVolume": 1,
+        "basePriceMinor": 900
+      },
+      {
+        "id": "steel",
+        "unitVolume": 1,
+        "basePriceMinor": 2500
+      },
+      {
+        "id": "copper",
+        "unitVolume": 1,
+        "basePriceMinor": 3600
+      },
+      {
+        "id": "gravel",
+        "unitVolume": 1,
+        "basePriceMinor": 800
+      },
+      {
+        "id": "flour",
+        "unitVolume": 1,
+        "basePriceMinor": 900
+      },
+      {
+        "id": "sugar",
+        "unitVolume": 1,
+        "basePriceMinor": 1500
+      },
+      {
+        "id": "bread",
+        "unitVolume": 1,
+        "basePriceMinor": 2100
+      },
+      {
+        "id": "cheese",
+        "unitVolume": 1,
+        "basePriceMinor": 5000
+      },
+      {
+        "id": "curd",
+        "unitVolume": 1,
+        "basePriceMinor": 3300
+      },
+      {
+        "id": "cream",
+        "unitVolume": 1,
+        "basePriceMinor": 2800
+      },
+      {
+        "id": "wire",
+        "unitVolume": 1,
+        "basePriceMinor": 2900
+      },
+      {
+        "id": "beam",
+        "unitVolume": 2,
+        "basePriceMinor": 7200
+      },
+      {
+        "id": "steel_sheet",
+        "unitVolume": 1,
+        "basePriceMinor": 4100
+      },
+      {
+        "id": "glass",
+        "unitVolume": 1,
+        "basePriceMinor": 3400
+      },
+      {
+        "id": "concrete",
+        "unitVolume": 1,
+        "basePriceMinor": 3900
+      },
+      {
+        "id": "asphalt",
+        "unitVolume": 1,
+        "basePriceMinor": 3900
+      },
+      {
+        "id": "furniture",
+        "unitVolume": 4,
+        "basePriceMinor": 20700
+      },
+      {
+        "id": "window",
+        "unitVolume": 2,
+        "basePriceMinor": 13200
+      },
+      {
+        "id": "pastry",
+        "unitVolume": 1,
+        "basePriceMinor": 5000
+      },
+      {
+        "id": "motor",
+        "unitVolume": 4,
+        "basePriceMinor": 23400
+      },
+      {
+        "id": "conveyor",
+        "unitVolume": 10,
+        "basePriceMinor": 66500
+      }
+    ],
+    "recipes": [
+      {
+        "id": "saw_planks",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "plank",
+        "outputQuantity": 4,
+        "fullStaffTicks": 16,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 32,
+        "inputs": [
+          {
+            "itemId": "wood",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "saw_planks_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "plank",
+        "outputQuantity": 20,
+        "fullStaffTicks": 72,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 144,
+        "inputs": [
+          {
+            "itemId": "wood",
+            "quantity": 8
+          }
+        ]
+      },
+      {
+        "id": "saw_planks_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "plank",
+        "outputQuantity": 12,
+        "fullStaffTicks": 40,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 80,
+        "inputs": [
+          {
+            "itemId": "wood",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "smelt_steel",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "steel",
+        "outputQuantity": 2,
+        "fullStaffTicks": 20,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 40,
+        "inputs": [
+          {
+            "itemId": "coke",
+            "quantity": 1
+          },
+          {
+            "itemId": "iron_ore",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "smelt_steel_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "steel",
+        "outputQuantity": 10,
+        "fullStaffTicks": 90,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 180,
+        "inputs": [
+          {
+            "itemId": "coke",
+            "quantity": 4
+          },
+          {
+            "itemId": "iron_ore",
+            "quantity": 12
+          }
+        ]
+      },
+      {
+        "id": "smelt_steel_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "steel",
+        "outputQuantity": 6,
+        "fullStaffTicks": 50,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 100,
+        "inputs": [
+          {
+            "itemId": "coke",
+            "quantity": 2
+          },
+          {
+            "itemId": "iron_ore",
+            "quantity": 6
+          }
+        ]
+      },
+      {
+        "id": "smelt_copper",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "copper",
+        "outputQuantity": 1,
+        "fullStaffTicks": 16,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 32,
+        "inputs": [
+          {
+            "itemId": "copper_ore",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "smelt_copper_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "copper",
+        "outputQuantity": 5,
+        "fullStaffTicks": 72,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 144,
+        "inputs": [
+          {
+            "itemId": "copper_ore",
+            "quantity": 8
+          }
+        ]
+      },
+      {
+        "id": "smelt_copper_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "copper",
+        "outputQuantity": 3,
+        "fullStaffTicks": 40,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 80,
+        "inputs": [
+          {
+            "itemId": "copper_ore",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "crush_stone",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "gravel",
+        "outputQuantity": 5,
+        "fullStaffTicks": 20,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 40,
+        "inputs": [
+          {
+            "itemId": "stone",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "crush_stone_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "gravel",
+        "outputQuantity": 25,
+        "fullStaffTicks": 90,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 180,
+        "inputs": [
+          {
+            "itemId": "stone",
+            "quantity": 12
+          }
+        ]
+      },
+      {
+        "id": "crush_stone_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "gravel",
+        "outputQuantity": 15,
+        "fullStaffTicks": 50,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 100,
+        "inputs": [
+          {
+            "itemId": "stone",
+            "quantity": 6
+          }
+        ]
+      },
+      {
+        "id": "mill_flour",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "flour",
+        "outputQuantity": 4,
+        "fullStaffTicks": 16,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 32,
+        "inputs": [
+          {
+            "itemId": "grain",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "mill_flour_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "flour",
+        "outputQuantity": 20,
+        "fullStaffTicks": 72,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 144,
+        "inputs": [
+          {
+            "itemId": "grain",
+            "quantity": 12
+          }
+        ]
+      },
+      {
+        "id": "mill_flour_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "flour",
+        "outputQuantity": 12,
+        "fullStaffTicks": 40,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 80,
+        "inputs": [
+          {
+            "itemId": "grain",
+            "quantity": 6
+          }
+        ]
+      },
+      {
+        "id": "make_sugar",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "sugar",
+        "outputQuantity": 2,
+        "fullStaffTicks": 12,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 24,
+        "inputs": [
+          {
+            "itemId": "beet",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "make_sugar_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "sugar",
+        "outputQuantity": 10,
+        "fullStaffTicks": 54,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 108,
+        "inputs": [
+          {
+            "itemId": "beet",
+            "quantity": 12
+          }
+        ]
+      },
+      {
+        "id": "make_sugar_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "sugar",
+        "outputQuantity": 6,
+        "fullStaffTicks": 30,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 60,
+        "inputs": [
+          {
+            "itemId": "beet",
+            "quantity": 6
+          }
+        ]
+      },
+      {
+        "id": "bake_bread",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "bread",
+        "outputQuantity": 4,
+        "fullStaffTicks": 32,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 64,
+        "inputs": [
+          {
+            "itemId": "flour",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "bake_bread_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "bread",
+        "outputQuantity": 20,
+        "fullStaffTicks": 144,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 288,
+        "inputs": [
+          {
+            "itemId": "flour",
+            "quantity": 12
+          }
+        ]
+      },
+      {
+        "id": "bake_bread_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "bread",
+        "outputQuantity": 12,
+        "fullStaffTicks": 80,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 160,
+        "inputs": [
+          {
+            "itemId": "flour",
+            "quantity": 6
+          }
+        ]
+      },
+      {
+        "id": "make_cheese",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "cheese",
+        "outputQuantity": 1,
+        "fullStaffTicks": 24,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 48,
+        "inputs": [
+          {
+            "itemId": "milk",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "make_cheese_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "cheese",
+        "outputQuantity": 5,
+        "fullStaffTicks": 108,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 216,
+        "inputs": [
+          {
+            "itemId": "milk",
+            "quantity": 12
+          }
+        ]
+      },
+      {
+        "id": "make_cheese_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "cheese",
+        "outputQuantity": 3,
+        "fullStaffTicks": 60,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 120,
+        "inputs": [
+          {
+            "itemId": "milk",
+            "quantity": 6
+          }
+        ]
+      },
+      {
+        "id": "make_curd",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "curd",
+        "outputQuantity": 1,
+        "fullStaffTicks": 16,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 32,
+        "inputs": [
+          {
+            "itemId": "milk",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "make_curd_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "curd",
+        "outputQuantity": 5,
+        "fullStaffTicks": 72,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 144,
+        "inputs": [
+          {
+            "itemId": "milk",
+            "quantity": 8
+          }
+        ]
+      },
+      {
+        "id": "make_curd_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "curd",
+        "outputQuantity": 3,
+        "fullStaffTicks": 40,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 80,
+        "inputs": [
+          {
+            "itemId": "milk",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "make_cream",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "cream",
+        "outputQuantity": 2,
+        "fullStaffTicks": 28,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 56,
+        "inputs": [
+          {
+            "itemId": "milk",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "make_cream_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "cream",
+        "outputQuantity": 10,
+        "fullStaffTicks": 126,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 252,
+        "inputs": [
+          {
+            "itemId": "milk",
+            "quantity": 12
+          }
+        ]
+      },
+      {
+        "id": "make_cream_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "cream",
+        "outputQuantity": 6,
+        "fullStaffTicks": 70,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 140,
+        "inputs": [
+          {
+            "itemId": "milk",
+            "quantity": 6
+          }
+        ]
+      },
+      {
+        "id": "draw_wire",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "wire",
+        "outputQuantity": 4,
+        "fullStaffTicks": 48,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 96,
+        "inputs": [
+          {
+            "itemId": "copper",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "draw_wire_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "wire",
+        "outputQuantity": 20,
+        "fullStaffTicks": 216,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 432,
+        "inputs": [
+          {
+            "itemId": "copper",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "draw_wire_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "wire",
+        "outputQuantity": 12,
+        "fullStaffTicks": 120,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 240,
+        "inputs": [
+          {
+            "itemId": "copper",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "roll_beams",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "beam",
+        "outputQuantity": 2,
+        "fullStaffTicks": 30,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 60,
+        "inputs": [
+          {
+            "itemId": "steel",
+            "quantity": 3
+          }
+        ]
+      },
+      {
+        "id": "roll_beams_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "beam",
+        "outputQuantity": 10,
+        "fullStaffTicks": 135,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 270,
+        "inputs": [
+          {
+            "itemId": "steel",
+            "quantity": 12
+          }
+        ]
+      },
+      {
+        "id": "roll_beams_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "beam",
+        "outputQuantity": 6,
+        "fullStaffTicks": 75,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 150,
+        "inputs": [
+          {
+            "itemId": "steel",
+            "quantity": 6
+          }
+        ]
+      },
+      {
+        "id": "roll_sheet",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "steel_sheet",
+        "outputQuantity": 3,
+        "fullStaffTicks": 40,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 80,
+        "inputs": [
+          {
+            "itemId": "steel",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "roll_sheet_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "steel_sheet",
+        "outputQuantity": 15,
+        "fullStaffTicks": 180,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 360,
+        "inputs": [
+          {
+            "itemId": "steel",
+            "quantity": 8
+          }
+        ]
+      },
+      {
+        "id": "roll_sheet_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "steel_sheet",
+        "outputQuantity": 9,
+        "fullStaffTicks": 100,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 200,
+        "inputs": [
+          {
+            "itemId": "steel",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "make_glass",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "glass",
+        "outputQuantity": 3,
+        "fullStaffTicks": 60,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 120,
+        "inputs": [
+          {
+            "itemId": "limestone",
+            "quantity": 1
+          },
+          {
+            "itemId": "sand",
+            "quantity": 4
+          },
+          {
+            "itemId": "soda",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "make_glass_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "glass",
+        "outputQuantity": 15,
+        "fullStaffTicks": 270,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 540,
+        "inputs": [
+          {
+            "itemId": "limestone",
+            "quantity": 4
+          },
+          {
+            "itemId": "sand",
+            "quantity": 16
+          },
+          {
+            "itemId": "soda",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "make_glass_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "glass",
+        "outputQuantity": 9,
+        "fullStaffTicks": 150,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 300,
+        "inputs": [
+          {
+            "itemId": "limestone",
+            "quantity": 2
+          },
+          {
+            "itemId": "sand",
+            "quantity": 8
+          },
+          {
+            "itemId": "soda",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "mix_concrete",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "concrete",
+        "outputQuantity": 4,
+        "fullStaffTicks": 80,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 160,
+        "inputs": [
+          {
+            "itemId": "cement",
+            "quantity": 1
+          },
+          {
+            "itemId": "gravel",
+            "quantity": 3
+          },
+          {
+            "itemId": "sand",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "mix_concrete_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "concrete",
+        "outputQuantity": 20,
+        "fullStaffTicks": 360,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 720,
+        "inputs": [
+          {
+            "itemId": "cement",
+            "quantity": 4
+          },
+          {
+            "itemId": "gravel",
+            "quantity": 12
+          },
+          {
+            "itemId": "sand",
+            "quantity": 8
+          }
+        ]
+      },
+      {
+        "id": "mix_concrete_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "concrete",
+        "outputQuantity": 12,
+        "fullStaffTicks": 200,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 400,
+        "inputs": [
+          {
+            "itemId": "cement",
+            "quantity": 2
+          },
+          {
+            "itemId": "gravel",
+            "quantity": 6
+          },
+          {
+            "itemId": "sand",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "mix_asphalt",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "asphalt",
+        "outputQuantity": 4,
+        "fullStaffTicks": 80,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 160,
+        "inputs": [
+          {
+            "itemId": "bitumen",
+            "quantity": 1
+          },
+          {
+            "itemId": "gravel",
+            "quantity": 3
+          },
+          {
+            "itemId": "sand",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "mix_asphalt_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "asphalt",
+        "outputQuantity": 20,
+        "fullStaffTicks": 360,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 720,
+        "inputs": [
+          {
+            "itemId": "bitumen",
+            "quantity": 4
+          },
+          {
+            "itemId": "gravel",
+            "quantity": 12
+          },
+          {
+            "itemId": "sand",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "mix_asphalt_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "asphalt",
+        "outputQuantity": 12,
+        "fullStaffTicks": 200,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 400,
+        "inputs": [
+          {
+            "itemId": "bitumen",
+            "quantity": 2
+          },
+          {
+            "itemId": "gravel",
+            "quantity": 6
+          },
+          {
+            "itemId": "sand",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "assemble_furniture",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "furniture",
+        "outputQuantity": 1,
+        "fullStaffTicks": 48,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 96,
+        "inputs": [
+          {
+            "itemId": "plank",
+            "quantity": 6
+          },
+          {
+            "itemId": "steel",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "assemble_furniture_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "furniture",
+        "outputQuantity": 5,
+        "fullStaffTicks": 216,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 432,
+        "inputs": [
+          {
+            "itemId": "plank",
+            "quantity": 24
+          },
+          {
+            "itemId": "steel",
+            "quantity": 8
+          }
+        ]
+      },
+      {
+        "id": "assemble_furniture_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "furniture",
+        "outputQuantity": 3,
+        "fullStaffTicks": 120,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 240,
+        "inputs": [
+          {
+            "itemId": "plank",
+            "quantity": 12
+          },
+          {
+            "itemId": "steel",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "assemble_windows",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "window",
+        "outputQuantity": 2,
+        "fullStaffTicks": 64,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 128,
+        "inputs": [
+          {
+            "itemId": "glass",
+            "quantity": 2
+          },
+          {
+            "itemId": "plank",
+            "quantity": 4
+          },
+          {
+            "itemId": "steel",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "assemble_windows_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "window",
+        "outputQuantity": 10,
+        "fullStaffTicks": 288,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 576,
+        "inputs": [
+          {
+            "itemId": "glass",
+            "quantity": 8
+          },
+          {
+            "itemId": "plank",
+            "quantity": 16
+          },
+          {
+            "itemId": "steel",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "assemble_windows_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "window",
+        "outputQuantity": 6,
+        "fullStaffTicks": 160,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 320,
+        "inputs": [
+          {
+            "itemId": "glass",
+            "quantity": 4
+          },
+          {
+            "itemId": "plank",
+            "quantity": 8
+          },
+          {
+            "itemId": "steel",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "bake_milk",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "pastry",
+        "outputQuantity": 3,
+        "fullStaffTicks": 60,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 120,
+        "inputs": [
+          {
+            "itemId": "flour",
+            "quantity": 2
+          },
+          {
+            "itemId": "milk",
+            "quantity": 2
+          },
+          {
+            "itemId": "sugar",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "bake_milk_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "pastry",
+        "outputQuantity": 15,
+        "fullStaffTicks": 270,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 540,
+        "inputs": [
+          {
+            "itemId": "flour",
+            "quantity": 8
+          },
+          {
+            "itemId": "milk",
+            "quantity": 8
+          },
+          {
+            "itemId": "sugar",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "bake_milk_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "pastry",
+        "outputQuantity": 9,
+        "fullStaffTicks": 150,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 300,
+        "inputs": [
+          {
+            "itemId": "flour",
+            "quantity": 4
+          },
+          {
+            "itemId": "milk",
+            "quantity": 4
+          },
+          {
+            "itemId": "sugar",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "bake_curd",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "pastry",
+        "outputQuantity": 4,
+        "fullStaffTicks": 80,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 160,
+        "inputs": [
+          {
+            "itemId": "curd",
+            "quantity": 1
+          },
+          {
+            "itemId": "flour",
+            "quantity": 2
+          },
+          {
+            "itemId": "sugar",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "bake_curd_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "pastry",
+        "outputQuantity": 20,
+        "fullStaffTicks": 360,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 720,
+        "inputs": [
+          {
+            "itemId": "curd",
+            "quantity": 4
+          },
+          {
+            "itemId": "flour",
+            "quantity": 8
+          },
+          {
+            "itemId": "sugar",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "bake_curd_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "pastry",
+        "outputQuantity": 12,
+        "fullStaffTicks": 200,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 400,
+        "inputs": [
+          {
+            "itemId": "curd",
+            "quantity": 2
+          },
+          {
+            "itemId": "flour",
+            "quantity": 4
+          },
+          {
+            "itemId": "sugar",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "bake_cream",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "pastry",
+        "outputQuantity": 3,
+        "fullStaffTicks": 48,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 96,
+        "inputs": [
+          {
+            "itemId": "cream",
+            "quantity": 1
+          },
+          {
+            "itemId": "flour",
+            "quantity": 2
+          },
+          {
+            "itemId": "sugar",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "bake_cream_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "pastry",
+        "outputQuantity": 15,
+        "fullStaffTicks": 216,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 432,
+        "inputs": [
+          {
+            "itemId": "cream",
+            "quantity": 4
+          },
+          {
+            "itemId": "flour",
+            "quantity": 8
+          },
+          {
+            "itemId": "sugar",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "bake_cream_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "pastry",
+        "outputQuantity": 9,
+        "fullStaffTicks": 120,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 240,
+        "inputs": [
+          {
+            "itemId": "cream",
+            "quantity": 2
+          },
+          {
+            "itemId": "flour",
+            "quantity": 4
+          },
+          {
+            "itemId": "sugar",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "assemble_motor",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "motor",
+        "outputQuantity": 1,
+        "fullStaffTicks": 64,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 128,
+        "inputs": [
+          {
+            "itemId": "steel",
+            "quantity": 2
+          },
+          {
+            "itemId": "wire",
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": "assemble_motor_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "motor",
+        "outputQuantity": 5,
+        "fullStaffTicks": 288,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 576,
+        "inputs": [
+          {
+            "itemId": "steel",
+            "quantity": 8
+          },
+          {
+            "itemId": "wire",
+            "quantity": 8
+          }
+        ]
+      },
+      {
+        "id": "assemble_motor_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "motor",
+        "outputQuantity": 3,
+        "fullStaffTicks": 160,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 320,
+        "inputs": [
+          {
+            "itemId": "steel",
+            "quantity": 4
+          },
+          {
+            "itemId": "wire",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "assemble_conveyor",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "conveyor",
+        "outputQuantity": 1,
+        "fullStaffTicks": 120,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 240,
+        "inputs": [
+          {
+            "itemId": "motor",
+            "quantity": 1
+          },
+          {
+            "itemId": "plank",
+            "quantity": 4
+          },
+          {
+            "itemId": "steel",
+            "quantity": 4
+          }
+        ]
+      },
+      {
+        "id": "assemble_conveyor_v2",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "conveyor",
+        "outputQuantity": 5,
+        "fullStaffTicks": 540,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 1080,
+        "inputs": [
+          {
+            "itemId": "motor",
+            "quantity": 4
+          },
+          {
+            "itemId": "plank",
+            "quantity": 16
+          },
+          {
+            "itemId": "steel",
+            "quantity": 16
+          }
+        ]
+      },
+      {
+        "id": "assemble_conveyor_v3",
+        "inputItem": "",
+        "inputQuantity": 0,
+        "outputItem": "conveyor",
+        "outputQuantity": 3,
+        "fullStaffTicks": 300,
+        "requiredStaff": 5,
+        "minimumStaff": 1,
+        "energyPerBatchMinor": 600,
+        "inputs": [
+          {
+            "itemId": "motor",
+            "quantity": 2
+          },
+          {
+            "itemId": "plank",
+            "quantity": 8
+          },
+          {
+            "itemId": "steel",
+            "quantity": 8
+          }
+        ]
+      }
+    ],
+    "buildingTypes": [
+      {
+        "id": "shop",
+        "kind": "Shop",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "",
+            "priceMinor": 10000,
+            "materials": [
+              {
+                "itemId": "wood",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 200,
+            "outputCapacity": 0,
+            "staffCapacity": 0,
+            "wageMinor": 0,
+            "workRateMultiplier": 1
+          }
+        ],
+        "walls": null
+      },
+      {
+        "id": "warehouse",
+        "kind": "Warehouse",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "",
+            "priceMinor": 10000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 200,
+            "outputCapacity": 0,
+            "staffCapacity": 0,
+            "wageMinor": 0,
+            "workRateMultiplier": 1,
+            "constructionTicks": 60
+          },
+          {
+            "level": 2,
+            "recipeId": "",
+            "priceMinor": 25000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 20
+              },
+              {
+                "itemId": "steel",
+                "quantity": 4
+              }
+            ],
+            "inputCapacity": 300,
+            "outputCapacity": 0,
+            "staffCapacity": 0,
+            "wageMinor": 0,
+            "workRateMultiplier": 1,
+            "constructionTicks": 120
+          },
+          {
+            "level": 3,
+            "recipeId": "",
+            "priceMinor": 60000,
+            "materials": [
+              {
+                "itemId": "beam",
+                "quantity": 6
+              },
+              {
+                "itemId": "concrete",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 400,
+            "outputCapacity": 0,
+            "staffCapacity": 0,
+            "wageMinor": 0,
+            "workRateMultiplier": 1,
+            "constructionTicks": 180
+          }
+        ],
+        "walls": []
+      },
+      {
+        "id": "woodworking",
+        "kind": "Production",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "saw_planks",
+            "priceMinor": 17000,
+            "materials": [
+              {
+                "itemId": "steel",
+                "quantity": 3
+              },
+              {
+                "itemId": "wood",
+                "quantity": 30
+              }
+            ],
+            "inputCapacity": 80,
+            "outputCapacity": 80,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [],
+            "constructionTicks": 60,
+            "workshopSlots": 1,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              }
+            ]
+          },
+          {
+            "level": 2,
+            "recipeId": "saw_planks",
+            "priceMinor": 45000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 20
+              },
+              {
+                "itemId": "steel",
+                "quantity": 5
+              }
+            ],
+            "inputCapacity": 120,
+            "outputCapacity": 120,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "assemble_furniture"
+            ],
+            "constructionTicks": 120,
+            "workshopSlots": 2,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              }
+            ]
+          },
+          {
+            "level": 3,
+            "recipeId": "saw_planks",
+            "priceMinor": 120000,
+            "materials": [
+              {
+                "itemId": "glass",
+                "quantity": 6
+              },
+              {
+                "itemId": "plank",
+                "quantity": 30
+              },
+              {
+                "itemId": "steel",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 160,
+            "outputCapacity": 160,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "assemble_furniture",
+              "assemble_windows"
+            ],
+            "constructionTicks": 180,
+            "workshopSlots": 3,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              }
+            ]
+          },
+          {
+            "level": 4,
+            "recipeId": "saw_planks",
+            "priceMinor": 350000,
+            "materials": [
+              {
+                "itemId": "beam",
+                "quantity": 12
+              },
+              {
+                "itemId": "concrete",
+                "quantity": 20
+              },
+              {
+                "itemId": "motor",
+                "quantity": 2
+              }
+            ],
+            "inputCapacity": 200,
+            "outputCapacity": 200,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "saw_planks_v2",
+              "assemble_furniture",
+              "assemble_furniture_v2",
+              "assemble_windows",
+              "assemble_windows_v2"
+            ],
+            "constructionTicks": 300,
+            "workshopSlots": 4,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              },
+              {
+                "x": 0,
+                "z": 2
+              }
+            ]
+          },
+          {
+            "level": 5,
+            "recipeId": "saw_planks",
+            "priceMinor": 900000,
+            "materials": [
+              {
+                "itemId": "beam",
+                "quantity": 24
+              },
+              {
+                "itemId": "concrete",
+                "quantity": 40
+              },
+              {
+                "itemId": "conveyor",
+                "quantity": 2
+              },
+              {
+                "itemId": "window",
+                "quantity": 12
+              }
+            ],
+            "inputCapacity": 240,
+            "outputCapacity": 240,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "saw_planks_v2",
+              "saw_planks_v3",
+              "assemble_furniture",
+              "assemble_furniture_v2",
+              "assemble_furniture_v3",
+              "assemble_windows",
+              "assemble_windows_v2",
+              "assemble_windows_v3"
+            ],
+            "constructionTicks": 480,
+            "workshopSlots": 5,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              },
+              {
+                "x": 0,
+                "z": 2
+              },
+              {
+                "x": 1,
+                "z": 2
+              }
+            ]
+          }
+        ],
+        "walls": [],
+        "workshopOutfit": {
+          "priceMinor": 15000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 6
+            },
+            {
+              "itemId": "steel",
+              "quantity": 1
+            }
+          ],
+          "ticks": 60
+        }
+      },
+      {
+        "id": "metallurgy",
+        "kind": "Production",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "smelt_copper",
+            "priceMinor": 24000,
+            "materials": [
+              {
+                "itemId": "steel",
+                "quantity": 6
+              },
+              {
+                "itemId": "stone",
+                "quantity": 20
+              },
+              {
+                "itemId": "wood",
+                "quantity": 20
+              }
+            ],
+            "inputCapacity": 80,
+            "outputCapacity": 80,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "smelt_steel"
+            ],
+            "constructionTicks": 60,
+            "workshopSlots": 1,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              }
+            ]
+          },
+          {
+            "level": 2,
+            "recipeId": "smelt_copper",
+            "priceMinor": 45000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 20
+              },
+              {
+                "itemId": "steel",
+                "quantity": 5
+              }
+            ],
+            "inputCapacity": 120,
+            "outputCapacity": 120,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "smelt_steel",
+              "draw_wire"
+            ],
+            "constructionTicks": 120,
+            "workshopSlots": 2,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              }
+            ]
+          },
+          {
+            "level": 3,
+            "recipeId": "smelt_copper",
+            "priceMinor": 120000,
+            "materials": [
+              {
+                "itemId": "glass",
+                "quantity": 6
+              },
+              {
+                "itemId": "plank",
+                "quantity": 30
+              },
+              {
+                "itemId": "steel",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 160,
+            "outputCapacity": 160,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "smelt_steel",
+              "draw_wire",
+              "roll_beams",
+              "roll_sheet"
+            ],
+            "constructionTicks": 180,
+            "workshopSlots": 3,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              }
+            ]
+          },
+          {
+            "level": 4,
+            "recipeId": "smelt_copper",
+            "priceMinor": 350000,
+            "materials": [
+              {
+                "itemId": "beam",
+                "quantity": 12
+              },
+              {
+                "itemId": "concrete",
+                "quantity": 20
+              },
+              {
+                "itemId": "motor",
+                "quantity": 2
+              }
+            ],
+            "inputCapacity": 200,
+            "outputCapacity": 200,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "smelt_steel",
+              "smelt_steel_v2",
+              "smelt_copper_v2",
+              "draw_wire",
+              "draw_wire_v2",
+              "roll_beams",
+              "roll_beams_v2",
+              "roll_sheet",
+              "roll_sheet_v2"
+            ],
+            "constructionTicks": 300,
+            "workshopSlots": 4,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              },
+              {
+                "x": 0,
+                "z": 2
+              }
+            ]
+          },
+          {
+            "level": 5,
+            "recipeId": "smelt_copper",
+            "priceMinor": 900000,
+            "materials": [
+              {
+                "itemId": "beam",
+                "quantity": 24
+              },
+              {
+                "itemId": "concrete",
+                "quantity": 40
+              },
+              {
+                "itemId": "conveyor",
+                "quantity": 2
+              },
+              {
+                "itemId": "window",
+                "quantity": 12
+              }
+            ],
+            "inputCapacity": 240,
+            "outputCapacity": 240,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "smelt_steel",
+              "smelt_steel_v2",
+              "smelt_steel_v3",
+              "smelt_copper_v2",
+              "smelt_copper_v3",
+              "draw_wire",
+              "draw_wire_v2",
+              "draw_wire_v3",
+              "roll_beams",
+              "roll_beams_v2",
+              "roll_beams_v3",
+              "roll_sheet",
+              "roll_sheet_v2",
+              "roll_sheet_v3"
+            ],
+            "constructionTicks": 480,
+            "workshopSlots": 5,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              },
+              {
+                "x": 0,
+                "z": 2
+              },
+              {
+                "x": 1,
+                "z": 2
+              }
+            ]
+          }
+        ],
+        "walls": [],
+        "workshopOutfit": {
+          "priceMinor": 25000,
+          "materials": [
+            {
+              "itemId": "steel",
+              "quantity": 4
+            },
+            {
+              "itemId": "stone",
+              "quantity": 6
+            }
+          ],
+          "ticks": 60
+        }
+      },
+      {
+        "id": "materials",
+        "kind": "Production",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "crush_stone",
+            "priceMinor": 19000,
+            "materials": [
+              {
+                "itemId": "steel",
+                "quantity": 4
+              },
+              {
+                "itemId": "stone",
+                "quantity": 20
+              },
+              {
+                "itemId": "wood",
+                "quantity": 20
+              }
+            ],
+            "inputCapacity": 80,
+            "outputCapacity": 80,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [],
+            "constructionTicks": 60,
+            "workshopSlots": 1,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              }
+            ]
+          },
+          {
+            "level": 2,
+            "recipeId": "crush_stone",
+            "priceMinor": 45000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 20
+              },
+              {
+                "itemId": "steel",
+                "quantity": 5
+              }
+            ],
+            "inputCapacity": 120,
+            "outputCapacity": 120,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "make_glass"
+            ],
+            "constructionTicks": 120,
+            "workshopSlots": 2,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              }
+            ]
+          },
+          {
+            "level": 3,
+            "recipeId": "crush_stone",
+            "priceMinor": 120000,
+            "materials": [
+              {
+                "itemId": "glass",
+                "quantity": 6
+              },
+              {
+                "itemId": "plank",
+                "quantity": 30
+              },
+              {
+                "itemId": "steel",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 160,
+            "outputCapacity": 160,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "make_glass",
+              "mix_concrete"
+            ],
+            "constructionTicks": 180,
+            "workshopSlots": 3,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              }
+            ]
+          },
+          {
+            "level": 4,
+            "recipeId": "crush_stone",
+            "priceMinor": 350000,
+            "materials": [
+              {
+                "itemId": "beam",
+                "quantity": 12
+              },
+              {
+                "itemId": "concrete",
+                "quantity": 20
+              },
+              {
+                "itemId": "motor",
+                "quantity": 2
+              }
+            ],
+            "inputCapacity": 200,
+            "outputCapacity": 200,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "crush_stone_v2",
+              "make_glass",
+              "make_glass_v2",
+              "mix_concrete",
+              "mix_concrete_v2",
+              "mix_asphalt",
+              "mix_asphalt_v2"
+            ],
+            "constructionTicks": 300,
+            "workshopSlots": 4,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              },
+              {
+                "x": 0,
+                "z": 2
+              }
+            ]
+          },
+          {
+            "level": 5,
+            "recipeId": "crush_stone",
+            "priceMinor": 900000,
+            "materials": [
+              {
+                "itemId": "beam",
+                "quantity": 24
+              },
+              {
+                "itemId": "concrete",
+                "quantity": 40
+              },
+              {
+                "itemId": "conveyor",
+                "quantity": 2
+              },
+              {
+                "itemId": "window",
+                "quantity": 12
+              }
+            ],
+            "inputCapacity": 240,
+            "outputCapacity": 240,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "crush_stone_v2",
+              "crush_stone_v3",
+              "make_glass",
+              "make_glass_v2",
+              "make_glass_v3",
+              "mix_concrete",
+              "mix_concrete_v2",
+              "mix_concrete_v3",
+              "mix_asphalt",
+              "mix_asphalt_v2",
+              "mix_asphalt_v3"
+            ],
+            "constructionTicks": 480,
+            "workshopSlots": 5,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              },
+              {
+                "x": 0,
+                "z": 2
+              },
+              {
+                "x": 1,
+                "z": 2
+              }
+            ]
+          }
+        ],
+        "walls": [],
+        "workshopOutfit": {
+          "priceMinor": 18000,
+          "materials": [
+            {
+              "itemId": "steel",
+              "quantity": 3
+            },
+            {
+              "itemId": "stone",
+              "quantity": 10
+            }
+          ],
+          "ticks": 60
+        }
+      },
+      {
+        "id": "food",
+        "kind": "Production",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "bake_bread",
+            "priceMinor": 17000,
+            "materials": [
+              {
+                "itemId": "steel",
+                "quantity": 3
+              },
+              {
+                "itemId": "wood",
+                "quantity": 30
+              }
+            ],
+            "inputCapacity": 80,
+            "outputCapacity": 80,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "mill_flour"
+            ],
+            "constructionTicks": 60,
+            "workshopSlots": 1,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              }
+            ]
+          },
+          {
+            "level": 2,
+            "recipeId": "bake_bread",
+            "priceMinor": 45000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 20
+              },
+              {
+                "itemId": "steel",
+                "quantity": 5
+              }
+            ],
+            "inputCapacity": 120,
+            "outputCapacity": 120,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "mill_flour",
+              "make_sugar"
+            ],
+            "constructionTicks": 120,
+            "workshopSlots": 2,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              }
+            ]
+          },
+          {
+            "level": 3,
+            "recipeId": "bake_bread",
+            "priceMinor": 120000,
+            "materials": [
+              {
+                "itemId": "glass",
+                "quantity": 6
+              },
+              {
+                "itemId": "plank",
+                "quantity": 30
+              },
+              {
+                "itemId": "steel",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 160,
+            "outputCapacity": 160,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "mill_flour",
+              "make_sugar",
+              "bake_milk"
+            ],
+            "constructionTicks": 180,
+            "workshopSlots": 3,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              }
+            ]
+          },
+          {
+            "level": 4,
+            "recipeId": "bake_bread",
+            "priceMinor": 350000,
+            "materials": [
+              {
+                "itemId": "beam",
+                "quantity": 12
+              },
+              {
+                "itemId": "concrete",
+                "quantity": 20
+              },
+              {
+                "itemId": "motor",
+                "quantity": 2
+              }
+            ],
+            "inputCapacity": 200,
+            "outputCapacity": 200,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "mill_flour",
+              "mill_flour_v2",
+              "make_sugar",
+              "make_sugar_v2",
+              "bake_bread_v2",
+              "bake_milk",
+              "bake_milk_v2",
+              "bake_curd",
+              "bake_curd_v2",
+              "bake_cream",
+              "bake_cream_v2"
+            ],
+            "constructionTicks": 300,
+            "workshopSlots": 4,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              },
+              {
+                "x": 0,
+                "z": 2
+              }
+            ]
+          },
+          {
+            "level": 5,
+            "recipeId": "bake_bread",
+            "priceMinor": 900000,
+            "materials": [
+              {
+                "itemId": "beam",
+                "quantity": 24
+              },
+              {
+                "itemId": "concrete",
+                "quantity": 40
+              },
+              {
+                "itemId": "conveyor",
+                "quantity": 2
+              },
+              {
+                "itemId": "window",
+                "quantity": 12
+              }
+            ],
+            "inputCapacity": 240,
+            "outputCapacity": 240,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "mill_flour",
+              "mill_flour_v2",
+              "mill_flour_v3",
+              "make_sugar",
+              "make_sugar_v2",
+              "make_sugar_v3",
+              "bake_bread_v2",
+              "bake_bread_v3",
+              "bake_milk",
+              "bake_milk_v2",
+              "bake_milk_v3",
+              "bake_curd",
+              "bake_curd_v2",
+              "bake_curd_v3",
+              "bake_cream",
+              "bake_cream_v2",
+              "bake_cream_v3"
+            ],
+            "constructionTicks": 480,
+            "workshopSlots": 5,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              },
+              {
+                "x": 0,
+                "z": 2
+              },
+              {
+                "x": 1,
+                "z": 2
+              }
+            ]
+          }
+        ],
+        "walls": [],
+        "workshopOutfit": {
+          "priceMinor": 15000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 6
+            },
+            {
+              "itemId": "steel",
+              "quantity": 1
+            }
+          ],
+          "ticks": 60
+        }
+      },
+      {
+        "id": "dairy",
+        "kind": "Production",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "make_cheese",
+            "priceMinor": 19000,
+            "materials": [
+              {
+                "itemId": "steel",
+                "quantity": 4
+              },
+              {
+                "itemId": "wood",
+                "quantity": 25
+              }
+            ],
+            "inputCapacity": 80,
+            "outputCapacity": 80,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [],
+            "constructionTicks": 60,
+            "workshopSlots": 1,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              }
+            ]
+          },
+          {
+            "level": 2,
+            "recipeId": "make_cheese",
+            "priceMinor": 45000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 20
+              },
+              {
+                "itemId": "steel",
+                "quantity": 5
+              }
+            ],
+            "inputCapacity": 120,
+            "outputCapacity": 120,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "make_curd"
+            ],
+            "constructionTicks": 120,
+            "workshopSlots": 2,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              }
+            ]
+          },
+          {
+            "level": 3,
+            "recipeId": "make_cheese",
+            "priceMinor": 120000,
+            "materials": [
+              {
+                "itemId": "glass",
+                "quantity": 6
+              },
+              {
+                "itemId": "plank",
+                "quantity": 30
+              },
+              {
+                "itemId": "steel",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 160,
+            "outputCapacity": 160,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "make_curd",
+              "make_cream"
+            ],
+            "constructionTicks": 180,
+            "workshopSlots": 3,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              }
+            ]
+          },
+          {
+            "level": 4,
+            "recipeId": "make_cheese",
+            "priceMinor": 350000,
+            "materials": [
+              {
+                "itemId": "beam",
+                "quantity": 12
+              },
+              {
+                "itemId": "concrete",
+                "quantity": 20
+              },
+              {
+                "itemId": "motor",
+                "quantity": 2
+              }
+            ],
+            "inputCapacity": 200,
+            "outputCapacity": 200,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "make_cheese_v2",
+              "make_curd",
+              "make_curd_v2",
+              "make_cream",
+              "make_cream_v2"
+            ],
+            "constructionTicks": 300,
+            "workshopSlots": 4,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              },
+              {
+                "x": 0,
+                "z": 2
+              }
+            ]
+          },
+          {
+            "level": 5,
+            "recipeId": "make_cheese",
+            "priceMinor": 900000,
+            "materials": [
+              {
+                "itemId": "beam",
+                "quantity": 24
+              },
+              {
+                "itemId": "concrete",
+                "quantity": 40
+              },
+              {
+                "itemId": "conveyor",
+                "quantity": 2
+              },
+              {
+                "itemId": "window",
+                "quantity": 12
+              }
+            ],
+            "inputCapacity": 240,
+            "outputCapacity": 240,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "make_cheese_v2",
+              "make_cheese_v3",
+              "make_curd",
+              "make_curd_v2",
+              "make_curd_v3",
+              "make_cream",
+              "make_cream_v2",
+              "make_cream_v3"
+            ],
+            "constructionTicks": 480,
+            "workshopSlots": 5,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              },
+              {
+                "x": 0,
+                "z": 2
+              },
+              {
+                "x": 1,
+                "z": 2
+              }
+            ]
+          }
+        ],
+        "walls": [],
+        "workshopOutfit": {
+          "priceMinor": 18000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 4
+            },
+            {
+              "itemId": "steel",
+              "quantity": 2
+            }
+          ],
+          "ticks": 60
+        }
+      },
+      {
+        "id": "machinery",
+        "kind": "Production",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 0
+          }
+        ],
+        "levels": [
+          {
+            "level": 1,
+            "recipeId": "assemble_motor",
+            "priceMinor": 35000,
+            "materials": [
+              {
+                "itemId": "glass",
+                "quantity": 6
+              },
+              {
+                "itemId": "plank",
+                "quantity": 30
+              },
+              {
+                "itemId": "steel",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 80,
+            "outputCapacity": 80,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [],
+            "constructionTicks": 60,
+            "workshopSlots": 1,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              }
+            ]
+          },
+          {
+            "level": 2,
+            "recipeId": "assemble_motor",
+            "priceMinor": 45000,
+            "materials": [
+              {
+                "itemId": "plank",
+                "quantity": 20
+              },
+              {
+                "itemId": "steel",
+                "quantity": 5
+              }
+            ],
+            "inputCapacity": 120,
+            "outputCapacity": 120,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "assemble_conveyor"
+            ],
+            "constructionTicks": 120,
+            "workshopSlots": 2,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              }
+            ]
+          },
+          {
+            "level": 3,
+            "recipeId": "assemble_motor",
+            "priceMinor": 120000,
+            "materials": [
+              {
+                "itemId": "glass",
+                "quantity": 6
+              },
+              {
+                "itemId": "plank",
+                "quantity": 30
+              },
+              {
+                "itemId": "steel",
+                "quantity": 10
+              }
+            ],
+            "inputCapacity": 160,
+            "outputCapacity": 160,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "assemble_conveyor"
+            ],
+            "constructionTicks": 180,
+            "workshopSlots": 3,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              }
+            ]
+          },
+          {
+            "level": 4,
+            "recipeId": "assemble_motor",
+            "priceMinor": 350000,
+            "materials": [
+              {
+                "itemId": "beam",
+                "quantity": 12
+              },
+              {
+                "itemId": "concrete",
+                "quantity": 20
+              },
+              {
+                "itemId": "motor",
+                "quantity": 2
+              }
+            ],
+            "inputCapacity": 200,
+            "outputCapacity": 200,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "assemble_motor_v2",
+              "assemble_conveyor",
+              "assemble_conveyor_v2"
+            ],
+            "constructionTicks": 300,
+            "workshopSlots": 4,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              },
+              {
+                "x": 0,
+                "z": 2
+              }
+            ]
+          },
+          {
+            "level": 5,
+            "recipeId": "assemble_motor",
+            "priceMinor": 900000,
+            "materials": [
+              {
+                "itemId": "beam",
+                "quantity": 24
+              },
+              {
+                "itemId": "concrete",
+                "quantity": 40
+              },
+              {
+                "itemId": "conveyor",
+                "quantity": 2
+              },
+              {
+                "itemId": "window",
+                "quantity": 12
+              }
+            ],
+            "inputCapacity": 240,
+            "outputCapacity": 240,
+            "staffCapacity": 5,
+            "wageMinor": 20,
+            "workRateMultiplier": 1,
+            "additionalRecipeIds": [
+              "assemble_motor_v2",
+              "assemble_motor_v3",
+              "assemble_conveyor",
+              "assemble_conveyor_v2",
+              "assemble_conveyor_v3"
+            ],
+            "constructionTicks": 480,
+            "workshopSlots": 5,
+            "footprint": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 1,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 1
+              },
+              {
+                "x": 1,
+                "z": 1
+              },
+              {
+                "x": 0,
+                "z": 2
+              },
+              {
+                "x": 1,
+                "z": 2
+              }
+            ]
+          }
+        ],
+        "walls": [],
+        "workshopOutfit": {
+          "priceMinor": 35000,
+          "materials": [
+            {
+              "itemId": "motor",
+              "quantity": 1
+            },
+            {
+              "itemId": "steel",
+              "quantity": 6
+            }
+          ],
+          "ticks": 60
+        }
+      }
+    ],
+    "equipmentTypes": [
+      {
+        "id": "extract_beet",
+        "itemId": "beet",
+        "levels": [
+          {
+            "level": 1,
+            "priceMinor": 15000,
+            "cycleQuantity": 2,
+            "cycleTicks": 2,
+            "storageCapacity": 70,
+            "minimumCrew": 2,
+            "crewCapacity": 2,
+            "wageMinor": 20
+          },
+          {
+            "level": 2,
+            "priceMinor": 60000,
+            "cycleQuantity": 6,
+            "cycleTicks": 2,
+            "storageCapacity": 200,
+            "minimumCrew": 5,
+            "crewCapacity": 5,
+            "wageMinor": 20
+          }
+        ]
+      },
+      {
+        "id": "extract_copper_ore",
+        "itemId": "copper_ore",
+        "levels": [
+          {
+            "level": 1,
+            "priceMinor": 15000,
+            "cycleQuantity": 2,
+            "cycleTicks": 2,
+            "storageCapacity": 70,
+            "minimumCrew": 2,
+            "crewCapacity": 2,
+            "wageMinor": 20
+          },
+          {
+            "level": 2,
+            "priceMinor": 60000,
+            "cycleQuantity": 6,
+            "cycleTicks": 2,
+            "storageCapacity": 200,
+            "minimumCrew": 5,
+            "crewCapacity": 5,
+            "wageMinor": 20
+          }
+        ]
+      },
+      {
+        "id": "extract_grain",
+        "itemId": "grain",
+        "levels": [
+          {
+            "level": 1,
+            "priceMinor": 15000,
+            "cycleQuantity": 2,
+            "cycleTicks": 2,
+            "storageCapacity": 70,
+            "minimumCrew": 2,
+            "crewCapacity": 2,
+            "wageMinor": 20
+          },
+          {
+            "level": 2,
+            "priceMinor": 60000,
+            "cycleQuantity": 6,
+            "cycleTicks": 2,
+            "storageCapacity": 200,
+            "minimumCrew": 5,
+            "crewCapacity": 5,
+            "wageMinor": 20
+          }
+        ]
+      },
+      {
+        "id": "extract_iron_ore",
+        "itemId": "iron_ore",
+        "levels": [
+          {
+            "level": 1,
+            "priceMinor": 15000,
+            "cycleQuantity": 2,
+            "cycleTicks": 2,
+            "storageCapacity": 70,
+            "minimumCrew": 2,
+            "crewCapacity": 2,
+            "wageMinor": 20
+          },
+          {
+            "level": 2,
+            "priceMinor": 60000,
+            "cycleQuantity": 6,
+            "cycleTicks": 2,
+            "storageCapacity": 200,
+            "minimumCrew": 5,
+            "crewCapacity": 5,
+            "wageMinor": 20
+          }
+        ]
+      },
+      {
+        "id": "extract_milk",
+        "itemId": "milk",
+        "levels": [
+          {
+            "level": 1,
+            "priceMinor": 15000,
+            "cycleQuantity": 2,
+            "cycleTicks": 2,
+            "storageCapacity": 70,
+            "minimumCrew": 2,
+            "crewCapacity": 2,
+            "wageMinor": 20
+          },
+          {
+            "level": 2,
+            "priceMinor": 60000,
+            "cycleQuantity": 6,
+            "cycleTicks": 2,
+            "storageCapacity": 200,
+            "minimumCrew": 5,
+            "crewCapacity": 5,
+            "wageMinor": 20
+          }
+        ]
+      },
+      {
+        "id": "extract_sand",
+        "itemId": "sand",
+        "levels": [
+          {
+            "level": 1,
+            "priceMinor": 15000,
+            "cycleQuantity": 2,
+            "cycleTicks": 2,
+            "storageCapacity": 70,
+            "minimumCrew": 2,
+            "crewCapacity": 2,
+            "wageMinor": 20
+          },
+          {
+            "level": 2,
+            "priceMinor": 60000,
+            "cycleQuantity": 6,
+            "cycleTicks": 2,
+            "storageCapacity": 200,
+            "minimumCrew": 5,
+            "crewCapacity": 5,
+            "wageMinor": 20
+          }
+        ]
+      },
+      {
+        "id": "extract_stone",
+        "itemId": "stone",
+        "levels": [
+          {
+            "level": 1,
+            "priceMinor": 15000,
+            "cycleQuantity": 2,
+            "cycleTicks": 2,
+            "storageCapacity": 70,
+            "minimumCrew": 2,
+            "crewCapacity": 2,
+            "wageMinor": 20
+          },
+          {
+            "level": 2,
+            "priceMinor": 60000,
+            "cycleQuantity": 6,
+            "cycleTicks": 2,
+            "storageCapacity": 200,
+            "minimumCrew": 5,
+            "crewCapacity": 5,
+            "wageMinor": 20
+          }
+        ]
+      },
+      {
+        "id": "extract_wood",
+        "itemId": "wood",
+        "levels": [
+          {
+            "level": 1,
+            "priceMinor": 15000,
+            "cycleQuantity": 2,
+            "cycleTicks": 2,
+            "storageCapacity": 70,
+            "minimumCrew": 2,
+            "crewCapacity": 2,
+            "wageMinor": 20
+          },
+          {
+            "level": 2,
+            "priceMinor": 60000,
+            "cycleQuantity": 6,
+            "cycleTicks": 2,
+            "storageCapacity": 200,
+            "minimumCrew": 5,
+            "crewCapacity": 5,
+            "wageMinor": 20
+          }
+        ]
+      }
+    ],
+    "labor": {
+      "stepTicks": 10,
+      "salaryChangeDelayTicks": 20,
+      "mobilityNumerator": 1,
+      "mobilityDenominator": 10,
+      "growthPeriodTicks": 120,
+      "growthPerPeriod": 1
+    },
+    "market": {
+      "auctionRoundTicks": 5,
+      "auctionRounds": 2,
+      "minimumRaiseMinor": 1,
+      "pickupTtlTicks": 1200,
+      "pickupFineBasisPoints": 500
+    },
+    "delivery": {
+      "contractTtlTicks": 2400,
+      "fineBasisPoints": 500,
+      "offerTtlTicks": 180
+    },
+    "logistics": {
+      "purchasePriceMinor": 20000,
+      "cargoCapacity": 10,
+      "moveTicksPerCell": 1,
+      "minimumCrew": 2,
+      "crewCapacity": 2,
+      "wageMinor": 20,
+      "upgrade": {
+        "priceMinor": 30000,
+        "materials": [
+          {
+            "itemId": "plank",
+            "quantity": 10
+          }
+        ],
+        "cargoCapacity": 20,
+        "minimumCrew": 3,
+        "crewCapacity": 3
+      }
+    },
+    "capitalDemand": {
+      "terminal": {
+        "x": 15,
+        "z": 3
+      },
+      "periodTicks": 60,
+      "bootstrapBaseBudgetMinor": 20000,
+      "demandNumerator": 11,
+      "demandDenominator": 10,
+      "commonWaveTicks": 600,
+      "itemWaveTicks": 240,
+      "orderTtlTicks": 180,
+      "priceScaleBasisPoints": 10000
+    },
+    "elections": {
+      "periodTicks": 600,
+      "baseVote": 1,
+      "pauseForBallots": true
+    },
+    "support": {
+      "tradingPoint": {
+        "x": 15,
+        "z": 3
+      },
+      "sectionCapacity": 80
+    },
+    "rules": {
+      "playerWageStepMinor": 5,
+      "reservationFeeBasisPoints": 1000,
+      "wageAttractionExponent": 3,
+      "commonPriceMinimumBasisPoints": 9000,
+      "commonPriceMaximumBasisPoints": 11000,
+      "itemPriceMinimumBasisPoints": 8000,
+      "itemPriceMaximumBasisPoints": 12000,
+      "noiseMinimumBasisPoints": 9800,
+      "noiseMaximumBasisPoints": 10200,
+      "demandWeightMinimumBasisPoints": 5000,
+      "demandWeightMaximumBasisPoints": 15000,
+      "city": {
+        "confirmationTicks": 30,
+        "settlement": {
+          "capitalMinor": 150000,
+          "population": 25,
+          "activeProductions": 1
+        },
+        "smallTown": {
+          "capitalMinor": 400000,
+          "population": 40,
+          "activeProductions": 3
+        },
+        "developedTown": {
+          "capitalMinor": 1000000,
+          "population": 80,
+          "activeProductions": 6
+        }
+      },
+      "handling": {
+        "personalVolumePerTick": 4,
+        "workerVolumePerTick": 4
+      },
+      "negotiations": {
+        "ttlTicks": 60,
+        "maxVersions": 4,
+        "maxActivePerParticipant": 16
+      },
+      "storage": {
+        "groundCapacity": 70,
+        "overflowGraceTicks": 1200,
+        "warningOffsets": [
+          600,
+          120
+        ]
+      },
+      "workshops": {
+        "serviceMinorPerFullTick": 2
+      },
+      "development": {
+        "industries": [
+          {
+            "id": "woodworking",
+            "products": [
+              {
+                "recipeId": "saw_planks",
+                "itemId": "plank",
+                "quantity": 4,
+                "xpPerUnit": 1,
+                "technologyLevel": 1
+              },
+              {
+                "recipeId": "saw_planks_v2",
+                "itemId": "plank",
+                "quantity": 20,
+                "xpPerUnit": 1,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "saw_planks_v3",
+                "itemId": "plank",
+                "quantity": 12,
+                "xpPerUnit": 1,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "assemble_furniture",
+                "itemId": "furniture",
+                "quantity": 1,
+                "xpPerUnit": 6,
+                "technologyLevel": 2
+              },
+              {
+                "recipeId": "assemble_furniture_v2",
+                "itemId": "furniture",
+                "quantity": 5,
+                "xpPerUnit": 6,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "assemble_furniture_v3",
+                "itemId": "furniture",
+                "quantity": 3,
+                "xpPerUnit": 6,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "assemble_windows",
+                "itemId": "window",
+                "quantity": 2,
+                "xpPerUnit": 6,
+                "technologyLevel": 3
+              },
+              {
+                "recipeId": "assemble_windows_v2",
+                "itemId": "window",
+                "quantity": 10,
+                "xpPerUnit": 6,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "assemble_windows_v3",
+                "itemId": "window",
+                "quantity": 6,
+                "xpPerUnit": 6,
+                "technologyLevel": 5
+              }
+            ]
+          },
+          {
+            "id": "metallurgy",
+            "products": [
+              {
+                "recipeId": "smelt_steel",
+                "itemId": "steel",
+                "quantity": 2,
+                "xpPerUnit": 2,
+                "technologyLevel": 1
+              },
+              {
+                "recipeId": "smelt_steel_v2",
+                "itemId": "steel",
+                "quantity": 10,
+                "xpPerUnit": 2,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "smelt_steel_v3",
+                "itemId": "steel",
+                "quantity": 6,
+                "xpPerUnit": 2,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "smelt_copper",
+                "itemId": "copper",
+                "quantity": 1,
+                "xpPerUnit": 2,
+                "technologyLevel": 1
+              },
+              {
+                "recipeId": "smelt_copper_v2",
+                "itemId": "copper",
+                "quantity": 5,
+                "xpPerUnit": 2,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "smelt_copper_v3",
+                "itemId": "copper",
+                "quantity": 3,
+                "xpPerUnit": 2,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "draw_wire",
+                "itemId": "wire",
+                "quantity": 4,
+                "xpPerUnit": 3,
+                "technologyLevel": 2
+              },
+              {
+                "recipeId": "draw_wire_v2",
+                "itemId": "wire",
+                "quantity": 20,
+                "xpPerUnit": 3,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "draw_wire_v3",
+                "itemId": "wire",
+                "quantity": 12,
+                "xpPerUnit": 3,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "roll_beams",
+                "itemId": "beam",
+                "quantity": 2,
+                "xpPerUnit": 3,
+                "technologyLevel": 3
+              },
+              {
+                "recipeId": "roll_beams_v2",
+                "itemId": "beam",
+                "quantity": 10,
+                "xpPerUnit": 3,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "roll_beams_v3",
+                "itemId": "beam",
+                "quantity": 6,
+                "xpPerUnit": 3,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "roll_sheet",
+                "itemId": "steel_sheet",
+                "quantity": 3,
+                "xpPerUnit": 3,
+                "technologyLevel": 3
+              },
+              {
+                "recipeId": "roll_sheet_v2",
+                "itemId": "steel_sheet",
+                "quantity": 15,
+                "xpPerUnit": 3,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "roll_sheet_v3",
+                "itemId": "steel_sheet",
+                "quantity": 9,
+                "xpPerUnit": 3,
+                "technologyLevel": 5
+              }
+            ]
+          },
+          {
+            "id": "materials",
+            "products": [
+              {
+                "recipeId": "crush_stone",
+                "itemId": "gravel",
+                "quantity": 5,
+                "xpPerUnit": 1,
+                "technologyLevel": 1
+              },
+              {
+                "recipeId": "crush_stone_v2",
+                "itemId": "gravel",
+                "quantity": 25,
+                "xpPerUnit": 1,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "crush_stone_v3",
+                "itemId": "gravel",
+                "quantity": 15,
+                "xpPerUnit": 1,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "make_glass",
+                "itemId": "glass",
+                "quantity": 3,
+                "xpPerUnit": 4,
+                "technologyLevel": 2
+              },
+              {
+                "recipeId": "make_glass_v2",
+                "itemId": "glass",
+                "quantity": 15,
+                "xpPerUnit": 4,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "make_glass_v3",
+                "itemId": "glass",
+                "quantity": 9,
+                "xpPerUnit": 4,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "mix_concrete",
+                "itemId": "concrete",
+                "quantity": 4,
+                "xpPerUnit": 4,
+                "technologyLevel": 3
+              },
+              {
+                "recipeId": "mix_concrete_v2",
+                "itemId": "concrete",
+                "quantity": 20,
+                "xpPerUnit": 4,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "mix_concrete_v3",
+                "itemId": "concrete",
+                "quantity": 12,
+                "xpPerUnit": 4,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "mix_asphalt",
+                "itemId": "asphalt",
+                "quantity": 4,
+                "xpPerUnit": 4,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "mix_asphalt_v2",
+                "itemId": "asphalt",
+                "quantity": 20,
+                "xpPerUnit": 4,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "mix_asphalt_v3",
+                "itemId": "asphalt",
+                "quantity": 12,
+                "xpPerUnit": 4,
+                "technologyLevel": 5
+              }
+            ]
+          },
+          {
+            "id": "food",
+            "products": [
+              {
+                "recipeId": "mill_flour",
+                "itemId": "flour",
+                "quantity": 4,
+                "xpPerUnit": 1,
+                "technologyLevel": 1
+              },
+              {
+                "recipeId": "mill_flour_v2",
+                "itemId": "flour",
+                "quantity": 20,
+                "xpPerUnit": 1,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "mill_flour_v3",
+                "itemId": "flour",
+                "quantity": 12,
+                "xpPerUnit": 1,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "make_sugar",
+                "itemId": "sugar",
+                "quantity": 2,
+                "xpPerUnit": 1,
+                "technologyLevel": 2
+              },
+              {
+                "recipeId": "make_sugar_v2",
+                "itemId": "sugar",
+                "quantity": 10,
+                "xpPerUnit": 1,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "make_sugar_v3",
+                "itemId": "sugar",
+                "quantity": 6,
+                "xpPerUnit": 1,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "bake_bread",
+                "itemId": "bread",
+                "quantity": 4,
+                "xpPerUnit": 2,
+                "technologyLevel": 1
+              },
+              {
+                "recipeId": "bake_bread_v2",
+                "itemId": "bread",
+                "quantity": 20,
+                "xpPerUnit": 2,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "bake_bread_v3",
+                "itemId": "bread",
+                "quantity": 12,
+                "xpPerUnit": 2,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "bake_milk",
+                "itemId": "pastry",
+                "quantity": 3,
+                "xpPerUnit": 4,
+                "technologyLevel": 3
+              },
+              {
+                "recipeId": "bake_milk_v2",
+                "itemId": "pastry",
+                "quantity": 15,
+                "xpPerUnit": 4,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "bake_milk_v3",
+                "itemId": "pastry",
+                "quantity": 9,
+                "xpPerUnit": 4,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "bake_curd",
+                "itemId": "pastry",
+                "quantity": 4,
+                "xpPerUnit": 4,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "bake_curd_v2",
+                "itemId": "pastry",
+                "quantity": 20,
+                "xpPerUnit": 4,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "bake_curd_v3",
+                "itemId": "pastry",
+                "quantity": 12,
+                "xpPerUnit": 4,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "bake_cream",
+                "itemId": "pastry",
+                "quantity": 3,
+                "xpPerUnit": 4,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "bake_cream_v2",
+                "itemId": "pastry",
+                "quantity": 15,
+                "xpPerUnit": 4,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "bake_cream_v3",
+                "itemId": "pastry",
+                "quantity": 9,
+                "xpPerUnit": 4,
+                "technologyLevel": 5
+              }
+            ]
+          },
+          {
+            "id": "dairy",
+            "products": [
+              {
+                "recipeId": "make_cheese",
+                "itemId": "cheese",
+                "quantity": 1,
+                "xpPerUnit": 3,
+                "technologyLevel": 1
+              },
+              {
+                "recipeId": "make_cheese_v2",
+                "itemId": "cheese",
+                "quantity": 5,
+                "xpPerUnit": 3,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "make_cheese_v3",
+                "itemId": "cheese",
+                "quantity": 3,
+                "xpPerUnit": 3,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "make_curd",
+                "itemId": "curd",
+                "quantity": 1,
+                "xpPerUnit": 3,
+                "technologyLevel": 2
+              },
+              {
+                "recipeId": "make_curd_v2",
+                "itemId": "curd",
+                "quantity": 5,
+                "xpPerUnit": 3,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "make_curd_v3",
+                "itemId": "curd",
+                "quantity": 3,
+                "xpPerUnit": 3,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "make_cream",
+                "itemId": "cream",
+                "quantity": 2,
+                "xpPerUnit": 3,
+                "technologyLevel": 3
+              },
+              {
+                "recipeId": "make_cream_v2",
+                "itemId": "cream",
+                "quantity": 10,
+                "xpPerUnit": 3,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "make_cream_v3",
+                "itemId": "cream",
+                "quantity": 6,
+                "xpPerUnit": 3,
+                "technologyLevel": 5
+              }
+            ]
+          },
+          {
+            "id": "machinery",
+            "products": [
+              {
+                "recipeId": "assemble_motor",
+                "itemId": "motor",
+                "quantity": 1,
+                "xpPerUnit": 12,
+                "technologyLevel": 1
+              },
+              {
+                "recipeId": "assemble_motor_v2",
+                "itemId": "motor",
+                "quantity": 5,
+                "xpPerUnit": 12,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "assemble_motor_v3",
+                "itemId": "motor",
+                "quantity": 3,
+                "xpPerUnit": 12,
+                "technologyLevel": 5
+              },
+              {
+                "recipeId": "assemble_conveyor",
+                "itemId": "conveyor",
+                "quantity": 1,
+                "xpPerUnit": 25,
+                "technologyLevel": 2
+              },
+              {
+                "recipeId": "assemble_conveyor_v2",
+                "itemId": "conveyor",
+                "quantity": 5,
+                "xpPerUnit": 25,
+                "technologyLevel": 4
+              },
+              {
+                "recipeId": "assemble_conveyor_v3",
+                "itemId": "conveyor",
+                "quantity": 3,
+                "xpPerUnit": 25,
+                "technologyLevel": 5
+              }
+            ]
+          }
+        ],
+        "questSlots": 2,
+        "questReviewTicks": 1200
+      },
+      "productionContent": {
+        "imports": [
+          {
+            "itemId": "coke",
+            "package": 30,
+            "refreshTicks": 1200,
+            "unitPriceMinor": 500
+          },
+          {
+            "itemId": "soda",
+            "package": 30,
+            "refreshTicks": 1200,
+            "unitPriceMinor": 375
+          },
+          {
+            "itemId": "limestone",
+            "package": 30,
+            "refreshTicks": 1200,
+            "unitPriceMinor": 250
+          },
+          {
+            "itemId": "cement",
+            "package": 30,
+            "refreshTicks": 1200,
+            "unitPriceMinor": 625
+          },
+          {
+            "itemId": "bitumen",
+            "package": 30,
+            "refreshTicks": 1200,
+            "unitPriceMinor": 750
+          },
+          {
+            "itemId": "steel",
+            "package": 12,
+            "refreshTicks": 1200,
+            "unitPriceMinor": 3125
+          },
+          {
+            "itemId": "glass",
+            "package": 6,
+            "refreshTicks": 1200,
+            "unitPriceMinor": 4250
+          },
+          {
+            "itemId": "asphalt",
+            "package": 20,
+            "refreshTicks": 2400,
+            "unitPriceMinor": 4875
+          }
+        ],
+        "versions": [
+          {
+            "baseRecipe": "saw_planks",
+            "recipeId": "saw_planks",
+            "version": 1,
+            "technologyLevel": 1
+          },
+          {
+            "baseRecipe": "saw_planks",
+            "recipeId": "saw_planks_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "saw_planks",
+            "recipeId": "saw_planks_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "smelt_steel",
+            "recipeId": "smelt_steel",
+            "version": 1,
+            "technologyLevel": 1
+          },
+          {
+            "baseRecipe": "smelt_steel",
+            "recipeId": "smelt_steel_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "smelt_steel",
+            "recipeId": "smelt_steel_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "smelt_copper",
+            "recipeId": "smelt_copper",
+            "version": 1,
+            "technologyLevel": 1
+          },
+          {
+            "baseRecipe": "smelt_copper",
+            "recipeId": "smelt_copper_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "smelt_copper",
+            "recipeId": "smelt_copper_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "crush_stone",
+            "recipeId": "crush_stone",
+            "version": 1,
+            "technologyLevel": 1
+          },
+          {
+            "baseRecipe": "crush_stone",
+            "recipeId": "crush_stone_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "crush_stone",
+            "recipeId": "crush_stone_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "mill_flour",
+            "recipeId": "mill_flour",
+            "version": 1,
+            "technologyLevel": 1
+          },
+          {
+            "baseRecipe": "mill_flour",
+            "recipeId": "mill_flour_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "mill_flour",
+            "recipeId": "mill_flour_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "make_sugar",
+            "recipeId": "make_sugar",
+            "version": 1,
+            "technologyLevel": 2
+          },
+          {
+            "baseRecipe": "make_sugar",
+            "recipeId": "make_sugar_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "make_sugar",
+            "recipeId": "make_sugar_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "bake_bread",
+            "recipeId": "bake_bread",
+            "version": 1,
+            "technologyLevel": 1
+          },
+          {
+            "baseRecipe": "bake_bread",
+            "recipeId": "bake_bread_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "bake_bread",
+            "recipeId": "bake_bread_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "make_cheese",
+            "recipeId": "make_cheese",
+            "version": 1,
+            "technologyLevel": 1
+          },
+          {
+            "baseRecipe": "make_cheese",
+            "recipeId": "make_cheese_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "make_cheese",
+            "recipeId": "make_cheese_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "make_curd",
+            "recipeId": "make_curd",
+            "version": 1,
+            "technologyLevel": 2
+          },
+          {
+            "baseRecipe": "make_curd",
+            "recipeId": "make_curd_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "make_curd",
+            "recipeId": "make_curd_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "make_cream",
+            "recipeId": "make_cream",
+            "version": 1,
+            "technologyLevel": 3
+          },
+          {
+            "baseRecipe": "make_cream",
+            "recipeId": "make_cream_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "make_cream",
+            "recipeId": "make_cream_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "draw_wire",
+            "recipeId": "draw_wire",
+            "version": 1,
+            "technologyLevel": 2
+          },
+          {
+            "baseRecipe": "draw_wire",
+            "recipeId": "draw_wire_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "draw_wire",
+            "recipeId": "draw_wire_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "roll_beams",
+            "recipeId": "roll_beams",
+            "version": 1,
+            "technologyLevel": 3
+          },
+          {
+            "baseRecipe": "roll_beams",
+            "recipeId": "roll_beams_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "roll_beams",
+            "recipeId": "roll_beams_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "roll_sheet",
+            "recipeId": "roll_sheet",
+            "version": 1,
+            "technologyLevel": 3
+          },
+          {
+            "baseRecipe": "roll_sheet",
+            "recipeId": "roll_sheet_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "roll_sheet",
+            "recipeId": "roll_sheet_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "make_glass",
+            "recipeId": "make_glass",
+            "version": 1,
+            "technologyLevel": 2
+          },
+          {
+            "baseRecipe": "make_glass",
+            "recipeId": "make_glass_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "make_glass",
+            "recipeId": "make_glass_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "mix_concrete",
+            "recipeId": "mix_concrete",
+            "version": 1,
+            "technologyLevel": 3
+          },
+          {
+            "baseRecipe": "mix_concrete",
+            "recipeId": "mix_concrete_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "mix_concrete",
+            "recipeId": "mix_concrete_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "mix_asphalt",
+            "recipeId": "mix_asphalt",
+            "version": 1,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "mix_asphalt",
+            "recipeId": "mix_asphalt_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "mix_asphalt",
+            "recipeId": "mix_asphalt_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "assemble_furniture",
+            "recipeId": "assemble_furniture",
+            "version": 1,
+            "technologyLevel": 2
+          },
+          {
+            "baseRecipe": "assemble_furniture",
+            "recipeId": "assemble_furniture_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "assemble_furniture",
+            "recipeId": "assemble_furniture_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "assemble_windows",
+            "recipeId": "assemble_windows",
+            "version": 1,
+            "technologyLevel": 3
+          },
+          {
+            "baseRecipe": "assemble_windows",
+            "recipeId": "assemble_windows_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "assemble_windows",
+            "recipeId": "assemble_windows_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "bake_milk",
+            "recipeId": "bake_milk",
+            "version": 1,
+            "technologyLevel": 3
+          },
+          {
+            "baseRecipe": "bake_milk",
+            "recipeId": "bake_milk_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "bake_milk",
+            "recipeId": "bake_milk_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "bake_curd",
+            "recipeId": "bake_curd",
+            "version": 1,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "bake_curd",
+            "recipeId": "bake_curd_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "bake_curd",
+            "recipeId": "bake_curd_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "bake_cream",
+            "recipeId": "bake_cream",
+            "version": 1,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "bake_cream",
+            "recipeId": "bake_cream_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "bake_cream",
+            "recipeId": "bake_cream_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "assemble_motor",
+            "recipeId": "assemble_motor",
+            "version": 1,
+            "technologyLevel": 1
+          },
+          {
+            "baseRecipe": "assemble_motor",
+            "recipeId": "assemble_motor_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "assemble_motor",
+            "recipeId": "assemble_motor_v3",
+            "version": 3,
+            "technologyLevel": 5
+          },
+          {
+            "baseRecipe": "assemble_conveyor",
+            "recipeId": "assemble_conveyor",
+            "version": 1,
+            "technologyLevel": 2
+          },
+          {
+            "baseRecipe": "assemble_conveyor",
+            "recipeId": "assemble_conveyor_v2",
+            "version": 2,
+            "technologyLevel": 4
+          },
+          {
+            "baseRecipe": "assemble_conveyor",
+            "recipeId": "assemble_conveyor_v3",
+            "version": 3,
+            "technologyLevel": 5
+          }
+        ],
+        "modernizations": [
+          {
+            "version": 2,
+            "priceMinor": 30000,
+            "materials": [
+              {
+                "itemId": "motor",
+                "quantity": 1
+              },
+              {
+                "itemId": "steel",
+                "quantity": 4
+              }
+            ],
+            "ticks": 120
+          },
+          {
+            "version": 3,
+            "priceMinor": 90000,
+            "materials": [
+              {
+                "itemId": "conveyor",
+                "quantity": 1
+              },
+              {
+                "itemId": "steel",
+                "quantity": 6
+              }
+            ],
+            "ticks": 120
+          }
+        ]
+      },
+      "fleet": {
+        "models": [
+          {
+            "id": "sputnik20",
+            "name": "\u0421\u043F\u0443\u0442\u043D\u0438\u043A-20",
+            "speed": 60,
+            "capacityVolume": 20,
+            "priceMinor": 180000,
+            "handlingMax": 10,
+            "materialsOnly": false
+          },
+          {
+            "id": "muravey70",
+            "name": "\u041C\u0443\u0440\u0430\u0432\u0435\u0439-70",
+            "speed": 34,
+            "capacityVolume": 70,
+            "priceMinor": 250000,
+            "handlingMax": 35,
+            "materialsOnly": false
+          },
+          {
+            "id": "eger70",
+            "name": "\u0415\u0433\u0435\u0440\u044C-70",
+            "speed": 52,
+            "capacityVolume": 70,
+            "priceMinor": 450000,
+            "handlingMax": 35,
+            "materialsOnly": false
+          },
+          {
+            "id": "vector200",
+            "name": "\u0412\u0435\u043A\u0442\u043E\u0440-200",
+            "speed": 45,
+            "capacityVolume": 200,
+            "priceMinor": 900000,
+            "handlingMax": 100,
+            "materialsOnly": false
+          },
+          {
+            "id": "trakt_d1",
+            "name": "\u0410\u0441\u0444\u0430\u043B\u044C\u0442\u043E\u0443\u043A\u043B\u0430\u0434\u0447\u0438\u043A \u0422\u0440\u0430\u043A\u0442-\u04141",
+            "speed": 10,
+            "capacityVolume": 70,
+            "priceMinor": 1200000,
+            "handlingMax": 35,
+            "materialsOnly": true
+          }
+        ],
+        "kits": [
+          {
+            "level": 1,
+            "throughput": 35,
+            "priceMinor": 20000,
+            "materials": [
+              {
+                "itemId": "steel",
+                "quantity": 2
+              }
+            ],
+            "ticks": 60,
+            "staff": 1,
+            "serviceMinor": 0
+          },
+          {
+            "level": 2,
+            "throughput": 100,
+            "priceMinor": 60000,
+            "materials": [
+              {
+                "itemId": "conveyor",
+                "quantity": 1
+              },
+              {
+                "itemId": "steel",
+                "quantity": 6
+              }
+            ],
+            "ticks": 60,
+            "staff": 1,
+            "serviceMinor": 0
+          }
+        ],
+        "platforms": [
+          {
+            "level": 1,
+            "throughput": 10,
+            "priceMinor": 0,
+            "materials": [],
+            "ticks": 0,
+            "staff": 1,
+            "serviceMinor": 0
+          },
+          {
+            "level": 2,
+            "throughput": 40,
+            "priceMinor": 25000,
+            "materials": [
+              {
+                "itemId": "conveyor",
+                "quantity": 1
+              },
+              {
+                "itemId": "steel",
+                "quantity": 4
+              }
+            ],
+            "ticks": 120,
+            "staff": 1,
+            "serviceMinor": 0
+          },
+          {
+            "level": 3,
+            "throughput": 100,
+            "priceMinor": 90000,
+            "materials": [
+              {
+                "itemId": "conveyor",
+                "quantity": 2
+              },
+              {
+                "itemId": "motor",
+                "quantity": 2
+              }
+            ],
+            "ticks": 180,
+            "staff": 0,
+            "serviceMinor": 5
+          }
+        ],
+        "supplyTicks": 500,
+        "minimumStockTicks": 2500,
+        "purchaseWindowTicks": 5,
+        "wageMinor": 20
+      },
+      "roads": {
+        "stages": [
+          {
+            "level": 1,
+            "speed": 20,
+            "priceMinor": 200,
+            "ticks": 8,
+            "materials": [
+              {
+                "itemId": "gravel",
+                "quantity": 2
+              }
+            ]
+          },
+          {
+            "level": 2,
+            "speed": 40,
+            "priceMinor": 400,
+            "ticks": 12,
+            "materials": [
+              {
+                "itemId": "asphalt",
+                "quantity": 1
+              },
+              {
+                "itemId": "gravel",
+                "quantity": 2
+              }
+            ]
+          },
+          {
+            "level": 3,
+            "speed": 60,
+            "priceMinor": 800,
+            "ticks": 16,
+            "materials": [
+              {
+                "itemId": "asphalt",
+                "quantity": 2
+              },
+              {
+                "itemId": "concrete",
+                "quantity": 1
+              }
+            ]
+          }
+        ],
+        "wageMinor": 20,
+        "exitHoldTicks": 1,
+        "warningTicks": 30,
+        "releaseTicks": 60
+      },
+      "billing": {
+        "invoicePeriod": 120,
+        "graceTicks": 1000,
+        "penaltyPeriod": 1000,
+        "penaltyBasisPoints": 2000,
+        "cityShareBasisPoints": 1000,
+        "lightIncrementMinor": 1,
+        "classFactors": {
+          "eger70": 10000,
+          "muravey70": 10000,
+          "sputnik20": 10000,
+          "trakt_d1": 20000,
+          "vector200": 20000
+        }
+      },
+      "services": {
+        "responseTicks": 10,
+        "minimumFeeMinor": 500,
+        "fixedFeeMinor": 200,
+        "blockFeeMinor": 10,
+        "volumeBlock": 10,
+        "distanceBlock": 10,
+        "costMarkupBasisPoints": 12000,
+        "driverWageMinor": 20,
+        "minimumBufferTicks": 600,
+        "bufferBasisPoints": 5000
+      },
+      "serviceExecution": {
+        "lateBasisPoints": 2000,
+        "forceCloseAfterTicks": 1200
+      }
+    },
+    "resources": [
+      {
+        "itemId": "beet",
+        "private": {
+          "public": false,
+          "capacity": 100,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 10,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 50,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 30,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      },
+      {
+        "itemId": "copper_ore",
+        "private": {
+          "public": false,
+          "capacity": 100,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 16,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 50,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 48,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      },
+      {
+        "itemId": "grain",
+        "private": {
+          "public": false,
+          "capacity": 120,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 8,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 60,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 24,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      },
+      {
+        "itemId": "iron_ore",
+        "private": {
+          "public": false,
+          "capacity": 120,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 12,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 60,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 36,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      },
+      {
+        "itemId": "milk",
+        "private": {
+          "public": false,
+          "capacity": 80,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 10,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 40,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 30,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      },
+      {
+        "itemId": "sand",
+        "private": {
+          "public": false,
+          "capacity": 160,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 6,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 80,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 18,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      },
+      {
+        "itemId": "stone",
+        "private": {
+          "public": false,
+          "capacity": 160,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 8,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 80,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 24,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      },
+      {
+        "itemId": "wood",
+        "private": {
+          "public": false,
+          "capacity": 120,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 4,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        },
+        "public": {
+          "public": true,
+          "capacity": 60,
+          "regenerationQuantity": 1,
+          "regenerationTicks": 12,
+          "purchasePriceMinor": 15000,
+          "leasePriceMinor": 1500,
+          "leaseTicks": 1200,
+          "initialOwner": null
+        }
+      }
+    ]
+  },
+  "npc": {
+    "cashReserveMinor": 3000,
+    "batchQuantity": 20,
+    "baseWageMinor": 20,
+    "maximumWageMinor": 50,
+    "wageRaiseMinor": 1,
+    "wageReviewTicks": 60,
+    "blockedRetryTicks": 30,
+    "maximumBuyPriceBasisPoints": 12500,
+    "sellPriceBasisPoints": 10000,
+    "supportPricePerVoteMinor": 500,
+    "politicalHorizonTicks": 180,
+    "marketLotQuantity": 10,
+    "decisionIntervalTicks": 5,
+    "expansionWeight": 100,
+    "cashWeight": 100,
+    "productionWeight": 100,
+    "ownVictoryWeight": 100,
+    "humanDefeatWeight": 0,
+    "harvestCoefficient": 1,
+    "productionCoefficient": 1,
+    "tradeEnabled": true,
+    "logisticsEnabled": true,
+    "politicsEnabled": true,
+    "futureContractsEnabled": true,
+    "coherentEconomy": true
+  },
+  "vNext": {
+    "projectionVersion": "npc-economy-projection-1",
+    "sourceSha256": "711e08a681cf27442b4e9c37b56ce7b2713c39d9ecf65ce3f761c92cfc8ee3ec",
+    "fullBalanceSha256": "c14c3130c8e51ae84093f6c32081d01d0d3151da4d872d3fe2d0c344e684b398",
+    "catalogSha256": "38b0bcb53ecef3c6a7131e449c78acded67450bb2c0ab8311084d7b357dcc197",
+    "baselineProfileSha256": "b3da26be46960e876327a0dcca960c48575b6a98c9080eacb283a4a3f2c7317c",
+    "projectionPayloadSha256": "e3c3fe1db56a46d3b26412b1a596a0eff01ee338c707fe14dfba309ec4d8a2f7",
+    "fixedParticipants": 4,
+    "activeCapabilities": [
+      "34-item-definitions",
+      "23-v1-recipes-1-to-8-inputs",
+      "linear-staff-existing-executor",
+      "proportional-service-per-work",
+      "8-resource-site-profiles",
+      "uniform-manual-harvest",
+      "start-cash-personal-capacity-land-fee",
+      "demand-period-budget-coefficient-for-4",
+      "election-period",
+      "ground-storage",
+      "timed-warehouses",
+      "delivery-overflow",
+      "parallel-workshops",
+      "workshop-labor-curve",
+      "paid-ready-slot-outfit",
+      "safe-demolition",
+      "industry-experience",
+      "funded-delivery-quests",
+      "industrial-contour-rights",
+      "timed-enterprise-expansion",
+      "per-cell-investment-levels",
+      "full-six-industry-production",
+      "finite-paid-import",
+      "resource-equipment",
+      "paid-local-recipe-versions",
+      "finite-vehicle-dealer",
+      "owned-fleet",
+      "shared-cargo-logistics",
+      "paid-handling-equipment",
+      "sequential-road-construction",
+      "layer-contributions",
+      "physical-paver-bypass",
+      "shared-traffic-assistance",
+      "distance-road-accruals",
+      "principal-first-invoices",
+      "free-money-auto-pay",
+      "personal-account",
+      "delivery-offers",
+      "multi-trip-service-quotes",
+      "service-reservations-and-acceptance",
+      "physical-service-runs",
+      "per-receipt-service-settlement",
+      "paid-service-drivers",
+      "safe-service-returns",
+      "coherent-npc-economy",
+      "persisted-rejection-memory"
+    ],
+    "limitations": [
+      "G1 policy uses the same finite resources and commands; natural progression is measured separately from prepared feature fixtures.",
+      "Difficulty is a policy difference, not a proven Hard win-rate advantage."
+    ]
+  }
+}

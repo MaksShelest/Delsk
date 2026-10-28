@@ -14,6 +14,7 @@ public sealed partial class AlgorithmicController
             EmploymentRole.Production => Inventory(o,o.Enterprises.Single(e=>e.Id.Value==group.Id.Value||!e.Workshops.IsDefault&&e.Workshops.Any(w=>w.GroupId==group.Id)).InputId).Position,
             EmploymentRole.Handling => o.Buildings.Single(b=>b.Id.Value==o.Fleet!.Platforms.Single(p=>p.Group.Id==group.Id).Building).Position,
             EmploymentRole.Extraction => o.Equipment.Single(e=>e.GroupId==group.Id).Position,
+            EmploymentRole.DeliveryService => o.Fleet!.Vehicles.Single(v=>v.Vehicle.Id==o.Services!.Execution!.Crews.Single(c=>c.Group.Id==group.Id).Vehicle).Position,
             EmploymentRole.RoadWorks => o.Fleet!.Vehicles.Single(v=>v.Vehicle.Id==group.Id.Value).Position,
             _ => Inventory(o,o.Enterprises.Single(e=>e.Id==o.OwnLogistics.Single(l=>l.GroupId==group.Id).EnterpriseId).InputId).Position
         };

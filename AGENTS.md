@@ -1,3 +1,23 @@
+## G1,28.10.2026 — NPC/P76 (текущая итерация)
+
+- Явное задание пользователя разрешает G1 поверх0511375/merge PR70 с полным F2.
+  По содержанию это P76, а не историческое G1/P75 (карта). P77 не начинать.
+  Ветка feat/vnext-g1-npc-economy. PR без auto merge. Автор: Шелестов Максим Евгеньевич.
+- Новый opt-in профиль vnext-g1-npc-economy-1: World идентичен F2; coherentEconomy
+  только в настройках NPC. Старые профили и controller versions2/3 не подменять.
+  Новая память отказов/стройки — version4; hybrid сохраняет baseline version4.
+- NPC получает immutable own/public EconomicOpportunities: свой overflow и bounded
+  pure quotes через обычный QuoteDeliveryService. Нельзя читать закрытый товар
+  продавца даже для списка candidate items; только своё или оплаченный claim.
+- Полная стоимость проекта, конечные рабочие/ресурсы, реальное движение/transfer,
+  F2 груз/escrow и E3 свободные деньги переиспользовать. Не создавать водителей.
+- G1 ordinary/Developer tests — отдельные exhaustive disjoint -g1 partitions.
+  Существующие9/E2/E3/F1/F2 suites/deadlines сохранять. Heavy local gates serial.
+  Natural обе карты3/6/10 и prepared action fixtures отчётливо разделять;
+  один seed/короткий горизонт не доказывают баланс/превосходство Hard.
+- Ход: docs/WORKLOG_PACKAGE_G1.md. Итоговый отчёт и evidence добавить по фактическим
+  проверкам. Ошибки/таймауты не удалять; final source CI Core+Windows обязателен.
+
 ## F2,28.10.2026 — реализованный software-объём P73
 
 - Явное задание F2 поверх25b6a38/merge PR69 разрешает исполнение, несмотря на

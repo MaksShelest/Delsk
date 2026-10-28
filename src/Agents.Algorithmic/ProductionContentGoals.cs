@@ -16,7 +16,8 @@ public sealed partial class AlgorithmicController
             var type=o.BuildingTypes.Single(t=>t.Id==o.Buildings.Single(b=>b.Id.Value==e.Id.Value).TypeId);
             if(type.Levels.SingleOrDefault(l=>l.Level==e.Level+1) is {} level&&o.Development!.Experience.Single(x=>x.Industry==type.Id).TechnologyLevel>=level.Level)Require(level.Materials);
         }
-        if(o.Enterprises.IsEmpty)
+        if(UsesEconomicPlanning&&StartupIndustry(o) is {} plannedIndustry)Require(plannedIndustry.Levels[0].Materials);
+        if(o.Enterprises.IsEmpty&&!UsesEconomicPlanning)
             foreach(var type in o.BuildingTypes.Where(t=>t.Kind==BuildingKind.Production&&t.Levels[0].UnlockedRecipes.Any(id=>o.Map.Recipes.Single(r=>r.Id==id).Uses(_state.Settings.PreferredInput))))Require(type.Levels[0].Materials);
         foreach(var e in o.Enterprises)
         foreach(var w in e.Workshops)

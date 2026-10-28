@@ -27,7 +27,7 @@ public sealed partial class GameSession
         if (_unrestoredControllers.Length > 0) throw new InvalidOperationException("RestoreControllers required");
         long barrier = ++_ballotBarrier;
         foreach (var c in _controllers) c.BeginBallotBarrier(barrier);
-        var observations = _controllers.Select(c=>Engine.ObserveController(c.Actor)).ToArray();
+        var observations = _controllers.Select(c=>Engine.ObserveController(c.Actor,c.UsesEconomicPlanning)).ToArray();
         var decisions = _controllers.Select((c,i)=>observations[i].Elections.Voting!.Awaiting.Contains(c.Actor) ? c.DecideBallot(observations[i]) : null).ToArray();
         long election = observations.FirstOrDefault()?.Elections.Voting?.Election.Value ?? 0;
         foreach (var c in _controllers) c.EndBallotBarrier(barrier,election);
@@ -81,7 +81,7 @@ public sealed partial class GameSession
         if (_controllers.Length == 0) return;
         foreach (var controller in _controllers) controller.BeginDecisionBarrier(Engine.Tick);
         // Freeze every observation before any policy or submission is called. World mutations still occur only in Step.
-        var observations = _controllers.Select(c => Engine.ObserveController(c.Actor)).ToArray();
+        var observations = _controllers.Select(c => Engine.ObserveController(c.Actor,c.UsesEconomicPlanning)).ToArray();
         var decisions = new ControllerDecision[_controllers.Length];
         var feedback = new ImmutableArray<CommandResult>[_controllers.Length];
         for (int i = 0; i < _controllers.Length; i++)

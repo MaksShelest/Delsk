@@ -10,6 +10,8 @@ public sealed partial class AlgorithmicController
     public ControllerDecision Decide(ControllerObservation o, ImmutableArray<CommandResult> ownResults)
     {
         if (o.Participant.Id != Actor) throw new ArgumentException("Observation actor mismatch");
+        if(UsesEconomicPlanning&&_state.EconomyMemory is {ConstructionIndustry.Length:>0} memory&&o.Buildings.Any(b=>b.TypeId==memory.ConstructionIndustry))
+            _state=_state with{EconomyMemory=memory with{ConstructionIndustry=""}};
         bool completed = false;
         if (_state.PendingCommandId is { } pending)
         {
@@ -18,6 +20,7 @@ public sealed partial class AlgorithmicController
             if (result.Status == ResultStatus.Rejected)
             {
                 var failed = _state.Plan[_state.NextStep].Action;
+                RememberEconomicFailure(failed,o.Tick,result.ReasonCode);
                 if(failed.Kind==ActionKind.SignSupport && result.ReasonCode=="NotAvailable")
                     _state = _state with {FailedSupport=[.._state.FailedSupport.Where(id=>id!=failed.SupportProposalId),failed.SupportProposalId]};
                 _state = _state with { PendingCommandId = null, Plan = [], NextStep = 0,
@@ -27,6 +30,7 @@ public sealed partial class AlgorithmicController
             else
             {
                 var action = _state.Plan[_state.NextStep].Action;
+                RememberEconomicSuccess(action);
                 if (action.Kind == ActionKind.RaiseBid)
                     _state = _state with { BidReviews = [.. _state.BidReviews.Where(r => r.OfferId != action.MarketOfferId), new(action.MarketOfferId, action.MarketRound)] };
                 _state = _state with { PendingCommandId = null, NextStep = _state.NextStep + 1 };
@@ -57,13 +61,13 @@ public sealed partial class AlgorithmicController
         return Choose(o, DecisionCandidates(o));
     }
     private Candidate[] DecisionCandidates(ControllerObservation o) => StrategicCandidates(o,Candidates(o).Concat(WageCandidates(o)).Concat(ContractCandidates(o)).Concat(MarketCandidates(o))
-            .Concat(RoadCandidates(o)).Concat(ProductionContentCandidates(o)).Concat(DevelopmentCandidates(o)).Concat(LogisticsCandidates(o)).Concat(WorkshopCandidates(o)).Concat(RecipeCandidates(o)).Concat(PoliticalCandidates(o)).Concat(NegotiationCandidates(o)).Concat(NegotiationResponses(o))
-            .Where(c => (!SimplePolicy || SimpleGoal(c) || HasObligations(o)) && Feasible(c,o) && (!HasObligations(o) || !ExpansionGoal(c.Goal)) &&
+            .Concat(EconomicCandidates(o)).Concat(EconomicExtraction(o)).Concat(RoadCandidates(o)).Concat(ProductionContentCandidates(o)).Concat(DevelopmentCandidates(o)).Concat(LogisticsCandidates(o)).Concat(WorkshopCandidates(o)).Concat(RecipeCandidates(o)).Concat(PoliticalCandidates(o)).Concat(NegotiationCandidates(o)).Concat(NegotiationResponses(o))
+            .Where(c => (!SimplePolicy || SimpleGoal(c) || HasObligations(o) || UsesEconomicPlanning&&c.Goal=="SelectRecipe") && Feasible(c,o) && (!HasObligations(o) || !ExpansionGoal(c.Goal)) &&
                 (o.OwnSupplyRequests.Length==0 || c.Goal is not ("SellCarried" or "SellOutput" or "HarvestForSale")))
             .Select(c => HasObligations(o) && c.Goal is "SupplyProduction" or "ResumeProduction" or "AdjustWage"
                 ? c with { Score = c.Score + 300000 } : c).ToArray());
     private bool Feasible(Candidate c, ControllerObservation o) => c.Steps.Length > 0 && c.Score > 0 && (!ExpansionGoal(c.Goal) || _state.Settings.ExpansionWeight>0) &&
-        !(c.Goal == _state.BlockedGoal && o.Tick < _state.BlockedUntilTick);
+        !(c.Goal == _state.BlockedGoal && o.Tick < _state.BlockedUntilTick)&&EconomicFeasible(c,o);
     private ControllerDecision Choose(ControllerObservation o, Candidate[] candidates)
     {
         var ranked = candidates.OrderBy(c => c.Goal, StringComparer.Ordinal).ThenBy(c => c.Reason, StringComparer.Ordinal)
@@ -79,6 +83,8 @@ public sealed partial class AlgorithmicController
             );
         }
         var chosen=ranked[0].Candidate;
+        if(UsesEconomicPlanning&&chosen.Goal=="BuildProduction"&&StartupIndustry(o) is {} planned)
+            _state=_state with{EconomyMemory=_state.EconomyMemory! with{ConstructionIndustry=planned.Id}};
         if(_state.Settings.Difficulty==NpcDifficulty.Hard)_state=_state with {StrategyTrace=candidates.Where(c=>c.Assessment is not null).Select(c=>c.Assessment!).ToArray()};
         _state = _state with { Goal=chosen.Goal,Reason=chosen.Reason,Plan=chosen.Steps,NextStep=0 };
         return new(chosen.Goal,Explain(chosen),[chosen.Steps[0].Action]

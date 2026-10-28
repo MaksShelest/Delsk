@@ -48,12 +48,12 @@ public sealed partial class AlgorithmicController
             if(next.Materials.Any(m=>Free(input,m.ItemId)<m.Quantity)||enterprise.Workshops.Any(w=>w.Enabled||w.BatchId!=0)||enterprise.Installations.Length>0)continue;
             var build=new List<PlanStep>();Move(build,o.Participant.Position,b.Position);build.Add(new(new(ActionKind.UpgradeBuilding,Building:b.Id,Quantity:next.Level)));yield return new("ExpandEnterprise","PaidTier:"+next.Level,150000,build.ToArray());
         }
-        if(o.Enterprises.Length>0||d.Projects.Length>0)yield break;
+        if(o.Enterprises.Length>0&&!UsesEconomicPlanning||d.Projects.Length>0)yield break;
         foreach(var type in o.BuildingTypes.Where(t=>t.Kind==BuildingKind.Production))
         {
             var level=type.Levels.Single(l=>l.Level==1);var recipe=o.Map.Recipes.Single(r=>r.Id==level.RecipeId);
             bool preferred=o.ProductionContent is null?recipe.Uses(settings.PreferredInput):level.UnlockedRecipes.Any(id=>o.Map.Recipes.Single(r=>r.Id==id).Uses(settings.PreferredInput));
-            if(!preferred||BestOffer(o,recipe.OutputItem,recipe.OutputQuantity,o.Participant.Position) is null)continue;
+            if(UsesEconomicPlanning?StartupIndustry(o)?.Id!=type.Id:!preferred||BestOffer(o,recipe.OutputItem,recipe.OutputQuantity,o.Participant.Position) is null)continue;
             foreach(var plot in o.Plots.Where(p=>p.BuildingId is null&&p.ExpansionFor is null&&!p.IsCorridor&&!p.IsShopSite&&p.ShopParticipantId is null&&(p.OwnerId is null||p.OwnerId==Actor)&&(p.ReservedBy is null||p.ReservedBy==Actor)&&
                 (d.BuildAnchors.IsEmpty||d.BuildAnchors.Contains(p.Position))).OrderBy(p=>p.OwnerId==Actor?0:1).ThenBy(p=>p.Id.Value))
             {

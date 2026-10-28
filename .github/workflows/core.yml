@@ -505,15 +505,125 @@ jobs:
         with:
           name: service-runs-checks-and-runs
           path: artifacts/
+  npc-unit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Complete NPC ordinary suite
+        run: python scripts/run_check.py --name npc-unit --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --phase tests --suite npc --output artifacts/npc-unit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: npc-unit-checks-and-fixtures
+          path: artifacts/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npc-command-fixtures
+          path: |
+            artifacts/npc-unit/g1-fixtures/*.json
+            artifacts/npc-unit/g1-fixtures/*.jsonl
+            artifacts/npc-unit/g1-fixtures/*.tick
+            !artifacts/npc-unit/g1-fixtures/*.save.json
+  npc-developer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Complete NPC Developer and forbidden Release checks
+        run: python scripts/run_check.py --name npc-developer --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --suite npc --output artifacts/npc-developer
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: npc-developer-checks
+          path: artifacts/
+  npc-actions:
+    needs: [npc-unit]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: npc-command-fixtures
+          path: artifacts/npc-fixtures
+      - name: Bounded runner build
+        run: |
+          python scripts/run_check.py --name npc-restore --timeout 180 -- dotnet restore src/Research.Runner/Research.Runner.csproj --locked-mode --disable-parallel -m:1
+          python scripts/run_check.py --name npc-build --timeout 180 -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
+      - name: Prepared actions, replay, continuation and independent audits
+        run: python scripts/run_check.py --name npc-actions --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_npc_actions_g1.py --fixtures artifacts/npc-fixtures --output artifacts/npc-actions
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: npc-actions-checks
+          path: artifacts/
+  npc-natural:
+    strategy:
+      fail-fast: false
+      matrix:
+        map: [small-river, large-districts]
+        bots: [3, 6, 10]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Bounded runner build
+        run: |
+          python scripts/run_check.py --name npc-restore --timeout 180 -- dotnet restore src/Research.Runner/Research.Runner.csproj --locked-mode --disable-parallel -m:1
+          python scripts/run_check.py --name npc-build --timeout 180 -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
+      - name: Natural start, checkpoint and replay, without staged cash or goods
+        run: python scripts/run_check.py --name npc-natural --timeout 1080 --log-directory artifacts/gate-checks -- python scripts/check_npc_g1.py --map ${{ matrix.map }} --bots ${{ matrix.bots }} --output artifacts/npc-natural
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: npc-natural-${{ matrix.map }}-${{ matrix.bots }}
+          path: artifacts/
   # Preserve the required check and require every suite, including D3's independent audit.
   verify:
     if: ${{ always() }}
-    needs: [unit, core, developer, production, fleet, road-unit, road-developer, roads, billing-unit, billing-developer, billing, services-unit, services-developer, services, service-runs-unit, service-runs-developer, service-runs]
+    needs: [unit, core, developer, production, fleet, road-unit, road-developer, roads, billing-unit, billing-developer, billing, services-unit, services-developer, services, service-runs-unit, service-runs-developer, service-runs, npc-unit, npc-developer, npc-actions, npc-natural]
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
       - name: Require all complete suites
         env:
+          NPC_UNIT_RESULT: ${{ needs.npc-unit.result }}
+          NPC_DEVELOPER_RESULT: ${{ needs.npc-developer.result }}
+          NPC_ACTIONS_RESULT: ${{ needs.npc-actions.result }}
+          NPC_NATURAL_RESULT: ${{ needs.npc-natural.result }}
           UNIT_RESULT: ${{ needs.unit.result }}
           CORE_RESULT: ${{ needs.core.result }}
           DEVELOPER_RESULT: ${{ needs.developer.result }}
@@ -531,4 +641,4 @@ jobs:
           RUNS_RESULT: ${{ needs.service-runs.result }}
           SERVICES_RESULT: ${{ needs.services.result }}
           FLEET_RESULT: ${{ needs.fleet.result }}
-        run: test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success && test "$ROADS_RESULT" = success && test "$ROAD_UNIT_RESULT" = success && test "$ROAD_DEVELOPER_RESULT" = success && test "$BILLING_UNIT_RESULT" = success && test "$BILLING_DEVELOPER_RESULT" = success && test "$BILLING_RESULT" = success && test "$SERVICES_UNIT_RESULT" = success && test "$SERVICES_DEVELOPER_RESULT" = success && test "$SERVICES_RESULT" = success && test "$RUNS_UNIT_RESULT" = success && test "$RUNS_DEVELOPER_RESULT" = success && test "$RUNS_RESULT" = success
+        run: test "$NPC_UNIT_RESULT" = success && test "$NPC_DEVELOPER_RESULT" = success && test "$NPC_ACTIONS_RESULT" = success && test "$NPC_NATURAL_RESULT" = success && test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success && test "$ROADS_RESULT" = success && test "$ROAD_UNIT_RESULT" = success && test "$ROAD_DEVELOPER_RESULT" = success && test "$BILLING_UNIT_RESULT" = success && test "$BILLING_DEVELOPER_RESULT" = success && test "$BILLING_RESULT" = success && test "$SERVICES_UNIT_RESULT" = success && test "$SERVICES_DEVELOPER_RESULT" = success && test "$SERVICES_RESULT" = success && test "$RUNS_UNIT_RESULT" = success && test "$RUNS_DEVELOPER_RESULT" = success && test "$RUNS_RESULT" = success
