@@ -23,6 +23,30 @@ public class NpcRecoveryG1Tests
         Assert.Contains(s.CommandTape,r=>r.Command.Action.Kind==ActionKind.OutfitWorkshop);Assert.Contains(s.CommandTape,r=>r.Command.Action.Kind==ActionKind.AssignWorkshopWorkers);
         Assert.Equal(s.Engine.Inspect().Population,s.Engine.Inspect().Unemployed+s.Engine.Inspect().EmploymentGroups.Sum(g=>g.Headcount));Assert.Contains(s.Engine.Ledger(),r=>r.Reason=="WorkshopOutfit");
     }
+    [Fact]public void PrivateExtractorIsPurchasedAndActuallyWorksWithFinitePaidCrew()
+    {
+        var d=Fixtures.Cycle(cash:100000) with{Population=4,ResourceNodes=[new("wood",new(0,0),new(false,Capacity:100,RegenerationQuantity:2,RegenerationTicks:10,InitialOwner:1))],EquipmentTypes=[new("g1-wood", "wood",[new(1,1000,4,2,40,1,1,5)])],Labor=new(StepTicks:2,GrowthPerPeriod:0)};
+        var s=new GameSession(new(d));Fixtures.Supply(s,20);Fixtures.UntilIdle(s);var c=new AlgorithmicController(new(1,"wood",Difficulty:NpcDifficulty.Medium,CoherentEconomy:true,FutureContractsEnabled:false),42,[1,2]);
+        NpcEconomyG1Tests.Drive(s,c,()=>s.Engine.Inspect().Equipment.Any(e=>e.Mode==EquipmentMode.Automatic&&e.CompletedCycles>0),600);
+        Assert.Contains(s.CommandTape,r=>r.Command.Action.Kind==ActionKind.BuyEquipment);Assert.Contains(s.CommandTape,r=>r.Command.Action.Kind==ActionKind.SetEquipmentMode);Assert.Equal(4,s.Engine.Inspect().Unemployed+s.Engine.Inspect().EmploymentGroups.Sum(g=>g.Headcount));
+        Assert.DoesNotContain(s.Engine.EventsSince(0),e=>e.Type.Contains("God"));
+    }
+    [Fact]public void FullOutputIsPhysicallySoldAndTheNextBatchCanComplete()
+    {
+        var s=Fixtures.Session(Fixtures.Cycle(outputCapacity:1));Fixtures.Supply(s,20);Fixtures.UntilIdle(s);
+        var c=new AlgorithmicController(new(1,"wood",Difficulty:NpcDifficulty.Medium,CoherentEconomy:true,FutureContractsEnabled:false),42,[1,2]);
+        NpcEconomyG1Tests.Drive(s,c,()=>s.Engine.Inspect().Settlements.Any(x=>x.PaidMinor>0)&&s.Engine.Observe(new(1)).OwnEnterprises.Single().CompletedBatches>=2,600);
+        Assert.Contains(s.CommandTape,r=>r.Command.Action.Kind==ActionKind.SellAvailableToCapital);s.Engine.ValidateInvariants();
+    }
+    [Fact]public void ActualBusyRejectionIsRememberedAndAnotherEarnedSaleRecovers()
+    {
+        var s=Fixtures.Session();var c=NpcEconomyG1Tests.Controller(2);var decision=c.Decide(s.Engine.ObserveController(new(2),true),[]);var action=Assert.Single(decision.Actions);
+        string own=s.Send(new(2),new(ActionKind.Harvest,ItemId:"wood",Quantity:20));s.Step();Assert.Equal(ResultStatus.Accepted,s.Engine.Result(own)!.Status);
+        string id=s.Send(new(2),action);c.CommandSubmitted(id);s.Step();var rejection=s.Engine.Result(id)!;Assert.Equal(ResultStatus.Rejected,rejection.Status);
+        c.Decide(s.Engine.ObserveController(new(2),true),[rejection]);Assert.Contains("retryTick",c.Capture().StateJson);NpcEconomyG1Tests.SameCheckpoint(c);
+        NpcEconomyG1Tests.Drive(s,c,()=>s.Engine.Observe(new(2)).Account.BalanceMinor>0,600);
+        Assert.Single(s.CommandTape,r=>s.Engine.Result(r.Command.CommandId)?.Status==ResultStatus.Rejected);Assert.Contains(s.Engine.Ledger(),r=>r.Reason=="CapitalSettlement");
+    }
     [Fact]public void HybridOffKeepsEconomicProjectionAndVersionFourMemoryAcrossLoad()
     {
         using var runtime=new ModelRuntime(new TestModelAdapter((_,_)=>throw new Exception("Off must not call model")),[2]);

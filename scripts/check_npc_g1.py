@@ -16,7 +16,8 @@ a=p.parse_args();out=a.output.resolve()
 if out.exists() and any(out.iterdir()):p.error('Use a new/empty output')
 out.mkdir(parents=True,exist_ok=True)
 runner=['dotnet',ROOT/'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll'];checks=[]
-def check(name,cmd,timeout=600):
+def check(name,cmd,timeout=None):
+    timeout=timeout or (600 if a.ticks<=5000 else 900)
     result=subprocess.run([sys.executable,ROOT/'scripts/run_check.py','--name',name,'--timeout',str(timeout),'--log-directory',out/'checks','--',*map(str,cmd)],cwd=ROOT,check=False)
     if result.returncode:
         for suffix in ['stdout','stderr']:
@@ -25,11 +26,18 @@ def check(name,cmd,timeout=600):
         raise SystemExit(name+' failed')
     checks.append(name)
 options=out/'options.json';options.write_text(json.dumps(dict(npcCount=a.bots,difficulty=a.difficulty,seed=42)))
-source=ROOT/f'scenarios/vnext/{a.map}.json';definition=json.loads(source.read_text());original_limit=definition['maxTicks']
+source=ROOT/f'scenarios/vnext/{a.map}.json';original_limit=json.loads((ROOT/'config/vnext/economy.g1-npc.json').read_text())['world']['maxTicks']
+start_args=['--scenario',source,'--economy',ROOT/'config/vnext/economy.g1-npc.json','--new-game',options]
 if a.ticks>original_limit:
-    definition['maxTicks']=a.ticks;source=out/'map-horizon-only.json';source.write_text(json.dumps(definition))
+    # Apply the frozen profile/setup first; changing the template alone is overwritten by Apply.
+    # Exported scenario is INITIAL configuration, not the tick-1 world. Only its safety horizon changes.
+    resolved=out/'resolution';check('resolve-horizon',runner+start_args+['--script','baseline','--human-ballot','self','--ticks',1,'--output',resolved])
+    definition=json.loads((resolved/'scenario.json').read_text());definition['maxTicks']=a.ticks;source=out/'resolved-horizon-only.json';source.write_text(json.dumps(definition))
+    settings=[json.loads(c['stateJson'])['settings'] for c in json.loads((resolved/'controllers.json').read_text()) if c['kind'].startswith('utility-')]
+    config=out/'controllers-horizon.json';config.write_text(json.dumps(dict(version=1,humanActorId=1,finalTick=a.ticks,npcs=settings)))
+    start_args=['--scenario',source,'--controllers',config]
 cut=a.ticks//2;save=out/'npc.save.json';base=out/'start';loaded=out/'loaded';replay=out/'replay'
-check('start',runner+['--scenario',source,'--economy',ROOT/'config/vnext/economy.g1-npc.json','--new-game',options,'--script','baseline','--human-ballot','self','--ticks',a.ticks,'--checkpoint',save,'--checkpoint-at',cut,'--output',base])
+check('start',runner+start_args+['--script','baseline','--human-ballot','self','--ticks',a.ticks,'--checkpoint',save,'--checkpoint-at',cut,'--output',base])
 check('load',runner+['--load',save,'--ticks',a.ticks,'--output',loaded])
 check('continuation',[sys.executable,ROOT/'scripts/verify_checkpoint_exports.py',base,loaded],30)
 check('replay',runner+['--scenario',base/'scenario.json','--replay',base/'commands.jsonl','--script','baseline','--ticks',a.ticks,'--output',replay])

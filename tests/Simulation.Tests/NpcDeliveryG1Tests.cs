@@ -27,7 +27,7 @@ public class NpcDeliveryG1Tests
     {
         var(s,v,o)=ServiceF2Tests.Prepare(150);ServiceF2Tests.Board(s,v);for(int n=0;n<5;n++){ServiceF2Tests.Load(s,o.Id);ServiceF2Tests.Deliver(s,o.Id);}
         var before=s.Engine.ObserveController(new(1),true).EconomicOpportunities!.Overflow.Sum(p=>p.Lot.Quantity);Assert.True(before>0);
-        var c=NpcEconomyG1Tests.Controller(1);NpcEconomyG1Tests.Drive(s,c,()=>s.Engine.ObserveController(new(1),true).EconomicOpportunities!.Overflow.Sum(p=>p.Lot.Quantity)<before);
+        var c=NpcEconomyG1Tests.Controller(1);NpcEconomyG1Tests.Drive(s,c,()=>s.Engine.ObserveController(new(1),true).EconomicOpportunities!.Overflow.All(p=>p.Lot.Quantity==0)&&!s.Engine.Observe(new(1)).Participant.Busy&&s.Engine.Observe(new(1)).OwnInventories.Single(i=>i.Id==s.Engine.Observe(new(1)).Participant.InventoryId).Stock.All(p=>p.Quantity==0));
         Assert.Contains(s.CommandTape,r=>r.AuthenticatedActor.Value==1&&r.Command.Action.Kind==ActionKind.TakeOverflow);Assert.DoesNotContain(s.Engine.EventsSince(0),e=>e.Type=="OverflowLost");
         var restored=AlgorithmicController.Restore(c.Capture());Assert.Equal(c.Capture().StateJson,restored.Capture().StateJson);Assert.Equal(s.Engine.ComputeStateHash(),CheckpointStore.Decode(CheckpointStore.Encode(s)).Engine.ComputeStateHash());
     }

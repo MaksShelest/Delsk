@@ -79,6 +79,8 @@ public sealed partial class AlgorithmicController
         var current = AvailableModelCandidates(o).Select(c => Option(o, c))
             .FirstOrDefault(p => p.Id == offered.Id && p.RelevantVersion == offered.RelevantVersion);
         if (current is null) return false;
+        if(UsesEconomicPlanning&&current.Goal=="BuildProduction"&&StartupIndustry(o) is {} planned)
+            _state=_state with{EconomyMemory=_state.EconomyMemory! with{ConstructionIndustry=planned.Id}};
         _state = _state with { Goal = current.Goal, Reason = current.Reason,
             Plan = current.Actions.Select(a => new PlanStep(a)).ToArray(), NextStep = 0 };
         decision = new(current.Goal, "ModelChoice", [current.Actions[0]]);

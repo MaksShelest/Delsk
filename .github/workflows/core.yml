@@ -577,6 +577,9 @@ jobs:
           python scripts/run_check.py --name npc-build --timeout 180 -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
       - name: Prepared actions, replay, continuation and independent audits
         run: python scripts/run_check.py --name npc-actions --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_npc_actions_g1.py --fixtures artifacts/npc-fixtures --output artifacts/npc-actions
+      - name: Actual G1 counters and failed process logs
+        if: always()
+        run: python scripts/report_check_results.py artifacts/npc-actions
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -606,6 +609,9 @@ jobs:
           python scripts/run_check.py --name npc-build --timeout 180 -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
       - name: Natural start, checkpoint and replay, without staged cash or goods
         run: python scripts/run_check.py --name npc-natural --timeout 1080 --log-directory artifacts/gate-checks -- python scripts/check_npc_g1.py --map ${{ matrix.map }} --bots ${{ matrix.bots }} --output artifacts/npc-natural
+      - name: Actual G1 counters and failed process logs
+        if: always()
+        run: python scripts/report_check_results.py artifacts/npc-natural
       - uses: actions/upload-artifact@v4
         if: always()
         with:
