@@ -65,3 +65,13 @@
   логистики исключает ServiceReserved. Реальные рейсы/оплата частей остаются F2.
 - Independent audit дополнительно суммирует service stock/money commitments,
   чтобы несколько машин не могли скрыть нехватку совокупных резервов.
+
+- unit-11:26/26 pass после bounded retry, deadline180 прежний.
+- В финальной проверке поставочного согласия выявлен двойной прогноз: объём уже
+  включён в underlying DeliveryContract. Quote теперь исключает текущую часть из
+  «других ожидаемых», не создаёт второй incoming/capacity hold. DTO чужого получателя
+  больше не предлагает его как доступный источник без paid-pickup права.
+- unit-12:27/27 pass (14 lifecycle/12 rights/1 competition). Новые F1 classes
+  разделены на естественные disjoint partitions с прежним120s each/780s aggregate;
+  previous9/E2/E3 partitions и deadlines не менялись. Подтверждены quota/consent,
+  prepared quantity, ручной double-delivery rejection и полный возврат quota.

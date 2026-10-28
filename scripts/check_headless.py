@@ -51,7 +51,7 @@ if args.phase!='runs':
     from test_partitions import run_suite
     partitions=run_suite(check,args.dotnet,'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',out,suite=args.suite)
     passed=sum(p['passed'] for p in partitions)
-    if passed<(26 if args.suite=='services' else 22 if args.suite=='billing' else 25 if args.suite=='roads' else 1157):raise SystemExit('Incomplete test suite')
+    if passed<(27 if args.suite=='services' else 22 if args.suite=='billing' else 25 if args.suite=='roads' else 1157):raise SystemExit('Incomplete test suite')
     unit={'suite':args.suite,'status':'succeeded','testsPassed':passed,'testPartitions':partitions,'scope':'Exhaustive ordinary unit phase; runner checks are a separate required gate'}
     (out/'unit-check.json').write_text(json.dumps(unit,indent=2)+'\n')
     if args.phase=='tests':

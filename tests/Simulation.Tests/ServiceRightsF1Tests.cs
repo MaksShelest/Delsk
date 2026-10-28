@@ -105,4 +105,18 @@ public class ServiceRightsF1Tests
         Assert.True(s.Engine.ServicesOf(new(2))!.Catalog.Single().Available);ServiceF1Tests.Exact(s,"npc-offer");
     }
 
+    [Fact]public void ForeignRecipientNeedsContractConsentAndExpectedCargoIsCountedOnce()
+    {
+        var d=ServiceF1Tests.Definition();d=d with{Buildings=[..d.Buildings!.Select(b=>b.Id==10?b with{OwnerId=2}:b),new(11,1,new(30,3),"shop"),new(12,2,new(31,3),"shop")],Plots=[..d.Plots!.Select(p=>p.Id==101||p.Id==91?p with{OwnerId=2}:p.Id==90?p with{OwnerId=1}:p)]};
+        var s=new GameSession(new(d));StorageC1Tests.Harvest(s,"wood",10);var source=s.Engine.Observe(new(1)).OwnBuildings.Single(b=>b.Id.Value==9).InputId;var dest=s.Engine.Observe(new(2)).OwnBuildings.Single(b=>b.Id.Value==10).InputId;StorageC1Tests.Put(s,source,"wood",10);
+        var car=FleetE1Tests.Buy(s,"muravey70",2);ServiceF1Tests.Step(s,new(ActionKind.SetDeliveryService,VehicleId:car.Id,Enabled:true),2);
+        var terms=new ServiceTerms(car.Id,source,dest,"wood",10);Assert.Equal("ServicePointRequired",s.Engine.QuoteDeliveryService(new(1),terms).Reason);
+        ServiceF1Tests.Step(s,new(ActionKind.CreateBuyOffer,Destination:dest,ItemId:"wood",Quantity:10,UnitPriceMinor:100),2);var offer=s.Engine.Observe(new(2)).BuyOffers.Single();
+        ServiceF1Tests.Step(s,new(ActionKind.AcceptDeliveryQuantity,BuyOfferId:offer.Id,Quantity:10));s.AdvanceTo(s.Engine.Tick+6);var contract=s.Engine.Inspect().DeliveryContracts.Single();terms=terms with{ContractId=contract.Id};
+        Assert.Contains(s.Engine.ServicesOf(new(1))!.OwnPoints,p=>p.Inventory==dest&&p.CanReceive&&!p.CanSource);
+        var q=ServiceF1Tests.Quote(s,terms);Assert.Equal(0,q.ExpectedIncomingVolume);var order=ServiceF1Tests.Request(s,terms);Assert.Equal(10,s.Engine.Inspect().DeliveryContracts.Single().PreparedQuantity);Assert.Equal(0,s.Engine.Inspect().DeliveryContracts.Single().UnprovidedQuantity);
+        ServiceF1Tests.Step(s,new(ActionKind.AcceptDeliveryService,ServiceId:order.Id),2);StorageC1Tests.Move(s,new(8,4));ServiceF1Tests.Step(s,new(ActionKind.DeliverContract,ContractId:contract.Id,Quantity:1),accepted:false);
+        ServiceF1Tests.Exact(s,"delivery-quota");ServiceF1Tests.Step(s,new(ActionKind.CancelDeliveryService,ServiceId:order.Id));Assert.Equal(0,s.Engine.Inspect().DeliveryContracts.Single().PreparedQuantity);Assert.Equal(10,s.Engine.Inspect().DeliveryContracts.Single().UnprovidedQuantity);ServiceF1Tests.Exact(s,"quota-refund");
+    }
+
 }
