@@ -56,3 +56,31 @@ F2 профиль; World28 ограниченно читает старый27 б
 - После review добавлены ручной takeover числовой машины между центрами клеток,
   остановка numeric handling без работников, paid foreign cargo return/expiry,
   раздельные goods/service payouts и independent corruption checks.
+
+Итог 28.10.2026, Europe/Samara:
+- Native first build: отсутствовал using Simulation.Hosting в partial panel;
+  исправлено. Нативный UI повторно проверен после исправления устаревшей фразы
+  «груз ещё у источника» во время разгрузки. Final71.722s,677 matched inputs.
+- unit-5: в новом receiver-case владелец ушёл к warehouse перед SetWage;
+  правильный physical Move к машине добавлен, location policy не ослаблялась.
+- unit-6:27/27 pass. После review добавлены30 итоговых случаев: partial receipt
+  cancel keeps earned fee, Trakt rejects crew, return==recipient pays real delivery.
+- Runner-1:112 process checks/save-load comparisons passed; independent accounting
+  остановлен новым строгим правилом return==recipient, exit1,563.101/600s.
+  Это не timeout и не pass. Исправлено без повышения deadline; runner-2:
+  116checks,84exports,56pairs,548.948/600s, все независимые аудиты пройдены.
+- Final ordinary30/30, CI ordinary30/30 иDeveloper30/30 на96ebac6. Core run
+  40643810656 все18jobs success, Windows40643810551 success. Python28/Lab37 pass;
+  первая Lab-попытка без loopback permission дала7 PermissionError, затем все37
+  прошли в подготовленной сети. Никакие tests/partition/deadlines не ослаблены.
+- Реальный F1 World27 accepted.save.json b42292d0… t258→288 load/replay точны,
+  old profile не переключён. Source869, native677, old financial82 unchanged.
+- Локальный Git push не имел действительной авторизации. Использован имеющийся
+  GitHub connector: create_tree/commit/ref с expected SHA. Remote и local trees
+  побайтно совпадали; локальные refs синхронизированы только после проверки tree.
+  PR70 draft до финальной проверки, затем ready; auto merge не используется.
+- Существенная граница: товары сохраняют подписанный срок. В F2 profile минимумы
+  1200/2400, динамическая формула товарного договора из §16 не заменяется скрытым
+  продлением при выборе машины. Too-long service rejected по F1 ETA/rights check.
+- Итоговые docs/evidence после runtime96ebac6 не меняют869 проверенных source inputs.
+  F2/P73 завершён, G1 не начат. Следующий шаг — review PR70.

@@ -1,0 +1,101 @@
+{
+  "scope": "Failures retained, superseded by successful final checks; no increased deadlines",
+  "checks": [
+    {
+      "check": "checks/core-build-1.json",
+      "exitCode": 1,
+      "seconds": 14.5,
+      "timeout": 180
+    },
+    {
+      "check": "checks/core-build-2.json",
+      "exitCode": 1,
+      "seconds": 28.911,
+      "timeout": 180
+    },
+    {
+      "check": "checks/execution-smoke-1.json",
+      "exitCode": 1,
+      "seconds": 15.345,
+      "timeout": 120
+    },
+    {
+      "check": "checks/points-2.json",
+      "exitCode": 1,
+      "seconds": 12.003,
+      "timeout": 120
+    },
+    {
+      "check": "checks/service-runs-native.json",
+      "exitCode": 1,
+      "seconds": 30.56,
+      "timeout": 600
+    },
+    {
+      "check": "checks/service-runs-runner.json",
+      "exitCode": 1,
+      "seconds": 563.101,
+      "timeout": 600
+    },
+    {
+      "check": "checks/tests-build-1.json",
+      "exitCode": 1,
+      "seconds": 43.028,
+      "timeout": 180
+    },
+    {
+      "check": "checks/unit-f2-2.json",
+      "exitCode": 1,
+      "seconds": 107.992,
+      "timeout": 780
+    },
+    {
+      "check": "checks/unit-f2-3.json",
+      "exitCode": 1,
+      "seconds": 156.068,
+      "timeout": 780
+    },
+    {
+      "check": "checks/unit-f2-final.json",
+      "exitCode": 1,
+      "seconds": 139.805,
+      "timeout": 780
+    },
+    {
+      "check": "checks/unit-f2.json",
+      "exitCode": 1,
+      "seconds": 121.636,
+      "timeout": 780
+    },
+    {
+      "check": "runner-1/checks/independent-accounting.json",
+      "exitCode": 1,
+      "seconds": 10.665,
+      "timeout": 120
+    },
+    {
+      "check": "unit-1/checks/tests-f2-3.json",
+      "exitCode": 1,
+      "seconds": 9.432,
+      "timeout": 120
+    },
+    {
+      "check": "unit-2/checks/tests-f2-3.json",
+      "exitCode": 1,
+      "seconds": 10.592,
+      "timeout": 120
+    },
+    {
+      "check": "unit-3/checks/tests-f2-3.json",
+      "exitCode": 1,
+      "seconds": 44.152,
+      "timeout": 120
+    },
+    {
+      "check": "unit-5/checks/tests-f2-3.json",
+      "exitCode": 1,
+      "seconds": 12.505,
+      "timeout": 120
+    }
+  ]
+}

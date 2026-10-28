@@ -1,0 +1,123 @@
+{
+  "status": "succeeded",
+  "processChecks": 116,
+  "exports": 84,
+  "comparisonPairs": 56,
+  "cases": {
+    "in-transit": {
+      "finalTick": 415,
+      "cut": 404
+    },
+    "completed": {
+      "finalTick": 431,
+      "cut": 404
+    },
+    "five-trips": {
+      "finalTick": 717,
+      "cut": 545
+    },
+    "numeric": {
+      "finalTick": 415,
+      "cut": 389
+    },
+    "late-before-unload": {
+      "finalTick": 1012,
+      "cut": 401
+    },
+    "late-parts": {
+      "finalTick": 1021,
+      "cut": 401
+    },
+    "cancel-finish-loaded": {
+      "finalTick": 437,
+      "cut": 425
+    },
+    "cancel-return-loaded": {
+      "finalTick": 437,
+      "cut": 425
+    },
+    "cancel-finish": {
+      "finalTick": 459,
+      "cut": 425
+    },
+    "cancel-return": {
+      "finalTick": 449,
+      "cut": 425
+    },
+    "force-close": {
+      "finalTick": 2222,
+      "cut": 401
+    },
+    "cancel-partial-load": {
+      "finalTick": 409,
+      "cut": 401
+    },
+    "npc-completed": {
+      "finalTick": 484,
+      "cut": 425
+    },
+    "no-workers-manual": {
+      "finalTick": 442,
+      "cut": 415
+    },
+    "exclusive-vehicle": {
+      "finalTick": 432,
+      "cut": 401
+    },
+    "import-delivered": {
+      "finalTick": 238,
+      "cut": 141
+    },
+    "extraction-delivered": {
+      "finalTick": 396,
+      "cut": 333
+    },
+    "extraction-received": {
+      "finalTick": 514,
+      "cut": 451
+    },
+    "capital-delivered": {
+      "finalTick": 493,
+      "cut": 384
+    },
+    "foreign-delivered": {
+      "finalTick": 404,
+      "cut": 385
+    },
+    "goods-expiring-loaded": {
+      "finalTick": 2636,
+      "cut": 385
+    },
+    "goods-expired-return": {
+      "finalTick": 2643,
+      "cut": 385
+    },
+    "paid-return": {
+      "finalTick": 479,
+      "cut": 459
+    },
+    "pickup-expiring-loaded": {
+      "finalTick": 1483,
+      "cut": 507
+    },
+    "pickup-expired-delivered": {
+      "finalTick": 1505,
+      "cut": 507
+    },
+    "manual-takeover": {
+      "finalTick": 271,
+      "cut": 135
+    },
+    "takeover-completed": {
+      "finalTick": 429,
+      "cut": 402
+    },
+    "handling-takeover": {
+      "finalTick": 434,
+      "cut": 407
+    }
+  },
+  "scope": "Actual F2 ordinary commands, independent quotes/exclusivity/escrow/refunds, money/flows/capital/privacy, exact save/load/replay. Prepared fixtures; F2 physical cargo, multiple trips, per-receipt/late settlement, cancellation and paid drivers included.",
+  "verifiedCommit": "96ebac669d6f51e3ba9074cb34d5f29fd2cf6ed8",
+  "ciRun": 40643810656
+}

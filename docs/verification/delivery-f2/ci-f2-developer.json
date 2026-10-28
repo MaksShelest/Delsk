@@ -1,0 +1,31 @@
+{
+  "suite": "runs",
+  "status": "succeeded",
+  "testsPassed": 30,
+  "testPartitions": [
+    {
+      "file": "tests-f2-0.trx",
+      "passed": 5
+    },
+    {
+      "file": "tests-f2-1.trx",
+      "passed": 6
+    },
+    {
+      "file": "tests-f2-2.trx",
+      "passed": 6
+    },
+    {
+      "file": "tests-f2-3.trx",
+      "passed": 7
+    },
+    {
+      "file": "tests-f2-4.trx",
+      "passed": 6
+    }
+  ],
+  "release_negative_build": "expected rejection",
+  "scope": "Developer variant; ordinary release/client metadata checked separately",
+  "verifiedCommit": "96ebac669d6f51e3ba9074cb34d5f29fd2cf6ed8",
+  "ciRun": 40643810656
+}

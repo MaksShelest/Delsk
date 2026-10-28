@@ -1,0 +1,28 @@
+{
+  "suite": "runs",
+  "status": "succeeded",
+  "testsPassed": 30,
+  "testPartitions": [
+    {
+      "file": "tests-f2-0.trx",
+      "passed": 5
+    },
+    {
+      "file": "tests-f2-1.trx",
+      "passed": 6
+    },
+    {
+      "file": "tests-f2-2.trx",
+      "passed": 6
+    },
+    {
+      "file": "tests-f2-3.trx",
+      "passed": 7
+    },
+    {
+      "file": "tests-f2-4.trx",
+      "passed": 6
+    }
+  ],
+  "scope": "Exhaustive ordinary unit phase; runner checks are a separate required gate"
+}

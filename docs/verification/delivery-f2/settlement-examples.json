@@ -1,0 +1,659 @@
+{
+  "five-trips": {
+    "tick": 717,
+    "quantity": 150,
+    "feeMinor": 7337,
+    "deadline": 1281,
+    "state": "Completed",
+    "run": {
+      "order": 1068,
+      "returnInventory": {
+        "value": 1009
+      },
+      "stage": "Completed",
+      "loaded": 150,
+      "delivered": 150,
+      "returned": 0,
+      "released": 0,
+      "tripQuantity": 10,
+      "tripNumber": 5,
+      "workRemainder": 0,
+      "stageStartedTick": 711,
+      "lastWorkedTick": 713,
+      "cancellation": "",
+      "grossSettledMinor": 7337,
+      "paidMinor": 7337,
+      "refundedMinor": 0,
+      "lateGrossMinor": 0,
+      "lateRefundMinor": 0,
+      "receipts": [
+        {
+          "tick": 565,
+          "quantity": 5,
+          "grossMinor": 244,
+          "paidMinor": 244,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 566,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 567,
+          "quantity": 5,
+          "grossMinor": 244,
+          "paidMinor": 244,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 568,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 569,
+          "quantity": 5,
+          "grossMinor": 244,
+          "paidMinor": 244,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 570,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 571,
+          "quantity": 5,
+          "grossMinor": 244,
+          "paidMinor": 244,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 603,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 604,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 605,
+          "quantity": 5,
+          "grossMinor": 244,
+          "paidMinor": 244,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 606,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 607,
+          "quantity": 5,
+          "grossMinor": 244,
+          "paidMinor": 244,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 608,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 609,
+          "quantity": 5,
+          "grossMinor": 244,
+          "paidMinor": 244,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 641,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 642,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 643,
+          "quantity": 5,
+          "grossMinor": 244,
+          "paidMinor": 244,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 644,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 645,
+          "quantity": 5,
+          "grossMinor": 244,
+          "paidMinor": 244,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 646,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 647,
+          "quantity": 5,
+          "grossMinor": 244,
+          "paidMinor": 244,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 679,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 680,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 681,
+          "quantity": 5,
+          "grossMinor": 244,
+          "paidMinor": 244,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 682,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 683,
+          "quantity": 5,
+          "grossMinor": 244,
+          "paidMinor": 244,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 684,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 685,
+          "quantity": 5,
+          "grossMinor": 244,
+          "paidMinor": 244,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 712,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 713,
+          "quantity": 5,
+          "grossMinor": 245,
+          "paidMinor": 245,
+          "lateRefundMinor": 0
+        }
+      ],
+      "reason": "Delivered",
+      "cargo": 0,
+      "cargoHold": "service-cargo:1068",
+      "returnHold": "service-return:1068"
+    }
+  },
+  "late-parts": {
+    "tick": 1021,
+    "quantity": 30,
+    "feeMinor": 4025,
+    "deadline": 1009,
+    "state": "Completed",
+    "run": {
+      "order": 1068,
+      "returnInventory": {
+        "value": 1009
+      },
+      "stage": "Completed",
+      "loaded": 30,
+      "delivered": 30,
+      "returned": 0,
+      "released": 0,
+      "tripQuantity": 30,
+      "tripNumber": 1,
+      "workRemainder": 0,
+      "stageStartedTick": 1013,
+      "lastWorkedTick": 1018,
+      "cancellation": "",
+      "grossSettledMinor": 4025,
+      "paidMinor": 3354,
+      "refundedMinor": 671,
+      "lateGrossMinor": 3355,
+      "lateRefundMinor": 671,
+      "receipts": [
+        {
+          "tick": 420,
+          "quantity": 5,
+          "grossMinor": 670,
+          "paidMinor": 670,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 1014,
+          "quantity": 5,
+          "grossMinor": 671,
+          "paidMinor": 537,
+          "lateRefundMinor": 134
+        },
+        {
+          "tick": 1015,
+          "quantity": 5,
+          "grossMinor": 671,
+          "paidMinor": 537,
+          "lateRefundMinor": 134
+        },
+        {
+          "tick": 1016,
+          "quantity": 5,
+          "grossMinor": 671,
+          "paidMinor": 537,
+          "lateRefundMinor": 134
+        },
+        {
+          "tick": 1017,
+          "quantity": 5,
+          "grossMinor": 671,
+          "paidMinor": 537,
+          "lateRefundMinor": 134
+        },
+        {
+          "tick": 1018,
+          "quantity": 5,
+          "grossMinor": 671,
+          "paidMinor": 536,
+          "lateRefundMinor": 135
+        }
+      ],
+      "reason": "Delivered",
+      "cargo": 0,
+      "cargoHold": "service-cargo:1068",
+      "returnHold": "service-return:1068"
+    }
+  },
+  "cancel-after-receipt": {
+    "tick": 467,
+    "quantity": 50,
+    "feeMinor": 4737,
+    "deadline": 1061,
+    "state": "Cancelled",
+    "run": {
+      "order": 1068,
+      "returnInventory": {
+        "value": 1009
+      },
+      "stage": "Cancelled",
+      "loaded": 35,
+      "delivered": 5,
+      "returned": 30,
+      "released": 15,
+      "tripQuantity": 35,
+      "tripNumber": 1,
+      "workRemainder": 0,
+      "stageStartedTick": 458,
+      "lastWorkedTick": 464,
+      "cancellation": "Return",
+      "grossSettledMinor": 473,
+      "paidMinor": 473,
+      "refundedMinor": 4264,
+      "lateGrossMinor": 0,
+      "lateRefundMinor": 0,
+      "receipts": [
+        {
+          "tick": 445,
+          "quantity": 5,
+          "grossMinor": 473,
+          "paidMinor": 473,
+          "lateRefundMinor": 0
+        }
+      ],
+      "reason": "CancelledAfterCargoSafe",
+      "cargo": 0,
+      "cargoHold": "service-cargo:1068",
+      "returnHold": "service-return:1068"
+    }
+  },
+  "paid-return": {
+    "tick": 479,
+    "quantity": 10,
+    "feeMinor": 4273,
+    "deadline": 1004,
+    "state": "Cancelled",
+    "run": {
+      "order": 1073,
+      "returnInventory": {
+        "value": 1010
+      },
+      "stage": "Cancelled",
+      "loaded": 10,
+      "delivered": 0,
+      "returned": 10,
+      "released": 0,
+      "tripQuantity": 10,
+      "tripNumber": 1,
+      "workRemainder": 0,
+      "stageStartedTick": 474,
+      "lastWorkedTick": 476,
+      "cancellation": "Return",
+      "grossSettledMinor": 0,
+      "paidMinor": 0,
+      "refundedMinor": 4273,
+      "lateGrossMinor": 0,
+      "lateRefundMinor": 0,
+      "receipts": [],
+      "reason": "CancelledAfterCargoSafe",
+      "cargo": 0,
+      "cargoHold": "service-cargo:1073",
+      "returnHold": "service-return:1073"
+    }
+  },
+  "cancel-same-recipient": {
+    "tick": 479,
+    "quantity": 10,
+    "feeMinor": 3793,
+    "deadline": 984,
+    "state": "Completed",
+    "run": {
+      "order": 1073,
+      "returnInventory": {
+        "value": 1010
+      },
+      "stage": "Completed",
+      "loaded": 10,
+      "delivered": 10,
+      "returned": 0,
+      "released": 0,
+      "tripQuantity": 10,
+      "tripNumber": 1,
+      "workRemainder": 0,
+      "stageStartedTick": 474,
+      "lastWorkedTick": 476,
+      "cancellation": "FinishCurrent",
+      "grossSettledMinor": 3793,
+      "paidMinor": 3793,
+      "refundedMinor": 0,
+      "lateGrossMinor": 0,
+      "lateRefundMinor": 0,
+      "receipts": [
+        {
+          "tick": 475,
+          "quantity": 5,
+          "grossMinor": 1896,
+          "paidMinor": 1896,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 476,
+          "quantity": 5,
+          "grossMinor": 1897,
+          "paidMinor": 1897,
+          "lateRefundMinor": 0
+        }
+      ],
+      "reason": "CancelledAfterCargoSafe",
+      "cargo": 0,
+      "cargoHold": "service-cargo:1073",
+      "returnHold": "service-return:1073"
+    }
+  },
+  "numeric": {
+    "tick": 415,
+    "quantity": 30,
+    "feeMinor": 4025,
+    "deadline": 1009,
+    "state": "Completed",
+    "run": {
+      "order": 1068,
+      "returnInventory": {
+        "value": 1009
+      },
+      "stage": "Completed",
+      "loaded": 30,
+      "delivered": 30,
+      "returned": 0,
+      "released": 0,
+      "tripQuantity": 30,
+      "tripNumber": 1,
+      "workRemainder": 0,
+      "stageStartedTick": 406,
+      "lastWorkedTick": 412,
+      "cancellation": "",
+      "grossSettledMinor": 4025,
+      "paidMinor": 4025,
+      "refundedMinor": 0,
+      "lateGrossMinor": 0,
+      "lateRefundMinor": 0,
+      "receipts": [
+        {
+          "tick": 407,
+          "quantity": 5,
+          "grossMinor": 670,
+          "paidMinor": 670,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 408,
+          "quantity": 5,
+          "grossMinor": 671,
+          "paidMinor": 671,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 409,
+          "quantity": 5,
+          "grossMinor": 671,
+          "paidMinor": 671,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 410,
+          "quantity": 5,
+          "grossMinor": 671,
+          "paidMinor": 671,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 411,
+          "quantity": 5,
+          "grossMinor": 671,
+          "paidMinor": 671,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 412,
+          "quantity": 5,
+          "grossMinor": 671,
+          "paidMinor": 671,
+          "lateRefundMinor": 0
+        }
+      ],
+      "reason": "Delivered",
+      "cargo": 0,
+      "cargoHold": "service-cargo:1068",
+      "returnHold": "service-return:1068"
+    }
+  },
+  "import-delivered": {
+    "tick": 238,
+    "quantity": 3,
+    "feeMinor": 4098,
+    "deadline": 819,
+    "state": "Completed",
+    "run": {
+      "order": 1066,
+      "returnInventory": {
+        "value": 1065
+      },
+      "stage": "Completed",
+      "loaded": 3,
+      "delivered": 3,
+      "returned": 0,
+      "released": 0,
+      "tripQuantity": 3,
+      "tripNumber": 1,
+      "workRemainder": 0,
+      "stageStartedTick": 234,
+      "lastWorkedTick": 235,
+      "cancellation": "",
+      "grossSettledMinor": 4098,
+      "paidMinor": 4098,
+      "refundedMinor": 0,
+      "lateGrossMinor": 0,
+      "lateRefundMinor": 0,
+      "receipts": [
+        {
+          "tick": 235,
+          "quantity": 3,
+          "grossMinor": 4098,
+          "paidMinor": 4098,
+          "lateRefundMinor": 0
+        }
+      ],
+      "reason": "Delivered",
+      "cargo": 0,
+      "cargoHold": "service-cargo:1066",
+      "returnHold": "service-return:1066"
+    }
+  },
+  "extraction-received": {
+    "tick": 514,
+    "quantity": 5,
+    "feeMinor": 5048,
+    "deadline": 1031,
+    "state": "Completed",
+    "run": {
+      "order": 1070,
+      "returnInventory": {
+        "value": 1010
+      },
+      "stage": "Completed",
+      "loaded": 5,
+      "delivered": 5,
+      "returned": 0,
+      "released": 0,
+      "tripQuantity": 5,
+      "tripNumber": 1,
+      "workRemainder": 0,
+      "stageStartedTick": 510,
+      "lastWorkedTick": 511,
+      "cancellation": "",
+      "grossSettledMinor": 5048,
+      "paidMinor": 5048,
+      "refundedMinor": 0,
+      "lateGrossMinor": 0,
+      "lateRefundMinor": 0,
+      "receipts": [
+        {
+          "tick": 511,
+          "quantity": 5,
+          "grossMinor": 5048,
+          "paidMinor": 5048,
+          "lateRefundMinor": 0
+        }
+      ],
+      "reason": "Delivered",
+      "cargo": 0,
+      "cargoHold": "service-cargo:1070",
+      "returnHold": "service-return:1070"
+    }
+  },
+  "capital-delivered": {
+    "tick": 493,
+    "quantity": 10,
+    "feeMinor": 5986,
+    "deadline": 1074,
+    "state": "Completed",
+    "run": {
+      "order": 1072,
+      "returnInventory": {
+        "value": 1009
+      },
+      "stage": "Completed",
+      "loaded": 10,
+      "delivered": 10,
+      "returned": 0,
+      "released": 0,
+      "tripQuantity": 10,
+      "tripNumber": 1,
+      "workRemainder": 0,
+      "stageStartedTick": 488,
+      "lastWorkedTick": 490,
+      "cancellation": "",
+      "grossSettledMinor": 5986,
+      "paidMinor": 5986,
+      "refundedMinor": 0,
+      "lateGrossMinor": 0,
+      "lateRefundMinor": 0,
+      "receipts": [
+        {
+          "tick": 489,
+          "quantity": 5,
+          "grossMinor": 2993,
+          "paidMinor": 2993,
+          "lateRefundMinor": 0
+        },
+        {
+          "tick": 490,
+          "quantity": 5,
+          "grossMinor": 2993,
+          "paidMinor": 2993,
+          "lateRefundMinor": 0
+        }
+      ],
+      "reason": "Delivered",
+      "cargo": 0,
+      "cargoHold": "service-cargo:1072",
+      "returnHold": "service-return:1072"
+    }
+  }
+}

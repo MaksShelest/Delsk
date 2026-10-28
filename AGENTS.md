@@ -1,9 +1,14 @@
-## F2,28.10.2026 — текущая итерация P73
+## F2,28.10.2026 — реализованный software-объём P73
 
 - Явное задание F2 поверх25b6a38/merge PR69 разрешает исполнение, несмотря на
   историческое «F2 не начинать» ниже. Ветка feat/vnext-f2-delivery-runs.
   G1 не начинать. Отчёт IMPLEMENTATION_REPORT_PACKAGE_F2.md, usage DELIVERY_F2.md,
   восстановление WORKLOG_PACKAGE_F2.md; PR без автоматического merge.
+- Runtime/test/CI96ebac6, PR70.30ordinary/30Developer,116 runner processes,
+  84exports/56exact pairs,548.948/600s; native RU/EN71.722s/677 matched inputs.
+  Core40643810656 все18jobs success; Windows40643810551 success. Source869,
+  financial82 unchanged; actualWorld27 t258→288 exact.28Python/37Lab.
+  Evidence docs/verification/delivery-f2/. Следующий шаг — review PR70, не G1.
 - Opt-in vnext-f2-delivery-runs-1 только новые designed maps/lab. World28 читает27
   без execution; старые resolved profiles/подписанные товарные сроки не подменять.
   F1 escrow/lease/quote, canonical CargoInventory, E2 TrafficTravel и C1 overflow
@@ -11,7 +16,9 @@
 - Реальные whole-tick loading/receipt/returns, частичная выплата услуги отдельно
   от goods settlement. Late20% только late receipts, cumulative minor rounding.
   Cancel прекращает новые погрузки, текущий груз физически довозится/возвращается;
-  остаток escrow refund once. Снятие с линии не отменяет заказ.
+  остаток escrow refund once. Если return point совпадает с agreed recipient,
+  фактический receipt оплачивать как delivery, не бесплатный return.
+  Снятие с линии не отменяет заказ.
 - Numeric crew — capacity1/headcount0, общая finite allocation, wage only actual
   work. Owner не телепортируется. NPC — ordinary commands/own immutable DTO.
   Истечение не уничтожает груз; force-close строго после deadline+1200.
