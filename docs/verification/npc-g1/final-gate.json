@@ -1,0 +1,71 @@
+{
+  "status": "succeeded",
+  "scope": "G1 user task / P76 software; P75/P77/G2 excluded",
+  "runtimeTestedCode": "8da2218958ad02b6dd74b7abb4a02294eaf11076",
+  "base": "0511375023261ba2a5d3dc9898659a8a03ee7ae4",
+  "pullRequest": 71,
+  "autoMerge": false,
+  "coreCI": {
+    "run": 40722536198,
+    "jobsPassed": 27,
+    "url": "https://github.com/MaksShelest/Delsk/actions/runs/40722536198"
+  },
+  "windowsCI": {
+    "run": 40722536200,
+    "jobsPassed": 1,
+    "url": "https://github.com/MaksShelest/Delsk/actions/runs/40722536200"
+  },
+  "ordinaryCases": 30,
+  "developerCases": 30,
+  "localFinalProduction": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noLogo",
+      "-noColor",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.NpcProductionG1Tests",
+      "-result-trx",
+      "/workspace/work/g1/production-33.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-10-28T16:04:15.033380+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 50.587,
+    "finished_at": "2026-10-28T16:05:05.620423+00:00"
+  },
+  "preparedActionCases": 17,
+  "preparedExports": 34,
+  "preparedExactContinuationPairs": 17,
+  "preparedProcesses": 55,
+  "naturalCases": 6,
+  "naturalDifficulty": "Medium",
+  "naturalSeed": 42,
+  "naturalTicks": 1800,
+  "naturalCheckpoint": 900,
+  "naturalExports": 18,
+  "naturalExactPairs": 12,
+  "nativeCases": 2,
+  "nativeInputMatches": 659,
+  "funded": {
+    "completedBatches": 3,
+    "plankDelivered": 9,
+    "plankRevenueMinor": 8482,
+    "wagesMinor": 4320,
+    "checkpointTick": 2940,
+    "finalTick": 4500,
+    "exactContinuation": true
+  },
+  "frozenInputs": 884,
+  "financialInputsUnchanged": 82,
+  "retainedNonzeroChecks": 52,
+  "limitations": [
+    "Natural1800-tick starts have no production buildings/workers yet. Prepared actions are not natural growth evidence.",
+    "One Medium seed per map/count; no proven Hard superiority, calibrated industry timing or ROI.",
+    "The earlier12000-tick attempt timed out at its unchanged900s deadline; not a successful long-run gate.",
+    "Quote search and investment/market policies remain bounded heuristics.",
+    "Large full research decision tapes still consume substantial disk; no target Android/LLM/hardware performance claim."
+  ]
+}

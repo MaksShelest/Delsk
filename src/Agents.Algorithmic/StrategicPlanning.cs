@@ -159,11 +159,16 @@ public sealed partial class AlgorithmicController
         if(_state.Settings.Difficulty!=NpcDifficulty.Hard || HasObligations(o))return candidates;
         var limits=Limits;long reserve=ExecutionReserve(o),budget=Math.Max(0,o.Account.AvailableMinor-_state.Settings.CashReserveMinor-reserve);
         var shortlist=candidates.OrderByDescending(c=>c.Score).ThenBy(c=>c.Goal,StringComparer.Ordinal).ThenBy(c=>c.Reason,StringComparer.Ordinal).DistinctBy(c=>c.Goal).Take(limits.MaxCandidates).ToArray();
-        var values=new List<(Candidate C,long Eta,long Net,long Capital,long Risk,HashSet<string> Claims)>();int evaluations=0;
+        var values=new List<(Candidate C,long Eta,long Net,long Capital,long Risk,HashSet<string> Claims)>();var longIntents=new List<Candidate>();int evaluations=0;
         foreach(var c in shortlist)
         {
             if(evaluations>=limits.MaxEvaluations)break;long eta=ForecastTicks(o,c,o.Participant.Position);var f=ForecastValue(o,c,eta);evaluations++;
-            if(eta>limits.HorizonTicks || f.Capital>budget)continue;
+            if(f.Capital>budget)continue;
+            if(eta>limits.HorizonTicks)
+            {
+                if(UsesEconomicPlanning)longIntents.Add(c with{Score=Math.Max(1,c.Score-10000),Assessment=new(c.Goal,eta,0,f.Capital,reserve,f.Risk,0,evaluations,"ExecutableLongIntent;outsideForecastHorizon")});
+                continue;
+            }
             values.Add((c,eta,f.Value,f.Capital,f.Risk,Claims(o,c)));
         }
         var result=new List<Candidate>();
@@ -183,6 +188,6 @@ public sealed partial class AlgorithmicController
             var trace=new StrategyAssessment(first.C.Goal,eta,net,capital,reserve,risk,continuations,evaluations,$"forecast;h={limits.HorizonTicks};net={net};risk={risk};reserve={reserve}");
             result.Add(first.C with {Score=Math.Max(1,first.C.Score+bonus),Reason=(first.C.Reason+";"+trace.Reason)[..Math.Min(250,first.C.Reason.Length+1+trace.Reason.Length)],Assessment=trace});
         }
-        return result.Select(c=>c with {Assessment=c.Assessment! with {Evaluations=evaluations}}).ToArray();
+        return result.Concat(longIntents.Take(1)).Select(c=>c with {Assessment=c.Assessment! with {Evaluations=evaluations}}).ToArray();
     }
 }

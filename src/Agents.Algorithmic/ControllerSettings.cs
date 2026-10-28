@@ -18,7 +18,8 @@ public record ControllerSettings(long ActorId, string PreferredInput, int Decisi
     [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] NpcDifficulty Difficulty = NpcDifficulty.Legacy,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] long PoliticalBudgetMinor=0,
     [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] PlanningLimits? Planning=null,
-    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] bool? NegotiationsEnabled=null);
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] bool? NegotiationsEnabled=null,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] bool CoherentEconomy=false);
 public record AutonomousConfiguration(int Version, long HumanActorId, long FinalTick, ControllerSettings[] Npcs)
 {
     public void Validate(ScenarioDefinition scenario)
@@ -48,6 +49,7 @@ public record AlgorithmState(ControllerSettings Settings, ulong RandomState, str
     public PolicyProfile? Profile {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public StrategyAssessment[]? StrategyTrace {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EconomyMemory? EconomyMemory {get;init;}
 }
 
 public sealed partial class AlgorithmicController : IController
@@ -55,6 +57,7 @@ public sealed partial class AlgorithmicController : IController
     public const string PolicyKind = "utility-economy-v2";
     private AlgorithmState _state;
     public ParticipantId Actor => new(_state.Settings.ActorId);
+    public bool UsesEconomicPlanning=>_state.Settings.CoherentEconomy;
     /// <summary>Тот же вывод семени, что у runner: порядок присоединения контроллеров его не меняет.</summary>
     public static ulong RuntimeSeed(ulong scenarioSeed, long actor)
         => BinaryPrimitives.ReadUInt64LittleEndian(SHA256.HashData(Encoding.UTF8.GetBytes(FormattableString.Invariant($"controller-v1:{scenarioSeed}:{actor}"))));
@@ -62,19 +65,21 @@ public sealed partial class AlgorithmicController : IController
     {
         ValidateSettings(settings);
         _state = new(settings, seed, "Idle", "Initial", [], 0, null, 0, 0, 0, "", 0, 0,
-            participants.Where(p => p != settings.ActorId).Distinct().Order().Select(p => new TrustEntry(p, 0)).ToArray(), [], [], 0, "", "", []) {Profile=ResolveProfile(settings.Difficulty)};
+            participants.Where(p => p != settings.ActorId).Distinct().Order().Select(p => new TrustEntry(p, 0)).ToArray(), [], [], 0, "", "", []) {Profile=ResolveProfile(settings.Difficulty),EconomyMemory=settings.CoherentEconomy?new([]):null};
     }
-    public ControllerCheckpoint Capture() => new(Profile is null?PolicyKind:ModularPolicyKind, Profile is null?2:3, Actor,
+    public ControllerCheckpoint Capture() => new(Profile is null?PolicyKind:ModularPolicyKind, UsesEconomicPlanning?4:Profile is null?2:3, Actor,
         System.Text.Json.JsonSerializer.Serialize(_state, SimulationJson.Options),
         _state.PendingCommandId is { } id ? [id] : []);
     public static AlgorithmicController Restore(ControllerCheckpoint saved)
     {
-        if (!((saved.Kind == PolicyKind && saved.Version == 2) || (saved.Kind == ModularPolicyKind && saved.Version == 3))) throw new CheckpointException("UnknownControllerVersion");
+        if (!((saved.Kind == PolicyKind && saved.Version == 2) || (saved.Kind == ModularPolicyKind && saved.Version is 3 or 4) || (saved.Kind==PolicyKind&&saved.Version==4))) throw new CheckpointException("UnknownControllerVersion");
         try
         {
             var s = System.Text.Json.JsonSerializer.Deserialize<AlgorithmState>(saved.StateJson, SimulationJson.Options)
                 ?? throw new CheckpointException("EmptyControllerState");
             ValidateSettings(s.Settings);
+            ValidateEconomyMemory(s.EconomyMemory,s.Settings.CoherentEconomy);
+            if(s.Settings.CoherentEconomy!=(saved.Version==4))throw new CheckpointException("InvalidEconomicControllerVersion");
             if(s.StrategyTrace is {} trace && (s.Settings.Difficulty!=NpcDifficulty.Hard || trace.Length>(s.Settings.Planning??new()).MaxCandidates ||
                 trace.Any(t=>t is null || t.Eta<0 || t.Evaluations<0 || t.Evaluations>(s.Settings.Planning??new()).MaxEvaluations || t.CapitalMinor<0 || t.ExecutionReserveMinor<0 || t.RiskMinor<0 || t.Continuations<0 || t.Continuations>=(s.Settings.Planning??new()).Depth || t.Reason is null || t.Reason.Length>256)))throw new CheckpointException("InvalidStrategyTrace");
             if((s.Profile is null)!=(saved.Kind==PolicyKind) ||

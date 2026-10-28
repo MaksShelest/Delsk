@@ -18,8 +18,8 @@ public sealed partial class AlgorithmicController
                 var input=Inventory(o,parent.InputId);var output=Inventory(o,parent.OutputId);var group=o.EmploymentGroups.Single(g=>g.Id==line.Group);
                 long Net(RecipeDefinition r)
                 {
-                    var offer=BestOffer(o,r.OutputItem,r.OutputQuantity,b.Position);if(offer is null)return long.MinValue/1000000;
-                    return checked(r.OutputQuantity*offer.UnitPriceMinor-RecipeInputValue(o,r)-r.EnergyPerBatchMinor-5*group.WageMinor*r.FullStaffTicks);
+                    var offer=BestOffer(o,r.OutputItem,r.OutputQuantity,b.Position);long price=offer?.UnitPriceMinor??(UsesEconomicPlanning?o.CapitalPrices.Where(p=>p.ItemId==r.OutputItem).Select(p=>p.UnitPriceMinor).DefaultIfEmpty(0).Max():0);if(price<=0)return long.MinValue/1000000;
+                    return checked(r.OutputQuantity*price-RecipeInputValue(o,r)-r.EnergyPerBatchMinor-5*group.WageMinor*r.FullStaffTicks);
                 }
                 var current=o.Map.Recipes.Single(r=>r.Id==unit.RecipeId);RecipeDefinition? best=null;
                 foreach(var id in type.Levels.Where(l=>l.Level<=tech).SelectMany(l=>l.UnlockedRecipes).Distinct(StringComparer.Ordinal))

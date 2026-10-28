@@ -25,6 +25,7 @@ public sealed partial class HybridController : IController
     private HybridState _state;
     private ControllerSessionContext? _context;
     public ParticipantId Actor => _baseline.Actor;
+    public bool UsesEconomicPlanning=>_baseline.UsesEconomicPlanning;
     public bool WaitingForModel => new[]{_state.Slot,_state.BallotSlot}.Any(s=>s is {Interrupted:false,Reply:null} && !_runtime.HasReply(s.Request));
     public HybridController(AlgorithmicController baseline, ModelRuntime runtime, HybridSettings? settings = null, LocalGameModel? gameModel=null)
     {

@@ -1,3 +1,34 @@
+## G1,28.10.2026 — реализованный software-объём NPC/P76
+
+- Явное задание пользователя разрешает G1 поверх0511375/merge PR70 с полным F2.
+  По содержанию это P76, а не историческое G1/P75 (карта). P77 не начинать.
+  Ветка feat/vnext-g1-npc-economy. PR без auto merge. Автор: Шелестов Максим Евгеньевич.
+- Новый opt-in профиль vnext-g1-npc-economy-1: World идентичен F2; coherentEconomy
+  только в настройках NPC. Старые профили и controller versions2/3 не подменять.
+  Новая память отказов/стройки — version4; hybrid сохраняет baseline version4.
+- NPC получает immutable own/public EconomicOpportunities: свой overflow и bounded
+  pure quotes через обычный QuoteDeliveryService. Нельзя читать закрытый товар
+  продавца даже для списка candidate items; только своё или оплаченный claim.
+- Полная стоимость проекта, конечные рабочие/ресурсы, реальное движение/transfer,
+  F2 груз/escrow и E3 свободные деньги переиспользовать. Не создавать водителей.
+- G1 ordinary/Developer tests — отдельные exhaustive disjoint -g1 partitions.
+  Существующие9/E2/E3/F1/F2 suites/deadlines сохранять. Heavy local gates serial.
+  Natural обе карты3/6/10 и prepared action fixtures отчётливо разделять;
+  один seed/короткий горизонт не доказывают баланс/превосходство Hard.
+- Runtime/test/CI8da2218958ad02b6dd74b7abb4a02294eaf11076; PR71 без auto merge.
+  Отчёт IMPLEMENTATION_REPORT_PACKAGE_G1.md, evidence verification/npc-g1/.
+  30ordinary/30Developer;17prepared cases,34exports/17exactpairs. Natural обе
+  карты3/6/10 Medium/seed42/t1800/cut900: заработок и точные load/replay, ещё
+  без предприятий. Это не измерение долгого промышленного развития/баланса.
+- Session schema3 только для pooled G1 controller observations: полная история
+  сохранена, чтение1/2, non-G1 writer2, World28. Лимиты64/512MiB не повышать.
+- Core40722536198: все27jobs success; Windows40722536200 success.
+  Native small-river6/large-districts10,659matched inputs. Funded100000/start,
+  t4500:3batches/9planks/8482minor/wages4320; load2940 exact+audits. Это не
+  естественный старт20000.884source inputs,82financial unchanged,52nonzero checks.
+- Итоговые CI/native/funded counters — verification/npc-g1/final-gate.json.
+  Ход: docs/WORKLOG_PACKAGE_G1.md. Ошибки/900s timeout сохранены. P77/G2 не начинать.
+
 ## F2,28.10.2026 — реализованный software-объём P73
 
 - Явное задание F2 поверх25b6a38/merge PR69 разрешает исполнение, несмотря на

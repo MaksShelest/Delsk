@@ -14,6 +14,7 @@ public sealed partial class AlgorithmicController
             EmploymentRole.Production => Inventory(o,o.Enterprises.Single(e=>e.Id.Value==group.Id.Value||!e.Workshops.IsDefault&&e.Workshops.Any(w=>w.GroupId==group.Id)).InputId).Position,
             EmploymentRole.Handling => o.Buildings.Single(b=>b.Id.Value==o.Fleet!.Platforms.Single(p=>p.Group.Id==group.Id).Building).Position,
             EmploymentRole.Extraction => o.Equipment.Single(e=>e.GroupId==group.Id).Position,
+            EmploymentRole.DeliveryService => o.Fleet!.Vehicles.Single(v=>v.Vehicle.Id==o.Services!.Execution!.Crews.Single(c=>c.Group.Id==group.Id).Vehicle).Position,
             EmploymentRole.RoadWorks => o.Fleet!.Vehicles.Single(v=>v.Vehicle.Id==group.Id.Value).Position,
             _ => Inventory(o,o.Enterprises.Single(e=>e.Id==o.OwnLogistics.Single(l=>l.GroupId==group.Id).EnterpriseId).InputId).Position
         };
@@ -26,6 +27,7 @@ public sealed partial class AlgorithmicController
     private bool PlanRelevant(ControllerObservation o)
     {
         if (_state.NextStep>=_state.Plan.Length) return true;
+        if(UsesEconomicPlanning&&!EconomicFeasible(new(_state.Goal,_state.Reason,1,_state.Plan.Skip(_state.NextStep).ToArray()),o))return false;
         var next=_state.Plan[_state.NextStep].Action;
         if(next.Kind==ActionKind.Transfer && (!o.Inventories.Any(i=>i.Id==next.Source && Free(i,next.ItemId)>=next.Quantity) ||
             !o.Inventories.Any(i=>i.Id==next.Destination && FreeVolume(i)>=checked(next.Quantity*Volume(o,next.ItemId)))))return false;
@@ -77,9 +79,9 @@ public sealed partial class AlgorithmicController
             var r=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);var ingredient=r.Ingredients.Single(i=>i.ItemId==item);return Math.Max(0,Math.Max(ingredient.Quantity,InputTarget(o,Inventory(o,e.InputId),r,ingredient)/2)-Free(Inventory(o,e.InputId),item));});
         need=checked(need+o.OwnDeliveryContracts.Where(c=>c.Supplier==Actor && c.ClosedTick is null && c.ItemId==item).Sum(c=>c.UnprovidedQuantity));
         long incoming=o.OwnMarketAllocations.Where(c=>c.Buyer==Actor && c.ItemId==item).Sum(c=>c.RemainingQuantity)+
-            o.OwnMarketBids.Where(b=>o.MarketOffers.Any(m=>m.Id==b.OfferId && m.ItemId==item)).Sum(b=>b.Quantity);
+            (UsesEconomicPlanning?0:o.OwnMarketBids.Where(b=>o.MarketOffers.Any(m=>m.Id==b.OfferId && m.ItemId==item)).Sum(b=>b.Quantity));
         incoming=checked(incoming+o.OwnDeliveryContracts.Where(c=>c.Buyer==Actor && c.ClosedTick is null && c.ItemId==item).Sum(c=>c.RemainingQuantity));
-        incoming=checked(incoming+o.BuyOffers.Where(b=>b.Buyer==Actor && b.ItemId==item && b.Status=="Open").Sum(b=>b.RemainingQuantity));
+        if(!UsesEconomicPlanning)incoming=checked(incoming+o.BuyOffers.Where(b=>b.Buyer==Actor && b.ItemId==item && b.Status=="Open").Sum(b=>b.RemainingQuantity));
         return Math.Max(0,checked(need-Free(Carrier(o),item)-incoming));
     }
 }

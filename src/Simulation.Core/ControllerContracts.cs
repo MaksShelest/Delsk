@@ -48,6 +48,7 @@ public record ControllerObservation(long Tick, ParticipantView Participant, Acco
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public PersonalAccount? PersonalAccount {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public ServiceObservation? Services {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EconomicOpportunities? EconomicOpportunities {get;init;}
     public ProductionContentObservation? ProductionContent {get;init;}
     public System.Collections.Immutable.ImmutableArray<ResourceSiteView> Resources { get; init; } = [];
     public System.Collections.Immutable.ImmutableArray<TradeNegotiation> Negotiations {get;init;}=[];
@@ -80,6 +81,7 @@ public interface IController
     void BeginDecisionBarrier(long tick) { }
     void EndDecisionBarrier(long tick) { }
     bool WaitingForModel => false;
+    bool UsesEconomicPlanning=>false;
     void BeginBallotBarrier(long barrier) { }
     void EndBallotBarrier(long barrier, long election) { }
     BallotDecision DecideBallot(ControllerObservation observation) => new(observation.Elections.Voting?.RequiredCandidate ?? observation.Elections.OwnChoice ?? Actor, "ExplicitSelfBallot");
@@ -87,9 +89,11 @@ public interface IController
 
 public sealed partial class SimulationEngine
 {
-    public ControllerObservation ObserveController(ParticipantId actor)
+    public ControllerObservation ObserveController(ParticipantId actor,bool economicPlanning=false)
     {
         var o = Observe(actor);
+        var road=_config.Layout?.InitialCityDirtCells.FirstOrDefault(o.Participant.Position)??o.Participant.Position;
+        int moveTicks=economicPlanning&&Fleet is not null?80/FleetSpeed(road,road):_config.MoveTicksPerCell;
         return new(o.Tick, o.Participant, o.Account,
             o.OwnInventories.Select(i => new ControllerInventory(i.Id, i.Position, i.Capacity,
                 i.OccupiedVolume, i.ReservedCapacity, [.. i.Stock])).ToImmutableArray(),
@@ -103,7 +107,7 @@ public sealed partial class SimulationEngine
             [.. o.OwnEmploymentGroups], [.. o.LaborMarket], o.Population, o.Unemployed, [.. o.OwnEquipment],
             o.EquipmentTypes.Select(t => new ControllerEquipmentType(t.Id, t.ItemId, [.. t.Levels])).ToImmutableArray(),
             new(_config.MapWidth, _config.MapHeight, BlockedCells(), [.. _config.ResourceNodes],
-                [.. _config.Items], [.. _config.Recipes], _config.MoveTicksPerCell,
-                _config.HarvestTicksPerUnit, _config.TradeWindowTicks), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules, o.CapitalPrices, o.CapitalPriceHistory, o.Elections, o.Support, o.City) { Services=ServicesOf(actor),PersonalAccount=Billing is null?null:AccountOf(actor),Roads=RoadsOf(actor),Fleet=FleetOf(actor),ProductionContent=ProductionContentOf(actor),Development=DevelopmentOf(actor),Economics=new(Labor,EconomyRules.Handling??new(),EconomyRules.WageAttractionExponent,_config.Economy?.Workshops),Resources = o.Resources,Negotiations=o.Negotiations,NegotiationRules=o.NegotiationRules,TradingParticipants=o.TradingParticipants };
+                [.. _config.Items], [.. _config.Recipes], moveTicks,
+                _config.HarvestTicksPerUnit, _config.TradeWindowTicks), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules, o.CapitalPrices, o.CapitalPriceHistory, o.Elections, o.Support, o.City) { EconomicOpportunities=economicPlanning?EconomicOpportunitiesOf(actor):null,Services=ServicesOf(actor),PersonalAccount=Billing is null?null:AccountOf(actor),Roads=RoadsOf(actor),Fleet=FleetOf(actor),ProductionContent=ProductionContentOf(actor),Development=DevelopmentOf(actor),Economics=new(Labor,EconomyRules.Handling??new(),EconomyRules.WageAttractionExponent,_config.Economy?.Workshops),Resources = o.Resources,Negotiations=o.Negotiations,NegotiationRules=o.NegotiationRules,TradingParticipants=o.TradingParticipants };
     }
 }

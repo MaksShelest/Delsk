@@ -10,6 +10,15 @@ public sealed partial class AlgorithmicController
         var order=roads.Orders.Where(r=>r.PaidTick==0&&(r.Assignee==0||r.Assignee==Actor.Value)&&
             (roads.Cells.FirstOrDefault(c=>c.Cell==r.Cell)?.Level??0)==r.Level-1).OrderByDescending(r=>r.Assignee==Actor.Value).ThenBy(r=>r.Id).FirstOrDefault();
         if(order is null)yield break;
+        if(UsesEconomicPlanning)
+        {
+            var stage=roads.Rules.Stages[order.Level-1];
+            bool obtainable=stage.Materials.All(m=>o.Inventories.Sum(i=>Free(i,m.ItemId))>=m.Quantity||o.Map.ResourceNodes.Any(n=>n.ItemId==m.ItemId&&AvailableResource(o,n))||o.ProductionContent?.Imports.Any(i=>i.ItemId==m.ItemId&&i.Remaining>=m.Quantity)==true);
+            long inputs=stage.Materials.Sum(m=>m.Quantity*(o.Map.ResourceNodes.Any(n=>n.ItemId==m.ItemId&&AvailableResource(o,n))?BasePrice(o,m.ItemId):o.ProductionContent?.Rules.Imports.FirstOrDefault(i=>i.ItemId==m.ItemId)?.UnitPriceMinor??BasePrice(o,m.ItemId)));
+            long project=checked(stage.PriceMinor+inputs+2L*stage.Ticks*roads.Rules.WageMinor);
+            long purchase=fleet.Vehicles.Any(v=>v.Model.MaterialsOnly)?0:fleet.Models.Single(m=>m.Id=="trakt_d1").PriceMinor;
+            if(!obtainable||order.Reward<=project||o.Account.AvailableMinor<purchase+project+_state.Settings.CashReserveMinor)yield break;
+        }
         var paver=fleet.Vehicles.Where(v=>v.Model.MaterialsOnly&&v.Vehicle.Installation is null).OrderBy(v=>v.Vehicle.Id).FirstOrDefault();
         if(paver is null)
         {

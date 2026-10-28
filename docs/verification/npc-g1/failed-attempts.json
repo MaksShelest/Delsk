@@ -1,0 +1,1037 @@
+{
+  "scope": "Retained nonzero bounded check records, including fixture/build/environment corrections and the explicit 900s long-run timeout. Original deadlines are retained; expected negative-build controls are interpreted by their parent gate.",
+  "attempts": [
+    {
+      "path": "/workspace/work/g1/checks/g1-build-1.json",
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T09:50:45.721889+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 47.161,
+      "finished_at": "2026-10-28T09:51:32.882745+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-build-2.json",
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T09:51:56.548572+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 9.54,
+      "finished_at": "2026-10-28T09:52:06.088727+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-build-5.json",
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T10:03:30.386640+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 5.951,
+      "finished_at": "2026-10-28T10:03:36.337945+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-policy-2.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcEconomyG1Tests",
+        "-class",
+        "Simulation.Tests.NpcDeliveryG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/policy-2.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T10:05:06.636649+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 17.566,
+      "finished_at": "2026-10-28T10:05:24.202589+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-policy-3.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcEconomyG1Tests",
+        "-class",
+        "Simulation.Tests.NpcDeliveryG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/policy-3.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T10:09:33.283285+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 19.982,
+      "finished_at": "2026-10-28T10:09:53.265408+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-build-8.json",
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T10:14:28.385704+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 28.527,
+      "finished_at": "2026-10-28T10:14:56.913153+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-unit-1.json",
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "npc",
+        "--output",
+        "/workspace/work/g1/unit-1"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-28T10:15:55.321217+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 79.328,
+      "finished_at": "2026-10-28T10:17:14.649399+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/unit-1/checks/tests-g1-2.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcProductionG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/unit-1/tests-g1-2.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T10:16:52.201618+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 22.427,
+      "finished_at": "2026-10-28T10:17:14.628672+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-unit-2.json",
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "npc",
+        "--output",
+        "/workspace/work/g1/unit-2"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-28T10:21:09.138095+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 102.345,
+      "finished_at": "2026-10-28T10:22:51.483097+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/unit-2/checks/tests-g1-2.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcProductionG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/unit-2/tests-g1-2.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T10:22:24.308278+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 27.119,
+      "finished_at": "2026-10-28T10:22:51.427305+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-unit-3.json",
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "npc",
+        "--output",
+        "/workspace/work/g1/unit-3"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-28T10:24:42.156828+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 93.844,
+      "finished_at": "2026-10-28T10:26:16.001113+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/unit-3/checks/tests-g1-2.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcProductionG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/unit-3/tests-g1-2.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T10:25:43.049544+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 32.894,
+      "finished_at": "2026-10-28T10:26:15.944065+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-unit-4.json",
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "npc",
+        "--output",
+        "/workspace/work/g1/unit-4"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-28T10:27:52.663233+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 126.336,
+      "finished_at": "2026-10-28T10:29:58.999345+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/unit-4/checks/tests-g1-2.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcProductionG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/unit-4/tests-g1-2.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T10:29:12.898971+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 46.041,
+      "finished_at": "2026-10-28T10:29:58.939886+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-unit-5.json",
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "npc",
+        "--output",
+        "/workspace/work/g1/unit-5"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-28T10:32:37.103393+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 100.573,
+      "finished_at": "2026-10-28T10:34:17.675996+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/unit-5/checks/tests-g1-2.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcProductionG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/unit-5/tests-g1-2.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T10:33:35.968203+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 41.659,
+      "finished_at": "2026-10-28T10:34:17.627696+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-pilot-small-3-v10.json",
+      "command": [
+        "dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "scenarios/vnext/small-river.json",
+        "--economy",
+        "config/vnext/economy.g1-npc.json",
+        "--new-game",
+        "/workspace/work/g1/options-3-medium.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self",
+        "--ticks",
+        "6000",
+        "--output",
+        "/workspace/work/g1/pilot-small-3-v10"
+      ],
+      "timeout_seconds": 300,
+      "started_at": "2026-10-28T10:36:02.495416+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 213.356,
+      "finished_at": "2026-10-28T10:39:35.851479+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-unit-6.json",
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--dotnet",
+        "dotnet",
+        "--phase",
+        "tests",
+        "--suite",
+        "npc",
+        "--output",
+        "/workspace/work/g1/unit-6"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-28T10:40:03.885484+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 61.798,
+      "finished_at": "2026-10-28T10:41:05.683447+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/unit-6/checks/tests-g1-3.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcInfrastructureG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/unit-6/tests-g1-3.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T10:40:56.950069+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 8.683,
+      "finished_at": "2026-10-28T10:41:05.633644+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-unit-8.json",
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "npc",
+        "--output",
+        "/workspace/work/g1/unit-8"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-28T10:46:24.626547+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 102.309,
+      "finished_at": "2026-10-28T10:48:06.935159+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/unit-8/checks/tests-g1-4.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcRecoveryG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/unit-8/tests-g1-4.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T10:47:51.754708+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 15.117,
+      "finished_at": "2026-10-28T10:48:06.872284+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-unit-9.json",
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "npc",
+        "--output",
+        "/workspace/work/g1/unit-9"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-28T10:48:40.794897+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 81.913,
+      "finished_at": "2026-10-28T10:50:02.708055+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/unit-9/checks/tests-g1-4.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcRecoveryG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/unit-9/tests-g1-4.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T10:49:51.257555+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 11.398,
+      "finished_at": "2026-10-28T10:50:02.655258+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-unit-10.json",
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "npc",
+        "--output",
+        "/workspace/work/g1/unit-10"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-28T10:50:31.231403+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 111.669,
+      "finished_at": "2026-10-28T10:52:22.900216+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/unit-10/checks/tests-g1-4.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcRecoveryG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/unit-10/tests-g1-4.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T10:52:04.145273+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 18.715,
+      "finished_at": "2026-10-28T10:52:22.860294+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-unit-11.json",
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "npc",
+        "--output",
+        "/workspace/work/g1/unit-11"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-28T10:53:01.420301+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 104.724,
+      "finished_at": "2026-10-28T10:54:46.144807+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/unit-11/checks/tests-g1-4.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcRecoveryG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/unit-11/tests-g1-4.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T10:54:26.496397+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 19.598,
+      "finished_at": "2026-10-28T10:54:46.094771+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-natural-small-3-v4.json",
+      "command": [
+        "python",
+        "scripts/check_npc_g1.py",
+        "--map",
+        "small-river",
+        "--bots",
+        "3",
+        "--output",
+        "/workspace/work/g1/natural-small-3-v4"
+      ],
+      "timeout_seconds": 1080,
+      "started_at": "2026-10-28T13:33:04.685734+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 153.806,
+      "finished_at": "2026-10-28T13:35:38.491441+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-long-start-12000.json",
+      "command": [
+        "dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/work/g1/long-horizon.json",
+        "--economy",
+        "config/vnext/economy.g1-npc.json",
+        "--new-game",
+        "/workspace/work/g1/options-3-medium.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self",
+        "--ticks",
+        "12000",
+        "--checkpoint",
+        "/workspace/work/g1/long-12000.save.json",
+        "--checkpoint-at",
+        "6000",
+        "--output",
+        "/workspace/work/g1/long-12000"
+      ],
+      "timeout_seconds": 900,
+      "started_at": "2026-10-28T13:36:52.018198+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 278.815,
+      "finished_at": "2026-10-28T13:41:30.833034+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-natural-long-12000-v2.json",
+      "command": [
+        "python",
+        "scripts/check_npc_g1.py",
+        "--map",
+        "small-river",
+        "--bots",
+        "3",
+        "--ticks",
+        "12000",
+        "--output",
+        "/workspace/work/g1/natural-long-12000-v2"
+      ],
+      "timeout_seconds": 2400,
+      "started_at": "2026-10-28T13:46:31.904460+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 903.152,
+      "finished_at": "2026-10-28T14:01:35.057311+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/natural-long-12000-v2/checks/start.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/work/g1/natural-long-12000-v2/resolved-horizon-only.json",
+        "--controllers",
+        "/workspace/work/g1/natural-long-12000-v2/controllers-horizon.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self",
+        "--ticks",
+        "12000",
+        "--checkpoint",
+        "/workspace/work/g1/natural-long-12000-v2/npc.save.json",
+        "--checkpoint-at",
+        "6000",
+        "--output",
+        "/workspace/work/g1/natural-long-12000-v2/start"
+      ],
+      "timeout_seconds": 900,
+      "started_at": "2026-10-28T13:46:34.828905+00:00",
+      "timed_out": true,
+      "exit_code": 124,
+      "elapsed_seconds": 900.12,
+      "finished_at": "2026-10-28T14:01:34.949537+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-large-10-streaming-17.json",
+      "command": [
+        "python",
+        "scripts/check_npc_g1.py",
+        "--map",
+        "large-districts",
+        "--bots",
+        "10",
+        "--audit-existing",
+        "--output",
+        "/workspace/work/g1/natural-large-10-16"
+      ],
+      "timeout_seconds": 90,
+      "started_at": "2026-10-28T14:18:04.084576+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-28T14:18:04.150084+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/developer-17/checks/forbidden-developer-release.json",
+      "command": [
+        "dotnet",
+        "build",
+        "src/Simulation.Core/Simulation.Core.csproj",
+        "-c",
+        "Release",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-28T14:25:17.040664+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 1.734,
+      "finished_at": "2026-10-28T14:25:18.774900+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/native-18/checks-denied-network/native-restore.json",
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g1/native-18/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T14:27:43.206308+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 8.83,
+      "finished_at": "2026-10-28T14:27:52.036645+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-production-19.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcProductionG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/production-19.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T14:32:37.999574+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 22.03,
+      "finished_at": "2026-10-28T14:33:00.029737+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-production-20.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcProductionG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/production-20.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T14:37:28.853475+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 28.274,
+      "finished_at": "2026-10-28T14:37:57.127689+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-delivery-20.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcDeliveryG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/delivery-20.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T14:37:57.203702+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 38.674,
+      "finished_at": "2026-10-28T14:38:35.877550+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-unit-22.json",
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "npc",
+        "--output",
+        "/workspace/work/g1/unit-22"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-28T14:45:17.439400+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 140.611,
+      "finished_at": "2026-10-28T14:47:38.050360+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/unit-22/checks/tests-g1-4.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcRecoveryG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/unit-22/tests-g1-4.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T14:47:07.388836+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 30.604,
+      "finished_at": "2026-10-28T14:47:37.992738+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-recovery-23.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcRecoveryG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/recovery-23.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T14:51:36.367529+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 17.221,
+      "finished_at": "2026-10-28T14:51:53.588340+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-unit-26.json",
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "npc",
+        "--output",
+        "/workspace/work/g1/unit-26"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-28T15:16:24.624496+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 122.541,
+      "finished_at": "2026-10-28T15:18:27.165314+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/unit-26/checks/tests-g1-4.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcRecoveryG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/unit-26/tests-g1-4.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T15:18:00.316888+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 26.799,
+      "finished_at": "2026-10-28T15:18:27.115845+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/native-18/checks/native-probe-build.json",
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g1/native-18/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T15:28:45.750379+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 9.699,
+      "finished_at": "2026-10-28T15:28:55.449586+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/native-18/checks/native-small_river-3.json",
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://OrdinarySetupProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g1/native-18/small_river-3",
+        "--count",
+        "3",
+        "--map",
+        "small_river",
+        "--windowed"
+      ],
+      "timeout_seconds": 150,
+      "started_at": "2026-10-28T15:32:08.475128+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 16.033,
+      "finished_at": "2026-10-28T15:32:24.508191+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-decline-probe.json",
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/work/g1/decline-probe/Probe.csproj",
+        "-c",
+        "Release"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T15:32:24.573790+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 2.824,
+      "finished_at": "2026-10-28T15:32:27.397444+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/native-18/checks/native-g1-small-river-3.json",
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://OrdinarySetupProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g1/native-18/small-river-3",
+        "--count",
+        "3",
+        "--map",
+        "small-river",
+        "--windowed"
+      ],
+      "timeout_seconds": 150,
+      "started_at": "2026-10-28T15:35:00.395489+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 59.313,
+      "finished_at": "2026-10-28T15:35:59.708195+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/developer-28/checks/forbidden-developer-release.json",
+      "command": [
+        "dotnet",
+        "build",
+        "src/Simulation.Core/Simulation.Core.csproj",
+        "-c",
+        "Release",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-28T15:43:41.707668+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 0.868,
+      "finished_at": "2026-10-28T15:43:42.575940+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-production-29.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcProductionG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/production-29.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T15:54:35.460011+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 40.602,
+      "finished_at": "2026-10-28T15:55:16.062289+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-production-30.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcProductionG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/production-30.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T15:56:36.622404+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 59.703,
+      "finished_at": "2026-10-28T15:57:36.325497+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-production-31.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-method",
+        "Simulation.Tests.NpcProductionG1Tests.SmallBatchesReachExchangeAndSellDespiteShortLivedOffers",
+        "-result-trx",
+        "/workspace/work/g1/production-31.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T16:01:03.502907+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 23.926,
+      "finished_at": "2026-10-28T16:01:27.429370+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-build-32.json",
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T16:02:08.156420+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 24.629,
+      "finished_at": "2026-10-28T16:02:32.785537+00:00"
+    },
+    {
+      "path": "/workspace/work/g1/checks/g1-production-32.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.NpcProductionG1Tests",
+        "-result-trx",
+        "/workspace/work/g1/production-32.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T16:02:32.855353+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 62.595,
+      "finished_at": "2026-10-28T16:03:35.450222+00:00"
+    }
+  ]
+}

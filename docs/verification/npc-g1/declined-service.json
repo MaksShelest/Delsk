@@ -1,0 +1,23 @@
+{
+  "status": "succeeded",
+  "prepared": true,
+  "actor": 1,
+  "tick": 2853,
+  "changedRule": "service driver wage 1000 for this fixture only",
+  "quotes": [
+    {
+      "feeMinor": 295480,
+      "goodsReferenceMinor": 20000
+    },
+    {
+      "feeMinor": 300400,
+      "goodsReferenceMinor": 50000
+    }
+  ],
+  "goal": "SupplyProduction",
+  "actions": [
+    "Transfer"
+  ],
+  "worldUnchanged": true,
+  "scope": "Actual quote and algorithmic refusal; positive physical service execution covered separately"
+}

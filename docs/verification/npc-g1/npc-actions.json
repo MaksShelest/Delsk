@@ -1,0 +1,81 @@
+{
+  "status": "succeeded",
+  "prepared": true,
+  "cases": {
+    "ActualBusyRejectionIsRememberedAndAnotherEarnedSaleRecovers": {
+      "tick": 68,
+      "checkpointTick": 34
+    },
+    "CustomerOrdersUsefulTransportAndCarrierPhysicallyDeliversUsingOrdinaryCommands": {
+      "tick": 3133,
+      "checkpointTick": 1566
+    },
+    "EarnedExperienceLeadsToPaidLandAndPhysicalEnterpriseUpgrade": {
+      "tick": 412,
+      "checkpointTick": 206
+    },
+    "FiniteConstructionImportsAreBoughtOnlyForAFundedProject": {
+      "tick": 195,
+      "checkpointTick": 97
+    },
+    "FullOutputIsPhysicallySoldAndTheNextBatchCanComplete": {
+      "tick": 147,
+      "checkpointTick": 73
+    },
+    "FundedIndustryQuestIsAcceptedAndCompletedByActualGoodsReceipt": {
+      "tick": 52,
+      "checkpointTick": 26
+    },
+    "NoCashRecoversByActualHarvestAndSaleWithoutGrants": {
+      "tick": 334,
+      "checkpointTick": 167
+    },
+    "OverflowIsPhysicallyCollectedAndSoldBeforeItsDeadline": {
+      "tick": 873,
+      "checkpointTick": 436
+    },
+    "OwnedPaverExecutesFundedRoadOrderAndReceivesOnlyActualCompletionReward": {
+      "tick": 634,
+      "checkpointTick": 317
+    },
+    "OwnerRecoversUnstaffedAutomationThroughActualPersonalDriving": {
+      "tick": 462,
+      "checkpointTick": 231
+    },
+    "PaidForeignPurchaseUsesAServiceWithoutCompetingManualPickupOrDuplicateGoodsPayment": {
+      "tick": 621,
+      "checkpointTick": 310
+    },
+    "PaidWorkshopIsOutfittedAndRunsWithConservedStaff": {
+      "tick": 528,
+      "checkpointTick": 264
+    },
+    "PrivateExtractorIsPurchasedAndActuallyWorksWithFinitePaidCrew": {
+      "tick": 270,
+      "checkpointTick": 135
+    },
+    "SecondEnterpriseKeepsBothRealWorkforcesAndProductionRunning": {
+      "tick": 1128,
+      "checkpointTick": 564
+    },
+    "SmallBatchesReachExchangeAndSellDespiteShortLivedOffers": {
+      "tick": 1016,
+      "checkpointTick": 508
+    },
+    "UnacceptedBuyOfferDoesNotBlockPhysicalSelfSupplyAndHiring": {
+      "tick": 231,
+      "checkpointTick": 115
+    },
+    "ZeroWageWorkplaceIsFundedAndHiredThroughTheNormalLocalCommand": {
+      "tick": 280,
+      "checkpointTick": 140
+    }
+  },
+  "exports": 34,
+  "comparisonPairs": 17,
+  "processChecks": 55,
+  "scope": "Policy-generated ordinary commands after explicit prepared staging; replay/checkpoint, finance/flow/privacy audits and frozen profile reproduction. Controller-memory continuations are covered separately by natural starts and unit tests.",
+  "runtimeTestedCode": "8da2218958ad02b6dd74b7abb4a02294eaf11076",
+  "run": 40722536198,
+  "job": 122940209090
+}

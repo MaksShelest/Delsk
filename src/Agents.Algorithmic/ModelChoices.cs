@@ -28,6 +28,7 @@ public sealed partial class AlgorithmicController
             .Append(new("hold", "Hold", "WaitOneTick", 0, [], "hold")).ToImmutableArray();
     }
     public bool RequiresUninterruptedAlgorithm(ControllerObservation o) => HasObligations(o) ||
+        UsesEconomicPlanning&&(o.Services?.OwnOrders.Any(s=>s.Active)==true||o.EconomicOpportunities?.Overflow.Length>0) ||
         o.OwnMarketBids.Any(b => o.MarketOffers.Any(m => m.Id == b.OfferId && m.Status == MarketOfferStatus.Auction));
     private bool CanOfferModelOptions(ControllerObservation o) => _state.PendingCommandId is null &&
         _state.NextStep == 0 && _state.SuspendedPlan.Length == 0 && !o.Participant.Busy &&
@@ -78,6 +79,9 @@ public sealed partial class AlgorithmicController
         var current = AvailableModelCandidates(o).Select(c => Option(o, c))
             .FirstOrDefault(p => p.Id == offered.Id && p.RelevantVersion == offered.RelevantVersion);
         if (current is null) return false;
+        RememberMarketIntent(current.Goal,current.Actions);
+        if(UsesEconomicPlanning&&current.Goal=="BuildProduction"&&StartupIndustry(o) is {} planned)
+            _state=_state with{EconomyMemory=_state.EconomyMemory! with{ConstructionIndustry=planned.Id}};
         _state = _state with { Goal = current.Goal, Reason = current.Reason,
             Plan = current.Actions.Select(a => new PlanStep(a)).ToArray(), NextStep = 0 };
         decision = new(current.Goal, "ModelChoice", [current.Actions[0]]);
