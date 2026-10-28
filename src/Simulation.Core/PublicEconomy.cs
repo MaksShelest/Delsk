@@ -66,7 +66,7 @@ public sealed partial class SimulationEngine
     public CapitalBreakdown CapitalOf(ParticipantId actor)
     {
         if (!_actors.TryGetValue(actor.Value, out var owner)) throw new ArgumentException("Participant not available");
-        long money = _economy.Accounts[owner.Account].Balance;
+        long money = checked(_economy.Accounts[owner.Account].Balance+ServiceEscrow(actor.Value));
         foreach (var pickup in _marketAllocations.Where(p => p.Buyer == actor))
             money = checked(money + _economy.Accounts[pickup.EscrowAccount.Value].Balance);
         foreach (var contract in _deliveryContracts)

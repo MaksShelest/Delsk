@@ -1,0 +1,164 @@
+{
+  "quote": {
+    "terms": {
+      "vehicleId": 1057,
+      "source": {
+        "value": 1009
+      },
+      "destination": {
+        "value": 1010
+      },
+      "itemId": "wood",
+      "quantity": 150,
+      "purchaseId": 0,
+      "contractId": 0
+    },
+    "volume": 300,
+    "quantityPerTrip": 35,
+    "trips": 5,
+    "loadedDistance": 1,
+    "travelTicks": 224,
+    "handlingTicks": 60,
+    "extraStaffTicks": 0,
+    "etaTicks": 284,
+    "bufferTicks": 600,
+    "feeMinor": 7337,
+    "roadUnits": 1360000000000,
+    "expectedIncomingVolume": 0,
+    "destinationCapacity": 200,
+    "destinationOccupiedVolume": 0,
+    "vehiclePosition": {
+      "x": 22,
+      "z": 6
+    },
+    "sourcePosition": {
+      "x": 7,
+      "z": 4
+    },
+    "destinationPosition": {
+      "x": 8,
+      "z": 4
+    },
+    "approach": [
+      {
+        "x": 22,
+        "z": 6
+      },
+      {
+        "x": 21,
+        "z": 6
+      },
+      {
+        "x": 21,
+        "z": 5
+      },
+      {
+        "x": 21,
+        "z": 4
+      },
+      {
+        "x": 21,
+        "z": 3
+      },
+      {
+        "x": 21,
+        "z": 2
+      },
+      {
+        "x": 21,
+        "z": 1
+      },
+      {
+        "x": 20,
+        "z": 1
+      },
+      {
+        "x": 19,
+        "z": 1
+      },
+      {
+        "x": 18,
+        "z": 1
+      },
+      {
+        "x": 17,
+        "z": 1
+      },
+      {
+        "x": 16,
+        "z": 1
+      },
+      {
+        "x": 15,
+        "z": 1
+      },
+      {
+        "x": 14,
+        "z": 1
+      },
+      {
+        "x": 13,
+        "z": 1
+      },
+      {
+        "x": 12,
+        "z": 1
+      },
+      {
+        "x": 11,
+        "z": 1
+      },
+      {
+        "x": 10,
+        "z": 1
+      },
+      {
+        "x": 9,
+        "z": 1
+      },
+      {
+        "x": 8,
+        "z": 1
+      },
+      {
+        "x": 7,
+        "z": 1
+      },
+      {
+        "x": 7,
+        "z": 2
+      },
+      {
+        "x": 7,
+        "z": 3
+      },
+      {
+        "x": 7,
+        "z": 4
+      }
+    ],
+    "loaded": [
+      {
+        "x": 7,
+        "z": 4
+      },
+      {
+        "x": 8,
+        "z": 4
+      }
+    ],
+    "emptyReturn": [
+      {
+        "x": 8,
+        "z": 4
+      },
+      {
+        "x": 7,
+        "z": 4
+      }
+    ],
+    "token": "7135e91b76d7935ebbb870cdfb4407ef153f5c1c83329574ccd371dec174807c",
+    "cargoRightsDeadline": 0
+  },
+  "calculation": "300 volume / 70 capacity => 35 wood units/trip, 5 trips; 224 travel + 60 handling = 284 ticks; W=56.80, R=0.17, fixed+blocks=5.00; ceil_cent(5+1.20*(56.80+0.17))=73.37; deadline=acceptTick+884"
+}

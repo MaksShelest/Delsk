@@ -118,15 +118,17 @@ public sealed partial class SimulationEngine
             return previous == command ? _results.GetValueOrDefault(command.CommandId)
                 : new(command.CommandId, ResultStatus.Rejected, "CommandIdConflict", Tick);
         if (command.LocalSequence <= 0 || command.IssuedAtTick < 0 || command.IssuedAtTick > Tick ||
-            (command.NotBeforeTick <= command.IssuedAtTick && !IsImmediateBallot(command)) || command.ExpiresAtTick < command.NotBeforeTick ||
+            (command.NotBeforeTick <= command.IssuedAtTick && !IsImmediateBallot(command)&&!IsImmediateServiceDecision(command)) || command.ExpiresAtTick < command.NotBeforeTick ||
             command.NotBeforeTick > _config.MaxTicks || !Enum.IsDefined(command.Action.Kind))
             return new(command.CommandId, ResultStatus.Rejected, "InvalidEnvelope", Tick);
         if (WaitingForBallots && !IsImmediateBallot(command)) return new(command.CommandId, ResultStatus.Rejected, "ElectionInProgress", Tick);
         if (IsImmediateBallot(command) && (!WaitingForBallots || command.IssuedAtTick != Tick))
             return new(command.CommandId, ResultStatus.Rejected, "ElectionClosed", Tick);
+        if(IsImmediateServiceDecision(command)&&(command.IssuedAtTick!=Tick||_stepping||!HasCommittedBoundary()))return new(command.CommandId,ResultStatus.Rejected,"InvalidEnvelope",Tick);
         if (!_actorSequences.Add((command.ActorId.Value, command.LocalSequence)))
             return new(command.CommandId, ResultStatus.Rejected, "SequenceReused", Tick);
         _seenCommands.Add(command.CommandId, command);
+        if(IsImmediateServiceDecision(command))return ApplyServiceDecision(command);
         if (WaitingForBallots)
         {
             _phase = 9; Execute(command); ValidateInvariants(); return _results[command.CommandId];
@@ -163,7 +165,7 @@ public sealed partial class SimulationEngine
             _phase = 4; AdvanceHarvests(); AdvanceWork(); AdvanceRoadWorks();
             _phase = 5; AdvanceLabor();
             _phase = 6; CloseVehiclePurchases(); CloseCapitalWindows(); AdvanceMarketWindows(); CloseBuyWindows(); AdvanceCapitalDemand();
-            _phase = 7; AdvanceOverflow(true); ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders(); ExpireSupport(); ExpireNegotiations();AdvanceIndustryQuests();AdvanceBilling();
+            _phase = 7; AdvanceServices(); AdvanceOverflow(true); ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders(); ExpireSupport(); ExpireNegotiations();AdvanceIndustryQuests();AdvanceBilling();
             _phase = 8; AdvanceElections();
             _phase = 9; AdvanceCityStage(); ValidateInvariants(); Emit("TickCommitted");
         }
@@ -187,6 +189,7 @@ public sealed partial class SimulationEngine
                 throw new RuleViolation(access.ReasonCode);
             switch (c.Action.Kind)
             {
+                case ActionKind.SetDeliveryService: case ActionKind.RequestDeliveryService: case ActionKind.AcceptDeliveryService: case ActionKind.RejectDeliveryService: case ActionKind.ConfirmDeliveryService: case ActionKind.CancelDeliveryService: case ActionKind.ViewDeliveryService: ServiceCommand(actor,c); break;
                 case ActionKind.PayInvoice: case ActionKind.ViewInvoice: case ActionKind.SetAutoPay: BillingCommand(actor,c); break;
                 case ActionKind.BuyVehicle: BuyVehicle(actor,c); break;
                 case ActionKind.SetRoadWork: SetRoadWork(actor,c); break;
@@ -431,6 +434,7 @@ public sealed partial class SimulationEngine
         if(InspectFleet() is {} fleet)payload=new{Payload=payload,Fleet=fleet};
         if(InspectRoads() is {} roads)payload=new{Payload=payload,Roads=roads};
         if(InspectBilling() is {} billing)payload=new{Payload=payload,Billing=billing};
+        if(InspectServices() is {} services)payload=new{Payload=payload,Services=services};
         if(InspectDevelopment() is {} development)payload=new{Payload=payload,Development=development};
         var travel = TravelDeviation();
         return ScenarioValidation.Hash(travel is null ? payload : new { Payload = payload, Travel = travel });

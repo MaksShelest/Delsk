@@ -62,6 +62,8 @@ public partial class PersonalAccountPanel : VBoxContainer
     {"Treasury"=>L("Город","City"),"WagesSink"=>L("Числовой персонал","Staff"),"CapitalBudget" or "Capital"=>L("Столица","Capital"),"External"=>L("Внешний рынок","External market"),"RoadClearing"=>L("Получатели дорожной платы","Road recipients"),_=>L("Расчёты по договору","Contract settlement")};
     private string Kind(string kind)
     {
+        if(kind.StartsWith("ServiceFunding:",StringComparison.Ordinal))return L("Резерв оплаты доставки","Delivery escrow funding");
+        if(kind.StartsWith("ServiceRefund:",StringComparison.Ordinal))return L("Возврат оплаты доставки","Delivery refund");
         if(kind.StartsWith("RoadPrincipal:",StringComparison.Ordinal))return L("Оплата дороги","Road payment");
         if(kind.StartsWith("RoadRevenue:",StringComparison.Ordinal))return L("Доход дороги","Road income");
         if(kind.StartsWith("RoadPenalty:",StringComparison.Ordinal))return L("Пени","Penalty");

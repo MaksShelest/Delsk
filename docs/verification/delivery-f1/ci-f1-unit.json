@@ -1,0 +1,26 @@
+{
+  "name": "f1-unit",
+  "jobId": 122618928039,
+  "runId": 40628448975,
+  "commit": "ba0f348a1c5cb3ff52428b6b38b219dbc75b9ced",
+  "report": {
+    "suite": "services",
+    "status": "succeeded",
+    "testsPassed": 27,
+    "testPartitions": [
+      {
+        "file": "tests-f1-services.trx",
+        "passed": 14
+      },
+      {
+        "file": "tests-f1-rights.trx",
+        "passed": 12
+      },
+      {
+        "file": "tests-f1-competition.trx",
+        "passed": 1
+      }
+    ],
+    "scope": "Exhaustive ordinary unit phase; runner checks are a separate required gate"
+  }
+}

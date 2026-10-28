@@ -1,0 +1,81 @@
+{
+  "status": "succeeded",
+  "processChecks": 76,
+  "exports": 54,
+  "comparisonPairs": 36,
+  "cases": {
+    "pending": {
+      "finalTick": 255,
+      "cut": 251
+    },
+    "rejected": {
+      "finalTick": 259,
+      "cut": 255
+    },
+    "accepted": {
+      "finalTick": 258,
+      "cut": 252
+    },
+    "refunded": {
+      "finalTick": 263,
+      "cut": 258
+    },
+    "expired": {
+      "finalTick": 266,
+      "cut": 261
+    },
+    "competition": {
+      "finalTick": 255,
+      "cut": 251
+    },
+    "requote": {
+      "finalTick": 261,
+      "cut": 257
+    },
+    "reconfirmed": {
+      "finalTick": 265,
+      "cut": 261
+    },
+    "offline": {
+      "finalTick": 257,
+      "cut": 253
+    },
+    "busy": {
+      "finalTick": 258,
+      "cut": 254
+    },
+    "five-trips": {
+      "finalTick": 399,
+      "cut": 395
+    },
+    "two-customers": {
+      "finalTick": 250,
+      "cut": 246
+    },
+    "paid-claim": {
+      "finalTick": 579,
+      "cut": 575
+    },
+    "claim-refund": {
+      "finalTick": 583,
+      "cut": 579
+    },
+    "npc-carrier": {
+      "finalTick": 256,
+      "cut": 252
+    },
+    "paused-response": {
+      "finalTick": 256,
+      "cut": 252
+    },
+    "delivery-quota": {
+      "finalTick": 247,
+      "cut": 236
+    },
+    "quota-refund": {
+      "finalTick": 251,
+      "cut": 247
+    }
+  },
+  "scope": "Actual F1 ordinary commands, independent quotes/exclusivity/escrow/refunds, money/flows/capital/privacy, exact save/load/replay. Prepared fixtures; F2 trips and delivered-part settlement excluded."
+}

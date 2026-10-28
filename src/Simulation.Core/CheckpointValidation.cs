@@ -65,7 +65,7 @@ public sealed partial class SimulationEngine
         foreach (var c in _seenCommands.Values)
             if (string.IsNullOrWhiteSpace(c.CommandId) || c.CommandId.Length > 160 || c.Action is null ||
                 !_actors.ContainsKey(c.ActorId.Value) || c.LocalSequence <= 0 || c.IssuedAtTick < 0 || c.IssuedAtTick > Tick ||
-                (c.NotBeforeTick <= c.IssuedAtTick && !IsImmediateBallot(c)) || c.NotBeforeTick > _config.MaxTicks || c.ExpiresAtTick < c.NotBeforeTick ||
+                (c.NotBeforeTick <= c.IssuedAtTick && !IsImmediateBallot(c)&&!IsImmediateServiceDecision(c)) || c.NotBeforeTick > _config.MaxTicks || c.ExpiresAtTick < c.NotBeforeTick ||
                 !Enum.IsDefined(c.Action.Kind)) throw new CheckpointException("InvalidStoredCommand");
         if (_pending.Select(c => c.CommandId).Distinct().Count() != _pending.Count ||
             _pending.Any(c => _results.ContainsKey(c.CommandId)) ||
@@ -157,7 +157,7 @@ public sealed partial class SimulationEngine
         AddExpectedSupportHolds(expectedStock);
         AddExpectedMarketHolds(expectedStock, expectedMoney);
         AddExpectedDeliveryHolds(expectedCapacity, expectedMoney);
-        AddExpectedLogisticsHolds(expectedCapacity, expectedStock, expectedMoney);AddExpectedFleetHolds(expectedMoney);AddExpectedRoadHolds(expectedMoney);
+        AddExpectedLogisticsHolds(expectedCapacity, expectedStock, expectedMoney);AddExpectedFleetHolds(expectedMoney);AddExpectedRoadHolds(expectedMoney);AddExpectedServiceHolds(expectedStock,expectedMoney);
         foreach (var inv in _economy.Inventories.Values)
         {
             foreach (var h in inv.CapacityHolds)

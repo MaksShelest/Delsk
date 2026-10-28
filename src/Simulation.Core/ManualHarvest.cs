@@ -55,14 +55,14 @@ public sealed partial class SimulationEngine
         Emit("HarvestCancelled", actor.Id, job.Id, job.Item, job.Quantity, reason: reason, command: job.CommandId);
     }
 
-    // Only atomic travel cancellation may follow the current tick's commit. Other unfinished
-    // phases remain unsaveable. This preserves focus/save and replay between travel quanta.
+    // Only explicitly validated atomic control events may follow the current tick commit.
+    // Economic phases stay unsaveable until committed; travel and paused service decisions replay exactly.
     private bool HasCommittedBoundary()
     {
         if (Tick == 0) return true;
         int commit = _events.FindLastIndex(e => e.Type == "TickCommitted" && e.Tick == Tick && e.Phase == 9);
         return commit >= 0 && _events.Skip(commit + 1).All(e =>
-            IsBillingTravelEvent(e) || IsResearchEvent(e) || IsElectionControlEvent(e) || IsTransferControlEvent(e) || e.Tick == Tick && e.Phase == 9 && e.Type == "HarvestCancelled" && e.ReasonCode == "LeftResourceArea" &&
+            IsServiceControlEvent(e) || IsBillingTravelEvent(e) || IsResearchEvent(e) || IsElectionControlEvent(e) || IsTransferControlEvent(e) || e.Tick == Tick && e.Phase == 9 && e.Type == "HarvestCancelled" && e.ReasonCode == "LeftResourceArea" &&
             e.ActorId is { } actor && _actors.ContainsKey(actor.Value) && e.EntityId >= 1000 && e.Quantity > 0 &&
             e.CommandId is { } id && _seenCommands.TryGetValue(id, out var c) && c.ActorId == actor &&
             c.Action.Kind is ActionKind.Harvest or ActionKind.StartHarvesting && c.Action.ItemId == e.ItemId &&

@@ -286,7 +286,7 @@ public sealed partial class SimulationEngine
         }
         return new(x,z,0,0,v.FacingX,v.FacingZ);
     }
-    private bool RoadVehicleBusy(long vehicle)=>Roads is not null&&(RoadVehicleWorking(vehicle)||_roadWorks.TryGetValue(vehicle,out var w)&&w.Enabled||
+    private bool RoadVehicleBusy(long vehicle)=>ServiceVehicleBusy(vehicle)||Roads is not null&&(RoadVehicleWorking(vehicle)||_roadWorks.TryGetValue(vehicle,out var w)&&w.Enabled||
         _traffic.TryGetValue(vehicle,out var t)&&(t.Progress>0||t.Resume is not null||t.Index<t.Path.Length-1));
     private void AdvanceTrafficAssistance()
     {

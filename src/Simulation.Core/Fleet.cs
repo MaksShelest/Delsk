@@ -171,7 +171,7 @@ public sealed partial class SimulationEngine
         [.. _vehiclePurchases], [.. _platforms.Values.OrderBy(p => p.Id).Select(p => p.View())]);
     public FleetObservation? FleetOf(ParticipantId actor) => Fleet is null ? null : new(Dealer.Entry, Fleet.Models,
         [.. _dealerStock.OrderBy(v => v.Id)], [.. _vehicles.Values.Where(v => v.Owner == actor).OrderBy(v => v.Id).Select(v => new VehicleView(v, Model(v.ModelId), VehicleCargo(v).Position,
-            v.Installation is not null ? "Installing" : v.Driver != 0 ? "Personal" : VehicleLogistics(v.Id)?.Trip?.State ?? "Parked", new(VehicleLogistics(v.Id)?.Id ?? 0)))],
+            ServiceVehicleBusy(v.Id) ? "ServiceReserved" : v.Installation is not null ? "Installing" : v.Driver != 0 ? "Personal" : VehicleLogistics(v.Id)?.Trip?.State ?? "Parked", new(VehicleLogistics(v.Id)?.Id ?? 0)))],
         [.. _vehicleRequests.Where(r => r.Actor == actor)], [.. _platforms.Values.Where(p => p.Group.Owner == actor.Value).OrderBy(p => p.Id).Select(p => p.View())], Fleet.Kits, Fleet.Platforms);
     private void RestoreFleet(FleetState? state)
     {

@@ -15,6 +15,7 @@ public sealed partial class SimulationEngine
         if(Development is null||!_developmentBuildings.TryGetValue(c.Action.Building.Value,out var state)||state.Owner!=actor.Id||Demolished(state.Id))throw new RuleViolation("NotAvailable");
         if(cancel){_preparingDevelopment.Remove(state.Id);Emit("IndustryPreparationCancelled",actor.Id,state.Id,command:c.CommandId);return;}
         if(PreparingDemolition(state.Id))throw new RuleViolation("PreparingDemolition");if(StorageWorkAt(_buildings[state.Id].Position))throw new RuleViolation("ConstructionInProgress");
+        var serviceBuilding=_buildings[state.Id];if(ServicePointBusy(serviceBuilding.Input)||serviceBuilding.Output is {} serviceOutput&&ServicePointBusy(serviceOutput))throw new RuleViolation("DeliveryServiceCommitment");
         _preparingDevelopment.Add(state.Id);foreach(var e in UnitsFor(state.Id))e.Enabled=e.Batch is not null;
         Emit("IndustryPreparationStarted",actor.Id,state.Id,command:c.CommandId);
     }
@@ -65,6 +66,7 @@ public sealed partial class SimulationEngine
         if(Development is null||!_buildings.TryGetValue(id.Value,out var b)||b.Owner!=actor.Value||b.Type.Kind!=BuildingKind.Production||Demolished(b.Id))return null;
         var level=b.Type.Levels.SingleOrDefault(l=>l.Level==b.Level+1);if(level is null)return null;
         var blockers=new List<string>();int known=Experience(b.Owner,b.Type.Id).TechnologyLevel;
+        if(ServicePointBusy(b.Input)||b.Output is {} serviceOutput&&ServicePointBusy(serviceOutput))blockers.Add("DeliveryServiceCommitment");
         if(known<level.Level)blockers.Add("IndustryTechnologyRequired");
         if(UnitsFor(b.Id).Any(e=>e.Enabled||e.Batch is not null)||_workshopInstallations.Values.Any(w=>w.Enterprise.Value==b.Id))blockers.Add("ProductionNotSafe");
         if(StorageWorkAt(b.Position))blockers.Add("ConstructionInProgress");if(PreparingDemolition(b.Id))blockers.Add("PreparingDemolition");

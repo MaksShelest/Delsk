@@ -13,6 +13,7 @@ for original, loaded in zip(sys.argv[1::2], sys.argv[2::2]):
     if (Path(original)/'fleet.json').exists() or (Path(loaded)/'fleet.json').exists(): names.append('fleet.json')
     if (Path(original)/'roads.json').exists() or (Path(loaded)/'roads.json').exists(): names.append('roads.json')
     if (Path(original)/'billing.json').exists() or (Path(loaded)/'billing.json').exists(): names.append('billing.json')
+    if (Path(original)/'services.json').exists() or (Path(loaded)/'services.json').exists(): names.append('services.json')
     for name in names:
         if world_only and name in ['controllers.json','decisions.jsonl','agents.csv','model-decisions.jsonl']: continue
         if (Path(original)/name).read_bytes() != (Path(loaded)/name).read_bytes():

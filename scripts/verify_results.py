@@ -8,9 +8,11 @@ from import_audit import verify_imports
 from fleet_audit import verify_fleet
 from road_audit import verify_roads
 from billing_audit import verify as verify_billing
+from service_audit import verify as verify_services
 
 def verify(folder):
     verify_billing(folder)
+    verify_services(folder)
     folder = Path(folder)
     verify_fleet(folder)
     verify_roads(folder)
@@ -261,7 +263,8 @@ def verify(folder):
         active_trips = [l['trip'] for l in systems if l['trip'] and l['trip']['contractId'] == d['id']]
         if d['closedTick'] is None:
             physical=json.loads((folder/'physical-state.json').read_text())
-            assert d['preparedQuantity'] == sum(t['quantity']-t['freight']['loaded']-t['freight']['cancelled'] for t in active_trips)+sum(t['remaining'] for t in physical['transfers'] if t['kind']=='Delivery' and t['contract']==d['id'])
+            service_prepared=sum(o['quote']['terms']['quantity'] for o in json.loads((folder/'services.json').read_text())['orders'] if o['state'] in ('Pending','Requote','Accepted') and o['quote']['terms']['contractId']==d['id']) if (folder/'services.json').exists() else 0
+            assert d['preparedQuantity'] == service_prepared+sum(t['quantity']-t['freight']['loaded']-t['freight']['cancelled'] for t in active_trips)+sum(t['remaining'] for t in physical['transfers'] if t['kind']=='Delivery' and t['contract']==d['id'])
             assert d['inTransitQuantity'] == sum(t['freight']['loaded']-t['freight']['received']-t['freight']['returned'] for t in active_trips)
     physical=json.loads((folder/'physical-state.json').read_text())
     assert len({(r['position']['x'],r['position']['z'],r['itemId']) for r in physical['resources']})==len(physical['resources'])

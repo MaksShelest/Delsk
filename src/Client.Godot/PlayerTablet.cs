@@ -17,6 +17,8 @@ public partial class PlayerTablet : VBoxContainer
     private readonly Label _capital=TabletDesign.Heading("",27),_employed=TabletDesign.Heading("",27),_room=TabletDesign.Heading("",27);
     private readonly CurrentDealsPanel _deals;
     private readonly DevelopmentPanel _development;
+    private readonly ServicePanel? _services;private readonly Button _serviceToggle=new(){Name="OpenDeliveryServices",ToggleMode=true};
+    public void OpenServices(){SelectedTab=0;_serviceToggle.ButtonPressed=true;if(_services is not null)_services.Visible=true;Back();}
     private readonly FleetPanel? _fleet;
     private readonly RoadPanel? _roads;
     private readonly PersonalAccountPanel _account;private readonly Button _accountToggle=new(){Name="OpenPersonalAccount",ToggleMode=true};
@@ -31,11 +33,12 @@ public partial class PlayerTablet : VBoxContainer
     private string _signature="";
     public VBoxContainer PoliticsHost {get;}=new(){Name="CityPolitics"};
     public int SelectedTab{get=>_tabs.CurrentTab;set=>_tabs.CurrentTab=Math.Clamp(value,0,3);}
-    public PlayerTablet(ScenarioDefinition scenario,string language,System.Action<GameAction> submit,System.Func<GameAction,ActionAccess> access,Func<long,bool,DemolitionQuote?>? demolitionQuote=null,Func<int,int,PersonalAccount>? accountQuery=null)
+    public PlayerTablet(ScenarioDefinition scenario,string language,System.Action<GameAction> submit,System.Func<GameAction,ActionAccess> access,Func<long,bool,DemolitionQuote?>? demolitionQuote=null,Func<int,int,PersonalAccount>? accountQuery=null,Func<ServiceTerms,ServiceQuoteResult>? serviceQuery=null)
     {
         _demolitionQuote=demolitionQuote;Name="PlayerPages";_scenario=scenario;_language=language;_submit=submit;_access=access;AddChild(_tabs);
         var farm=Tab(L("Моё хозяйство","My holdings"));farm.AddChild(_overview);
         _account=new(language,submit,accountQuery){Visible=false};_accountToggle.Toggled+=on=>_account.Visible=on;_overview.AddChild(_accountToggle);_overview.AddChild(_account);_overview.AddChild(_parked);
+        if(scenario.Economy?.Services is not null){_services=new(scenario,language,submit,serviceQuery){Visible=false};_serviceToggle.Text=L("Услуги доставки","Delivery services");_serviceToggle.Toggled+=on=>_services.Visible=on;_overview.AddChild(_serviceToggle);_overview.AddChild(_services);}
         var stats=new TabletColumns{Breakpoint=660};_overview.AddChild(stats);
         Stat(stats,"coin",_capital,L("Капитал","Capital"));Stat(stats,"people",_employed,L("Работают на вас","Working for you"));Stat(stats,"bag",_room,L("Свободно в рюкзаке · объём","Free backpack volume"));
         _empty.Text=L("Своих объектов пока нет. Добывайте сырьё, продавайте столице, покупайте участок и стройте.","No holdings yet. Harvest inputs, sell to the capital, buy a plot and build.");_overview.AddChild(_empty);_overview.AddChild(_holdings);
@@ -70,6 +73,7 @@ public partial class PlayerTablet : VBoxContainer
     {
         if(_cardObject is {} selected&&selected.Kind=="building"&&!view.Buildings.Any(b=>b.Id.Value==selected.Id)){_card=null;_cardObject=null;Back();}
         _view=view;_pending=pending;
+        _services?.ShowData(view,pending);if(view.Services is {} services){int unread=services.OwnOrders.Count(o=>o.Carrier==view.Participant.Id?!o.CarrierViewed:!o.CustomerViewed);_serviceToggle.Text=L("Услуги доставки","Delivery services")+(unread>0?" · ● "+unread:"");}
         if(view.PersonalAccount is {} account){_account.ShowData(account,pending);_accountToggle.Text=L("Личный счёт","Personal account")+(account.UnreadCount>0?" · ● "+account.UnreadCount:"")+(account.DebtMinor>0?L(" · долг "," · debt ")+PlayerText.Money(account.DebtMinor):"");_accountToggle.Modulate=account.UnreadCount>0?new Color("ff7777"):Colors.White;}_paused=paused;_tabs.CustomMinimumSize=new(0,Mathf.Max(260,GetViewportRect().Size.Y-340));
         var entries=view.Buildings.Select(b=>(Kind:"building",Id:b.Id.Value,Position:b.Position,Title:PlayerText.Building(_language,b.TypeId),Icon:b.TypeId))
             .Concat((view.Equipment??[]).Select(e=>(Kind:"equipment",Id:e.Id.Value,Position:e.Position,Title:L("Добывающая техника","Extraction equipment"),Icon:"gear"))).ToArray();
