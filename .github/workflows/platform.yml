@@ -126,6 +126,12 @@ jobs:
         run: |
           python scripts/run_check.py --name city-ux-native --timeout 600 --log-directory artifacts/gate-checks -- python scripts/check_city_experience_ui.py --godot "$env:DELSK_GODOT" --output artifacts/city-ux-ui --fixtures artifacts/city-ux-fixtures/g2-fixtures
           exit $LASTEXITCODE
+      - name: Failed city UX check diagnostics
+        if: failure()
+        shell: pwsh
+        run: |
+          Get-ChildItem artifacts/gate-checks,artifacts/city-ux-ui/checks -Filter '*.stderr.log' -ErrorAction SilentlyContinue | ForEach-Object { Write-Output $_.Name; Get-Content $_.FullName -Tail 60 }
+          Get-ChildItem artifacts/city-ux-ui -Recurse -Filter 'failure.json' -ErrorAction SilentlyContinue | ForEach-Object { Write-Output $_.FullName; Get-Content $_.FullName }
       - name: Publish actual native results and retained errors
         if: always()
         shell: pwsh

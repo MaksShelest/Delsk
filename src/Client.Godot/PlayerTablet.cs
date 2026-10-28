@@ -55,6 +55,7 @@ public partial class PlayerTablet : VBoxContainer
         var farm=Tab(L("Моё хозяйство","My holdings"));farm.AddChild(_overview);
         _account=new(language,submit,accountQuery){Visible=false};_accountToggle.Toggled+=on=>_account.Visible=on;_overview.AddChild(_accountToggle);_overview.AddChild(_account);_overview.AddChild(_parked);
         if(scenario.Economy?.Services is not null){_services=new(scenario,language,submit,serviceQuery,access){Visible=false};_serviceToggle.Text=L("Услуги доставки","Delivery services");_serviceToggle.Toggled+=on=>_services.Visible=on;_overview.AddChild(_serviceToggle);_overview.AddChild(_services);}
+        if(scenario.Economy?.Services is null){_serviceToggle.Visible=false;_overview.AddChild(_serviceToggle);}
         var stats=new TabletColumns{Breakpoint=660};_overview.AddChild(stats);
         Stat(stats,"coin",_capital,L("Капитал","Capital"));Stat(stats,"people",_employed,L("Работают на вас","Working for you"));Stat(stats,"bag",_room,L("Свободно в рюкзаке · объём","Free backpack volume"));
         _empty.Text=L("Своих объектов пока нет. Добывайте сырьё, продавайте столице, покупайте участок и стройте.","No holdings yet. Harvest inputs, sell to the capital, buy a plot and build.");_overview.AddChild(_empty);

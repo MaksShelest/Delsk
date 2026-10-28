@@ -19,15 +19,17 @@ public partial class CityMapPanel : VBoxContainer
     public CityMapPanel(ScenarioDefinition scenario,string language,CityMapPreferences state,Action<GameAction> submit,Func<Cell,MovementGuide> route)
     {
         Name="FullCityMap";_language=language;_state=state;_submit=submit;_route=route;
+        Canvas=new(state);Canvas.CellChosen+=Choose;AddChild(Canvas);
         var toolbar=TabletDesign.Flow();AddChild(toolbar);
         toolbar.AddChild(Button("MapZoomIn","+",()=>Canvas!.Zoom(1.25)));toolbar.AddChild(Button("MapZoomOut","−",()=>Canvas!.Zoom(.8)));
         toolbar.AddChild(Button("MapFit",L("Весь город","Fit city"),()=>Canvas!.Fit()));
         toolbar.AddChild(Button("MapMe",L("Ко мне","Find me"),()=>{if(_view is null)return;_state.Center(_view.Participant.Position.X+.5,_view.Participant.Position.Z+.5);Canvas!.Zoom(2); }));
-        toolbar.AddChild(_participant);_participant.ItemSelected+=i=>{_state.Participant=_participants[i];Canvas!.QueueRedraw();UpdateDetails();};
-        var layers=TabletDesign.Flow();AddChild(layers);
+        var filters=new VBoxContainer{Visible=false};
+        toolbar.AddChild(Button("MapFilters",L("Фильтры ▾","Filters ▾"),()=>filters.Visible=!filters.Visible));AddChild(filters);
+        filters.AddChild(_participant);_participant.ItemSelected+=i=>{_state.Participant=_participants[i];Canvas!.QueueRedraw();UpdateDetails();};
+        var layers=TabletDesign.Flow();filters.AddChild(layers);
         foreach(var layer in new[]{CityLayer.Resources,CityLayer.Industry,CityLayer.Property,CityLayer.Roads,CityLayer.Services,CityLayer.Deliveries,CityLayer.People})
         {var toggle=new CheckButton{Name="MapLayer"+layer,Text=LayerTitle(layer),ButtonPressed=(_state.Layers&layer)!=0,CustomMinimumSize=new(0,44)};toggle.Toggled+=on=>{_state.Layers=on?_state.Layers|layer:_state.Layers&~layer;Canvas!.QueueRedraw();UpdateDetails();};layers.AddChild(toggle);}
-        Canvas=new(state);Canvas.CellChosen+=Choose;AddChild(Canvas);
         AddChild(new Label{Text=L("Колесо / + −: масштаб · перетаскивание / стрелки / WASD: сдвиг · Home: весь город · касание: выбор, два пальца: масштаб.","Wheel / + −: zoom · drag / arrows / WASD: pan · Home: fit · tap: select, two fingers: zoom."),AutowrapMode=TextServer.AutowrapMode.WordSmart});
         _objects.ItemSelected+=i=>{_state.SelectedKey=_keys[i];UpdateDetails(false);};AddChild(_objects);AddChild(_details);
         var actions=TabletDesign.Flow();AddChild(actions);_open.Pressed+=OpenSelected;actions.AddChild(_open);

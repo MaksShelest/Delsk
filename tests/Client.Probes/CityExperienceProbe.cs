@@ -63,8 +63,9 @@ public partial class CityExperienceProbe : Control
         Input.ParseInputEvent(new InputEventScreenTouch{WindowId=window,Index=1,Position=b+new Vector2(35,10),Pressed=false});
         Input.ParseInputEvent(new InputEventScreenTouch{WindowId=window,Index=0,Position=a,Pressed=false});await Frames();
         Check(prefs.Zoom>zoom,"Two-finger gesture did not zoom");Check(prefs.SelectedKey==selected,"Pinch emitted a ghost selection");Check(Session.CommandTape.Length==commands,"Map input submitted a world command");
-        await Click(Named<CheckButton>("MapLayerResources"));Check(!CityMap.Visible(resource,prefs.Layers,0),"Layer filter did not hide resource");await Click(Named<CheckButton>("MapLayerResources"));
+        await Click(Named<Button>("MapFilters"));await Click(Named<CheckButton>("MapLayerResources"));Check(!CityMap.Visible(resource,prefs.Layers,0),"Layer filter did not hide resource");await Click(Named<CheckButton>("MapLayerResources"));
         var selector=Named<OptionButton>("MapParticipant");await Click(selector);await Press(Key.Up);await Press(Key.Enter);await Frames();Check(prefs.Participant==frame.Participants[^1],"Last participant filter did not apply");await Click(selector);await Press(Key.Down);await Press(Key.Enter);await Frames();Check(prefs.Participant==0,"All-participants filter did not restore");
+        await Click(Named<Button>("MapFilters"));await Reveal(canvas);
         // Every roster entry remains selectable; metadata is public identity only.
         Check(selector.ItemCount==count+2,"Participant filter misses final NPC");
         await Click(Named<Button>("TabletHelp"));Check(Session.Paused,"Help did not pause");await Press(Key.Escape);Check(Field<TabletState>(_app,"_tabletState").Kind==TabletKind.CityMap,"Help close lost map");

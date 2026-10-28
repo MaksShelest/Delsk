@@ -24,17 +24,17 @@ for name in sorted(set(names)):
         if not name.startswith('docs/vnext/') or name=='docs/vnext/data/BALANCE_VNEXT.json':inputs[name]=hashlib.sha256(source.read_bytes()).hexdigest()
 for name in ['tests/Client.Probes/CityExperienceProbe.cs','tests/Client.Probes/CityExperienceProbe.Forms.cs','tests/Client.Probes/ServiceRunProbe.cs','tools/AssemblyAudit/Program.cs','scripts/check_city_experience_ui.py']:
     if (ROOT/name).exists():inputs[name]=hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
-marker.write_text('Owned isolated G2 ordinary UI stage\n')
+marker.write_text('Owned isolated G2 ordinary UI stage\n',encoding='utf-8')
 for name in ['CityExperienceProbe.cs','CityExperienceProbe.Forms.cs','CityExperienceProbe.tscn','ServiceRunProbe.cs','ServiceRunProbe.tscn']:
     (project/name).unlink(missing_ok=True)
 # Existing measured import workaround belongs only to the disposable stage.
-with (project/'project.godot').open('a') as f:f.write('\n[editor]\nimport/use_multiple_threads=false\n')
+with (project/'project.godot').open('a',encoding='utf-8') as f:f.write('\n[editor]\nimport/use_multiple_threads=false\n')
 check('restore',180,['dotnet','restore',project/'Delsk.Client.csproj','--locked-mode','--disable-parallel','-m:1'])
 check('ordinary-build',180,['dotnet','build',project/'Delsk.Client.csproj','--no-restore','--disable-build-servers','-m:1'])
 check('ordinary-audit',120,['dotnet','run','--project',ROOT/'tools/AssemblyAudit','-c','Release','--',project/'.godot/mono/temp/bin/Debug'])
 def probe(name):
     shutil.copyfile(ROOT/'tests/Client.Probes'/(name+'.cs'),project/(name+'.cs'))
-    (project/(name+'.tscn')).write_text('[gd_scene load_steps=2 format=3]\n[ext_resource type="Script" path="res://'+name+'.cs" id="1"]\n[node name="'+name+'" type="Control"]\nlayout_mode=3\nanchors_preset=15\nanchor_right=1.0\nanchor_bottom=1.0\nscript=ExtResource("1")\n')
+    (project/(name+'.tscn')).write_text('[gd_scene load_steps=2 format=3]\n[ext_resource type="Script" path="res://'+name+'.cs" id="1"]\n[node name="'+name+'" type="Control"]\nlayout_mode=3\nanchors_preset=15\nanchor_right=1.0\nanchor_bottom=1.0\nscript=ExtResource("1")\n',encoding='utf-8')
 probe('CityExperienceProbe')
 if a.fixtures:probe('ServiceRunProbe')
 if (ROOT/'tests/Client.Probes/CityExperienceProbe.Forms.cs').exists():shutil.copyfile(ROOT/'tests/Client.Probes/CityExperienceProbe.Forms.cs',project/'CityExperienceProbe.Forms.cs')
@@ -44,29 +44,29 @@ check('import',120,[a.godot,'--headless','--path',project,'--editor','--import']
 env=os.environ.copy()
 if a.display:env.update(DISPLAY=a.display,LIBGL_ALWAYS_SOFTWARE='1')
 cases=[]
-base_project=(project/'project.godot').read_text()
+base_project=(project/'project.godot').read_text(encoding='utf-8')
 for map_key,count,language,width in [('small-river',6,'ru',640),('large-districts',10,'en',1100),('large-districts',10,'ru',360)]:
     tag='small' if map_key=='small-river' else 'large' if width>500 else 'narrow'
     if a.case not in ('all',tag):continue
     name=map_key+'-'+str(count)+'-'+language+'-'+str(width);folder=case_root/name;folder.mkdir()
     identity=hashlib.sha256(str(folder).encode()).hexdigest()[:16]
-    (project/'project.godot').write_text(base_project.replace('[application]','[application]\nconfig/use_custom_user_dir=true\nconfig/custom_user_dir_name="Delsk-G2-'+identity+'"',1))
+    (project/'project.godot').write_text(base_project.replace('[application]','[application]\nconfig/use_custom_user_dir=true\nconfig/custom_user_dir_name="Delsk-G2-'+identity+'"',1),encoding='utf-8')
     check(name,180,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','res://CityExperienceProbe.tscn','--','--output',folder,'--map',map_key,'--count',count,'--language',language,'--width',width,'--windowed'],env|{'XDG_DATA_HOME':str(out/('user-'+prefix+'-'+name))})
     check(name+'-logs',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks'/(prefix+'-'+name)])
-    result=json.loads((folder/'native-check.json').read_text());assert result['status']=='succeeded';cases.append(result)
+    result=json.loads((folder/'native-check.json').read_text(encoding='utf-8'));assert result['status']=='succeeded';cases.append(result)
 if a.fixtures:
     fixtures=a.fixtures.resolve()
     for language in ['ru','en']:
         name='forms-'+language;folder=case_root/name;folder.mkdir();identity=hashlib.sha256(str(folder).encode()).hexdigest()[:16]
-        (project/'project.godot').write_text(base_project.replace('[application]','[application]\nconfig/use_custom_user_dir=true\nconfig/custom_user_dir_name="Delsk-G2-'+identity+'"',1))
+        (project/'project.godot').write_text(base_project.replace('[application]','[application]\nconfig/use_custom_user_dir=true\nconfig/custom_user_dir_name="Delsk-G2-'+identity+'"',1),encoding='utf-8')
         check(name,180,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','res://CityExperienceProbe.tscn','--','--output',folder,'--map','prepared','--count',2,'--language',language,'--width',800,'--fixtures',fixtures,'--windowed'],env|{'XDG_DATA_HOME':str(out/('user-'+prefix+'-'+name))})
         check(name+'-logs',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks'/(prefix+'-'+name)])
-        result=json.loads((folder/'native-check.json').read_text());assert result['status']=='succeeded' and result['prepared'];cases.append(result)
+        result=json.loads((folder/'native-check.json').read_text(encoding='utf-8'));assert result['status']=='succeeded' and result['prepared'];cases.append(result)
     folder=case_root/'service-runs';folder.mkdir()
     check('service-runs',180,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','res://ServiceRunProbe.tscn','--','--output',folder,'--fixtures',fixtures,'--windowed'],env|{'XDG_DATA_HOME':str(out/('user-'+prefix+'-service-runs'))})
     check('service-runs-logs',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks'/(prefix+'-service-runs')])
     cases.append(dict(status='succeeded',prepared=True,scope='Existing F2 native delivery execution/partial payment/cancellation/restore probe on the same final client source, RU/EN'))
 assert all(hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest for name,digest in inputs.items()),'Sources changed during the native gate'
-(out/(prefix+'-inputs.json')).write_text(json.dumps(dict(inputs=inputs,stageOnlyChanges=['serial editor import','isolated forbidden probe','isolated per-case user data directory'],scope='Exact source digests; asset cache verified separately'),indent=2)+'\n')
-(out/(prefix+'-gate.json')).write_text(json.dumps(dict(status='succeeded',requestedCases=a.case,cases=cases,matchedInputs=len(inputs),scope='Ordinary native window with synthetic keyboard/mouse/touch input; no physical Android/device assertion'),ensure_ascii=False,indent=2)+'\n')
+(out/(prefix+'-inputs.json')).write_text(json.dumps(dict(inputs=inputs,stageOnlyChanges=['serial editor import','isolated forbidden probe','isolated per-case user data directory'],scope='Exact source digests; asset cache verified separately'),indent=2)+'\n',encoding='utf-8')
+(out/(prefix+'-gate.json')).write_text(json.dumps(dict(status='succeeded',requestedCases=a.case,cases=cases,matchedInputs=len(inputs),scope='Ordinary native window with synthetic keyboard/mouse/touch input; no physical Android/device assertion'),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print('G2 native city experience passed:',len(cases),'cases')

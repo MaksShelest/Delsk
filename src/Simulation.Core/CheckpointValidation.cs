@@ -99,7 +99,11 @@ public sealed partial class SimulationEngine
                 !_seenCommands.ContainsKey(j.CommandId)) throw new CheckpointException("InvalidPersonalJob");
             if (j.Kind == "Move" && Roads is not null && DrivenVehicle(actor.Id) is {} movingVehicle)
             {
-                bool serviceIntent=ExecutingService(movingVehicle.Id) is {} service&&_seenCommands[j.CommandId].Action.Kind==ActionKind.NavigateDeliveryService&&j.Path[^1]==ServiceTarget(service,_serviceRuns[service.Id]);
+                // Cancellation can change the next service target while an already entered route finishes.
+                // The job retains its authenticated original endpoint; cargo/traffic remain canonical.
+                var navigation=_seenCommands[j.CommandId].Action;
+                bool serviceIntent=j.Path.Length>=2&&ExecutingService(movingVehicle.Id) is {} service&&navigation.Kind==ActionKind.NavigateDeliveryService&&navigation.ServiceId==service.Id&&
+                    (j.Path[^1]==service.Quote.SourcePosition||j.Path[^1]==service.Quote.DestinationPosition||j.Path[^1]==service.Quote.ReturnPosition);
                 if(j.Path.Length<2 || j.Path.Any(c=>!_map.Walkable(c)) || !_traffic.TryGetValue(movingVehicle.Id,out var traffic) && actor.Position!=j.Path[0] || !serviceIntent && traffic is not null && traffic.Path.Length>0 && traffic.Path[^1]!=(traffic.Resume??j.Path[^1]) && traffic.Resume!=j.Path[^1])throw new CheckpointException("InvalidRoadMove");
             }
             else if (j.Kind == "Move")

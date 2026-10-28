@@ -48,6 +48,22 @@ public class CityExperienceG2Tests
         for(int i=0;i<24;i++){var historical=ServiceF1Tests.Request(s,terms);ServiceF1Tests.Step(s,new(ActionKind.RejectDeliveryService,ServiceId:historical.Id),2);}
         Assert.Equal(25,s.Engine.ServicesOf(new(2))!.OwnOrders.Length);Evidence(s,"service-history",2);
     }
+    [Fact]public void CancellationDuringPersonalServiceNavigationRestoresBeforePhysicalReturn()
+    {
+        var(s,v,o)=ServiceF2Tests.Prepare();ServiceF2Tests.Board(s,v);ServiceF2Tests.Load(s,o.Id);
+        ServiceF2Tests.Step(s,new(ActionKind.NavigateDeliveryService,ServiceId:o.Id));
+        Assert.True(s.Engine.Observe(new(2)).Participant.Busy);
+        ServiceF2Tests.Step(s,new(ActionKind.CancelDeliveryService,ServiceId:o.Id),1);
+        Assert.Equal("Returning",ServiceF2Tests.Run(s).Stage);Assert.Equal(30,ServiceF2Tests.Run(s).Cargo);
+        var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));
+        for(int i=0;s.Engine.Observe(new(2)).Participant.Busy&&i<2000;i++)
+        {s.Step();copy.Step();Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());}
+        Assert.False(s.Engine.Observe(new(2)).Participant.Busy);Assert.Equal(0,ServiceF2Tests.Run(s).PaidMinor);
+        ServiceF2Tests.Navigate(s,o.Id);ServiceF2Tests.Step(s,new(ActionKind.UnloadDeliveryService,ServiceId:o.Id));
+        ServiceF2Tests.Until(s,()=>ServiceF2Tests.Run(s).Stage=="Cancelled");
+        Assert.Equal(30,ServiceF2Tests.Run(s).Returned);Assert.Equal(o.Quote.FeeMinor,ServiceF2Tests.Run(s).RefundedMinor);
+        ServiceF2Tests.Exact(s,"g2-cancel-physical-return");
+    }
     [Theory][InlineData(0,0,1000,800,10,25,970,740,10,25,20,35)][InlineData(200,100,1000,800,0,0,2000,1500,0,0,0,0)]
     public void SafeInsetsRespectTheActualWindowAndViewport(double x,double y,double w,double h,double sx,double sy,double sw,double sh,double left,double top,double right,double bottom)
     {
