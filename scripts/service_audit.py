@@ -32,7 +32,7 @@ def verify(folder):
         if is_active:
             active.append(t['vehicleId']);assert not o['closedTick']
             if status!='Accepted':money_needed[o['customer']['value']]+=q['feeMinor']
-            if not t['purchaseId']:stock_needed[(t['source']['value'],t['itemId'])]+=remaining
+            if not t['purchaseId'] and remaining:stock_needed[(t['source']['value'],t['itemId'])]+=remaining
             assert run is not None or (o['deadlineTick'] if status=='Accepted' else o['respondByTick'])>state['tick']
             if not t['purchaseId'] and remaining:
                 stock=next(s for s in inventories[t['source']['value']]['stock'] if s['itemId']==t['itemId']);assert stock['reserved']>=remaining

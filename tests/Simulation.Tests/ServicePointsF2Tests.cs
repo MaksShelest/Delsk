@@ -21,7 +21,7 @@ public class ServicePointsF2Tests
         var(s,v,dest)=Empty(d);StorageC1Tests.Move(s,wood.Position);Step(s,new(ActionKind.BuyEquipment,Target:wood.Position,EquipmentTypeId:d.EquipmentTypes!.Single(t=>t.ItemId=="wood").Id),1);var machine=s.Engine.Observe(new(1)).OwnEquipment.Single();
         Step(s,new(ActionKind.Harvest,ItemId:"wood",Quantity:5),1);StorageC1Tests.Idle(s);StorageC1Tests.Put(s,receiver?dest:machine.StorageId,"wood",5);var point=s.Engine.ServicesOf(new(1))!.OwnPoints.Single(p=>p.Inventory==machine.StorageId);Assert.Equal("Extraction",point.PointType);
         var target=receiver?machine.StorageId:dest;var o=ServiceF1Tests.Request(s,new(v.Id,receiver?dest:machine.StorageId,target,"wood",5));Step(s,new(ActionKind.AcceptDeliveryService,ServiceId:o.Id));
-        Step(s,new(ActionKind.SetWage,Group:machine.GroupId,WageMinor:0),1);Step(s,new(ActionKind.SetEquipmentMode,Equipment:machine.Id,Mode:EquipmentMode.Automatic),1);
+        StorageC1Tests.Move(s,wood.Position);Step(s,new(ActionKind.SetWage,Group:machine.GroupId,WageMinor:0),1);Step(s,new(ActionKind.SetEquipmentMode,Equipment:machine.Id,Mode:EquipmentMode.Automatic),1);
         Step(s,new(ActionKind.MoveEquipment,Equipment:machine.Id,Target:wood.Position),1,false);Assert.Equal("DeliveryServiceCommitment",s.Engine.Result(s.CommandTape.Last().Command.CommandId)!.ReasonCode);
         Board(s,v);Load(s,o.Id);Deliver(s,o.Id);Assert.Equal(5,FleetE1Tests.Stock(s,target,"wood"));Assert.Equal(wood.Position,s.Engine.Observe(new(1)).OwnEquipment.Single().Position);Exact(s,receiver?"extraction-received":"extraction-delivered");
     }
