@@ -1,0 +1,41 @@
+{
+  "suite": "npc",
+  "status": "succeeded",
+  "testsPassed": 30,
+  "testPartitions": [
+    {
+      "file": "tests-g1-0.trx",
+      "passed": 7
+    },
+    {
+      "file": "tests-g1-1.trx",
+      "passed": 6
+    },
+    {
+      "file": "tests-g1-2.trx",
+      "passed": 5
+    },
+    {
+      "file": "tests-g1-3.trx",
+      "passed": 3
+    },
+    {
+      "file": "tests-g1-4.trx",
+      "passed": 6
+    },
+    {
+      "file": "tests-g1-5.trx",
+      "passed": 3
+    }
+  ],
+  "release_negative_build": "expected rejection",
+  "scope": "Developer variant; ordinary release/client metadata checked separately",
+  "localEvidenceCode": "bcf36b1010cd3030c6beca67413928651ba264c3",
+  "finalSourceCI": {
+    "commit": "8da2218958ad02b6dd74b7abb4a02294eaf11076",
+    "run": 40722536198,
+    "job": 122936994577,
+    "status": "success",
+    "scope": "Same exhaustive six-class/30-case suite; final source CI exits successfully under its unchanged count and no-skip checks. Local detailed partition counts above were recorded on the preceding source; the changed five-case production partition also passed locally on the final source."
+  }
+}

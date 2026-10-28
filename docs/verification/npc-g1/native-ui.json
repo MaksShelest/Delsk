@@ -1,0 +1,99 @@
+{
+  "status": "succeeded",
+  "runtimeTestedCode": "8da2218958ad02b6dd74b7abb4a02294eaf11076",
+  "cases": [
+    {
+      "status": "succeeded",
+      "npcCount": 6,
+      "map": "small-river",
+      "checks": [
+        "native keyboard 3..10 selection",
+        "RU/EN preserved count",
+        "catalog/preview without world",
+        "real start/controllers/last rendered actor",
+        "native replacement cancel",
+        "continue retained roster",
+        "disk load retained saved roster"
+      ],
+      "scope": "Actual native window, keyboard/mouse dispatch and real Playfield/session; software renderer, not target device",
+      "process": {
+        "command": [
+          "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+          "--path",
+          "/workspace/work/g1/native-18/source/src/Client.Godot",
+          "--rendering-method",
+          "gl_compatibility",
+          "--audio-driver",
+          "Dummy",
+          "res://OrdinarySetupProbe.tscn",
+          "--",
+          "--output",
+          "/workspace/work/g1/native-33/small-river-6",
+          "--count",
+          "6",
+          "--map",
+          "small-river",
+          "--windowed"
+        ],
+        "timeout_seconds": 150,
+        "started_at": "2026-10-28T16:10:57.848217+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 30.019,
+        "finished_at": "2026-10-28T16:11:27.867386+00:00"
+      },
+      "screenshots": {
+        "count-en.png": "a7ba6f42a64b082ae74efc4acb630a2f77427083fd8c877668a9d30c1de7f0d0",
+        "live-en.png": "7a14bb821e390febc5d97cc7b3241fd3c3cb05cf280e56417fa45ddea25aa19a",
+        "count-ru-compact.png": "5890730d420e0b5f2a4151ac40ee375727c87a9025db7c6aa271952620f23edc"
+      }
+    },
+    {
+      "status": "succeeded",
+      "npcCount": 10,
+      "map": "large-districts",
+      "checks": [
+        "native keyboard 3..10 selection",
+        "RU/EN preserved count",
+        "catalog/preview without world",
+        "real start/controllers/last rendered actor",
+        "native replacement cancel",
+        "continue retained roster",
+        "disk load retained saved roster"
+      ],
+      "scope": "Actual native window, keyboard/mouse dispatch and real Playfield/session; software renderer, not target device",
+      "process": {
+        "command": [
+          "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+          "--path",
+          "/workspace/work/g1/native-18/source/src/Client.Godot",
+          "--rendering-method",
+          "gl_compatibility",
+          "--audio-driver",
+          "Dummy",
+          "res://OrdinarySetupProbe.tscn",
+          "--",
+          "--output",
+          "/workspace/work/g1/native-33/large-districts-10",
+          "--count",
+          "10",
+          "--map",
+          "large-districts",
+          "--windowed"
+        ],
+        "timeout_seconds": 150,
+        "started_at": "2026-10-28T16:11:28.058614+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 37.854,
+        "finished_at": "2026-10-28T16:12:05.912342+00:00"
+      },
+      "screenshots": {
+        "count-en.png": "27d0e6bf6927509bda4d6b27d0be6adc9531f04c6f1988c59a883d2ee09511ed",
+        "live-en.png": "adebb85730aa659a3c1d6e30ac9381150903ac16a31c83718ae28c70d643994d",
+        "count-ru-compact.png": "82af497e5166747dd65a8cb4ce9dbca963da1ec1f38fa74df14a574c6b3a48a3"
+      }
+    }
+  ],
+  "matchedInputs": 659,
+  "visualInspection": "Final large-districts-10/live-en.png inspected: ordinary HUD, map, player and last NPC rendered.",
+  "scope": "Native X11 keyboard/mouse, RU/EN, start/cancel/resume/disk load. Software Mesa; not hardware/Android performance. Existing count3 probe civic assertions predate E1; selected native counts are6/10, not a claim of that obsolete civic path. Stage-only probe is not shipped; ordinary Debug/Release assembly checks passed in final Windows CI."
+}

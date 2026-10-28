@@ -1,0 +1,115 @@
+{
+  "status": "succeeded",
+  "prepared": true,
+  "runtimeTestedCode": "8da2218958ad02b6dd74b7abb4a02294eaf11076",
+  "initialNpc2CashMinor": 100000,
+  "ordinaryInitialCashMinor": 20000,
+  "otherNpcInitialCashMinor": 20000,
+  "finalTick": 4500,
+  "checkpointTick": 2940,
+  "checkpointSchema": 3,
+  "checkpointNpc2Goal": "SellCarried",
+  "checkpointNpc2Memory": {
+    "rejected": [],
+    "constructionIndustry": "",
+    "marketWaitUntil": 3224,
+    "marketItem": "plank"
+  },
+  "checkpointSha256": "2fd661dfa51b92ae14bd4ace871b062611f93edeb858e7189fcc8435dcb4357e",
+  "completedBatches": 3,
+  "plankDelivered": 9,
+  "plankRevenueMinor": 8482,
+  "plankReceipts": 9,
+  "wagesMinor": 4320,
+  "controllerRejections": 0,
+  "finalStateHash": "e2c84c36d1f7cda1a85459add7115cfd118c3bd35958a0f3a9bcf63d57675dd3",
+  "exactContinuation": true,
+  "independentAccounting": true,
+  "publicAudit": true,
+  "processChecks": {
+    "4500": {
+      "command": [
+        "dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/work/g1/funded-start.json",
+        "--controllers",
+        "/workspace/work/g1/funded-controllers.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self",
+        "--ticks",
+        "4500",
+        "--checkpoint",
+        "/workspace/work/g1/funded-4500-33.save.json",
+        "--checkpoint-at",
+        "2940",
+        "--output",
+        "/workspace/work/g1/funded-4500-33"
+      ],
+      "timeout_seconds": 300,
+      "started_at": "2026-10-28T16:05:43.341749+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 195.168,
+      "finished_at": "2026-10-28T16:08:58.510273+00:00"
+    },
+    "load": {
+      "command": [
+        "dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/work/g1/funded-4500-33.save.json",
+        "--ticks",
+        "4500",
+        "--output",
+        "/workspace/work/g1/funded-loaded-33"
+      ],
+      "timeout_seconds": 300,
+      "started_at": "2026-10-28T16:08:58.562943+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 88.115,
+      "finished_at": "2026-10-28T16:10:26.678619+00:00"
+    },
+    "exact": {
+      "command": [
+        "python",
+        "scripts/verify_checkpoint_exports.py",
+        "/workspace/work/g1/funded-4500-33",
+        "/workspace/work/g1/funded-loaded-33"
+      ],
+      "timeout_seconds": 20,
+      "started_at": "2026-10-28T16:10:26.733160+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.968,
+      "finished_at": "2026-10-28T16:10:27.700921+00:00"
+    },
+    "audit": {
+      "command": [
+        "python",
+        "scripts/verify_results.py",
+        "/workspace/work/g1/funded-4500-33",
+        "/workspace/work/g1/funded-loaded-33"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-28T16:10:27.744461+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.469,
+      "finished_at": "2026-10-28T16:10:29.213563+00:00"
+    },
+    "public": {
+      "command": [
+        "python",
+        "scripts/verify_public_economy.py",
+        "/workspace/work/g1/funded-4500-33",
+        "/workspace/work/g1/funded-loaded-33"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-28T16:10:29.261794+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.366,
+      "finished_at": "2026-10-28T16:10:29.627519+00:00"
+    }
+  },
+  "scope": "Funded preparation on the original small-river map; actual build/import/supply/hiring/production/exchange actions. At saved tick2940 the remembered exchange wait had reached a public offer and SellCarried was active; unit capture/restore also checks actual waiting. Not natural start timing or calibrated ROI."
+}
