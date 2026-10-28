@@ -45,6 +45,23 @@ def verify(folder):
         land = sum(p['priceMinor'] for p in state['plots'] if p['ownerId'] and p['ownerId']['value']==actor)
         land += sum(r['purchasePriceMinor'] for r in physical['resources'] if r['owner'] and r['owner']['value']==actor)
         buildings = sum(l['priceMinor']+sum(m['quantity']*prices[m['itemId']] for m in l['materials']) for b in state['buildings'] if b['ownerId']['value']==actor for l in types[b['typeId']]['levels'] if l['level']<=b['level'])
+        # Additional paid workshops are separate production units, not extra parent levels.
+        # Include their actual WIP and unfinished paid installations exactly once.
+        workshops=json.loads((folder/'workshops.json').read_text()) if (folder/'workshops.json').exists() else None
+        owned={b['id']['value']:b for b in state['buildings'] if b['ownerId']['value']==actor}
+        if workshops:
+            for line in workshops['additional']:
+                if line['enterprise'] not in owned:continue
+                outfit=types[owned[line['enterprise']]['typeId']]['workshopOutfit']
+                buildings+=outfit['priceMinor']+sum(m['quantity']*prices[m['itemId']] for m in outfit['materials'])
+                batch=line['unit']['batch']
+                if batch:
+                    recipe=recipes[batch['recipeId'] or line['unit']['recipeId']]
+                    ingredients=batch.get('inputs') or recipe.get('inputs') or [dict(itemId=recipe['inputItem'],quantity=recipe['inputQuantity'])]
+                    wip+=sum(m['quantity']*prices[m['itemId']] for m in ingredients)
+            for installation in workshops['installations']:
+                if installation['enterprise']['value'] in owned:
+                    wip+=installation['priceMinor']+sum(m['quantity']*prices[m['itemId']] for m in installation['materials'])
         equipment = sum(l['priceMinor'] for e in state['equipment'] if e['ownerId']['value']==actor for l in machines[e['typeId']]['levels'] if l['level']<=e['level'])
         for system in state['logistics']:
             if system['ownerId']['value']!=actor or system.get('vehicleId',0): continue
