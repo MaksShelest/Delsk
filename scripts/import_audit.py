@@ -98,6 +98,17 @@ def verify_imports(config, state, content, events, ledger, tape, public, modific
             assert command['actorId']['value'] == owner and a['destination'] == people[owner]['inventoryId']
             assert a['itemId'] == e['itemId'] and e['quantity'] > 0, 'Invalid physical import pickup'
             owned[(section, e['itemId'])] -= e['quantity']
+    # Service events refer to frozen authenticated order terms, not a second stock source.
+    if (config.get('economy') or {}).get('serviceExecution'):
+        orders={}
+        for record in tape:
+            action=record['command']['action']
+            if action['kind']=='RequestDeliveryService':orders[record['command']['commandId']]=action
+        service_sources={e['entityId']:orders[e['commandId']]['source']['value'] for e in events if e['type']=='ServiceRequested'}
+        for e in events:
+            source=service_sources.get(e['entityId'])
+            if source in sections and e['type'] in ('ServiceCargoLoaded','ServiceCargoReturned'):
+                owned[(source,e['itemId'])]+=e['quantity']*(-1 if e['type']=='ServiceCargoLoaded' else 1)
     for m in modifications:
         if m['kind'] == 'Stock' and m['inventory']['value'] in sections:
             owned[(m['inventory']['value'], m['item'])] += m['newValue'] - m['oldValue']

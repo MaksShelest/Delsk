@@ -7,7 +7,7 @@ public sealed partial class SimulationEngine
     private void StartRoadMove(ActorState actor,OwnedVehicle vehicle,CommandEnvelope c)
     {
         RequireIdle(actor);
-        if(RoadVehicleWorking(vehicle.Id)||VehicleTransferring(vehicle.CargoInventory.Value)||vehicle.Installation is not null)throw new RuleViolation("VehicleBusy");
+        if(ServiceHandlingVehicle(vehicle.Id)||RoadVehicleWorking(vehicle.Id)||VehicleTransferring(vehicle.CargoInventory.Value)||vehicle.Installation is not null)throw new RuleViolation("VehicleBusy");
         var state=Traffic(vehicle.Id);if(state.Progress>0)throw new RuleViolation("VehicleMoving");
         var path=VehiclePath(vehicle,c.Action.Target);CancelTrafficRoute(vehicle.Id);
         actor.HeadingX=actor.HeadingZ=0;
@@ -18,7 +18,7 @@ public sealed partial class SimulationEngine
     private void AdvanceRoadMove(ActorState actor,OwnedVehicle vehicle,PersonalJob job)
     {
         bool arrived=false;
-        try{arrived=TrafficTravel(vehicle,job.Path[^1]);}catch(RuleViolation ex){var t=Traffic(vehicle.Id);_traffic[vehicle.Id]=t with{Reason=ex.ReasonCode};}
+        try{arrived=ExecutingService(vehicle.Id) is not null?ServiceTrafficTravel(vehicle,job.Path[^1]):TrafficTravel(vehicle,job.Path[^1]);}catch(RuleViolation ex){var t=Traffic(vehicle.Id);_traffic[vehicle.Id]=t with{Reason=ex.ReasonCode};}
         // The job is an intention; the persisted traffic trajectory is its actual physical progress.
         job.CompletionTick=checked(Tick+1);
         if(!arrived)return;
@@ -286,7 +286,8 @@ public sealed partial class SimulationEngine
         }
         return new(x,z,0,0,v.FacingX,v.FacingZ);
     }
-    private bool RoadVehicleBusy(long vehicle)=>ServiceVehicleBusy(vehicle)||Roads is not null&&(RoadVehicleWorking(vehicle)||_roadWorks.TryGetValue(vehicle,out var w)&&w.Enabled||
+    private bool RoadVehicleBusy(long vehicle)=>ServiceVehicleBusy(vehicle)||RoadVehicleBusyBase(vehicle);
+    private bool RoadVehicleBusyBase(long vehicle)=>Roads is not null&&(RoadVehicleWorking(vehicle)||_roadWorks.TryGetValue(vehicle,out var w)&&w.Enabled||
         _traffic.TryGetValue(vehicle,out var t)&&(t.Progress>0||t.Resume is not null||t.Index<t.Path.Length-1));
     private void AdvanceTrafficAssistance()
     {
@@ -294,7 +295,7 @@ public sealed partial class SimulationEngine
         foreach(var v in _vehicles.Values.OrderBy(v=>v.Id).ToArray())
         {
             var t=Traffic(v.Id);var at=VehicleCargo(v).Position;
-            if(RoadVehicleWorking(v.Id)||VehicleLogistics(v.Id)?.Trip is not null||v.Driver!=0&&_actors[v.Driver].Job is not null)continue;
+            if(ExecutingService(v.Id) is not null||RoadVehicleWorking(v.Id)||VehicleLogistics(v.Id)?.Trip is not null||v.Driver!=0&&_actors[v.Driver].Job is not null)continue;
             if(v.Driver!=0)for(int q=0;q<TravelQuantaPerTick;q++)ManualRoadTravel(_actors[v.Driver]);
             t=Traffic(v.Id);at=VehicleCargo(v).Position;
             if(t.Resume is not null||t.Assistance)

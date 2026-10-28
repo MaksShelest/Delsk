@@ -14,7 +14,7 @@ public sealed partial class SimulationEngine
         BeginTransfer(actor,c,actor.Inventory,d.DestinationInventory?.Value??0,d.ItemId,c.Action.Quantity,"Delivery",d.Id);
     }
     private void ReceiveDelivery(int index, long sourceInventory, long q, bool inTransit,
-        LogisticsState? logistics, string? command = null, string? preparedHold = null)
+        LogisticsState? logistics, string? command = null, string? preparedHold = null,string? cargoHold=null,long serviceReturnInventory=0,string? serviceReturnHold=null)
     {
         var d = _deliveryContracts[index]; long supplier = d.Supplier.Value;
         if (q <= 0 || q > (inTransit ? d.InTransitQuantity : preparedHold is not null ? d.PreparedQuantity : d.UnprovidedQuantity)) throw new RuleViolation("InvalidQuantity");
@@ -27,12 +27,14 @@ public sealed partial class SimulationEngine
             ClosedTick = complete ? Tick : null };
         long exported = d.Buyer is null ? checked(_flows[d.ItemId].Exported + q) : _flows[d.ItemId].Exported;
         var tx = _economy.Begin(Tick);
-        if (logistics is not null) tx.ConsumeReserved(sourceInventory, logistics.Trip!.CargoHold, q);
+        if(cargoHold is not null)tx.ConsumeReserved(sourceInventory,cargoHold,q);
+        else if (logistics is not null) tx.ConsumeReserved(sourceInventory, logistics.Trip!.CargoHold, q);
         else if(preparedHold is not null) tx.ConsumeReserved(sourceInventory,preparedHold,q);
         else tx.RemoveFreeStock(sourceInventory, d.ItemId, q);
         long excess=0;
         if (d.DestinationInventory is { } inventory){if(d.CapacityForecast)excess=ReceiveForecast(tx,inventory.Value,d.ItemId,q,$"delivery:{d.Id}");else tx.ReceiveReservedCapacity(inventory.Value, d.CapacityHold, d.ItemId, q);}
         if (logistics is not null) tx.ReleaseCapacityVolume(logistics.Trip!.Freight!.GoodsSource.Value, logistics.Trip.ReturnHold,d.ItemId,q);
+        if(serviceReturnHold is not null)tx.ReleaseCapacityVolume(serviceReturnInventory,serviceReturnHold,d.ItemId,q);
         tx.Pay(d.EscrowAccount.Value, _actors[supplier].Account, payment, "DeliveryPayment");
         if (complete && d.BondMinor > 0) tx.Pay(d.BondAccount.Value, _actors[supplier].Account, d.BondMinor, "DeliveryBondReturn");
         tx.Commit(); _deliveryContracts[index] = next; _flows[d.ItemId].Exported = exported;

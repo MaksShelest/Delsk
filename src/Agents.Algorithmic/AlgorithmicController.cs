@@ -46,6 +46,8 @@ public sealed partial class AlgorithmicController
                 _state=_state with {SuspendedPlan=_state.Plan,SuspendedNextStep=_state.NextStep,SuspendedGoal=_state.Goal,SuspendedReason=_state.Reason};
             return Choose(o,remote);
         }
+        var service=ServiceExecutionDecision(o);
+        if(service is not null)return service;
         if (o.Participant.Busy || Carrier(o).Stock.Any(s => s.Reserved > 0)) return Wait("ActiveJobOrSaleHold");
         if (!PlanRelevant(o) || (HasObligations(o) && !ObligationGoal(_state.Goal)))
             _state = _state with { Plan = [], NextStep = 0, NextDecisionTick = o.Tick };

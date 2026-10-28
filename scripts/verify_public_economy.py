@@ -35,6 +35,12 @@ def verify(folder):
         if (folder/'services.json').exists():
             cash += sum(accounts[o['escrowAccount']] for o in json.loads((folder/'services.json').read_text())['orders'] if o['customer']['value']==actor and o['escrowAccount'])
         stock = sum(s['quantity']*prices[s['itemId']] for i in state['inventories'] if i['ownerId']['value']==actor for s in i['stock'])
+        stock+=sum(lot['quantity']*prices[lot['itemId']] for i in state['inventories'] if i['ownerId']['value']==actor for lot in i.get('overflow') or [])
+        if (folder/'services.json').exists():
+            services=json.loads((folder/'services.json').read_text());orders={o['id']:o for o in services['orders']}
+            for run in (services.get('execution') or {}).get('runs',[]):
+                order=orders[run['order']];cargo=run['loaded']-run['delivered']-run['returned'];value=cargo*prices[order['quote']['terms']['itemId']]
+                stock+=value*(int(order['customer']['value']==actor)-int(order['carrier']['value']==actor))
         wip = sum(sum(i['quantity']*prices[i['itemId']] for i in e['batchInputs']) for e in state['enterprises'] if e['ownerId']['value']==actor and e['batchId'])
         land = sum(p['priceMinor'] for p in state['plots'] if p['ownerId'] and p['ownerId']['value']==actor)
         land += sum(r['purchasePriceMinor'] for r in physical['resources'] if r['owner'] and r['owner']['value']==actor)

@@ -1,0 +1,51 @@
+{
+  "status": "succeeded",
+  "scope": "F2/P73 software only; G1 not started; no auto merge",
+  "runtimeTestedCode": "96ebac669d6f51e3ba9074cb34d5f29fd2cf6ed8",
+  "base": "25b6a38e999a1f9bf9435e58ab6fe685829e8e5b",
+  "pullRequest": "https://github.com/MaksShelest/Delsk/pull/70",
+  "ordinaryF2": 30,
+  "developerF2": 30,
+  "runner": {
+    "processChecks": 116,
+    "exports": 84,
+    "exactComparisonPairs": 56,
+    "seconds": 548.948,
+    "deadline": 600
+  },
+  "native": {
+    "languages": [
+      "ru",
+      "en"
+    ],
+    "sizes": [
+      "800x720",
+      "1100x800"
+    ],
+    "seconds": 71.722,
+    "deadline": 600,
+    "matchedInputs": 677
+  },
+  "sourceInputs": 869,
+  "unchangedFinancialInputs": 82,
+  "coreCI": {
+    "run": 40643810656,
+    "jobs": 18,
+    "status": "success"
+  },
+  "windowsCI": {
+    "run": 40643810551,
+    "status": "success"
+  },
+  "saveCompatibility": {
+    "status": "succeeded",
+    "actualWorldSchema": 27,
+    "fromTick": 258,
+    "toTick": 288,
+    "sourceSaveSha256": "b42292d0fa7064b3c6de696032013f39f4f451d08b2be7f99ab169fc6d7278a4",
+    "comparedWorldExports": true,
+    "processChecks": 4
+  },
+  "pythonChecks": 28,
+  "researchLabChecks": 37
+}

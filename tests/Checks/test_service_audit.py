@@ -24,3 +24,24 @@ class ServiceAuditTests(unittest.TestCase):
             data=self.fixture();mutate(data)
             with self.subTest(mutation=mutate):
                 with self.assertRaises((AssertionError,KeyError,FileNotFoundError)):self.check(data)
+
+class ServiceExecutionAuditTests(ServiceAuditTests):
+    def fixture(self):
+        d=super().fixture();d['scenario.json']['economy']['serviceExecution']=dict(lateBasisPoints=2000)
+        o=d['services.json']['orders'][0];o['quote']['returnInventory']=dict(value=5)
+        r=dict(order=1001,returnInventory=dict(value=5),loaded=45,delivered=10,returned=0,released=0,grossSettledMinor=193,paidMinor=193,refundedMinor=0,lateGrossMinor=0,lateRefundMinor=0,receipts=[dict(tick=20,quantity=10,grossMinor=193,paidMinor=193,lateRefundMinor=0)])
+        d['services.json']['execution']=dict(runs=[r],crews=[])
+        v=d['fleet.json']['vehicles'][0];v.update(cargoInventory=dict(value=7),driver=2)
+        state=d['final-state.json'];state['tick']=20;state['accounts'][0]['balanceMinor']=2707
+        state['inventories'][0].update(ownerId=dict(value=1),stock=[dict(itemId='wood',quantity=105,reserved=105)])
+        state['inventories'].append(dict(id=dict(value=7),ownerId=dict(value=2),stock=[dict(itemId='wood',quantity=35,reserved=35)]))
+        d['events.jsonl'] += [dict(type='ServiceCargoLoaded',entityId=1001,tick=15,quantity=45),dict(type='ServicePartDelivered',entityId=1001,tick=20,quantity=10,amountMinor=193)]
+        d['ledger.jsonl'].append(dict(debitAccount=dict(value=3),creditAccount=dict(value=2),amountMinor=193,reason='ServicePayment:1001'))
+        return d
+    def test_physical_partial_receipt_and_payment(self):self.check(self.fixture())
+    def test_receipt_cargo_recipient_and_duplicate_payment_corruption(self):
+        mutations=[lambda d:d['services.json']['execution']['runs'][0]['receipts'][0].update(paidMinor=194),lambda d:d['final-state.json']['inventories'][1]['stock'][0].update(quantity=36),lambda d:d['ledger.jsonl'][-1].update(creditAccount=dict(value=1)),lambda d:d['ledger.jsonl'].append(copy.deepcopy(d['ledger.jsonl'][-1]))]
+        for mutate in mutations:
+            d=self.fixture();mutate(d)
+            with self.subTest(mutation=mutate):
+                with self.assertRaises(AssertionError):self.check(d)

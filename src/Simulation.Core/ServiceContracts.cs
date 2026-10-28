@@ -19,12 +19,16 @@ public sealed record ServiceQuote(ServiceTerms Terms,long Volume,long QuantityPe
     Cell VehiclePosition,Cell SourcePosition,Cell DestinationPosition,ImmutableArray<Cell> Approach,
     ImmutableArray<Cell> Loaded,ImmutableArray<Cell> EmptyReturn,string Token)
 {
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public InventoryId? ReturnInventory {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public Cell? ReturnPosition {get;init;}
     public long CargoRightsDeadline {get;init;}
     public long EstimatedDeadline(long acceptTick)=>checked(acceptTick+EtaTicks+BufferTicks);
 }
 public sealed record ServiceQuoteResult(ServiceQuote? Quote,string Reason);
 public sealed record ServiceListing(long VehicleId,ParticipantId Carrier,string ModelId,long CapacityVolume,Cell Position,bool Available);
-public sealed record ServicePoint(InventoryId Inventory,ParticipantId Owner,Cell Position,BuildingKind Kind,bool CanSource,bool CanReceive);
+public sealed record ServicePoint(InventoryId Inventory,ParticipantId Owner,Cell Position,BuildingKind Kind,bool CanSource,bool CanReceive)
+{[System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public string? PointType {get;init;}};
 public sealed record ServiceOrder(long Id,ParticipantId Customer,ParticipantId Carrier,ServiceQuote Quote,
     long CreatedTick,long RespondByTick,string State="Pending",long AcceptedTick=0,long DeadlineTick=0,long EscrowAccount=0,
     long ClosedTick=0,string Reason="WaitingCarrier",ServiceQuote? ProposedQuote=null,bool CustomerViewed=false,bool CarrierViewed=false)
@@ -33,6 +37,8 @@ public sealed record ServiceOrder(long Id,ParticipantId Customer,ParticipantId C
     public string MoneyHold=>"service-money:"+Id;
     public string StockHold=>"service-stock:"+Id;
 }
-public sealed record ServicesState(ImmutableArray<long> ListedVehicles,ImmutableArray<ServiceOrder> Orders);
+public sealed record ServicesState(ImmutableArray<long> ListedVehicles,ImmutableArray<ServiceOrder> Orders)
+{[System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public ServiceExecutionState? Execution {get;init;}}
 public sealed record ServiceObservation(ImmutableArray<ServiceListing> Catalog,ImmutableArray<long> OwnListings,
-    ImmutableArray<ServiceOrder> OwnOrders,ImmutableArray<ServicePoint> OwnPoints,ServiceRules Rules);
+    ImmutableArray<ServiceOrder> OwnOrders,ImmutableArray<ServicePoint> OwnPoints,ServiceRules Rules)
+{[System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public ServiceExecutionObservation? Execution {get;init;}}

@@ -76,6 +76,7 @@ public sealed partial class SimulationEngine
         }
         long stock = _economy.Inventories.Values.Where(i => i.Owner == actor.Value)
             .Sum(i => checked(i.Stock.Sum(s => checked(s.Value * _items[s.Key].BasePriceMinor))+i.Overflow.Values.Sum(l=>checked(l.Quantity*_items[l.ItemId].BasePriceMinor))));
+        stock=checked(stock+ServiceCargoAsset(actor.Value));
         long wip = ProductionUnits().Where(e => e.Definition.OwnerId == actor.Value && e.Batch is not null)
             .Sum(e => e.Batch!.Inputs.Sum(i=>checked(i.Quantity*_items[i.ItemId].BasePriceMinor)));
         wip=checked(wip+_storageConstruction.Values.Where(c=>c.Owner==actor.Value).Sum(c=>checked(c.PaidMinor+c.Materials.Sum(m=>checked(m.Quantity*_items[m.ItemId].BasePriceMinor)))));

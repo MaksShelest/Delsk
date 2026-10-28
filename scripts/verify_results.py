@@ -263,9 +263,13 @@ def verify(folder):
         active_trips = [l['trip'] for l in systems if l['trip'] and l['trip']['contractId'] == d['id']]
         if d['closedTick'] is None:
             physical=json.loads((folder/'physical-state.json').read_text())
-            service_prepared=sum(o['quote']['terms']['quantity'] for o in json.loads((folder/'services.json').read_text())['orders'] if o['state'] in ('Pending','Requote','Accepted') and o['quote']['terms']['contractId']==d['id']) if (folder/'services.json').exists() else 0
+            services=json.loads((folder/'services.json').read_text()) if (folder/'services.json').exists() else {'orders':[]}
+            runs={r['order']:r for r in (services.get('execution') or {}).get('runs',[])}
+            service_orders=[o for o in services['orders'] if o['state'] in ('Pending','Requote','Accepted') and o['quote']['terms']['contractId']==d['id']]
+            service_prepared=sum(o['quote']['terms']['quantity']-runs.get(o['id'],{}).get('loaded',0)-runs.get(o['id'],{}).get('released',0) for o in service_orders)
+            service_transit=sum(runs[o['id']]['loaded']-runs[o['id']]['delivered']-runs[o['id']]['returned'] for o in service_orders if o['id'] in runs)
             assert d['preparedQuantity'] == service_prepared+sum(t['quantity']-t['freight']['loaded']-t['freight']['cancelled'] for t in active_trips)+sum(t['remaining'] for t in physical['transfers'] if t['kind']=='Delivery' and t['contract']==d['id'])
-            assert d['inTransitQuantity'] == sum(t['freight']['loaded']-t['freight']['received']-t['freight']['returned'] for t in active_trips)
+            assert d['inTransitQuantity'] == service_transit+sum(t['freight']['loaded']-t['freight']['received']-t['freight']['returned'] for t in active_trips)
     physical=json.loads((folder/'physical-state.json').read_text())
     assert len({(r['position']['x'],r['position']['z'],r['itemId']) for r in physical['resources']})==len(physical['resources'])
     for site in physical['resources']:

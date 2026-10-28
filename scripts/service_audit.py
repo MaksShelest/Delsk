@@ -26,14 +26,16 @@ def verify(folder):
         assert q['feeMinor']==max(rules['minimumFeeMinor'],(numerator+SCALE*10000-1)//(SCALE*10000))
         assert o['respondByTick']>=o['createdTick']+rules['responseTicks']
         assert len([e for e in events if e['type']=='ServiceRequested' and e['entityId']==o['id']])==1
+        run=next((r for r in (services.get('execution') or {}).get('runs',[]) if r['order']==o['id']),None)
+        remaining=t['quantity']-(run['loaded']+run['released'] if run else 0)
         status=o['state'];is_active=status in ('Pending','Requote','Accepted')
         if is_active:
             active.append(t['vehicleId']);assert not o['closedTick']
             if status!='Accepted':money_needed[o['customer']['value']]+=q['feeMinor']
-            if not t['purchaseId']:stock_needed[(t['source']['value'],t['itemId'])]+=t['quantity']
-            assert (o['deadlineTick'] if status=='Accepted' else o['respondByTick'])>state['tick']
-            if not t['purchaseId']:
-                stock=next(s for s in inventories[t['source']['value']]['stock'] if s['itemId']==t['itemId']);assert stock['reserved']>=t['quantity']
+            if not t['purchaseId'] and remaining:stock_needed[(t['source']['value'],t['itemId'])]+=remaining
+            assert run is not None or (o['deadlineTick'] if status=='Accepted' else o['respondByTick'])>state['tick']
+            if not t['purchaseId'] and remaining:
+                stock=next(s for s in inventories[t['source']['value']]['stock'] if s['itemId']==t['itemId']);assert stock['reserved']>=remaining
         accepted=[e for e in events if e['type']=='ServiceAccepted' and e['entityId']==o['id']]
         assert len(accepted)==bool(o['escrowAccount'])
         if accepted:assert accepted[0]['tick']==o['acceptedTick'] and accepted[0]['amountMinor']==q['feeMinor']
@@ -41,18 +43,22 @@ def verify(folder):
         if o['escrowAccount']:
             assert len(funded)==1 and funded[0]['amountMinor']==q['feeMinor'] and funded[0]['creditAccount']['value']==o['escrowAccount']
             assert o['deadlineTick']==o['acceptedTick']+q['etaTicks']+q['bufferTicks']
-            expected=q['feeMinor'] if status=='Accepted' else 0
+            if run:
+                from service_execution_audit import verify_run
+                verify_run(config,state,services,o,run,ledger,events,vehicles,inventories,actors,accounts)
+                expected=q['feeMinor']-run['paidMinor']-run['refundedMinor']
+            else:expected=q['feeMinor'] if status=='Accepted' else 0
             assert accounts[o['escrowAccount']]['kind']=='DeliveryServiceEscrow' and accounts[o['escrowAccount']]['balanceMinor']==expected
-            assert len(refunded)==(status!='Accepted') and sum(l['amountMinor'] for l in refunded)==q['feeMinor']-expected
+            assert run is not None or len(refunded)==(status!='Accepted') and sum(l['amountMinor'] for l in refunded)==q['feeMinor']-expected
             assert all(l['creditAccount']['value']==actors[o['customer']['value']]['accountId']['value'] for l in refunded)
-            assert all(l['reason']=='ServiceRefund:'+str(o['id']) for l in ledger if l['debitAccount']['value']==o['escrowAccount'])
+            assert all(run is not None or l['reason']=='ServiceRefund:'+str(o['id']) for l in ledger if l['debitAccount']['value']==o['escrowAccount'])
         else:assert not funded and not refunded and status!='Accepted'
     for (inventory,item),quantity in stock_needed.items():assert next(s for s in inventories[inventory]['stock'] if s['itemId']==item)['reserved']>=quantity
     for actor,amount in money_needed.items():assert accounts[actors[actor]['accountId']['value']]['reservedMinor']>=amount
     assert len(active)==len(set(active))
     public=[json.loads(l) for l in (folder/'public-events.jsonl').read_text().splitlines()]
     assert not any(e['type'].startswith('Service') for e in public)
-    print(f'{folder}: F1 quotes, exclusive leases, frozen terms, escrow/refunds and private events verified')
+    print(f'{folder}: Service quotes, execution/receipts when enabled, exclusive leases, frozen terms, escrow/refunds and private events verified')
 
 if __name__=='__main__':
     import sys

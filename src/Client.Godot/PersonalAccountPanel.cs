@@ -63,6 +63,9 @@ public partial class PersonalAccountPanel : VBoxContainer
     private string Kind(string kind)
     {
         if(kind.StartsWith("ServiceFunding:",StringComparison.Ordinal))return L("Резерв оплаты доставки","Delivery escrow funding");
+        if(kind.StartsWith("ServicePayment:",StringComparison.Ordinal))return L("Оплата доставленной части","Delivered part payment");
+        if(kind.StartsWith("ServiceLateRefund:",StringComparison.Ordinal))return L("Возврат за просроченную часть","Late delivery refund");
+        if(kind.StartsWith("ServiceDriverWages:",StringComparison.Ordinal))return L("Зарплата водителя доставки","Delivery driver wages");
         if(kind.StartsWith("ServiceRefund:",StringComparison.Ordinal))return L("Возврат оплаты доставки","Delivery refund");
         if(kind.StartsWith("RoadPrincipal:",StringComparison.Ordinal))return L("Оплата дороги","Road payment");
         if(kind.StartsWith("RoadRevenue:",StringComparison.Ordinal))return L("Доход дороги","Road income");

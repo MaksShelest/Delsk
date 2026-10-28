@@ -1,0 +1,12 @@
+{
+  "verifiedCommit": "96ebac669d6f51e3ba9074cb34d5f29fd2cf6ed8",
+  "run": 40643810551,
+  "status": "succeeded",
+  "jobs": [
+    {
+      "id": 122667847744,
+      "name": "windows-core-replay",
+      "conclusion": "success"
+    }
+  ]
+}
