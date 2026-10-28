@@ -1,3 +1,16 @@
+## G2,28.10.2026 — полная карта и итоговый UX (текущая итерация)
+
+- Явное задание пользователя разрешает G2 поверх52cb5c0/merge PR71 с финальным G1.
+  Содержание — P75/P79 и необходимые UX/restore проверки P78; P77/P80 полностью
+  этим не закрывать. Ветка feat/vnext-g2-city-experience, PR без auto merge.
+- Переиспользовать Core/Hosting commands, own/public projections и готовые cards.
+  Карта не получает закрытые чужие stock/contracts; road contributors по ступеням,
+  не один фиктивный собственник. UX/cosmetics не меняют экономику/коллизии/PRNG.
+- Клавиатура/мышь/touch, safe areas/узкое окно, pause/help/focus, stable input/selection
+  проверяются реальными native событиями; не выдавать software/emulation за device.
+- Прежние suite partitions/deadlines/Release audits сохранять. Heavy local gates serial.
+  Ход: docs/WORKLOG_PACKAGE_G2.md. Итоговый отчёт/PR по фактическим проверкам.
+
 ## G1,28.10.2026 — реализованный software-объём NPC/P76
 
 - Явное задание пользователя разрешает G1 поверх0511375/merge PR70 с полным F2.

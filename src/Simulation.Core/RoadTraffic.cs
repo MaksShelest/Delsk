@@ -62,9 +62,9 @@ public sealed partial class SimulationEngine
     private bool ReservedByOther(long vehicle,Cell cell)=>RoadBodies().Any(v=>v.Id!=vehicle&&VehicleCargo(v).Position==cell)||
         _dealerStock.Any(v=>v.Position==cell)||_traffic.Values.Any(t=>t.VehicleId!=vehicle&&t.Progress>0&&t.Index<t.Path.Length-1&&t.Path[t.Index+1]==cell);
     private Cell[] VehiclePath(OwnedVehicle v,Cell target,bool avoidVehicles=false)=>VehiclePath(Body(v),target,avoidVehicles);
-    private Cell[] VehiclePath(RoadBody v,Cell target,bool avoidVehicles=false)
+    private Cell[] VehiclePath(RoadBody v,Cell target,bool avoidVehicles=false,bool preview=false)
     {
-        var source=VehicleCargo(v).Position;var current=Traffic(v.Id);
+        var source=VehicleCargo(v).Position;if(!preview)Traffic(v.Id);
         bool corridorOnly=_config.Layout!.RoadCorridorCells.Contains(source)&&_config.Layout.RoadCorridorCells.Contains(target);
         bool Allow(Cell c)=>_map.Walkable(c)&&!WorkBlocks(v.Id,c)&&(!avoidVehicles||!ReservedByOther(v.Id,c))&&
             (!corridorOnly||PublicRoadCell(c))&&

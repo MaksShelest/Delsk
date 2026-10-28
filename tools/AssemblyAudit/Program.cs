@@ -14,7 +14,7 @@ foreach(string name in new[]{"Delsk.Client","Simulation.Core","Simulation.Hostin
     foreach(var handle in metadata.TypeDefinitions)
     {
         var type=metadata.GetTypeDefinition(handle);string typeName=metadata.GetString(type.Name),ns=metadata.GetString(type.Namespace);
-        if(typeName is "DeveloperPanel" or "DeveloperTools" or "DecisionLogEntry" or "VisualModelsProbe" or "HudGodProbe" or "TabletDesignProbe" or "OrdinarySetupProbe" or "StorageProbe" or "DemolitionProbe" or "WorkshopProbe" or "DevelopmentProbe" or "ProductionProbe" or "FleetProbe" or "RoadProbe" or "BillingProbe" or "ServiceProbe" or "ServiceRunProbe" || ns=="Simulation.Developer")throw new InvalidOperationException(name+": Developer screen/type");
+        if(typeName is "CityExperienceProbe" or "DeveloperPanel" or "DeveloperTools" or "DecisionLogEntry" or "VisualModelsProbe" or "HudGodProbe" or "TabletDesignProbe" or "OrdinarySetupProbe" or "StorageProbe" or "DemolitionProbe" or "WorkshopProbe" or "DevelopmentProbe" or "ProductionProbe" or "FleetProbe" or "RoadProbe" or "BillingProbe" or "ServiceProbe" or "ServiceRunProbe" || ns=="Simulation.Developer")throw new InvalidOperationException(name+": Developer screen/type");
         foreach(var method in type.GetMethods())
         {
             if(noDebugUi && metadata.GetString(metadata.GetMethodDefinition(method).Name)=="OpenDebug")

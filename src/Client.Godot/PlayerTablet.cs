@@ -6,6 +6,9 @@ using Simulation.Hosting;
 public partial class PlayerTablet : VBoxContainer
 {
     public event System.Action? HelpRequested;
+    public event System.Action? MapRequested;
+    public event System.Action? TutorialRequested;
+    public event System.Action? NoticesRequested;
     private readonly ScenarioDefinition _scenario;
     private readonly string _language;
     private readonly System.Action<GameAction> _submit;
@@ -13,21 +16,24 @@ public partial class PlayerTablet : VBoxContainer
     private readonly TabContainer _tabs=new(){SizeFlagsVertical=SizeFlags.ExpandFill,CustomMinimumSize=new(0,410)};
     private readonly VBoxContainer _overview=new(),_cardHost=new(),_holdings=new();
     private readonly Button _back=new();
+    private int _holdingOffset;private readonly Button _previousHoldings=new(){Name="HoldingsPrevious"},_nextHoldings=new(){Name="HoldingsNext"};private readonly Label _holdingPage=new();
     private readonly Label _empty=Wrapped(),_participants=Wrapped(),_city=Wrapped(),_labor=Wrapped();
     private readonly Label _capital=TabletDesign.Heading("",27),_employed=TabletDesign.Heading("",27),_room=TabletDesign.Heading("",27);
     private readonly CurrentDealsPanel _deals;
     private readonly DevelopmentPanel _development;
     private readonly ServicePanel? _services;private readonly Button _serviceToggle=new(){Name="OpenDeliveryServices",ToggleMode=true};
-    public void OpenServices(){SelectedTab=0;_serviceToggle.ButtonPressed=true;if(_services is not null)_services.Visible=true;Back();}
+    private string _section="holdings";
+    public string HelpTopic=>_section switch{"account"=>"account","services"=>"services","fleet"=>"dealership","roads"=>"map",_=>"holdings"};
+    public void OpenServices(){_section="services";SelectedTab=0;_serviceToggle.ButtonPressed=true;if(_services is not null)_services.Visible=true;Back();}
     private readonly FleetPanel? _fleet;
     private readonly RoadPanel? _roads;
     private readonly PersonalAccountPanel _account;private readonly Button _accountToggle=new(){Name="OpenPersonalAccount",ToggleMode=true};
-    public void OpenAccount(){SelectedTab=0;_accountToggle.ButtonPressed=true;_account.Visible=true;Back();}
+    public void OpenAccount(){_section="account";SelectedTab=0;_accountToggle.ButtonPressed=true;_account.Visible=true;Back();}
     private readonly TradeNegotiationPanel _negotiations;
     private readonly PurchaseGuidePanel _pickups;
     private readonly EquipmentPurchasePanel _purchases;
     private readonly Dictionary<(string,long),(Label Stock,ProgressBar Progress,Button Walk)> _rows=[];
-    private HouseholdObjectCard? _card;private (string Kind,long Id)? _cardObject;private readonly Func<long,bool,DemolitionQuote?>? _demolitionQuote;private readonly VBoxContainer _parked=new();private readonly Dictionary<long,RouteEditor> _parkedRoutes=[];
+    private HouseholdObjectCard? _card;private StoragePanel? _groundCard;private (string Kind,long Id)? _cardObject;private readonly Func<long,bool,DemolitionQuote?>? _demolitionQuote;private readonly VBoxContainer _parked=new();private readonly Dictionary<long,RouteEditor> _parkedRoutes=[];
     private PlayerView _view=null!;
     private bool _pending,_paused;
     private string _signature="";
@@ -35,13 +41,26 @@ public partial class PlayerTablet : VBoxContainer
     public int SelectedTab{get=>_tabs.CurrentTab;set=>_tabs.CurrentTab=Math.Clamp(value,0,3);}
     public PlayerTablet(ScenarioDefinition scenario,string language,System.Action<GameAction> submit,System.Func<GameAction,ActionAccess> access,Func<long,bool,DemolitionQuote?>? demolitionQuote=null,Func<int,int,PersonalAccount>? accountQuery=null,Func<ServiceTerms,ServiceQuoteResult>? serviceQuery=null)
     {
-        _demolitionQuote=demolitionQuote;Name="PlayerPages";_scenario=scenario;_language=language;_submit=submit;_access=access;AddChild(_tabs);
+        _demolitionQuote=demolitionQuote;Name="PlayerPages";_scenario=scenario;_language=language;_submit=submit;_access=access;
+        var shortcuts=TabletDesign.Flow();AddChild(shortcuts);
+        void Shortcut(string name,string text,Action action){var button=new Button{Name=name,Text=text,CustomMinimumSize=new(44,44)};button.Pressed+=action;shortcuts.AddChild(button);}
+        Shortcut("PlayerMap",L("Карта","Map"),()=>MapRequested?.Invoke());
+        Shortcut("PlayerFleet",L("Транспорт","Vehicles"),()=>OpenSection("fleet"));
+        Shortcut("PlayerServices",L("Доставка","Delivery"),()=>OpenSection("services"));
+        Shortcut("PlayerAccount",L("Счёт","Account"),()=>OpenSection("account"));
+        Shortcut("PlayerQuests",L("Задания","Quests"),()=>OpenSection("quests"));
+        Shortcut("PlayerNotices",L("События","Notices"),()=>NoticesRequested?.Invoke());
+        Shortcut("PlayerTutorial",L("Короткий путь","Quick guide"),()=>TutorialRequested?.Invoke());
+        AddChild(_tabs);
         var farm=Tab(L("Моё хозяйство","My holdings"));farm.AddChild(_overview);
         _account=new(language,submit,accountQuery){Visible=false};_accountToggle.Toggled+=on=>_account.Visible=on;_overview.AddChild(_accountToggle);_overview.AddChild(_account);_overview.AddChild(_parked);
-        if(scenario.Economy?.Services is not null){_services=new(scenario,language,submit,serviceQuery){Visible=false};_serviceToggle.Text=L("Услуги доставки","Delivery services");_serviceToggle.Toggled+=on=>_services.Visible=on;_overview.AddChild(_serviceToggle);_overview.AddChild(_services);}
+        if(scenario.Economy?.Services is not null){_services=new(scenario,language,submit,serviceQuery,access){Visible=false};_serviceToggle.Text=L("Услуги доставки","Delivery services");_serviceToggle.Toggled+=on=>_services.Visible=on;_overview.AddChild(_serviceToggle);_overview.AddChild(_services);}
         var stats=new TabletColumns{Breakpoint=660};_overview.AddChild(stats);
         Stat(stats,"coin",_capital,L("Капитал","Capital"));Stat(stats,"people",_employed,L("Работают на вас","Working for you"));Stat(stats,"bag",_room,L("Свободно в рюкзаке · объём","Free backpack volume"));
-        _empty.Text=L("Своих объектов пока нет. Добывайте сырьё, продавайте столице, покупайте участок и стройте.","No holdings yet. Harvest inputs, sell to the capital, buy a plot and build.");_overview.AddChild(_empty);_overview.AddChild(_holdings);
+        _empty.Text=L("Своих объектов пока нет. Добывайте сырьё, продавайте столице, покупайте участок и стройте.","No holdings yet. Harvest inputs, sell to the capital, buy a plot and build.");_overview.AddChild(_empty);
+        var holdingPages=TabletDesign.Flow();_previousHoldings.Text=L("‹ Назад","‹ Previous");_nextHoldings.Text=L("Далее ›","Next ›");holdingPages.AddChild(_previousHoldings);holdingPages.AddChild(_holdingPage);holdingPages.AddChild(_nextHoldings);_overview.AddChild(holdingPages);_overview.AddChild(_holdings);
+        void HoldingsPage(int delta){_holdingOffset=Math.Max(0,_holdingOffset+delta);_signature="";if(_view is not null)ShowData(_view,_pending,_paused);}
+        _previousHoldings.Pressed+=()=>HoldingsPage(-20);_nextHoldings.Pressed+=()=>HoldingsPage(20);
         if(scenario.Economy?.Fleet is not null){_fleet=new(language,submit,access);_overview.AddChild(Fold(L("Автопарк и автосалон ›","Fleet and dealer ›"),_fleet,true));}
         if(scenario.Economy?.Roads is not null){_roads=new(language,submit,access);_overview.AddChild(Fold(L("Дороги и движение ›","Roads and traffic ›"),_roads,true));}
         _development=new(scenario,language,0,submit,access);_overview.AddChild(Fold(L("Опыт и задания ›","Experience and quests ›"),_development));
@@ -66,8 +85,26 @@ public partial class PlayerTablet : VBoxContainer
     private void Open(string kind,long id)
     {
         foreach(Node child in _cardHost.GetChildren()){_cardHost.RemoveChild(child);child.QueueFree();}
-        _cardObject=(kind,id);_card=new(_scenario,_language,kind,id,_submit,_access,_demolitionQuote);_card.CloseRequested+=Back;_card.HelpRequested+=()=>HelpRequested?.Invoke();_cardHost.AddChild(_card);
-        _overview.Visible=false;_cardHost.Visible=true;_back.Visible=true;_card.ShowData(_view,_pending,_paused);
+        _cardObject=(kind,id);_card=null;_groundCard=null;
+        if(kind=="ground"){_groundCard=new(_scenario,_language,kind,id,_submit,_access,demolitionQuote:_demolitionQuote);_cardHost.AddChild(_groundCard);_groundCard.ShowData(_view,_pending);}
+        else{_card=new(_scenario,_language,kind,id,_submit,_access,_demolitionQuote);_card.CloseRequested+=Back;_card.HelpRequested+=()=>HelpRequested?.Invoke();_cardHost.AddChild(_card);_card.ShowData(_view,_pending,_paused);}
+        _overview.Visible=false;_cardHost.Visible=true;_back.Visible=true;
+    }
+    public void OpenHolding(string kind,long id){SelectedTab=0;Open(kind,id);}
+    public void OpenSection(string section,long id=0)
+    {
+        _section=section;SelectedTab=0;Back();Control? target=null;
+        switch(section)
+        {
+            case "account":OpenAccount();if(id>0)_account.FocusInvoice(id);target=_account;break;
+            case "service-vehicle":OpenServices();target=_services;_services?.FocusVehicle(id);break;
+            case "services":OpenServices();target=_services;_services?.FocusOrder(id);break;
+            case "fleet":target=_fleet;_fleet?.FocusVehicle(id);break;
+            case "roads":target=_roads;break;
+            case "quests":target=_development;break;
+            case "purchases":SelectedTab=2;target=_pickups;break;
+        }
+        if(target is not null)UiNavigation.Reveal(target);
     }
     public void ShowData(PlayerView view,bool pending,bool paused)
     {
@@ -77,6 +114,9 @@ public partial class PlayerTablet : VBoxContainer
         if(view.PersonalAccount is {} account){_account.ShowData(account,pending);_accountToggle.Text=L("Личный счёт","Personal account")+(account.UnreadCount>0?" · ● "+account.UnreadCount:"")+(account.DebtMinor>0?L(" · долг "," · debt ")+PlayerText.Money(account.DebtMinor):"");_accountToggle.Modulate=account.UnreadCount>0?new Color("ff7777"):Colors.White;}_paused=paused;_tabs.CustomMinimumSize=new(0,Mathf.Max(260,GetViewportRect().Size.Y-340));
         var entries=view.Buildings.Select(b=>(Kind:"building",Id:b.Id.Value,Position:b.Position,Title:PlayerText.Building(_language,b.TypeId),Icon:b.TypeId))
             .Concat((view.Equipment??[]).Select(e=>(Kind:"equipment",Id:e.Id.Value,Position:e.Position,Title:L("Добывающая техника","Extraction equipment"),Icon:"gear"))).ToArray();
+        entries=entries.OrderBy(e=>e.Id).ThenBy(e=>e.Kind,StringComparer.Ordinal).ToArray();int totalEntries=entries.Length;
+        _holdingOffset=Math.Clamp(_holdingOffset,0,Math.Max(0,(totalEntries-1)/20*20));entries=entries.Skip(_holdingOffset).Take(20).ToArray();
+        _previousHoldings.Disabled=pending||_holdingOffset==0;_nextHoldings.Disabled=pending||_holdingOffset+20>=totalEntries;_holdingPage.Text=totalEntries==0?"0":$"{_holdingOffset+1}–{_holdingOffset+entries.Length} / {totalEntries}";
         string signature=string.Join(';',entries.Select(e=>e.Kind+e.Id));
         if(signature!=_signature)
         {
@@ -104,7 +144,7 @@ public partial class PlayerTablet : VBoxContainer
         }
         var city=view.City!;var own=city.Participants.Single(p=>p.Actor==view.Participant.Id);var pack=view.Inventories.Single(i=>i.Id==view.Participant.InventoryId);
         _capital.Text=PlayerText.Money(own.CapitalMinor);_employed.Text=own.Employed.ToString();_room.Text=Math.Max(0,pack.Capacity-pack.OccupiedVolume-pack.ReservedCapacity).ToString();
-        _roads?.ShowData(view,pending,paused);_fleet?.ShowData(view,pending);_development.ShowData(view,pending);_card?.ShowData(view,pending,paused);_deals.ShowData(view,pending);_negotiations.ShowData(view,pending);_pickups.ShowData(view,pending);_purchases.ShowData(view,pending);
+        _roads?.ShowData(view,pending,paused);_fleet?.ShowData(view,pending);_development.ShowData(view,pending);_card?.ShowData(view,pending,paused);_groundCard?.ShowData(view,pending);_deals.ShowData(view,pending);_negotiations.ShowData(view,pending);_pickups.ShowData(view,pending);_purchases.ShowData(view,pending);
         _participants.Text=L("Рейтинг по капиталу · фиксированная оценка","Capital ranking · fixed reference valuation")+"\n\n"+string.Join("\n\n",city.Participants.OrderByDescending(p=>p.CapitalMinor).ThenBy(p=>p.Actor.Value).Select(p=>(p.Actor==view.Participant.Id?L("Вы","You"):WorldSkins.ActorName(p.Actor.Value,_language))+" · "+PlayerText.Money(p.CapitalMinor)+L(" · работников "," · workforce ")+p.Employed+(p.Actor==view.Participant.Id?"":"\n"+L("Предпочтение: ","Preference: ")+(p.PreferenceItem.Length==0?L("не объявлено","not declared"):PlayerText.Item(_language,p.PreferenceItem)))));
         _city.Text=Stage(city.Stage)+L(" · капитал города "," · city capital ")+PlayerText.Money(city.CapitalMinor)+"\n\n"+L("Население / занятые / безработные: ","Population / employed / unemployed: ")+$"{city.Population} / {city.Employed} / {city.Unemployed}\n"+L("Работают на вас: ","Working for you: ")+own.Employed+(city.Employed==0?"":$" ({100m*own.Employed/city.Employed:0.0}%)")+"\n"+L("Действующих производств: ","Active productions: ")+city.ActiveProductions+"\n"+L("Завершённый выпуск: ","Completed-period output: ")+PlayerText.Money(city.GrossOutputMinor)+"\n"+L("Период приёмки: ","Receipt period: ")+$"{city.PeriodStartTick}–{city.PeriodEndTick}\n"+L("Принято столицей: ","Capital receipts: ")+city.CapitalDeliveredQuantity+L(" · по договорам "," · contracted receipts ")+city.CapitalContractDeliveredQuantity+L(" · новых обязательств "," · new commitments ")+city.CapitalContractedQuantity;
         foreach(var system in view.Logistics.Where(l=>view.Demolition?.Receipts.Any(r=>!r.Construction&&r.Target==l.EnterpriseId.Value)==true))

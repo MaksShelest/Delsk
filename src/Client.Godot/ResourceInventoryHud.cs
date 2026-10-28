@@ -4,7 +4,7 @@ using Simulation.Hosting;
 using System.Globalization;
 
 /// <summary>Only physical stock in the player's backpack; paired production chains.</summary>
-public partial class ResourceInventoryHud : HBoxContainer
+public partial class ResourceInventoryHud : HFlowContainer
 {
     private string _signature = "";
     private static readonly string[][] Chains =

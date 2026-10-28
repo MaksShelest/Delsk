@@ -20,6 +20,8 @@ public partial class Playfield
     private void BindFeedbackButton(Node node)
     {
         if(node is not BaseButton button || !IsAncestorOf(button) || button.HasMeta("feedback_bound"))return;
+        for(Node? parent=button.GetParent();parent is not null;parent=parent.GetParent())
+            if(parent is TabletPanel or HelpOverlay){button.FocusMode=FocusModeEnum.All;break;}
         button.SetMeta("feedback_bound",true);button.Pressed+=()=>_feedbackAudio?.Click();
     }
     private void FeedbackPause()
@@ -53,7 +55,7 @@ public partial class Playfield
             slider.ValueChanged+=v=>{set((int)v);label.Text=(int)v+"%";SaveFeedback();};
         }
         column.AddChild(new Label{Text=L("0% — выключено. Настройки не меняют симуляцию.","0% disables a channel. Settings do not change simulation."),AutowrapMode=TextServer.AutowrapMode.WordSmart});
-        dialog.Confirmed+=()=>dialog.QueueFree();dialog.Canceled+=()=>dialog.QueueFree();AddChild(dialog);dialog.PopupCentered();
+        dialog.Confirmed+=()=>dialog.QueueFree();dialog.Canceled+=()=>dialog.QueueFree();AddChild(dialog);UiSafeArea.Popup(dialog,this,new(540,310));
     }
     private void DisposeFeedback(){if(!_feedbackBound)return;GetTree().NodeAdded-=BindFeedbackButton;_feedbackBound=false;}
 }

@@ -33,8 +33,8 @@ public partial class Playfield
     }
     private void OpenAppearanceSettings()
     {
-        if(_appearanceDialog is not null){_appearanceDialog.PopupCentered();return;}
-        var dialog=new AcceptDialog {Name="AppearanceSettings",Title=L("Оформление и персонажи","Appearance and characters"),Size=new(820,690),MinSize=new(640,460),Theme=(Theme)TabletDesign.Theme.Duplicate(true)};
+        if(_appearanceDialog is not null){UiSafeArea.Popup(_appearanceDialog,this,new(820,690));return;}
+        var dialog=new AcceptDialog {Name="AppearanceSettings",Title=L("Оформление и персонажи","Appearance and characters"),Size=new(820,690),MinSize=Vector2I.Zero,Theme=(Theme)TabletDesign.Theme.Duplicate(true)};
         var arrow=GD.Load<Texture2D>("res://tablets_v1/assets/icons/down.svg").GetImage();arrow.Resize(18,18,Image.Interpolation.Lanczos);
         dialog.Theme.SetIcon("arrow","OptionButton",ImageTexture.CreateFromImage(arrow));
         dialog.AddThemeStyleboxOverride("panel",TabletDesign.Card());
@@ -47,7 +47,7 @@ public partial class Playfield
         column.AddChild(new Label {Text=L("Основной — прежние модели. Дополнительный — новые уютные образы.","Primary keeps the original models. Additional uses the new cozy artwork."),AutowrapMode=TextServer.AutowrapMode.WordSmart});
         var worldSet=new Button {Name="WorldSkinSet",FocusMode=FocusModeEnum.None};column.AddChild(worldSet);
         var peopleSet=new Button {Name="PeopleSkinSet",FocusMode=FocusModeEnum.None};column.AddChild(peopleSet);
-        var row=new HBoxContainer();column.AddChild(row);
+        var row=new TabletColumns{Breakpoint=660};column.AddChild(row);
         var type=new OptionButton {Name="ModelType",SizeFlagsHorizontal=SizeFlags.ExpandFill};row.AddChild(type);
         foreach(string key in AppearancePreferences.ModelKeys)type.AddItem(ModelTitle(key));
         var changeModel=new Button {Name="ChangeBuildingSkin",FocusMode=FocusModeEnum.None};row.AddChild(changeModel);
@@ -56,11 +56,11 @@ public partial class Playfield
         var ids=_session is null?new[]{human}:_scenario.Participants.Select(p=>p.Id).Order().ToArray();
         foreach(long id in ids)who.AddItem(id==human?L("Ваш персонаж","Your character"):L("Участник #","Participant #")+id+" · "+WorldSkins.ActorName(id,_language));
         int humanSlot=Array.IndexOf(ids,human);who.Select(Math.Max(0,humanSlot));
-        var profileRow=new HBoxContainer();column.AddChild(profileRow);
+        var profileRow=new TabletColumns{Breakpoint=660};column.AddChild(profileRow);
         var profile=new OptionButton {Name="CharacterSkin",SizeFlagsHorizontal=SizeFlags.ExpandFill};profileRow.AddChild(profile);
         for(int i=0;i<AppearanceCatalog.People.Length;i++)profile.AddItem(AppearanceCatalog.Name(i,_language));
         var next=new Button {Name="NextCharacterSkin",Text=L("Следующий образ ›","Next look ›"),FocusMode=FocusModeEnum.None};profileRow.AddChild(next);
-        var previews=new HBoxContainer();column.AddChild(previews);var buildingPreview=new SkinPreview();var personPreview=new SkinPreview();previews.AddChild(buildingPreview);previews.AddChild(personPreview);
+        var previews=new TabletColumns{Breakpoint=660};column.AddChild(previews);var buildingPreview=new SkinPreview();var personPreview=new SkinPreview();previews.AddChild(buildingPreview);previews.AddChild(personPreview);
         column.AddChild(new Label {Text=L("Выбор применяется сразу и сохраняется для следующих запусков.","Applied immediately and kept for your next launch."),AutowrapMode=TextServer.AutowrapMode.WordSmart});
         string SetName(string set)=>set==AppearancePreferences.Cozy?L("Дополнительный","Additional"):L("Основной","Primary");
         void Update()
@@ -80,7 +80,7 @@ public partial class Playfield
         profile.ItemSelected+=index=>{_appearance=_appearance.WithActor(ids[who.Selected],(int)index);SaveAppearance();Update();};
         next.Pressed+=()=>{long id=ids[who.Selected];_appearance=_appearance.WithActor(id,(_appearance.ForActor(id)+1)%AppearanceCatalog.People.Length);SaveAppearance();Update();};
         void Close(){_appearanceDialog=null;dialog.QueueFree();}
-        dialog.Confirmed+=Close;dialog.Canceled+=Close;AddChild(dialog);dialog.PopupCentered();Update();
+        dialog.Confirmed+=Close;dialog.Canceled+=Close;AddChild(dialog);UiSafeArea.Popup(dialog,this,new(820,690));Update();
     }
     private string ModelTitle(string key)=>key switch
     {

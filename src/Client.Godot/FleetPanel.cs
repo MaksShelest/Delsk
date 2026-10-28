@@ -29,6 +29,8 @@ public partial class FleetPanel : VBoxContainer
         AddChild(_platforms);
     }
     private string L(string ru,string en)=>PlayerText.Local(_language,ru,en);
+    public void FocusVehicle(long id)
+    {if(_vehicles.TryGetValue(id,out var row)){row.Label.AddThemeColorOverride("font_color",new Color("956019"));UiNavigation.Reveal(row.Label);}}
     private static Label TextLabel(string text="")=>new(){Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart};
     private void ActionButton(Container host,string name,string text,GameAction action)
     {var button=new Button{Name=name,Text=text,FocusMode=FocusModeEnum.None,AutowrapMode=TextServer.AutowrapMode.WordSmart};button.Pressed+=()=>_submit(action);host.AddChild(button);_actions.Add((button,action));}

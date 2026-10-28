@@ -35,7 +35,7 @@ public partial class TabletPanel : PanelContainer
         _clock=new Label{SizeFlagsHorizontal=SizeFlags.ExpandFill};footer.AddChild(_clock);
         _time=new CheckButton{Name="TabletTime",FocusMode=FocusModeEnum.None,TooltipText=L("Пауза останавливает весь мир, включая NPC. Разрешённое движение запускает время.","Pause stops the whole world, including NPCs. Allowed movement resumes time.")};
         _time.Toggled+=running=>TimeRunningChanged?.Invoke(running);footer.AddChild(_time);
-        Resized+=()=>{float margin=GetViewportRect().Size.X>=1360?64:12;OffsetLeft=margin;OffsetRight=-margin;};OffsetLeft=12;OffsetRight=-12;
+        ClipContents=true;UiSafeArea.Panel(this);Ready+=()=>UiSafeArea.Keyboard(this);
     }
     public void ShowClock(bool timeRunning,bool paused,long tick,string feedback)
     {
