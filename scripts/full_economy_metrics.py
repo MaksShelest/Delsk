@@ -87,6 +87,9 @@ def measure(folder):
             if buyer in actors:actors[buyer]['serviceCostMinor' if reason=='ServicePayment' else 'goodsCostMinor']+=amount
             if ca:actors[ca]['serviceRevenueMinor' if reason=='ServicePayment' else 'salesRevenueMinor']+=amount
             continue
+        if reason=='ImportPurchase':
+            if da:actors[da]['goodsCostMinor']+=amount;actors[da]['importCostMinor']+=amount
+            continue
         if reason in revenues:
             if ca:actors[ca]['roadRevenueMinor' if reason=='RoadRevenue' else 'workRewardMinor' if reason in {'RoadOrderReward','QuestReward','IndustryQuestReward'} else 'salesRevenueMinor']+=amount
             continue
@@ -112,11 +115,14 @@ def measure(folder):
     types={t['id']:t['kind'] for t in scenario.get('buildingTypes',[])}
     building_types={identity(b['id']):b['typeId'] for b in state.get('buildings',[])}
     milestones={str(a):dict(firstProductionTick=None,physicalLevels={str(i):None for i in range(1,6)},rightCensoredAt=state['tick']) for a in actors}
-    output=collections.Counter();event_counts=collections.Counter();rejections=collections.Counter();overflow_losses=collections.Counter()
+    output=collections.Counter();event_counts=collections.Counter();rejections=collections.Counter();overflow_losses=collections.Counter();moves={};move_times=collections.defaultdict(list);imports_purchased=collections.Counter()
     for e in rows(folder,'events.jsonl'):
         kind=e['type'];event_counts[kind]+=1;actor=identity(e.get('actorId'));entity=identity(e.get('entityId'))
+        if kind=='MovementStarted':moves[(actor,entity)]=e['tick']
+        if kind=='MovementArrived' and (actor,entity) in moves:move_times[str(actor)].append(e['tick']-moves.pop((actor,entity)))
         if kind=='CommandRejected':rejections[e.get('reasonCode') or 'Unknown']+=1
         if kind=='OverflowLost':overflow_losses[e['itemId']]+=e['quantity']
+        if kind=='ImportPurchased':imports_purchased[e['itemId']]+=e['quantity']
         if kind=='ProductionCompleted':output[e['itemId']]+=e['quantity']
         if kind=='BuildingConstructed':building_types[entity]=e['reasonCode']
         if actor not in actors or kind not in {'BuildingConstructed','BuildingUpgraded'} or types.get(building_types.get(entity))!='Production':continue
@@ -169,29 +175,37 @@ def measure(folder):
     for node in physical.get('resources',[]):
         r=resources[node['itemId']];r['stock']+=node['stock'];r['reserved']+=node['reserved'];r['capacity']+=node['capacity'];r['depletedNodes']+=node['stock']==0
         if node.get('public'):r['publicStock']+=node['stock'];r['publicReserved']+=node['reserved'];r['publicNodes']+=1;r['depletedPublicNodes']+=node['stock']==0
+    content=load('production-content.json',{}) or {};pickups={identity(p['inventory']) for p in content.get('pickups',[])}
     pressure=collections.defaultdict(collections.Counter)
     for inv in state['inventories']:
+        if identity(inv['id']) in pickups:continue
         r=pressure[str(identity(inv.get('ownerId')))];r['capacityVolume']+=inv['capacity'];r['occupiedVolume']+=inv.get('occupiedVolume',0);r['reservedVolume']+=inv.get('reservedCapacity',0);r['fullInventories']+=inv.get('occupiedVolume',0)>=inv['capacity']>0
     demand=collections.Counter();sales=collections.defaultdict(collections.Counter)
     for offer in state.get('capitalOffers',[]):demand[offer['itemId']]+=offer['remainingQuantity']
     for sale in state.get('settlements',[]):
         r=sales[sale['itemId']];r['requested']+=sale['requested'];r['accepted']+=sale['accepted'];r['paidMinor']+=sale['paidMinor']
-    content=load('production-content.json',{}) or {}
+    uncollected=collections.Counter()
+    for inv in state['inventories']:
+        if identity(inv['id']) in pickups:
+            for lot in inv['stock']:uncollected[lot['itemId']]+=lot['quantity']
+    import_removed={item:imports_purchased[item]-uncollected[item] for item in imports_purchased.keys()|uncollected.keys()}
     runs=(services.get('execution') or {}).get('runs',[])
     npcs=sorted(a for a in actors if a!=1);natural=bool(scenario.get('newGame'))
     # Initial stock/buildings require a proper initial valuation; do not fabricate it for rich fixtures.
     changes=[capital[a]-initial[a] for a in npcs] if natural and not scenario.get('buildings') and not scenario.get('enterprises') else []
     result=dict(version=1,actors={str(a):dict(r) for a,r in actors.items()},milestones=milestones,experience={k:dict(v) for k,v in xp.items()},industryUnlockTicks=unlock,
-        productionUnitsByItem=dict(output),productionOwnership={k:dict(v) for k,v in ownership.items()},industryOwnerHHI=hhi,importsCollectedByItem=dict(imports),overflowUnitsByItem=dict(overflow),overflowVolume=sum(q*items[i].get('volume',1) for i,q in overflow.items()),
+        productionUnitsByItem=dict(output),productionOwnership={k:dict(v) for k,v in ownership.items()},industryOwnerHHI=hhi,importsCollectedByItem=dict(imports),overflowUnitsByItem=dict(overflow),overflowVolume=sum(q*items[i]['unitVolume'] for i,q in overflow.items()),
         events=dict(event_counts),ledgerReasons=dict(reason_totals),unclassifiedActorCashMinor=dict(unknown),cashLedgerReconciled=True,
         vehicleCount=len(fleet.get('vehicles',[])),completedRoadStages=sum(identity(c['builder'])>0 for r in roads.get('cells',[]) for c in r['contributions']),
         roadDebtPrincipalMinor=sum(i['principalRemaining'] for i in billing.get('invoices',[])),roadDebtPenaltyMinor=sum(i['penaltyRemaining'] for i in billing.get('invoices',[])),
         resourceAvailabilitySnapshot={k:dict(v) for k,v in resources.items()},storagePressureSnapshot={k:dict(v) for k,v in pressure.items()},overflowLostUnitsByItem=dict(overflow_losses),commandRejectedReasons=dict(rejections),
         importAvailabilitySnapshot=content.get('imports',[]),capitalDemandRemainingSnapshot=dict(demand),capitalSettlementsByItem={k:dict(v) for k,v in sales.items()},
+        importsPurchasedByItem=dict(imports_purchased),importPickupStockByItem=dict(uncollected),importsNetRemovedFromPickupsByItem=import_removed,importDefinition='B1 ImportPurchased is a paid external purchase at the terminal; net removed subtracts final pickup stock and may reflect returns. Legacy market imports collected are separate.',
         trafficSnapshotReasons=dict(collections.Counter(t['reason'] for t in roads.get('traffic',[]))),maxCurrentTrafficWaitTicks=max((state['tick']-t['waitingSince'] for t in roads.get('traffic',[]) if t.get('waitingSince')),default=0),
         serviceStates=dict(collections.Counter(o['state'] for o in services.get('orders',[]))),serviceDeliveredQuantity=sum(r['delivered'] for r in runs),serviceLateRefundMinor=sum(r['lateRefundMinor'] for r in runs),
         serviceOrders=len(services.get('orders',[])),servicePaidMinor=sum(r['paidMinor'] for r in (services.get('execution') or {}).get('runs',[])),
         personalIdleSamples=dict(personal_idle),longestWaitSampleStreak=dict(longest_wait),goalSampleCounts=dict(goals),goalReasonSamples=dict(goal_reasons),zeroCashSamples=dict(zero_cash),minimumObservedCashMinor=minimum_cash,idleWorkerSamples=idle_workers,laborSampleTicks=len(labor_ticks),laborSampleDefinition='Headcount-weighted non-ready group samples, deduplicated within tick. Not full observed worker idle time.',
+        completedMovementDurationsTicks=dict(move_times),unfinishedMovements=len(moves),movementDefinition='Actual MovementStarted→MovementArrived event intervals, inclusive activity otherwise unspecified. No distance/speed formula is substituted for elapsed ticks.',
         roi=dict(observedCapitalCashMinor=sum(a['cashCapitalSpendingMinor'] for a in actors.values()),vehicles=vehicle_returns(folder,fleet.get('vehicles',[]),services.get('orders',[]),actors,accounts),paybackTick=None,reason='Mixed enterprise/road portfolios require attributable revenue and costs. Unobserved payback stays censored; no static-margin extrapolation.'),
         definition='Actual settled receipts minus all actual goods/service settlement costs, wages/energy/lease/road/fines. Escrow funding/refunds and cash capex separate; purchased construction materials are included among goods costs, not allocated to an entity. Unsold stock, depreciation and owner opportunity cost are not accrual net profit. Idle samples do not certify no feasible action.')
     progress=load('run-progress.json',{}) or {};interval=state['tick']-progress.get('startTick',0)

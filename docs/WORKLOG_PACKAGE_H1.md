@@ -55,3 +55,21 @@
 - Long small first process1800 saved2788748bytes with audits, second separate
   process loaded it and reached3600/checkpoint8017220bytes. Continuous3600 comparison
   running; no target timing/ROI claim. Observed long cohort still no firm at3600.
+- Actual small t9000 runner/checkpoint/audits all0, first firm7284; five firms,
+  real flour12/cheese2/plank8/bread4, named payroll. Observer then failed reading
+  2585797-byte summary with plan-input2MiB reader; pipeline1 stopped, not an engine
+  or balance failure. Reproduced traceback, original tool SHA8bbbb422/trajectory
+  retained in long-small/tool-history. Trusted export reader fixed, explicit tool
+  update records old/new SHA, recover-completed reused9000 without re-simulation.
+- B1 imports use ImportPurchase external receipt, not legacy market seller0.
+  Real t9000:17steel bought/physically removed,53125minor paid. Unknown-reason
+  safeguard made earlier operating result null rather than omitting this cost.
+  Added classification and separate purchased/pickup/net-removed metrics; final
+  analysis recomputes every raw export with one version. Full-history retained.
+- Source2dde8c0e Core40809350452 and Windows40809350579 success (fetch jobs pending
+  final evidence). New analysis fixes and recovery tool will receive another CI.
+  Shell git fetch now invalid credentials; GitHub connector remains working.
+- Actual E2/G1 controller observation already projects physical movement cost
+  instead of raw profile MoveTicksPerCell1; do not "fix" it from raw config alone.
+  Movement event intervals measured separately: at7200 roughly5458–5886 active
+  ticks in completed movement per NPC, median trip115ticks. Still one trajectory.

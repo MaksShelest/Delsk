@@ -38,3 +38,10 @@ class FullMetricsTests(unittest.TestCase):
  def test_handling_investment_is_cash_capex_not_repeated_operating_cost(self):
   p=self.example([700,100],[(1,101,0,100,'VehicleHandlingKit'),(2,101,0,200,'LoadingPlatformUpgrade')]);r=measure(p)['fullEconomy']
   self.assertEqual(300,r['actors']['1']['cashCapitalSpendingMinor']);self.assertEqual(0,r['actors']['1']['operatingReceiptResultMinor']);self.assertEqual({},r['unclassifiedActorCashMinor'])
+ def test_b1_import_is_paid_at_terminal_and_uncollected_stock_is_separate(self):
+  p=self.example([600,100],[(1,101,0,400,'ImportPurchase')]);state=json.loads((p/'final-state.json').read_text());state['inventories']=[dict(id=200,ownerId=1,capacity=100,occupiedVolume=1,stock=[dict(itemId='steel',quantity=1)])];(p/'final-state.json').write_text(json.dumps(state))
+  (p/'production-content.json').write_text(json.dumps(dict(pickups=[dict(owner=1,inventory=200)])))
+  (p/'events.jsonl').write_text(json.dumps(dict(type='ImportPurchased',actorId=1,entityId=200,tick=1,itemId='steel',quantity=4))+'\n')
+  f=measure(p)['fullEconomy'];self.assertEqual(400,f['actors']['1']['importCostMinor']);self.assertEqual(-400,f['actors']['1']['operatingReceiptResultMinor']);self.assertEqual({'steel':4},f['importsPurchasedByItem']);self.assertEqual({'steel':3},f['importsNetRemovedFromPickupsByItem']);self.assertEqual({},f['unclassifiedActorCashMinor'])
+ def test_overflow_uses_real_cargo_volume(self):
+  p=self.example([1000,100],[]);s=json.loads((p/'scenario.json').read_text());s['items']=[dict(id='wood',unitVolume=2)];(p/'scenario.json').write_text(json.dumps(s));state=json.loads((p/'final-state.json').read_text());state['inventories']=[dict(id=200,ownerId=1,capacity=20,occupiedVolume=20,stock=[],overflow=[dict(itemId='wood',quantity=7)])];(p/'final-state.json').write_text(json.dumps(state));f=measure(p)['fullEconomy'];self.assertEqual(14,f['overflowVolume']);self.assertEqual({'wood':7},f['overflowUnitsByItem'])

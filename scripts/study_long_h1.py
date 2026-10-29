@@ -2,7 +2,7 @@
 """Whole-tick long trajectories, persistent checkpoint segments, same ordinary G1 policies.
 Only the resolved safety horizon is extended. Author: Шелестов Максим Евгеньевич.
 """
-import argparse,hashlib,json,sys
+import argparse,datetime,hashlib,json,sys
 from pathlib import Path
 from research_lab import ROOT,read,write
 from research_workspace import binary_hashes
@@ -16,7 +16,7 @@ def check(name,seconds,out,cmd):
  return code,meta
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--map',choices=['small-river','large-districts'],required=True);p.add_argument('--segments',type=int,default=1000);p.add_argument('--compare-first-two',action='store_true');p.add_argument('--retry-failed',action='store_true');a=p.parse_args()
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--map',choices=['small-river','large-districts'],required=True);p.add_argument('--segments',type=int,default=1000);p.add_argument('--compare-first-two',action='store_true');p.add_argument('--retry-failed',action='store_true');p.add_argument('--adopt-tool-update',metavar='REASON');p.add_argument('--recover-completed',action='store_true');a=p.parse_args()
  if a.segments<0:raise ValueError('Segment count must be nonnegative')
  out=a.output.resolve();out.mkdir(parents=True,exist_ok=True);spec=read(ROOT/'docs/research/h1/study-plan.json')['long'];target=spec['targetTicks'];runner=['dotnet',ROOT/'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll']
  frozen=dict(simulationInputs=simulation_inputs(),binaries=binary_hashes());journal=out/'trajectory.json'
@@ -24,7 +24,22 @@ def main():
   state=read(journal)
   if state['frozen']!=frozen:raise ValueError('Trajectory code/binaries changed; original evidence is retained')
   if state['map']!=a.map or state['compareFirstTwo']!=a.compare_first_two:raise ValueError('Trajectory map/continuation proof must remain unchanged')
-  if state['toolSha256']!=digest(__file__):raise ValueError('Trajectory tool changed; original evidence retained')
+  if state['toolSha256']!=digest(__file__):
+   if not a.adopt_tool_update:raise ValueError('Trajectory tool changed; retain evidence and explicitly --adopt-tool-update REASON')
+   state.setdefault('toolUpdates',[]).append(dict(oldSha256=state['toolSha256'],newSha256=digest(__file__),reason=a.adopt_tool_update,atUtc=datetime.datetime.now(datetime.timezone.utc).isoformat()))
+   state['toolSha256']=digest(__file__);write(journal,state)
+  if a.recover_completed:
+   if state['status']!='running' or 'activeAttempt' not in state:raise ValueError('No unfinished observer attempt to recover')
+   record=dict(state['activeAttempt']);run=Path(record['result']);end=record['targetTick'];checkpoint=Path(record['checkpoint'])
+   meta=read(out/'checks'/('segment-'+str(end)+'.json'))
+   summary=json.loads((run/'summary.json').read_text(encoding='utf-8'))
+   if meta['exit_code']!=0 or summary['status']!='succeeded' or summary['tick']!=end or not checkpoint.exists():raise ValueError('Runner/checkpoint did not complete; cannot recover analysis')
+   for tool in ['verify_results.py','verify_public_economy.py']:
+    audit=read(out/'checks'/(str(end)+'-'+tool.replace('.py','')+'.json'))
+    if audit['exit_code']!=0:raise ValueError('Original audit did not pass; retain failed attempt')
+    record[tool]=audit
+   record.update(runner=meta,metrics=measure(run),stateHash=summary['stateHash'],checkpointBytes=checkpoint.stat().st_size,checkpointSha256=digest(checkpoint),lastHeartbeat=read(run/'run-progress.json'),observerRecovered=True)
+   state['segments'].append(record);state.update(lastSavedTick=end,lastCheckpoint=str(checkpoint),lastCheckpointSha256=record['checkpointSha256'],status='ready');state.pop('activeAttempt');state.pop('activeSegment',None);write(journal,state);compress_turns(run)
   if state['status'] in ('failed','running'):
    if not a.retry_failed:raise ValueError('Failed/interrupted attempt retained; diagnose then explicitly --retry-failed')
    if state['status']=='running':
@@ -80,7 +95,7 @@ def main():
   for tool,budget in [('verify_results.py',60),('verify_public_economy.py',30)]:
    status,audit=check(str(end)+'-'+tool.replace('.py',''),budget,out,[sys.executable,ROOT/'scripts'/tool,run]);record[tool]=audit
    if status:state['status']='failed';record['failure']='Audit failed';state['segments'].append(record);write(journal,state);return status
-  record['metrics']=measure(run);record['stateHash']=read(run/'summary.json')['stateHash']
+  record['metrics']=measure(run);record['stateHash']=json.loads((run/'summary.json').read_text(encoding='utf-8'))['stateHash']
   record['checkpointSha256']=digest(checkpoint)
   state['segments'].append(record);state['lastSavedTick']=end;state['lastCheckpoint']=str(checkpoint);state['lastCheckpointSha256']=record['checkpointSha256'];state['status']='completed' if end==target else 'ready';state.pop('activeSegment',None);state.pop('activeAttempt',None);write(journal,state)
   print(json.dumps(dict(map=a.map,tick=end,target=target,checkpointBytes=record['checkpointBytes'])),flush=True)
