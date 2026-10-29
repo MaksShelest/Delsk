@@ -14,20 +14,23 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     outputs:
-      needed: ${{ steps.inspect.outputs.needed }}
+      audits: ${{ steps.inspect.outputs.audits }}
+      resume: ${{ steps.inspect.outputs.resume }}
     steps:
       - uses: actions/github-script@v7
         id: inspect
         with:
           script: |
             const ids=['long-small-river-6-Medium-42','long-small-river-6-Medium-43','long-small-river-6-Hard-42','long-small-river-6-Hard-43','long-large-districts-6-Medium-42','long-large-districts-6-Medium-43','long-large-districts-6-Hard-42','long-large-districts-6-Hard-43'];
-            const names=['h1-post-g2-audited-summary',...ids.map(x=>'h1-resume-'+x+'-complete')];
-            let needed=false;
-            for(const name of names){const r=await github.rest.actions.listArtifactsForRepo({...context.repo,name,per_page:100});if(!r.data.artifacts.some(a=>!a.expired))needed=true;}
-            core.setOutput('needed',String(needed));
+            const names=ids.map(x=>'h1-resume-'+x+'-complete');
+            let resume=false;
+            for(const name of names){const r=await github.rest.actions.listArtifactsForRepo({...context.repo,name,per_page:100});if(!r.data.artifacts.some(a=>!a.expired))resume=true;}
+            const r=await github.rest.actions.listArtifactsForRepo({...context.repo,name:'h1-post-g2-audited-summary-v2',per_page:100});
+            core.setOutput('audits',String(!r.data.artifacts.some(a=>!a.expired)));
+            core.setOutput('resume',String(resume));
   audits:
     needs: plan
-    if: needs.plan.outputs.needed == 'true'
+    if: needs.plan.outputs.audits == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -41,25 +44,43 @@ jobs:
         with:
           run-id: 40921991720
           github-token: ${{ github.token }}
-          pattern: h1-metrics-*
-          merge-multiple: true
-          path: work/evidence
-      - run: python scripts/analyze_postg2_h1.py --study work/evidence --output work/analysis
+          name: h1-post-g2-summary
+          path: work/original
       - uses: actions/github-script@v7
         with:
           script: |
+            const fs=require('fs');
             const r=await github.rest.actions.getWorkflowRun({...context.repo,run_id:40921991720});
             if(r.data.head_sha!='0f89a63e4ff3421d00df755cd8cb6d61e641b62e'||r.data.conclusion!='success')throw Error('Unexpected source cohort');
             const artifacts=await github.paginate(github.rest.actions.listWorkflowRunArtifacts,{...context.repo,run_id:40921991720,per_page:100});
-            require('fs').writeFileSync('work/analysis/source-artifacts.json',JSON.stringify({run:r.data,artifacts},null,2));
+            const thin=artifacts.filter(a=>a.name.startsWith('h1-metrics-')&&!a.expired);
+            if(thin.length!=128)throw Error('Expected exactly128 thin worlds');
+            fs.mkdirSync('work/zips',{recursive:true});fs.mkdirSync('work/analysis',{recursive:true});
+            let cursor=0;
+            async function worker(){while(cursor<thin.length){const a=thin[cursor++];const z=await github.rest.actions.downloadArtifact({...context.repo,artifact_id:a.id,archive_format:'zip'});fs.writeFileSync('work/zips/'+a.id+'.zip',Buffer.from(z.data));}}
+            await Promise.all(Array.from({length:8},worker));
+            fs.writeFileSync('work/analysis/source-artifacts.json',JSON.stringify({run:r.data,artifacts},null,2));
+      - name: Extract owned archives and require every registered world and original audit
+        run: |
+          python - <<'PYCODE'
+          import zipfile
+          from pathlib import Path
+          out=Path('work/evidence').resolve();out.mkdir(parents=True,exist_ok=True)
+          for p in Path('work/zips').glob('*.zip'):
+            with zipfile.ZipFile(p) as z:
+              if any(not (out/n).resolve().is_relative_to(out) for n in z.namelist()):raise ValueError('Archive path escape')
+              z.extractall(out)
+          PYCODE
+          python scripts/analyze_postg2_h1.py --study work/evidence --output work/analysis
+          python scripts/verify_postg2_collection.py --original work/original --collected work/analysis
       - uses: actions/upload-artifact@v4
         with:
-          name: h1-post-g2-audited-summary
+          name: h1-post-g2-audited-summary-v2
           path: work/analysis/
           retention-days: 90
   resume:
     needs: plan
-    if: needs.plan.outputs.needed == 'true'
+    if: needs.plan.outputs.resume == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     strategy:

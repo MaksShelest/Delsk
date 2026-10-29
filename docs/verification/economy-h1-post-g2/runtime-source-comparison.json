@@ -1,0 +1,5 @@
+{
+  "base": "3cc17e843d880b8ba49833fa49a9ed2a1006626b",
+  "changedRuntimeInputs": [],
+  "scope": "Working tree vs accepted G2: all src/config/scenarios/build props/global/design balance byte unchanged. No runtime save/policy/rule change. Python research and documentation differ."
+}

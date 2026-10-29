@@ -1,0 +1,1359 @@
+{
+  "version": 2,
+  "prepared": true,
+  "protocol": {
+    "version": 1,
+    "author": "\u0428\u0435\u043b\u0435\u0441\u0442\u043e\u0432 \u041c\u0430\u043a\u0441\u0438\u043c \u0415\u0432\u0433\u0435\u043d\u044c\u0435\u0432\u0438\u0447",
+    "scope": "Prepared diagnostic, separate from ordinary matrix: only starting cash is zero; same public resources, G1 policies, finite demand and active ticks.",
+    "maps": [
+      "small-river",
+      "large-districts"
+    ],
+    "bots": 6,
+    "difficulty": "Medium",
+    "seed": 42,
+    "ticks": 1800,
+    "timeoutSeconds": 600,
+    "claims": "Observed ability to earn from zero cash in these two conditions; not a proof that every depleted-resource or late-debt state is recoverable."
+  },
+  "rows": [
+    {
+      "map": "small-river",
+      "status": "succeeded",
+      "prepared": true,
+      "result": "/workspace/Delsk/work/h1-post-zero-cash/small-river/run",
+      "check": {
+        "command": [
+          "dotnet",
+          "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "/workspace/Delsk/work/h1-post-zero-cash/small-river/zero-cash-scenario.json",
+          "--controllers",
+          "/workspace/Delsk/work/h1-post-zero-cash/small-river/controllers.json",
+          "--script",
+          "baseline",
+          "--human-ballot",
+          "self",
+          "--ticks",
+          "1800",
+          "--progress",
+          "true",
+          "--output",
+          "/workspace/Delsk/work/h1-post-zero-cash/small-river/run"
+        ],
+        "timeout_seconds": 600,
+        "started_at": "2026-10-29T17:30:52.346062+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 102.751,
+        "finished_at": "2026-10-29T17:32:35.097289+00:00"
+      },
+      "condition": {
+        "version": 1,
+        "prepared": true,
+        "changes": [
+          "participants[*].cashMinor=0",
+          "economyProfileId=h1-zero-cash-diagnostic-1"
+        ],
+        "allOtherResolvedValuesExact": true,
+        "canonicalProfileSha256": "5fd07e335370a5dad974ebd6b25a561b002b324544ab06b0b98e788b2bf9a0b3",
+        "scenarioSha256": "735c815098421d4dfceabee220ff47fd63dc27105011c44f336c7ca485f8266f",
+        "controllersSha256": "81d55dc882142ab45be70a1ef7e60bfa004fa978f02c475d02dcc75080c93e29"
+      },
+      "verify_results.py": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "/workspace/Delsk/scripts/verify_results.py",
+          "/workspace/Delsk/work/h1-post-zero-cash/small-river/run"
+        ],
+        "timeout_seconds": 60,
+        "started_at": "2026-10-29T17:32:35.147901+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.573,
+        "finished_at": "2026-10-29T17:32:35.720664+00:00"
+      },
+      "verify_public_economy.py": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "/workspace/Delsk/scripts/verify_public_economy.py",
+          "/workspace/Delsk/work/h1-post-zero-cash/small-river/run"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-29T17:32:35.775289+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.181,
+        "finished_at": "2026-10-29T17:32:35.956207+00:00"
+      },
+      "metrics": {
+        "fullEconomy": {
+          "version": 1,
+          "actors": {
+            "1": {
+              "cashMinor": 0,
+              "capitalMinor": 0,
+              "operatingReceiptResultMinor": 0,
+              "debtMinor": 0,
+              "unbilledAccruedMinor": 0,
+              "escrowMinor": 0,
+              "roadLiabilityMinor": 0,
+              "operatingAfterRoadDebtMinor": 0
+            },
+            "2": {
+              "cashCreditsMinor": 7662,
+              "salesRevenueMinor": 7662,
+              "cashMinor": 7662,
+              "capitalMinor": 8162,
+              "operatingReceiptResultMinor": 7662,
+              "debtMinor": 0,
+              "unbilledAccruedMinor": 0,
+              "escrowMinor": 0,
+              "roadLiabilityMinor": 0,
+              "operatingAfterRoadDebtMinor": 7662
+            },
+            "3": {
+              "cashCreditsMinor": 7896,
+              "salesRevenueMinor": 7896,
+              "cashMinor": 7896,
+              "capitalMinor": 8396,
+              "operatingReceiptResultMinor": 7896,
+              "debtMinor": 0,
+              "unbilledAccruedMinor": 0,
+              "escrowMinor": 0,
+              "roadLiabilityMinor": 0,
+              "operatingAfterRoadDebtMinor": 7896
+            },
+            "4": {
+              "cashCreditsMinor": 6448,
+              "salesRevenueMinor": 6448,
+              "cashMinor": 6448,
+              "capitalMinor": 6948,
+              "operatingReceiptResultMinor": 6448,
+              "debtMinor": 0,
+              "unbilledAccruedMinor": 0,
+              "escrowMinor": 0,
+              "roadLiabilityMinor": 0,
+              "operatingAfterRoadDebtMinor": 6448
+            },
+            "5": {
+              "cashCreditsMinor": 7006,
+              "salesRevenueMinor": 7006,
+              "cashMinor": 7006,
+              "capitalMinor": 8406,
+              "operatingReceiptResultMinor": 7006,
+              "debtMinor": 0,
+              "unbilledAccruedMinor": 0,
+              "escrowMinor": 0,
+              "roadLiabilityMinor": 0,
+              "operatingAfterRoadDebtMinor": 7006
+            },
+            "6": {
+              "cashCreditsMinor": 7091,
+              "salesRevenueMinor": 7091,
+              "cashMinor": 7091,
+              "capitalMinor": 8291,
+              "operatingReceiptResultMinor": 7091,
+              "debtMinor": 0,
+              "unbilledAccruedMinor": 0,
+              "escrowMinor": 0,
+              "roadLiabilityMinor": 0,
+              "operatingAfterRoadDebtMinor": 7091
+            },
+            "7": {
+              "cashCreditsMinor": 5743,
+              "salesRevenueMinor": 5743,
+              "cashMinor": 5743,
+              "capitalMinor": 6743,
+              "operatingReceiptResultMinor": 5743,
+              "debtMinor": 0,
+              "unbilledAccruedMinor": 0,
+              "escrowMinor": 0,
+              "roadLiabilityMinor": 0,
+              "operatingAfterRoadDebtMinor": 5743
+            }
+          },
+          "milestones": {
+            "1": {
+              "firstProductionTick": null,
+              "physicalLevels": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null
+              },
+              "rightCensoredAt": 1800
+            },
+            "2": {
+              "firstProductionTick": null,
+              "physicalLevels": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null
+              },
+              "rightCensoredAt": 1800
+            },
+            "3": {
+              "firstProductionTick": null,
+              "physicalLevels": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null
+              },
+              "rightCensoredAt": 1800
+            },
+            "4": {
+              "firstProductionTick": null,
+              "physicalLevels": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null
+              },
+              "rightCensoredAt": 1800
+            },
+            "5": {
+              "firstProductionTick": null,
+              "physicalLevels": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null
+              },
+              "rightCensoredAt": 1800
+            },
+            "6": {
+              "firstProductionTick": null,
+              "physicalLevels": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null
+              },
+              "rightCensoredAt": 1800
+            },
+            "7": {
+              "firstProductionTick": null,
+              "physicalLevels": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null
+              },
+              "rightCensoredAt": 1800
+            }
+          },
+          "experience": {},
+          "industryUnlockTicks": {},
+          "productionUnitsByItem": {},
+          "productionOwnership": {},
+          "industryOwnerHHI": {},
+          "importsCollectedByItem": {},
+          "overflowUnitsByItem": {},
+          "overflowVolume": 0,
+          "events": {
+            "CapitalDemandPublished": 31,
+            "DealerInitialStock": 6,
+            "WorldCreated": 1,
+            "MovementStarted": 67,
+            "CommandAccepted": 202,
+            "RoadOrderPublished": 2,
+            "TickCommitted": 1800,
+            "LaborStepCommitted": 180,
+            "MovementArrived": 65,
+            "HarvestStarted": 31,
+            "ResourceConsumed": 31,
+            "HarvestCompleted": 31,
+            "ResourceRegenerated": 121,
+            "PopulationGrew": 15,
+            "CapitalDemandExpired": 527,
+            "CapitalSaleRequested": 83,
+            "CapitalSaleSettled": 83,
+            "CapitalWindowClosed": 35,
+            "VotingOpened": 3,
+            "VoteChoiceChanged": 21,
+            "BallotSubmitted": 21,
+            "ElectionBallot": 21,
+            "ElectionCompleted": 3,
+            "ImportRestocked": 7
+          },
+          "ledgerReasons": {
+            "CapitalDemandBudget": 1084944,
+            "CapitalDemandRetired": 933784,
+            "CapitalEscrow": 41846,
+            "CapitalSettlement": 41846
+          },
+          "unclassifiedActorCashMinor": {},
+          "cashLedgerReconciled": true,
+          "vehicleCount": 0,
+          "completedRoadStages": 0,
+          "roadDebtPrincipalMinor": 0,
+          "roadDebtPenaltyMinor": 0,
+          "resourceAvailabilitySnapshot": {
+            "grain": {
+              "stock": 2940,
+              "reserved": 0,
+              "capacity": 2940,
+              "depletedNodes": 0,
+              "publicStock": 60,
+              "publicReserved": 0,
+              "publicNodes": 1,
+              "depletedPublicNodes": 0
+            },
+            "iron_ore": {
+              "stock": 2940,
+              "reserved": 0,
+              "capacity": 2940,
+              "depletedNodes": 0,
+              "publicStock": 60,
+              "publicReserved": 0,
+              "publicNodes": 1,
+              "depletedPublicNodes": 0
+            },
+            "beet": {
+              "stock": 2450,
+              "reserved": 0,
+              "capacity": 2450,
+              "depletedNodes": 0,
+              "publicStock": 50,
+              "publicReserved": 0,
+              "publicNodes": 1,
+              "depletedPublicNodes": 0
+            },
+            "stone": {
+              "stock": 3920,
+              "reserved": 0,
+              "capacity": 3920,
+              "depletedNodes": 0,
+              "publicStock": 80,
+              "publicReserved": 0,
+              "publicNodes": 1,
+              "depletedPublicNodes": 0
+            },
+            "wood": {
+              "stock": 2940,
+              "reserved": 0,
+              "capacity": 2940,
+              "depletedNodes": 0,
+              "publicStock": 60,
+              "publicReserved": 0,
+              "publicNodes": 1,
+              "depletedPublicNodes": 0
+            },
+            "sand": {
+              "stock": 3914,
+              "reserved": 0,
+              "capacity": 3920,
+              "depletedNodes": 0,
+              "publicStock": 74,
+              "publicReserved": 0,
+              "publicNodes": 1,
+              "depletedPublicNodes": 0
+            },
+            "milk": {
+              "stock": 1960,
+              "reserved": 0,
+              "capacity": 1960,
+              "depletedNodes": 0,
+              "publicStock": 40,
+              "publicReserved": 0,
+              "publicNodes": 1,
+              "depletedPublicNodes": 0
+            },
+            "copper_ore": {
+              "stock": 2432,
+              "reserved": 0,
+              "capacity": 2450,
+              "depletedNodes": 0,
+              "publicStock": 32,
+              "publicReserved": 0,
+              "publicNodes": 1,
+              "depletedPublicNodes": 0
+            }
+          },
+          "storagePressureSnapshot": {
+            "1": {
+              "capacityVolume": 100,
+              "occupiedVolume": 0,
+              "reservedVolume": 0,
+              "fullInventories": 0
+            },
+            "2": {
+              "capacityVolume": 100,
+              "occupiedVolume": 1,
+              "reservedVolume": 0,
+              "fullInventories": 0
+            },
+            "3": {
+              "capacityVolume": 100,
+              "occupiedVolume": 1,
+              "reservedVolume": 0,
+              "fullInventories": 0
+            },
+            "4": {
+              "capacityVolume": 100,
+              "occupiedVolume": 1,
+              "reservedVolume": 0,
+              "fullInventories": 0
+            },
+            "5": {
+              "capacityVolume": 100,
+              "occupiedVolume": 7,
+              "reservedVolume": 0,
+              "fullInventories": 0
+            },
+            "6": {
+              "capacityVolume": 100,
+              "occupiedVolume": 6,
+              "reservedVolume": 0,
+              "fullInventories": 0
+            },
+            "7": {
+              "capacityVolume": 100,
+              "occupiedVolume": 2,
+              "reservedVolume": 0,
+              "fullInventories": 0
+            }
+          },
+          "overflowLostUnitsByItem": {},
+          "commandRejectedReasons": {},
+          "workforceSnapshot": {
+            "population": 155,
+            "unemployed": 155,
+            "employed": 0,
+            "byRole": {},
+            "definition": "Final-tick headcount/capacity, not utilization over the whole run."
+          },
+          "importAvailabilitySnapshot": [
+            {
+              "itemId": "asphalt",
+              "remaining": 40,
+              "nextRefreshTick": 2400
+            },
+            {
+              "itemId": "bitumen",
+              "remaining": 120,
+              "nextRefreshTick": 2400
+            },
+            {
+              "itemId": "cement",
+              "remaining": 120,
+              "nextRefreshTick": 2400
+            },
+            {
+              "itemId": "coke",
+              "remaining": 120,
+              "nextRefreshTick": 2400
+            },
+            {
+              "itemId": "glass",
+              "remaining": 24,
+              "nextRefreshTick": 2400
+            },
+            {
+              "itemId": "limestone",
+              "remaining": 120,
+              "nextRefreshTick": 2400
+            },
+            {
+              "itemId": "soda",
+              "remaining": 120,
+              "nextRefreshTick": 2400
+            },
+            {
+              "itemId": "steel",
+              "remaining": 48,
+              "nextRefreshTick": 2400
+            }
+          ],
+          "capitalDemandRemainingSnapshot": {
+            "beet": 13,
+            "bitumen": 6,
+            "cement": 5,
+            "coke": 5,
+            "copper": 1,
+            "copper_ore": 4,
+            "flour": 2,
+            "glass": 1,
+            "grain": 12,
+            "iron_ore": 9,
+            "limestone": 17,
+            "milk": 10,
+            "pastry": 1,
+            "plank": 2,
+            "sand": 18,
+            "soda": 11,
+            "steel_sheet": 2,
+            "stone": 12,
+            "wire": 1,
+            "wood": 8,
+            "asphalt": 2,
+            "beam": 1,
+            "cream": 2,
+            "gravel": 2,
+            "cheese": 1,
+            "concrete": 1,
+            "sugar": 1,
+            "steel": 0
+          },
+          "capitalSettlementsByItem": {
+            "sand": {
+              "requested": 125,
+              "accepted": 74,
+              "paidMinor": 15175
+            },
+            "copper_ore": {
+              "requested": 87,
+              "accepted": 41,
+              "paidMinor": 20343
+            },
+            "wood": {
+              "requested": 20,
+              "accepted": 12,
+              "paidMinor": 6328
+            }
+          },
+          "importsPurchasedByItem": {},
+          "importPickupStockByItem": {},
+          "importsNetRemovedFromPickupsByItem": {},
+          "importDefinition": "B1 ImportPurchased is a paid external purchase at the terminal; net removed subtracts final pickup stock and may reflect returns. Legacy market imports collected are separate.",
+          "trafficSnapshotReasons": {},
+          "maxCurrentTrafficWaitTicks": 0,
+          "serviceStates": {},
+          "serviceDeliveredQuantity": 0,
+          "serviceLateRefundMinor": 0,
+          "serviceOrders": 0,
+          "servicePaidMinor": 0,
+          "personalIdleSamples": {
+            "1": 1800,
+            "2": 249,
+            "3": 247,
+            "4": 534,
+            "5": 319,
+            "6": 182,
+            "7": 536
+          },
+          "longestWaitSampleStreak": {
+            "1": 600,
+            "4": 55,
+            "7": 55,
+            "5": 55,
+            "6": 55,
+            "3": 55,
+            "2": 55
+          },
+          "goalSampleCounts": {
+            "Idle": 2465,
+            "EarnConstructionReserve": 7925,
+            "SellCarried": 566,
+            "Ballot": 1644
+          },
+          "goalReasonSamples": {
+            "Idle:Initial": 600,
+            "EarnConstructionReserve:Medium:FullTrip:sand": 21,
+            "EarnConstructionReserve:ActiveJobOrSaleHold": 7823,
+            "EarnConstructionReserve:FullTrip:sand": 24,
+            "SellCarried:Medium:sand": 34,
+            "SellCarried:ActiveJobOrSaleHold": 487,
+            "Idle:NoFeasibleGoal": 1865,
+            "EarnConstructionReserve:Medium:FullTrip:copper_ore": 22,
+            "EarnConstructionReserve:FullTrip:copper_ore": 23,
+            "SellCarried:Medium:copper_ore": 36,
+            "Ballot:ExplicitSelfBallot": 1644,
+            "EarnConstructionReserve:Medium:FullTrip:wood": 8,
+            "EarnConstructionReserve:FullTrip:wood": 4,
+            "SellCarried:Medium:wood": 9
+          },
+          "zeroCashSamples": {
+            "1": 1800,
+            "2": 227,
+            "3": 227,
+            "4": 307,
+            "5": 307,
+            "6": 255,
+            "7": 255
+          },
+          "minimumObservedCashMinor": {
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0
+          },
+          "idleWorkerSamples": 0,
+          "laborSampleTicks": 0,
+          "laborSampleDefinition": "Headcount-weighted non-ready group samples, deduplicated within tick. Not full observed worker idle time.",
+          "completedMovementDurationsTicks": {
+            "3": [
+              90,
+              115,
+              115,
+              80,
+              115,
+              115,
+              115,
+              115,
+              115,
+              115,
+              115,
+              115,
+              115
+            ],
+            "2": [
+              94,
+              115,
+              115,
+              80,
+              115,
+              115,
+              115,
+              115,
+              115,
+              115,
+              115,
+              115,
+              115
+            ],
+            "7": [
+              118,
+              115,
+              115,
+              115,
+              185,
+              185,
+              115,
+              80,
+              115
+            ],
+            "6": [
+              122,
+              115,
+              115,
+              115,
+              185,
+              185,
+              115,
+              115,
+              115,
+              115,
+              115
+            ],
+            "5": [
+              126,
+              115,
+              115,
+              115,
+              185,
+              185,
+              115,
+              80,
+              115,
+              115
+            ],
+            "4": [
+              130,
+              115,
+              115,
+              115,
+              185,
+              185,
+              115,
+              80,
+              115
+            ]
+          },
+          "unfinishedMovements": 2,
+          "movementDefinition": "Actual MovementStarted\u2192MovementArrived event intervals, inclusive activity otherwise unspecified. No distance/speed formula is substituted for elapsed ticks.",
+          "roi": {
+            "observedCapitalCashMinor": 0,
+            "vehicles": [],
+            "paybackTick": null,
+            "reason": "Mixed enterprise/road portfolios require attributable revenue and costs. Unobserved payback stays censored; no static-margin extrapolation."
+          },
+          "definition": "Actual settled receipts minus all actual goods/service settlement costs, wages/energy/lease/road/fines. Escrow funding/refunds and cash capex separate; purchased construction materials are included among goods costs, not allocated to an entity. Unsold stock, depreciation and owner opportunity cost are not accrual net profit. Idle samples do not certify no feasible action."
+        },
+        "fullEconomyMetricsVersion": 1,
+        "employment": 0,
+        "hostedMillisecondsPerActiveTick": 54.99077266666667,
+        "npcMedianCapitalChangeMinor": 8226.5,
+        "npcOperatingReceiptResultMinor": 41846,
+        "npcOperatingAfterRoadDebtMinor": 41846,
+        "firstNpcProductionTick": null
+      },
+      "npcPositiveFinalCash": 6
+    },
+    {
+      "map": "large-districts",
+      "status": "succeeded",
+      "prepared": true,
+      "result": "/workspace/Delsk/work/h1-post-zero-cash/large-districts/run",
+      "check": {
+        "command": [
+          "dotnet",
+          "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "/workspace/Delsk/work/h1-post-zero-cash/large-districts/zero-cash-scenario.json",
+          "--controllers",
+          "/workspace/Delsk/work/h1-post-zero-cash/large-districts/controllers.json",
+          "--script",
+          "baseline",
+          "--human-ballot",
+          "self",
+          "--ticks",
+          "1800",
+          "--progress",
+          "true",
+          "--output",
+          "/workspace/Delsk/work/h1-post-zero-cash/large-districts/run"
+        ],
+        "timeout_seconds": 600,
+        "started_at": "2026-10-29T17:32:44.248566+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 219.908,
+        "finished_at": "2026-10-29T17:36:24.156922+00:00"
+      },
+      "condition": {
+        "version": 1,
+        "prepared": true,
+        "changes": [
+          "participants[*].cashMinor=0",
+          "economyProfileId=h1-zero-cash-diagnostic-1"
+        ],
+        "allOtherResolvedValuesExact": true,
+        "canonicalProfileSha256": "5fd07e335370a5dad974ebd6b25a561b002b324544ab06b0b98e788b2bf9a0b3",
+        "scenarioSha256": "7f57d261662244252af2a68bd0e332f89d39165c6c190a40bd639993b8cb2e28",
+        "controllersSha256": "ef7069d77273d13c2edda365779239dec488df60777275cc8c6f6281c2c7ee11"
+      },
+      "verify_results.py": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "/workspace/Delsk/scripts/verify_results.py",
+          "/workspace/Delsk/work/h1-post-zero-cash/large-districts/run"
+        ],
+        "timeout_seconds": 60,
+        "started_at": "2026-10-29T17:36:24.209641+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.569,
+        "finished_at": "2026-10-29T17:36:24.778586+00:00"
+      },
+      "verify_public_economy.py": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "/workspace/Delsk/scripts/verify_public_economy.py",
+          "/workspace/Delsk/work/h1-post-zero-cash/large-districts/run"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-10-29T17:36:24.838561+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.265,
+        "finished_at": "2026-10-29T17:36:25.104085+00:00"
+      },
+      "metrics": {
+        "fullEconomy": {
+          "version": 1,
+          "actors": {
+            "1": {
+              "cashMinor": 0,
+              "capitalMinor": 0,
+              "operatingReceiptResultMinor": 0,
+              "debtMinor": 0,
+              "unbilledAccruedMinor": 0,
+              "escrowMinor": 0,
+              "roadLiabilityMinor": 0,
+              "operatingAfterRoadDebtMinor": 0
+            },
+            "2": {
+              "cashCreditsMinor": 7718,
+              "salesRevenueMinor": 7718,
+              "cashMinor": 7718,
+              "capitalMinor": 7718,
+              "operatingReceiptResultMinor": 7718,
+              "debtMinor": 0,
+              "unbilledAccruedMinor": 0,
+              "escrowMinor": 0,
+              "roadLiabilityMinor": 0,
+              "operatingAfterRoadDebtMinor": 7718
+            },
+            "3": {
+              "cashCreditsMinor": 5008,
+              "salesRevenueMinor": 5008,
+              "cashMinor": 5008,
+              "capitalMinor": 5008,
+              "operatingReceiptResultMinor": 5008,
+              "debtMinor": 0,
+              "unbilledAccruedMinor": 0,
+              "escrowMinor": 0,
+              "roadLiabilityMinor": 0,
+              "operatingAfterRoadDebtMinor": 5008
+            },
+            "4": {
+              "cashCreditsMinor": 5092,
+              "salesRevenueMinor": 5092,
+              "cashMinor": 5092,
+              "capitalMinor": 5092,
+              "operatingReceiptResultMinor": 5092,
+              "debtMinor": 0,
+              "unbilledAccruedMinor": 0,
+              "escrowMinor": 0,
+              "roadLiabilityMinor": 0,
+              "operatingAfterRoadDebtMinor": 5092
+            },
+            "5": {
+              "cashCreditsMinor": 5155,
+              "salesRevenueMinor": 5155,
+              "cashMinor": 5155,
+              "capitalMinor": 5155,
+              "operatingReceiptResultMinor": 5155,
+              "debtMinor": 0,
+              "unbilledAccruedMinor": 0,
+              "escrowMinor": 0,
+              "roadLiabilityMinor": 0,
+              "operatingAfterRoadDebtMinor": 5155
+            },
+            "6": {
+              "cashCreditsMinor": 4664,
+              "salesRevenueMinor": 4664,
+              "cashMinor": 4664,
+              "capitalMinor": 5464,
+              "operatingReceiptResultMinor": 4664,
+              "debtMinor": 0,
+              "unbilledAccruedMinor": 0,
+              "escrowMinor": 0,
+              "roadLiabilityMinor": 0,
+              "operatingAfterRoadDebtMinor": 4664
+            },
+            "7": {
+              "cashCreditsMinor": 7659,
+              "salesRevenueMinor": 7659,
+              "cashMinor": 7659,
+              "capitalMinor": 7659,
+              "operatingReceiptResultMinor": 7659,
+              "debtMinor": 0,
+              "unbilledAccruedMinor": 0,
+              "escrowMinor": 0,
+              "roadLiabilityMinor": 0,
+              "operatingAfterRoadDebtMinor": 7659
+            }
+          },
+          "milestones": {
+            "1": {
+              "firstProductionTick": null,
+              "physicalLevels": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null
+              },
+              "rightCensoredAt": 1800
+            },
+            "2": {
+              "firstProductionTick": null,
+              "physicalLevels": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null
+              },
+              "rightCensoredAt": 1800
+            },
+            "3": {
+              "firstProductionTick": null,
+              "physicalLevels": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null
+              },
+              "rightCensoredAt": 1800
+            },
+            "4": {
+              "firstProductionTick": null,
+              "physicalLevels": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null
+              },
+              "rightCensoredAt": 1800
+            },
+            "5": {
+              "firstProductionTick": null,
+              "physicalLevels": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null
+              },
+              "rightCensoredAt": 1800
+            },
+            "6": {
+              "firstProductionTick": null,
+              "physicalLevels": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null
+              },
+              "rightCensoredAt": 1800
+            },
+            "7": {
+              "firstProductionTick": null,
+              "physicalLevels": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null
+              },
+              "rightCensoredAt": 1800
+            }
+          },
+          "experience": {},
+          "industryUnlockTicks": {},
+          "productionUnitsByItem": {},
+          "productionOwnership": {},
+          "industryOwnerHHI": {},
+          "importsCollectedByItem": {},
+          "overflowUnitsByItem": {},
+          "overflowVolume": 0,
+          "events": {
+            "CapitalDemandPublished": 31,
+            "DealerInitialStock": 6,
+            "WorldCreated": 1,
+            "MovementStarted": 62,
+            "CommandAccepted": 218,
+            "RoadOrderPublished": 2,
+            "TickCommitted": 1800,
+            "LaborStepCommitted": 180,
+            "MovementArrived": 60,
+            "HarvestStarted": 31,
+            "ResourceConsumed": 27,
+            "HarvestCompleted": 27,
+            "ResourceRegenerated": 122,
+            "PopulationGrew": 15,
+            "CapitalDemandExpired": 528,
+            "CapitalSaleRequested": 104,
+            "CapitalSaleSettled": 104,
+            "CapitalWindowClosed": 33,
+            "VotingOpened": 3,
+            "VoteChoiceChanged": 21,
+            "BallotSubmitted": 21,
+            "ElectionBallot": 21,
+            "ElectionCompleted": 3,
+            "ImportRestocked": 7
+          },
+          "ledgerReasons": {
+            "CapitalDemandBudget": 1084944,
+            "CapitalDemandRetired": 940253,
+            "CapitalEscrow": 35296,
+            "CapitalSettlement": 35296
+          },
+          "unclassifiedActorCashMinor": {},
+          "cashLedgerReconciled": true,
+          "vehicleCount": 0,
+          "completedRoadStages": 0,
+          "roadDebtPrincipalMinor": 0,
+          "roadDebtPenaltyMinor": 0,
+          "resourceAvailabilitySnapshot": {
+            "iron_ore": {
+              "stock": 8810,
+              "reserved": 0,
+              "capacity": 8820,
+              "depletedNodes": 0,
+              "publicStock": 170,
+              "publicReserved": 0,
+              "publicNodes": 3,
+              "depletedPublicNodes": 0
+            },
+            "copper_ore": {
+              "stock": 7350,
+              "reserved": 0,
+              "capacity": 7350,
+              "depletedNodes": 0,
+              "publicStock": 150,
+              "publicReserved": 0,
+              "publicNodes": 3,
+              "depletedPublicNodes": 0
+            },
+            "wood": {
+              "stock": 8820,
+              "reserved": 0,
+              "capacity": 8820,
+              "depletedNodes": 0,
+              "publicStock": 180,
+              "publicReserved": 0,
+              "publicNodes": 3,
+              "depletedPublicNodes": 0
+            },
+            "sand": {
+              "stock": 11756,
+              "reserved": 22,
+              "capacity": 11760,
+              "depletedNodes": 0,
+              "publicStock": 236,
+              "publicReserved": 22,
+              "publicNodes": 3,
+              "depletedPublicNodes": 0
+            },
+            "grain": {
+              "stock": 8820,
+              "reserved": 0,
+              "capacity": 8820,
+              "depletedNodes": 0,
+              "publicStock": 180,
+              "publicReserved": 0,
+              "publicNodes": 3,
+              "depletedPublicNodes": 0
+            },
+            "beet": {
+              "stock": 7350,
+              "reserved": 0,
+              "capacity": 7350,
+              "depletedNodes": 0,
+              "publicStock": 150,
+              "publicReserved": 0,
+              "publicNodes": 3,
+              "depletedPublicNodes": 0
+            },
+            "milk": {
+              "stock": 5880,
+              "reserved": 0,
+              "capacity": 5880,
+              "depletedNodes": 0,
+              "publicStock": 120,
+              "publicReserved": 0,
+              "publicNodes": 3,
+              "depletedPublicNodes": 0
+            },
+            "stone": {
+              "stock": 11760,
+              "reserved": 0,
+              "capacity": 11760,
+              "depletedNodes": 0,
+              "publicStock": 240,
+              "publicReserved": 0,
+              "publicNodes": 3,
+              "depletedPublicNodes": 0
+            }
+          },
+          "storagePressureSnapshot": {
+            "1": {
+              "capacityVolume": 100,
+              "occupiedVolume": 0,
+              "reservedVolume": 0,
+              "fullInventories": 0
+            },
+            "2": {
+              "capacityVolume": 100,
+              "occupiedVolume": 0,
+              "reservedVolume": 0,
+              "fullInventories": 0
+            },
+            "3": {
+              "capacityVolume": 100,
+              "occupiedVolume": 0,
+              "reservedVolume": 5,
+              "fullInventories": 0
+            },
+            "4": {
+              "capacityVolume": 100,
+              "occupiedVolume": 0,
+              "reservedVolume": 5,
+              "fullInventories": 0
+            },
+            "5": {
+              "capacityVolume": 100,
+              "occupiedVolume": 0,
+              "reservedVolume": 5,
+              "fullInventories": 0
+            },
+            "6": {
+              "capacityVolume": 100,
+              "occupiedVolume": 4,
+              "reservedVolume": 0,
+              "fullInventories": 0
+            },
+            "7": {
+              "capacityVolume": 100,
+              "occupiedVolume": 0,
+              "reservedVolume": 7,
+              "fullInventories": 0
+            }
+          },
+          "overflowLostUnitsByItem": {},
+          "commandRejectedReasons": {},
+          "workforceSnapshot": {
+            "population": 155,
+            "unemployed": 155,
+            "employed": 0,
+            "byRole": {},
+            "definition": "Final-tick headcount/capacity, not utilization over the whole run."
+          },
+          "importAvailabilitySnapshot": [
+            {
+              "itemId": "asphalt",
+              "remaining": 40,
+              "nextRefreshTick": 2400
+            },
+            {
+              "itemId": "bitumen",
+              "remaining": 120,
+              "nextRefreshTick": 2400
+            },
+            {
+              "itemId": "cement",
+              "remaining": 120,
+              "nextRefreshTick": 2400
+            },
+            {
+              "itemId": "coke",
+              "remaining": 120,
+              "nextRefreshTick": 2400
+            },
+            {
+              "itemId": "glass",
+              "remaining": 24,
+              "nextRefreshTick": 2400
+            },
+            {
+              "itemId": "limestone",
+              "remaining": 120,
+              "nextRefreshTick": 2400
+            },
+            {
+              "itemId": "soda",
+              "remaining": 120,
+              "nextRefreshTick": 2400
+            },
+            {
+              "itemId": "steel",
+              "remaining": 48,
+              "nextRefreshTick": 2400
+            }
+          ],
+          "capitalDemandRemainingSnapshot": {
+            "beet": 13,
+            "bitumen": 6,
+            "cement": 5,
+            "coke": 5,
+            "copper": 1,
+            "copper_ore": 9,
+            "flour": 2,
+            "glass": 1,
+            "grain": 12,
+            "iron_ore": 5,
+            "limestone": 17,
+            "milk": 10,
+            "pastry": 1,
+            "plank": 2,
+            "sand": 15,
+            "soda": 11,
+            "steel_sheet": 2,
+            "stone": 12,
+            "wire": 1,
+            "wood": 8,
+            "asphalt": 2,
+            "beam": 1,
+            "cream": 2,
+            "gravel": 2,
+            "cheese": 1,
+            "concrete": 1,
+            "sugar": 1,
+            "steel": 0
+          },
+          "capitalSettlementsByItem": {
+            "sand": {
+              "requested": 203,
+              "accepted": 88,
+              "paidMinor": 17345
+            },
+            "iron_ore": {
+              "requested": 92,
+              "accepted": 44,
+              "paidMinor": 17951
+            }
+          },
+          "importsPurchasedByItem": {},
+          "importPickupStockByItem": {},
+          "importsNetRemovedFromPickupsByItem": {},
+          "importDefinition": "B1 ImportPurchased is a paid external purchase at the terminal; net removed subtracts final pickup stock and may reflect returns. Legacy market imports collected are separate.",
+          "trafficSnapshotReasons": {},
+          "maxCurrentTrafficWaitTicks": 0,
+          "serviceStates": {},
+          "serviceDeliveredQuantity": 0,
+          "serviceLateRefundMinor": 0,
+          "serviceOrders": 0,
+          "servicePaidMinor": 0,
+          "personalIdleSamples": {
+            "1": 1800,
+            "2": 235,
+            "3": 534,
+            "4": 537,
+            "5": 539,
+            "6": 243,
+            "7": 235
+          },
+          "longestWaitSampleStreak": {
+            "1": 600,
+            "2": 55,
+            "4": 55,
+            "5": 55,
+            "7": 55,
+            "6": 55,
+            "3": 55
+          },
+          "goalSampleCounts": {
+            "Idle": 2715,
+            "EarnConstructionReserve": 7371,
+            "SellCarried": 579,
+            "Ballot": 1935
+          },
+          "goalReasonSamples": {
+            "Idle:Initial": 600,
+            "EarnConstructionReserve:Medium:FullTrip:sand": 26,
+            "EarnConstructionReserve:ActiveJobOrSaleHold": 7274,
+            "EarnConstructionReserve:FullTrip:sand": 34,
+            "SellCarried:Medium:sand": 60,
+            "SellCarried:ActiveJobOrSaleHold": 479,
+            "Idle:NoFeasibleGoal": 2115,
+            "EarnConstructionReserve:Medium:FullTrip:copper_ore": 1,
+            "EarnConstructionReserve:Medium:FullTrip:iron_ore": 12,
+            "EarnConstructionReserve:FullTrip:iron_ore": 22,
+            "Ballot:ExplicitSelfBallot": 1935,
+            "SellCarried:Medium:iron_ore": 40,
+            "EarnConstructionReserve:Medium:FullTrip:milk": 2
+          },
+          "zeroCashSamples": {
+            "1": 1800,
+            "2": 209,
+            "3": 221,
+            "4": 221,
+            "5": 215,
+            "6": 209,
+            "7": 209
+          },
+          "minimumObservedCashMinor": {
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0
+          },
+          "idleWorkerSamples": 0,
+          "laborSampleTicks": 0,
+          "laborSampleDefinition": "Headcount-weighted non-ready group samples, deduplicated within tick. Not full observed worker idle time.",
+          "completedMovementDurationsTicks": {
+            "2": [
+              82,
+              105,
+              155,
+              155,
+              105,
+              105,
+              195,
+              40,
+              155,
+              105,
+              105
+            ],
+            "7": [
+              82,
+              105,
+              155,
+              155,
+              105,
+              105,
+              195,
+              40,
+              155,
+              105,
+              105,
+              105
+            ],
+            "6": [
+              86,
+              105,
+              195,
+              280,
+              105,
+              105,
+              105,
+              155,
+              155,
+              105
+            ],
+            "5": [
+              90,
+              105,
+              155,
+              155,
+              105,
+              105,
+              155,
+              155,
+              105
+            ],
+            "4": [
+              94,
+              105,
+              155,
+              155,
+              105,
+              105,
+              155,
+              155,
+              105
+            ],
+            "3": [
+              98,
+              105,
+              155,
+              155,
+              105,
+              105,
+              155,
+              155,
+              105
+            ]
+          },
+          "unfinishedMovements": 2,
+          "movementDefinition": "Actual MovementStarted\u2192MovementArrived event intervals, inclusive activity otherwise unspecified. No distance/speed formula is substituted for elapsed ticks.",
+          "roi": {
+            "observedCapitalCashMinor": 0,
+            "vehicles": [],
+            "paybackTick": null,
+            "reason": "Mixed enterprise/road portfolios require attributable revenue and costs. Unobserved payback stays censored; no static-margin extrapolation."
+          },
+          "definition": "Actual settled receipts minus all actual goods/service settlement costs, wages/energy/lease/road/fines. Escrow funding/refunds and cash capex separate; purchased construction materials are included among goods costs, not allocated to an entity. Unsold stock, depreciation and owner opportunity cost are not accrual net profit. Idle samples do not certify no feasible action."
+        },
+        "fullEconomyMetricsVersion": 1,
+        "employment": 0,
+        "hostedMillisecondsPerActiveTick": 118.84785927777779,
+        "npcMedianCapitalChangeMinor": 5309.5,
+        "npcOperatingReceiptResultMinor": 35296,
+        "npcOperatingAfterRoadDebtMinor": 35296,
+        "firstNpcProductionTick": null
+      },
+      "npcPositiveFinalCash": 6
+    }
+  ],
+  "currentSourceCommit": "0f89a63e4ff3421d00df755cd8cb6d61e641b62e",
+  "cohort": "prepared geometry2, not an independent ordinary sample",
+  "historicalHelperFreezeLabelNote": "Old helper freeze.baseG2 is a historical label; actual input/DLL hashes are retained separately."
+}

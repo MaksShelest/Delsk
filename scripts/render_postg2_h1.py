@@ -5,11 +5,11 @@ Author: Шелестов Максим Евгеньевич. No simulated/extrapo
 import argparse,csv,json,os
 from pathlib import Path
 p=argparse.ArgumentParser(description=__doc__);p.add_argument('--analysis',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
-os.environ.setdefault('MPLCONFIGDIR',str(a.output/'.mpl-cache'))
+os.environ.setdefault('MPLCONFIGDIR',str(a.output/'.mpl-cache'));os.environ.setdefault('XDG_CACHE_HOME',str(a.output/'.cache'))
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg');matplotlib.rcParams['svg.hashsalt']='h1-post-g2-v1'
 import matplotlib.pyplot as plt
-rows=json.loads((a.analysis/'observations.json').read_text())['rows']
+data=json.loads((a.analysis/'observations.json').read_text());rows=data['rows'];ordinary=data['plan']['ordinary'];planned=len(data['plan']['maps'])*len(ordinary['difficulties'])*sum(len(ordinary['seedsByBots'][str(n)]) for n in ordinary['bots']);complete=sum(r['case']['phase']=='ordinary' and r['status']=='completed' and r['lastSavedTick']==5000 for r in rows)
 with (a.output/'world-endpoints.csv').open('w',newline='') as f:
  w=csv.writer(f);w.writerow(['case','phase','map','bots','difficulty','seed','status','last_audited_tick','median_npc_capital_change_minor','npc_receipts_result_minor','first_factory_tick','censored_at_tick'])
  for row in rows:
@@ -33,8 +33,8 @@ for ax,map_key in zip(axes,['small-river','large-districts']):
    labels.append(f'{bots}\n{diff}');x+=1
  ax.set_xticks(range(len(labels)),labels,fontsize=8);ax.set_title(map_key);ax.grid(axis='y',alpha=.25)
 axes[0].set_ylabel('Change in world median NPC capital, coins')
-fig.suptitle('Ordinary tick5000: one dot per independent world; incomplete worlds omitted here only')
-fig.tight_layout();fig.savefig(a.output/'ordinary-capital.svg');plt.close(fig)
+fig.suptitle(f'Ordinary tick5000: {complete}/{planned} worlds complete; one dot per independent world')
+fig.tight_layout();fig.savefig(a.output/'ordinary-capital.svg',metadata={'Date':None});plt.close(fig)
 fig,axes=plt.subplots(1,2,figsize=(12,4.8))
 for row in rows:
  c=row['case']
@@ -43,8 +43,10 @@ for row in rows:
  for ax,key,scale in [(axes[0],'elapsed_seconds',1),(axes[1],'checkpointBytes',1024*1024)]:
   x=[s['targetTick']/3600 for s in good];y=[s['runner'].get(key,0)/scale if key=='elapsed_seconds' else s.get(key,0)/scale for s in good]
   ax.plot(x,y,marker='o',markersize=3,label=label)
-axes[0].set_ylabel('Wall seconds / completed segment');axes[1].set_ylabel('Checkpoint envelope MiB');axes[1].axhline(64,color='red',linestyle=':',label='64MiB reader limit')
+ for failure in [s for s in row['segments'] if s.get('status')!='succeeded' and s.get('runner')]:
+  axes[0].scatter([failure['targetTick']/3600],[failure['runner']['elapsed_seconds']],marker='x',color='#b33d43',s=45,zorder=5)
+axes[0].axhline(900,color='#b33d43',linestyle=':',label='900s budget');axes[0].set_ylabel('Wall seconds / attempt (x = failed)');axes[1].set_ylabel('Checkpoint envelope MiB');axes[1].axhline(64,color='red',linestyle=':',label='64MiB reader limit')
 for ax in axes:ax.set_xlabel('Audited active game hours');ax.grid(alpha=.25)
-axes[1].legend(fontsize=7,bbox_to_anchor=(1.02,1),loc='upper left');fig.suptitle('Long trajectories: completed segments only; failed attempts remain in summary.json')
-fig.tight_layout();fig.savefig(a.output/'long-runtime.svg');plt.close(fig)
+axes[0].set_xlabel('Target active game hours');axes[1].legend(fontsize=7,bbox_to_anchor=(1.02,1),loc='upper left');fig.suptitle('Long trajectories: audited segments and measured failures; no extrapolation')
+fig.tight_layout();fig.savefig(a.output/'long-runtime.svg',metadata={'Date':None});plt.close(fig)
 print('Exported CSV and two observed-only plots')

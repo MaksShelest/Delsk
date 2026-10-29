@@ -1,0 +1,1135 @@
+{
+  "records": [
+    {
+      "path": "work/h1-post-checks/h1-post-runtime-controls.json",
+      "command": [
+        "python3",
+        "scripts/check_economy_h1.py",
+        "--fixtures",
+        "work/h1-post-f2-fixtures",
+        "--output",
+        "work/h1-post-runtime-controls"
+      ],
+      "timeout_seconds": 300,
+      "started_at": "2026-10-29T17:37:38.968532+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 64.648,
+      "finished_at": "2026-10-29T17:38:43.616979+00:00"
+    },
+    {
+      "path": "work/h1-post-checks/smoke-continuous.json",
+      "command": [
+        "dotnet",
+        "work/h1-post-smoke/runtime/Research.Runner.dll",
+        "--scenario",
+        "work/h1-post-smoke/inputs/scenario.json",
+        "--economy",
+        "work/h1-post-smoke/inputs/economy.json",
+        "--new-game",
+        "work/h1-post-smoke/inputs/ordinary.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self",
+        "--ticks",
+        "60",
+        "--output",
+        "work/h1-post-smoke-continuous"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T17:28:46.906866+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 10.613,
+      "finished_at": "2026-10-29T17:28:57.520118+00:00"
+    },
+    {
+      "path": "work/h1-post-checks/h1-post-python.json",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Research.Lab"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T17:29:43.599853+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 1.271,
+      "finished_at": "2026-10-29T17:29:44.871165+00:00"
+    },
+    {
+      "path": "work/h1-post-checks/h1-post-service-fixtures-corrected.json",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-method",
+        "Simulation.Tests.ServiceF2Tests.OneRealVehicleLoadsMovesAndPaysOnlyAfterActualReceipt",
+        "-method",
+        "Simulation.Tests.ServiceF2Tests.NumericDriverIsAllocatedFromPopulationAndReceivesActualWages",
+        "-result-trx",
+        "work/h1-post-checks/h1-post-f2-corrected.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T17:37:00.538658+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 26.996,
+      "finished_at": "2026-10-29T17:37:27.534319+00:00"
+    },
+    {
+      "path": "work/h1-post-checks/h1-post-service-fixtures.json",
+      "command": [
+        "dotnet",
+        "test",
+        "tests/Simulation.Tests/Simulation.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--filter",
+        "FullyQualifiedName~OneRealVehicleLoadsMovesAndPaysOnlyAfterActualReceipt|FullyQualifiedName~NumericDriverIsAllocatedFromPopulationAndReceivesActualWages",
+        "--logger",
+        "trx;LogFileName=h1-post-f2.trx",
+        "--results-directory",
+        "work/h1-post-checks"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T17:36:46.690870+00:00",
+      "exit_code": 5,
+      "elapsed_seconds": 0.974,
+      "finished_at": "2026-10-29T17:36:47.664733+00:00"
+    },
+    {
+      "path": "work/h1-post-checks/h1-post-python-network.json",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Research.Lab"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T17:30:15.328123+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.734,
+      "finished_at": "2026-10-29T17:30:20.061740+00:00"
+    },
+    {
+      "path": "work/h1-post-checks/h1-post-build.json",
+      "command": [
+        "dotnet",
+        "build",
+        "src/Research.Runner/Research.Runner.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T17:23:00.550610+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 43.454,
+      "finished_at": "2026-10-29T17:23:44.004767+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/checks/large-districts-continuous.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/runtime/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/inputs/scenario.json",
+        "--economy",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/inputs/economy.json",
+        "--new-game",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/inputs/ordinary.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self",
+        "--ticks",
+        "3600",
+        "--output",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/continuous"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T18:01:13.782703+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 500.936,
+      "finished_at": "2026-10-29T18:09:34.719478+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/checks/small-river-continuous.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/runtime/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/inputs/scenario.json",
+        "--economy",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/inputs/economy.json",
+        "--new-game",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/inputs/ordinary.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self",
+        "--ticks",
+        "3600",
+        "--output",
+        "/workspace/Delsk/work/h1-post-controls/small-river/continuous"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T17:46:13.881542+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 280.128,
+      "finished_at": "2026-10-29T17:50:54.009842+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/small-river/segmented/checks/1800-a1.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/runtime/Research.Runner.dll",
+        "--ticks",
+        "1800",
+        "--output",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/runs/1800-a1",
+        "--checkpoint",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/checkpoints/1800-a1.save.json",
+        "--checkpoint-at",
+        "1800",
+        "--progress",
+        "true",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/inputs/scenario.json",
+        "--economy",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/inputs/economy.json",
+        "--new-game",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/inputs/ordinary.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T17:38:55.224655+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 282.798,
+      "finished_at": "2026-10-29T17:43:38.022887+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/small-river/segmented/checks/1800-a1-verify_results.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_results.py",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/runs/1800-a1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:43:38.121712+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.584,
+      "finished_at": "2026-10-29T17:43:38.705831+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/small-river/segmented/checks/3600-a1.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/runtime/Research.Runner.dll",
+        "--ticks",
+        "3600",
+        "--output",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/runs/3600-a1",
+        "--checkpoint",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/checkpoints/3600-a1.save.json",
+        "--checkpoint-at",
+        "3600",
+        "--progress",
+        "true",
+        "--load",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/checkpoints/1800-a1.save.json"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T17:43:43.175401+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 135.945,
+      "finished_at": "2026-10-29T17:45:59.120348+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/small-river/segmented/checks/3600-a1-verify_public_economy.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_public_economy.py",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/runs/3600-a1"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-29T17:46:00.044177+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.315,
+      "finished_at": "2026-10-29T17:46:00.359671+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/small-river/segmented/checks/validate-ordinary.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/runtime/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/inputs/scenario.json",
+        "--economy",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/inputs/economy.json",
+        "--new-game",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/inputs/ordinary.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self",
+        "--validate-only",
+        "true",
+        "--output",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/validation"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T17:38:53.827432+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.319,
+      "finished_at": "2026-10-29T17:38:55.146295+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/small-river/segmented/checks/1800-a1-verify_public_economy.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_public_economy.py",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/runs/1800-a1"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-29T17:43:38.753317+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.265,
+      "finished_at": "2026-10-29T17:43:39.018709+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/small-river/segmented/checks/3600-a1-verify_results.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_results.py",
+        "/workspace/Delsk/work/h1-post-controls/small-river/segmented/runs/3600-a1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:45:59.175627+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.817,
+      "finished_at": "2026-10-29T17:45:59.992689+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/large-districts/segmented/checks/1800-a1.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/runtime/Research.Runner.dll",
+        "--ticks",
+        "1800",
+        "--output",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/runs/1800-a1",
+        "--checkpoint",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/checkpoints/1800-a1.save.json",
+        "--checkpoint-at",
+        "1800",
+        "--progress",
+        "true",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/inputs/scenario.json",
+        "--economy",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/inputs/economy.json",
+        "--new-game",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/inputs/ordinary.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T17:50:59.529818+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 331.143,
+      "finished_at": "2026-10-29T17:56:30.672851+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/large-districts/segmented/checks/1800-a1-verify_results.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_results.py",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/runs/1800-a1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:56:30.767661+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.669,
+      "finished_at": "2026-10-29T17:56:31.436239+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/large-districts/segmented/checks/3600-a1.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/runtime/Research.Runner.dll",
+        "--ticks",
+        "3600",
+        "--output",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/runs/3600-a1",
+        "--checkpoint",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/checkpoints/3600-a1.save.json",
+        "--checkpoint-at",
+        "3600",
+        "--progress",
+        "true",
+        "--load",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/checkpoints/1800-a1.save.json"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T17:56:38.846988+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 257.935,
+      "finished_at": "2026-10-29T18:00:56.782327+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/large-districts/segmented/checks/3600-a1-verify_public_economy.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_public_economy.py",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/runs/3600-a1"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-29T18:00:58.085071+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.366,
+      "finished_at": "2026-10-29T18:00:58.450672+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/large-districts/segmented/checks/validate-ordinary.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/runtime/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/inputs/scenario.json",
+        "--economy",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/inputs/economy.json",
+        "--new-game",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/inputs/ordinary.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self",
+        "--validate-only",
+        "true",
+        "--output",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/validation"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T17:50:57.377907+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 2.033,
+      "finished_at": "2026-10-29T17:50:59.411061+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/large-districts/segmented/checks/1800-a1-verify_public_economy.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_public_economy.py",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/runs/1800-a1"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-29T17:56:31.490407+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.273,
+      "finished_at": "2026-10-29T17:56:31.763121+00:00"
+    },
+    {
+      "path": "work/h1-post-controls/large-districts/segmented/checks/3600-a1-verify_results.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_results.py",
+        "/workspace/Delsk/work/h1-post-controls/large-districts/segmented/runs/3600-a1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T18:00:56.861218+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.168,
+      "finished_at": "2026-10-29T18:00:58.028793+00:00"
+    },
+    {
+      "path": "work/h1-post-zero-cash/checks/large-districts-verify_results.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_results.py",
+        "/workspace/Delsk/work/h1-post-zero-cash/large-districts/run"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:36:24.209641+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.569,
+      "finished_at": "2026-10-29T17:36:24.778586+00:00"
+    },
+    {
+      "path": "work/h1-post-zero-cash/checks/large-districts-zero.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-zero-cash/large-districts/zero-cash-scenario.json",
+        "--controllers",
+        "/workspace/Delsk/work/h1-post-zero-cash/large-districts/controllers.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self",
+        "--ticks",
+        "1800",
+        "--progress",
+        "true",
+        "--output",
+        "/workspace/Delsk/work/h1-post-zero-cash/large-districts/run"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T17:32:44.248566+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 219.908,
+      "finished_at": "2026-10-29T17:36:24.156922+00:00"
+    },
+    {
+      "path": "work/h1-post-zero-cash/checks/small-river-resolve.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/scenarios/vnext/small-river.json",
+        "--economy",
+        "/workspace/Delsk/config/vnext/economy.g1-npc.json",
+        "--new-game",
+        "/workspace/Delsk/work/h1-post-zero-cash/small-river/options.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self",
+        "--ticks",
+        "1",
+        "--output",
+        "/workspace/Delsk/work/h1-post-zero-cash/small-river/canonical-resolution"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T17:30:48.632646+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.608,
+      "finished_at": "2026-10-29T17:30:52.240600+00:00"
+    },
+    {
+      "path": "work/h1-post-zero-cash/checks/large-districts-verify_public_economy.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_public_economy.py",
+        "/workspace/Delsk/work/h1-post-zero-cash/large-districts/run"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-29T17:36:24.838561+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.265,
+      "finished_at": "2026-10-29T17:36:25.104085+00:00"
+    },
+    {
+      "path": "work/h1-post-zero-cash/checks/large-districts-resolve.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/scenarios/vnext/large-districts.json",
+        "--economy",
+        "/workspace/Delsk/config/vnext/economy.g1-npc.json",
+        "--new-game",
+        "/workspace/Delsk/work/h1-post-zero-cash/large-districts/options.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self",
+        "--ticks",
+        "1",
+        "--output",
+        "/workspace/Delsk/work/h1-post-zero-cash/large-districts/canonical-resolution"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T17:32:39.814866+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.25,
+      "finished_at": "2026-10-29T17:32:44.065319+00:00"
+    },
+    {
+      "path": "work/h1-post-zero-cash/checks/small-river-verify_public_economy.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_public_economy.py",
+        "/workspace/Delsk/work/h1-post-zero-cash/small-river/run"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-29T17:32:35.775289+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.181,
+      "finished_at": "2026-10-29T17:32:35.956207+00:00"
+    },
+    {
+      "path": "work/h1-post-zero-cash/checks/small-river-zero.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-zero-cash/small-river/zero-cash-scenario.json",
+        "--controllers",
+        "/workspace/Delsk/work/h1-post-zero-cash/small-river/controllers.json",
+        "--script",
+        "baseline",
+        "--human-ballot",
+        "self",
+        "--ticks",
+        "1800",
+        "--progress",
+        "true",
+        "--output",
+        "/workspace/Delsk/work/h1-post-zero-cash/small-river/run"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T17:30:52.346062+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 102.751,
+      "finished_at": "2026-10-29T17:32:35.097289+00:00"
+    },
+    {
+      "path": "work/h1-post-zero-cash/checks/small-river-verify_results.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_results.py",
+        "/workspace/Delsk/work/h1-post-zero-cash/small-river/run"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:32:35.147901+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.573,
+      "finished_at": "2026-10-29T17:32:35.720664+00:00"
+    },
+    {
+      "path": "work/h1-post-transport-probe-final/checks/small-river-3.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-zero-cash/small-river/canonical-resolution/scenario.json",
+        "--replay",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/small-river-3.commands.jsonl",
+        "--script",
+        "baseline",
+        "--ticks",
+        "10",
+        "--output",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/small-river-3"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:52:10.640376+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 2.63,
+      "finished_at": "2026-10-29T17:52:13.270085+00:00"
+    },
+    {
+      "path": "work/h1-post-transport-probe-final/checks/large-districts-0.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-zero-cash/large-districts/canonical-resolution/scenario.json",
+        "--replay",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/large-districts-0.commands.jsonl",
+        "--script",
+        "baseline",
+        "--ticks",
+        "10",
+        "--output",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/large-districts-0"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:52:13.365977+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.604,
+      "finished_at": "2026-10-29T17:52:17.970192+00:00"
+    },
+    {
+      "path": "work/h1-post-transport-probe-final/checks/small-river-2.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-zero-cash/small-river/canonical-resolution/scenario.json",
+        "--replay",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/small-river-2.commands.jsonl",
+        "--script",
+        "baseline",
+        "--ticks",
+        "10",
+        "--output",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/small-river-2"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:52:07.703375+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 2.862,
+      "finished_at": "2026-10-29T17:52:10.565852+00:00"
+    },
+    {
+      "path": "work/h1-post-transport-probe-final/checks/small-river-1.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-zero-cash/small-river/canonical-resolution/scenario.json",
+        "--replay",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/small-river-1.commands.jsonl",
+        "--script",
+        "baseline",
+        "--ticks",
+        "10",
+        "--output",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/small-river-1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:52:05.193419+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 2.403,
+      "finished_at": "2026-10-29T17:52:07.596048+00:00"
+    },
+    {
+      "path": "work/h1-post-transport-probe-final/checks/large-districts-3.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-zero-cash/large-districts/canonical-resolution/scenario.json",
+        "--replay",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/large-districts-3.commands.jsonl",
+        "--script",
+        "baseline",
+        "--ticks",
+        "10",
+        "--output",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/large-districts-3"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:52:26.815520+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.4,
+      "finished_at": "2026-10-29T17:52:30.215871+00:00"
+    },
+    {
+      "path": "work/h1-post-transport-probe-final/checks/large-districts-1.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-zero-cash/large-districts/canonical-resolution/scenario.json",
+        "--replay",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/large-districts-1.commands.jsonl",
+        "--script",
+        "baseline",
+        "--ticks",
+        "10",
+        "--output",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/large-districts-1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:52:18.044369+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.969,
+      "finished_at": "2026-10-29T17:52:22.013857+00:00"
+    },
+    {
+      "path": "work/h1-post-transport-probe-final/checks/small-river-0.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-zero-cash/small-river/canonical-resolution/scenario.json",
+        "--replay",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/small-river-0.commands.jsonl",
+        "--script",
+        "baseline",
+        "--ticks",
+        "10",
+        "--output",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/small-river-0"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:52:02.335017+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 2.775,
+      "finished_at": "2026-10-29T17:52:05.110243+00:00"
+    },
+    {
+      "path": "work/h1-post-transport-probe-final/checks/large-districts-2.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-zero-cash/large-districts/canonical-resolution/scenario.json",
+        "--replay",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/large-districts-2.commands.jsonl",
+        "--script",
+        "baseline",
+        "--ticks",
+        "10",
+        "--output",
+        "/workspace/Delsk/work/h1-post-transport-probe-final/large-districts-2"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:52:22.075279+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.677,
+      "finished_at": "2026-10-29T17:52:26.752350+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/checks/loaded.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--load",
+        "/workspace/Delsk/work/h1-post-runtime-controls/ordinary.save.json",
+        "--ticks",
+        "120",
+        "--output",
+        "/workspace/Delsk/work/h1-post-runtime-controls/loaded",
+        "--progress",
+        "true"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T17:37:57.286815+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.35,
+      "finished_at": "2026-10-29T17:38:03.637509+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/checks/progress-off.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/inputs/scenario.json",
+        "--output",
+        "/workspace/Delsk/work/h1-post-runtime-controls/progress-off",
+        "--script",
+        "baseline",
+        "--mode",
+        "headless",
+        "--ticks",
+        "120",
+        "--new-game",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/runs/arm-0-s42-r0/1-new-game.json",
+        "--economy",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/inputs/arm-0/economy.json",
+        "--human-ballot",
+        "self",
+        "--checkpoint",
+        "/workspace/Delsk/work/h1-post-runtime-controls/ordinary.save.json",
+        "--checkpoint-at",
+        "60"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T17:37:49.761331+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 7.474,
+      "finished_at": "2026-10-29T17:37:57.235547+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/checks/ordinary-accounting.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_results.py",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/runs/arm-0-s42-r0/1",
+        "/workspace/Delsk/work/h1-post-runtime-controls/progress-off",
+        "/workspace/Delsk/work/h1-post-runtime-controls/loaded"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:38:03.824678+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.215,
+      "finished_at": "2026-10-29T17:38:04.040059+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/checks/observer-and-continuation-exact.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/runs/arm-0-s42-r0/1",
+        "/workspace/Delsk/work/h1-post-runtime-controls/progress-off",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/runs/arm-0-s42-r0/1",
+        "/workspace/Delsk/work/h1-post-runtime-controls/loaded"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:38:03.699070+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.064,
+      "finished_at": "2026-10-29T17:38:03.763638+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/checks/prepared-numeric.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-f2-fixtures/numeric.json",
+        "--replay",
+        "/workspace/Delsk/work/h1-post-f2-fixtures/numeric.commands.jsonl",
+        "--script",
+        "baseline",
+        "--ticks",
+        "415",
+        "--output",
+        "/workspace/Delsk/work/h1-post-runtime-controls/prepared-numeric"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T17:38:36.970068+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.343,
+      "finished_at": "2026-10-29T17:38:43.313535+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/checks/prepared-completed-accounting.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_results.py",
+        "/workspace/Delsk/work/h1-post-runtime-controls/prepared-completed"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:38:36.685372+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.216,
+      "finished_at": "2026-10-29T17:38:36.901379+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/checks/prepared-completed.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-f2-fixtures/completed.json",
+        "--replay",
+        "/workspace/Delsk/work/h1-post-f2-fixtures/completed.commands.jsonl",
+        "--script",
+        "baseline",
+        "--ticks",
+        "431",
+        "--output",
+        "/workspace/Delsk/work/h1-post-runtime-controls/prepared-completed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T17:38:30.777462+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.841,
+      "finished_at": "2026-10-29T17:38:36.618612+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/checks/prepared-numeric-accounting.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_results.py",
+        "/workspace/Delsk/work/h1-post-runtime-controls/prepared-numeric"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:38:43.373640+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.165,
+      "finished_at": "2026-10-29T17:38:43.538680+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/lab/h1-ordinary-6-61349a5dc0/checks/arm-0-s42-r0-a1.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-6-61349a5dc0/inputs/scenario.json",
+        "--output",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-6-61349a5dc0/runs/arm-0-s42-r0/1",
+        "--script",
+        "baseline",
+        "--mode",
+        "headless",
+        "--ticks",
+        "60",
+        "--new-game",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-6-61349a5dc0/runs/arm-0-s42-r0/1-new-game.json",
+        "--progress",
+        "true",
+        "--economy",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-6-61349a5dc0/inputs/arm-0/economy.json",
+        "--human-ballot",
+        "self"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T17:38:05.555311+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 8.305,
+      "finished_at": "2026-10-29T17:38:13.860515+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/lab/h1-ordinary-6-61349a5dc0/checks/arm-0-s42-r0-a1-accounting.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_results.py",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-6-61349a5dc0/runs/arm-0-s42-r0/1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:38:13.903077+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.114,
+      "finished_at": "2026-10-29T17:38:14.017520+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/lab/h1-ordinary-6-61349a5dc0/checks/arm-0-s42-r0-a1-privacy.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_public_economy.py",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-6-61349a5dc0/runs/arm-0-s42-r0/1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:38:14.063152+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-29T17:38:14.127725+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/lab/h1-ordinary-10-ad6cb4c521/checks/arm-0-s42-r0-a1.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-10-ad6cb4c521/inputs/scenario.json",
+        "--output",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-10-ad6cb4c521/runs/arm-0-s42-r0/1",
+        "--script",
+        "baseline",
+        "--mode",
+        "headless",
+        "--ticks",
+        "60",
+        "--new-game",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-10-ad6cb4c521/runs/arm-0-s42-r0/1-new-game.json",
+        "--progress",
+        "true",
+        "--economy",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-10-ad6cb4c521/inputs/arm-0/economy.json",
+        "--human-ballot",
+        "self"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T17:38:15.767076+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 14.517,
+      "finished_at": "2026-10-29T17:38:30.283880+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/lab/h1-ordinary-10-ad6cb4c521/checks/arm-0-s42-r0-a1-accounting.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_results.py",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-10-ad6cb4c521/runs/arm-0-s42-r0/1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:38:30.339739+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.166,
+      "finished_at": "2026-10-29T17:38:30.505548+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/lab/h1-ordinary-10-ad6cb4c521/checks/arm-0-s42-r0-a1-privacy.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_public_economy.py",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-10-ad6cb4c521/runs/arm-0-s42-r0/1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:38:30.560377+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.115,
+      "finished_at": "2026-10-29T17:38:30.675281+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/checks/arm-0-s42-r0-a1.json",
+      "command": [
+        "dotnet",
+        "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--scenario",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/inputs/scenario.json",
+        "--output",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/runs/arm-0-s42-r0/1",
+        "--script",
+        "baseline",
+        "--mode",
+        "headless",
+        "--ticks",
+        "120",
+        "--new-game",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/runs/arm-0-s42-r0/1-new-game.json",
+        "--progress",
+        "true",
+        "--economy",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/inputs/arm-0/economy.json",
+        "--human-ballot",
+        "self"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T17:37:40.236620+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 9.161,
+      "finished_at": "2026-10-29T17:37:49.398023+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/checks/arm-0-s42-r0-a1-accounting.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_results.py",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/runs/arm-0-s42-r0/1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:37:49.445775+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.115,
+      "finished_at": "2026-10-29T17:37:49.560423+00:00"
+    },
+    {
+      "path": "work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/checks/arm-0-s42-r0-a1-privacy.json",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/Delsk/scripts/verify_public_economy.py",
+        "/workspace/Delsk/work/h1-post-runtime-controls/lab/h1-ordinary-3-b1cda9056b/runs/arm-0-s42-r0/1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T17:37:49.626390+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-29T17:37:49.691035+00:00"
+    },
+    {
+      "path": "work/h1-post-checks/h1-post-python-final.json",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Research.Lab"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T21:06:04.281334+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.824,
+      "finished_at": "2026-10-29T21:06:09.105103+00:00"
+    }
+  ],
+  "exitCodes": {
+    "0": 55,
+    "1": 1,
+    "5": 1
+  }
+}

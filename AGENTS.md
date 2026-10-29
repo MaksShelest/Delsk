@@ -1,3 +1,33 @@
+## H1 после дополнительной G2,30.10.2026 — измеренная граница, P77 открыт
+
+- Явное новое задание пользователя разрешило H1 после visual G2; H2 не включён.
+  feat/vnext-h1-post-g2-study/PR75 без auto merge; отчёт H1_POST_G2, protocol
+  research/h1-post-g2, evidence verification/economy-h1-post-g2. История adapter1
+  не переименована: текущая игровая когорта0f89a63 после3cc17e8/layout2.
+-120/120ordinary до5000,18conditions,6NPC n10,3/10NPC n5. Все750first-factory
+  milestones censored, XP/production0.12planned contrasts Holm p1; Hard superior
+  не доказан.8long n2:5CheckpointTooLarge,3timeout900; последние audited9000–12600.
+  Medium first small6877/7284,large10764/11204; Hard no factory by own boundary.
+  II–V не достигнуты; ROI/late quests/industrial Hard не установлены.
+-411segments прошли accounting/privacy. Natural equipment/roads/services0,
+  overflow/debt0 означают отсутствие экспозиции, а не доказанную безопасность.
+  ResourceDepleted1426 в51ordinary мире;Idle/Wait max55ordinary/599long samples
+  не доказывают, что Core не имеет полезного действия. Zero-cash prepared12/12
+  NPC заработали деньги. Prepared F2 after paid/unbilled road4008/888minor,
+  vehicle capex250000 отдельно, не полная ROI.
+- Подтверждён microprobe: соседний пеший шаг4/5tick при controller map time1.
+  Цена/XP не менялись,82inputs byte exact к G2, World28/session3 прежние.
+  Влияние исправленного прогноза/площадок/Hard capital gate — новая когорта,
+  не скрытая замена уже сохранённых политик. Гипотезы не выдавать за причины.
+- Atomic relative journals, frozen DLL/inputs/helpers, explicit retries;
+  compact exported observations дают повтор статистики, не новые replicates.
+  Full raw artifacts90days, portable late bundles для локального продолжения;
+  скачать/проверить manifest/parts/files hashes. No silent changed binary resume.
+  Exact actual30+30 после relocation и обе карты1800+1800 vs3600:31exports.
+- Сохранить600/900s и64/512MiB/2MiB. H2 только отдельным заданием: профиль фаз,
+  рост состояния/истории и save/export, затем exact replay/money/ownership/routes.
+  Не поднимать лимиты и не заменять позднюю симуляцию статической маржой.
+
 ## Дополнительная визуальная G2,29.10.2026
 
 - Явное задание после da213bf/PR73: только пропорции, ратуша/терминал/автосалон,

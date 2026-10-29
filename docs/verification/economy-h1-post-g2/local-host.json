@@ -1,0 +1,9 @@
+{
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "python": "3.12.14",
+  "cpus": 3,
+  "scope": "Local host for prepared controls only; CI performance not compared as device benchmark",
+  "cpu.max": "200000 100000",
+  "memory.max": "8589934592",
+  "memory.peak": "1853505536"
+}
