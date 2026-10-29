@@ -1,0 +1,23 @@
+{
+  "base": "da213bf",
+  "files": 15,
+  "allUnchanged": true,
+  "scope": "All config files and normative BALANCE JSON; geometry changes are explicit and separately reviewed",
+  "sha256": {
+    "config/economy.json": "b3da26be46960e876327a0dcca960c48575b6a98c9080eacb283a4a3f2c7317c",
+    "config/vnext/balance.b1.json": "c14c3130c8e51ae84093f6c32081d01d0d3151da4d872d3fe2d0c344e684b398",
+    "config/vnext/catalog.b1.json": "38b0bcb53ecef3c6a7131e449c78acded67450bb2c0ab8311084d7b357dcc197",
+    "config/vnext/economy.b1-supported.json": "38c6c2649dc24a4793c80246165abfc6f1e03b9efcc4b4e3bf40374c70ceaa80",
+    "config/vnext/economy.c1-storage.json": "72dedafe37b2848d87bd47c9a75de25b21f8a076ca656b5ada272325c5fe030c",
+    "config/vnext/economy.d1-workshops.json": "9405ae44334b33a4624e492fd220984f1af91fc9c0c11df190c0619a64f3886b",
+    "config/vnext/economy.d2-development.json": "f30fcef3b65e8873fd02f85289fbe42bb18ed47dd4d0756d65584391127548c5",
+    "config/vnext/economy.d3-production.json": "ca3ca2cdb0bd96478240e859f60afb034dfe28bc8bdfd968813f9c95c456fec9",
+    "config/vnext/economy.e1-fleet.json": "0b60481cf838ce8b39c792400f6c5095d4f3ce99437cf24d2155559683b4c222",
+    "config/vnext/economy.e2-roads.json": "f116577ca47c8b2d583fea385bd3dee85cace42a4804ce957328848c33bf667a",
+    "config/vnext/economy.e3-accounts.json": "47e4634610a5d2262bd720197e29b98585ca09074c8a5367cae1a863b776392e",
+    "config/vnext/economy.f1-services.json": "04262e5846ec6a152784629c817457995869df461b97d9657c1a7c7f9f2a8e9f",
+    "config/vnext/economy.f2-services.json": "94653962c9f4ba1f25d3878fab28c7e2aff361086dc22cfc68eefcf9c9f720a0",
+    "config/vnext/economy.g1-npc.json": "5fd07e335370a5dad974ebd6b25a561b002b324544ab06b0b98e788b2bf9a0b3",
+    "docs/vnext/data/BALANCE_VNEXT.json": "711e08a681cf27442b4e9c37b56ce7b2713c39d9ecf65ce3f761c92cfc8ee3ec"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "suite": "ux",
+  "status": "succeeded",
+  "testsPassed": 41,
+  "testPartitions": [
+    {
+      "file": "tests-g2-0.trx",
+      "passed": 14
+    },
+    {
+      "file": "tests-g2-1.trx",
+      "passed": 10
+    },
+    {
+      "file": "tests-g2-2.trx",
+      "passed": 17
+    }
+  ],
+  "scope": "Exhaustive ordinary unit phase; runner checks are a separate required gate"
+}

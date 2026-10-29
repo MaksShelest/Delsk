@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/Delsk/scripts/verify_platform_probe.py",
+    "--log-prefix",
+    "/workspace/Delsk/work/final-native2/checks/first"
+  ],
+  "timeout_seconds": 15,
+  "started_at": "2026-10-29T16:15:23.886096+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.067,
+  "finished_at": "2026-10-29T16:15:23.953483+00:00"
+}

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3",
+    "scripts/check_visual_legacy_compatibility.py",
+    "--output",
+    "work/old-binary"
+  ],
+  "timeout_seconds": 600,
+  "started_at": "2026-10-29T16:03:26.854761+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 162.411,
+  "finished_at": "2026-10-29T16:06:09.265446+00:00"
+}

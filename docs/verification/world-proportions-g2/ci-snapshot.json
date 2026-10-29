@@ -1,0 +1,124 @@
+{
+  "runtimeSource": "5af0573ba9f4659ed5539c14d175b92b537aaefe",
+  "coreRun": 40909280572,
+  "platformRun": 40909280528,
+  "coreJobs": [
+    {
+      "name": "developer",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "services-unit",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "npc-unit",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "billing-unit",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "city-ux-developer",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "billing-developer",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "unit",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "road-unit",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "npc-developer",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "road-developer",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "npc-natural (large-districts, 3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "npc-natural (small-river, 6)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "city-ux-unit",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "service-runs-developer",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "npc-natural (small-river, 10)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "npc-natural (small-river, 3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "services-developer",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "npc-natural (large-districts, 6)",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "service-runs-unit",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "npc-natural (large-districts, 10)",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "npc-actions",
+      "status": "in_progress",
+      "conclusion": null
+    }
+  ],
+  "platformJobs": [
+    {
+      "name": "windows-core-replay",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "city-ux-ui",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}

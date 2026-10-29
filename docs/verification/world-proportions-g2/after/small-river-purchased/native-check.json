@@ -1,0 +1,31 @@
+{
+  "status": "succeeded",
+  "map": "small-river",
+  "participantCount": 4,
+  "prepared": true,
+  "layout": "map-adapter-2",
+  "measures": [
+    {
+      "set": "classic",
+      "personBounds": {
+        "size": "(0.21333334, 0.48, 0.21425602)",
+        "position": "(-0.10666667, 0, -0.10712777)"
+      }
+    },
+    {
+      "set": "cozy",
+      "personBounds": {
+        "size": "(0.27097997, 0.48, 0.16062096)",
+        "position": "(-0.13548999, 0, -0.08031205)"
+      }
+    }
+  ],
+  "checks": [
+    "real Playfield and resolved 4-participant world",
+    "both skin families, six camera views per designed map",
+    "skin change preserves authoritative world",
+    "cell picking at close/district/overview scales",
+    "checkpoint preserves exact resolved geometry"
+  ],
+  "scope": "Native Godot/X11 software renderer; camera framed in isolated probe; not physical device acceptance"
+}

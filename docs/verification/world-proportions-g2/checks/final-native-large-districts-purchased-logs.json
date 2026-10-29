@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/Delsk/scripts/verify_platform_probe.py",
+    "--log-prefix",
+    "/workspace/Delsk/work/final-native2/checks/large-districts-purchased"
+  ],
+  "timeout_seconds": 15,
+  "started_at": "2026-10-29T16:17:39.377204+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.064,
+  "finished_at": "2026-10-29T16:17:39.441718+00:00"
+}

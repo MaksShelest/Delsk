@@ -1,0 +1,40 @@
+{
+  "status": "succeeded",
+  "baselineCommit": "da213bf2277a76fbd26988ba02cf8f13691dade5",
+  "cases": [
+    {
+      "map": "small-river",
+      "checkpointTick": 60,
+      "finalTick": 120,
+      "participants": 11,
+      "layout": "map-adapter-1",
+      "dealerBody": 15,
+      "saveSha256": "fe730eb7dea9cac2e045bb044837569ead437a55f5fb9f2573686f6fd5a5a750",
+      "exact": true
+    },
+    {
+      "map": "large-districts",
+      "checkpointTick": 60,
+      "finalTick": 120,
+      "participants": 11,
+      "layout": "map-adapter-1",
+      "dealerBody": 15,
+      "saveSha256": "42f32456851d59217a28a9d65173eda161410b61bd3588c2c51926f889aa31ab",
+      "exact": true
+    }
+  ],
+  "checks": [
+    "baseline-archive",
+    "baseline-restore",
+    "baseline-build",
+    "small-river-old",
+    "small-river-current",
+    "small-river-exact",
+    "small-river-accounting",
+    "large-districts-old",
+    "large-districts-current",
+    "large-districts-exact",
+    "large-districts-accounting"
+  ],
+  "scope": "Actual checkpoint produced by the pre-iteration C# binary with ordinary G1 NPCs; current binary must preserve all exact world/controller/export data. Short compatibility regression, not H1/H2 or balance evidence."
+}

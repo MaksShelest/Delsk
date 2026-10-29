@@ -1,0 +1,6 @@
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at WorldProportionsProbe.All(Node n)+MoveNext() in /workspace/Delsk/work/after/source/src/Client.Godot/WorldProportionsProbe.cs:line 15
+   at System.Linq.Enumerable.IEnumerableWhereSelectIterator`2.ToArray()
+   at System.Linq.Enumerable.ToArray[TSource](IEnumerable`1 source)
+   at WorldProportionsProbe.Bounds(Node3D node) in /workspace/Delsk/work/after/source/src/Client.Godot/WorldProportionsProbe.cs:line 19
+   at WorldProportionsProbe._Ready() in /workspace/Delsk/work/after/source/src/Client.Godot/WorldProportionsProbe.cs:line 60
