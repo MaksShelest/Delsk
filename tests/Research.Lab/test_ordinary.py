@@ -2,7 +2,7 @@
 import copy,json,sys,tempfile,unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'scripts'))
-from research_lab import Lab,expand,command,write
+from research_lab import Lab,expand,command,write,read
 from research_workspace import compatible
 class OrdinaryTests(unittest.TestCase):
  def setUp(self):
@@ -26,3 +26,7 @@ class OrdinaryTests(unittest.TestCase):
   left,right=lab.series;self.assertTrue(compatible(lab,left,left,'arm-0','arm-2'));self.assertFalse(compatible(lab,left,right,'arm-0','arm-0'))
  def test_no_mutation_of_caller_plan(self):
   before=copy.deepcopy(self.plan);expand(self.plan,self.root);self.assertEqual(before,self.plan)
+ def test_large_persistent_queue_reopens_without_relaxing_plan_input_limit(self):
+  lab=Lab(self.root,lambda *a:(0,{}));lab.enqueue(self.plan);lab.series[0]['jobs'][0]['metrics']=dict(retainedDiagnostic='x'*(2*1024*1024));lab.save()
+  with self.assertRaises(ValueError):read(self.root/'queue.json')
+  reopened=Lab(self.root,lambda *a:(0,{}));self.assertEqual(lab.series,reopened.series)

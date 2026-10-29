@@ -5,7 +5,7 @@ Author: Шелестов Максим Евгеньевич.
 import argparse,collections,json,math,random,statistics
 from pathlib import Path
 from analyze_paired_series import spread,quantile
-from research_lab import read,write
+from research_lab import read,read_metadata,write
 
 def paired_stats(values):
  nonzero=[v for v in values if v];n=len(nonzero);positive=sum(v>0 for v in nonzero)
@@ -65,7 +65,7 @@ def plots(rows,out):
 
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--study',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--plots',action='store_true');a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
- rows=read(a.study/'observations.json')['rows'];result=summarize(rows);write(a.output/'study-summary.json',result)
+ rows=read_metadata(a.study/'observations.json')['rows'];result=summarize(rows);write(a.output/'study-summary.json',result)
  if a.plots:plots(rows,a.output)
  print(json.dumps(dict(groups=len(result['groups']),pending=result['pending'],failures=len(result['failures']))))
 if __name__=='__main__':main()

@@ -2,7 +2,7 @@
 """H1 reproducible ordinary-game matrix using the existing persistent laboratory queue.
 Author: Шелестов Максим Евгеньевич. No financial rules are implemented here.
 """
-import argparse,hashlib,json,os,signal,sys,time
+import argparse,datetime,hashlib,json,os,signal,sys,time
 from pathlib import Path
 from research_lab import Lab,write,read,ROOT
 from research_workspace import binary_hashes
@@ -71,7 +71,7 @@ def summarize(lab,out):
  return rows
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--phase',choices=['pilot','pairs','summary'],default='pilot');p.add_argument('--init-only',action='store_true');p.add_argument('--retry-failed',action='store_true');p.add_argument('--compress-turns',action='store_true');a=p.parse_args()
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--phase',choices=['pilot','pairs','summary'],default='pilot');p.add_argument('--init-only',action='store_true');p.add_argument('--retry-failed',action='store_true');p.add_argument('--compress-turns',action='store_true');p.add_argument('--adopt-lab-tool-update',metavar='REASON');a=p.parse_args()
  out=a.output.resolve();out.mkdir(parents=True,exist_ok=True);freeze(out)
  protocol=out/'study-protocol.json'
  if not protocol.exists():
@@ -79,7 +79,12 @@ def main():
   write(protocol,dict(inputs={f:hashlib.sha256((ROOT/f).read_bytes()).hexdigest() for f in inputs},registeredPlan=read(ROOT/'docs/research/h1/study-plan.json')))
  if protocol.exists():
   registered=read(protocol)
-  if any(hashlib.sha256((ROOT/f).read_bytes()).hexdigest()!=h for f,h in registered['inputs'].items()):raise ValueError('Registered setup/protocol changed; use a separate study')
+  actual={f:hashlib.sha256((ROOT/f).read_bytes()).hexdigest() for f in registered['inputs']};changed=[f for f,h in registered['inputs'].items() if h!=actual[f]]
+  if changed:
+   if changed!=['scripts/research_lab.py'] or not a.adopt_lab_tool_update:raise ValueError('Registered setup/protocol changed; use a separate study or explicitly adopt a Lab-only tool repair')
+   previous=out/('study-protocol.previous-'+str(1+len(registered.get('toolUpdates',[])))+'.json')
+   if previous.exists():raise ValueError('Protocol history already exists; retain and inspect it')
+   previous.write_bytes(protocol.read_bytes());registered.setdefault('toolUpdates',[]).append(dict(oldInputs=registered['inputs'],newInputs=actual,reason=a.adopt_lab_tool_update,atUtc=datetime.datetime.now(datetime.timezone.utc).isoformat()));registered['inputs']=actual;write(protocol,registered)
  lab=Lab(out/'lab',executor);plan=read(ROOT/'docs/research/h1/study-plan.json')
  if a.phase!='summary':initialize(lab,a.phase,plan)
  if a.init_only or a.phase=='summary':summarize(lab,out);return 0

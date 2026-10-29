@@ -57,6 +57,11 @@ def read(path):
     return json.loads(path.read_text(encoding='utf-8-sig'), object_pairs_hook=unique)
 
 
+def read_metadata(path):
+    """Owned persistent queue/results, not an input plan. Preserve duplicate-field validation."""
+    return json.loads(path.read_text(encoding='utf-8-sig'), object_pairs_hook=unique)
+
+
 def write(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + '.tmp')
@@ -234,7 +239,7 @@ class Lab:
         self.paused = True
         from research_workspace import Workspace
         self.views=Workspace(self)
-        self.series = read(self.workspace/'queue.json') if (self.workspace/'queue.json').exists() else []
+        self.series = read_metadata(self.workspace/'queue.json') if (self.workspace/'queue.json').exists() else []
         # An interrupted process is never silently considered successful or reissued.
         for s in self.series:
             for j in s['jobs']:
