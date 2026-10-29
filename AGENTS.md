@@ -1,4 +1,28 @@
-## H1,29.10.2026 — исследование и калибровка после F/G (текущая итерация)
+## H1,29.10.2026 — ограниченное исследование завершено, P77 частично открыт
+
+- PR73 feat/vnext-h1-economy-calibration: итоговый отчёт PACKAGE_H1, инструкция
+  ECONOMY_RESEARCH_H1, доказательства verification/economy-h1. G2 PR72 слит
+  владельцем в b9f59ad8; PR73 перенаправлен на feat/economic-cycle-p00-p05.
+  Агент PR не сливает; H2 автоматически не начинать.
+- Все120 ordinary партий t1800 прошли,120 accounting/120 privacy;18conditions,
+  n5 при3/10NPC и n10 при6NPC. Все750 NPC milestones censored, производства/XP0.
+  Четыре6NPC paired contrasts по10 миров: разности капитала0, sign/Holm p1.
+  Это короткий заработок, не доказанное равенство трудностей/Hard superiority.
+- По одному long миру Medium6/seed42 до10800 на обеих картах; exact3600
+  continuation и аудиты. Далее два timeout900s. Small отдельный срез до11600
+  реально CheckpointTooLarge; large11600 сохранён/аудирован, первая factory11233.
+  Small первая factory7284/20batches к10800, II–V не достигнуты. Нет обоснования
+  численно менять баланс.82financial inputs unchanged, World28/session3 прежние.
+- Runtime source99ea0b59: Core40835135617 все30jobs/Windows40835135468 оба2success.
+  Полный unit13:57pass, scopedordinary6/metrics9; actual runtime smoke61.329s.
+  Нулевые деньги prepared: обе карты6NPC/t1800, все заработали; F2 cash controls
+  учитывают зарплаты и billed/unbilled road. Не смешивать их с natural starts.
+- Блокеры и необходимые работы: docs/research/h1/H2_BLOCKERS.md. Профиль5000
+  (в том числе Godot Play) не позволяет35h; research horizon-only override отдельно.
+  Старые failures, SHA и исходные экспорты сохранены. Не поднимать600/900s,
+  2MiB входных планов и64/512MiB checkpoint. Heavy local gates serial.
+
+### Исходный протокол H1 (история решения)
 
 - Пользователь явно разрешил H1 после завершения G2. Основаcf0784b/PR72 с runtime
   9ae94bf: Core29/Windows2 success,900source inputs unchanged. G2 PRready/unmerged.

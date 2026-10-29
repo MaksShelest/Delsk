@@ -1,0 +1,7 @@
+{
+  "memory.max": "8589934592",
+  "memory.current": "6193123328",
+  "memory.events": "low 0\nhigh 0\nmax 31521\noom 0\noom_kill 0\noom_group_kill 0",
+  "cpu.max": "200000 100000",
+  "atUtc": "2026-10-29T03:00:03.504211+00:00"
+}

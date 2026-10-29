@@ -112,3 +112,29 @@
   jobs remain ahead of appended paired jobs. Both serial diagnostics finished,
   hold-before-run removed automatically; all120 jobs now draining. Source6 updates
   still analysis/orchestration only; do not rebuild frozen .NET binaries.
+
+- GitHub recheck: G2 PR72 merged by repository owner at05:18:11Z, merge b9f59ad8.
+  H1 PR73 retargeted to feat/economic-cycle-p00-p05; still draft/open, no agent merge.
+  Source6 CI Core40835135617 all30success, Windows40835135468 both2success; snapshots
+  retained. Primary matrix80/120success when retargeted; no study inputs changed.
+- Final primary completed12:00:40Z; analysis-v1 completed12:01:10Z/29.857s. All120
+  ordinary jobs attempt1 succeeded; all120 accounting and120 privacy passed. 90pilot
+  +30extra, all18conditions, four6NPC contrasts n10 with all capital differences0.
+  No production/XP by1800;750NPC milestones right-censored, no Hard superiority.
+  Observed cash gain positive for everyNPC; natural imports0/vehicles0/services0.
+- Final raw-export parser reconciles all participant ledgers, unknown cash reasons0.
+  Full observations2.73MB/source-artifacts0.60MB copied to evidence; raw study retained
+  separately, no deletion. Long final parser: small10800 receipts236875/import71875/
+  wages37140/other816/capex149000; one NPC cash430 vs capital79830. Endpoint employed0
+  does not mean never employed: paused groups and actual paid payroll retained.
+- Evidence collector bounded180s passed; performance SVG bounded60s passed. Frozen
+  simulator675source/config/scenario inputs still byte-exact; DLL guard checked
+  during every job. No rebuild, no balance/profile/save-schema changes. Final report
+  separates repeated short worlds, n1 long worlds, engineering continuation and
+  prepared service/zero-cash controls. P77/P53 late phase remains open; H2 not started.
+
+- Final QA passed0: all953 non-doc runtime/tool inputs match source99ea0b59, all675
+  simulator inputs and5frozen DLL hashes match initial study. 82financial unchanged;
+  all120 unique roster/difficulty/seed worlds and240actual audit metadata checked.
+  Final evidence process registry475 bounded processes: {0: 466, 1: 7, 124: 2}; original
+  failures retained. Final docs/evidence change no tested runtime/tool source input.

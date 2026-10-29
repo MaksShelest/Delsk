@@ -1,6 +1,6 @@
 {
   "inputs": {
-    "scripts/research_lab.py": "6311c69b908f13a97cd89f4c4a5602f6a4537d95ce8eedca13215d99e0720a17",
+    "scripts/research_lab.py": "bf4d058f26491961d69d030771e3cb7ead990741b173e1a6cc6044d705414aab",
     "scripts/research_workspace.py": "8b2ee9f6fbd340b0a53c2fa12ad0492103880bac2ea3283eb065014971eb08fe",
     "docs/research/h1/study-plan.json": "f93a6a2cef0852461815f949e5dae38f6ba398d0b562e25f321b30a73df0ce96"
   },
@@ -72,5 +72,35 @@
     "recordWorld": false,
     "author": "Шелестов Максим Евгеньевич",
     "revisionReason": "Before primary runs: setup-only large10/Hard120 took25.459s including export. Pilot timeout600 matches existing G1 natural runner budget; old tests retain their deadlines."
-  }
+  },
+  "toolUpdates": [
+    {
+      "oldInputs": {
+        "scripts/research_lab.py": "6311c69b908f13a97cd89f4c4a5602f6a4537d95ce8eedca13215d99e0720a17",
+        "scripts/research_workspace.py": "8b2ee9f6fbd340b0a53c2fa12ad0492103880bac2ea3283eb065014971eb08fe",
+        "docs/research/h1/study-plan.json": "f93a6a2cef0852461815f949e5dae38f6ba398d0b562e25f321b30a73df0ce96"
+      },
+      "newInputs": {
+        "scripts/research_lab.py": "b65bb5d65ce7ab5c8a433dc64991b475edc830e7ba0c64d4fe0c828eb0486c05",
+        "scripts/research_workspace.py": "8b2ee9f6fbd340b0a53c2fa12ad0492103880bac2ea3283eb065014971eb08fe",
+        "docs/research/h1/study-plan.json": "f93a6a2cef0852461815f949e5dae38f6ba398d0b562e25f321b30a73df0ce96"
+      },
+      "reason": "Analysis-only persistent queue reader repair after 23 completed worlds. Input-plan 2MiB and engine 64/512MiB limits, plan, all simulation inputs, snapshots and DLLs unchanged; original protocol retained.",
+      "atUtc": "2026-10-29T05:26:53.136020+00:00"
+    },
+    {
+      "oldInputs": {
+        "scripts/research_lab.py": "b65bb5d65ce7ab5c8a433dc64991b475edc830e7ba0c64d4fe0c828eb0486c05",
+        "scripts/research_workspace.py": "8b2ee9f6fbd340b0a53c2fa12ad0492103880bac2ea3283eb065014971eb08fe",
+        "docs/research/h1/study-plan.json": "f93a6a2cef0852461815f949e5dae38f6ba398d0b562e25f321b30a73df0ce96"
+      },
+      "newInputs": {
+        "scripts/research_lab.py": "bf4d058f26491961d69d030771e3cb7ead990741b173e1a6cc6044d705414aab",
+        "scripts/research_workspace.py": "8b2ee9f6fbd340b0a53c2fa12ad0492103880bac2ea3283eb065014971eb08fe",
+        "docs/research/h1/study-plan.json": "f93a6a2cef0852461815f949e5dae38f6ba398d0b562e25f321b30a73df0ce96"
+      },
+      "reason": "Align early Lab validation with existing C# OrdinaryGameOptions 3..10 NPC. All declared 3/6/10 conditions, source snapshots, simulation inputs, DLLs and statistical plan unchanged; still 23 completed worlds before resuming.",
+      "atUtc": "2026-10-29T06:09:36.043427+00:00"
+    }
+  ]
 }
