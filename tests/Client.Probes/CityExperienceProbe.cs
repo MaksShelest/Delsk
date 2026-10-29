@@ -20,7 +20,7 @@ public partial class CityExperienceProbe : Control
     {for(Node? p=c.GetParent();p is not null;p=p.GetParent())if(p is ScrollContainer s)s.EnsureControlVisible(c);await Frames();}
     private async Task Mouse(Vector2 position,MouseButton button=MouseButton.Left)
     {
-        int id=GetTree().Root.GetWindowId();Input.ParseInputEvent(new InputEventMouseMotion{WindowId=id,Position=position,GlobalPosition=position});
+        Input.WarpMouse(position);await Frames(2);int id=GetTree().Root.GetWindowId();Input.ParseInputEvent(new InputEventMouseMotion{WindowId=id,Position=position,GlobalPosition=position});
         Input.ParseInputEvent(new InputEventMouseButton{WindowId=id,Position=position,GlobalPosition=position,ButtonIndex=button,Pressed=true});await Frames(1);
         Input.ParseInputEvent(new InputEventMouseButton{WindowId=id,Position=position,GlobalPosition=position,ButtonIndex=button,Pressed=false});await Frames();
     }
@@ -51,6 +51,7 @@ public partial class CityExperienceProbe : Control
         await Press(Key.M);var panel=Named<CityMapPanel>("FullCityMap");var canvas=panel.Canvas;await Reveal(canvas);
         var prefs=canvas.State;var frame=Field<CityMapFrame>(panel,"_map");Check(frame.Participants.Length==count+1,"Map lost participants");
         var tablet=Named<TabletPanel>("GameTablet");var rect=tablet.GetGlobalRect();Check(rect.Position.X>=0&&rect.End.X<=width+1,"Tablet exceeds narrow viewport: "+rect);
+        var timeRect=Named<CheckButton>("TabletTime").GetGlobalRect();Check(timeRect.Position.X>=0&&timeRect.End.X<=width+1,"Time control exceeds narrow viewport: "+timeRect);
         string hash=Session.Engine.ComputeStateHash();long tick=Session.Engine.Tick;int commands=Session.CommandTape.Length;
         var resource=frame.Objects.First(o=>o.Layer==CityLayer.Resources&&CityMap.At(frame,o.Entry,CityLayer.All,0).First().Key==o.Key);
         await Mouse(canvas.GlobalPosition+canvas.Point(resource.Entry));Check(prefs.SelectedKey==resource.Key,"Native cell hit did not select resource");
@@ -64,7 +65,7 @@ public partial class CityExperienceProbe : Control
         Input.ParseInputEvent(new InputEventScreenTouch{WindowId=window,Index=0,Position=a,Pressed=false});await Frames();
         Check(prefs.Zoom>zoom,"Two-finger gesture did not zoom");Check(prefs.SelectedKey==selected,"Pinch emitted a ghost selection");Check(Session.CommandTape.Length==commands,"Map input submitted a world command");
         await Click(Named<Button>("MapFilters"));await Click(Named<CheckButton>("MapLayerResources"));Check(!CityMap.Visible(resource,prefs.Layers,0),"Layer filter did not hide resource");await Click(Named<CheckButton>("MapLayerResources"));
-        var selector=Named<OptionButton>("MapParticipant");await Click(selector);await Press(Key.Up);await Press(Key.Enter);await Frames();Check(prefs.Participant==frame.Participants[^1],"Last participant filter did not apply");await Click(selector);await Press(Key.Down);await Press(Key.Enter);await Frames();Check(prefs.Participant==0,"All-participants filter did not restore");
+        var selector=Named<OptionButton>("MapParticipant");await Click(selector);Check(selector.GetPopup().Visible,"Participant popup did not open; rect="+selector.GetGlobalRect()+" mouse="+GetGlobalMousePosition()+" focus="+GetViewport().GuiGetFocusOwner()?.Name);await Press(Key.Up);await Press(Key.Enter);await Frames();Check(prefs.Participant==frame.Participants[^1],"Last participant filter did not apply");await Click(selector);await Press(Key.Down);await Press(Key.Enter);await Frames();Check(prefs.Participant==0,"All-participants filter did not restore");
         await Click(Named<Button>("MapFilters"));await Reveal(canvas);
         // Every roster entry remains selectable; metadata is public identity only.
         Check(selector.ItemCount==count+2,"Participant filter misses final NPC");
@@ -84,7 +85,7 @@ public partial class CityExperienceProbe : Control
         await Click(TextButton(_language=="ru"?"Сменить карту":"Change map"));var catalog=All(_app).OfType<AcceptDialog>().Single(d=>d.Visible);Check(catalog.Size.X<=width,"Catalog wider than mobile window");await Click(catalog.GetOkButton());
         await Capture("setup-"+_language+"-"+width);await Click(TextButton(_language=="ru"?"Продолжить":"Continue"));
         _app.Notification((int)NotificationApplicationFocusOut);await Frames();long savedTick=Session.Engine.Tick;RemoveChild(_app);_app.QueueFree();await Frames();
-        _app=GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();AddChild(_app);await Frames(5);await Click(TextButton(_language=="ru"?"Продолжить":"Continue"));
+        _app=GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();AddChild(_app);await Frames(5);if(_language=="en")await Click(TextButton("English"));await Click(TextButton(_language=="ru"?"Продолжить":"Continue"));
         Check(Session.Engine.Tick==savedTick&&Session.Engine.Configuration().Participants.Length==count+1,"Disk continuation changed time or roster");Check(Field<CityReadState>(_app,"_cityRead").TutorialPage==1,"Disk load lost guide memory");
         _checks.AddRange(["ordinary new game and entire roster","native full-map cell hit and wheel zoom","keyboard pan","two-finger zoom without world input or ghost tap","layer and participant filters","help/close preserve selection and time","focus pause","guide memory","skin change preserves authoritative hash","narrow setup/catalog/appearance","disk continuation"]);
     }
