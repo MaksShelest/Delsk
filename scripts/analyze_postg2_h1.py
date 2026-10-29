@@ -2,7 +2,7 @@
 """Preregistered post-G2 world-level analysis. Failures and censoring are data, not zeros.
 Author: Шелестов Максим Евгеньевич.
 """
-import argparse,collections,json
+import argparse,collections,gzip,json
 from pathlib import Path
 from research_lab import read,read_metadata,write
 from study_postg2_h1 import PLAN,cases
@@ -12,7 +12,7 @@ from analyze_economy_h1 import paired_stats
 def observe(folder):
  journal=read_metadata(folder/'trajectory.json');case=journal['case'];segments=[]
  for segment in journal['segments']:
-  row={k:v for k,v in segment.items() if k not in ('audits',)}
+  row=dict(segment)
   if segment.get('status')=='succeeded':row['metrics']=read_metadata(folder/segment['result']/segment['metrics'])
   segments.append(row)
  return dict(case=case,status=journal['status'],lastSavedTick=journal['lastSavedTick'],sourceCommit=journal['sourceCommit'],frozen=journal['frozen'],segments=segments)
@@ -66,9 +66,19 @@ def summarize(rows,plan):
    long=[r for r in rows if r['case']['phase']=='long'],blocked=[dict(case=r['case'],status=r['status'],lastSavedTick=r['lastSavedTick'],lastAttempt=r['segments'][-1] if r['segments'] else None) for r in rows if r['status'].startswith('blocked')],
    definition='No missing outcome imputed. Different planning horizons never pooled. n5 cells exploratory; n10 primary. Industrial Hard superiority remains unproved if late milestones are censored.')
 
+def load_observations(path,plan):
+ # Explicit owned measurement export, not a user-supplied simulation plan.
+ opener=gzip.open if path.suffix=='.gz' else open
+ with opener(path,'rt',encoding='utf-8') as stream:data=json.load(stream)
+ if data['plan']!=plan:raise ValueError('Measurement plan does not match registered current protocol')
+ rows=data['rows']
+ if data.get('formatVersion')==2:
+  rows=[dict(r,frozen=data['frozen']) for r in rows]
+ return rows
+
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--study',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
- plan=read(PLAN);rows=[observe(p.parent) for p in sorted(a.study.rglob('trajectory.json'))];result=summarize(rows,plan)
+ p=argparse.ArgumentParser(description=__doc__);source=p.add_mutually_exclusive_group(required=True);source.add_argument('--study',type=Path);source.add_argument('--observations',type=Path,help='Owned exported observations, optionally gzip/common fingerprint format2');p.add_argument('--output',type=Path,required=True);a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
+ plan=read(PLAN);rows=load_observations(a.observations,plan) if a.observations else [observe(p.parent) for p in sorted(a.study.rglob('trajectory.json'))];result=summarize(rows,plan)
  write(a.output/'observations.json',dict(rows=rows,plan=plan));write(a.output/'summary.json',result)
  print(json.dumps(dict(recorded=result['recordedWorlds'],missing=len(result['missing']),blocked=len(result['blocked']),complete=sum(r['status']=='completed' for r in rows))))
 if __name__=='__main__':main()

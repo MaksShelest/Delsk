@@ -1,11 +1,11 @@
 """Protocol and failure guardrails; actual-engine continuation is a separate integration gate.
 Author: Шелестов Максим Евгеньевич.
 """
-import copy,json,sys,tempfile,unittest
+import copy,gzip,json,sys,tempfile,unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'scripts'))
 from study_postg2_h1 import PLAN,cases,boundaries,valid_checkpoint,classify_failure,digest
-from analyze_postg2_h1 import summarize
+from analyze_postg2_h1 import summarize,load_observations
 class PostG2StudyTests(unittest.TestCase):
  def setUp(self):self.plan=json.loads(PLAN.read_text())
  def test_preregistered_independent_worlds_and_horizons(self):
@@ -35,3 +35,11 @@ class PostG2StudyTests(unittest.TestCase):
    out=Path(d)/'owned';out.mkdir();outside=Path(d)/'other';outside.write_bytes(b'foreign')
    state=dict(lastCheckpoint='../other',lastCheckpointSha256=digest(outside),inputs={})
    with self.assertRaises(ValueError):valid_checkpoint(out,state)
+
+ def test_owned_compressed_export_restores_shared_fingerprint_and_rejects_other_plan(self):
+  row=dict(case=cases(self.plan,'ordinary')[0],status='ready',lastSavedTick=0,segments=[],sourceCommit='test')
+  with tempfile.TemporaryDirectory() as d:
+   path=Path(d)/'observations.json.gz';path.write_bytes(gzip.compress(json.dumps(dict(formatVersion=2,plan=self.plan,frozen={'runtime':'fixture'},rows=[row])).encode()))
+   restored=load_observations(path,self.plan);self.assertEqual({'runtime':'fixture'},restored[0]['frozen']);self.assertEqual(127,len(summarize(restored,self.plan)['missing']))
+   wrong=copy.deepcopy(self.plan);wrong['ordinary']['targetTicks']=1800
+   with self.assertRaises(ValueError):load_observations(path,wrong)

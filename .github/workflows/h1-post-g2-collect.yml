@@ -1,0 +1,115 @@
+name: H1 post-G2 durable evidence
+on:
+  pull_request:
+    types: [synchronize]
+    paths: ['docs/research/h1-post-g2/collect-1.json']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: h1-post-g2-collection
+  cancel-in-progress: false
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      needed: ${{ steps.inspect.outputs.needed }}
+    steps:
+      - uses: actions/github-script@v7
+        id: inspect
+        with:
+          script: |
+            const ids=['long-small-river-6-Medium-42','long-small-river-6-Medium-43','long-small-river-6-Hard-42','long-small-river-6-Hard-43','long-large-districts-6-Medium-42','long-large-districts-6-Medium-43','long-large-districts-6-Hard-42','long-large-districts-6-Hard-43'];
+            const names=['h1-post-g2-audited-summary',...ids.map(x=>'h1-resume-'+x+'-complete')];
+            let needed=false;
+            for(const name of names){const r=await github.rest.actions.listArtifactsForRepo({...context.repo,name,per_page:100});if(!r.data.artifacts.some(a=>!a.expired))needed=true;}
+            core.setOutput('needed',String(needed));
+  audits:
+    needs: plan
+    if: needs.plan.outputs.needed == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 40921991720
+          github-token: ${{ github.token }}
+          pattern: h1-metrics-*
+          merge-multiple: true
+          path: work/evidence
+      - run: python scripts/analyze_postg2_h1.py --study work/evidence --output work/analysis
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const r=await github.rest.actions.getWorkflowRun({...context.repo,run_id:40921991720});
+            if(r.data.head_sha!='0f89a63e4ff3421d00df755cd8cb6d61e641b62e'||r.data.conclusion!='success')throw Error('Unexpected source cohort');
+            const artifacts=await github.paginate(github.rest.actions.listWorkflowRunArtifacts,{...context.repo,run_id:40921991720,per_page:100});
+            require('fs').writeFileSync('work/analysis/source-artifacts.json',JSON.stringify({run:r.data,artifacts},null,2));
+      - uses: actions/upload-artifact@v4
+        with:
+          name: h1-post-g2-audited-summary
+          path: work/analysis/
+          retention-days: 90
+  resume:
+    needs: plan
+    if: needs.plan.outputs.needed == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        case: [long-small-river-6-Medium-42, long-small-river-6-Medium-43, long-small-river-6-Hard-42, long-small-river-6-Hard-43, long-large-districts-6-Medium-42, long-large-districts-6-Medium-43, long-large-districts-6-Hard-42, long-large-districts-6-Hard-43]
+    env:
+      CASE_ID: ${{ matrix.case }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 40921991720
+          github-token: ${{ github.token }}
+          name: h1-full-${{ matrix.case }}-a1
+          path: work/world
+      - run: python scripts/bundle_postg2_resume.py --source work/world --output work/bundle
+      - uses: actions/upload-artifact@v4
+        with:
+          name: h1-resume-${{ matrix.case }}-manifest
+          path: work/bundle/manifest.json
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        with:
+          name: h1-resume-${{ matrix.case }}-part00
+          path: work/bundle/resume.zip.part00
+          compression-level: 0
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        with:
+          name: h1-resume-${{ matrix.case }}-part01
+          path: work/bundle/resume.zip.part01
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        with:
+          name: h1-resume-${{ matrix.case }}-part02
+          path: work/bundle/resume.zip.part02
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        with:
+          name: h1-resume-${{ matrix.case }}-complete
+          path: work/bundle/manifest.json
+          retention-days: 90
