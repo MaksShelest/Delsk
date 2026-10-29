@@ -40,3 +40,18 @@
   126000/controller finalTick, writes persistent1800-tick checkpoints, resumes via
   actual existing CLI. Not launched concurrently with pilot. Compare first2segments
   to continuous trajectory; budgets900/segment, original readers remain bounded.
+- Pause matrix at23/90 completed,0fail to check long path serially; SIGTERM waited
+  for actual job boundary and preserved queue. Actual H1 runtime gate61.329s passed:
+  ordinary3/6/10, progress on/off exact, checkpoint60→120 exact, prepared F2 cases.
+  AccountOf separates billed DebtMinor and unbilled AccruedMinor; both now included
+  exactly once in liability-adjusted result. Prepared accrued10/6 confirmed, not
+  unpaid invoices; adjusted4008/888. Carrier actor2/customer1. No economics changed.
+- Python unit5 failed because toy service fixture lacked actual id/quote fields
+  after ROI analysis added; fixture completed, not parser weakened. unit6/7/8 pass,
+  latest53tests. First7HTTP sandbox errors and earlier failure logs retained.
+- H1 code snapshot30aee6a/PR73draft stacked on G2. Core40808271586/Windows40808271569
+  queued. PR remains draft pending study results. Local HEAD deliberately stays
+  cf0784b while frozen binaries/study run; final source tree will be reconciled.
+- Long small first process1800 saved2788748bytes with audits, second separate
+  process loaded it and reached3600/checkpoint8017220bytes. Continuous3600 comparison
+  running; no target timing/ROI claim. Observed long cohort still no firm at3600.

@@ -35,3 +35,6 @@ class FullMetricsTests(unittest.TestCase):
   with self.assertRaises(ValueError):measure(p)
  def test_unclassified_cash_is_reported_and_does_not_enter_profit_comparison(self):
   p=self.example([900,100],[(1,101,0,100,'NewUnclassifiedCost')]);r=measure(p);self.assertEqual({'NewUnclassifiedCost':100},r['fullEconomy']['unclassifiedActorCashMinor']);self.assertIsNone(r['npcOperatingReceiptResultMinor'])
+ def test_handling_investment_is_cash_capex_not_repeated_operating_cost(self):
+  p=self.example([700,100],[(1,101,0,100,'VehicleHandlingKit'),(2,101,0,200,'LoadingPlatformUpgrade')]);r=measure(p)['fullEconomy']
+  self.assertEqual(300,r['actors']['1']['cashCapitalSpendingMinor']);self.assertEqual(0,r['actors']['1']['operatingReceiptResultMinor']);self.assertEqual({},r['unclassifiedActorCashMinor'])

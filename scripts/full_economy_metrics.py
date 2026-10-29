@@ -71,7 +71,7 @@ def measure(folder):
         escrow[identity(c['bondAccount'])]=identity(c['supplier'])
     services=load('services.json',{}) or {}
     for order in services.get('orders',[]):escrow[identity(order['escrowAccount'])]=identity(order['customer'])
-    capex={'Construction','BuildingUpgrade','PlotPurchase','PlotReservation','VehiclePurchase','EquipmentPurchase','EquipmentUpgrade','LogisticsPurchase','LogisticsUpgrade','WorkshopOutfit','WorkshopModernization','RoadConstruction','ResourcePurchase'}
+    capex={'Construction','BuildingUpgrade','PlotPurchase','PlotReservation','VehiclePurchase','EquipmentPurchase','EquipmentUpgrade','LogisticsPurchase','LogisticsUpgrade','WorkshopOutfit','WorkshopModernization','RoadConstruction','ResourcePurchase','VehicleHandlingKit','LoadingPlatformUpgrade'}
     revenues={'CapitalSettlement','DeliveryPayment','PickupPayment','RoadRevenue','RoadOrderReward','QuestReward','IndustryQuestReward'}
     costs={'Wages','Energy','ResourceLease','HandlingService','HandlingWages','EquipmentTravelWages','LogisticsWages','RoadWages','ServiceDriverWages','RoadPrincipal','RoadPenalty','Demolition'}
     financial={'MarketEscrow','DeliveryFunding','DeliveryBond','DeliveryBondReturn','DeliveryRefund','PickupRefund','ServiceFunding','ServiceRefund','ServiceLateRefund','PlotReservationRefund'}
@@ -172,6 +172,11 @@ def measure(folder):
     pressure=collections.defaultdict(collections.Counter)
     for inv in state['inventories']:
         r=pressure[str(identity(inv.get('ownerId')))];r['capacityVolume']+=inv['capacity'];r['occupiedVolume']+=inv.get('occupiedVolume',0);r['reservedVolume']+=inv.get('reservedCapacity',0);r['fullInventories']+=inv.get('occupiedVolume',0)>=inv['capacity']>0
+    demand=collections.Counter();sales=collections.defaultdict(collections.Counter)
+    for offer in state.get('capitalOffers',[]):demand[offer['itemId']]+=offer['remainingQuantity']
+    for sale in state.get('settlements',[]):
+        r=sales[sale['itemId']];r['requested']+=sale['requested'];r['accepted']+=sale['accepted'];r['paidMinor']+=sale['paidMinor']
+    content=load('production-content.json',{}) or {}
     runs=(services.get('execution') or {}).get('runs',[])
     npcs=sorted(a for a in actors if a!=1);natural=bool(scenario.get('newGame'))
     # Initial stock/buildings require a proper initial valuation; do not fabricate it for rich fixtures.
@@ -182,12 +187,13 @@ def measure(folder):
         vehicleCount=len(fleet.get('vehicles',[])),completedRoadStages=sum(identity(c['builder'])>0 for r in roads.get('cells',[]) for c in r['contributions']),
         roadDebtPrincipalMinor=sum(i['principalRemaining'] for i in billing.get('invoices',[])),roadDebtPenaltyMinor=sum(i['penaltyRemaining'] for i in billing.get('invoices',[])),
         resourceAvailabilitySnapshot={k:dict(v) for k,v in resources.items()},storagePressureSnapshot={k:dict(v) for k,v in pressure.items()},overflowLostUnitsByItem=dict(overflow_losses),commandRejectedReasons=dict(rejections),
+        importAvailabilitySnapshot=content.get('imports',[]),capitalDemandRemainingSnapshot=dict(demand),capitalSettlementsByItem={k:dict(v) for k,v in sales.items()},
         trafficSnapshotReasons=dict(collections.Counter(t['reason'] for t in roads.get('traffic',[]))),maxCurrentTrafficWaitTicks=max((state['tick']-t['waitingSince'] for t in roads.get('traffic',[]) if t.get('waitingSince')),default=0),
         serviceStates=dict(collections.Counter(o['state'] for o in services.get('orders',[]))),serviceDeliveredQuantity=sum(r['delivered'] for r in runs),serviceLateRefundMinor=sum(r['lateRefundMinor'] for r in runs),
         serviceOrders=len(services.get('orders',[])),servicePaidMinor=sum(r['paidMinor'] for r in (services.get('execution') or {}).get('runs',[])),
         personalIdleSamples=dict(personal_idle),longestWaitSampleStreak=dict(longest_wait),goalSampleCounts=dict(goals),goalReasonSamples=dict(goal_reasons),zeroCashSamples=dict(zero_cash),minimumObservedCashMinor=minimum_cash,idleWorkerSamples=idle_workers,laborSampleTicks=len(labor_ticks),laborSampleDefinition='Headcount-weighted non-ready group samples, deduplicated within tick. Not full observed worker idle time.',
         roi=dict(observedCapitalCashMinor=sum(a['cashCapitalSpendingMinor'] for a in actors.values()),vehicles=vehicle_returns(folder,fleet.get('vehicles',[]),services.get('orders',[]),actors,accounts),paybackTick=None,reason='Mixed enterprise/road portfolios require attributable revenue and costs. Unobserved payback stays censored; no static-margin extrapolation.'),
-        definition='Actual settled receipts minus actual goods/service settlement costs, wages/energy/lease/road/fines. Escrow funding/refunds and capex separate; unsold stock, depreciation and owner opportunity cost are not operating cash profit. Idle samples do not certify no feasible action.')
+        definition='Actual settled receipts minus all actual goods/service settlement costs, wages/energy/lease/road/fines. Escrow funding/refunds and cash capex separate; purchased construction materials are included among goods costs, not allocated to an entity. Unsold stock, depreciation and owner opportunity cost are not accrual net profit. Idle samples do not certify no feasible action.')
     progress=load('run-progress.json',{}) or {};interval=state['tick']-progress.get('startTick',0)
     return dict(fullEconomy=result,fullEconomyMetricsVersion=1,hostedMillisecondsPerActiveTick=(summary.get('elapsedMilliseconds',0)-(summary.get('startupMilliseconds') or 0))/interval if interval>0 else None,npcMedianCapitalChangeMinor=statistics.median(changes) if changes else None,
         npcOperatingReceiptResultMinor=sum(actors[a]['operatingReceiptResultMinor'] for a in npcs) if not unknown else None,
