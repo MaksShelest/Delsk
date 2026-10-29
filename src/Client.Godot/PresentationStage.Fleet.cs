@@ -20,7 +20,8 @@ public partial class PresentationStage
             }
             mover.Node.GetChildren().OfType<Label3D>().Single().Visible=!v.ForSale&&_cameraDistance<10;
             int slot=frame.Vehicles.Count(other=>other.X==v.X&&other.Z==v.Z&&other.Id<v.Id);
-            float side=v.ForSale&&v.ModelId!="trakt_d1"?(slot%2==0?-.23f:.23f):0;
+            bool onDisplay=v.ForSale || frame.Layout?.CivicObjects.Any(site=>site.Kind=="dealership" && (site.Parking?.Contains(new(v.X,v.Z))??false))==true && v.OffsetX==500 && v.OffsetZ==500;
+            float side=onDisplay&&v.ModelId!="trakt_d1"?(slot%2==0?-.23f:.23f):0;
             var at=new Vector3(v.X+(v.OffsetX-500)/1000f+side,.07f,v.Z+(v.OffsetZ-500)/1000f);
             Target(mover,at,.1f,snap||mover.From==Vector3.Zero);
             if(v.FacingX!=0||v.FacingZ!=0)mover.Node.Rotation=new(0,Mathf.Atan2(-v.FacingX,-v.FacingZ),0);

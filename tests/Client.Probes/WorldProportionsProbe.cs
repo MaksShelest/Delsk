@@ -50,7 +50,18 @@ public partial class WorldProportionsProbe : Control
                         var dimensions=Bounds(stage.GetNode<Node3D>("Actor_"+actor.Id+"/Appearance")).Size;
                         Check(dimensions.Y<=.481f&&dimensions.X<=.301f&&dimensions.Z<=.301f,"Actor outside agreed bounds");
                     }
-                    foreach(var v in Presentation.Read(scenario,session.Engine,1).Vehicles)
+                    var vehicles=Presentation.Read(scenario,session.Engine,1).Vehicles;
+                    foreach(var group in vehicles.GroupBy(v=>(v.X,v.Z)))
+                    {
+                        var rows=group.ToArray();
+                        for(int i=0;i<rows.Length;i++)for(int j=i+1;j<rows.Length;j++)
+                        {
+                            var first=stage.GetNode<Node3D>("Vehicle_"+rows[i].Id);var second=stage.GetNode<Node3D>("Vehicle_"+rows[j].Id);
+                            var a=Bounds(first);var b=Bounds(second);var delta=first.Position-second.Position;
+                            Check(Mathf.Abs(delta.X)>=(a.Size.X+b.Size.X)/2-.001f || Mathf.Abs(delta.Z)>=(a.Size.Z+b.Size.Z)/2-.001f,"Parked vehicles overlap after purchase/skin switch");
+                        }
+                    }
+                    foreach(var v in vehicles)
                     {
                         var size=Bounds(stage.GetNode<Node3D>("Vehicle_"+v.Id)).Size;
                         Check(size.X<=(v.ModelId=="trakt_d1"?.761f:.381f)&&size.Z<=.861f,"Vehicle blocks neighbouring slot");
@@ -91,7 +102,7 @@ public partial class WorldProportionsProbe : Control
             }
             var copy=CheckpointStore.Decode(CheckpointStore.Encode(session));Check(copy.Engine.ComputeStateHash()==hash,"Save restore changed geometry/state");
             Check(JsonSerializer.Serialize(copy.Engine.Configuration(),SimulationJson.Options)==JsonSerializer.Serialize(scenario,SimulationJson.Options),"Restore substituted map");
-            System.IO.File.WriteAllText(output+"/native-check.json",JsonSerializer.Serialize(new{status="succeeded",map,layout=scenario.Layout?.Version,measures,checks=new[]{"real Playfield and ordinary 11-participant world","both skin families, six camera views per designed map","skin change preserves authoritative world","cell picking at close/district/overview scales","checkpoint preserves exact resolved geometry"},scope="Native Godot/X11 software renderer; camera framed in isolated probe; not physical device acceptance"},new JsonSerializerOptions{WriteIndented=true}));
+            System.IO.File.WriteAllText(output+"/native-check.json",JsonSerializer.Serialize(new{status="succeeded",map,participantCount=scenario.Participants.Length,prepared=args.Contains("--load"),layout=scenario.Layout?.Version,measures,checks=new[]{"real Playfield and resolved "+scenario.Participants.Length+"-participant world","both skin families, six camera views per designed map","skin change preserves authoritative world","cell picking at close/district/overview scales","checkpoint preserves exact resolved geometry"},scope="Native Godot/X11 software renderer; camera framed in isolated probe; not physical device acceptance"},new JsonSerializerOptions{WriteIndented=true}));
             RemoveChild(app);app.QueueFree();await Frames(8);GC.Collect();GC.WaitForPendingFinalizers();await Frames();GD.Print("WORLD_PROPORTIONS_PASS");GetTree().Quit();
         }
         catch(Exception e){GD.PushError(e.ToString());if(output.Length>0)System.IO.File.WriteAllText(output+"/failure.txt",e.ToString());GetTree().Quit(1);}

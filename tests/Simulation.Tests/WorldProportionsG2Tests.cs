@@ -85,6 +85,8 @@ public class WorldProportionsG2Tests
         // Funded action fixture; this does not claim an ordinary start can afford a car.
         scenario=scenario with{Participants=scenario.Participants.Select(p=>p.Id==1?p with{CashMinor=10000000}:p).ToArray()};
         var session=new GameSession(new(scenario));var car=FleetE1Tests.Buy(session,"sputnik20");FleetE1Tests.Board(session,car);
+        if(Environment.GetEnvironmentVariable("DELSK_MAP_EVIDENCE") is {} output)
+        {Directory.CreateDirectory(output);File.WriteAllText(Path.Combine(output,id+"-purchased.save.json"),CheckpointStore.Encode(session));}
         var copy=CheckpointStore.Decode(CheckpointStore.Encode(session));
         var dealer=scenario.Layout!.CivicObjects.Single(c=>c.Kind=="dealership");int x=dealer.Footprint.Min(c=>c.X),z=dealer.Footprint.Min(c=>c.Z);
         var targets=new[]{new Cell(x+4,z+3),new Cell(x+4,z),new Cell(x+2,z+2),dealer.Entry,scenario.CapitalDemand!.Terminal};
