@@ -1,3 +1,25 @@
+## H1,29.10.2026 — исследование и калибровка после F/G (текущая итерация)
+
+- Пользователь явно разрешил H1 после завершения G2. Основаcf0784b/PR72 с runtime
+  9ae94bf: Core29/Windows2 success,900source inputs unchanged. G2 PRready/unmerged.
+  Ветка feat/vnext-h1-economy-calibration; PR stacked на G2 до его merge.
+- Сначала обычный C# OrdinaryNewGame.Resolve для обеих designed maps/3/6/10,
+  реальные G1 coherent policies, не legacy controllers от старой лаборатории.
+  План до результатов: docs/research/h1/study-plan.json. Worklog PACKAGE_H1.
+- Pilot18conditions×5seeds/t1800, затем выбранные сравнения10paired seeds;
+  NPC внутри одной партии не независимые replicates. Нули/таймауты сохранять,
+  milestones с цензурированием, не обещать Hard superiority по короткому cash.
+- Actual money/cargo/payroll/road/services из existing engine exports, не новая
+  Python economy. Частичные service receipts не подменяют goods settlement;
+  escrow/reserves не доход. Prepared controls отдельно от natural starts.
+- Обычный G1 maxTicks5000 —83m20s: для длинного research объявить horizon-only
+  override на initial resolved config/controller finalTick, не менять old saves.
+  Измерять throughput/RAM/checkpoint bytes; если блокер, факты и работа для H2.
+  Не поднимать64MiB/512MiB reader limits и не заменять длинный опыт маржой.
+- Heavy local gates/experiments serial; прежние suites/deadlines/audits сохранять.
+  Для численных изменений нужны данные/версия. H2 автоматически не начинать.
+  Автор: Шелестов Максим Евгеньевич. Итог — воспроизводимый отчёт и PR без merge.
+
 ## G2,28–29.10.2026 — выполненный software-объём карты и UX
 
 - Пользовательское G2 поверх52cb5c0/PR71: P75/P79 и нужные UX/restore проверки P78.

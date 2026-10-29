@@ -55,4 +55,13 @@ def measure(directory):
     if (folder/'profile.json').exists():
         profile=load('profile.json');result.update(profile)
         result['capitalChangeMinor']=profile['finalCapitalMinor']-profile['initialCapitalMinor']
+    if (scenario.get('economyProfileId') or '').startswith('vnext-'):
+        from full_economy_metrics import measure as full_measure
+        result.update(full_measure(folder))
+        full=result['fullEconomy'];a=full['actors'].values()
+        revenue=sum(r.get('salesRevenueMinor',0)+r.get('serviceRevenueMinor',0)+r.get('roadRevenueMinor',0)+r.get('workRewardMinor',0)+r.get('compensationMinor',0) for r in a)
+        result['realizedRevenueMinor']=revenue
+        result['operatingCashProfitMinor']=sum(r['operatingReceiptResultMinor'] for r in a) if not full['unclassifiedActorCashMinor'] else None
+        result['operatingCashMargin']=result['operatingCashProfitMinor']/revenue if revenue and result['operatingCashProfitMinor'] is not None else None
+        result['profitDefinition']=full['definition']
     return result

@@ -87,7 +87,9 @@ def compatible(lab,left,right,left_arm,right_arm):
         economy=read(folder/arm/'economy.json')
         controllers=read(folder/arm/'controllers.json')
         setup=read(folder/arm/'setup.json') if (folder/arm/'setup.json').exists() else None
+        ordinary=read(folder/arm/'ordinary.json') if (folder/arm/'ordinary.json').exists() else None
         for path in factors:
+            if ordinary is not None and path=='npc.difficulty':ordinary.pop('difficulty',None)
             if path in ('npc.difficulty','npc.negotiationsEnabled'):
                 for npc in controllers['npcs']:
                     npc.pop(path.split('.')[1],None)
@@ -96,7 +98,7 @@ def compatible(lab,left,right,left_arm,right_arm):
                 parts=path.split('.');node=economy
                 for part in parts[:-1]:node=node.get(part,{})
                 node.pop(parts[-1],None)
-        return scenario,economy,controllers,setup
+        return scenario,economy,controllers,setup,ordinary
     return normalized(left,left_arm)==normalized(right,right_arm)
 
 

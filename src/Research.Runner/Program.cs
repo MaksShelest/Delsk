@@ -19,7 +19,7 @@ try
     for (int i = 0; i < args.Length; i += 2)
     {
         if (i + 1 >= args.Length || args[i] is not ("--scenario" or "--output" or "--script" or "--mode" or "--seed" or
-            "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers" or "--model-mode" or "--model-config" or "--economy" or "--new-game" or "--validate-only" or "--profile" or "--human-ballot" or "--research" or "--research-setup" or "--model-wait"
+            "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers" or "--model-mode" or "--model-config" or "--economy" or "--new-game" or "--validate-only" or "--profile" or "--human-ballot" or "--research" or "--research-setup" or "--model-wait" or "--progress"
 #if DELSK_DEVELOPER
             or "--research-modifications"
 #endif
@@ -27,9 +27,9 @@ try
             throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--economy config/economy.json] [--new-game OPTIONS_JSON (new baseline/hybrid only)] [--validate-only true] [--profile true] [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|stopped-elections|physical-automation|participant-trade|food-chain|support|baseline|hybrid|model-safety] [--mode headless|paced] [--model-mode off|ollama --model-config PATH] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
         if (!options.TryAdd(args[i], args[i + 1])) throw new ArgumentException("Duplicate argument");
     }
-    foreach (string flag in new[] { "--profile", "--validate-only", "--research", "--model-wait", "--recover-backup" })
+    foreach (string flag in new[] { "--profile", "--validate-only", "--research", "--model-wait", "--recover-backup", "--progress" })
         if (options.TryGetValue(flag,out var value) && !bool.TryParse(value,out _)) throw new ArgumentException(flag + " requires true or false");
-    foreach(string flag in new[]{"--profile","--validate-only","--research","--model-wait","--recover-backup"})
+    foreach(string flag in new[]{"--profile","--validate-only","--research","--model-wait","--recover-backup","--progress"})
         if(options.ContainsKey(flag))options[flag]=bool.Parse(options[flag]).ToString().ToLowerInvariant();
     if ((options.ContainsKey("--load") || options.ContainsKey("--replay")) &&
         (options.GetValueOrDefault("--profile","false") == "true" || options.GetValueOrDefault("--validate-only","false") == "true"))
@@ -154,6 +154,7 @@ try
     bool waitForModel=options.GetValueOrDefault("--model-wait")=="true";
     if(observe && (target is null || options.GetValueOrDefault("--profile")=="true"))throw new ArgumentException("Research recording requires --ticks and no --profile");
     using var observer=observe?new ResearchObservation(directory,session,definition,target!.Value):null;
+    var progress=options.GetValueOrDefault("--progress")=="true"?new RunProgress(directory,session,target??definition.MaxTicks):null;
     if(waitForModel)mode="ResearchWaitAtDecision-v1";
     try
     {
@@ -179,7 +180,7 @@ try
                 observer?.Boundary();
                 while(waitForModel && session.WaitingForModel)
                 {observer?.Boundary();models.ProgressWaiting();observer?.Progress("waiting-model");Thread.Sleep(50);}
-                long prior=session.Engine.Tick;session.Step();
+                long prior=session.Engine.Tick;session.Step();progress?.Write();
                 if(session.Engine.WaitingForBallots)
                 {
                     if(!session.HasControllers && (session.PlaybackFinalTick is null || prior==session.Engine.Tick))throw new InvalidOperationException("ElectionWaitingForBallots");
@@ -197,6 +198,7 @@ try
             observer?.Capture(); // Include recorded inputs at the final barrier.
         }
         else RunScript(session, definition, script);
+        progress?.Write(true,"exporting");
         // Research profiles may deliberately eliminate profitable production. Fixed fixture targets are not economic rules.
         if (definition.EconomyProfileId is null) BaselineValidation.Check(session,definition);
         if (saveTick.HasValue && !saved) throw new ArgumentException("Checkpoint tick was not reached");
@@ -210,7 +212,7 @@ try
     }
     catch (Exception ex)
     {
-        observer?.Progress("failed");
+        observer?.Progress("failed");progress?.Write(true,"failed");
         watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, "failed", ex.Message, models.Metadata);
         throw;
     }
@@ -218,7 +220,7 @@ try
     watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, modelMetadata: models.Metadata, economyProvenance: economics?.VNext is { } provenance ? new { Metadata=provenance, ProfileFileSha256=VNextBalanceReader.Digest(economyBytes!), ResolvedConfigHash=session.Engine.ConfigHash } : null,startupMilliseconds:startupMilliseconds);
     if (economics is not null)
         File.WriteAllText(Path.Combine(directory,"economy-profile.json"),JsonSerializer.Serialize(economics,new JsonSerializerOptions(SimulationJson.Options) {WriteIndented=true}));
-    observer?.Progress("completed");
+    observer?.Progress("completed");progress?.Write(true,"completed");
     Console.WriteLine(JsonSerializer.Serialize(new { Status = "succeeded", Tick = session.Engine.Tick,
         StateHash = session.Engine.ComputeStateHash(), Output = Path.GetFullPath(directory), CheckpointSaved = saved }, SimulationJson.Options));
     return 0;
