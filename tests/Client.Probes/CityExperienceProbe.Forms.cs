@@ -72,5 +72,15 @@ public partial class CityExperienceProbe
         await Click(Named<Button>("NoticeOpen_"+ready.Key.Replace(':','_')));Check(s.Engine.ComputeStateHash()==before,"Opening completed work granted another reward");
         Check(All(_app).OfType<HouseholdObjectCard>().Any(c=>c.IsVisibleInTree()),"Completed work did not open the real object card");
         await Capture("work-"+_language);_checks.Add("real completed construction to its card, read state without repeated economic effect");
+
+        await Prepared(fixtures,"road-built");s=Session;var road=Field<CityNotice[]>(_app,"_cityNotices").Single(n=>n.Target=="road");before=s.Engine.ComputeStateHash();
+        await Click(Named<Button>("NoticeOpen_"+road.Key.Replace(':','_')));var cell=road.Position!.Value;
+        Check(Field<TabletState>(_app,"_tabletState").Kind==TabletKind.CityMap,"Road completion did not open city map");
+        var roadMap=Named<CityMapPanel>("FullCityMap");Check(roadMap.Canvas.State.SelectedKey==$"road:{cell.X}:{cell.Z}","Road notice lost its completed cell");
+        var segment=Field<CityMapFrame>(roadMap,"_map").Objects.Single(o=>o.Key==roadMap.Canvas.State.SelectedKey);
+        Check(segment.Contributions!.Select(c=>c.Builder.Value).SequenceEqual(new long[]{0,1}),"Road deep link lost city or private contribution");
+        Check(s.Engine.ComputeStateHash()==before,"Road notification granted another reward");
+        var details=Field<Label>(roadMap,"_details");Check(details.Text.Contains("90%")&&details.Text.Contains("100%"),"Road card does not explain retained revenue rights");await Reveal(details);await Capture("road-work-"+_language);
+        _checks.Add("self-funded road completion notice, full-map deep link, retained city/private contributions and no repeated reward");
     }
 }

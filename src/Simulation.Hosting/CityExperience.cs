@@ -46,8 +46,10 @@ public static class CityNotices
             var e=own.Enterprises.FirstOrDefault(e=>e.OwnerId.Value==actor&&e.Workshops.Any(w=>w.Id==t.Workshop));if(e is null)continue;
             string key=$"technology:{t.Workshop}:{t.Version}";notices.Add(new(key,"work","building",e.Id.Value,"workshop",t.Version,0,!read.Seen(key),true));
         }
-        foreach(var order in own.Roads?.Orders.Where(o=>o.Assignee==actor&&o.PaidTick>0)??[])
-        {string key="road-work:"+order.Id;notices.Add(new(key,"work","road",order.Id,"road",order.Level,0,!read.Seen(key),true,Position:order.Cell));}
+        // Completed contributions cover both city commissions and self-funded work.
+        // A commission is the same completed stage, not a second completion notice.
+        foreach(var road in own.Roads?.Cells??[])foreach(var contribution in road.Contributions.Where(c=>c.Builder.Value==actor))
+        {string key=$"road-work:{road.Cell.X}:{road.Cell.Z}:{contribution.Level}";notices.Add(new(key,"work","road",contribution.VehicleId,"road",contribution.Level,0,!read.Seen(key),true,Position:road.Cell));}
         foreach(var quest in own.Development?.Quests.Where(q=>q.Owner.Value==actor&&q.Status=="Completed")??[])
         {string key="quest:"+quest.Id;notices.Add(new(key,"work","quests",quest.Id,quest.ItemId,quest.Delivered,0,!read.Seen(key),true));}
         foreach(var inventory in own.Inventories.Where(i=>i.OwnerId.Value==actor))foreach(var lot in inventory.Overflow??[])

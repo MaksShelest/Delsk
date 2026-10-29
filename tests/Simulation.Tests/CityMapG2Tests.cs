@@ -45,6 +45,10 @@ public class CityMapG2Tests
         var batch=s.Engine.InspectRoads()!.Works.Single().Batch!;s.AdvanceTo(batch.StartedTick+24);
         var road=Map(s).Objects.Single(o=>o.Kind=="road"&&o.Entry==batch.Cell);Assert.Equal(2,road.Level);Assert.Equal(new long[]{0,1},road.Contributions!.Select(c=>c.Builder.Value));
         Assert.True(CityMap.Visible(road,CityLayer.Roads,1));Assert.False(CityMap.Visible(road,CityLayer.Roads,2));
+        var read=new CityReadState();var notice=Assert.Single(CityNotices.Read(s.Engine.Configuration(),PlayerDesk.Read(s.Engine,new(1)),read),n=>n.Target=="road"&&n.Position==batch.Cell);
+        Assert.Equal(2,notice.Quantity);Assert.True(notice.Unread);string before=s.Engine.ComputeStateHash();read.MarkSeen(notice.Key);
+        Assert.False(CityNotices.Read(s.Engine.Configuration(),PlayerDesk.Read(s.Engine,new(1)),read).Single(n=>n.Key==notice.Key).Unread);Assert.Equal(before,s.Engine.ComputeStateHash());
+        CityExperienceG2Tests.Evidence(s,"road-built");
         Assert.Equal(JsonSerializer.Serialize(road,SimulationJson.Options),JsonSerializer.Serialize(Map(CheckpointStore.Decode(CheckpointStore.Encode(s))).Objects.Single(o=>o.Key==road.Key),SimulationJson.Options));
     }
     [Fact]public void AcceptedServiceShowsOnlyItsPartiesTheAgreedRoute()
