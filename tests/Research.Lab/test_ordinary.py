@@ -19,7 +19,7 @@ class OrdinaryTests(unittest.TestCase):
   cmd=command(self.root/key,j,self.root/'out');self.assertNotIn('--controllers',cmd);self.assertNotIn('--seed',cmd);self.assertNotIn('--model-wait',cmd)
   options=json.loads(Path(cmd[cmd.index('--new-game')+1]).read_text());self.assertEqual(dict(npcCount=6,difficulty='Hard',seed=42),options)
  def test_mixed_overrides_and_ignored_factors_are_rejected(self):
-  for change in [dict(controllers='scenarios/baseline-controllers.json'),dict(participants=[]),dict(composition=[]),dict(ordinaryNpcCount=True),dict(ordinaryNpcCount=11),dict(factors=[dict(path='npc.negotiationsEnabled',values=[True])])]:
+  for change in [dict(controllers='scenarios/baseline-controllers.json'),dict(participants=[]),dict(composition=[]),dict(ordinaryNpcCount=True),dict(ordinaryNpcCount=1),dict(ordinaryNpcCount=2),dict(ordinaryNpcCount=11),dict(factors=[dict(path='npc.negotiationsEnabled',values=[True])])]:
    with self.subTest(change=change),self.assertRaises(ValueError):expand(self.plan|change,self.root)
  def test_pairing_keeps_roster_and_declared_difficulty_distinct(self):
   lab=Lab(self.root,lambda *a:(0,{}));a=lab.enqueue(self.plan);b=lab.enqueue(self.plan|dict(ordinaryNpcCount=10))

@@ -8,10 +8,13 @@ from research_lab import ROOT,read,write
 from full_economy_metrics import measure
 
 def checkpoint_bytes(path):
- envelope=read(path);size=0
+ if path.stat().st_size>64*1024*1024:raise ValueError('Checkpoint exceeds existing envelope limit')
+ envelope=json.loads(path.read_text(encoding='utf-8'));size=0
  if envelope['formatVersion']!=2:return dict(fileBytes=path.stat().st_size,decodedBytes=None)
  with gzip.GzipFile(fileobj=io.BytesIO(base64.b64decode(envelope['payloadJson']))) as stream:
-  for block in iter(lambda:stream.read(1024*1024),b''):size+=len(block)
+  for block in iter(lambda:stream.read(1024*1024),b''):
+   size+=len(block)
+   if size>512*1024*1024:raise ValueError('Checkpoint exceeds existing decoded limit')
  return dict(fileBytes=path.stat().st_size,decodedBytes=size)
 
 def main():
@@ -29,6 +32,7 @@ def main():
    for record in value['segments']:
     if 'stateHash' not in record:continue
     folder=Path(record['result']);checkpoint=Path(record['checkpoint'])
+    if hashlib.sha256(checkpoint.read_bytes()).hexdigest()!=record['checkpointSha256']:raise ValueError('Original checkpoint bytes changed')
     reanalysis.append(dict(tick=record['targetTick'],metrics=measure(folder),checkpoint=checkpoint_bytes(checkpoint)))
    value['finalAnalysis']=reanalysis;value['analysisSha256']=hashlib.sha256((ROOT/'scripts/full_economy_metrics.py').read_bytes()).hexdigest();trajectories[name]=value
  write(out/'long-trajectories.json',trajectories)

@@ -148,8 +148,8 @@ def expand(plan, workspace):
     if not isinstance(plan['factors'], list) or len(plan['factors']) > 6:
         raise ValueError('At most 6 factors')
     ordinary='ordinaryNpcCount' in plan
-    if ordinary and (not integer(plan['ordinaryNpcCount'],1,10) or plan['mode']!='algorithmic' or any(k in plan for k in ('controllers','participants','composition'))):
-        raise ValueError('Ordinary setup requires 1..10 NPC, algorithmic mode and no controllers/participants/composition override')
+    if ordinary and (not integer(plan['ordinaryNpcCount'],3,10) or plan['mode']!='algorithmic' or any(k in plan for k in ('controllers','participants','composition'))):
+        raise ValueError('Ordinary setup requires 3..10 NPC, algorithmic mode and no controllers/participants/composition override')
     if ordinary and any(f.get('path')=='npc.negotiationsEnabled' for f in plan['factors']):
         raise ValueError('Negotiation override is not an OrdinaryGameOptions setting')
     axes = [values(f) for f in plan['factors']]

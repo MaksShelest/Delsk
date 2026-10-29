@@ -73,3 +73,17 @@
   instead of raw profile MoveTicksPerCell1; do not "fix" it from raw config alone.
   Movement event intervals measured separately: at7200 roughly5458–5886 active
   ticks in completed movement per NPC, median trip115ticks. Still one trajectory.
+- Small long: last fully audited t10800 (20production batches; no tierII/questXP).
+  Envelope41707526bytes, decoded496785540bytes (<536870912 unchanged limit).
+  Next target12600 actual timeout900.585s/124. Last heartbeat12260, delta1460
+  ticks/872.636s after load, peak5065453568bytes; no model/ballot wait. This is a
+  measured budget/throughput blocker, NOT a proven CheckpointTooLarge exception.
+  Highest completed-process peak so far5847019520bytes. No OOM recorded.
+- Pipeline2 retains stdout/stderr/tracebacks per phase. Large first1800 and load
+  to3600 completed with audits; continuous3600 proof running. Short matrix still
+  paused23completed while heavy work is serial; it resumes automatically afterward.
+- Large persisted queue reader tested above2MiB while plan reader still rejects it;
+  protocol metadata-only update explicitly adopted after23worlds. Previous inputs
+  retained in study-protocol.previous-1.json. Plan/seeds/balance/simulation/DLLs same.
+  Unit13:57pass/5.144s. Source4 044f3ce CI core40823770141, Windows40823770065;
+  Windows2success, Core still progressing. No final acceptance claimed yet.
