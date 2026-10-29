@@ -22,7 +22,7 @@ for name in sorted(set(names)):
     if source.is_file() and (name.startswith(('src/','config/','scenarios/','docs/vnext/')) or name in ['Directory.Build.props','Directory.Build.targets','global.json']):
         dest=stage/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,dest);
         if not name.startswith('docs/vnext/') or name=='docs/vnext/data/BALANCE_VNEXT.json':inputs[name]=hashlib.sha256(source.read_bytes()).hexdigest()
-for name in ['tests/Client.Probes/CityExperienceProbe.cs','tests/Client.Probes/CityExperienceProbe.Forms.cs','tests/Client.Probes/ServiceRunProbe.cs','tools/AssemblyAudit/Program.cs','scripts/check_city_experience_ui.py']:
+for name in ['tests/Client.Probes/CityExperienceProbe.cs','tests/Client.Probes/CityExperienceProbe.Forms.cs','tests/Client.Probes/ServiceRunProbe.cs','tools/AssemblyAudit/Program.cs','scripts/check_city_experience_ui.py','scripts/prepare_godot_asset_import.py','scripts/reuse_godot_imports.py']:
     if (ROOT/name).exists():inputs[name]=hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
 marker.write_text('Owned isolated G2 ordinary UI stage\n',encoding='utf-8')
 for name in ['CityExperienceProbe.cs','CityExperienceProbe.Forms.cs','CityExperienceProbe.tscn','ServiceRunProbe.cs','ServiceRunProbe.tscn']:
@@ -39,8 +39,15 @@ probe('CityExperienceProbe')
 if a.fixtures:probe('ServiceRunProbe')
 if (ROOT/'tests/Client.Probes/CityExperienceProbe.Forms.cs').exists():shutil.copyfile(ROOT/'tests/Client.Probes/CityExperienceProbe.Forms.cs',project/'CityExperienceProbe.Forms.cs')
 check('probe-build',180,['dotnet','build',project/'Delsk.Client.csproj','--no-restore','--disable-build-servers','-m:1'])
-if a.asset_cache:check('asset-cache',60,[sys.executable,ROOT/'scripts/reuse_godot_imports.py','--source',a.asset_cache,'--target',project,'--report',out/(prefix+'-asset-cache.json')])
-check('import',120,[a.godot,'--headless','--path',project,'--editor','--import'])
+cache=a.asset_cache
+if cache is None:
+    # Reuse the ordinary Windows gate's measured workaround: import actual assets
+    # without initializing a Mono editor project. A timeout is never accepted.
+    cache=out/('assets-'+prefix)
+    check('asset-stage',30,[sys.executable,ROOT/'scripts/prepare_godot_asset_import.py','--source',project,'--output',cache,'--report',out/(prefix+'-asset-stage.json')])
+    check('import',120,[a.godot,'--headless','--path',cache,'--editor','--import','--quit'])
+check('asset-cache',60,[sys.executable,ROOT/'scripts/reuse_godot_imports.py','--source',cache,'--target',project,'--report',out/(prefix+'-asset-cache.json')])
+check('asset-completeness',30,[sys.executable,ROOT/'scripts/reuse_godot_imports.py','--source',project,'--verify-only','--report',out/(prefix+'-asset-completeness.json')])
 env=os.environ.copy()
 if a.display:env.update(DISPLAY=a.display,LIBGL_ALWAYS_SOFTWARE='1')
 cases=[]
@@ -67,6 +74,6 @@ if a.fixtures:
     check('service-runs-logs',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks'/(prefix+'-service-runs')])
     cases.append(dict(status='succeeded',prepared=True,scope='Existing F2 native delivery execution/partial payment/cancellation/restore probe on the same final client source, RU/EN'))
 assert all(hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest for name,digest in inputs.items()),'Sources changed during the native gate'
-(out/(prefix+'-inputs.json')).write_text(json.dumps(dict(inputs=inputs,stageOnlyChanges=['serial editor import','isolated forbidden probe','isolated per-case user data directory'],scope='Exact source digests; asset cache verified separately'),indent=2)+'\n',encoding='utf-8')
+(out/(prefix+'-inputs.json')).write_text(json.dumps(dict(inputs=inputs,stageOnlyChanges=['verified identical asset import in an isolated project without Mono editor initialization','isolated forbidden probe','isolated per-case user data directory'],scope='Exact source digests; asset cache verified separately'),indent=2)+'\n',encoding='utf-8')
 (out/(prefix+'-gate.json')).write_text(json.dumps(dict(status='succeeded',requestedCases=a.case,cases=cases,matchedInputs=len(inputs),scope='Ordinary native window with synthetic keyboard/mouse/touch input; no physical Android/device assertion'),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print('G2 native city experience passed:',len(cases),'cases')
