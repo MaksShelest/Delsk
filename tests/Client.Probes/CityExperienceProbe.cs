@@ -65,10 +65,10 @@ public partial class CityExperienceProbe : Control
         Input.ParseInputEvent(new InputEventScreenTouch{WindowId=window,Index=0,Position=a,Pressed=false});await Frames();
         Check(prefs.Zoom>zoom,"Two-finger gesture did not zoom");Check(prefs.SelectedKey==selected,"Pinch emitted a ghost selection");Check(Session.CommandTape.Length==commands,"Map input submitted a world command");
         await Click(Named<Button>("MapFilters"));await Click(Named<CheckButton>("MapLayerResources"));Check(!CityMap.Visible(resource,prefs.Layers,0),"Layer filter did not hide resource");await Click(Named<CheckButton>("MapLayerResources"));
-        var selector=Named<OptionButton>("MapParticipant");await Click(selector);Check(selector.GetPopup().Visible,"Participant popup did not open; rect="+selector.GetGlobalRect()+" mouse="+GetGlobalMousePosition()+" focus="+GetViewport().GuiGetFocusOwner()?.Name);await Press(Key.Up);await Press(Key.Enter);await Frames();Check(prefs.Participant==frame.Participants[^1],"Last participant filter did not apply");await Click(selector);await Press(Key.Down);await Press(Key.Enter);await Frames();Check(prefs.Participant==0,"All-participants filter did not restore");
+        await Click(Named<Button>("MapParticipant_"+frame.Participants[^1]));Check(prefs.Participant==frame.Participants[^1],"Last participant filter did not apply");
+        var all=Named<Button>("MapParticipant_0");await Reveal(all);all.GrabFocus();await Press(Key.Enter);Check(prefs.Participant==0,"Keyboard all-participants filter did not restore");
+        Check(All(panel).OfType<Button>().Count(b=>b.Name.ToString().StartsWith("MapParticipant_"))==count+2,"Participant filter misses final NPC");
         await Click(Named<Button>("MapFilters"));await Reveal(canvas);
-        // Every roster entry remains selectable; metadata is public identity only.
-        Check(selector.ItemCount==count+2,"Participant filter misses final NPC");
         await Click(Named<Button>("TabletHelp"));Check(Session.Paused,"Help did not pause");await Press(Key.Escape);Check(Field<TabletState>(_app,"_tabletState").Kind==TabletKind.CityMap,"Help close lost map");
         Check(ReferenceEquals(prefs,Named<CityMapPanel>("FullCityMap").Canvas.State)&&prefs.SelectedKey==selected,"Help reset selection/viewport");
         Check(Session.Engine.Tick==tick&&Session.Engine.ComputeStateHash()==hash,"Map/help changed the economy");await Capture("map-"+_language+"-"+width);

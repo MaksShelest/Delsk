@@ -11,7 +11,9 @@ public partial class CityMapPanel : VBoxContainer
     private readonly Func<Cell,MovementGuide> _route;
     private readonly CityMapPreferences _state;
     public CityMapCanvas Canvas {get;}
-    private readonly OptionButton _participant=new(){Name="MapParticipant"},_objects=new(){Name="MapObjects"};
+    private readonly OptionButton _objects=new(){Name="MapObjects"};
+    private readonly HFlowContainer _participant=new(){Name="MapParticipants"};
+    private readonly Label _participantCaption=Wrap();
     private readonly Label _legend=Wrap(),_details=Wrap(),_routeInfo=Wrap();
     private readonly HFlowContainer _owners=new();
     private readonly Button _open=new(){Name="MapOpenObject"},_walk=new(){Name="MapNavigate"};
@@ -26,7 +28,7 @@ public partial class CityMapPanel : VBoxContainer
         toolbar.AddChild(Button("MapMe",L("Ко мне","Find me"),()=>{if(_view is null)return;_state.Center(_view.Participant.Position.X+.5,_view.Participant.Position.Z+.5);Canvas!.Zoom(2); }));
         var filters=new VBoxContainer{Visible=false};
         toolbar.AddChild(Button("MapFilters",L("Фильтры ▾","Filters ▾"),()=>filters.Visible=!filters.Visible));AddChild(filters);
-        filters.AddChild(_participant);_participant.ItemSelected+=i=>{_state.Participant=_participants[i];Canvas!.QueueRedraw();UpdateDetails();};
+        filters.AddChild(_participantCaption);filters.AddChild(_participant);
         var layers=TabletDesign.Flow();filters.AddChild(layers);
         foreach(var layer in new[]{CityLayer.Resources,CityLayer.Industry,CityLayer.Property,CityLayer.Roads,CityLayer.Services,CityLayer.Deliveries,CityLayer.People})
         {var toggle=new CheckButton{Name="MapLayer"+layer,Text=LayerTitle(layer),ButtonPressed=(_state.Layers&layer)!=0,CustomMinimumSize=new(0,44)};toggle.Toggled+=on=>{_state.Layers=on?_state.Layers|layer:_state.Layers&~layer;Canvas!.QueueRedraw();UpdateDetails();};layers.AddChild(toggle);}
@@ -46,10 +48,19 @@ public partial class CityMapPanel : VBoxContainer
         var ids=new[]{0L}.Concat(map.Participants).ToArray();
         if(!_participants.SequenceEqual(ids))
         {
-            _participants=ids;_participant.Clear();_participant.AddItem(L("Все участники","All participants"));foreach(long id in map.Participants)_participant.AddItem(OwnerCaption(id));_participant.Select(Math.Max(0,Array.IndexOf(ids,_state.Participant)));
+            _participants=ids;
+            foreach(Node child in _participant.GetChildren()){_participant.RemoveChild(child);child.QueueFree();}
+            var group=new ButtonGroup{AllowUnpress=false};
+            foreach(long id in ids)
+            {
+                var choice=new Button{Name="MapParticipant_"+id,Text=id==0?L("Все","All"):"#"+id,TooltipText=id==0?L("Все участники","All participants"):OwnerCaption(id),ToggleMode=true,ButtonGroup=group,CustomMinimumSize=new(44,44)};
+                choice.SetPressedNoSignal(id==_state.Participant);
+                choice.Toggled+=on=>{if(!on)return;_state.Participant=id;Canvas.QueueRedraw();UpdateDetails();};_participant.AddChild(choice);
+            }
             foreach(Node child in _owners.GetChildren()){_owners.RemoveChild(child);child.QueueFree();}
             foreach(long id in map.Participants){var row=new HBoxContainer();row.AddChild(new ColorRect{Color=MapSymbols.ActorColor(id,id==map.Viewer),CustomMinimumSize=new(16,16),SizeFlagsVertical=SizeFlags.ShrinkCenter});row.AddChild(new Label{Text=OwnerCaption(id)});_owners.AddChild(row);}
         }
+        _participantCaption.Text=L("По участнику: ","By participant: ")+(_state.Participant==0?L("Все участники","All participants"):OwnerCaption(_state.Participant));
         Canvas.ShowData(map);Canvas.CustomMinimumSize=new(220,Math.Clamp(GetViewportRect().Size.Y*.43f,230,570));
         UpdateDetails();_walk.Disabled|=pending;_open.Disabled|=pending;
         _legend.Text=L("R ресурс · I уровень объекта · V машина · D услуги · → поставка. Обводка — участок, точка — участник. Цвет собственника совпадает с его цветом в мире.","R resource · I object level · V vehicle · D service · → delivery. Outline: plot; dot: participant. Owner colours match the world.")+"\n"+
@@ -77,6 +88,7 @@ public partial class CityMapPanel : VBoxContainer
     private string Model(string id)=>_view?.Fleet?.Models.FirstOrDefault(m=>m.Id==id)?.Name??id;
     private void UpdateDetails(bool refreshChoices=true)
     {
+        _participantCaption.Text=L("По участнику: ","By participant: ")+(_state.Participant==0?L("Все участники","All participants"):OwnerCaption(_state.Participant));
         var selected=Selected;if(selected is null){_details.Text=L("Выберите объект или клетку. Масштаб и фильтры сохраняются при обновлении.","Select an object or cell. Live updates preserve zoom and filters.");_open.Disabled=_walk.Disabled=true;return;}
         if(selected.Layer!=0&&!CityMap.Visible(selected,_state.Layers,_state.Participant)){_details.Text=L("Выбранный объект скрыт фильтром. Выбор сохранён.","The selected object is hidden by a filter. Selection is retained.");_open.Disabled=_walk.Disabled=true;_guide=null;_objects.Visible=false;if(_map is not null)Canvas.ShowData(_map);return;}
         if(refreshChoices&&_map is not null)SetChoices(CityMap.At(_map,selected.Entry,_state.Layers,_state.Participant));
