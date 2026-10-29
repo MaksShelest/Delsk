@@ -84,7 +84,7 @@ public partial class Playfield
     }
     private string ModelTitle(string key)=>key switch
     {
-        "shop"=>L("Торговая лавочка","Trading stall"),"capital"=>L("Ратуша и терминал","Town hall and terminal"),"truck"=>L("Грузовик","Delivery truck"),"equipment"=>L("Добывающая техника","Harvesting equipment"),
+        "shop"=>L("Торговая лавочка","Trading stall"),"capital"=>L("Ратуша","Town hall"),"terminal"=>L("Грузовой терминал","Freight terminal"),"dealership"=>L("Автосалон столицы","Capital dealership"),"truck"=>L("Грузовик","Delivery truck"),"equipment"=>L("Добывающая техника","Harvesting equipment"),
         _ when key.StartsWith("resource:",StringComparison.Ordinal)=>L("Ресурс: ","Resource: ")+PlayerText.Item(_language,key[9..]),
         _=>PlayerText.Building(_language,key)
     };

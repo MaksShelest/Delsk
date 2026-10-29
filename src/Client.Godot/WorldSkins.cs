@@ -29,15 +29,21 @@ public static class WorldSkins
     public static Node3D Person(long actor,bool human,string you,string language)
     {
         string name=ActorName(actor,language),caption=human?you+" · "+name:name;
-        if(Preferences.PeopleSet==AppearancePreferences.Cozy && Model(AppearanceCatalog.People[Preferences.ForActor(actor)].Asset,.38f,reverse:true,feet:true) is {} model)
+        Node3D geometry;
+        if(Preferences.PeopleSet==AppearancePreferences.Cozy && Model(AppearanceCatalog.People[Preferences.ForActor(actor)].Asset,1,reverse:true) is {} model)geometry=model;
+        else
         {
-            model.AddChild(new Label3D { Name="Caption", Text=caption, FontSize=24, PixelSize=.004f, Position=new(0,1.01f,0), Billboard=BaseMaterial3D.BillboardModeEnum.Enabled, OutlineSize=5, Modulate=Colors.White });
-            return model;
+            geometry=WorldModels.Person(human?new("eef0dc"):MapSymbols.ActorColor(actor,false),caption);
+            foreach(var label in geometry.GetChildren().OfType<Label3D>()){geometry.RemoveChild(label);label.Free();}
         }
-        var original=Classic(WorldModels.Person(human?new("eef0dc"):MapSymbols.ActorColor(actor,false),caption));
-        foreach(var label in original.GetChildren().OfType<Label3D>()){label.Name="Caption";label.FontSize=24;label.PixelSize=.004f;}
+        var original=WorldProportions.Fit(geometry,new(WorldProportions.PersonWidth,WorldProportions.PersonHeight,WorldProportions.PersonWidth));
+        original.Name="Appearance";original.SetMeta("skin_set",Preferences.PeopleSet);
+        if(Preferences.PeopleSet==AppearancePreferences.Cozy)original.SetMeta("skin_id",AppearanceCatalog.People[Preferences.ForActor(actor)].Asset);
+        original.AddChild(new Label3D{Name="Caption",Text=caption,FontSize=24,PixelSize=.0028f,Position=new(0,WorldProportions.CaptionHeight,0),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,OutlineSize=5,Modulate=Colors.White});
         return original;
     }
+    public static Node3D Civic(CivicSite site)=>WorldModels.Civic(site,Preferences.ForModel(site.Kind=="town_hall"?"capital":site.Kind)==AppearancePreferences.Cozy);
+
     public static Node3D Resource(PresentationMarker marker)
     {
         if(Preferences.ForModel("resource:"+marker.Label)==AppearancePreferences.Cozy)
@@ -49,6 +55,7 @@ public static class WorldSkins
     }
     public static Node3D Building(PresentationMarker marker)
     {
+        if(marker.Kind=="capital")return WorldModels.EnterpriseExtent(marker,Preferences.ForModel("capital")==AppearancePreferences.Cozy?WorldModels.LegacyTownHall(true):Classic(WorldModels.LegacyTownHall(false)));
         string id=marker.Kind=="production"?marker.Label:marker.Kind;
         string key=id switch {"sawmill"=>"Sawmill","bakery"=>"Bakery","dairy"=>"Dairy","sugar-factory"=>"SugarFactory","confectionery"=>"Confectionery","shop"=>"MarketStall","capital"=>"CapitalTownHall",_=>""};
         if(key.Length>0 && Preferences.ForModel(id)==AppearancePreferences.Cozy)
@@ -64,15 +71,16 @@ public static class WorldSkins
     }
     public static Node3D Truck(bool loaded)
     {
-        if(Preferences.ForModel("truck")==AppearancePreferences.Cozy && Model(loaded?"DeliveryTruck":"DeliveryTruckEmpty",.18f,reverse:true) is {} model)return model;
-        return Classic(WorldModels.Truck(loaded));
+        if(Preferences.ForModel("truck")==AppearancePreferences.Cozy && Model(loaded?"DeliveryTruck":"DeliveryTruckEmpty",1,reverse:true) is {} model)return Fitted(model,new(.42f,.45f,.75f));
+        return Classic(Fitted(WorldModels.Truck(loaded),new(.42f,.45f,.75f)));
     }
     public static Node3D Equipment(string item,int level)
     {
-        if(Preferences.ForModel("equipment")==AppearancePreferences.Cozy && Model(item=="wood"?"ForestHarvester":"FieldHarvester",.16f,reverse:true) is {} model)
-        {AddLevel(model,level);return model;}
-        return Classic(WorldModels.Equipment(item,level));
+        if(Preferences.ForModel("equipment")==AppearancePreferences.Cozy && Model(item=="wood"?"ForestHarvester":"FieldHarvester",1,reverse:true) is {} model)
+        {AddLevel(model,level);return Fitted(model,new(.72f,.75f,.82f));}
+        return Classic(Fitted(WorldModels.Equipment(item,level),new(.72f,.75f,.82f)));
     }
+    private static Node3D Fitted(Node3D node,Vector3 size){var root=WorldProportions.Fit(node,size);root.Name="Appearance";root.SetMeta("skin_set",node.HasMeta("skin_set")?node.GetMeta("skin_set"):AppearancePreferences.Cozy);return root;}
     private static void AddLevel(Node3D root,int level)
     {
         // Existing real level only; decorative strips do not create capacity or upgrades.
@@ -83,7 +91,8 @@ public static class WorldSkins
     {
         "truck"=>Truck(true),"equipment"=>Equipment("wood",1),
         _ when key.StartsWith("resource:",StringComparison.Ordinal)=>Resource(new("resource",0,0,key[9..],0,0){ResourceStock=100,ResourceCapacity=100}),
-        "capital"=>Building(new("capital",0,0,"",0,0){Footprint=[new(0,0),new(1,0),new(2,0)]}),
+        "terminal" or "dealership"=>Civic(new CivicSite(key,key,Enumerable.Range(0,key=="terminal"?6:25).Select(i=>new Cell(i%(key=="terminal"?2:5),i/(key=="terminal"?2:5))).ToArray(),null,key=="dealership"?[new(0,3),new(1,3),new(2,3),new(3,3)]:null,[new(0,0),new(1,0),new(0,1),new(1,1)],new(0,2))),
+        "capital"=>Civic(new CivicSite("town_hall","town_hall",Enumerable.Range(0,9).Select(i=>new Cell(i%3,i/3)).ToArray(),null,null,[new(0,0),new(1,0),new(0,1),new(1,1)],new(1,2))),
         "shop"=>Building(new("shop",0,0,"shop",0,0)),
         _=>Building(new("production",0,0,key,0,0))
     };

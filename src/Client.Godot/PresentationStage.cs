@@ -81,7 +81,7 @@ public partial class PresentationStage : Node3D
             _staticKey = staticKey;
             RebuildStatic(frame);
         }
-        ShowWarehouseStock(frame);ShowRoads(frame);ShowFleet(frame,snap);ShowRoadEquipment(frame,snap,appearanceChanged);
+        ShowWarehouseStock(frame);ShowRoads(frame);ShowFleet(frame,snap,appearanceChanged);ShowRoadEquipment(frame,snap,appearanceChanged);
         var liveActors = new System.Collections.Generic.HashSet<long>();
         foreach (var actor in frame.Actors)
         {
@@ -108,7 +108,8 @@ public partial class PresentationStage : Node3D
             var caption=mover.Node.GetNodeOrNull<Label3D>("Appearance/Caption");
             if(caption is not null)
             {
-                caption.Position=new(0,1.01f+labelRow*.23f,0);
+                caption.Position=new(0,WorldProportions.CaptionHeight+labelRow*.18f,0);
+                caption.Visible=_cameraDistance<18 || actor.Human;
                 caption.Text=(actor.Human?you+" · ":"")+WorldSkins.ActorName(actor.Id,language);
             }
             if (actor.FacingX != 0 || actor.FacingZ != 0)
@@ -240,7 +241,7 @@ public partial class PresentationStage : Node3D
     {
         StaticBuildCount++;
         foreach(var stock in _stocks.Values)stock.Node.QueueFree();_stocks.Clear();
-        foreach (var node in _staticNodes) node.QueueFree();
+        foreach (var node in _staticNodes) {RemoveChild(node);node.QueueFree();}
         _staticNodes.Clear();
         _parked.Clear();
         var ground = new Node3D();
@@ -260,7 +261,7 @@ public partial class PresentationStage : Node3D
                 for(int i=1;i<=cells.Length;i++)if(i==cells.Length || cells[i].X!=cells[i-1].X+1)
                 {int length=cells[i-1].X-cells[begin].X+1;WorldModels.Part(ground,new BoxMesh{Size=new(length,.025f,.98f)},new Color("a39578"),new(cells[begin].X+(length-1)/2f,.003f,row.Key));begin=i;}
             }
-            foreach(var site in layout.CivicObjects)AddStatic(WorldModels.Civic(site));
+            foreach(var site in layout.CivicObjects)AddStatic(WorldSkins.Civic(site));
         }
         AddStatic(ground);
         _buildingStates.Clear();

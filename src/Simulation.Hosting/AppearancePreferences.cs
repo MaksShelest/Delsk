@@ -8,7 +8,7 @@ public sealed record AppearancePreferences
     public string PeopleSet { get; init; } = Cozy;
     public Dictionary<string,string> ModelSets { get; init; } = new(StringComparer.Ordinal);
     public Dictionary<long,int> ActorSkins { get; init; } = [];
-    public static readonly string[] ModelKeys = ["sawmill","bakery","dairy","sugar-factory","confectionery","shop","capital","resource:wood","resource:grain","resource:beet","resource:milk","truck","equipment"];
+    public static readonly string[] ModelKeys = ["sawmill","bakery","dairy","sugar-factory","confectionery","shop","capital","resource:wood","resource:grain","resource:beet","resource:milk","truck","equipment","terminal","dealership"];
     public static bool IsSet(string? value) => value is Classic or Cozy;
     public AppearancePreferences Normalize() => new()
     {

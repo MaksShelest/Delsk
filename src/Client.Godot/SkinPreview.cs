@@ -21,8 +21,8 @@ public partial class SkinPreview : SubViewportContainer
         if(person && model.GetMeta("skin_set").AsString()=="cozy")model.RotationDegrees=new(0,180,0);
         _world.AddChild(model);
         foreach(var label in model.GetChildren().OfType<Label3D>())label.Visible=false;
-        var target=new Vector3(capital?1:0,person ? .42f : capital ? .5f : .25f,0);
-        _camera.Size=capital ? 2.6f : person ? 1.12f : 1.55f;
+        var bounds=WorldProportions.Bounds(model);var target=bounds.GetCenter()+model.Position;
+        _camera.Size=Mathf.Max(.65f,Mathf.Max(bounds.Size.Y,Mathf.Max(bounds.Size.X,bounds.Size.Z))*1.25f);
         _camera.Position=target+new Vector3(person ? .8f : 2,person ? .4f : 1.7f,3);
         if(IsInsideTree())_camera.LookAt(target,Vector3.Up);
     }
