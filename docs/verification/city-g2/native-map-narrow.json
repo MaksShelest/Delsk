@@ -1,0 +1,68 @@
+{
+  "status": "succeeded",
+  "requestedCases": "narrow",
+  "cases": [
+    {
+      "status": "succeeded",
+      "prepared": false,
+      "map": "large-districts",
+      "npcCount": 10,
+      "language": "ru",
+      "width": 360,
+      "checks": [
+        "ordinary new game and entire roster",
+        "native full-map cell hit and wheel zoom",
+        "keyboard pan",
+        "two-finger zoom without world input or ghost tap",
+        "layer and participant filters",
+        "help/close preserve selection and time",
+        "focus pause",
+        "guide memory",
+        "skin change preserves authoritative hash",
+        "narrow setup/catalog/appearance",
+        "disk continuation"
+      ],
+      "scope": "Ordinary native Godot GUI with injected keyboard/mouse/touch events, software renderer; not a physical mobile device."
+    },
+    {
+      "status": "succeeded",
+      "prepared": true,
+      "map": "prepared",
+      "npcCount": 2,
+      "language": "ru",
+      "width": 800,
+      "checks": [
+        "invoice deep link, queued viewed flag, retained draft, actual partial payment and pending-command restore",
+        "actual incoming request, view plus acceptance in one paused preparation, service quantity draft",
+        "older own service history is paged, draft quantity is retained",
+        "overflow warning to its own storage card, local acknowledgement, physical partial rescue, unchanged expiry",
+        "real completed construction to its card, read state without repeated economic effect"
+      ],
+      "scope": "Ordinary native Godot GUI with injected keyboard/mouse/touch events, software renderer; not a physical mobile device."
+    },
+    {
+      "status": "succeeded",
+      "prepared": true,
+      "map": "prepared",
+      "npcCount": 2,
+      "language": "en",
+      "width": 800,
+      "checks": [
+        "invoice deep link, queued viewed flag, retained draft, actual partial payment and pending-command restore",
+        "actual incoming request, view plus acceptance in one paused preparation, service quantity draft",
+        "older own service history is paged, draft quantity is retained",
+        "overflow warning to its own storage card, local acknowledgement, physical partial rescue, unchanged expiry",
+        "real completed construction to its card, read state without repeated economic effect"
+      ],
+      "scope": "Ordinary native Godot GUI with injected keyboard/mouse/touch events, software renderer; not a physical mobile device."
+    },
+    {
+      "status": "succeeded",
+      "prepared": true,
+      "scope": "Existing F2 native delivery execution/partial payment/cancellation/restore probe on the same final client source, RU/EN"
+    }
+  ],
+  "matchedInputs": 679,
+  "scope": "Ordinary native window with synthetic keyboard/mouse/touch input; no physical Android/device assertion",
+  "sourceBytesMatchRef": "cde7a49e17e3ca2a457177ab15f3bacd5cb19efc"
+}

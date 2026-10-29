@@ -1,0 +1,39 @@
+{
+  "status": "succeeded",
+  "scope": "G2/P75/P79 software; physical P80 and balance P77 remain separate",
+  "runtimeTestedCode": "9ae94bf9e8e15db60765df3aae87421f06ab573b",
+  "base": "52cb5c036070af13b8f680793a1f4acc7e4b8fef",
+  "pullRequest": 72,
+  "autoMerge": false,
+  "coreCI": {
+    "run": 40796389712,
+    "jobsPassed": 29,
+    "url": "https://github.com/MaksShelest/Delsk/actions/runs/40796389712"
+  },
+  "windowsCI": {
+    "run": 40796389702,
+    "jobsPassed": 2,
+    "url": "https://github.com/MaksShelest/Delsk/actions/runs/40796389702"
+  },
+  "ordinaryG2Cases": 24,
+  "developerG2Cases": 24,
+  "pythonToolCases": 28,
+  "windowsNativeCases": 6,
+  "windowsNativeChildProcesses": 20,
+  "localPreparedMatchedInputs": 681,
+  "frozenSourceInputs": 900,
+  "unchangedFinancialInputs": 82,
+  "worldVersion": 28,
+  "sessionVersion": 3,
+  "physicalDeviceTested": false,
+  "localWideLinux": {
+    "status": "timeout retained",
+    "width": 1100,
+    "npcCount": 10,
+    "seconds": 180.168,
+    "exitCode": 124
+  },
+  "localProcesses": 170,
+  "localNonzeroProcesses": 24,
+  "sourceDigestSha256": "154672cc02dc8ca54c97942f4fbb80d5953659889e3d248ecf0a99e297824bfd"
+}

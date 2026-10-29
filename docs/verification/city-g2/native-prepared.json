@@ -1,0 +1,48 @@
+{
+  "status": "succeeded",
+  "requestedCases": "forms",
+  "cases": [
+    {
+      "status": "succeeded",
+      "prepared": true,
+      "map": "prepared",
+      "npcCount": 2,
+      "language": "ru",
+      "width": 800,
+      "checks": [
+        "invoice deep link, queued viewed flag, retained draft, actual partial payment and pending-command restore",
+        "actual incoming request, view plus acceptance in one paused preparation, service quantity draft",
+        "older own service history is paged, draft quantity is retained",
+        "overflow warning to its own storage card, local acknowledgement, physical partial rescue, unchanged expiry",
+        "real completed construction to its card, read state without repeated economic effect",
+        "self-funded road completion notice, full-map deep link, retained city/private contributions and no repeated reward"
+      ],
+      "scope": "Ordinary native Godot GUI with injected keyboard/mouse/touch events, software renderer; not a physical mobile device."
+    },
+    {
+      "status": "succeeded",
+      "prepared": true,
+      "map": "prepared",
+      "npcCount": 2,
+      "language": "en",
+      "width": 800,
+      "checks": [
+        "invoice deep link, queued viewed flag, retained draft, actual partial payment and pending-command restore",
+        "actual incoming request, view plus acceptance in one paused preparation, service quantity draft",
+        "older own service history is paged, draft quantity is retained",
+        "overflow warning to its own storage card, local acknowledgement, physical partial rescue, unchanged expiry",
+        "real completed construction to its card, read state without repeated economic effect",
+        "self-funded road completion notice, full-map deep link, retained city/private contributions and no repeated reward"
+      ],
+      "scope": "Ordinary native Godot GUI with injected keyboard/mouse/touch events, software renderer; not a physical mobile device."
+    },
+    {
+      "status": "succeeded",
+      "prepared": true,
+      "scope": "Existing F2 native delivery execution/partial payment/cancellation/restore probe on the same final client source, RU/EN"
+    }
+  ],
+  "matchedInputs": 681,
+  "scope": "Ordinary native window with synthetic keyboard/mouse/touch input; no physical Android/device assertion",
+  "sourceBytesMatchRef": "9ae94bf9e8e15db60765df3aae87421f06ab573b"
+}

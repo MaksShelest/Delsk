@@ -1,0 +1,128 @@
+{
+  "source": "9ae94bf9e8e15db60765df3aae87421f06ab573b",
+  "run": 40796389702,
+  "job": 123193766030,
+  "scope": "Six native processes and their strict log verifiers in an ordinary Windows Godot client. Injected input on a hosted VM, no physical device claim.",
+  "checks": [
+    {
+      "name": "a1-asset-cache",
+      "exit_code": 0,
+      "elapsed_seconds": 0.328,
+      "timeout_seconds": 60
+    },
+    {
+      "name": "a1-asset-completeness",
+      "exit_code": 0,
+      "elapsed_seconds": 0.219,
+      "timeout_seconds": 30
+    },
+    {
+      "name": "a1-asset-stage",
+      "exit_code": 0,
+      "elapsed_seconds": 0.203,
+      "timeout_seconds": 30
+    },
+    {
+      "name": "a1-forms-en-logs",
+      "exit_code": 0,
+      "elapsed_seconds": 0.047,
+      "timeout_seconds": 15
+    },
+    {
+      "name": "a1-forms-en",
+      "exit_code": 0,
+      "elapsed_seconds": 39.453,
+      "timeout_seconds": 180
+    },
+    {
+      "name": "a1-forms-ru-logs",
+      "exit_code": 0,
+      "elapsed_seconds": 0.078,
+      "timeout_seconds": 15
+    },
+    {
+      "name": "a1-forms-ru",
+      "exit_code": 0,
+      "elapsed_seconds": 42.157,
+      "timeout_seconds": 180
+    },
+    {
+      "name": "a1-import",
+      "exit_code": 0,
+      "elapsed_seconds": 8.297,
+      "timeout_seconds": 120
+    },
+    {
+      "name": "a1-large-districts-10-en-1100-logs",
+      "exit_code": 0,
+      "elapsed_seconds": 0.062,
+      "timeout_seconds": 15
+    },
+    {
+      "name": "a1-large-districts-10-en-1100",
+      "exit_code": 0,
+      "elapsed_seconds": 101.297,
+      "timeout_seconds": 180
+    },
+    {
+      "name": "a1-large-districts-10-ru-360-logs",
+      "exit_code": 0,
+      "elapsed_seconds": 0.047,
+      "timeout_seconds": 15
+    },
+    {
+      "name": "a1-large-districts-10-ru-360",
+      "exit_code": 0,
+      "elapsed_seconds": 76.313,
+      "timeout_seconds": 180
+    },
+    {
+      "name": "a1-ordinary-audit",
+      "exit_code": 0,
+      "elapsed_seconds": 4.891,
+      "timeout_seconds": 120
+    },
+    {
+      "name": "a1-ordinary-build",
+      "exit_code": 0,
+      "elapsed_seconds": 33.125,
+      "timeout_seconds": 180
+    },
+    {
+      "name": "a1-probe-build",
+      "exit_code": 0,
+      "elapsed_seconds": 8.688,
+      "timeout_seconds": 180
+    },
+    {
+      "name": "a1-restore",
+      "exit_code": 0,
+      "elapsed_seconds": 3.14,
+      "timeout_seconds": 180
+    },
+    {
+      "name": "a1-service-runs-logs",
+      "exit_code": 0,
+      "elapsed_seconds": 0.047,
+      "timeout_seconds": 15
+    },
+    {
+      "name": "a1-service-runs",
+      "exit_code": 0,
+      "elapsed_seconds": 9.734,
+      "timeout_seconds": 180
+    },
+    {
+      "name": "a1-small-river-6-ru-640-logs",
+      "exit_code": 0,
+      "elapsed_seconds": 0.063,
+      "timeout_seconds": 15
+    },
+    {
+      "name": "a1-small-river-6-ru-640",
+      "exit_code": 0,
+      "elapsed_seconds": 55.485,
+      "timeout_seconds": 180
+    }
+  ]
+}

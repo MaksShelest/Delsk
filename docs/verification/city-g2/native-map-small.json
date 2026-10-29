@@ -1,0 +1,31 @@
+{
+  "status": "succeeded",
+  "requestedCases": "small",
+  "cases": [
+    {
+      "status": "succeeded",
+      "prepared": false,
+      "map": "small-river",
+      "npcCount": 6,
+      "language": "ru",
+      "width": 640,
+      "checks": [
+        "ordinary new game and entire roster",
+        "native full-map cell hit and wheel zoom",
+        "keyboard pan",
+        "two-finger zoom without world input or ghost tap",
+        "layer and participant filters",
+        "help/close preserve selection and time",
+        "focus pause",
+        "guide memory",
+        "skin change preserves authoritative hash",
+        "narrow setup/catalog/appearance",
+        "disk continuation"
+      ],
+      "scope": "Ordinary native Godot GUI with injected keyboard/mouse/touch events, software renderer; not a physical mobile device."
+    }
+  ],
+  "matchedInputs": 681,
+  "scope": "Ordinary native window with synthetic keyboard/mouse/touch input; no physical Android/device assertion",
+  "sourceBytesMatchRef": "496fc77583016a6f99f3d391b8584e5321c41d2b"
+}
