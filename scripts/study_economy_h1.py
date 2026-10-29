@@ -95,8 +95,13 @@ def main():
   def compressed_measure(folder):
    result=ordinary_measure(folder);compress_turns(Path(folder));return result
   research_lab.measure=compressed_measure
- def stop(*_):lab.pause()
+ stopped=[False]
+ def stop(*_):stopped[0]=True;lab.pause()
  signal.signal(signal.SIGINT,stop);signal.signal(signal.SIGTERM,stop)
+ hold=out/'hold-before-run'
+ if hold.exists():print('Holding at a phase boundary; remove '+str(hold)+' to resume. No simulation is running.',flush=True)
+ while hold.exists() and not stopped[0]:time.sleep(1)
+ if stopped[0]:summarize(lab,out);return 0
  lab.start(retry=a.retry_failed);last=-1
  while lab.thread is not None:
   thread=lab.thread

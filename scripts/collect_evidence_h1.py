@@ -57,5 +57,9 @@ def main():
   if hashlib.sha256((ROOT/f).read_bytes()).hexdigest()!=h:changed.append(f)
  write(out/'financial-source-comparison.json',dict(baseG2='cf0784be360024b2b6874753a8d231da8b4a8f59',unchangedCount=len(financial)-len(changed),changed=changed,files=financial))
  if (root/'runtime-gate1/gate.json').exists():shutil.copyfile(root/'runtime-gate1/gate.json',out/'runtime-gate.json')
+ for source,name in [('checkpoint-probes/plan.json','checkpoint-diagnostic-plan.json'),('checkpoint-probes/diagnostic.json','checkpoint-diagnostic.json'),('zero-cash/diagnostic.json','zero-cash-diagnostic.json'),('diagnostic-control.json','diagnostic-control.json'),('host-resources.json','host-resources.json')]:
+  if (root/source).exists():shutil.copyfile(root/source,out/name)
+ for source,name in [('checkpoint-probes/diagnostic-recovered.json','checkpoint-diagnostic.json'),('checkpoint-probes/diagnostic.json','checkpoint-diagnostic-original.json'),('zero-cash-v2/diagnostic.json','zero-cash-diagnostic.json'),('recovery-control.json','recovery-control.json')]:
+  if (root/source).exists():shutil.copyfile(root/source,out/name)
  print(json.dumps(dict(processes=len(processes),nonzero=sum(p['exit_code']!=0 for p in processes),changedFinancial=changed)))
 if __name__=='__main__':main()

@@ -87,3 +87,28 @@
   retained in study-protocol.previous-1.json. Plan/seeds/balance/simulation/DLLs same.
   Unit13:57pass/5.144s. Source4 044f3ce CI core40823770141, Windows40823770065;
   Windows2success, Core still progressing. No final acceptance claimed yet.
+- Large original long also timeout900.367s/124 on target12600; last audited10800,
+  last heartbeat12414/883.5s after load. Original large10800 no completed factory;
+  material staging and cash/land/import purchases did progress. No inference that
+  every moment was model/voting-free: flags are last-sample only, not phase totals.
+- Added separately declared engineering continuation10800→11600, same frozen DLLs/
+  inputs, shorter800-tick save interval, same900s budget. Small actually returned
+  CheckpointTooLarge/exit1 (171.536s). This confirms a save-size limit under64/512;
+  the common error does not itself distinguish which check threw. Large succeeded;
+  envelope34663090/decoded427609870bytes, first factory11233/two woodworking firms,
+  no completed production yet, workforce0employed/236population at11600. This is
+  one reused world, not an extra independent economic observation.
+- First probe observer audit name accidentally included'.py'; run_check rejected
+  it before audit. Fixed names, reused large11600 without re-simulation; both actual
+  audits0. Original failed observer/partial diagnostic retained, recovery in
+  checkpoint-probes/diagnostic-recovered.json. No old budget or bound increased.
+- Initial zero-cash factor rejected stale canonical B1 projection metadata, before
+  simulation. Kept that failure. Corrected diagnostic resolves canonical G1 in C#,
+  copies settings and changes only participant cash0 plus declared research profile
+  id; asserts every other resolved value unchanged. Both real1800-tick maps passed
+  audits; all6NPC earn positive cash (small5743–7896, large4969–7659minor).
+  Prepared cases separate; source canonical82financial inputs untouched.
+- Matrix paused after27success on a real job boundary for recovery. Pending pilot
+  jobs remain ahead of appended paired jobs. Both serial diagnostics finished,
+  hold-before-run removed automatically; all120 jobs now draining. Source6 updates
+  still analysis/orchestration only; do not rebuild frozen .NET binaries.

@@ -190,6 +190,9 @@ def measure(folder):
             for lot in inv['stock']:uncollected[lot['itemId']]+=lot['quantity']
     import_removed={item:imports_purchased[item]-uncollected[item] for item in imports_purchased.keys()|uncollected.keys()}
     runs=(services.get('execution') or {}).get('runs',[])
+    workforce=collections.defaultdict(collections.Counter)
+    for group in state.get('employmentGroups',[]):
+        workforce[group['role']]['headcount']+=group['headcount'];workforce[group['role']]['capacity']+=group['capacity']
     npcs=sorted(a for a in actors if a!=1);natural=bool(scenario.get('newGame'))
     # Initial stock/buildings require a proper initial valuation; do not fabricate it for rich fixtures.
     changes=[capital[a]-initial[a] for a in npcs] if natural and not scenario.get('buildings') and not scenario.get('enterprises') else []
@@ -199,6 +202,7 @@ def measure(folder):
         vehicleCount=len(fleet.get('vehicles',[])),completedRoadStages=sum(identity(c['builder'])>0 for r in roads.get('cells',[]) for c in r['contributions']),
         roadDebtPrincipalMinor=sum(i['principalRemaining'] for i in billing.get('invoices',[])),roadDebtPenaltyMinor=sum(i['penaltyRemaining'] for i in billing.get('invoices',[])),
         resourceAvailabilitySnapshot={k:dict(v) for k,v in resources.items()},storagePressureSnapshot={k:dict(v) for k,v in pressure.items()},overflowLostUnitsByItem=dict(overflow_losses),commandRejectedReasons=dict(rejections),
+        workforceSnapshot=dict(population=state.get('population'),unemployed=state.get('unemployed'),employed=city.get('employed'),byRole={k:dict(v) for k,v in workforce.items()},definition='Final-tick headcount/capacity, not utilization over the whole run.'),
         importAvailabilitySnapshot=content.get('imports',[]),capitalDemandRemainingSnapshot=dict(demand),capitalSettlementsByItem={k:dict(v) for k,v in sales.items()},
         importsPurchasedByItem=dict(imports_purchased),importPickupStockByItem=dict(uncollected),importsNetRemovedFromPickupsByItem=import_removed,importDefinition='B1 ImportPurchased is a paid external purchase at the terminal; net removed subtracts final pickup stock and may reflect returns. Legacy market imports collected are separate.',
         trafficSnapshotReasons=dict(collections.Counter(t['reason'] for t in roads.get('traffic',[]))),maxCurrentTrafficWaitTicks=max((state['tick']-t['waitingSince'] for t in roads.get('traffic',[]) if t.get('waitingSince')),default=0),
@@ -209,7 +213,7 @@ def measure(folder):
         roi=dict(observedCapitalCashMinor=sum(a['cashCapitalSpendingMinor'] for a in actors.values()),vehicles=vehicle_returns(folder,fleet.get('vehicles',[]),services.get('orders',[]),actors,accounts),paybackTick=None,reason='Mixed enterprise/road portfolios require attributable revenue and costs. Unobserved payback stays censored; no static-margin extrapolation.'),
         definition='Actual settled receipts minus all actual goods/service settlement costs, wages/energy/lease/road/fines. Escrow funding/refunds and cash capex separate; purchased construction materials are included among goods costs, not allocated to an entity. Unsold stock, depreciation and owner opportunity cost are not accrual net profit. Idle samples do not certify no feasible action.')
     progress=load('run-progress.json',{}) or {};interval=state['tick']-progress.get('startTick',0)
-    return dict(fullEconomy=result,fullEconomyMetricsVersion=1,hostedMillisecondsPerActiveTick=(summary.get('elapsedMilliseconds',0)-(summary.get('startupMilliseconds') or 0))/interval if interval>0 else None,npcMedianCapitalChangeMinor=statistics.median(changes) if changes else None,
+    return dict(fullEconomy=result,fullEconomyMetricsVersion=1,employment=city.get('employed'),hostedMillisecondsPerActiveTick=(summary.get('elapsedMilliseconds',0)-(summary.get('startupMilliseconds') or 0))/interval if interval>0 else None,npcMedianCapitalChangeMinor=statistics.median(changes) if changes else None,
         npcOperatingReceiptResultMinor=sum(actors[a]['operatingReceiptResultMinor'] for a in npcs) if not unknown else None,
         npcOperatingAfterRoadDebtMinor=sum(actors[a]['operatingAfterRoadDebtMinor'] for a in npcs) if not unknown and all('operatingAfterRoadDebtMinor' in actors[a] for a in npcs) else None,
         firstNpcProductionTick=min((m['firstProductionTick'] for a,m in milestones.items() if a!='1' and m['firstProductionTick'] is not None),default=None))
