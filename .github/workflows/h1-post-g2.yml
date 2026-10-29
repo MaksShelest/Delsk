@@ -1,0 +1,197 @@
+name: H1 post-G2 measured study
+on:
+  pull_request:
+    types: [opened]
+    paths: ['docs/research/h1-post-g2/start.json']
+  workflow_dispatch:
+    inputs:
+      resume_run:
+        description: 'Prior run ID to resume, 0 for a new preregistered cohort'
+        default: '0'
+        required: true
+      retry_failed:
+        description: 'Explicitly retry failed/interrupted segments, retaining old attempts'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+  actions: read
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      ordinary: ${{ steps.matrix.outputs.ordinary }}
+      long: ${{ steps.matrix.outputs.long }}
+      source: ${{ steps.source.outputs.ref }}
+    steps:
+      - uses: actions/github-script@v7
+        id: source
+        env:
+          RESUME_RUN: ${{ inputs.resume_run || '0' }}
+          SOURCE_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+        with:
+          script: |
+            const fs = require('fs');
+            if (!/^\d+$/.test(process.env.RESUME_RUN)) throw Error('Invalid resume run');
+            let ref=process.env.SOURCE_REF, artifacts=[];
+            if (Number(process.env.RESUME_RUN)) {
+              const r=await github.rest.actions.getWorkflowRun({...context.repo,run_id:Number(process.env.RESUME_RUN)});
+              ref=r.data.head_sha;
+              artifacts=await github.paginate(github.rest.actions.listWorkflowRunArtifacts,{...context.repo,run_id:Number(process.env.RESUME_RUN),per_page:100});
+            }
+            fs.writeFileSync(process.env.RUNNER_TEMP+'/h1-resume.json',JSON.stringify(artifacts));
+            core.setOutput('ref',ref);
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.source.outputs.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - id: matrix
+        run: |
+          python - <<'PYCODE'
+          import json,os,sys
+          from pathlib import Path
+          sys.path.insert(0,'scripts')
+          from study_postg2_h1 import PLAN,cases
+          plan=json.loads(PLAN.read_text());old=json.loads((Path(os.environ['RUNNER_TEMP'])/'h1-resume.json').read_text())
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:
+            for phase in ['ordinary','long']:
+              rows=cases(plan,phase)
+              for row in rows:
+                matches=[a for a in old if a['name'].startswith('h1-full-'+row['id']+'-a') and not a['expired']]
+                row['artifact']=max(matches,key=lambda a:a['id'])['name'] if matches else ''
+              out.write(phase+'='+json.dumps({'include':rows},separators=(',',':'))+'\n')
+          PYCODE
+  ordinary:
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 12
+      matrix: ${{ fromJSON(needs.plan.outputs.ordinary) }}
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+      CASE_ID: ${{ matrix.id }}
+      RETRY: ${{ inputs.retry_failed && '--retry-failed' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.plan.outputs.source }}
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore prior world without substituting another source revision
+        if: matrix.artifact != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          run-id: ${{ inputs.resume_run }}
+          github-token: ${{ github.token }}
+          path: work/study/${{ matrix.id }}
+      - name: Bounded locked runner build
+        if: matrix.artifact == ''
+        run: |
+          python scripts/run_check.py --name restore --timeout 180 --log-directory work/setup -- dotnet restore src/Research.Runner/Research.Runner.csproj --locked-mode --disable-parallel -m:1
+          python scripts/run_check.py --name build --timeout 180 --log-directory work/setup -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
+      - name: Actual game segments, audits and retained runtime failures
+        run: python scripts/study_postg2_h1.py --case "$CASE_ID" --output "work/study/$CASE_ID"  $RETRY
+      - name: Package compact evidence independently from full archives
+        if: always()
+        run: python scripts/package_postg2_h1.py --source "work/study/$CASE_ID" --output work/thin
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h1-metrics-${{ matrix.id }}-a${{ github.run_attempt }}
+          path: work/thin/
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h1-full-${{ matrix.id }}-a${{ github.run_attempt }}
+          path: work/study/${{ matrix.id }}/
+          retention-days: 90
+          compression-level: 6
+  long:
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 160
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix: ${{ fromJSON(needs.plan.outputs.long) }}
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+      CASE_ID: ${{ matrix.id }}
+      RETRY: ${{ inputs.retry_failed && '--retry-failed' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.plan.outputs.source }}
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore prior world without substituting another source revision
+        if: matrix.artifact != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          run-id: ${{ inputs.resume_run }}
+          github-token: ${{ github.token }}
+          path: work/study/${{ matrix.id }}
+      - name: Bounded locked runner build
+        if: matrix.artifact == ''
+        run: |
+          python scripts/run_check.py --name restore --timeout 180 --log-directory work/setup -- dotnet restore src/Research.Runner/Research.Runner.csproj --locked-mode --disable-parallel -m:1
+          python scripts/run_check.py --name build --timeout 180 --log-directory work/setup -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
+      - name: Actual game segments, audits and retained runtime failures
+        run: python scripts/study_postg2_h1.py --case "$CASE_ID" --output "work/study/$CASE_ID" --segments 8 $RETRY
+      - name: Package compact evidence independently from full archives
+        if: always()
+        run: python scripts/package_postg2_h1.py --source "work/study/$CASE_ID" --output work/thin
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h1-metrics-${{ matrix.id }}-a${{ github.run_attempt }}
+          path: work/thin/
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h1-full-${{ matrix.id }}-a${{ github.run_attempt }}
+          path: work/study/${{ matrix.id }}/
+          retention-days: 90
+          compression-level: 6
+  collect:
+    needs: [plan, ordinary, long]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.plan.outputs.source }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: h1-metrics-*
+          merge-multiple: true
+          path: work/evidence
+      - name: Complete and censored worlds, missing/failed cases and preregistered pairs
+        run: python scripts/analyze_postg2_h1.py --study work/evidence --output work/analysis
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h1-post-g2-summary
+          path: work/analysis/
+          retention-days: 90
