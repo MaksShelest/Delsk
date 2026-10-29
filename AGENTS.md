@@ -1,3 +1,22 @@
+## Дополнительная визуальная G2,29.10.2026
+
+- Явное задание после da213bf/PR73: только пропорции, ратуша/терминал/автосалон,
+  два скина и совместимость. H1/H2 этим заданием не запускаются.
+- Runtime source5af0573, feat/vnext-g2-world-proportions, PR74 без auto merge.
+  Отчёт IMPLEMENTATION_REPORT_G2_WORLD_PROPORTIONS.md, snapshots/PNG/gates
+  verification/world-proportions-g2, ход WORKLOG_G2_WORLD_PROPORTIONS.md.
+- Только новые партии: delsk-map-design-2 / map-adapter-2, explicit Body/Entry;
+  dealer2×2 в прежней5×5 территории. Старый adapter1 сохраняет body5×3/entry,
+  пять maps без Layout не получают новую землю. Load не заменяет saved layout.
+- Оба скина используют одну геометрию; palette/mesh fitting не меняет Core.
+  Person≤.30×.48×.30; обычный display car≤.38×.46×.76, tracked≤.76×.55×.86.
+  World28/session3/Rules/financial config прежние. Legacy loading-door offsets
+  сохранены; Fleet следует настоящим координатам и двум display slots.
+- WorldProportionsProbe только owned isolated stage, запрещена AssemblyAudit.
+  Для внешнего вида нужны реальные PNG, не только bounds/hash. Прежние gates,
+  partitions/deadlines не повышать; полный локальный integration timeout120
+  сохранён как failure, не объявлять полным pass. Финальные счётчики — в gate.
+
 ## H1,29.10.2026 — ограниченное исследование завершено, P77 частично открыт
 
 - PR73 feat/vnext-h1-economy-calibration: итоговый отчёт PACKAGE_H1, инструкция

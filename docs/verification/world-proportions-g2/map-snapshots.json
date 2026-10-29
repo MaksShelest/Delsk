@@ -1,0 +1,18 @@
+{
+  "status": "succeeded",
+  "maps": [
+    {
+      "map": "small_river",
+      "sourceSha256": "7763cd07d1719c6ef597b0185a7499871c03fb3f772db83f9c5d947ab3485e5c",
+      "scenarioSha256": "e5125a5b6031453293518b59708affb7a33a176e31592ff4c5793c7398e7be82",
+      "profileSha256": "38c6c2649dc24a4793c80246165abfc6f1e03b9efcc4b4e3bf40374c70ceaa80"
+    },
+    {
+      "map": "large_districts",
+      "sourceSha256": "ea207e1f724c47437502291c267e7c990bd4b513255be3d41aeae6d882fd5392",
+      "scenarioSha256": "0c7c755d3a68868efde8286eae3cd290c1ab6364064026a949729e91f32c4dec",
+      "profileSha256": "38c6c2649dc24a4793c80246165abfc6f1e03b9efcc4b4e3bf40374c70ceaa80"
+    }
+  ],
+  "scope": "Exact source bytes and C# adapter snapshots; not runtime balance"
+}

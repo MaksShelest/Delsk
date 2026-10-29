@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup><EmbeddedResource Include="Fixtures/*.json.gz" LogicalName="Fixture.%(Filename)%(Extension)" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../scenarios/vnext/small-river.json" LogicalName="Fixture.small-river.json" /><EmbeddedResource Include="../../scenarios/vnext/large-districts.json" LogicalName="Fixture.large-districts.json" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../docs/vnext/maps/*.json" LogicalName="Fixture.%(Filename)%(Extension)" /></ItemGroup>
   <ItemGroup>

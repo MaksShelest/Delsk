@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+    "-noColor",
+    "-noLogo",
+    "-parallelMode",
+    "none",
+    "-class",
+    "Simulation.Tests.WorldProportionsG2Tests",
+    "-result-trx",
+    "/workspace/Delsk/work/final-geometry.trx"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-10-29T16:10:31.305381+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 55.907,
+  "finished_at": "2026-10-29T16:11:27.212455+00:00"
+}

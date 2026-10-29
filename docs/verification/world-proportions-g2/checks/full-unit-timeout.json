@@ -1,0 +1,26 @@
+{
+  "command": [
+    "dotnet",
+    "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+    "-noColor",
+    "-noLogo",
+    "-parallelMode",
+    "none",
+    "-class",
+    "Simulation.Tests.ControllerTests",
+    "-class",
+    "Simulation.Tests.StorageC1Tests",
+    "-class",
+    "Simulation.Tests.FoodChainTests",
+    "-class",
+    "Simulation.Tests.MapRuntimeTests",
+    "-result-trx",
+    "/workspace/Delsk/work/full-unit/tests-integration.trx"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-10-29T15:52:57.455371+00:00",
+  "timed_out": true,
+  "exit_code": 124,
+  "elapsed_seconds": 120.033,
+  "finished_at": "2026-10-29T15:54:57.488590+00:00"
+}

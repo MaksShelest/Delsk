@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+    "--path",
+    "/workspace/Delsk/work/final-native2/source/src/Client.Godot",
+    "--rendering-method",
+    "gl_compatibility",
+    "--audio-driver",
+    "Dummy",
+    "res://WorldProportionsProbe.tscn",
+    "--",
+    "--map",
+    "first",
+    "--output",
+    "/workspace/Delsk/work/final-native2/first",
+    "--verify"
+  ],
+  "timeout_seconds": 150,
+  "started_at": "2026-10-29T16:15:11.730859+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 12.095,
+  "finished_at": "2026-10-29T16:15:23.825470+00:00"
+}

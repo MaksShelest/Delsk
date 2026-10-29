@@ -17,7 +17,7 @@ public static partial class ScenarioValidation
         ArgumentNullException.ThrowIfNull(s);
         if(s.Layout is not {} l)return;
         void Require([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool valid){if(!valid)throw new ArgumentException("Invalid resolved map layout");}
-        Require(l.Version=="map-adapter-1" && !string.IsNullOrWhiteSpace(l.SourceId) && l.SourceName is {Length:>0 and <=180} &&
+        Require((l.Version is "map-adapter-1" or "map-adapter-2") && !string.IsNullOrWhiteSpace(l.SourceId) && l.SourceName is {Length:>0 and <=180} &&
             System.Text.RegularExpressions.Regex.IsMatch(l.SourceSha256??"","\\A[0-9a-f]{64}\\z") && l.MaxParticipants is >=4 and <=64 && s.Participants.Length<=l.MaxParticipants);
         HashSet<Cell> Cells(Cell[] cells,bool nonempty=true)
         {Require(cells is not null && (!nonempty || cells.Length>0));var set=cells!.ToHashSet();Require(set.Count==cells.Length && set.All(c=>c.X>=0&&c.Z>=0&&c.X<s.MapWidth&&c.Z<s.MapHeight));return set;}
@@ -38,7 +38,16 @@ public static partial class ScenarioValidation
         {Id(site.Id);var c=Cells(site.Footprint);var body=Cells(site.Body);
             if(site.Kind=="town_hall")Require(body.Count==4 && body.Max(p=>p.X)-body.Min(p=>p.X)==1 && body.Max(p=>p.Z)-body.Min(p=>p.Z)==1);
             var shape=site.Kind switch{"town_hall"=>(3,3),"terminal"=>(2,3),"dealership"=>(5,5),_=>(0,0)};Require(c.Count==shape.Item1*shape.Item2 && c.Max(p=>p.X)-c.Min(p=>p.X)+1==shape.Item1 && c.Max(p=>p.Z)-c.Min(p=>p.Z)+1==shape.Item2);
-            Require(body.IsSubsetOf(c)&&c.Contains(site.Entry)&&!body.Contains(site.Entry)&&body.Any(p=>Math.Abs(p.X-site.Entry.X)+Math.Abs(p.Z-site.Entry.Z)==1));if(site.SourceBuilding is {} source)Require(Cells(source).SetEquals(body));if(site.Parking is {} parking)Require(Cells(parking).IsSubsetOf(c));Reserve(c);bodies.UnionWith(body);}
+            Require(body.IsSubsetOf(c)&&c.Contains(site.Entry)&&!body.Contains(site.Entry)&&body.Any(p=>Math.Abs(p.X-site.Entry.X)+Math.Abs(p.Z-site.Entry.Z)==1));if(site.SourceBuilding is {} source)Require(Cells(source).SetEquals(body));if(site.Parking is {} parking)Require(Cells(parking).IsSubsetOf(c));if(l.Version=="map-adapter-2")
+            {
+                // New starts only. Never reinterpret the body/entry of a resolved adapter-1 save.
+                Require(site.SourceBuilding is not null && body.Count==4 && body.Max(p=>p.X)-body.Min(p=>p.X)==1 && body.Max(p=>p.Z)-body.Min(p=>p.Z)==1);
+                Require(body.Min(p=>p.X)==c.Min(p=>p.X) && body.Min(p=>p.Z)==c.Min(p=>p.Z));
+                Require(site.Entry==new Cell(c.Min(p=>p.X)+(site.Kind=="town_hall"?1:0),c.Min(p=>p.Z)+2));
+                if(site.Kind=="dealership")Require(site.Parking is {Length:4} && site.Parking.SequenceEqual(Enumerable.Range(0,4).Select(i=>new Cell(c.Min(p=>p.X)+i,c.Min(p=>p.Z)+3))));
+                Require(site.Parking is null || !site.Parking.Any(body.Contains));
+            }
+            Reserve(c);bodies.UnionWith(body);}
         Require(l.CivicObjects.Select(c=>c.Kind).Order(StringComparer.Ordinal).SequenceEqual(new[]{"dealership","terminal","town_hall"}));
         Require(s.BlockedCells.ToHashSet().SetEquals(bodies));Require(s.CapitalDemand?.Terminal==l.CivicObjects.Single(c=>c.Kind=="terminal").Entry && s.Support?.TradingPoint==s.CapitalDemand.Terminal);
         var stalls=Cells(l.MarketStalls.Select(m=>m.Cell).ToArray());foreach(var stall in l.MarketStalls)Id(stall.Id);Reserve(stalls);

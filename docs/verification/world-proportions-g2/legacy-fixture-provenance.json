@@ -1,0 +1,14 @@
+{
+  "small-river": {
+    "gzipSha256": "0aeeee6ca40f9e80e6568c92ea44034c694342fc4b10dc2c9eb309f68130707b",
+    "scenarioSha256": "1f78b402eed6ddab40ecb7421a2cf6cc46da33902751251bb884d2ad17d3417f",
+    "baseline": "da213bf",
+    "exactOriginalScenario": true
+  },
+  "large-districts": {
+    "gzipSha256": "9055eeb4cf1e262024825678bbec7f74ee82e8367c68f9373063e751c91bfb73",
+    "scenarioSha256": "91fbe8715303a20546c30956aa62b569f0ab30930e807e5c1b9568096ab6f7bf",
+    "baseline": "da213bf",
+    "exactOriginalScenario": true
+  }
+}

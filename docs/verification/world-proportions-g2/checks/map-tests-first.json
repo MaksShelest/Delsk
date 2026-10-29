@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+    "-noColor",
+    "-noLogo",
+    "-parallelMode",
+    "none",
+    "-class",
+    "Simulation.Tests.MapDesignTests",
+    "-result-trx",
+    "/workspace/Delsk/work/map-tests.trx"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-10-29T15:28:05.283298+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 49.229,
+  "finished_at": "2026-10-29T15:28:54.512448+00:00"
+}

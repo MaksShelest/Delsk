@@ -1,0 +1,103 @@
+{
+  "status": "visual-scope-passed",
+  "runtimeSource": "5af0573ba9f4659ed5539c14d175b92b537aaefe",
+  "base": "da213bf2277a76fbd26988ba02cf8f13691dade5",
+  "ordinaryG2": 41,
+  "developerG2": 41,
+  "geometryRetest": 17,
+  "pythonToolTests": 28,
+  "nativeCases": [
+    {
+      "case": "small-river",
+      "map": "small-river",
+      "participants": 11,
+      "prepared": false,
+      "layout": "map-adapter-2",
+      "elapsedSeconds": 21.454,
+      "timeoutSeconds": 150,
+      "strictLogExit": 0,
+      "png": 12
+    },
+    {
+      "case": "large-districts",
+      "map": "large-districts",
+      "participants": 11,
+      "prepared": false,
+      "layout": "map-adapter-2",
+      "elapsedSeconds": 36.74,
+      "timeoutSeconds": 150,
+      "strictLogExit": 0,
+      "png": 12
+    },
+    {
+      "case": "first",
+      "map": "first",
+      "participants": 11,
+      "prepared": false,
+      "layout": null,
+      "elapsedSeconds": 12.095,
+      "timeoutSeconds": 150,
+      "strictLogExit": 0,
+      "png": 8
+    },
+    {
+      "case": "small-river-adapter1",
+      "map": "small-river",
+      "participants": 4,
+      "prepared": true,
+      "layout": "map-adapter-1",
+      "elapsedSeconds": 27.8,
+      "timeoutSeconds": 150,
+      "strictLogExit": 0,
+      "png": 12
+    },
+    {
+      "case": "large-districts-adapter1",
+      "map": "large-districts",
+      "participants": 4,
+      "prepared": true,
+      "layout": "map-adapter-1",
+      "elapsedSeconds": 49.672,
+      "timeoutSeconds": 150,
+      "strictLogExit": 0,
+      "png": 12
+    },
+    {
+      "case": "small-river-purchased",
+      "map": "small-river",
+      "participants": 4,
+      "prepared": true,
+      "layout": "map-adapter-2",
+      "elapsedSeconds": 21.719,
+      "timeoutSeconds": 150,
+      "strictLogExit": 0,
+      "png": 12
+    },
+    {
+      "case": "large-districts-purchased",
+      "map": "large-districts",
+      "participants": 4,
+      "prepared": true,
+      "layout": "map-adapter-2",
+      "elapsedSeconds": 35.547,
+      "timeoutSeconds": 150,
+      "strictLogExit": 0,
+      "png": 12
+    }
+  ],
+  "beforePng": 32,
+  "afterPng": 80,
+  "matchedNativeInputs": 678,
+  "visualInspection": [
+    "both new maps, both skin families, close/district/overview",
+    "clock no longer hidden by roof; door and freight shutter visible",
+    "finite showroom cars do not overlap; own car retains shared slot after purchase",
+    "legacy compact civic and saved large dealer geometry remain distinct from new starts"
+  ],
+  "actualOldBinaryCompatibility": "old-binary-compatibility.json",
+  "mapSnapshots": "map-snapshots.json",
+  "fullLocalUnit": "blocked: unchanged integration partition timed out at120.033s after292 passed",
+  "scope": "Real Playfield and ordinary data; separate prepared ownership/purchased-car cases. Native Linux/X11 software renderer, not physical hardware. No H1/H2 study or calibration. No merge.",
+  "ciSnapshot": "ci-snapshot.json",
+  "windowsRuntimeCI": "both jobs succeeded on5af0573"
+}

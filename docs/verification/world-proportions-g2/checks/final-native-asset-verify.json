@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/Delsk/scripts/reuse_godot_imports.py",
+    "--source",
+    "/workspace/Delsk/work/final-native2/source/src/Client.Godot",
+    "--verify-only",
+    "--report",
+    "/workspace/Delsk/work/final-native2/asset-verify.json"
+  ],
+  "timeout_seconds": 30,
+  "started_at": "2026-10-29T16:14:12.827979+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.217,
+  "finished_at": "2026-10-29T16:14:13.045172+00:00"
+}

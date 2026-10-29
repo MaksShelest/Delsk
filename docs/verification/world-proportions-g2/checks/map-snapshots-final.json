@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3",
+    "scripts/check_map_designs.py",
+    "--output",
+    "work/map-snapshots-final"
+  ],
+  "timeout_seconds": 180,
+  "started_at": "2026-10-29T16:06:09.342578+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 5.089,
+  "finished_at": "2026-10-29T16:06:14.432009+00:00"
+}
