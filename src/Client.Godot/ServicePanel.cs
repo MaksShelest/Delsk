@@ -7,15 +7,18 @@ public partial class ServicePanel : VBoxContainer
 {
     private readonly string _language;private readonly ScenarioDefinition _scenario;private readonly Action<GameAction> _submit;
     private readonly Func<ServiceTerms,ServiceQuoteResult>? _query;
+    private readonly Func<GameAction,ActionAccess>? _access;
+    private PlayerView? _lastView;private bool _lastPending;private int _orderOffset;
+    private readonly Button _newerOrders=new(){Name="ServiceOrdersNewer"},_olderOrders=new(){Name="ServiceOrdersOlder"};
     private readonly OptionButton _vehicle=new(){Name="ServiceVehicle"},_source=new(){Name="ServiceSource"},_dest=new(){Name="ServiceDestination"},_item=new(){Name="ServiceItem"},_purchase=new(){Name="ServicePurchase"},_contract=new(){Name="ServiceContract"};
     private readonly SpinBox _quantity=new(){Name="ServiceQuantity",MinValue=1,MaxValue=1000000,Value=1};
     private readonly Label _quoteText=new(){Name="ServiceQuote",AutowrapMode=TextServer.AutowrapMode.WordSmart};
     private readonly Button _calculate=new(){Name="ServiceCalculate"},_request=new(){Name="ServiceRequest"};
     private readonly VBoxContainer _owned=new(),_orders=new();private readonly Label _catalog=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};
     private readonly Dictionary<long,(Label Label,ProgressBar Bar)> _responses=[];private ServiceQuote? _quote;private string _key="";private readonly List<(Button Button,GameAction Action)> _buttons=[];
-    public ServicePanel(ScenarioDefinition scenario,string language,Action<GameAction> submit,Func<ServiceTerms,ServiceQuoteResult>? query)
+    public ServicePanel(ScenarioDefinition scenario,string language,Action<GameAction> submit,Func<ServiceTerms,ServiceQuoteResult>? query,Func<GameAction,ActionAccess>? access=null)
     {
-        _scenario=scenario;_language=language;_submit=submit;_query=query;
+        _scenario=scenario;_language=language;_submit=submit;_query=query;_access=access;
         AddChild(TabletDesign.Heading(L("Услуги доставки","Delivery services"),23));
         AddChild(new Label{Text=L("Ответ перевозчика — 10 активных тиков. Уведомление не останавливает время. Принятый заказ закрепляет машину и груз; до погрузки отмена возвращает всю оплату.","Carrier response: 10 active ticks. Notifications do not pause time. Acceptance reserves the vehicle and cargo; cancellation before pickup refunds the full fee."),AutowrapMode=TextServer.AutowrapMode.WordSmart});
         AddChild(_owned);AddChild(_catalog);
@@ -23,7 +26,10 @@ public partial class ServicePanel : VBoxContainer
         Field(L("Право на оплаченную покупку (для чужого источника)","Paid purchase right (foreign source)"),_purchase);Field(L("Договор получателя (для чужого получателя)","Recipient contract (foreign recipient)"),_contract);
         foreach(var i in scenario.Items)_item.AddItem(PlayerText.Item(language,i.Id));
         _calculate.Text=L("Рассчитать","Calculate");_calculate.Pressed+=Calculate;AddChild(_calculate);AddChild(_quoteText);
-        _request.Text=L("Подтвердить условия и зарезервировать","Confirm terms and reserve");_request.Disabled=true;_request.Pressed+=()=>{if(_quote is {} q)_submit(new(ActionKind.RequestDeliveryService,VehicleId:q.Terms.VehicleId,Source:q.Terms.Source,Destination:q.Terms.Destination,ItemId:q.Terms.ItemId,Quantity:q.Terms.Quantity,PurchaseId:q.Terms.PurchaseId,ContractId:q.Terms.ContractId,ServiceQuote:q.Token));};AddChild(_request);AddChild(_orders);
+        _request.Text=L("Подтвердить условия и зарезервировать","Confirm terms and reserve");_request.Disabled=true;_request.Pressed+=()=>{if(_quote is {} q)_submit(new(ActionKind.RequestDeliveryService,VehicleId:q.Terms.VehicleId,Source:q.Terms.Source,Destination:q.Terms.Destination,ItemId:q.Terms.ItemId,Quantity:q.Terms.Quantity,PurchaseId:q.Terms.PurchaseId,ContractId:q.Terms.ContractId,ServiceQuote:q.Token));};AddChild(_request);
+        var pages=TabletDesign.Flow();_newerOrders.Text=L("‹ Новые заказы","‹ Newer orders");_olderOrders.Text=L("Ранние заказы ›","Older orders ›");pages.AddChild(_newerOrders);pages.AddChild(_olderOrders);AddChild(pages);AddChild(_orders);
+        void Page(int delta){_orderOffset=Math.Max(0,_orderOffset+delta);_key="";if(_lastView is {} view)ShowData(view,_lastPending);}
+        _newerOrders.Pressed+=()=>Page(-20);_olderOrders.Pressed+=()=>Page(20);
         foreach(var select in new[]{_vehicle,_source,_dest,_item,_purchase,_contract})select.ItemSelected+=_=>Invalidate();_quantity.ValueChanged+=_=>Invalidate();
     }
     private string L(string ru,string en)=>PlayerText.Local(_language,ru,en);
@@ -46,23 +52,36 @@ public partial class ServicePanel : VBoxContainer
     }
     private static void Clear(Container host){foreach(Node n in host.GetChildren()){host.RemoveChild(n);n.QueueFree();}}
     private void Button(Container host,string name,string text,GameAction action){var b=new Button{Name=name,Text=text,FocusMode=FocusModeEnum.None};b.Pressed+=()=>_submit(action);host.AddChild(b);_buttons.Add((b,action));}
+    public void FocusOrder(long id)
+    {
+        if(id<=0||_lastView?.Services is not {} data)return;
+        var orders=data.OwnOrders.Reverse().ToArray();int index=Array.FindIndex(orders,o=>o.Id==id);if(index<0)return;_orderOffset=index/20*20;_key="";ShowData(_lastView,_lastPending);
+        if(_orders.FindChild("ServiceOrder_"+id,true,false) is Control row)UiNavigation.Reveal(row);
+    }
+    public void FocusVehicle(long id)
+    {
+        for(int i=0;i<_vehicle.ItemCount;i++)if(_vehicle.GetItemMetadata(i).AsInt64()==id){_vehicle.Select(i);Invalidate();UiNavigation.Reveal(_vehicle);return;}
+        if(_owned.FindChild("ServiceOffer_"+id,true,false) is Control offer)UiNavigation.Reveal(offer);
+    }
     public void ShowData(PlayerView view,bool pending)
     {
-        if(view.Services is not {} data)return;
-        string key=view.Participant.Busy+"|"+view.Participant.Position+"|"+string.Join(',',data.OwnOrders.Select(o=>view.Tick>o.DeadlineTick+(data.Execution?.Rules.ForceCloseAfterTicks??1200)))+"|"+string.Join('|',data.Execution?.Runs.Select(r=>r.ToString())??[])+"|"+string.Join('|',data.Execution?.Crews.Select(c=>c.ToString())??[])+"|"+string.Join(';',data.Catalog.Select(c=>$"{c.VehicleId}:{c.Available}"))+"|"+string.Join(',',data.OwnListings)+"|"+string.Join(';',data.OwnOrders.Select(o=>$"{o.Id}:{o.State}:{o.CustomerViewed}:{o.CarrierViewed}"))+"|"+string.Join(',',data.OwnPoints.Select(p=>p.Inventory.Value))+"|"+string.Join(',',view.Fleet?.Vehicles.Select(v=>$"{v.Vehicle.Id}:{v.Vehicle.Driver}")??[])+"|"+string.Join(',',view.Market?.Allocations.Select(a=>$"{a.Id}:{a.ClosedTick}")??[]);
+        if(view.Services is not {} data)return;_lastView=view;_lastPending=pending;
+        var allOrders=data.OwnOrders.Reverse().ToArray();_orderOffset=Math.Clamp(_orderOffset,0,Math.Max(0,(allOrders.Length-1)/20*20));var shownOrders=allOrders.Skip(_orderOffset).Take(20).ToArray();
+        _newerOrders.Disabled=pending||_orderOffset==0;_olderOrders.Disabled=pending||_orderOffset+20>=allOrders.Length;
+        string key=_orderOffset+"|"+view.Participant.Busy+"|"+view.Participant.Position+"|"+string.Join(',',shownOrders.Select(o=>view.Tick>o.DeadlineTick+(data.Execution?.Rules.ForceCloseAfterTicks??1200)))+"|"+string.Join('|',data.Execution?.Runs.Select(r=>$"{r.Run.Order}:{r.Run.Stage}:{r.Run.Cancellation}:{r.Automatic}:{r.AtTarget}:{r.Headcount}:{r.Run.Reason}:{r.Run.ReturnInventory.Value}")??[])+"|"+string.Join('|',data.Execution?.Crews.Select(c=>$"{c.Vehicle}:{c.Group.Headcount}:{c.Group.WageMinor}:{c.Group.PendingWageMinor}:{c.Group.ReadinessReason}")??[])+"|"+string.Join(';',data.Catalog.Select(c=>$"{c.VehicleId}:{c.Available}"))+"|"+string.Join(',',data.OwnListings)+"|"+string.Join(';',shownOrders.Select(o=>$"{o.Id}:{o.State}:{o.CustomerViewed}:{o.CarrierViewed}"))+"|"+string.Join(',',data.OwnPoints.Select(p=>p.Inventory.Value))+"|"+string.Join(',',view.Fleet?.Vehicles.Select(v=>$"{v.Vehicle.Id}:{v.Vehicle.Driver}")??[])+"|"+string.Join(',',view.Market?.Allocations.Select(a=>$"{a.Id}:{a.ClosedTick}")??[]);
         if(key!=_key)
         {
-            _key=key;Invalidate();_buttons.Clear();_responses.Clear();Clear(_owned);Clear(_orders);
+            var restoreScroll=UiNavigation.KeepScroll(this);var restoreFocus=UiNavigation.KeepFocus(this);_key=key;_buttons.Clear();_responses.Clear();_runDisplays.Clear();Clear(_owned);Clear(_orders);
             foreach(var car in view.Fleet?.Vehicles??[])
             {var v=car.Vehicle;var model=view.Fleet!.Models.Single(m=>m.Id==v.ModelId);if(model.MaterialsOnly)continue;bool listed=data.OwnListings.Contains(v.Id);Button(_owned,"ServiceOffer_"+v.Id,model.Name+" #"+v.Id+" · "+(listed?L("Снять с линии","Stop accepting"):L("Принимать заказы доставки","Accept delivery orders")),new(ActionKind.SetDeliveryService,VehicleId:v.Id,Enabled:!listed));}
             Fill(_vehicle,data.Catalog.Where(c=>c.Carrier!=view.Participant.Id).Select(c=>(c.VehicleId,$"#{c.Carrier.Value} · {view.Fleet?.Models.FirstOrDefault(m=>m.Id==c.ModelId)?.Name??c.ModelId} #{c.VehicleId} · {c.CapacityVolume} · "+(c.Available?L("Свободна","Available"):L("Занята","Busy")))));
             Fill(_source,data.OwnPoints.Where(p=>p.CanSource).Select(p=>(p.Inventory.Value,$"{PointName(p)} #{p.Inventory.Value} · #{p.Owner.Value} · {Coordinates(p.Position)}")));
             Fill(_dest,data.OwnPoints.Where(p=>p.CanReceive||view.Contracts?.Any(d=>d.Supplier==view.Participant.Id&&d.DestinationInventory==p.Inventory&&d.ClosedTick is null)==true).Select(p=>(p.Inventory.Value,$"{PointName(p)} #{p.Inventory.Value} · {Coordinates(p.Position)}")));
-            Fill(_purchase,new[]{(0L,L("Свой груз","Own goods"))}.Concat((view.Market?.Allocations??[]).Where(a=>a.Buyer==view.Participant.Id&&a.ClosedTick is null).Select(a=>(a.Id,$"#{a.Id} · {a.ItemId} ×{a.RemainingQuantity} · t{a.DeadlineTick}"))));
-            Fill(_contract,new[]{(0L,L("Свой получатель","Own recipient"))}.Concat((view.Contracts??[]).Where(d=>d.Supplier==view.Participant.Id&&d.ClosedTick is null).Select(d=>(d.Id,$"#{d.Id} · {d.ItemId} · t{d.DeadlineTick}"))));
-            foreach(var order in data.OwnOrders.Reverse())
+            Fill(_purchase,new[]{(0L,L("Свой груз","Own goods"))}.Concat((view.Market?.Allocations??[]).Where(a=>a.Buyer==view.Participant.Id&&a.ClosedTick is null).Select(a=>(a.Id,$"#{a.Id} · {PlayerText.Item(_language,a.ItemId)} ×{a.RemainingQuantity} · t{a.DeadlineTick}"))));
+            Fill(_contract,new[]{(0L,L("Свой получатель","Own recipient"))}.Concat((view.Contracts??[]).Where(d=>d.Supplier==view.Participant.Id&&d.ClosedTick is null).Select(d=>(d.Id,$"#{d.Id} · {PlayerText.Item(_language,d.ItemId)} · t{d.DeadlineTick}"))));
+            foreach(var order in shownOrders)
             {
-                var row=new VBoxContainer();_orders.AddChild(TabletDesign.Wrap(row));bool carrier=order.Carrier==view.Participant.Id;bool seen=carrier?order.CarrierViewed:order.CustomerViewed;
+                var row=new VBoxContainer{Name="ServiceOrder_"+order.Id};_orders.AddChild(TabletDesign.Wrap(row));bool carrier=order.Carrier==view.Participant.Id;bool seen=carrier?order.CarrierViewed:order.CustomerViewed;
                 row.AddChild(new Label{Text=(seen?"":"● ")+"#"+order.Id+" · "+State(order.State)+$" · #{order.Customer.Value} → #{order.Carrier.Value} · {PlayerText.Item(_language,order.Quote.Terms.ItemId)} ×{order.Quote.Terms.Quantity} · {order.Quote.Trips} "+L("рейсов","trips")+" · "+PlayerText.Money(order.Quote.FeeMinor)+" · ≈"+order.Quote.EtaTicks+"t · "+L("ответ до t","reply through t")+order.RespondByTick+" · "+L("срок t","due t")+order.DeadlineTick+"\n"+Coordinates(order.Quote.SourcePosition)+" → "+Coordinates(order.Quote.DestinationPosition)+" · "+L("срок от принятия +","due after acceptance +")+(order.Quote.EtaTicks+order.Quote.BufferTicks)+(order.Quote.CargoRightsDeadline>0?L(" · право на груз до t"," · cargo rights through t")+order.Quote.CargoRightsDeadline:"")+"\n"+(data.Execution?.Runs.Any(r=>r.Run.Order==order.Id)==true?L("Фактическое исполнение ниже. Оплата — по разгрузке.","Actual execution below. Payment follows unloading."):TabletText.Reason(_language,order.Reason)),AutowrapMode=TextServer.AutowrapMode.WordSmart});
                 if(order.State is "Pending" or "Requote"){var time=new Label();var bar=new ProgressBar{Name="ServiceResponse_"+order.Id,MaxValue=data.Rules.ResponseTicks,ShowPercentage=false,CustomMinimumSize=new(0,12)};row.AddChild(time);row.AddChild(bar);_responses.Add(order.Id,(time,bar));}
                 if(!seen)Button(row,"ServiceView_"+order.Id,L("Отметить просмотренным","Mark viewed"),new(ActionKind.ViewDeliveryService,ServiceId:order.Id));
@@ -72,10 +91,13 @@ public partial class ServicePanel : VBoxContainer
                 if(data.Execution is {} execution&&execution.Runs.SingleOrDefault(r=>r.Run.Order==order.Id) is {} run)ShowRun(row,view,order,run,execution);
                 else if(order.Active)Button(row,"ServiceCancel_"+order.Id,L("Отменить до погрузки","Cancel before pickup"),new(ActionKind.CancelDeliveryService,ServiceId:order.Id));
             }
+            Callable.From(()=>{restoreScroll();restoreFocus();}).CallDeferred();
         }
+        foreach(var run in data.Execution?.Runs??[]){var order=data.OwnOrders.FirstOrDefault(o=>o.Id==run.Run.Order);if(order is not null)UpdateRunDisplay(order,run);}
+        if(_quote is {} quote&&_query is not null&&_query(quote.Terms).Quote?.Token!=quote.Token){Invalidate();_quoteText.Text=L("Условия изменились. Рассчитайте заново перед подтверждением.","Conditions changed. Recalculate before confirming.");}
         foreach(var order in data.OwnOrders.Where(o=>o.State is "Pending" or "Requote")){if(_responses.TryGetValue(order.Id,out var response)){long left=Math.Max(0,order.RespondByTick-view.Tick);response.Label.Text=L("Осталось активных тиков: ","Active ticks remaining: ")+left;response.Bar.Value=left;}}
         _catalog.Text=L("Каталог: ","Catalog: ")+string.Join(" · ",data.Catalog.Select(c=>$"#{c.Carrier.Value} · {view.Fleet?.Models.FirstOrDefault(m=>m.Id==c.ModelId)?.Name??c.ModelId} #{c.VehicleId} · "+L("объём ","volume ")+c.CapacityVolume+" · "+Coordinates(c.Position)+" · "+(c.Available?L("Свободна","Available"):L("Занята","Busy"))));
-        foreach(var (button,_) in _buttons)button.Disabled=pending;_calculate.Disabled=pending||Id(_vehicle)==0||Id(_source)==0||(_dest.Selected<0||_dest.IsItemDisabled(_dest.Selected));_request.Disabled=pending||_quote is null;
+        foreach(var (button,action) in _buttons){var permission=_access?.Invoke(action);button.Disabled=pending||permission?.Allowed==false;button.TooltipText=permission?.Allowed==false?PlayerText.Reason(_language,permission.ReasonCode):"";}_calculate.Disabled=pending||Id(_vehicle)==0||Id(_source)==0||(_dest.Selected<0||_dest.IsItemDisabled(_dest.Selected));_request.Disabled=pending||_quote is null;
     }
     private string PointName(ServicePoint p)=>p.PointType switch{"Capital"=>L("Столица","Capital"),"ImportPickup"=>L("Выдача импорта","Import pickup"),"Extraction"=>L("Добывающая техника","Extraction equipment"),_=>p.Kind==BuildingKind.Warehouse?L("Склад","Warehouse"):p.Kind==BuildingKind.Shop?L("Лавочка","Shop"):L("Предприятие","Enterprise")};
     private string State(string state)=>state switch{"Pending"=>L("Ожидает перевозчика","Awaiting carrier"),"Requote"=>L("Нужно подтверждение новых условий","Reconfirmation required"),"Accepted"=>L("Принят","Accepted"),"Completed"=>L("Доставлен","Completed"),"Rejected"=>L("Отклонён","Rejected"),"Expired"=>L("Время ответа истекло","Response expired"),_=>L("Отменён","Cancelled")};

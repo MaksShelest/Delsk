@@ -1,0 +1,19 @@
+{
+  "source": "9ae94bf9e8e15db60765df3aae87421f06ab573b",
+  "run": 40796389712,
+  "job": 123193767584,
+  "status": "succeeded",
+  "testsPassed": 24,
+  "partitions": [
+    {
+      "name": "tests-g2-0.trx",
+      "passed": 14
+    },
+    {
+      "name": "tests-g2-1.trx",
+      "passed": 10
+    }
+  ],
+  "releaseNegativeBuild": "expected rejection; exit 1; Developer interventions are forbidden in Release/ExportRelease",
+  "scope": "Actual final-source CI job, not a local Developer run."
+}

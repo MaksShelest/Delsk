@@ -11,7 +11,7 @@ import sys
 parser = argparse.ArgumentParser()
 parser.add_argument('--dotnet', default='dotnet', help='SDK executable or absolute path')
 parser.add_argument('--output', type=Path, default=Path('artifacts/headless-p22'))
-parser.add_argument('--suite',choices=['all','previous','roads','billing','services','runs','npc'],default='all',help='Explicit disjoint suites preserve pre-E2 aggregate deadlines')
+parser.add_argument('--suite',choices=['all','previous','roads','billing','services','runs','npc','ux'],default='all',help='Explicit disjoint suites preserve pre-E2 aggregate deadlines')
 parser.add_argument('--phase',choices=['all','tests','runs'],default='all',help='Separate exhaustive unit and runner gates without changing their deadlines')
 parser.add_argument('--unit-artifacts',type=Path,help='Completed unit gate fixtures, required by --phase runs')
 args = parser.parse_args()
@@ -47,13 +47,14 @@ if args.phase!='runs':
     os.environ['DELSK_E1_EVIDENCE'] = str(out/'e1-fixtures')
     os.environ['DELSK_E2_EVIDENCE'] = str(out/'e2-fixtures')
     os.environ['DELSK_E3_EVIDENCE'] = str(out/'e3-fixtures')
+    os.environ['DELSK_G2_EVIDENCE']=str(out/'g2-fixtures')
     os.environ['DELSK_G1_EVIDENCE']=str(out/'g1-fixtures')
     os.environ['DELSK_F2_EVIDENCE']=str(out/'f2-fixtures')
     os.environ['DELSK_F1_EVIDENCE']=str(out/'f1-fixtures')
     from test_partitions import run_suite
     partitions=run_suite(check,args.dotnet,'tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll',out,suite=args.suite)
     passed=sum(p['passed'] for p in partitions)
-    if passed<(30 if args.suite=='npc' else 30 if args.suite=='runs' else 27 if args.suite=='services' else 22 if args.suite=='billing' else 25 if args.suite=='roads' else 1157):raise SystemExit('Incomplete test suite')
+    if passed<(24 if args.suite=='ux' else 30 if args.suite=='npc' else 30 if args.suite=='runs' else 27 if args.suite=='services' else 22 if args.suite=='billing' else 25 if args.suite=='roads' else 1157):raise SystemExit('Incomplete test suite')
     unit={'suite':args.suite,'status':'succeeded','testsPassed':passed,'testPartitions':partitions,'scope':'Exhaustive ordinary unit phase; runner checks are a separate required gate'}
     (out/'unit-check.json').write_text(json.dumps(unit,indent=2)+'\n')
     if args.phase=='tests':

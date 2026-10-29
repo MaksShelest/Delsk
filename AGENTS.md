@@ -1,3 +1,32 @@
+## G2,28–29.10.2026 — выполненный software-объём карты и UX
+
+- Пользовательское G2 поверх52cb5c0/PR71: P75/P79 и нужные UX/restore проверки P78.
+  Source9ae94bf9e8e15db60765df3aae87421f06ab573b, feat/vnext-g2-city-experience,
+  PR72 без auto merge. Автор: Шелестов Максим Евгеньевич.
+- Core40796389712 все29jobs success, Windows40796389702 обаjobs success.
+  24ordinary/24Developer G2,28Python; Windows6native cases/20child processes:
+  small6/RU640, large10/EN1100/RU360, preparedRU/EN, physicalF2RU/EN.
+  900source inputs/681local prepared matches,82financial unchanged, World28/session3.
+- Карта получает public/own allowlist, не чужие closed stocks/contracts. Собственник,
+  бронь/аренда и вклады дороги по ступеням различаются. Route preview pure; pending
+  view не блокирует accept. Read != payment/rescue/reward. Скины не меняют Core.
+- Все owned road contributions дают completion notice, включая self-funded; city
+  commission не дублирует ту же ступень. Cancel in-transit checkpoint сохраняет
+  authenticated original service endpoint до физического окончания пути.
+- Heavy gates serial, прежние partitions/deadlines/Release audits не ослаблять.
+  Source/probes frozen during native gate; probes только owned isolated stage,
+  запрещены AssemblyAudit. Mono editor shutdown timeout не принимать: использовать
+  existing asset-only normal import и byte-verified reuse без C# editor initialization.
+- Linux wide1100 timeout180.168s/124 сохранён; Windows тот же полный сценарий101.297s.
+  Phone/tablet не использовались; synthetic input/VM не объявлять physical device.
+  Prepared rich worlds не natural economy. P77 и вся аппаратная P80 не закрыты.
+- Итог: docs/IMPLEMENTATION_REPORT_PACKAGE_G2.md, usage CITY_EXPERIENCE_G2.md,
+  WORKLOG_PACKAGE_G2.md, verification/city-g2/final-gate.json. Документационный commit
+  после проверенного source не должен менять ни один из900 закреплённых inputs.
+- Пользователь29.10 явно запросил H1 после завершения G2: отдельные воспроизводимые
+  исследования/калибровка P77, отчёт и PR без merge. Это разрешает следующий H1,
+  несмотря на прежние исторические запреты. H2 автоматически не начинать.
+
 ## G1,28.10.2026 — реализованный software-объём NPC/P76
 
 - Явное задание пользователя разрешает G1 поверх0511375/merge PR70 с полным F2.

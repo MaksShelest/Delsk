@@ -134,6 +134,8 @@ public partial class Playfield : Control
             GetViewport().SetInputAsHandled();
             return;
         }
+        if(key.Keycode==Key.M&&_surface==Surface.Play&&!_tabletState.IsOpen){OpenCityMap();GetViewport().SetInputAsHandled();return;}
+        if(key.Keycode==Key.Escape&&_surface==Surface.Play&&_tabletState.IsOpen){CloseTablet();GetViewport().SetInputAsHandled();return;}
         if (key.Keycode == Key.Escape)
         {
             if (_surface == Surface.Debug) OpenMenu();
@@ -187,7 +189,7 @@ public partial class Playfield : Control
         else return;
         ApplyPause();
         if (what == NotificationApplicationPaused || what == NotificationApplicationFocusOut)
-        { try { CheckpointStore.Save(_session, SavePath); } catch (Exception failure) { _feedback = failure.Message; } }
+        { SaveCityExperience();try { CheckpointStore.Save(_session, SavePath); } catch (Exception failure) { _feedback = failure.Message; } }
         Refresh();
     }
 
@@ -224,7 +226,7 @@ public partial class Playfield : Control
             AddChild(confirm);
             confirm.Confirmed += () => { confirm.QueueFree(); BeginMap(key); };
             confirm.Canceled += () => confirm.QueueFree();
-            confirm.PopupCentered();
+            UiSafeArea.Popup(confirm,this,new(580,170));
         };
         _mapSelection.Continued += () =>
         {
@@ -255,7 +257,7 @@ public partial class Playfield : Control
         _storageCursor=0;_storageLossUntil=0;_storageLoss="";
         DismissHelp();
         ResetTablet(true);
-        _mode = mode;
+        _mode = mode;LoadCityExperience(true);
         _gain = "";
         _hoverX = _hoverZ = null;
         _selectedEnterprise = 0;
@@ -478,6 +480,7 @@ public partial class Playfield : Control
         bool paused = _session.Paused;
         var frame = Presentation.Read(_scenario, _session.Engine, _human.Value);
         if (_surface == Surface.Play || paused) _stage?.Show(frame, paused, _selectedEnterprise, T("you"), _surface == Surface.Play, _language);
+        _stage?.ShowBuildingStates(view,_language);
         if (_surface == Surface.Debug) _board?.Show(frame, _cellX, _cellZ);
         _miniMap?.Show(frame,null,null);
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
@@ -513,7 +516,7 @@ public partial class Playfield : Control
             $"{T("npc.title")}: " + string.Join("; ", view.LaborMarket.Where(g => g.OwnerId != _human).Select(g => $"{g.OwnerId.Value} {g.Role} {g.Headcount}/{g.Capacity}"));
         _feedbackLabel.Text = _feedback;
         UpdatePlayNotice();
-        StorageNotice(view);
+        StorageNotice(view);UpdateCityExperience(view);
         if(_serviceNotice is not null&&view.Services is {} serviceNotice){int unread=serviceNotice.OwnOrders.Count(o=>o.Carrier==view.Participant.Id?!o.CarrierViewed:!o.CustomerViewed);_serviceNotice.Text=unread>0?L("● Доставка: ","● Delivery: ")+unread:L("Доставка","Delivery");_serviceNotice.Modulate=unread>0?new Color("ff7777"):Colors.White;}
         if(_accountNotice is not null&&view.PersonalAccount is {} accountNotice){_accountNotice.Text=accountNotice.UnreadCount>0?L("● Счета: ","● Invoices: ")+accountNotice.UnreadCount:L("Счёт","Account");_accountNotice.Modulate=accountNotice.UnreadCount>0?new Color("ff7777"):Colors.White;}
         if (_gameClock is not null) _gameClock.Text = L("Время ", "Time ") + GameTime(view.Tick) + (_session.Paused ? "  Ⅱ" : "  ▸");
@@ -668,6 +671,8 @@ public partial class Playfield : Control
     private void OnViewInput(InputEvent e)
     {
         if (_surface != Surface.Play || _tabletState.IsOpen || _helpOverlay is not null || _stage is null || _view is null) return;
+        if(e is InputEventMouseButton {Pressed:true,ButtonIndex:MouseButton.WheelUp or MouseButton.WheelDown} zoom){_stage.ZoomView(zoom.ButtonIndex==MouseButton.WheelUp?.85f:1.18f);_view.AcceptEvent();return;}
+        if(e is InputEventMagnifyGesture gesture){_stage.ZoomView(1/gesture.Factor);_view.AcceptEvent();return;}
         Vector2 position = e switch
         {
             InputEventMouseButton button when button.Pressed && button.ButtonIndex == MouseButton.Left => button.Position,
@@ -799,12 +804,10 @@ public partial class Playfield : Control
         _menu = new ColorRect { Color = new Color(0.15f, 0.20f, 0.23f, 0.97f), MouseFilter = MouseFilterEnum.Stop };
         _menu.SetAnchorsPreset(LayoutPreset.FullRect);
         AddChild(_menu);
-        var center = new CenterContainer();
-        center.SetAnchorsPreset(LayoutPreset.FullRect);
-        _menu.AddChild(center);
-        var box = new VBoxContainer { CustomMinimumSize = new Vector2(360, 0) };
-        center.AddChild(box);
-        box.AddChild(new Label { Text = T("menu.title") + " · " + PlayMaps.Name(_mapKey, _language), HorizontalAlignment = HorizontalAlignment.Center });
+        var menuScroll=new ScrollContainer{HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};menuScroll.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);_menu.AddChild(menuScroll);
+        var center = new MarginContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};menuScroll.AddChild(center);UiSafeArea.CenterColumn(menuScroll,center,440);
+        var box = new VBoxContainer { SizeFlagsHorizontal=SizeFlags.ExpandFill };center.AddChild(box);
+        box.AddChild(new Label { Text = T("menu.title") + " · " + PlayMaps.Name(_mapKey, _language), HorizontalAlignment = HorizontalAlignment.Center,AutowrapMode=TextServer.AutowrapMode.WordSmart });
         box.AddChild(new Label { Text = T("menu.escape"), AutowrapMode = TextServer.AutowrapMode.WordSmart });
         Button(box, "menu.continue", ContinueGame);
 #if DEBUG
@@ -904,7 +907,7 @@ public partial class Playfield : Control
         DisposeModel();
         _storageCursor=0;_storageLossUntil=0;_storageLoss="";
         _session = loaded.Session;
-        _scenario = _session.Engine.Configuration();
+        _scenario = _session.Engine.Configuration();LoadCityExperience(false);
         _mapKey = PlayMaps.KeyForScenario(_scenario.Id);
         _human = new(_scenario.NewGame?.HumanActorId??1);
         RestoreGameControllers();
@@ -995,6 +998,7 @@ public partial class Playfield : Control
     private void SampleHeading()
     {
         if (_surface != Surface.Play || _waitRelease || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots) return;
+        if(_tabletState.Kind is TabletKind.CityMap or TabletKind.Notices or TabletKind.Tutorial||GetViewport().GuiGetFocusOwner() is LineEdit or TextEdit)return;
         var heading = TravelHeading.FromKeys(
             Input.IsPhysicalKeyPressed(Key.D), Input.IsPhysicalKeyPressed(Key.A),
             Input.IsPhysicalKeyPressed(Key.S), Input.IsPhysicalKeyPressed(Key.W));

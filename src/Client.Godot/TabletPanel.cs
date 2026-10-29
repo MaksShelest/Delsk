@@ -31,11 +31,11 @@ public partial class TabletPanel : PanelContainer
         var scroll=new ScrollContainer{Name="TabletScroll",SizeFlagsVertical=SizeFlags.ExpandFill,HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};column.AddChild(scroll);
         Body=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};scroll.AddChild(Body);
         _status=new Label{Name="TabletFeedback",AutowrapMode=TextServer.AutowrapMode.WordSmart,MaxLinesVisible=3};column.AddChild(_status);
-        column.AddChild(new HSeparator());var footer=new HBoxContainer();column.AddChild(footer);footer.AddChild(TabletDesign.Art("clock",new(26,26)));
-        _clock=new Label{SizeFlagsHorizontal=SizeFlags.ExpandFill};footer.AddChild(_clock);
+        column.AddChild(new HSeparator());var footer=new TabletColumns{Breakpoint=560};column.AddChild(footer);var clockRow=new HBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};footer.AddChild(clockRow);clockRow.AddChild(TabletDesign.Art("clock",new(26,26)));
+        _clock=new Label{SizeFlagsHorizontal=SizeFlags.ExpandFill};clockRow.AddChild(_clock);
         _time=new CheckButton{Name="TabletTime",FocusMode=FocusModeEnum.None,TooltipText=L("Пауза останавливает весь мир, включая NPC. Разрешённое движение запускает время.","Pause stops the whole world, including NPCs. Allowed movement resumes time.")};
         _time.Toggled+=running=>TimeRunningChanged?.Invoke(running);footer.AddChild(_time);
-        Resized+=()=>{float margin=GetViewportRect().Size.X>=1360?64:12;OffsetLeft=margin;OffsetRight=-margin;};OffsetLeft=12;OffsetRight=-12;
+        ClipContents=true;UiSafeArea.Panel(this);Ready+=()=>UiSafeArea.Keyboard(this);
     }
     public void ShowClock(bool timeRunning,bool paused,long tick,string feedback)
     {

@@ -65,11 +65,16 @@ public partial class Playfield
         bar.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color("243a3e"),
             ContentMarginLeft = 12, ContentMarginRight = 12, ContentMarginTop = 6, ContentMarginBottom = 6 });
         _playChrome!.AddChild(bar);
-        var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Begin }; bar.AddChild(row);
+        UiSafeArea.Track(bar,()=>{var safe=UiSafeArea.Read(bar);bar.OffsetLeft=(float)safe.Left;bar.OffsetRight=-(float)safe.Right;bar.OffsetTop=(float)safe.Top;bar.OffsetBottom=54+(float)safe.Top;});
+        bar.Resized+=()=>LayoutCityHud(bar);
+        var row = new HFlowContainer { Alignment = FlowContainer.AlignmentMode.Begin }; bar.AddChild(row);
         var menu = new Button { Text = L("Меню", "Menu"), FocusMode = FocusModeEnum.None };
         menu.Pressed += OpenMenu; row.AddChild(menu);
         var tablet = new Button { Text = L("Планшет", "Tablet"), FocusMode = FocusModeEnum.None };
         tablet.Pressed += OpenPlayerTablet; row.AddChild(tablet);
+        var cityMap=new Button{Name="OpenCityMap",Text=L("Карта","Map"),TooltipText=L("Карта всего города · M","City map · M")};cityMap.Pressed+=OpenCityMap;row.AddChild(cityMap);
+        _cityNoticeButton=new Button{Name="CityNotices",Text=L("События","Notices")};_cityNoticeButton.Pressed+=OpenCityNotices;row.AddChild(_cityNoticeButton);
+        var journey=new Button{Name="OpenJourney",Text=L("Путь","Guide")};journey.Pressed+=OpenCityJourney;row.AddChild(journey);
         _accountNotice=new(){Name="AccountNotification",Text=L("Счёт","Account"),FocusMode=FocusModeEnum.None};
         _accountNotice.Pressed+=()=>{OpenPlayerTablet();_playerTablet?.OpenAccount();};row.AddChild(_accountNotice);
         if(_scenario.Economy?.Services is not null){_serviceNotice=new(){Name="ServiceNotification",Text=L("Доставка","Delivery"),FocusMode=FocusModeEnum.None};_serviceNotice.Pressed+=()=>{OpenPlayerTablet();_playerTablet?.OpenServices();};row.AddChild(_serviceNotice);}
@@ -78,7 +83,7 @@ public partial class Playfield
         _gameClock = new Label { VerticalAlignment = VerticalAlignment.Center, CustomMinimumSize = new Vector2(185, 0) }; row.AddChild(_gameClock);
         row.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill });
         _playInventory = new Label { VerticalAlignment = VerticalAlignment.Center }; row.AddChild(_playInventory);
-        _hudGoods = new ResourceInventoryHud { Name = "InventoryHud", Alignment = BoxContainer.AlignmentMode.End };
+        _hudGoods = new ResourceInventoryHud { Name = "InventoryHud", Alignment = FlowContainer.AlignmentMode.End, SizeFlagsHorizontal=SizeFlags.ExpandFill };
         row.AddChild(_hudGoods);
         _playNotice = new Label { HorizontalAlignment = HorizontalAlignment.Center, MouseFilter = MouseFilterEnum.Ignore,
             AutowrapMode = TextServer.AutowrapMode.WordSmart };
@@ -100,19 +105,28 @@ public partial class Playfield
             mapPanel.OffsetLeft=-248;mapPanel.OffsetRight=-16;mapPanel.OffsetTop=110;mapPanel.OffsetBottom=284;
             _miniMap=new DebugBoard{CustomMinimumSize=new(232,174),MouseFilter=MouseFilterEnum.Ignore};mapPanel.MouseFilter=MouseFilterEnum.Ignore;mapPanel.AddChild(_miniMap);_playChrome.AddChild(mapPanel);
         }
-        var dock = new CenterContainer { MouseFilter = MouseFilterEnum.Ignore };
+        var dock = new MarginContainer { MouseFilter = MouseFilterEnum.Ignore, GrowVertical=GrowDirection.Begin };
         dock.SetAnchorsAndOffsetsPreset(LayoutPreset.BottomWide);
         dock.OffsetTop = -132; dock.OffsetBottom = -16; dock.OffsetLeft = 16; dock.OffsetRight = -16;
         _playChrome.AddChild(dock); _bottomChrome = dock;
+        UiSafeArea.Track(dock,()=>{var safe=UiSafeArea.Read(dock);dock.OffsetBottom=-16-(float)safe.Bottom;dock.OffsetTop=-132-(float)safe.Bottom;dock.OffsetLeft=16+(float)safe.Left;dock.OffsetRight=-16-(float)safe.Right;});
         _contextHost = new VBoxContainer { MouseFilter = MouseFilterEnum.Ignore }; dock.AddChild(_contextHost);
-        _contextKey = ""; _choices = [];
+        _contextKey = ""; _choices = [];LayoutCityHud(bar);
+    }
+    private void LayoutCityHud(Control bar)
+    {
+        float top=bar.Position.Y+bar.Size.Y;var safe=UiSafeArea.Read(bar);bool narrow=GetViewportRect().Size.X<800;
+        if(_playNotice is not null){_playNotice.OffsetTop=top+8;_playNotice.OffsetBottom=top+42;_playNotice.OffsetLeft=16+(float)safe.Left;_playNotice.OffsetRight=-16-(float)safe.Right;}
+        if(_storageWarning is not null){_storageWarning.OffsetTop=top+44;_storageWarning.OffsetBottom=top+100;_storageWarning.OffsetRight=-(narrow?16:260)-(float)safe.Right;}
+        if(_tooltip is not null)_tooltip.Position=new(16+(float)safe.Left,top+96);
+        if(_miniMap?.GetParent() is Control mini){mini.Visible=!narrow;mini.OffsetTop=top+56;mini.OffsetBottom=top+230;}
     }
     private void FillPlayContext(VBoxContainer host)
     {
         foreach (Node child in host.GetChildren()) { host.RemoveChild(child); child.QueueFree(); }
         _harvestButtons.Clear(); host.Visible = _choices.Length > 0;
         if (_choices.Length == 0) return;
-        var row = new HBoxContainer(); host.AddChild(row);
+        var row = new HFlowContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill}; host.AddChild(row);
         int count = _choices.Length > 3 ? 2 : _choices.Length;
         for (int i = 0; i < count; i++)
         {

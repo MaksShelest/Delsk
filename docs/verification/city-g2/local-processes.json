@@ -1,0 +1,3306 @@
+{
+  "scope": "Retained completed local process metadata, including intermediate failures. Expected negative build exits are labelled by their command name; they are not ordinary passes.",
+  "processes": [
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T19:35:09.734679+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 103.97,
+      "finished_at": "2026-10-28T19:36:53.704423+00:00",
+      "localEvidence": "checks/g2-core-build-1.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T19:36:53.796652+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 54.288,
+      "finished_at": "2026-10-28T19:37:48.084789+00:00",
+      "localEvidence": "checks/g2-client-build-1.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T19:47:17.343500+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 40.192,
+      "finished_at": "2026-10-28T19:47:57.535440+00:00",
+      "localEvidence": "checks/g2-core-build-2.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T19:47:57.598910+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 27.53,
+      "finished_at": "2026-10-28T19:48:25.129041+00:00",
+      "localEvidence": "checks/g2-client-build-2.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T19:57:44.829907+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 35.759,
+      "finished_at": "2026-10-28T19:58:20.589568+00:00",
+      "localEvidence": "checks/g2-core-build-3.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:01:55.698489+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 27.832,
+      "finished_at": "2026-10-28T20:02:23.530808+00:00",
+      "localEvidence": "checks/g2-core-build-4.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.CityMapG2Tests",
+        "-class",
+        "Simulation.Tests.CityExperienceG2Tests",
+        "-result-trx",
+        "/workspace/work/g2/unit-4.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T20:02:23.608566+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 23.24,
+      "finished_at": "2026-10-28T20:02:46.848244+00:00",
+      "localEvidence": "checks/g2-unit-4.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:02:46.921117+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 22.247,
+      "finished_at": "2026-10-28T20:03:09.168645+00:00",
+      "localEvidence": "checks/g2-client-build-4.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-1",
+        "--display",
+        ":91",
+        "--asset-cache",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--case",
+        "small"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-28T20:20:59.115389+00:00",
+      "exit_code": 2,
+      "elapsed_seconds": 0.117,
+      "finished_at": "2026-10-28T20:20:59.232174+00:00",
+      "localEvidence": "checks/g2-native-a1.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-2",
+        "--display",
+        ":91",
+        "--asset-cache",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--case",
+        "small"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-28T20:21:19.619632+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 175.321,
+      "finished_at": "2026-10-28T20:24:14.941152+00:00",
+      "localEvidence": "checks/g2-native-a2.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:21:20.119139+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.34,
+      "finished_at": "2026-10-28T20:21:25.458977+00:00",
+      "localEvidence": "native-2/checks/a1-restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:21:25.523341+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 71.083,
+      "finished_at": "2026-10-28T20:22:36.606295+00:00",
+      "localEvidence": "native-2/checks/a1-ordinary-build.json"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Checks",
+        "-v"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-28T20:22:28.752483+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.132,
+      "finished_at": "2026-10-28T20:22:29.884596+00:00",
+      "localEvidence": "checks/g2-python-1.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/Delsk/tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T20:22:36.672496+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.396,
+      "finished_at": "2026-10-28T20:22:42.068753+00:00",
+      "localEvidence": "native-2/checks/a1-ordinary-audit.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:22:42.143833+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 19.008,
+      "finished_at": "2026-10-28T20:23:01.151956+00:00",
+      "localEvidence": "native-2/checks/a1-probe-build.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--target",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--report",
+        "/workspace/work/g2/native-2/a1-asset-cache.json"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-28T20:23:01.207938+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.265,
+      "finished_at": "2026-10-28T20:23:01.472696+00:00",
+      "localEvidence": "native-2/checks/a1-asset-cache.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--editor",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T20:23:01.526728+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 10.499,
+      "finished_at": "2026-10-28T20:23:12.026048+00:00",
+      "localEvidence": "native-2/checks/a1-import.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a1/small-river-6-ru-640",
+        "--map",
+        "small-river",
+        "--count",
+        "6",
+        "--language",
+        "ru",
+        "--width",
+        "640",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:23:12.103050+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 62.766,
+      "finished_at": "2026-10-28T20:24:14.869272+00:00",
+      "localEvidence": "native-2/checks/a1-small-river-6-ru-640.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-2",
+        "--display",
+        ":91",
+        "--asset-cache",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--case",
+        "small",
+        "--reuse-stage",
+        "--attempt",
+        "2"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-28T20:29:55.505543+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 110.514,
+      "finished_at": "2026-10-28T20:31:46.019784+00:00",
+      "localEvidence": "checks/g2-native-a3.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:29:55.954318+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 2.765,
+      "finished_at": "2026-10-28T20:29:58.719814+00:00",
+      "localEvidence": "native-2/checks/a2-restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:29:58.789357+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 39.346,
+      "finished_at": "2026-10-28T20:30:38.135288+00:00",
+      "localEvidence": "native-2/checks/a2-ordinary-build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/Delsk/tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T20:30:38.180850+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.924,
+      "finished_at": "2026-10-28T20:30:40.104841+00:00",
+      "localEvidence": "native-2/checks/a2-ordinary-audit.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:30:40.145611+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 9.893,
+      "finished_at": "2026-10-28T20:30:50.038833+00:00",
+      "localEvidence": "native-2/checks/a2-probe-build.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--target",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--report",
+        "/workspace/work/g2/native-2/a2-asset-cache.json"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-28T20:30:50.081959+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.165,
+      "finished_at": "2026-10-28T20:30:50.246825+00:00",
+      "localEvidence": "native-2/checks/a2-asset-cache.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--editor",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T20:30:50.294039+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.644,
+      "finished_at": "2026-10-28T20:30:55.938404+00:00",
+      "localEvidence": "native-2/checks/a2-import.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a2/small-river-6-ru-640",
+        "--map",
+        "small-river",
+        "--count",
+        "6",
+        "--language",
+        "ru",
+        "--width",
+        "640",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:30:56.001652+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 49.972,
+      "finished_at": "2026-10-28T20:31:45.973926+00:00",
+      "localEvidence": "native-2/checks/a2-small-river-6-ru-640.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:40:23.549371+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 29.094,
+      "finished_at": "2026-10-28T20:40:52.643988+00:00",
+      "localEvidence": "checks/g2-core-build-5.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.CityMapG2Tests",
+        "-class",
+        "Simulation.Tests.CityExperienceG2Tests",
+        "-result-trx",
+        "/workspace/work/g2/unit-5.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T20:40:52.703782+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 17.04,
+      "finished_at": "2026-10-28T20:41:09.743475+00:00",
+      "localEvidence": "checks/g2-unit-5.json"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Checks",
+        "-v"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-28T20:41:09.796162+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.217,
+      "finished_at": "2026-10-28T20:41:10.012944+00:00",
+      "localEvidence": "checks/g2-python-2.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:49:33.122968+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 31.54,
+      "finished_at": "2026-10-28T20:50:04.662709+00:00",
+      "localEvidence": "checks/g2-core-build-6.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.CityMapG2Tests",
+        "-class",
+        "Simulation.Tests.CityExperienceG2Tests",
+        "-result-trx",
+        "/workspace/work/g2/unit-6.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T20:50:04.720354+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 16.813,
+      "finished_at": "2026-10-28T20:50:21.533514+00:00",
+      "localEvidence": "checks/g2-unit-6.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-2",
+        "--display",
+        ":91",
+        "--asset-cache",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--case",
+        "small",
+        "--reuse-stage",
+        "--attempt",
+        "3",
+        "--fixtures",
+        "/workspace/work/g2/fixtures-6"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-28T20:52:41.325839+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 143.502,
+      "finished_at": "2026-10-28T20:55:04.827523+00:00",
+      "localEvidence": "checks/g2-native-a4.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:52:41.681669+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.761,
+      "finished_at": "2026-10-28T20:52:43.442817+00:00",
+      "localEvidence": "native-2/checks/a3-restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:52:43.501609+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 43.01,
+      "finished_at": "2026-10-28T20:53:26.512086+00:00",
+      "localEvidence": "native-2/checks/a3-ordinary-build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/Delsk/tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T20:53:26.566765+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 2.039,
+      "finished_at": "2026-10-28T20:53:28.606276+00:00",
+      "localEvidence": "native-2/checks/a3-ordinary-audit.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:53:28.654165+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 10.881,
+      "finished_at": "2026-10-28T20:53:39.535014+00:00",
+      "localEvidence": "native-2/checks/a3-probe-build.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--target",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--report",
+        "/workspace/work/g2/native-2/a3-asset-cache.json"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-28T20:53:39.586056+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.165,
+      "finished_at": "2026-10-28T20:53:39.751303+00:00",
+      "localEvidence": "native-2/checks/a3-asset-cache.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--editor",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T20:53:39.795494+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.797,
+      "finished_at": "2026-10-28T20:53:45.592913+00:00",
+      "localEvidence": "native-2/checks/a3-import.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a3/small-river-6-ru-640",
+        "--map",
+        "small-river",
+        "--count",
+        "6",
+        "--language",
+        "ru",
+        "--width",
+        "640",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:53:45.649524+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 79.143,
+      "finished_at": "2026-10-28T20:55:04.792899+00:00",
+      "localEvidence": "native-2/checks/a3-small-river-6-ru-640.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-2",
+        "--display",
+        ":91",
+        "--asset-cache",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--case",
+        "small",
+        "--reuse-stage",
+        "--attempt",
+        "4",
+        "--fixtures",
+        "/workspace/work/g2/fixtures-6"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-28T20:59:37.140101+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 213.821,
+      "finished_at": "2026-10-28T21:03:10.961180+00:00",
+      "localEvidence": "checks/g2-native-a5.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:59:37.429239+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.419,
+      "finished_at": "2026-10-28T20:59:38.848671+00:00",
+      "localEvidence": "native-2/checks/a4-restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T20:59:38.896372+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 36.46,
+      "finished_at": "2026-10-28T21:00:15.356328+00:00",
+      "localEvidence": "native-2/checks/a4-ordinary-build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/Delsk/tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T21:00:15.400765+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.919,
+      "finished_at": "2026-10-28T21:00:17.319641+00:00",
+      "localEvidence": "native-2/checks/a4-ordinary-audit.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:00:17.359435+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 11.489,
+      "finished_at": "2026-10-28T21:00:28.848834+00:00",
+      "localEvidence": "native-2/checks/a4-probe-build.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--target",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--report",
+        "/workspace/work/g2/native-2/a4-asset-cache.json"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-28T21:00:28.937908+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.317,
+      "finished_at": "2026-10-28T21:00:29.254830+00:00",
+      "localEvidence": "native-2/checks/a4-asset-cache.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--editor",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T21:00:29.303171+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.819,
+      "finished_at": "2026-10-28T21:00:35.122565+00:00",
+      "localEvidence": "native-2/checks/a4-import.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a4/small-river-6-ru-640",
+        "--map",
+        "small-river",
+        "--count",
+        "6",
+        "--language",
+        "ru",
+        "--width",
+        "640",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:00:35.175622+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 103.023,
+      "finished_at": "2026-10-28T21:02:18.199047+00:00",
+      "localEvidence": "native-2/checks/a4-small-river-6-ru-640.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a4-small-river-6-ru-640"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-28T21:02:18.271299+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.064,
+      "finished_at": "2026-10-28T21:02:18.335514+00:00",
+      "localEvidence": "native-2/checks/a4-small-river-6-ru-640-logs.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a4/forms-ru",
+        "--map",
+        "prepared",
+        "--count",
+        "2",
+        "--language",
+        "ru",
+        "--width",
+        "800",
+        "--fixtures",
+        "/workspace/work/g2/fixtures-6",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:02:18.378607+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 52.392,
+      "finished_at": "2026-10-28T21:03:10.770447+00:00",
+      "localEvidence": "native-2/checks/a4-forms-ru.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a4-forms-ru"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-28T21:03:10.829474+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 0.064,
+      "finished_at": "2026-10-28T21:03:10.893920+00:00",
+      "localEvidence": "native-2/checks/a4-forms-ru-logs.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-2",
+        "--display",
+        ":91",
+        "--asset-cache",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--case",
+        "forms",
+        "--reuse-stage",
+        "--attempt",
+        "5",
+        "--fixtures",
+        "/workspace/work/g2/fixtures-6"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-28T21:05:40.625917+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 107.026,
+      "finished_at": "2026-10-28T21:07:27.652410+00:00",
+      "localEvidence": "checks/g2-native-a6.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:05:41.060576+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.576,
+      "finished_at": "2026-10-28T21:05:42.636142+00:00",
+      "localEvidence": "native-2/checks/a5-restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:05:42.693811+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 40.543,
+      "finished_at": "2026-10-28T21:06:23.237076+00:00",
+      "localEvidence": "native-2/checks/a5-ordinary-build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/Delsk/tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T21:06:23.291033+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.827,
+      "finished_at": "2026-10-28T21:06:25.118340+00:00",
+      "localEvidence": "native-2/checks/a5-ordinary-audit.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:06:25.162131+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 11.857,
+      "finished_at": "2026-10-28T21:06:37.019403+00:00",
+      "localEvidence": "native-2/checks/a5-probe-build.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--target",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--report",
+        "/workspace/work/g2/native-2/a5-asset-cache.json"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-28T21:06:37.068586+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.165,
+      "finished_at": "2026-10-28T21:06:37.233901+00:00",
+      "localEvidence": "native-2/checks/a5-asset-cache.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--editor",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T21:06:37.278101+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.988,
+      "finished_at": "2026-10-28T21:06:42.266228+00:00",
+      "localEvidence": "native-2/checks/a5-import.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a5/forms-ru",
+        "--map",
+        "prepared",
+        "--count",
+        "2",
+        "--language",
+        "ru",
+        "--width",
+        "800",
+        "--fixtures",
+        "/workspace/work/g2/fixtures-6",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:06:42.310131+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 45.18,
+      "finished_at": "2026-10-28T21:07:27.490320+00:00",
+      "localEvidence": "native-2/checks/a5-forms-ru.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a5-forms-ru"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-28T21:07:27.534601+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 0.064,
+      "finished_at": "2026-10-28T21:07:27.598977+00:00",
+      "localEvidence": "native-2/checks/a5-forms-ru-logs.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-2",
+        "--display",
+        ":91",
+        "--asset-cache",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--case",
+        "forms",
+        "--reuse-stage",
+        "--attempt",
+        "6",
+        "--fixtures",
+        "/workspace/work/g2/fixtures-6"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-28T21:11:33.076242+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 184.701,
+      "finished_at": "2026-10-28T21:14:37.777712+00:00",
+      "localEvidence": "checks/g2-native-a7.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:11:33.353542+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.37,
+      "finished_at": "2026-10-28T21:11:34.723293+00:00",
+      "localEvidence": "native-2/checks/a6-restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:11:34.762612+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 44.02,
+      "finished_at": "2026-10-28T21:12:18.782607+00:00",
+      "localEvidence": "native-2/checks/a6-ordinary-build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/Delsk/tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T21:12:18.824575+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.294,
+      "finished_at": "2026-10-28T21:12:23.118559+00:00",
+      "localEvidence": "native-2/checks/a6-ordinary-audit.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:12:23.171208+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 11.571,
+      "finished_at": "2026-10-28T21:12:34.742604+00:00",
+      "localEvidence": "native-2/checks/a6-probe-build.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--target",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--report",
+        "/workspace/work/g2/native-2/a6-asset-cache.json"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-28T21:12:34.820125+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.266,
+      "finished_at": "2026-10-28T21:12:35.087147+00:00",
+      "localEvidence": "native-2/checks/a6-asset-cache.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--editor",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T21:12:35.154063+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.945,
+      "finished_at": "2026-10-28T21:12:41.099590+00:00",
+      "localEvidence": "native-2/checks/a6-import.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a6/forms-ru",
+        "--map",
+        "prepared",
+        "--count",
+        "2",
+        "--language",
+        "ru",
+        "--width",
+        "800",
+        "--fixtures",
+        "/workspace/work/g2/fixtures-6",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:12:41.143214+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 46.713,
+      "finished_at": "2026-10-28T21:13:27.856750+00:00",
+      "localEvidence": "native-2/checks/a6-forms-ru.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a6-forms-ru"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-28T21:13:27.903127+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-28T21:13:27.968217+00:00",
+      "localEvidence": "native-2/checks/a6-forms-ru-logs.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a6/forms-en",
+        "--map",
+        "prepared",
+        "--count",
+        "2",
+        "--language",
+        "en",
+        "--width",
+        "800",
+        "--fixtures",
+        "/workspace/work/g2/fixtures-6",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:13:28.010578+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 50.859,
+      "finished_at": "2026-10-28T21:14:18.869539+00:00",
+      "localEvidence": "native-2/checks/a6-forms-en.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a6-forms-en"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-28T21:14:18.923896+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-28T21:14:18.989010+00:00",
+      "localEvidence": "native-2/checks/a6-forms-en-logs.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://ServiceRunProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a6/service-runs",
+        "--fixtures",
+        "/workspace/work/g2/fixtures-6",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:14:19.026719+00:00",
+      "exit_code": 2,
+      "elapsed_seconds": 18.7,
+      "finished_at": "2026-10-28T21:14:37.726946+00:00",
+      "localEvidence": "native-2/checks/a6-service-runs.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "ux",
+        "--output",
+        "/workspace/work/g2/ordinary-final"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-28T21:17:45.636558+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 95.004,
+      "finished_at": "2026-10-28T21:19:20.640516+00:00",
+      "localEvidence": "checks/g2-unit7.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "Delsk.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:17:45.763698+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.522,
+      "finished_at": "2026-10-28T21:17:47.285406+00:00",
+      "localEvidence": "ordinary-final/checks/restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:17:47.336544+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 67.459,
+      "finished_at": "2026-10-28T21:18:54.796935+00:00",
+      "localEvidence": "ordinary-final/checks/build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.CityMapG2Tests",
+        "-result-trx",
+        "/workspace/work/g2/ordinary-final/tests-g2-0.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T21:18:54.911794+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 13.35,
+      "finished_at": "2026-10-28T21:19:08.262269+00:00",
+      "localEvidence": "ordinary-final/checks/tests-g2-0.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.CityExperienceG2Tests",
+        "-result-trx",
+        "/workspace/work/g2/ordinary-final/tests-g2-1.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T21:19:08.312887+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 12.279,
+      "finished_at": "2026-10-28T21:19:20.591707+00:00",
+      "localEvidence": "ordinary-final/checks/tests-g2-1.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-2",
+        "--display",
+        ":91",
+        "--asset-cache",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--case",
+        "all",
+        "--reuse-stage",
+        "--attempt",
+        "7",
+        "--fixtures",
+        "/workspace/work/g2/ordinary-final/g2-fixtures"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-28T21:19:47.858572+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 132.237,
+      "finished_at": "2026-10-28T21:22:00.095438+00:00",
+      "localEvidence": "checks/g2-native-a8.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:19:48.135947+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.526,
+      "finished_at": "2026-10-28T21:19:49.661991+00:00",
+      "localEvidence": "native-2/checks/a7-restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:19:49.710261+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 50.732,
+      "finished_at": "2026-10-28T21:20:40.442738+00:00",
+      "localEvidence": "native-2/checks/a7-ordinary-build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/Delsk/tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T21:20:40.486556+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 2.227,
+      "finished_at": "2026-10-28T21:20:42.713158+00:00",
+      "localEvidence": "native-2/checks/a7-ordinary-audit.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:20:42.782192+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 11.654,
+      "finished_at": "2026-10-28T21:20:54.436322+00:00",
+      "localEvidence": "native-2/checks/a7-probe-build.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--target",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--report",
+        "/workspace/work/g2/native-2/a7-asset-cache.json"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-28T21:20:54.477589+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.215,
+      "finished_at": "2026-10-28T21:20:54.692449+00:00",
+      "localEvidence": "native-2/checks/a7-asset-cache.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--editor",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T21:20:54.744372+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.992,
+      "finished_at": "2026-10-28T21:20:59.736119+00:00",
+      "localEvidence": "native-2/checks/a7-import.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a7/small-river-6-ru-640",
+        "--map",
+        "small-river",
+        "--count",
+        "6",
+        "--language",
+        "ru",
+        "--width",
+        "640",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:20:59.787756+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 60.281,
+      "finished_at": "2026-10-28T21:22:00.069308+00:00",
+      "localEvidence": "native-2/checks/a7-small-river-6-ru-640.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-2",
+        "--display",
+        ":91",
+        "--asset-cache",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--case",
+        "small",
+        "--reuse-stage",
+        "--attempt",
+        "8"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-28T21:22:56.005673+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 220.879,
+      "finished_at": "2026-10-28T21:26:36.885115+00:00",
+      "localEvidence": "checks/g2-native-a9.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:22:56.250103+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.372,
+      "finished_at": "2026-10-28T21:22:57.622110+00:00",
+      "localEvidence": "native-2/checks/a8-restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:22:57.665586+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 49.921,
+      "finished_at": "2026-10-28T21:23:47.587164+00:00",
+      "localEvidence": "native-2/checks/a8-ordinary-build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/Delsk/tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T21:23:47.644516+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.974,
+      "finished_at": "2026-10-28T21:23:49.618518+00:00",
+      "localEvidence": "native-2/checks/a8-ordinary-audit.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:23:49.661699+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 10.968,
+      "finished_at": "2026-10-28T21:24:00.629994+00:00",
+      "localEvidence": "native-2/checks/a8-probe-build.json"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Checks",
+        "-v"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-28T21:23:57.383685+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.155,
+      "finished_at": "2026-10-28T21:23:58.538599+00:00",
+      "localEvidence": "checks/g2-python-final.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--target",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--report",
+        "/workspace/work/g2/native-2/a8-asset-cache.json"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-28T21:24:00.679963+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.215,
+      "finished_at": "2026-10-28T21:24:00.894790+00:00",
+      "localEvidence": "native-2/checks/a8-asset-cache.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--editor",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-28T21:24:00.947531+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.82,
+      "finished_at": "2026-10-28T21:24:07.767314+00:00",
+      "localEvidence": "native-2/checks/a8-import.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a8/small-river-6-ru-640",
+        "--map",
+        "small-river",
+        "--count",
+        "6",
+        "--language",
+        "ru",
+        "--width",
+        "640",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-28T21:24:07.813964+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 148.82,
+      "finished_at": "2026-10-28T21:26:36.634455+00:00",
+      "localEvidence": "native-2/checks/a8-small-river-6-ru-640.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a8-small-river-6-ru-640"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-28T21:26:36.700707+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-28T21:26:36.765692+00:00",
+      "localEvidence": "native-2/checks/a8-small-river-6-ru-640-logs.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-2",
+        "--display",
+        ":91",
+        "--asset-cache",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--case",
+        "all",
+        "--reuse-stage",
+        "--attempt",
+        "9",
+        "--fixtures",
+        "/workspace/work/g2/ordinary-final/g2-fixtures"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T00:09:13.078052+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 257.537,
+      "finished_at": "2026-10-29T00:13:30.615290+00:00",
+      "localEvidence": "checks/g2-native-a10.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:09:13.470577+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.627,
+      "finished_at": "2026-10-29T00:09:15.097730+00:00",
+      "localEvidence": "native-2/checks/a9-restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:09:15.137975+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 41.66,
+      "finished_at": "2026-10-29T00:09:56.798575+00:00",
+      "localEvidence": "native-2/checks/a9-ordinary-build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/Delsk/tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T00:09:56.847468+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 2.179,
+      "finished_at": "2026-10-29T00:09:59.026142+00:00",
+      "localEvidence": "native-2/checks/a9-ordinary-audit.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:09:59.123045+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 22.664,
+      "finished_at": "2026-10-29T00:10:21.787629+00:00",
+      "localEvidence": "native-2/checks/a9-probe-build.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--target",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--report",
+        "/workspace/work/g2/native-2/a9-asset-cache.json"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T00:10:21.861063+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.365,
+      "finished_at": "2026-10-29T00:10:22.226299+00:00",
+      "localEvidence": "native-2/checks/a9-asset-cache.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--editor",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T00:10:22.329658+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.401,
+      "finished_at": "2026-10-29T00:10:28.731000+00:00",
+      "localEvidence": "native-2/checks/a9-import.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a9/small-river-6-ru-640",
+        "--map",
+        "small-river",
+        "--count",
+        "6",
+        "--language",
+        "ru",
+        "--width",
+        "640",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:10:28.783739+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 99.951,
+      "finished_at": "2026-10-29T00:12:08.735026+00:00",
+      "localEvidence": "native-2/checks/a9-small-river-6-ru-640.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a9-small-river-6-ru-640"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-29T00:12:09.048782+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-29T00:12:09.114186+00:00",
+      "localEvidence": "native-2/checks/a9-small-river-6-ru-640-logs.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a9/large-districts-10-en-1100",
+        "--map",
+        "large-districts",
+        "--count",
+        "10",
+        "--language",
+        "en",
+        "--width",
+        "1100",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:12:09.155050+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 81.412,
+      "finished_at": "2026-10-29T00:13:30.567436+00:00",
+      "localEvidence": "native-2/checks/a9-large-districts-10-en-1100.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-2",
+        "--display",
+        ":91",
+        "--asset-cache",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--case",
+        "all",
+        "--reuse-stage",
+        "--attempt",
+        "10",
+        "--fixtures",
+        "/workspace/work/g2/ordinary-final/g2-fixtures"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T00:14:31.756555+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 316.982,
+      "finished_at": "2026-10-29T00:19:48.739251+00:00",
+      "localEvidence": "checks/g2-native-a11.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:14:32.407634+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.679,
+      "finished_at": "2026-10-29T00:14:34.086913+00:00",
+      "localEvidence": "native-2/checks/a10-restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:14:34.129727+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 43.694,
+      "finished_at": "2026-10-29T00:15:17.823603+00:00",
+      "localEvidence": "native-2/checks/a10-ordinary-build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/Delsk/tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T00:15:17.875370+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 2.084,
+      "finished_at": "2026-10-29T00:15:19.958996+00:00",
+      "localEvidence": "native-2/checks/a10-ordinary-audit.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:15:20.007654+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 16.968,
+      "finished_at": "2026-10-29T00:15:36.975591+00:00",
+      "localEvidence": "native-2/checks/a10-probe-build.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--target",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--report",
+        "/workspace/work/g2/native-2/a10-asset-cache.json"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T00:15:37.040810+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.165,
+      "finished_at": "2026-10-29T00:15:37.205783+00:00",
+      "localEvidence": "native-2/checks/a10-asset-cache.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--editor",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T00:15:37.248159+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.705,
+      "finished_at": "2026-10-29T00:15:41.953062+00:00",
+      "localEvidence": "native-2/checks/a10-import.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a10/small-river-6-ru-640",
+        "--map",
+        "small-river",
+        "--count",
+        "6",
+        "--language",
+        "ru",
+        "--width",
+        "640",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:15:41.994065+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 112.378,
+      "finished_at": "2026-10-29T00:17:34.371689+00:00",
+      "localEvidence": "native-2/checks/a10-small-river-6-ru-640.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a10-small-river-6-ru-640"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-29T00:17:34.418913+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.064,
+      "finished_at": "2026-10-29T00:17:34.483341+00:00",
+      "localEvidence": "native-2/checks/a10-small-river-6-ru-640-logs.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a10/large-districts-10-en-1100",
+        "--map",
+        "large-districts",
+        "--count",
+        "10",
+        "--language",
+        "en",
+        "--width",
+        "1100",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:17:34.528163+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 134.163,
+      "finished_at": "2026-10-29T00:19:48.690720+00:00",
+      "localEvidence": "native-2/checks/a10-large-districts-10-en-1100.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-2",
+        "--display",
+        ":91",
+        "--asset-cache",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--case",
+        "all",
+        "--reuse-stage",
+        "--attempt",
+        "11",
+        "--fixtures",
+        "/workspace/work/g2/ordinary-final/g2-fixtures"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T00:21:03.201080+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 380.737,
+      "finished_at": "2026-10-29T00:27:23.938681+00:00",
+      "localEvidence": "checks/g2-native-a12.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:21:03.576542+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.577,
+      "finished_at": "2026-10-29T00:21:05.153851+00:00",
+      "localEvidence": "native-2/checks/a11-restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:21:05.198116+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 63.787,
+      "finished_at": "2026-10-29T00:22:08.985504+00:00",
+      "localEvidence": "native-2/checks/a11-ordinary-build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/Delsk/tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T00:22:09.029752+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.192,
+      "finished_at": "2026-10-29T00:22:13.221930+00:00",
+      "localEvidence": "native-2/checks/a11-ordinary-audit.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:22:13.270801+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 15.209,
+      "finished_at": "2026-10-29T00:22:28.480099+00:00",
+      "localEvidence": "native-2/checks/a11-probe-build.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--target",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--report",
+        "/workspace/work/g2/native-2/a11-asset-cache.json"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T00:22:28.525736+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.215,
+      "finished_at": "2026-10-29T00:22:28.740579+00:00",
+      "localEvidence": "native-2/checks/a11-asset-cache.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--editor",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T00:22:28.785944+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.139,
+      "finished_at": "2026-10-29T00:22:33.924686+00:00",
+      "localEvidence": "native-2/checks/a11-import.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a11/small-river-6-ru-640",
+        "--map",
+        "small-river",
+        "--count",
+        "6",
+        "--language",
+        "ru",
+        "--width",
+        "640",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:22:33.971657+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 109.51,
+      "finished_at": "2026-10-29T00:24:23.481533+00:00",
+      "localEvidence": "native-2/checks/a11-small-river-6-ru-640.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a11-small-river-6-ru-640"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-29T00:24:23.553909+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-29T00:24:23.618701+00:00",
+      "localEvidence": "native-2/checks/a11-small-river-6-ru-640-logs.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a11/large-districts-10-en-1100",
+        "--map",
+        "large-districts",
+        "--count",
+        "10",
+        "--language",
+        "en",
+        "--width",
+        "1100",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:24:23.672230+00:00",
+      "timed_out": true,
+      "exit_code": 124,
+      "elapsed_seconds": 180.168,
+      "finished_at": "2026-10-29T00:27:23.839990+00:00",
+      "localEvidence": "native-2/checks/a11-large-districts-10-en-1100.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-2",
+        "--display",
+        ":91",
+        "--asset-cache",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--case",
+        "narrow",
+        "--reuse-stage",
+        "--attempt",
+        "12",
+        "--fixtures",
+        "/workspace/work/g2/ordinary-final/g2-fixtures"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T00:28:25.196924+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 327.565,
+      "finished_at": "2026-10-29T00:33:52.762251+00:00",
+      "localEvidence": "checks/g2-native-a13.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:28:25.704726+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.954,
+      "finished_at": "2026-10-29T00:28:27.659063+00:00",
+      "localEvidence": "native-2/checks/a12-restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:28:27.720453+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 43.518,
+      "finished_at": "2026-10-29T00:29:11.238899+00:00",
+      "localEvidence": "native-2/checks/a12-ordinary-build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/Delsk/tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T00:29:11.282584+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 2.667,
+      "finished_at": "2026-10-29T00:29:13.949545+00:00",
+      "localEvidence": "native-2/checks/a12-ordinary-audit.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:29:14.005013+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 12.786,
+      "finished_at": "2026-10-29T00:29:26.790739+00:00",
+      "localEvidence": "native-2/checks/a12-probe-build.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g1/native-18/source/src/Client.Godot",
+        "--target",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--report",
+        "/workspace/work/g2/native-2/a12-asset-cache.json"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T00:29:26.832960+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.216,
+      "finished_at": "2026-10-29T00:29:27.048710+00:00",
+      "localEvidence": "native-2/checks/a12-asset-cache.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--editor",
+        "--import"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T00:29:27.091070+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.089,
+      "finished_at": "2026-10-29T00:29:32.179710+00:00",
+      "localEvidence": "native-2/checks/a12-import.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a12/large-districts-10-ru-360",
+        "--map",
+        "large-districts",
+        "--count",
+        "10",
+        "--language",
+        "ru",
+        "--width",
+        "360",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:29:32.225845+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 118.434,
+      "finished_at": "2026-10-29T00:31:30.659920+00:00",
+      "localEvidence": "native-2/checks/a12-large-districts-10-ru-360.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a12-large-districts-10-ru-360"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-29T00:31:30.724604+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-29T00:31:30.789172+00:00",
+      "localEvidence": "native-2/checks/a12-large-districts-10-ru-360-logs.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a12/forms-ru",
+        "--map",
+        "prepared",
+        "--count",
+        "2",
+        "--language",
+        "ru",
+        "--width",
+        "800",
+        "--fixtures",
+        "/workspace/work/g2/ordinary-final/g2-fixtures",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:31:30.843261+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 50.959,
+      "finished_at": "2026-10-29T00:32:21.802269+00:00",
+      "localEvidence": "native-2/checks/a12-forms-ru.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a12-forms-ru"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-29T00:32:21.864100+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-29T00:32:21.928835+00:00",
+      "localEvidence": "native-2/checks/a12-forms-ru-logs.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a12/forms-en",
+        "--map",
+        "prepared",
+        "--count",
+        "2",
+        "--language",
+        "en",
+        "--width",
+        "800",
+        "--fixtures",
+        "/workspace/work/g2/ordinary-final/g2-fixtures",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:32:21.971343+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 63.959,
+      "finished_at": "2026-10-29T00:33:25.930832+00:00",
+      "localEvidence": "native-2/checks/a12-forms-en.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a12-forms-en"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-29T00:33:26.017404+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-29T00:33:26.082264+00:00",
+      "localEvidence": "native-2/checks/a12-forms-en-logs.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://ServiceRunProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a12/service-runs",
+        "--fixtures",
+        "/workspace/work/g2/ordinary-final/g2-fixtures",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:33:26.237849+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 26.268,
+      "finished_at": "2026-10-29T00:33:52.506151+00:00",
+      "localEvidence": "native-2/checks/a12-service-runs.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a12-service-runs"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-29T00:33:52.557689+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-29T00:33:52.622327+00:00",
+      "localEvidence": "native-2/checks/a12-service-runs-logs.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-2",
+        "--display",
+        ":91",
+        "--case",
+        "small",
+        "--reuse-stage",
+        "--attempt",
+        "13"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T00:35:27.165214+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 185.157,
+      "finished_at": "2026-10-29T00:38:32.322603+00:00",
+      "localEvidence": "checks/g2-native-a14.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:35:27.550985+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 8.58,
+      "finished_at": "2026-10-29T00:35:36.131047+00:00",
+      "localEvidence": "native-2/checks/a13-restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:35:36.182275+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 45.845,
+      "finished_at": "2026-10-29T00:36:22.027547+00:00",
+      "localEvidence": "native-2/checks/a13-ordinary-build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/Delsk/tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T00:36:22.085479+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 2.534,
+      "finished_at": "2026-10-29T00:36:24.619588+00:00",
+      "localEvidence": "native-2/checks/a13-ordinary-audit.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:36:24.698098+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 14.439,
+      "finished_at": "2026-10-29T00:36:39.137029+00:00",
+      "localEvidence": "native-2/checks/a13-probe-build.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/prepare_godot_asset_import.py",
+        "--source",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--output",
+        "/workspace/work/g2/native-2/assets-a13",
+        "--report",
+        "/workspace/work/g2/native-2/a13-asset-stage.json"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-29T00:36:39.186561+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.115,
+      "finished_at": "2026-10-29T00:36:39.301258+00:00",
+      "localEvidence": "native-2/checks/a13-asset-stage.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/g2/native-2/assets-a13",
+        "--editor",
+        "--import",
+        "--quit"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T00:36:39.350637+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.641,
+      "finished_at": "2026-10-29T00:36:44.992048+00:00",
+      "localEvidence": "native-2/checks/a13-import.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g2/native-2/assets-a13",
+        "--target",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--report",
+        "/workspace/work/g2/native-2/a13-asset-cache.json"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T00:36:45.044148+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.165,
+      "finished_at": "2026-10-29T00:36:45.209348+00:00",
+      "localEvidence": "native-2/checks/a13-asset-cache.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--verify-only",
+        "--report",
+        "/workspace/work/g2/native-2/a13-asset-completeness.json"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-29T00:36:45.263126+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.166,
+      "finished_at": "2026-10-29T00:36:45.428988+00:00",
+      "localEvidence": "native-2/checks/a13-asset-completeness.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a13/small-river-6-ru-640",
+        "--map",
+        "small-river",
+        "--count",
+        "6",
+        "--language",
+        "ru",
+        "--width",
+        "640",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:36:45.482312+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 106.575,
+      "finished_at": "2026-10-29T00:38:32.057703+00:00",
+      "localEvidence": "native-2/checks/a13-small-river-6-ru-640.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a13-small-river-6-ru-640"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-29T00:38:32.138599+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-29T00:38:32.203158+00:00",
+      "localEvidence": "native-2/checks/a13-small-river-6-ru-640-logs.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "ux",
+        "--output",
+        "/workspace/work/g2/ordinary-final-road"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-10-29T00:44:52.581804+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 87.543,
+      "finished_at": "2026-10-29T00:46:20.125469+00:00",
+      "localEvidence": "checks/g2-unit8.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "Delsk.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:44:52.670463+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.97,
+      "finished_at": "2026-10-29T00:44:54.640949+00:00",
+      "localEvidence": "ordinary-final-road/checks/restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:44:54.687065+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 54.161,
+      "finished_at": "2026-10-29T00:45:48.848102+00:00",
+      "localEvidence": "ordinary-final-road/checks/build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.CityMapG2Tests",
+        "-result-trx",
+        "/workspace/work/g2/ordinary-final-road/tests-g2-0.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T00:45:48.920805+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 12.727,
+      "finished_at": "2026-10-29T00:46:01.647545+00:00",
+      "localEvidence": "ordinary-final-road/checks/tests-g2-0.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.CityExperienceG2Tests",
+        "-result-trx",
+        "/workspace/work/g2/ordinary-final-road/tests-g2-1.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T00:46:01.695267+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 18.379,
+      "finished_at": "2026-10-29T00:46:20.074208+00:00",
+      "localEvidence": "ordinary-final-road/checks/tests-g2-1.json"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_city_experience_ui.py",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--output",
+        "/workspace/work/g2/native-2",
+        "--display",
+        ":91",
+        "--case",
+        "forms",
+        "--reuse-stage",
+        "--attempt",
+        "14",
+        "--fixtures",
+        "/workspace/work/g2/ordinary-final-road/g2-fixtures"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-10-29T00:47:13.028284+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 204.799,
+      "finished_at": "2026-10-29T00:50:37.827297+00:00",
+      "localEvidence": "checks/g2-native-a15.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "restore",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:47:13.449980+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.655,
+      "finished_at": "2026-10-29T00:47:15.104588+00:00",
+      "localEvidence": "native-2/checks/a14-restore.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:47:15.157746+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 39.981,
+      "finished_at": "2026-10-29T00:47:55.138842+00:00",
+      "localEvidence": "native-2/checks/a14-ordinary-build.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "/workspace/Delsk/tools/AssemblyAudit",
+        "-c",
+        "Release",
+        "--",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T00:47:55.184221+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 6.061,
+      "finished_at": "2026-10-29T00:48:01.245482+00:00",
+      "localEvidence": "native-2/checks/a14-ordinary-audit.json"
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/workspace/work/g2/native-2/source/src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:48:01.299730+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 11.881,
+      "finished_at": "2026-10-29T00:48:13.180996+00:00",
+      "localEvidence": "native-2/checks/a14-probe-build.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/prepare_godot_asset_import.py",
+        "--source",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--output",
+        "/workspace/work/g2/native-2/assets-a14",
+        "--report",
+        "/workspace/work/g2/native-2/a14-asset-stage.json"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-29T00:48:13.229028+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.115,
+      "finished_at": "2026-10-29T00:48:13.344108+00:00",
+      "localEvidence": "native-2/checks/a14-asset-stage.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--headless",
+        "--path",
+        "/workspace/work/g2/native-2/assets-a14",
+        "--editor",
+        "--import",
+        "--quit"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-10-29T00:48:13.387387+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.698,
+      "finished_at": "2026-10-29T00:48:19.085466+00:00",
+      "localEvidence": "native-2/checks/a14-import.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g2/native-2/assets-a14",
+        "--target",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--report",
+        "/workspace/work/g2/native-2/a14-asset-cache.json"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-10-29T00:48:19.129197+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.215,
+      "finished_at": "2026-10-29T00:48:19.344441+00:00",
+      "localEvidence": "native-2/checks/a14-asset-cache.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/reuse_godot_imports.py",
+        "--source",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--verify-only",
+        "--report",
+        "/workspace/work/g2/native-2/a14-asset-completeness.json"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-10-29T00:48:19.392638+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.114,
+      "finished_at": "2026-10-29T00:48:19.507127+00:00",
+      "localEvidence": "native-2/checks/a14-asset-completeness.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a14/forms-ru",
+        "--map",
+        "prepared",
+        "--count",
+        "2",
+        "--language",
+        "ru",
+        "--width",
+        "800",
+        "--fixtures",
+        "/workspace/work/g2/ordinary-final-road/g2-fixtures",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:48:19.556583+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 57.01,
+      "finished_at": "2026-10-29T00:49:16.566343+00:00",
+      "localEvidence": "native-2/checks/a14-forms-ru.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a14-forms-ru"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-29T00:49:16.707803+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.068,
+      "finished_at": "2026-10-29T00:49:16.775628+00:00",
+      "localEvidence": "native-2/checks/a14-forms-ru-logs.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://CityExperienceProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a14/forms-en",
+        "--map",
+        "prepared",
+        "--count",
+        "2",
+        "--language",
+        "en",
+        "--width",
+        "800",
+        "--fixtures",
+        "/workspace/work/g2/ordinary-final-road/g2-fixtures",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:49:16.949019+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 55.329,
+      "finished_at": "2026-10-29T00:50:12.278479+00:00",
+      "localEvidence": "native-2/checks/a14-forms-en.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a14-forms-en"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-29T00:50:12.368715+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.119,
+      "finished_at": "2026-10-29T00:50:12.488091+00:00",
+      "localEvidence": "native-2/checks/a14-forms-en-logs.json"
+    },
+    {
+      "command": [
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+        "--path",
+        "/workspace/work/g2/native-2/source/src/Client.Godot",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "res://ServiceRunProbe.tscn",
+        "--",
+        "--output",
+        "/workspace/work/g2/native-2/cases-a14/service-runs",
+        "--fixtures",
+        "/workspace/work/g2/ordinary-final-road/g2-fixtures",
+        "--windowed"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-10-29T00:50:12.546951+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 25.13,
+      "finished_at": "2026-10-29T00:50:37.676998+00:00",
+      "localEvidence": "native-2/checks/a14-service-runs.json"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/Delsk/scripts/verify_platform_probe.py",
+        "--log-prefix",
+        "/workspace/work/g2/native-2/checks/a14-service-runs"
+      ],
+      "timeout_seconds": 15,
+      "started_at": "2026-10-29T00:50:37.718269+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.065,
+      "finished_at": "2026-10-29T00:50:37.783050+00:00",
+      "localEvidence": "native-2/checks/a14-service-runs-logs.json"
+    }
+  ]
+}

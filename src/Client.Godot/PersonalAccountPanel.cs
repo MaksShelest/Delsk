@@ -37,6 +37,8 @@ public partial class PersonalAccountPanel : VBoxContainer
     private string L(string ru,string en)=>PlayerText.Local(_language,ru,en);
     private static Label Wrap()=>new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};
     private long Selected=>_invoices.Selected>=0&&_invoices.Selected<_ids.Length?_ids[_invoices.Selected]:0;
+    public void FocusInvoice(long id)
+    {_billOffset=0;Reload();int index=Array.IndexOf(_ids,id);if(index>=0){_invoices.Select(index);RenderInvoice();}}
     public void ShowData(PersonalAccount data,bool pending)
     {_data=data;_pending=pending;Reload();}
     private void Reload()

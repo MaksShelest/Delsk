@@ -6,6 +6,18 @@ public partial class PresentationStage : Node3D
 {
     public event System.Action<int, int>? CellChosen;
     private Camera3D _camera = null!;
+    private float _cameraDistance=4.2f,_cameraTarget=4.2f,_mapSpan=20;
+    private Vector3 _mapCenter;
+    private readonly Dictionary<long,Label3D> _buildingStates=[];
+    public void ZoomView(float factor)=>_cameraTarget=Mathf.Clamp(_cameraTarget*factor,4.2f,_mapSpan*1.3f);
+    public void ShowBuildingStates(Simulation.Hosting.PlayerView own,string language)
+    {
+        foreach(var (id,label) in _buildingStates)
+        {
+            var unit=own.Enterprises.FirstOrDefault(e=>e.Id.Value==id);label.Visible=unit is not null&&_cameraDistance<14;
+            if(unit is not null)label.Text=Simulation.Hosting.TabletText.Reason(language,unit.ReasonCode)+(unit.BatchId>0?$" · {100*unit.WorkDone/Math.Max(1,unit.WorkRequired)}%":"");
+        }
+    }
     private MeshInstance3D _selection = null!;
     private sealed class Mover(Node3D node, Vector3 at)
     {
@@ -45,7 +57,8 @@ public partial class PresentationStage : Node3D
 
     public override void _Process(double delta)
     {
-        if (_frozen) return;
+        _cameraDistance=Mathf.MoveToward(_cameraDistance,_cameraTarget,(float)delta*Mathf.Max(5,_cameraTarget*2));
+        FollowHuman();if (_frozen) return;
         foreach (var mover in _actors.Values.Concat(_trips.Values).Concat(_fleet.Values).Concat(_roadEquipment.Values.Select(e=>e.Mover)))
         {
             mover.Elapsed = Mathf.Min(mover.Duration, mover.Elapsed + (float)delta);
@@ -58,7 +71,7 @@ public partial class PresentationStage : Node3D
     {
         bool snap = frozen || _frozen || _follow != followHuman;
         _frozen = frozen;
-        _follow = followHuman;
+        _follow = followHuman;_mapSpan=Mathf.Max(frame.MapWidth,frame.MapHeight);_mapCenter=new(frame.MapWidth/2f-.5f,0,frame.MapHeight/2f-.5f);
         bool appearanceChanged=_appearanceRevision!=WorldSkins.Revision;
         _appearanceRevision=WorldSkins.Revision;
         string staticKey = frame.Layout?.SourceSha256+"|"+WorldSkins.Revision+"|"+frame.MapWidth + "x" + frame.MapHeight + "|" + string.Join(",", frame.Markers.Select(m =>
@@ -204,7 +217,9 @@ public partial class PresentationStage : Node3D
         var human = _actors.Values.FirstOrDefault(m => m.Human);
         if (human is null) return;
         _camera.Rotation = new Vector3(Mathf.DegToRad(-55), 0, 0);
-        _camera.Position = human.Node.Position + new Vector3(0, 4.2f, 2.94f);
+        float overview=Mathf.Clamp((_cameraDistance-_mapSpan*.45f)/Mathf.Max(1,_mapSpan*.85f),0,1);
+        var center=human.Node.Position.Lerp(_mapCenter,overview);
+        _camera.Position = center + new Vector3(0, _cameraDistance, _cameraDistance*.7f);
     }
 
     public void Pick(Vector2 viewportPosition)
@@ -248,6 +263,7 @@ public partial class PresentationStage : Node3D
             foreach(var site in layout.CivicObjects)AddStatic(WorldModels.Civic(site));
         }
         AddStatic(ground);
+        _buildingStates.Clear();
         var yardCells=frame.Markers.Where(m=>m.Kind=="warehouse").SelectMany(m=>m.Walls.Select(w=>new Simulation.Core.Cell(m.X+w.X,m.Z+w.Z))).ToHashSet();
         var civicBodies=frame.Layout?.CivicObjects.SelectMany(s=>s.Body).ToHashSet();
         foreach (var marker in frame.Markers)
@@ -281,6 +297,12 @@ public partial class PresentationStage : Node3D
                     foreach (float x in new[] { -0.39f, 0.39f }) foreach (float z in new[] { -0.39f, 0.39f })
                         WorldModels.Part(tile, new BoxMesh { Size = new Vector3(0.055f, 0.18f, 0.055f) }, new Color("e4d8b3"), new Vector3(x, 0.1f, z));
                 node = tile;
+            }
+            if(node is not null&&marker.Kind is "production" or "warehouse" or "shop")
+            {
+                WorldModels.Part(node,new BoxMesh{Size=new(.38f,.015f,.12f)},MapSymbols.ActorColor(marker.OwnerId,frame.Actors.Any(a=>a.Human&&a.Id==marker.OwnerId)),new(0,.04f,-.36f));
+                var gate=new Label3D{Text="▽ #"+marker.EntityId+" · "+marker.Level,FontSize=22,PixelSize=.0035f,Position=new(0,.46f,-.32f),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,OutlineSize=4,Modulate=new("fff7df")};node.AddChild(gate);
+                var state=new Label3D{FontSize=18,PixelSize=.0035f,Position=new(0,1.25f,0),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,OutlineSize=3,Visible=false};node.AddChild(state);_buildingStates[marker.EntityId]=state;
             }
             if (node is not null) { node.Position = marker.Kind is "truck-home" or "equipment" ? new Vector3(marker.X + 0.28f, 0.08f, marker.Z + 0.42f) : new Vector3(marker.X, marker.Kind.StartsWith("resource",StringComparison.Ordinal) && WorldSkins.Preferences.ForModel("resource:"+marker.Label)==AppearancePreferences.Cozy ? .01f : .045f, marker.Z); AddStatic(node); }
         }

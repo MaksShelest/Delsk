@@ -2,7 +2,7 @@ using Simulation.Core;
 
 namespace Simulation.Hosting;
 
-public enum TabletKind { Closed, Capital, Enterprise, Market, Player, Object }
+public enum TabletKind { Closed, Capital, Enterprise, Market, Player, Object, CityMap, Notices, Tutorial }
 
 /// <summary>Client interaction state, not an economic clock or a second world.</summary>
 public sealed class TabletState
@@ -27,6 +27,9 @@ public sealed class TabletState
         Open(TabletKind.Enterprise, view.Participant.Position, id); return true;
     }
     public void OpenPlayer(PlayerView view) => Open(TabletKind.Player, view.Participant.Position, 0);
+    public void OpenCityMap(PlayerView view) => Open(TabletKind.CityMap, view.Participant.Position, 0);
+    public void OpenNotices(PlayerView view) => Open(TabletKind.Notices, view.Participant.Position, 0);
+    public void OpenTutorial(PlayerView view) => Open(TabletKind.Tutorial, view.Participant.Position, 0);
     private string _objectKind="";
     public bool OpenObject(PlayerView view, string kind, long id)
     {
@@ -55,7 +58,7 @@ public sealed class TabletState
     public bool ValidateLocation(PlayerView view, ScenarioDefinition scenario)
     {
         if (!IsOpen) return false;
-        if (Kind == TabletKind.Player) return true;
+        if (Kind is TabletKind.Player or TabletKind.CityMap or TabletKind.Notices or TabletKind.Tutorial) return true;
         if (Kind == TabletKind.Object)
         {
             bool available = view.Participant.Position == Location&&(_objectKind=="building"?view.Buildings.Any(b=>b.Id.Value==EnterpriseId):true);

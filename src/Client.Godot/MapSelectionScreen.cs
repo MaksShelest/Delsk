@@ -30,11 +30,11 @@ public partial class MapSelectionScreen : ColorRect
         SelectedMap = selected; _read = read; _language = language;
         Color = new Color("26383d"); SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         var scroll=new ScrollContainer{HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};scroll.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);AddChild(scroll);
-        var center = new CenterContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill,SizeFlagsVertical=SizeFlags.ExpandFill};scroll.AddChild(center);
-        var column = new VBoxContainer { CustomMinimumSize = new Vector2(600, 0) }; center.AddChild(column);
+        var center = new MarginContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill,SizeFlagsVertical=SizeFlags.ExpandFill};scroll.AddChild(center);
+        var column = new VBoxContainer { SizeFlagsHorizontal=SizeFlags.ExpandFill }; center.AddChild(column);UiSafeArea.CenterColumn(scroll,center,600);
         column.AddChild(new Label { Text = "Delsk", HorizontalAlignment = HorizontalAlignment.Center });
         column.AddChild(_preview); ShowPreview();
-        var roster=new HBoxContainer();column.AddChild(roster);
+        var roster=new HFlowContainer();column.AddChild(roster);
         roster.AddChild(new Label{Text=L("Ботов","Bots")});
         var count=new SpinBox{Name="NpcCount",MinValue=3,MaxValue=10,Step=1,Rounded=true,Value=npcCount,CustomMinimumSize=new(110,48)};roster.AddChild(count);
         var total=new Label{Name="ParticipantCount",Text=L("Всего участников: ","Total participants: ")+(NpcCount+1)};roster.AddChild(total);
@@ -56,7 +56,7 @@ public partial class MapSelectionScreen : ColorRect
         var choices=new OptionButton();foreach(var text in new[]{L("Лёгкая","Easy"),L("Средняя","Medium"),L("Сложная","Hard")})choices.AddItem(text);
         choices.Selected=Math.Clamp((int)difficulty-1,0,2);row.AddChild(choices);choices.ItemSelected+=i=>Difficulty=(NpcDifficulty)(i+1);
         var hybrid=new CheckButton{Text=L("Гибрид · локальная модель","Hybrid · local model"),ButtonPressed=model is not null};column.AddChild(hybrid);
-        var settings=new HBoxContainer();column.AddChild(settings);
+        var settings=new HFlowContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};column.AddChild(settings);
         var name=new LineEdit{Text=model?.Adapter.Model??"qwen3.5:4b",CustomMinimumSize=new(230,0),TooltipText=L("Модель Ollama · localhost:11434","Ollama model · localhost:11434")};settings.AddChild(name);
         var timeout=new SpinBox{MinValue=1,MaxValue=120,Step=1,Value=(model?.Runtime.TimeoutMilliseconds??30000)/1000d,TooltipText=L("Таймаут одного запроса, секунд","Per-request timeout, seconds")};settings.AddChild(timeout);settings.AddChild(new Label{Text=L("сек.","sec")});
         var budget=new SpinBox{MinValue=1,MaxValue=10,Step=1,Value=model?.Policy.MaximumRequestsPerPeriod??2,TooltipText=L("Запросов на NPC за 120 тиков","Requests per NPC per 120 ticks")};settings.AddChild(budget);settings.AddChild(new Label{Text=L("/120 тиков","/120 ticks")});
@@ -81,32 +81,32 @@ public partial class MapSelectionScreen : ColorRect
         catch(Exception error)when(error is ArgumentException or InvalidOperationException)
         {_previewAvailable=false;if(_startButton is not null)_startButton.Disabled=true;_preview.AddChild(new Label{Name="MapUnavailable",Text=L("Карта недоступна с текущим профилем: ","Map unavailable with the current profile: ")+error.Message,AutowrapMode=TextServer.AutowrapMode.WordSmart});return;}
         _preview.AddChild(new Label { Text = PlayMaps.Name(SelectedMap, _language), HorizontalAlignment = HorizontalAlignment.Center });
-        _preview.AddChild(new MapPreview(scenario) { CustomMinimumSize = new Vector2(600, 240) });
+        _preview.AddChild(new MapPreview(scenario) { CustomMinimumSize = new Vector2(0, 240) });
         _preview.AddChild(new Label { Text = $"{scenario.MapWidth} × {scenario.MapHeight}" + L(" · Мир запустится только по «Начать».", " · The world starts only after Start."), HorizontalAlignment = HorizontalAlignment.Center });
     }
     private void ShowCatalog()
     {
         var dialog = new AcceptDialog { Title = L("Каталог карт", "Map catalog"), Size = new Vector2I(720, 560) };
         dialog.GetOkButton().Text = L("Отмена", "Cancel");
-        var scroll = new ScrollContainer(); dialog.AddChild(scroll);
+        var scroll = new ScrollContainer{HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled}; dialog.AddChild(scroll);
         var list = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill }; scroll.AddChild(list);
         foreach (string key in PlayMaps.All)
         {
             string choice = key;
-            list.AddChild(new Label { Text = PlayMaps.Name(key, _language) });
+            list.AddChild(new Label { Text = PlayMaps.Name(key, _language),AutowrapMode=TextServer.AutowrapMode.WordSmart });
             try
             {
-                list.AddChild(new MapPreview(_readSetup?.Invoke(key,NpcCount)??_read(key)) { CustomMinimumSize = new Vector2(640, 210) });
+                list.AddChild(new MapPreview(_readSetup?.Invoke(key,NpcCount)??_read(key)) { CustomMinimumSize = new Vector2(0, 210) });
                 AddButton(list, L("Выбрать", "Select"), () => { SelectedMap = choice; ShowPreview(); dialog.Hide(); dialog.QueueFree(); });
             }
             catch(Exception error)when(error is ArgumentException or InvalidOperationException)
             {list.AddChild(new Label{Text=L("Карта недоступна с текущим профилем: ","Map unavailable with the current profile: ")+error.Message,AutowrapMode=TextServer.AutowrapMode.WordSmart});list.AddChild(new Button{Text=L("Выбрать","Select"),Disabled=true});}
         }
         dialog.Confirmed += () => dialog.QueueFree(); dialog.Canceled += () => dialog.QueueFree();
-        AddChild(dialog); dialog.PopupCentered();
+        AddChild(dialog); UiSafeArea.Popup(dialog,this,new(720,560));
     }
     private static Button AddButton(Container parent, string text, System.Action action)
-    { var button = new Button { Text = text, FocusMode = FocusModeEnum.None }; button.Pressed += action; parent.AddChild(button);return button; }
+    { var button = new Button { Text = text, FocusMode = FocusModeEnum.All, CustomMinimumSize=new(0,44),AutowrapMode=TextServer.AutowrapMode.WordSmart }; button.Pressed += action; parent.AddChild(button);return button; }
     private string L(string ru, string en) => PlayerText.Local(_language, ru, en);
 }
 
