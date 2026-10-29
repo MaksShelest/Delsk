@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "id": "h1-post-g2-layout2-20261029",
+  "author": "Шелестов Максим Евгеньевич",
+  "baseCommit": "3cc17e8",
+  "historicalCohort": "docs/research/h1/study-plan.json",
+  "profile": "config/vnext/economy.g1-npc.json",
+  "maps": ["small-river", "large-districts"],
+  "ordinary": {
+    "bots": [3, 6, 10],
+    "difficulties": ["Easy", "Medium", "Hard"],
+    "seedsByBots": {"3": [42,43,44,45,46], "6": [42,43,44,45,46,47,48,49,50,51], "10": [42,43,44,45,46]},
+    "targetTicks": 5000,
+    "boundaries": [1800,3600,5000],
+    "timeoutSeconds": 600
+  },
+  "long": {
+    "bots": [6],
+    "difficulties": ["Medium", "Hard"],
+    "seedsByBots": {"6": [42,43]},
+    "targetTicks": 126000,
+    "segmentTicks": 1800,
+    "timeoutSeconds": 900,
+    "override": "Only resolved initial scenario maxTicks and controller finalTick; different planning horizon, separate cohort"
+  },
+  "primary": "Per-world median NPC capital change at ordinary5000; not accounting profit",
+  "contrasts": "For each map and bot count, Hard-Medium and Easy-Medium. Paired world/seed differences, exact sign test, Holm over12 predeclared contrasts; deterministic bootstrap95 median CI. n5 cells exploratory; n10 cells primary; no post-hoc selection by effect.",
+  "secondary": "Physical construction I..V and industry XP unlocks separately; quest XP share; production, actual cash receipts/costs, wages, road liabilities, import/resource snapshots, workforce utilization samples, ownership HHI, overflow, traffic and feasible-action diagnostics.",
+  "independence": "World/seed. NPCs and segments inside one world are dependent, never new replicates.",
+  "censoring": "No milestone is zero-filled. Horizon, timeout, save limit and audit failure separate. Failed/pending worlds never dropped silently; completed5000 and last valid partial boundaries reported separately.",
+  "human": "Observer without economic commands; self ballot. Not a timing study of an experienced human player.",
+  "calibration": "No price/XP/default edits before results. Versioned opt-in changes only if replicated game evidence identifies a cause; no untested correction to compensate for presumed weak NPC strategy.",
+  "stop": "Keep600/900s process deadlines, 2MiB input and64/512MiB checkpoint limits. Stop each long world at first runtime/serialization blocker; preserve last complete audited checkpoint, stderr, heartbeat and all attempts. No H2 runtime optimization in this study.",
+  "storage": "Atomic relative-path journal, frozen inputs/DLLs, OS process lock, explicit failed retry, lossless controller traces. Per-world artifacts retained90days; download to a durable workspace for longer retention. Resume original source revision and verify hashes; never silently continue with another profile/binary.",
+  "prepared": "Existing F2/E1/E2 controls are separate from natural progression. Cash recovery is not full economic ROI when costs/owner labour are unallocated.",
+  "historicalUse": "Prior120 ordinary1800 and long map-adapter1 results remain historical evidence. Current layout2 samples are a distinct cohort, not relabelled old observations."
+}
