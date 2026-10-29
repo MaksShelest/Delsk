@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "id": "h1-ordinary-smoke",
+  "scenario": "scenarios/vnext/large-districts.json",
+  "economy": "config/vnext/economy.g1-npc.json",
+  "ordinaryNpcCount": 10,
+  "ticks": 120,
+  "seeds": [
+    42
+  ],
+  "repetitions": 1,
+  "mode": "algorithmic",
+  "recordWorld": false,
+  "timeoutSeconds": 180,
+  "factors": [
+    {
+      "path": "npc.difficulty",
+      "values": [
+        "Hard"
+      ]
+    }
+  ]
+}

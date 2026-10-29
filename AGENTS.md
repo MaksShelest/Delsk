@@ -1,3 +1,49 @@
+## H1,29.10.2026 — ограниченное исследование завершено, P77 частично открыт
+
+- PR73 feat/vnext-h1-economy-calibration: итоговый отчёт PACKAGE_H1, инструкция
+  ECONOMY_RESEARCH_H1, доказательства verification/economy-h1. G2 PR72 слит
+  владельцем в b9f59ad8; PR73 перенаправлен на feat/economic-cycle-p00-p05.
+  Агент PR не сливает; H2 автоматически не начинать.
+- Все120 ordinary партий t1800 прошли,120 accounting/120 privacy;18conditions,
+  n5 при3/10NPC и n10 при6NPC. Все750 NPC milestones censored, производства/XP0.
+  Четыре6NPC paired contrasts по10 миров: разности капитала0, sign/Holm p1.
+  Это короткий заработок, не доказанное равенство трудностей/Hard superiority.
+- По одному long миру Medium6/seed42 до10800 на обеих картах; exact3600
+  continuation и аудиты. Далее два timeout900s. Small отдельный срез до11600
+  реально CheckpointTooLarge; large11600 сохранён/аудирован, первая factory11233.
+  Small первая factory7284/20batches к10800, II–V не достигнуты. Нет обоснования
+  численно менять баланс.82financial inputs unchanged, World28/session3 прежние.
+- Runtime source99ea0b59: Core40835135617 все30jobs/Windows40835135468 оба2success.
+  Полный unit13:57pass, scopedordinary6/metrics9; actual runtime smoke61.329s.
+  Нулевые деньги prepared: обе карты6NPC/t1800, все заработали; F2 cash controls
+  учитывают зарплаты и billed/unbilled road. Не смешивать их с natural starts.
+- Блокеры и необходимые работы: docs/research/h1/H2_BLOCKERS.md. Профиль5000
+  (в том числе Godot Play) не позволяет35h; research horizon-only override отдельно.
+  Старые failures, SHA и исходные экспорты сохранены. Не поднимать600/900s,
+  2MiB входных планов и64/512MiB checkpoint. Heavy local gates serial.
+
+### Исходный протокол H1 (история решения)
+
+- Пользователь явно разрешил H1 после завершения G2. Основаcf0784b/PR72 с runtime
+  9ae94bf: Core29/Windows2 success,900source inputs unchanged. G2 PRready/unmerged.
+  Ветка feat/vnext-h1-economy-calibration; PR stacked на G2 до его merge.
+- Сначала обычный C# OrdinaryNewGame.Resolve для обеих designed maps/3/6/10,
+  реальные G1 coherent policies, не legacy controllers от старой лаборатории.
+  План до результатов: docs/research/h1/study-plan.json. Worklog PACKAGE_H1.
+- Pilot18conditions×5seeds/t1800, затем выбранные сравнения10paired seeds;
+  NPC внутри одной партии не независимые replicates. Нули/таймауты сохранять,
+  milestones с цензурированием, не обещать Hard superiority по короткому cash.
+- Actual money/cargo/payroll/road/services из existing engine exports, не новая
+  Python economy. Частичные service receipts не подменяют goods settlement;
+  escrow/reserves не доход. Prepared controls отдельно от natural starts.
+- Обычный G1 maxTicks5000 —83m20s: для длинного research объявить horizon-only
+  override на initial resolved config/controller finalTick, не менять old saves.
+  Измерять throughput/RAM/checkpoint bytes; если блокер, факты и работа для H2.
+  Не поднимать64MiB/512MiB reader limits и не заменять длинный опыт маржой.
+- Heavy local gates/experiments serial; прежние suites/deadlines/audits сохранять.
+  Для численных изменений нужны данные/версия. H2 автоматически не начинать.
+  Автор: Шелестов Максим Евгеньевич. Итог — воспроизводимый отчёт и PR без merge.
+
 ## G2,28–29.10.2026 — выполненный software-объём карты и UX
 
 - Пользовательское G2 поверх52cb5c0/PR71: P75/P79 и нужные UX/restore проверки P78.

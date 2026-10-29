@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "author": "Шелестов Максим Евгеньевич",
+  "registeredAtUtc": "2026-10-29T02:33:49.297061+00:00",
+  "scope": "Statistical implementation details supplement frozen study-plan v2. No maps, seeds, horizons, primary or exclusions changed. Written before selected six-NPC comparisons were analyzed.",
+  "comparisons": [
+    "small-river Hard-Medium",
+    "small-river Easy-Medium",
+    "large-districts Hard-Medium",
+    "large-districts Easy-Medium"
+  ],
+  "unit": "World/seed. Median NPC capital change inside each world is one observation.",
+  "pairedN": 10,
+  "signTest": "Exact two-sided binomial sign test, zeros discarded from sign-test N only; zeros remain in medians and bootstrap.",
+  "multipleTesting": "Holm step-down correction over four planned contrasts, including incomplete contrasts; no selected favorable comparisons.",
+  "bootstrap": {
+    "resamples": 5000,
+    "seed": 20261029,
+    "statistic": "median of paired differences",
+    "interval": "linear-interpolated 2.5% and 97.5% quantiles"
+  },
+  "censoring": "Missing milestones are right-censored; conditional observed milestone distribution is explicitly separate. No zero or horizon imputation.",
+  "interpretation": "Capital includes Core stock/asset valuation, distinct from paid operating receipts. An 1800-tick contrast cannot establish long-term Hard superiority or stage II-V balance."
+}

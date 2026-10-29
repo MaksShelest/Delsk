@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python",
+    "scripts/check_economy_h1.py",
+    "--fixtures",
+    "/workspace/work/h1/settlement-fixtures",
+    "--output",
+    "/workspace/work/h1/runtime-gate1"
+  ],
+  "timeout_seconds": 300,
+  "started_at": "2026-10-29T02:39:56.712660+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 61.329,
+  "finished_at": "2026-10-29T02:40:58.041266+00:00"
+}

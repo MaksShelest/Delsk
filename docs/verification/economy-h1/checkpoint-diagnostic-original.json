@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "scope": "Adaptive H1 engineering diagnostic after bounded long-run failure; never a new economic replicate.\nSame saved world and binaries, a shorter save interval, unchanged 64/512MiB limits.\nAuthor: Шелестов Максим Евгеньевич.\n",
+  "independentEconomicReplicate": false,
+  "results": [
+    {
+      "map": "small-river",
+      "checkpoint": "/workspace/work/h1/long-small/checkpoints/10800-1.save.json",
+      "checkpointSha256": "8b318433d3bef3b41fdd336e8904157a6f52a905554d4a329df6a4241f6cbe8d",
+      "fromTick": 10800,
+      "targetTick": 11600,
+      "timeoutSeconds": 900,
+      "runner": {
+        "command": [
+          "dotnet",
+          "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/work/h1/long-small/checkpoints/10800-1.save.json",
+          "--ticks",
+          "11600",
+          "--checkpoint",
+          "/workspace/work/h1/checkpoint-probes/small-river.save.json",
+          "--checkpoint-at",
+          "11600",
+          "--progress",
+          "true",
+          "--output",
+          "/workspace/work/h1/checkpoint-probes/small-river"
+        ],
+        "timeout_seconds": 900,
+        "started_at": "2026-10-29T06:45:17.049690+00:00",
+        "exit_code": 1,
+        "elapsed_seconds": 171.536,
+        "finished_at": "2026-10-29T06:48:08.586285+00:00"
+      },
+      "status": "failed",
+      "checkpointTooLarge": true,
+      "lastHeartbeat": {
+        "version": 1,
+        "status": "failed",
+        "tick": 11600,
+        "target": 11600,
+        "startTick": 10800,
+        "percent": 100,
+        "elapsedSeconds": 143.4980159,
+        "ticksPerSecond": 5.574989974478107,
+        "workingSetBytes": 5860524032,
+        "peakWorkingSetBytes": 5968060416,
+        "waitingForModel": false,
+        "waitingForBallots": false,
+        "heartbeatAt": "2026-10-29T06:47:55.8340644+00:00",
+        "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+      }
+    }
+  ]
+}

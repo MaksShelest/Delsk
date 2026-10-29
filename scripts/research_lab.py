@@ -57,6 +57,11 @@ def read(path):
     return json.loads(path.read_text(encoding='utf-8-sig'), object_pairs_hook=unique)
 
 
+def read_metadata(path):
+    """Owned persistent queue/results, not an input plan. Preserve duplicate-field validation."""
+    return json.loads(path.read_text(encoding='utf-8-sig'), object_pairs_hook=unique)
+
+
 def write(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + '.tmp')
@@ -123,9 +128,10 @@ def scalar(document, path, value):
 
 
 def expand(plan, workspace):
+    if not isinstance(plan,dict):raise ValueError("Plan must be an object")
     fields(plan, ['version', 'id', 'scenario', 'economy', 'controllers', 'ticks', 'seeds',
-                  'repetitions', 'mode', 'modelConfig', 'factors', 'composition', 'timeoutSeconds', 'profile', 'economyData', 'modelData', 'participants', 'recordWorld'],
-           ['version', 'id', 'scenario', 'economy', 'controllers', 'ticks', 'seeds', 'repetitions', 'mode', 'factors'])
+                  'repetitions', 'mode', 'modelConfig', 'factors', 'composition', 'timeoutSeconds', 'profile', 'economyData', 'modelData', 'participants', 'recordWorld', 'ordinaryNpcCount'],
+           ['version', 'id', 'scenario', 'economy', 'ticks', 'seeds', 'repetitions', 'mode', 'factors'] + ([] if 'ordinaryNpcCount' in plan else ['controllers']))
     if type(plan['version']) is not int or plan['version'] != 1 or not isinstance(plan['id'],str) or not re.fullmatch(r'[a-zA-Z0-9_-]{1,64}', str(plan['id'])):
         raise ValueError('Invalid plan version/id')
     if not integer(plan['ticks'], 1, 10000) or not integer(plan['repetitions'], 1, 500):
@@ -141,6 +147,11 @@ def expand(plan, workspace):
         raise ValueError('Use timeoutSeconds1..900')
     if not isinstance(plan['factors'], list) or len(plan['factors']) > 6:
         raise ValueError('At most 6 factors')
+    ordinary='ordinaryNpcCount' in plan
+    if ordinary and (not integer(plan['ordinaryNpcCount'],3,10) or plan['mode']!='algorithmic' or any(k in plan for k in ('controllers','participants','composition'))):
+        raise ValueError('Ordinary setup requires 3..10 NPC, algorithmic mode and no controllers/participants/composition override')
+    if ordinary and any(f.get('path')=='npc.negotiationsEnabled' for f in plan['factors']):
+        raise ValueError('Negotiation override is not an OrdinaryGameOptions setting')
     axes = [values(f) for f in plan['factors']]
     paths = [f['path'] for f in plan['factors']]
     if len(paths) != len(set(paths)):
@@ -152,7 +163,7 @@ def expand(plan, workspace):
         raise ValueError('At most 10000 cells per series')
     scenario = read(source(plan['scenario'], workspace))
     economy = copy.deepcopy(plan['economyData']) if 'economyData' in plan else read(source(plan['economy'], workspace))
-    controllers = read(source(plan['controllers'], workspace))
+    controllers = dict(version=1,humanActorId=1,finalTick=plan['ticks'],npcs=[]) if ordinary else read(source(plan['controllers'], workspace))
     model = copy.deepcopy(plan['modelData']) if 'modelData' in plan else read(source(plan['modelConfig'], workspace)) if 'modelConfig' in plan else None
     if not isinstance(economy,dict) or type(plan.get('recordWorld',True)) is not bool:raise ValueError('Invalid economy/recording options')
     from research_workspace import prepare_participants
@@ -173,15 +184,18 @@ def expand(plan, workspace):
     for index, combination in enumerate(itertools.product(*axes)):
         e, c = copy.deepcopy(economy), copy.deepcopy(controllers)
         c['finalTick'] = plan['ticks']
+        ordinary_difficulty='Medium'
         for path, value in zip(paths, combination):
-            if path in ('npc.difficulty', 'npc.negotiationsEnabled'):
+            if ordinary and path=='npc.difficulty':
+                ordinary_difficulty=value
+            elif path in ('npc.difficulty', 'npc.negotiationsEnabled'):
                 for n in c['npcs']:
                     n[path.split('.')[1]] = value
                     if path == 'npc.difficulty' and value != 'Hard':
                         n.pop('planning', None)
             else:
                 scalar(e, path, value)
-        arms.append(dict(id=f'arm-{index}', factors=dict(zip(paths, combination)), economy=e, controllers=c, setup=setup))
+        arms.append(dict(id=f'arm-{index}', factors=dict(zip(paths, combination)), economy=e, controllers=c, setup=setup,ordinary=dict(npcCount=plan['ordinaryNpcCount'],difficulty=ordinary_difficulty) if ordinary else None))
     return scenario, model, arms
 
 
@@ -193,6 +207,13 @@ def command(folder, job, output):
                          str(path/'controllers.json'), 'ollama', str(folder/'inputs/model.json'))
     # Reuse the common runner CLI, without rebuilding per cell.
     cmd = ['dotnet', str(ROOT/'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll'), *cmd[cmd.index('--')+1:]]
+    if (path/'ordinary.json').is_file():
+        # The C# resolver owns actor slots, capacities and modern policy settings.
+        options=read(path/'ordinary.json')|dict(seed=job['seed'])
+        startup=output.with_name(output.name+'-new-game.json');write(startup,options)
+        cmd=cmd[:2]+[v for flag,value in zip(cmd[2::2],cmd[3::2]) if flag not in ('--controllers','--seed') for v in (flag,value)]
+        cmd+=['--new-game',str(startup)]
+        if not job.get('profile'):cmd+=['--progress','true']
     if job.get('profile'):cmd += ['--profile','true']
     if job.get('recordWorld',False):cmd += ['--research','true']
     if job.get('modelWait',False):cmd += ['--model-wait','true']
@@ -218,7 +239,7 @@ class Lab:
         self.paused = True
         from research_workspace import Workspace
         self.views=Workspace(self)
-        self.series = read(self.workspace/'queue.json') if (self.workspace/'queue.json').exists() else []
+        self.series = read_metadata(self.workspace/'queue.json') if (self.workspace/'queue.json').exists() else []
         # An interrupted process is never silently considered successful or reissued.
         for s in self.series:
             for j in s['jobs']:
@@ -236,6 +257,7 @@ class Lab:
                 for j in s['jobs']:
                     if j['status']=='running':
                         file=self.workspace/s['id']/'runs'/j['id']/str(j['attempt'])/'progress.json'
+                        if not file.exists():file=file.with_name('run-progress.json')
                         try:j['progress']=read(file)
                         except (OSError,ValueError):pass
             return dict(paused=self.paused, running=self.thread is not None and self.thread.is_alive(),
@@ -250,9 +272,14 @@ class Lab:
             if model is not None:
                 write(stage/'inputs/model.json', model)
             for arm in arms:
-                for name in ('economy', 'controllers', 'setup'):
+                for name in ('economy', 'controllers', 'setup', 'ordinary'):
                     if arm.get(name) is None:continue
                     write(stage/f"inputs/{arm['id']}/{name}.json", arm[name])
+                if arm.get('ordinary') is not None and arm['economy'].get('vNext'):
+                    full=source(plan['economy'],self.workspace).parent/'balance.b1.json'
+                    if not full.is_file() or digest(full)!=arm['economy']['vNext']['fullBalanceSha256']:
+                        raise ValueError('Ordinary full balance/profile mismatch')
+                    (stage/f"inputs/{arm['id']}/balance.b1.json").write_bytes(full.read_bytes())
                 sample = dict(arm=arm['id'], mode=plan['mode'], seed=plan['seeds'][0], ticks=plan['ticks'])
                 code, _ = self.executor('validate-'+arm['id'], 45, stage/'checks',
                                         [*command(stage, sample, stage/'unused'), '--validate-only', 'true'])
@@ -268,7 +295,7 @@ class Lab:
             shutil.copytree(stage/'checks', folder/'validation') if (stage/'checks').exists() else None
         write(folder/'plan.json', plan)
         jobs = [dict(id=f"{arm['id']}-s{seed}-r{repeat}", arm=arm['id'], factors=arm['factors'],
-                     seed=seed, repeat=repeat, ticks=plan['ticks'], mode=plan['mode'], profile=plan.get('profile',False),recordWorld=plan.get('recordWorld',True) and not plan.get('profile',False),modelWait=not plan.get('profile',False), status='queued', attempt=0)
+                     seed=seed, repeat=repeat, ticks=plan['ticks'], mode=plan['mode'], profile=plan.get('profile',False),recordWorld=plan.get('recordWorld',True) and not plan.get('profile',False),modelWait=not plan.get('profile',False) and 'ordinaryNpcCount' not in plan, status='queued', attempt=0)
                 for arm in arms for seed in plan['seeds'] for repeat in range(plan['repetitions'])]
         from research_workspace import binary_hashes
         s = dict(id=key,name=plan['id'],archived=False, plan=copy.deepcopy(plan), jobs=jobs, commit=self.commit,binaries=binary_hashes(),

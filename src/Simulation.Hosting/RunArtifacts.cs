@@ -54,7 +54,12 @@ public static class RunArtifacts
         WriteJson("elections.json", state.Elections);
         if(session.Engine.InspectFleet() is {} fleet)WriteJson("fleet.json",fleet);
         if(session.Engine.InspectRoads() is {} roads)WriteJson("roads.json",roads);
-        if(session.Engine.InspectBilling() is {} billing)WriteJson("billing.json",billing);
+        if(session.Engine.InspectBilling() is {} billing)
+        {
+            WriteJson("billing.json",billing);
+            // Private research export, like final-state/ledger; never a public game DTO.
+            WriteJson("personal-accounts.json",definition.Participants.Select(p=>new{Actor=p.Id,Personal=session.Engine.AccountOf(new(p.Id))}).ToArray());
+        }
         if(session.Engine.InspectServices() is {} services)WriteJson("services.json",services);
         if(session.Engine.InspectProductionContent() is {} content)WriteJson("production-content.json",content);
         WriteJson("support.json", session.Engine.InspectSupport());

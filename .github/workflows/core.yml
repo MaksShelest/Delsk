@@ -663,15 +663,45 @@ jobs:
         with:
           name: npc-natural-${{ matrix.map }}-${{ matrix.bots }}
           path: artifacts/
+  research-h1:
+    needs: [service-runs-unit]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: service-runs-command-fixtures
+          path: artifacts/f2-fixtures
+      - name: Bounded runner build
+        run: |
+          python scripts/run_check.py --name h1-restore --timeout 180 -- dotnet restore src/Research.Runner/Research.Runner.csproj --locked-mode --disable-parallel -m:1
+          python scripts/run_check.py --name h1-build --timeout 180 -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
+      - name: Actual ordinary G1 policies, observer invariance, checkpoint and F2 settlement costs
+        run: python scripts/run_check.py --name research-h1 --timeout 300 --log-directory artifacts/gate-checks -- python scripts/check_economy_h1.py --fixtures artifacts/f2-fixtures --output artifacts/research-h1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: research-h1-checks-and-runs
+          path: artifacts/
   # Preserve the required check and require every suite, including D3's independent audit.
   verify:
     if: ${{ always() }}
-    needs: [city-ux-unit, city-ux-developer, unit, core, developer, production, fleet, road-unit, road-developer, roads, billing-unit, billing-developer, billing, services-unit, services-developer, services, service-runs-unit, service-runs-developer, service-runs, npc-unit, npc-developer, npc-actions, npc-natural]
+    needs: [research-h1, city-ux-unit, city-ux-developer, unit, core, developer, production, fleet, road-unit, road-developer, roads, billing-unit, billing-developer, billing, services-unit, services-developer, services, service-runs-unit, service-runs-developer, service-runs, npc-unit, npc-developer, npc-actions, npc-natural]
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
       - name: Require all complete suites
         env:
+          RESEARCH_H1_RESULT: ${{ needs.research-h1.result }}
           CITY_UX_UNIT_RESULT: ${{ needs.city-ux-unit.result }}
           CITY_UX_DEVELOPER_RESULT: ${{ needs.city-ux-developer.result }}
           NPC_UNIT_RESULT: ${{ needs.npc-unit.result }}
@@ -695,4 +725,4 @@ jobs:
           RUNS_RESULT: ${{ needs.service-runs.result }}
           SERVICES_RESULT: ${{ needs.services.result }}
           FLEET_RESULT: ${{ needs.fleet.result }}
-        run: test "$CITY_UX_UNIT_RESULT" = success && test "$CITY_UX_DEVELOPER_RESULT" = success && test "$NPC_UNIT_RESULT" = success && test "$NPC_DEVELOPER_RESULT" = success && test "$NPC_ACTIONS_RESULT" = success && test "$NPC_NATURAL_RESULT" = success && test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success && test "$ROADS_RESULT" = success && test "$ROAD_UNIT_RESULT" = success && test "$ROAD_DEVELOPER_RESULT" = success && test "$BILLING_UNIT_RESULT" = success && test "$BILLING_DEVELOPER_RESULT" = success && test "$BILLING_RESULT" = success && test "$SERVICES_UNIT_RESULT" = success && test "$SERVICES_DEVELOPER_RESULT" = success && test "$SERVICES_RESULT" = success && test "$RUNS_UNIT_RESULT" = success && test "$RUNS_DEVELOPER_RESULT" = success && test "$RUNS_RESULT" = success
+        run: test "$RESEARCH_H1_RESULT" = success && test "$CITY_UX_UNIT_RESULT" = success && test "$CITY_UX_DEVELOPER_RESULT" = success && test "$NPC_UNIT_RESULT" = success && test "$NPC_DEVELOPER_RESULT" = success && test "$NPC_ACTIONS_RESULT" = success && test "$NPC_NATURAL_RESULT" = success && test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success && test "$ROADS_RESULT" = success && test "$ROAD_UNIT_RESULT" = success && test "$ROAD_DEVELOPER_RESULT" = success && test "$BILLING_UNIT_RESULT" = success && test "$BILLING_DEVELOPER_RESULT" = success && test "$BILLING_RESULT" = success && test "$SERVICES_UNIT_RESULT" = success && test "$SERVICES_DEVELOPER_RESULT" = success && test "$SERVICES_RESULT" = success && test "$RUNS_UNIT_RESULT" = success && test "$RUNS_DEVELOPER_RESULT" = success && test "$RUNS_RESULT" = success

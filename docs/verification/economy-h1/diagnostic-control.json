@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "status": "diagnostics-finished",
+  "startedAt": "2026-10-29T06:48:48.658085+00:00",
+  "hold": "/workspace/work/h1/study/hold-before-run",
+  "checkpointProbe": {
+    "command": [
+      "python",
+      "scripts/probe_checkpoint_h1.py",
+      "--trajectory",
+      "/workspace/work/h1/long-small",
+      "--trajectory",
+      "/workspace/work/h1/long-large",
+      "--output",
+      "/workspace/work/h1/checkpoint-probes"
+    ],
+    "timeout_seconds": 1860,
+    "started_at": "2026-10-29T06:45:16.662142+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 634.426,
+    "finished_at": "2026-10-29T06:55:51.088240+00:00"
+  },
+  "zeroCashExitCode": 1,
+  "finishedAt": "2026-10-29T06:55:52.251660+00:00",
+  "primaryReleased": true
+}

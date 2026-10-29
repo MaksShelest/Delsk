@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "author": "Шелестов Максим Евгеньевич",
+  "scope": "Prepared diagnostic, separate from ordinary matrix: only starting cash is zero; same public resources, G1 policies, finite demand and active ticks.",
+  "maps": ["small-river", "large-districts"],
+  "bots": 6,
+  "difficulty": "Medium",
+  "seed": 42,
+  "ticks": 1800,
+  "timeoutSeconds": 600,
+  "claims": "Observed ability to earn from zero cash in these two conditions; not a proof that every depleted-resource or late-debt state is recoverable."
+}
