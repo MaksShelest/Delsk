@@ -1,0 +1,16 @@
+{
+  "case": {
+    "id": "long-small-river-6-Medium-43",
+    "phase": "long",
+    "map": "small-river",
+    "bots": 6,
+    "difficulty": "Medium",
+    "seed": 43
+  },
+  "lastSavedTick": 10800,
+  "status": "blocked_checkpoint_limit",
+  "verifiedFiles": 102,
+  "journalSha256": "972925d8d037c2360b20885fde229eebed1a8ba6037d928fc859bd673a6e5470",
+  "archiveSha256": "0793f3e2ca750041d31f91c245bcbc61f3235bbeb3b8b53ae43b6203b141b047",
+  "scope": "Exact bundle files and frozen source/inputs/runtime/checkpoint verified; no C# deserialize or game tick"
+}

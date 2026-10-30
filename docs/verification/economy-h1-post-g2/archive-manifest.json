@@ -1,0 +1,20 @@
+{
+  "formatVersion": 2,
+  "artifactId": 12923679611,
+  "runId": 40921991720,
+  "sourceCommit": "0f89a63e4ff3421d00df755cd8cb6d61e641b62e",
+  "originalObservationsSha256": "d5733ffffbb65d93a7a0a774aa887d199eef7d8c5e1dca49328455b354af644b",
+  "compactUncompressedSha256": "b81167817810db8f4bd934eb94c2dd008676ccb698d54e0baef6d89d3162185c",
+  "compactGzipSha256": "210213b1f3c40cf46ff78da862e88df2b40263c385aede171d709306f937c7b7",
+  "definition": "All128 worlds/all segments and measured failures retained. Identical source/protocol fingerprint stored once, restored losslessly for analysis. Raw checkpoint/exports in separate GitHub full artifacts90days, expiry2027-01-27T17:30:34Z.",
+  "auditedCollectionRunId": 40954434118,
+  "auditedCollectionCommit": "4bfe8130a597dcf629b2ca474ca0aafdf16921c3",
+  "partialArtifactId": 12932518760,
+  "partialWorldCount": 96,
+  "missingThinArtifactsRecovered": 32,
+  "auditedObservationsSha256": "68489b91c2439e8ba90f794fa24d229089f04c2c7f74dd16511ca211079c0a20",
+  "successfulSegments": 411,
+  "accountingAudits": 411,
+  "privacyAudits": 411,
+  "primaryDataUnchangedByCollection": true
+}

@@ -1,0 +1,63 @@
+{
+  "case": {
+    "id": "long-small-river-6-Medium-43",
+    "phase": "long",
+    "map": "small-river",
+    "bots": 6,
+    "difficulty": "Medium",
+    "seed": 43
+  },
+  "lastSavedTick": 10800,
+  "attempt": {
+    "fromTick": 10800,
+    "targetTick": 12600,
+    "attempt": 1,
+    "result": "runs/12600-a1",
+    "checkpoint": "checkpoints/12600-a1.save.json",
+    "runner": {
+      "command": [
+        "/usr/bin/time",
+        "-v",
+        "dotnet",
+        "/home/runner/work/Delsk/Delsk/work/study/long-small-river-6-Medium-43/runtime/Research.Runner.dll",
+        "--ticks",
+        "12600",
+        "--output",
+        "/home/runner/work/Delsk/Delsk/work/study/long-small-river-6-Medium-43/runs/12600-a1",
+        "--checkpoint",
+        "/home/runner/work/Delsk/Delsk/work/study/long-small-river-6-Medium-43/checkpoints/12600-a1.save.json",
+        "--checkpoint-at",
+        "12600",
+        "--progress",
+        "true",
+        "--load",
+        "/home/runner/work/Delsk/Delsk/work/study/long-small-river-6-Medium-43/checkpoints/10800-a1.save.json"
+      ],
+      "timeout_seconds": 900,
+      "started_at": "2026-10-29T17:43:02.045870+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 171.208,
+      "finished_at": "2026-10-29T17:45:53.254326+00:00"
+    },
+    "lastHeartbeat": {
+      "version": 1,
+      "status": "failed",
+      "tick": 12600,
+      "target": 12600,
+      "startTick": 10800,
+      "percent": 100,
+      "elapsedSeconds": 149.7113418,
+      "ticksPerSecond": 12.023137180913302,
+      "workingSetBytes": 7579025408,
+      "peakWorkingSetBytes": 7579025408,
+      "waitingForModel": false,
+      "waitingForBallots": true,
+      "heartbeatAt": "2026-10-29T17:45:38.1709738+00:00",
+      "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+    },
+    "status": "checkpoint_limit",
+    "stderrTail": "CheckpointException: CheckpointTooLarge\nCommand exited with non-zero status 1\n\tCommand being timed: \"dotnet /home/runner/work/Delsk/Delsk/work/study/long-small-river-6-Medium-43/runtime/Research.Runner.dll --ticks 12600 --output /home/runner/work/Delsk/Delsk/work/study/long-small-river-6-Medium-43/runs/12600-a1 --checkpoint /home/runner/work/Delsk/Delsk/work/study/long-small-river-6-Medium-43/checkpoints/12600-a1.save.json --checkpoint-at 12600 --progress true --load /home/runner/work/Delsk/Delsk/work/study/long-small-river-6-Medium-43/checkpoints/10800-a1.save.json\"\n\tUser time (seconds): 161.55\n\tSystem time (seconds): 6.53\n\tPercent of CPU this job got: 98%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 2:51.20\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 7404524\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 2989896\n\tVoluntary context switches: 13689\n\tInvoluntary context switches: 1192\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 5333840\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 1\n"
+  },
+  "sourceCommit": "0f89a63e4ff3421d00df755cd8cb6d61e641b62e",
+  "provisional": true
+}

@@ -1,0 +1,1 @@
+{"version":1,"collectionRevision":2,"sourceRun":40921991720,"sourceCommit":"0f89a63e4ff3421d00df755cd8cb6d61e641b62e","purpose":"Read-only collection of all audit metadata and portable last-checkpoint bundles. No simulation continuation, no H2 optimization."}

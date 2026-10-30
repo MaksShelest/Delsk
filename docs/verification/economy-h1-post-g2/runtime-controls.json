@@ -1,0 +1,150 @@
+{
+  "status": "succeeded",
+  "cases": [
+    {
+      "ordinary": true,
+      "map": "small-river",
+      "bots": 3,
+      "difficulty": "Medium",
+      "ticks": 120,
+      "stateHash": "2c7c015019a90e51879bdc57be524aa649ebc3ead04db861d102bd37a30b6d59",
+      "modernControllers": 3
+    },
+    {
+      "ordinary": true,
+      "map": "small-river",
+      "bots": 6,
+      "difficulty": "Easy",
+      "ticks": 60,
+      "stateHash": "366496b8e6042f75e404dd763dd02b06463823b8d9d374b78172c2a3ea4aaa7b",
+      "modernControllers": 6
+    },
+    {
+      "ordinary": true,
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Hard",
+      "ticks": 60,
+      "stateHash": "8b152fd6a46a796002c6dfcd1f71a7e323bbe47c82dc2c9981fd081931b76041",
+      "modernControllers": 10
+    },
+    {
+      "prepared": true,
+      "name": "completed",
+      "servicePaidMinor": 4025,
+      "carrier": {
+        "cashDebitsMinor": 250007,
+        "cashCapitalSpendingMinor": 250000,
+        "operatingCostsMinor": 7,
+        "roadPaidMinor": 7,
+        "cashCreditsMinor": 4025,
+        "serviceRevenueMinor": 4025,
+        "cashMinor": 9754018,
+        "capitalMinor": 10004008,
+        "operatingReceiptResultMinor": 4018,
+        "debtMinor": 0,
+        "unbilledAccruedMinor": 10,
+        "escrowMinor": 0,
+        "roadLiabilityMinor": 10,
+        "operatingAfterRoadDebtMinor": 4008
+      },
+      "customer": {
+        "cashDebitsMinor": 4025,
+        "serviceCostMinor": 4025,
+        "cashMinor": 9995975,
+        "capitalMinor": 10208475,
+        "operatingReceiptResultMinor": -4025,
+        "debtMinor": 0,
+        "unbilledAccruedMinor": 0,
+        "escrowMinor": 0,
+        "roadLiabilityMinor": 0,
+        "operatingAfterRoadDebtMinor": -4025
+      },
+      "roi": {
+        "observedCapitalCashMinor": 250000,
+        "vehicles": [
+          {
+            "vehicle": 1057,
+            "owner": 2,
+            "model": "muravey70",
+            "purchaseTick": 250,
+            "purchaseMinor": 250000,
+            "feeReceiptsMinor": 4025,
+            "driverWagesMinor": 0,
+            "roadAndHandlingPaidMinor": 7,
+            "paybackTick": null,
+            "allocation": "Single owned vehicle: all paid road/handling costs included; driver wages by actual service order. Multiple vehicles: shared costs not allocated.",
+            "sharedCostsResolved": true,
+            "feeCashNetAfterPurchaseMinor": -245982,
+            "remainingRoadDebtMinor": 0,
+            "unbilledRoadAccrualMinor": 10,
+            "scope": "Observed service-fee cash recovery only; owner opportunity cost, kits and other unallocated uses are not full economic ROI."
+          }
+        ],
+        "paybackTick": null,
+        "reason": "Mixed enterprise/road portfolios require attributable revenue and costs. Unobserved payback stays censored; no static-margin extrapolation."
+      }
+    },
+    {
+      "prepared": true,
+      "name": "numeric",
+      "servicePaidMinor": 4025,
+      "carrier": {
+        "cashDebitsMinor": 253131,
+        "cashCapitalSpendingMinor": 250000,
+        "operatingCostsMinor": 3131,
+        "wagesMinor": 3120,
+        "roadPaidMinor": 11,
+        "cashCreditsMinor": 4025,
+        "serviceRevenueMinor": 4025,
+        "cashMinor": 9750894,
+        "capitalMinor": 10000888,
+        "operatingReceiptResultMinor": 894,
+        "debtMinor": 0,
+        "unbilledAccruedMinor": 6,
+        "escrowMinor": 0,
+        "roadLiabilityMinor": 6,
+        "operatingAfterRoadDebtMinor": 888
+      },
+      "customer": {
+        "cashDebitsMinor": 4025,
+        "serviceCostMinor": 4025,
+        "cashMinor": 9995975,
+        "capitalMinor": 10208475,
+        "operatingReceiptResultMinor": -4025,
+        "debtMinor": 0,
+        "unbilledAccruedMinor": 0,
+        "escrowMinor": 0,
+        "roadLiabilityMinor": 0,
+        "operatingAfterRoadDebtMinor": -4025
+      },
+      "roi": {
+        "observedCapitalCashMinor": 250000,
+        "vehicles": [
+          {
+            "vehicle": 1057,
+            "owner": 2,
+            "model": "muravey70",
+            "purchaseTick": 250,
+            "purchaseMinor": 250000,
+            "feeReceiptsMinor": 4025,
+            "driverWagesMinor": 3120,
+            "roadAndHandlingPaidMinor": 11,
+            "paybackTick": null,
+            "allocation": "Single owned vehicle: all paid road/handling costs included; driver wages by actual service order. Multiple vehicles: shared costs not allocated.",
+            "sharedCostsResolved": true,
+            "feeCashNetAfterPurchaseMinor": -249106,
+            "remainingRoadDebtMinor": 0,
+            "unbilledRoadAccrualMinor": 6,
+            "scope": "Observed service-fee cash recovery only; owner opportunity cost, kits and other unallocated uses are not full economic ROI."
+          }
+        ],
+        "paybackTick": null,
+        "reason": "Mixed enterprise/road portfolios require attributable revenue and costs. Unobserved payback stays censored; no static-margin extrapolation."
+      }
+    }
+  ],
+  "scope": "Actual ordinary sessions and exact progress/load exports; two prepared service receipts are not a natural ROI study.",
+  "runtimeSource": "3cc17e8 C# source, unchanged through0f89a63",
+  "preparedAreNotNaturalReplicates": true
+}
