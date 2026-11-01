@@ -1,0 +1,20 @@
+{
+  "status": "running",
+  "error": null,
+  "stage": "initial",
+  "map": "compact-valley",
+  "resumed": true,
+  "resumeSource": "/workspace/Delsk/work/h3/player-walkthrough-e/last-safe.save.json",
+  "tick": 12579,
+  "milestones": [
+    {
+      "name": "resumed-ordinary-start",
+      "tick": 12579,
+      "cash": 95760
+    }
+  ],
+  "elapsedSeconds": 20.8082823,
+  "scope": "Scripted human through ordinary commands with three autonomous NPCs. No Developer. Natural earning/land/import/construction/production XP/warehouse/vehicle; later delivery/road chain is a separate acceptance gate.",
+  "stateHash": "a9c389566ff0fb00425d2e6e2fe59e58c3d248d20ac9c054ca9af09264e562a0",
+  "maxTicks": 1000000
+}

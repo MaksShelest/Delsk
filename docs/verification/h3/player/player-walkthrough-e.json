@@ -1,0 +1,40 @@
+{
+  "status": "failed",
+  "error": "System.InvalidOperationException: Natural earning budget exhausted\n   at Program.\u003C\u003CMain\u003E$\u003Eg__Require|0_4(Boolean value, String reason) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 95\n   at Program.\u003C\u003Ec__DisplayClass0_0.\u003C\u003CMain\u003E$\u003Eg__Earn|16(Int64 target) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 150\n   at Program.\u003CMain\u003E$(String[] args) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 72",
+  "stage": "transport",
+  "map": "compact-valley",
+  "resumed": true,
+  "resumeSource": "/workspace/Delsk/work/h3/player-walkthrough-b/last-safe.save.json",
+  "tick": 12579,
+  "milestones": [
+    {
+      "name": "resumed-ordinary-start",
+      "tick": 3193,
+      "cash": 50338
+    },
+    {
+      "name": "construction-in-progress",
+      "tick": 3707,
+      "cash": 13963
+    },
+    {
+      "name": "first-enterprise",
+      "tick": 3767,
+      "cash": 13963
+    },
+    {
+      "name": "first-output-and-production-xp",
+      "tick": 4028,
+      "cash": 6103
+    },
+    {
+      "name": "paid-warehouse",
+      "tick": 5604,
+      "cash": 5972
+    }
+  ],
+  "elapsedSeconds": 428.4275118,
+  "scope": "Scripted human through ordinary commands with three autonomous NPCs. No Developer. Natural earning/land/import/construction/production XP/warehouse/vehicle; later delivery/road chain is a separate acceptance gate.",
+  "stateHash": "a9c389566ff0fb00425d2e6e2fe59e58c3d248d20ac9c054ca9af09264e562a0",
+  "maxTicks": 1000000
+}

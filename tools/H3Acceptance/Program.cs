@@ -78,11 +78,14 @@ try
     Advance(session.Engine.StorageOf(new(1)).Construction.Single().CompletesTick);
     Milestone("paid-warehouse");
     }
+    if(session.Engine.FleetOf(new(1))!.Vehicles.Length==0)
+    {
     stage="transport";Earn(190000);
     var dealer=definition.Layout!.CivicObjects.Single(c=>c.Kind=="dealership");Move(dealer.Entry);
     var stock=session.Engine.InspectFleet()!.Stock.First(v=>v.ModelId=="sputnik20");
     Do(new(ActionKind.BuyVehicle,VehicleId:stock.Id));Wait(()=>session.Engine.FleetOf(new(1))!.Vehicles.Length>0,20);
     Milestone("paid-vehicle");
+    }
     stage="complete";
     var replay=GameSession.Replay(definition,session.CommandTape,session.Engine.Tick);
     Require(replay.Engine.ComputeStateHash()==session.Engine.ComputeStateHash(),"Walkthrough replay mismatch");

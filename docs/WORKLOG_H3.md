@@ -100,3 +100,24 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
   Обхода нет: collection выполняется штатным GitHub Actions API и HTTPS ranges
   к original GitHub artifact storage; verified compact evidence сохраняется в
   отдельном docs/verification/h3/economy commit без перезапуска симуляций.
+
+### Этап3: воспроизводимые сцены, natural save и целевые bundles
+
+- Сохранены native city3/6/10NPC RU/EN640/800/360 и исходные manifests,
+  natural-loaded обеих косметик, по обзору остальных2карт, motion metadata.
+  Исходный natural checkpoint5604(2,5MiB) и его digest сохранены в player/;
+  это тот же файл, который читал исправленный Playfield, не реконструкция.
+- H3Acceptance resume после уже купленного транспорта теперь пропускает новую
+  покупку и позволяет отдельно закончить replay/export прежней trajectory.
+  Работающий g продолжает прежний binary; это изменение применяется к следующему
+  явному build, не скрывает работающие результаты.
+- Добавлены предварительный IMPLEMENTATION_REPORT_H3 и research/h3/README:
+  матрица требований, exact tools/команды, естественные/prepared/VM/device границы.
+- build_h3_targets.py создаёт pristine isolated source без probes, проверяет
+  Debug/ExportRelease metadata, стандартный Developer ExportDebug, настоящий
+  self-contained Windows runtime и состав APK. Test signing key остаётся только
+  в ignored staging. Отдельный H3 targets workflow сохраняет bundles90дней,
+  запускает оба EXE и actual natural save на Windows VM. Итог не заявлен заранее.
+- Повторный ls-remote: target остаётся b87bc90, H3 remote4175455; чужая работа
+  не заменялась. Папка /codex/.../output отсутствует и readonly в managed runtime;
+  готовые файлы выдаются штатными GitHub artifacts/PR, публикация Site не нужна.

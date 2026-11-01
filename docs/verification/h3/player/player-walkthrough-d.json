@@ -1,0 +1,20 @@
+{
+  "status": "failed",
+  "error": "System.InvalidOperationException: earn-and-supply: Build: BuildAtContourAnchor\n   at Program.\u003C\u003CMain\u003E$\u003Eg__Require|0_4(Boolean value, String reason) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 91\n   at Program.\u003C\u003Ec__DisplayClass0_0.\u003C\u003CMain\u003E$\u003Eg__Do|11(GameAction action) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 101\n   at Program.\u003CMain\u003E$(String[] args) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 46",
+  "stage": "earn-and-supply",
+  "map": "compact-valley",
+  "resumed": true,
+  "resumeSource": "/workspace/Delsk/work/h3/player-walkthrough-b/last-safe.save.json",
+  "tick": 3726,
+  "milestones": [
+    {
+      "name": "resumed-ordinary-start",
+      "tick": 3193,
+      "cash": 50338
+    }
+  ],
+  "elapsedSeconds": 24.5883359,
+  "scope": "Scripted human through ordinary commands with three autonomous NPCs. No Developer. Natural earning/land/import/construction/production XP/warehouse/vehicle; later delivery/road chain is a separate acceptance gate.",
+  "stateHash": "d785d16a3cc9e5a17344dd27e50fd91a82d84e7e775861a14cbd20faf75b47ee",
+  "maxTicks": 1000000
+}

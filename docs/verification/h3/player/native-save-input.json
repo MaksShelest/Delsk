@@ -1,0 +1,7 @@
+{
+  "path": "docs/verification/h3/player/paid-warehouse.save.json",
+  "sha256": "e5d3887b5726d2c4d63a45adade82b1b7d70854b0f15158f0ad55d10d2125ce4",
+  "bytes": 2596161,
+  "sourceTrajectory": "player-walkthrough-e",
+  "scope": "Actual ordinary commands, seed42,3NPC; paid factory/productionXP/warehouse. No injection. Exact file used for Linux natural-loaded Playfield acceptance."
+}

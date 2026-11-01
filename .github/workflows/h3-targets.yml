@@ -1,0 +1,79 @@
+name: H3 installable target packages
+on:
+  push:
+    branches: ['feat/vnext-h3-compact-acceptance']
+    paths: ['docs/research/h3/build.json']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2025
+    timeout-minutes: 20
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact official .NET editor and matching templates
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force .tools | Out-Null
+          python scripts/run_check.py --name editor-download --timeout 180 --log-directory artifacts/setup -- curl.exe --fail --location --silent --show-error --max-time 170 https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_win64.zip --output .tools/godot.zip
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Expand-Archive .tools/godot.zip -DestinationPath .tools/godot
+          $engine = (Get-ChildItem .tools/godot -Recurse -Filter '*_console.exe' | Select-Object -First 1).FullName
+          if (!$engine) { throw 'Missing pinned .NET editor' }
+          "DELSK_GODOT=$engine" >> $env:GITHUB_ENV
+          python scripts/run_check.py --name templates-download --timeout 180 --log-directory artifacts/setup -- curl.exe --fail --location --silent --show-error --max-time 170 https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_export_templates.tpz --output .tools/templates.tpz
+          exit $LASTEXITCODE
+      - name: Select unmodified Windows templates
+        shell: python
+        run: |
+          import os,pathlib,zipfile
+          out=pathlib.Path(os.environ['APPDATA'])/'Godot/export_templates/4.7.2.stable.mono';out.mkdir(parents=True)
+          with zipfile.ZipFile('.tools/templates.tpz') as z:
+            assert z.read('templates/version.txt').decode().strip()=='4.7.2.stable.mono'
+            for n in z.namelist():
+              if n.rsplit('/',1)[-1] in ['version.txt','windows_debug_x86_64.exe','windows_release_x86_64.exe','windows_debug_x86_64_console.exe','windows_release_x86_64_console.exe']:(out/n.rsplit('/',1)[-1]).write_bytes(z.read(n))
+      - name: Isolated Developer and Release exports with composition checks
+        shell: pwsh
+        run: |
+          python scripts/build_h3_targets.py --godot "$env:DELSK_GODOT" --platform windows --output artifacts/packages
+          exit $LASTEXITCODE
+      - name: Execute both exported self-contained bundles on this Windows VM
+        shell: pwsh
+        run: |
+          foreach ($flavor in @('developer','release')) {
+            $bundle=Join-Path $env:GITHUB_WORKSPACE "artifacts/packages/$flavor/DelskProbe.exe"
+            $report=Join-Path $env:GITHUB_WORKSPACE "artifacts/packages/$flavor/platform.json"
+            python scripts/run_check.py --name "bundle-smoke-$flavor" --timeout 90 --log-directory artifacts/packages/checks -- $bundle --headless -- --smoke --report $report
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            python scripts/verify_platform_probe.py --report $report --log-prefix "artifacts/packages/checks/bundle-smoke-$flavor"
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+      - name: Load the actual ordinary runner save in the rendered Windows client
+        shell: pwsh
+        run: |
+          python scripts/check_world_proportions.py --godot "$env:DELSK_GODOT" --maps compact-valley --save docs/verification/h3/player/paid-warehouse.save.json --natural-save --asset-cache artifacts/packages/assets --output artifacts/natural-loaded
+          exit $LASTEXITCODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h3-windows-installable-bundles
+          path: |
+            artifacts/packages/developer/
+            artifacts/packages/release/
+            artifacts/packages/packages.json
+            artifacts/packages/source-inputs.json
+            artifacts/packages/checks/
+            artifacts/setup/
+            artifacts/natural-loaded/compact-valley-saved/
+            artifacts/natural-loaded/checks/
+            artifacts/natural-loaded/source-inputs.json
+          retention-days: 90
