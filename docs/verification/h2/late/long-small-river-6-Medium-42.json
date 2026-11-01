@@ -1,0 +1,737 @@
+{
+  "run": 41313520862,
+  "commit": "b16b0957e9d3b6986dd002cea33de192095c0c9c",
+  "case": "long-small-river-6-Medium-42",
+  "verification": {
+    "status": "succeeded",
+    "initialTick": 10800,
+    "checkpointTick": 12600,
+    "finalTick": 12630,
+    "stateHash": "66b017fa6a862a51930b33add51c83f16e16f2659d54b4a41c0e96dcf4138c89",
+    "controllerStateHash": "68e4fe8f0fa44aabe4d04679b45d553ade431366b4f1f3ff8f2d8bc96c30aefe",
+    "exactExports": 31,
+    "replayWorldExact": true,
+    "independentAccountingAudits": 3,
+    "independentPublicAudits": 3,
+    "independentFullHistoryAudits": 2,
+    "limitsUnchanged": true,
+    "originalMovementRetained": true
+  },
+  "phases": {
+    "identify": {
+      "stage": "succeeded",
+      "error": null,
+      "initialTick": 10800,
+      "tick": 10800,
+      "finalWorldHash": "d266beccd625095f294c9e9467a341006f145dce44e2c381a334b6bdb8ce5e22",
+      "finalControllerHash": "037143945ec4cd2f24285ee2add57ddf989306fe27547fd1e0323afe71df063a",
+      "wallSeconds": 13.6737409,
+      "metrics": {
+        "load-total": {
+          "calls": 1,
+          "milliseconds": 13032.7861,
+          "allocatedBytes": 9702285056
+        },
+        "invariant-ValidateProductionContent": {
+          "calls": 7,
+          "milliseconds": 35.3107,
+          "allocatedBytes": 41000
+        },
+        "invariant-ValidateStorage": {
+          "calls": 7,
+          "milliseconds": 0.7627,
+          "allocatedBytes": 57400
+        },
+        "invariant-ValidateDemolition": {
+          "calls": 7,
+          "milliseconds": 1.1458000000000002,
+          "allocatedBytes": 0
+        },
+        "invariant-ValidateWorkshops": {
+          "calls": 7,
+          "milliseconds": 3.327400000000001,
+          "allocatedBytes": 90200
+        },
+        "invariant-ValidateIndustryDevelopment": {
+          "calls": 7,
+          "milliseconds": 7.0524000000000004,
+          "allocatedBytes": 196800
+        },
+        "invariant-ValidateDevelopmentBuildings": {
+          "calls": 7,
+          "milliseconds": 1.0795,
+          "allocatedBytes": 295200
+        },
+        "invariant-ValidateFleet": {
+          "calls": 7,
+          "milliseconds": 0.1286,
+          "allocatedBytes": 8200
+        },
+        "invariant-ValidateRoads": {
+          "calls": 7,
+          "milliseconds": 35.9037,
+          "allocatedBytes": 590400
+        },
+        "invariant-ValidateBilling": {
+          "calls": 7,
+          "milliseconds": 0.2489,
+          "allocatedBytes": 16400
+        },
+        "invariant-ValidateServices": {
+          "calls": 7,
+          "milliseconds": 0.0473,
+          "allocatedBytes": 8200
+        },
+        "invariant-ValidateServiceExecution": {
+          "calls": 7,
+          "milliseconds": 0.0323,
+          "allocatedBytes": 0
+        },
+        "invariant-ValidateResearchAudit": {
+          "calls": 7,
+          "milliseconds": 3.1805,
+          "allocatedBytes": 0
+        },
+        "invariant-ValidateResources": {
+          "calls": 7,
+          "milliseconds": 0.40739999999999993,
+          "allocatedBytes": 213200
+        },
+        "invariant-ValidateExtractionRoutes": {
+          "calls": 7,
+          "milliseconds": 0.0055000000000000005,
+          "allocatedBytes": 8200
+        },
+        "invariant-ValidateTransfers": {
+          "calls": 7,
+          "milliseconds": 0.1293,
+          "allocatedBytes": 24600
+        },
+        "invariant-accounts-and-inventories": {
+          "calls": 7,
+          "milliseconds": 0.9684,
+          "allocatedBytes": 172200
+        },
+        "invariant-ValidateLaborInvariants": {
+          "calls": 7,
+          "milliseconds": 0.11099999999999999,
+          "allocatedBytes": 24600
+        },
+        "invariant-actors": {
+          "calls": 7,
+          "milliseconds": 0.0318,
+          "allocatedBytes": 0
+        },
+        "invariant-flows-and-wip": {
+          "calls": 7,
+          "milliseconds": 1.8839,
+          "allocatedBytes": 488952
+        },
+        "invariant-ValidateLandInvariants": {
+          "calls": 7,
+          "milliseconds": 7.3539,
+          "allocatedBytes": 8200
+        },
+        "invariant-ValidateEquipmentInvariants": {
+          "calls": 7,
+          "milliseconds": 0.008,
+          "allocatedBytes": 0
+        },
+        "invariant-ValidateNegotiations": {
+          "calls": 7,
+          "milliseconds": 0.0934,
+          "allocatedBytes": 0
+        },
+        "invariant-ValidateMarketInvariants": {
+          "calls": 7,
+          "milliseconds": 0.0079,
+          "allocatedBytes": 8200
+        },
+        "invariant-ValidateDeliveryInvariants": {
+          "calls": 7,
+          "milliseconds": 12.3009,
+          "allocatedBytes": 229600
+        },
+        "invariant-ValidateLogisticsInvariants": {
+          "calls": 7,
+          "milliseconds": 0.008799999999999999,
+          "allocatedBytes": 0
+        },
+        "invariant-ValidateCapitalDemandInvariants": {
+          "calls": 7,
+          "milliseconds": 90.42089999999999,
+          "allocatedBytes": 12067000
+        },
+        "invariant-ValidateSupportInvariants": {
+          "calls": 7,
+          "milliseconds": 1.0342,
+          "allocatedBytes": 8200
+        },
+        "invariant-ValidateElectionInvariants": {
+          "calls": 7,
+          "milliseconds": 6.0442,
+          "allocatedBytes": 729800
+        },
+        "history-record": {
+          "calls": 7,
+          "milliseconds": 139.0677,
+          "allocatedBytes": 134424080
+        }
+      },
+      "workingSetBytes": 4050694144,
+      "peakWorkingSetBytes": 4050694144,
+      "managedBytes": 3613623728,
+      "allocatedBytes": 9887912384,
+      "observationArchive": {
+        "storage": "structural-json-dag-v2",
+        "nodes": 45345,
+        "shapes": 89,
+        "scalarCharacters": 42808,
+        "turns": 3441,
+        "decodeCacheBytes": 124478
+      },
+      "movementProfile": "legacy-divisor-80",
+      "scope": "Host phase measurements; sampling includes hash; nested buckets must not be added. Rules are loaded unchanged from the save."
+    },
+    "segment": {
+      "stage": "succeeded",
+      "error": null,
+      "initialTick": 10800,
+      "tick": 12600,
+      "finalWorldHash": "cc05d080a4e8deb3ee0d2e04d8111325d67726c6cfe09c0d805ccba7429dd501",
+      "finalControllerHash": "362d79a3e5bc5d439d003c21e74623551f693e0f2fd27b798c7b066fe42e7396",
+      "wallSeconds": 113.5219628,
+      "metrics": {
+        "load-total": {
+          "calls": 1,
+          "milliseconds": 12910.7603,
+          "allocatedBytes": 9702553456
+        },
+        "invariant-ValidateProductionContent": {
+          "calls": 1829,
+          "milliseconds": 4644.213400000002,
+          "allocatedBytes": 6976776
+        },
+        "invariant-ValidateStorage": {
+          "calls": 1829,
+          "milliseconds": 52.7057,
+          "allocatedBytes": 17094304
+        },
+        "invariant-ValidateDemolition": {
+          "calls": 1829,
+          "milliseconds": 7.646800000000036,
+          "allocatedBytes": 221400
+        },
+        "invariant-ValidateWorkshops": {
+          "calls": 1829,
+          "milliseconds": 268.0255999999997,
+          "allocatedBytes": 20589000
+        },
+        "invariant-ValidateIndustryDevelopment": {
+          "calls": 1829,
+          "milliseconds": 19.023499999999927,
+          "allocatedBytes": 885600
+        },
+        "invariant-ValidateDevelopmentBuildings": {
+          "calls": 1829,
+          "milliseconds": 117.84910000000009,
+          "allocatedBytes": 100220576
+        },
+        "invariant-ValidateFleet": {
+          "calls": 1829,
+          "milliseconds": 13.767399999999975,
+          "allocatedBytes": 3278240
+        },
+        "invariant-ValidateRoads": {
+          "calls": 1829,
+          "milliseconds": 2119.6766000000002,
+          "allocatedBytes": 74761128
+        },
+        "invariant-ValidateBilling": {
+          "calls": 1829,
+          "milliseconds": 7.86439999999997,
+          "allocatedBytes": 2975032
+        },
+        "invariant-ValidateServices": {
+          "calls": 1829,
+          "milliseconds": 3.8629999999999636,
+          "allocatedBytes": 672400
+        },
+        "invariant-ValidateServiceExecution": {
+          "calls": 1829,
+          "milliseconds": 1.563499999999961,
+          "allocatedBytes": 254200
+        },
+        "invariant-ValidateResearchAudit": {
+          "calls": 1829,
+          "milliseconds": 305.4771,
+          "allocatedBytes": 598552
+        },
+        "invariant-ValidateResources": {
+          "calls": 1829,
+          "milliseconds": 26.143700000000003,
+          "allocatedBytes": 57872368
+        },
+        "invariant-ValidateExtractionRoutes": {
+          "calls": 1829,
+          "milliseconds": 0.7435999999999847,
+          "allocatedBytes": 221400
+        },
+        "invariant-ValidateTransfers": {
+          "calls": 1829,
+          "milliseconds": 21.303299999999993,
+          "allocatedBytes": 10461872
+        },
+        "invariant-accounts-and-inventories": {
+          "calls": 1829,
+          "milliseconds": 75.52860000000007,
+          "allocatedBytes": 46041680
+        },
+        "invariant-ValidateLaborInvariants": {
+          "calls": 1829,
+          "milliseconds": 8.917800000000002,
+          "allocatedBytes": 3133432
+        },
+        "invariant-actors": {
+          "calls": 1829,
+          "milliseconds": 3.155699999999988,
+          "allocatedBytes": 205000
+        },
+        "invariant-flows-and-wip": {
+          "calls": 1829,
+          "milliseconds": 130.7029000000002,
+          "allocatedBytes": 136464464
+        },
+        "invariant-ValidateLandInvariants": {
+          "calls": 1829,
+          "milliseconds": 265.8358000000003,
+          "allocatedBytes": 2762272
+        },
+        "invariant-ValidateEquipmentInvariants": {
+          "calls": 1829,
+          "milliseconds": 1.3878999999999704,
+          "allocatedBytes": 237800
+        },
+        "invariant-ValidateNegotiations": {
+          "calls": 1829,
+          "milliseconds": 9.972899999999978,
+          "allocatedBytes": 1436368
+        },
+        "invariant-ValidateMarketInvariants": {
+          "calls": 1829,
+          "milliseconds": 1.2810999999999781,
+          "allocatedBytes": 352600
+        },
+        "invariant-ValidateDeliveryInvariants": {
+          "calls": 1829,
+          "milliseconds": 441.88859999999954,
+          "allocatedBytes": 64793144
+        },
+        "invariant-ValidateLogisticsInvariants": {
+          "calls": 1829,
+          "milliseconds": 1.4625999999999708,
+          "allocatedBytes": 639576
+        },
+        "invariant-ValidateCapitalDemandInvariants": {
+          "calls": 1829,
+          "milliseconds": 6741.238600000018,
+          "allocatedBytes": 3406659608
+        },
+        "invariant-ValidateSupportInvariants": {
+          "calls": 1829,
+          "milliseconds": 165.29439999999954,
+          "allocatedBytes": 5149592
+        },
+        "invariant-ValidateElectionInvariants": {
+          "calls": 1829,
+          "milliseconds": 386.62899999999996,
+          "allocatedBytes": 188168528
+        },
+        "history-record": {
+          "calls": 678,
+          "milliseconds": 13801.527699999995,
+          "allocatedBytes": 13763007080
+        },
+        "travel-quantum": {
+          "calls": 18000,
+          "milliseconds": 12.686099999999804,
+          "allocatedBytes": 14722808
+        },
+        "observations": {
+          "calls": 1800,
+          "milliseconds": 5211.350600000005,
+          "allocatedBytes": 6344752624
+        },
+        "policy-and-feedback": {
+          "calls": 1800,
+          "milliseconds": 25649.38410000002,
+          "allocatedBytes": 18495605800
+        },
+        "core-phase-0": {
+          "calls": 1800,
+          "milliseconds": 116.65759999999975,
+          "allocatedBytes": 40665056
+        },
+        "core-phase-1": {
+          "calls": 1800,
+          "milliseconds": 13.766500000000066,
+          "allocatedBytes": 287000
+        },
+        "core-phase-2": {
+          "calls": 1800,
+          "milliseconds": 17.92529999999999,
+          "allocatedBytes": 2402600
+        },
+        "core-phase-3": {
+          "calls": 1800,
+          "milliseconds": 62.842699999999866,
+          "allocatedBytes": 28053256
+        },
+        "core-phase-4": {
+          "calls": 1800,
+          "milliseconds": 46.33960000000003,
+          "allocatedBytes": 12992488
+        },
+        "core-phase-5": {
+          "calls": 1800,
+          "milliseconds": 15.35919999999969,
+          "allocatedBytes": 1599000
+        },
+        "core-phase-6": {
+          "calls": 1800,
+          "milliseconds": 304.09359999999964,
+          "allocatedBytes": 309167088
+        },
+        "core-phase-7": {
+          "calls": 1800,
+          "milliseconds": 147.6032,
+          "allocatedBytes": 34957752
+        },
+        "core-phase-8": {
+          "calls": 1800,
+          "milliseconds": 1.3803999999999472,
+          "allocatedBytes": 90200
+        },
+        "core-phase-9": {
+          "calls": 1800,
+          "milliseconds": 15733.987899999996,
+          "allocatedBytes": 4404626240
+        },
+        "core-step": {
+          "calls": 1800,
+          "milliseconds": 16465.52740000004,
+          "allocatedBytes": 4835603248
+        },
+        "state-hash": {
+          "calls": 1800,
+          "milliseconds": 30075.414399999983,
+          "allocatedBytes": 7558031840
+        },
+        "sampling-including-hash": {
+          "calls": 1800,
+          "milliseconds": 35641.19729999999,
+          "allocatedBytes": 12830418208
+        },
+        "save-with-validation": {
+          "calls": 1,
+          "milliseconds": 2444.6588,
+          "allocatedBytes": 2003456448
+        }
+      },
+      "workingSetBytes": 872189952,
+      "peakWorkingSetBytes": 7821246464,
+      "managedBytes": 1001496176,
+      "allocatedBytes": 68219500360,
+      "observationArchive": {
+        "storage": "structural-json-dag-v2",
+        "nodes": 58259,
+        "shapes": 91,
+        "scalarCharacters": 56817,
+        "turns": 4112,
+        "decodeCacheBytes": 124478
+      },
+      "movementProfile": "legacy-divisor-80",
+      "scope": "Host phase measurements; sampling includes hash; nested buckets must not be added. Rules are loaded unchanged from the save."
+    },
+    "continuous": {
+      "stage": "succeeded",
+      "error": null,
+      "initialTick": 10800,
+      "tick": 12630,
+      "finalWorldHash": "66b017fa6a862a51930b33add51c83f16e16f2659d54b4a41c0e96dcf4138c89",
+      "finalControllerHash": "68e4fe8f0fa44aabe4d04679b45d553ade431366b4f1f3ff8f2d8bc96c30aefe",
+      "wallSeconds": 136.8039663,
+      "metrics": {
+        "load-total": {
+          "calls": 1,
+          "milliseconds": 12831.5184,
+          "allocatedBytes": 9705761736
+        },
+        "invariant-ValidateProductionContent": {
+          "calls": 1858,
+          "milliseconds": 4403.113000000001,
+          "allocatedBytes": 6693312
+        },
+        "invariant-ValidateStorage": {
+          "calls": 1858,
+          "milliseconds": 56.202799999999975,
+          "allocatedBytes": 17493936
+        },
+        "invariant-ValidateDemolition": {
+          "calls": 1858,
+          "milliseconds": 8.297400000000035,
+          "allocatedBytes": 213200
+        },
+        "invariant-ValidateWorkshops": {
+          "calls": 1858,
+          "milliseconds": 258.31989999999996,
+          "allocatedBytes": 21233288
+        },
+        "invariant-ValidateIndustryDevelopment": {
+          "calls": 1858,
+          "milliseconds": 19.388599999999588,
+          "allocatedBytes": 915336
+        },
+        "invariant-ValidateDevelopmentBuildings": {
+          "calls": 1858,
+          "milliseconds": 83.86239999999994,
+          "allocatedBytes": 101329904
+        },
+        "invariant-ValidateFleet": {
+          "calls": 1858,
+          "milliseconds": 15.645800000000012,
+          "allocatedBytes": 3313120
+        },
+        "invariant-ValidateRoads": {
+          "calls": 1858,
+          "milliseconds": 4197.161700000002,
+          "allocatedBytes": 76270544
+        },
+        "invariant-ValidateBilling": {
+          "calls": 1858,
+          "milliseconds": 8.747399999999995,
+          "allocatedBytes": 2754792
+        },
+        "invariant-ValidateServices": {
+          "calls": 1858,
+          "milliseconds": 3.692499999999952,
+          "allocatedBytes": 805552
+        },
+        "invariant-ValidateServiceExecution": {
+          "calls": 1858,
+          "milliseconds": 2.16399999999999,
+          "allocatedBytes": 262416
+        },
+        "invariant-ValidateResearchAudit": {
+          "calls": 1858,
+          "milliseconds": 391.9075999999996,
+          "allocatedBytes": 525152
+        },
+        "invariant-ValidateResources": {
+          "calls": 1858,
+          "milliseconds": 32.83069999999994,
+          "allocatedBytes": 58750944
+        },
+        "invariant-ValidateExtractionRoutes": {
+          "calls": 1858,
+          "milliseconds": 1.0890999999999944,
+          "allocatedBytes": 180560
+        },
+        "invariant-ValidateTransfers": {
+          "calls": 1858,
+          "milliseconds": 19.228000000000034,
+          "allocatedBytes": 10683344
+        },
+        "invariant-accounts-and-inventories": {
+          "calls": 1858,
+          "milliseconds": 82.39349999999992,
+          "allocatedBytes": 47006872
+        },
+        "invariant-ValidateLaborInvariants": {
+          "calls": 1858,
+          "milliseconds": 10.342500000000003,
+          "allocatedBytes": 2826576
+        },
+        "invariant-actors": {
+          "calls": 1858,
+          "milliseconds": 3.368199999999978,
+          "allocatedBytes": 147600
+        },
+        "invariant-flows-and-wip": {
+          "calls": 1858,
+          "milliseconds": 213.29029999999986,
+          "allocatedBytes": 138781344
+        },
+        "invariant-ValidateLandInvariants": {
+          "calls": 1858,
+          "milliseconds": 298.7563,
+          "allocatedBytes": 2994448
+        },
+        "invariant-ValidateEquipmentInvariants": {
+          "calls": 1858,
+          "milliseconds": 1.30729999999998,
+          "allocatedBytes": 123248
+        },
+        "invariant-ValidateNegotiations": {
+          "calls": 1858,
+          "milliseconds": 9.663300000000017,
+          "allocatedBytes": 1714808
+        },
+        "invariant-ValidateMarketInvariants": {
+          "calls": 1858,
+          "milliseconds": 1.5585999999999602,
+          "allocatedBytes": 434600
+        },
+        "invariant-ValidateDeliveryInvariants": {
+          "calls": 1858,
+          "milliseconds": 458.97589999999946,
+          "allocatedBytes": 65350640
+        },
+        "invariant-ValidateLogisticsInvariants": {
+          "calls": 1858,
+          "milliseconds": 1.401899999999976,
+          "allocatedBytes": 533000
+        },
+        "invariant-ValidateCapitalDemandInvariants": {
+          "calls": 1858,
+          "milliseconds": 6925.413800000006,
+          "allocatedBytes": 3467026552
+        },
+        "invariant-ValidateSupportInvariants": {
+          "calls": 1858,
+          "milliseconds": 173.60429999999974,
+          "allocatedBytes": 5218904
+        },
+        "invariant-ValidateElectionInvariants": {
+          "calls": 1858,
+          "milliseconds": 411.19589999999914,
+          "allocatedBytes": 189138400
+        },
+        "history-record": {
+          "calls": 686,
+          "milliseconds": 14024.262899999996,
+          "allocatedBytes": 13934736272
+        },
+        "travel-quantum": {
+          "calls": 18300,
+          "milliseconds": 13.31259999999826,
+          "allocatedBytes": 15086352
+        },
+        "observations": {
+          "calls": 1830,
+          "milliseconds": 6046.674499999985,
+          "allocatedBytes": 6456774328
+        },
+        "policy-and-feedback": {
+          "calls": 1830,
+          "milliseconds": 26320.54200000007,
+          "allocatedBytes": 18761739952
+        },
+        "core-phase-0": {
+          "calls": 1830,
+          "milliseconds": 118.80710000000006,
+          "allocatedBytes": 40710416
+        },
+        "core-phase-1": {
+          "calls": 1830,
+          "milliseconds": 13.962400000000507,
+          "allocatedBytes": 287000
+        },
+        "core-phase-2": {
+          "calls": 1830,
+          "milliseconds": 17.770299999999995,
+          "allocatedBytes": 3009400
+        },
+        "core-phase-3": {
+          "calls": 1830,
+          "milliseconds": 66.33879999999994,
+          "allocatedBytes": 28175984
+        },
+        "core-phase-4": {
+          "calls": 1830,
+          "milliseconds": 47.022000000000055,
+          "allocatedBytes": 12919328
+        },
+        "core-phase-5": {
+          "calls": 1830,
+          "milliseconds": 18.054399999999855,
+          "allocatedBytes": 1526792
+        },
+        "core-phase-6": {
+          "calls": 1830,
+          "milliseconds": 403.54290000000003,
+          "allocatedBytes": 315151464
+        },
+        "core-phase-7": {
+          "calls": 1830,
+          "milliseconds": 221.72349999999992,
+          "allocatedBytes": 35273976
+        },
+        "core-phase-8": {
+          "calls": 1830,
+          "milliseconds": 1.1732999999999623,
+          "allocatedBytes": 57400
+        },
+        "core-phase-9": {
+          "calls": 1830,
+          "milliseconds": 18127.31520000001,
+          "allocatedBytes": 4482551072
+        },
+        "core-step": {
+          "calls": 1830,
+          "milliseconds": 19041.75409999996,
+          "allocatedBytes": 4920457976
+        },
+        "state-hash": {
+          "calls": 1830,
+          "milliseconds": 31256.83559999999,
+          "allocatedBytes": 7692773400
+        },
+        "sampling-including-hash": {
+          "calls": 1830,
+          "milliseconds": 37345.46009999999,
+          "allocatedBytes": 13056110880
+        },
+        "export": {
+          "calls": 1,
+          "milliseconds": 19514.217,
+          "allocatedBytes": 9894312736
+        }
+      },
+      "workingSetBytes": 972980224,
+      "peakWorkingSetBytes": 8137699328,
+      "managedBytes": 146174272,
+      "allocatedBytes": 76975043648,
+      "observationArchive": {
+        "storage": "structural-json-dag-v2",
+        "nodes": 53614,
+        "shapes": 90,
+        "scalarCharacters": 51876,
+        "turns": 4120,
+        "decodeCacheBytes": 124478
+      },
+      "movementProfile": "legacy-divisor-80",
+      "scope": "Host phase measurements; sampling includes hash; nested buckets must not be added. Rules are loaded unchanged from the save."
+    }
+  },
+  "traceArchives": {
+    "resumed/decisions.jsonl.gz": {
+      "uncompressedBytes": 3172272786,
+      "uncompressedSha256": "c9a1803c4f80b331dbb48505500e6b9563c18ec4c90e17e63b92866eff3a9027",
+      "gzipBytes": 226203880,
+      "gzipSha256": "e4114f2f510b4ad91a3911238e823cf7fb045a803542a9a7c9d8fb79d10175de"
+    },
+    "continuous/exports/decisions.jsonl.gz": {
+      "uncompressedBytes": 3172272786,
+      "uncompressedSha256": "c9a1803c4f80b331dbb48505500e6b9563c18ec4c90e17e63b92866eff3a9027",
+      "gzipBytes": 226203880,
+      "gzipSha256": "7b4804b95f257ec3d42bef78062a9cdcfee4aea78abeceeca926896af3c68f0f"
+    },
+    "replay/decisions.jsonl.gz": {
+      "uncompressedBytes": 0,
+      "uncompressedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 36,
+      "gzipSha256": "9e3b9d9fdbb85e53e1e2d191bc93ea02b48e219ac9e772b670f433b223404250"
+    }
+  }
+}

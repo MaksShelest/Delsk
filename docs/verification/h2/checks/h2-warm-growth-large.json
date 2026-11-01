@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "work/h2/current-runtime/Research.Runner.dll",
+    "--measure-session",
+    "work/h2/late-large-districts-6-Medium-42/world.save.json",
+    "--ticks",
+    "16200",
+    "--operation",
+    "save",
+    "--output",
+    "work/h2/warm-growth-large"
+  ],
+  "timeout_seconds": 900,
+  "started_at": "2026-11-01T14:06:43.259227+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 259.549,
+  "finished_at": "2026-11-01T14:11:02.808626+00:00"
+}

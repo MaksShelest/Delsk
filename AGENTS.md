@@ -1,4 +1,15 @@
-## H2,01.11.2026 — актуальная работа
+## H2,01.11.2026 — текущая реализация и проверенные границы
+
+- PR76 без auto merge. Отчёт IMPLEMENTATION_REPORT_H2.md, воспроизведение
+  research/h2/README.md;36 H2 tests,24 native PNG,8 late original H1 continuations.
+- Primary old-profile n3 comparisons: одинаковые полные31 exports, деньги,
+  controllers/history/routes; warm save/load и восстановление инструментов.
+- Исходный ordinary maxTicks5000 не повышался. Late inputs имеют прежде
+  объявленный126000 horizon;20–35ч не доказаны. Дополнительные growth probes
+  до16200 подтверждают save/readback, не полный audited/replay horizon.
+- При выделении helpers сохранять исходные E2 fixture имена явно: CallerMemberName
+  меняет контракт check_road_e2.py. H2 fixture имена должны быть отдельными.
+
 
 - Явное обновлённое задание владельца включает движение, грунтовку и производительность;
   H1/дополнительная G2 завершены, PR75 уже слит в29cb97d. H3 не запускать.

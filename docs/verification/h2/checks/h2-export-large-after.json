@@ -1,0 +1,17 @@
+{
+  "command": [
+    "dotnet",
+    "work/h2/current-runtime/Research.Runner.dll",
+    "--measure-session",
+    "work/h2/paired-large-final-after-2/world.save.json",
+    "--operation",
+    "export",
+    "--output",
+    "work/h2/export-large-after"
+  ],
+  "timeout_seconds": 900,
+  "started_at": "2026-11-01T13:52:21.684047+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 23.501,
+  "finished_at": "2026-11-01T13:52:45.185199+00:00"
+}

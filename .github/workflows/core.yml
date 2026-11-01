@@ -698,12 +698,13 @@ jobs:
   # Preserve the required check and require every suite, including D3's independent audit.
   verify:
     if: ${{ always() }}
-    needs: [research-h1, city-ux-unit, city-ux-developer, unit, core, developer, production, fleet, road-unit, road-developer, roads, billing-unit, billing-developer, billing, services-unit, services-developer, services, service-runs-unit, service-runs-developer, service-runs, npc-unit, npc-developer, npc-actions, npc-natural]
+    needs: [h2-engineering-unit, research-h1, city-ux-unit, city-ux-developer, unit, core, developer, production, fleet, road-unit, road-developer, roads, billing-unit, billing-developer, billing, services-unit, services-developer, services, service-runs-unit, service-runs-developer, service-runs, npc-unit, npc-developer, npc-actions, npc-natural]
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
       - name: Require all complete suites
         env:
+          H2_UNIT_RESULT: ${{ needs.h2-engineering-unit.result }}
           RESEARCH_H1_RESULT: ${{ needs.research-h1.result }}
           CITY_UX_UNIT_RESULT: ${{ needs.city-ux-unit.result }}
           CITY_UX_DEVELOPER_RESULT: ${{ needs.city-ux-developer.result }}
@@ -728,7 +729,7 @@ jobs:
           RUNS_RESULT: ${{ needs.service-runs.result }}
           SERVICES_RESULT: ${{ needs.services.result }}
           FLEET_RESULT: ${{ needs.fleet.result }}
-        run: test "$RESEARCH_H1_RESULT" = success && test "$CITY_UX_UNIT_RESULT" = success && test "$CITY_UX_DEVELOPER_RESULT" = success && test "$NPC_UNIT_RESULT" = success && test "$NPC_DEVELOPER_RESULT" = success && test "$NPC_ACTIONS_RESULT" = success && test "$NPC_NATURAL_RESULT" = success && test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success && test "$ROADS_RESULT" = success && test "$ROAD_UNIT_RESULT" = success && test "$ROAD_DEVELOPER_RESULT" = success && test "$BILLING_UNIT_RESULT" = success && test "$BILLING_DEVELOPER_RESULT" = success && test "$BILLING_RESULT" = success && test "$SERVICES_UNIT_RESULT" = success && test "$SERVICES_DEVELOPER_RESULT" = success && test "$SERVICES_RESULT" = success && test "$RUNS_UNIT_RESULT" = success && test "$RUNS_DEVELOPER_RESULT" = success && test "$RUNS_RESULT" = success
+        run: test "$H2_UNIT_RESULT" = success && test "$RESEARCH_H1_RESULT" = success && test "$CITY_UX_UNIT_RESULT" = success && test "$CITY_UX_DEVELOPER_RESULT" = success && test "$NPC_UNIT_RESULT" = success && test "$NPC_DEVELOPER_RESULT" = success && test "$NPC_ACTIONS_RESULT" = success && test "$NPC_NATURAL_RESULT" = success && test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success && test "$ROADS_RESULT" = success && test "$ROAD_UNIT_RESULT" = success && test "$ROAD_DEVELOPER_RESULT" = success && test "$BILLING_UNIT_RESULT" = success && test "$BILLING_DEVELOPER_RESULT" = success && test "$BILLING_RESULT" = success && test "$SERVICES_UNIT_RESULT" = success && test "$SERVICES_DEVELOPER_RESULT" = success && test "$SERVICES_RESULT" = success && test "$RUNS_UNIT_RESULT" = success && test "$RUNS_DEVELOPER_RESULT" = success && test "$RUNS_RESULT" = success
   h2-engineering-unit:
     runs-on: ubuntu-24.04
     timeout-minutes: 15

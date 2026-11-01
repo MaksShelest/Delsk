@@ -114,3 +114,15 @@
   дополнительный replay/audited horizon16200 пока не заявлен.
 - Повторное выполнение нового durable tool с тем же output прошло:14 стадий,
  97 helper SHA/copies, контрольные30→40→42, всё31 exact и все8 аудитов.
+
+01.11.2026 — завершённые проверки H2
+
+- b16b095/run41313520862:8/8 late worlds, все24 accounting/24public/16history
+  audits,31-file continuation и world replay. Actual interval/peak/world/controller
+  SHA выгружены из CI logs в verification/h2/late; разные hosted workers не
+  подставляются в локальный n3 speedup. Первая конверсия достигала8,03GiB peak.
+- E2 после фикса имён:27unit +51 bounded processes,35exports,24comparisons pass.
+- Required verify теперь зависит и от h2-engineering-unit. Старые needs и
+  deadlines сохранены. Функциональные953inputs отделены от report-only changes.
+- Оставшиеся ordinary5000/первая legacy-конверсия/20–35ч/полный JSONL явно
+  перечислены в отчёте. H3 не начат, автослияние не включалось.

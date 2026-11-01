@@ -1,0 +1,15 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--load",
+    "/workspace/Delsk/work/h2/road-runs-final/public-task-645.save.json",
+    "--output",
+    "/workspace/Delsk/work/h2/road-runs-final/public-task-loaded-645"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T14:16:39.156163+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 1.519,
+  "finished_at": "2026-11-01T14:16:40.675478+00:00"
+}

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--load",
+    "/workspace/Delsk/work/h2/road-runs-final/builders-562.save.json",
+    "--output",
+    "/workspace/Delsk/work/h2/road-runs-final/builders-loaded-562"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T14:16:22.313979+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 5.187,
+  "finished_at": "2026-11-01T14:16:27.500577+00:00"
+}

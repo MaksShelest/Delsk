@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python",
+    "scripts/check_road_e2.py",
+    "--fixtures",
+    "work/h2/road-units-final/e2-fixtures",
+    "--output",
+    "work/h2/road-runs-final"
+  ],
+  "timeout_seconds": 600,
+  "started_at": "2026-11-01T14:15:09.249709+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 194.985,
+  "finished_at": "2026-11-01T14:18:24.235235+00:00"
+}

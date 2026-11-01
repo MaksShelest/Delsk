@@ -1,0 +1,17 @@
+{
+  "command": [
+    "python",
+    "scripts/check_headless.py",
+    "--phase",
+    "tests",
+    "--suite",
+    "roads",
+    "--output",
+    "work/h2/road-units-final"
+  ],
+  "timeout_seconds": 600,
+  "started_at": "2026-11-01T14:12:11.904688+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 177.291,
+  "finished_at": "2026-11-01T14:15:09.196331+00:00"
+}

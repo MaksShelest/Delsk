@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+    "/workspace/Delsk/work/h2/road-runs-final/minimum-crew",
+    "/workspace/Delsk/work/h2/road-runs-final/minimum-crew-saved-541",
+    "/workspace/Delsk/work/h2/road-runs-final/minimum-crew",
+    "/workspace/Delsk/work/h2/road-runs-final/minimum-crew-loaded-541"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T14:15:21.566051+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.033,
+  "finished_at": "2026-11-01T14:15:21.598709+00:00"
+}
