@@ -1,0 +1,49 @@
+name: H3 retained Windows bundle diagnostics
+on:
+  push:
+    branches: ['feat/vnext-h3-compact-acceptance']
+    paths: ['docs/research/h3/target-diagnostic.json']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  retained-release:
+    runs-on: windows-2025
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - id: source
+        shell: python
+        run: |
+          import json,os,pathlib
+          d=json.loads(pathlib.Path('docs/research/h3/target-diagnostic.json').read_text())
+          assert isinstance(d['run'],int) and d['run']>0
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('run='+str(d['run'])+'\n')
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ steps.source.outputs.run }}
+          github-token: ${{ github.token }}
+          name: h3-windows-installable-bundles
+          path: work/retained
+      - name: Diagnose the same retained Release EXE without rebuilding it
+        shell: python
+        run: |
+          import hashlib,json,pathlib,subprocess,sys
+          root=pathlib.Path.cwd();bundle=root/'work/retained/packages/release/DelskProbe.exe'
+          d=json.loads((root/'work/retained/packages/packages.json').read_text())
+          expected=next(p['sha256'] for p in d['packages'] if p['flavor']=='release')
+          assert hashlib.sha256(bundle.read_bytes()).hexdigest()==expected
+          out=root/'work/diagnostic';out.mkdir(parents=True)
+          result=subprocess.run([sys.executable,'scripts/run_check.py','--name','retained-release','--timeout','90','--log-directory',str(out),'--',str(bundle),'--headless','--','--smoke','--report',str(out/'platform.json')])
+          for p in sorted(out.glob('*')):
+            if p.suffix in ['.json','.log']:print(p.name+'\n'+p.read_text(errors='replace')[-16000:])
+          raise SystemExit(result.returncode)
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h3-retained-release-diagnostic
+          path: work/diagnostic/
+          retention-days: 90

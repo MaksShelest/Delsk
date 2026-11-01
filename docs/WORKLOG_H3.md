@@ -136,3 +136,22 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
   вложенные последние логи при failure, как существующий native import workaround.
   Повтор обоснован отказом;240s не повышался, игровой код тот же. Обычные Windows
   gates41360866991 остаются независимым успешным доказательством.
+- Android/a cold export превысил240s на первом Gradle dependency/configuration
+  build. Явный retry в том же owned stage/cache, отдельные logs/output b:
+  Developer110,186s/240, Release прошёл тот же240s gate. CRC всех entries,
+  подписи apksigner, manifest API24/target36/ARM64 и Release metadata audit
+  прошли. Developer102310949bytes, Release95307498bytes; SHA в targets/android.
+  Release не debuggable и не содержит Simulation.Developer/Debug UI. Это не
+  device execution. Удалён только generated Gradle build/build cache после
+  проверки APK для освобождения диска; исходники/APK/логи/keys/deps сохранены.
+- Windows target41362439343: явный --quit исправил завершение обоих экспортов;
+  bundle shape/runtime и actual published Release audit прошли. Developer EXE
+  реально выполнил1132shared hashes/restores в Windows VM. Release EXE exit1
+  через1,5s; не объявлен runtime pass. Отдельная диагностика скачивает именно
+  этот retained bundle по digest EXE и печатает ошибку без пересборки/новых миров.
+- Compact active road bypass усилен настоящим save/load+3 иполным replay
+  непосредственно во время работы. Новый ordinary class1/1прошёл, старые H2
+  callers не получают callback и сохраняют прежнюю последовательность.
+- Developer H3 первый restore отказал NU1900 из-за отсутствия network grant в
+  этой exec cell. Ошибка сохранена в developer-h3; новый developer-h3-b использует
+  обычный разрешённый сетевой доступ, не отключает vulnerability audit.
