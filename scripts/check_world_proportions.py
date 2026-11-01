@@ -4,6 +4,7 @@ import argparse,hashlib,json,os,shutil,subprocess,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser(description=__doc__);p.add_argument('--godot',required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--verify',action='store_true');p.add_argument('--asset-cache',type=Path);p.add_argument('--legacy-save-dir',type=Path);p.add_argument('--fleet-save-dir',type=Path)
+p.add_argument('--maps',nargs='+',choices=['small-river','large-districts','compact-valley','first'],default=['small-river','large-districts','first'])
 a=p.parse_args();out=a.output.resolve()
 if out.exists() and any(out.iterdir()):p.error('Use a new/empty output')
 out.mkdir(parents=True,exist_ok=True);stage=out/'source';project=stage/'src/Client.Godot'
@@ -29,7 +30,7 @@ if cache is None:
 check('asset-reuse',60,[sys.executable,ROOT/'scripts/reuse_godot_imports.py','--source',cache,'--target',project,'--report',out/'asset-reuse.json'])
 check('asset-verify',30,[sys.executable,ROOT/'scripts/reuse_godot_imports.py','--source',project,'--verify-only','--report',out/'asset-verify.json'])
 base=(project/'project.godot').read_text()
-cases=[(m,None,'') for m in ['small-river','large-districts','first']]
+cases=[(m,None,'') for m in a.maps]
 if a.legacy_save_dir:cases += [(m,a.legacy_save_dir.resolve()/(m+'-adapter1.save.json'),'-adapter1') for m in ['small-river','large-districts']]
 if a.fleet_save_dir:cases += [(m,a.fleet_save_dir.resolve()/(m.replace('-','_')+'-purchased.save.json'),'-purchased') for m in ['small-river','large-districts']]
 for map_key,save,suffix in cases:

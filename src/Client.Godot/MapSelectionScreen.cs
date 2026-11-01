@@ -81,6 +81,7 @@ public partial class MapSelectionScreen : ColorRect
         catch(Exception error)when(error is ArgumentException or InvalidOperationException)
         {_previewAvailable=false;if(_startButton is not null)_startButton.Disabled=true;_preview.AddChild(new Label{Name="MapUnavailable",Text=L("Карта недоступна с текущим профилем: ","Map unavailable with the current profile: ")+error.Message,AutowrapMode=TextServer.AutowrapMode.WordSmart});return;}
         _preview.AddChild(new Label { Text = PlayMaps.Name(SelectedMap, _language), HorizontalAlignment = HorizontalAlignment.Center });
+        _preview.AddChild(new Label { Text = PlayMaps.Description(SelectedMap,_language), AutowrapMode=TextServer.AutowrapMode.WordSmart });
         _preview.AddChild(new MapPreview(scenario) { CustomMinimumSize = new Vector2(0, 240) });
         _preview.AddChild(new Label { Text = $"{scenario.MapWidth} × {scenario.MapHeight}" + L(" · Мир запустится только по «Начать».", " · The world starts only after Start."), HorizontalAlignment = HorizontalAlignment.Center });
     }
@@ -94,6 +95,7 @@ public partial class MapSelectionScreen : ColorRect
         {
             string choice = key;
             list.AddChild(new Label { Text = PlayMaps.Name(key, _language),AutowrapMode=TextServer.AutowrapMode.WordSmart });
+            list.AddChild(new Label { Text = PlayMaps.Description(key,_language),AutowrapMode=TextServer.AutowrapMode.WordSmart });
             try
             {
                 list.AddChild(new MapPreview(_readSetup?.Invoke(key,NpcCount)??_read(key)) { CustomMinimumSize = new Vector2(0, 210) });

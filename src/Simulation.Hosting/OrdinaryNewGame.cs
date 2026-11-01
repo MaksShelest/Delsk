@@ -25,6 +25,9 @@ public sealed record OrdinaryGameResolution(ScenarioDefinition Scenario,long Hum
 /// <summary>Initial data preparation only. No world, concrete policies, HTTP, or runtime PRNG.</summary>
 public static class OrdinaryNewGame
 {
+    // Active seconds: over 277 hours, including sandbox after victory. Saved games
+    // keep their resolved horizon; research profiles retain their bounded horizon.
+    public const long PlayHorizonTicks=1_000_000;
     public static OrdinaryGameResolution Resolve(ScenarioDefinition map,EconomyProfile economy,OrdinaryGameOptions options,IReadOnlyList<Cell>? spawnPool=null,VNextBalance? vnextBalance=null)
     {
         options.Validate();
@@ -71,7 +74,7 @@ public static class OrdinaryNewGame
         long population=vnext?checked(globals!.StartPopulationPerParticipant*count):Scale(baseScenario.Population,count);
         long? maximum=vnext?checked(globals!.MaxPopulationPerParticipant*count):baseScenario.Labor?.MaximumPopulation is {} max?Scale(max,count):null;
         long treasury=Scale(vnext?globals!.StartTreasuryMinorPer4Participants:baseScenario.StartingTreasuryMinor,count);
-        var scenario=baseScenario with {Seed=seed,Participants=actors,Plots=baseScenario.Plots is null?null:plots.ToArray(),
+        var scenario=baseScenario with {Seed=seed,MaxTicks=PlayHorizonTicks,Participants=actors,Plots=baseScenario.Plots is null?null:plots.ToArray(),
             Economy=baseScenario.Economy?.ProductionContent is {} content?baseScenario.Economy with{ProductionContent=content with{Imports=[..content.Imports.Select(i=>i with{Package=checked(i.Package*((count+3)/4))})]}}:baseScenario.Economy,
             Population=population,Labor=(baseScenario.Labor??new()) with {MaximumPopulation=maximum},StartingTreasuryMinor=treasury,
             CapitalDemand=baseScenario.CapitalDemand is {} demand?demand with {BootstrapBaseBudgetMinor=Scale(demand.BootstrapBaseBudgetMinor,count)}:null,

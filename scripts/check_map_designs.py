@@ -12,7 +12,7 @@ def check(name,args,expected=0):
  r=subprocess.run([sys.executable,str(ROOT/'scripts/run_check.py'),'--name',name,'--timeout','30','--log-directory',str(out/'checks'),'--',*map(str,args)],cwd=ROOT)
  assert r.returncode==expected,(name,r.returncode)
 records=[]
-for source,key in [('small_river','small-river'),('large_districts','large-districts')]:
+for source,key in [('small_river','small-river'),('large_districts','large-districts'),('compact_valley','compact-valley')]:
  design=ROOT/'docs/vnext/maps'/f'{source}.json';profile=ROOT/'config/vnext/economy.b1-supported.json';snapshot=ROOT/'scenarios/vnext'/f'{key}.json'
  for i in range(2):
   folder=out/f'{key}-{i}';check(f'export-{key}-{i}',[*runner,'--export-map-design',design,'--economy',profile,'--output',folder]);assert (folder/'scenario.json').read_bytes()==snapshot.read_bytes()

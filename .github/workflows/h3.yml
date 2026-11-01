@@ -1,0 +1,68 @@
+name: H3 compact map and new movement cohort
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'scenarios/**'
+      - 'tests/**'
+      - 'scripts/study_h3.py'
+      - 'docs/research/h3/study-plan.json'
+      - '.github/workflows/h3.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  matrix:
+    runs-on: ubuntu-24.04
+    outputs:
+      cases: ${{ steps.cases.outputs.cases }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: cases
+        shell: bash
+        run: echo "cases=$(python scripts/study_h3.py --matrix all)" >> "$GITHUB_OUTPUT"
+  natural:
+    needs: [matrix]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 12
+      matrix: ${{ fromJSON(needs.matrix.outputs.cases) }}
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+      DELSK_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+      CASE_ID: ${{ matrix.id }}
+      CASE_PHASE: ${{ matrix.phase }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Bounded locked restore
+        run: python scripts/run_check.py --name restore --timeout 180 --log-directory work/checks -- dotnet restore Delsk.sln --locked-mode --disable-parallel -m:1
+      - name: Bounded runner build
+        run: python scripts/run_check.py --name build --timeout 180 --log-directory work/checks -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
+      - name: Distinct H3 worlds, retained failures and audited checkpoints
+        shell: python
+        run: |
+          import os, subprocess, sys
+          # Extended worlds are explicitly bounded batches, never claimed complete at a batch boundary.
+          segments = '8' if os.environ['CASE_PHASE'] == 'extended' else '3'
+          subprocess.run([sys.executable,'scripts/study_h3.py','--case',os.environ['CASE_ID'],
+            '--output','work/world','--segments',segments],check=True)
+      - name: Publish actual outcomes
+        if: always()
+        run: python scripts/report_check_results.py work/world work/checks
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h3-${{ matrix.id }}
+          path: |
+            work/world/
+            work/checks/
+          compression-level: 1
+          retention-days: 90
