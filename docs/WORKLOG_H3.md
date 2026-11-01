@@ -121,3 +121,18 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
 - Повторный ls-remote: target остаётся b87bc90, H3 remote4175455; чужая работа
   не заменялась. Папка /codex/.../output отсутствует и readonly в managed runtime;
   готовые файлы выдаются штатными GitHub artifacts/PR, публикация Site не нужна.
+- Player/g: paid-vehicle t19868, cash10406minor после настоящей цены180000.
+  Milestone encode/decode hash прошёл, checkpoint8,7MiB сохранён. Дальнейший
+  полный prefix replay не уложился в оставшиеся259s из900s общего процесса;
+  process124/905,117s после5s grace, исходный running milestone JSON сохранён.
+  Это не успешный final replay/export. Отдельный bounded replay из paid-vehicle
+  checkpoint ещё нужен; лимит не поднимался.
+- Windows platform41360866991 оба jobs success: actual shared hashes/release
+  metadata, native HUD/Developer и расширенный city UX всех3карт RU/EN.
+  Это hostedVM, не физический ПК и не proof живой LLM.
+- Windows target run41361599014: ordinary/release restore/build/audits прошли,
+  export-developer превысил240s, artifact13105122829 сохранён как диагностика,
+  не успешный bundle. Новый driver явно завершает editor через --quit и печатает
+  вложенные последние логи при failure, как существующий native import workaround.
+  Повтор обоснован отказом;240s не повышался, игровой код тот же. Обычные Windows
+  gates41360866991 остаются независимым успешным доказательством.

@@ -1,1 +1,6 @@
-{"purpose":"H3 current-source installable Developer/Release bundles and actual Windows VM execution; no simulation cohort rerun","base":"b87bc90a84845f509cf256bb227dbcf2952a43ad","revision":1}
+{
+  "purpose": "H3 current-source installable Developer/Release bundles and actual Windows VM execution; no simulation cohort rerun",
+  "base": "b87bc90a84845f509cf256bb227dbcf2952a43ad",
+  "revision": 2,
+  "retryReason": "Previous export exceeded240s; preserve failure. Explicit editor quit and nested failure logs; same deadline and same game code."
+}

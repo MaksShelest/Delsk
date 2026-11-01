@@ -1,20 +1,25 @@
 {
   "status": "running",
   "error": null,
-  "stage": "initial",
+  "stage": "transport",
   "map": "compact-valley",
   "resumed": true,
   "resumeSource": "/workspace/Delsk/work/h3/player-walkthrough-e/last-safe.save.json",
-  "tick": 12579,
+  "tick": 19868,
   "milestones": [
     {
       "name": "resumed-ordinary-start",
       "tick": 12579,
       "cash": 95760
+    },
+    {
+      "name": "paid-vehicle",
+      "tick": 19868,
+      "cash": 10406
     }
   ],
-  "elapsedSeconds": 20.8082823,
+  "elapsedSeconds": 641.2898479,
   "scope": "Scripted human through ordinary commands with three autonomous NPCs. No Developer. Natural earning/land/import/construction/production XP/warehouse/vehicle; later delivery/road chain is a separate acceptance gate.",
-  "stateHash": "a9c389566ff0fb00425d2e6e2fe59e58c3d248d20ac9c054ca9af09264e562a0",
+  "stateHash": "bc699a9e707513423f47b026f5d7baa28c8d2cea1f4d876116076c630e2c936f",
   "maxTicks": 1000000
 }

@@ -19,12 +19,22 @@ for name in sorted(set(files)):
  source=ROOT/name
  if source.is_file() and (name.startswith(('src/','config/','scenarios/')) or name in ['Directory.Build.props','Directory.Build.targets','global.json']):
   target=stage/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target);inputs[name]=hashlib.sha256(source.read_bytes()).hexdigest()
+inputs['scripts/build_h3_targets.py']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 (out/'source-inputs.json').write_text(json.dumps(inputs,indent=2)+'\n')
 env=os.environ.copy()
 def check(name,limit,command):
- subprocess.run([sys.executable,ROOT/'scripts/run_check.py','--name',name,'--timeout',str(limit),'--log-directory',out/'checks','--',*map(str,command)],cwd=ROOT,env=env,check=True)
+ result=subprocess.run([sys.executable,ROOT/'scripts/run_check.py','--name',name,'--timeout',str(limit),'--log-directory',out/'checks','--',*map(str,command)],cwd=ROOT,env=env)
+ if result.returncode:
+  for suffix in ['stdout.log','stderr.log']:
+   path=out/'checks'/(name+'.'+suffix)
+   if path.is_file():print(path.read_text(errors='replace')[-12000:],file=sys.stderr)
+  raise SystemExit(result.returncode)
 def logs(name):
  check(name+'-logs',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks'/name])
+check('dotnet-version',15,['dotnet','--version'])
+check('godot-version',15,[a.godot,'--version'])
+if (out/'checks/dotnet-version.stdout.log').read_text().strip()!='10.0.401':raise ValueError('Expected exact .NET SDK10.0.401')
+if not (out/'checks/godot-version.stdout.log').read_text().strip().startswith('4.7.2.stable.mono.'):raise ValueError('Expected Godot4.7.2 .NET editor')
 cache=a.asset_cache
 if cache is None:
  cache=out/'assets';check('assets-stage',30,[sys.executable,ROOT/'scripts/prepare_godot_asset_import.py','--source',project,'--output',cache,'--report',out/'assets-stage.json'])
@@ -56,7 +66,7 @@ for flavor,mode in [('developer','debug'),('release','release')]:
  folder=out/flavor;folder.mkdir();target=folder/('DelskProbe.exe' if a.platform=='windows' else 'DelskH3.apk')
  current=presets.replace('com.maksshelest.delsk.probe','com.maksshelest.delsk.h3.'+flavor).replace('Delsk Platform Probe','Delsk H3 '+flavor)
  (project/'export_presets.cfg').write_text(current)
- command=[a.godot,'--headless','--path',project,*(['--install-android-build-template'] if a.platform=='android' else []),'--export-'+mode,'Windows Probe' if a.platform=='windows' else 'Android Probe',target]
+ command=[a.godot,'--headless','--quit','--path',project,*(['--install-android-build-template'] if a.platform=='android' else []),'--export-'+mode,'Windows Probe' if a.platform=='windows' else 'Android Probe',target]
  check('export-'+flavor,240,command);logs('export-'+flavor)
  if not target.is_file() or not target.stat().st_size:raise ValueError('No target package')
  if a.platform=='windows':

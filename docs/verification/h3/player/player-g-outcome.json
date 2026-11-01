@@ -1,0 +1,9 @@
+{
+  "status": "timeout_after_paid_vehicle",
+  "tick": 19868,
+  "processExit": 124,
+  "elapsedSeconds": 905.117,
+  "runnerDeadline": 900,
+  "milestoneSaved": true,
+  "scope": "Paid vehicle and milestone checkpoint roundtrip succeeded; full prefix replay after milestone did not finish in remaining segment time. Original running milestone JSON is retained verbatim, not relabelled as a successful final run."
+}
