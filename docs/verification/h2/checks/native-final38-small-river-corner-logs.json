@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/workspace/Delsk/scripts/verify_platform_probe.py",
+    "--log-prefix",
+    "/workspace/Delsk/work/h2/native-final38/checks/small-river-corner"
+  ],
+  "timeout_seconds": 15,
+  "started_at": "2026-11-01T18:25:36.825468+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.065,
+  "finished_at": "2026-11-01T18:25:36.890261+00:00"
+}

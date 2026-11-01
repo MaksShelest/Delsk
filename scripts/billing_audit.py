@@ -44,7 +44,14 @@ def verify(folder):
             cell=tuple(map(int,e['reasonCode'].split(',')));old=layers.setdefault(cell,[])
             assert len(old)+1==e['quantity'];old.append(actor)
         elif kind=='BillingDistance':
-            cell=tuple(map(int,e['reasonCode'].split(',')));assert cell in layers and 0<e['quantity']<=80
+            cell=tuple(map(int,e['reasonCode'].split(',')));assert cell in layers and 0<e['quantity']
+            # One quantum may cross a centre; each event bills only its real edge fragment.
+            limit=80
+            if config['economy'].get('movement'):
+                nominal=next(m['speed'] for m in config['economy']['fleet']['models'] if m['id']==vehicle[identity]['modelId']) if identity in vehicle else max(1,80//config['moveTicksPerCell'])
+                cap=config['economy']['roads']['stages'][len(layers[cell])-1]['speed']
+                limit=(min(nominal,cap)*5+1)//2
+            assert e['quantity']<=limit
             model=vehicle.get(identity);assert actor==(model['owner']['value'] if model else machine[identity]['ownerId']['value'])
             factor=rules['classFactors'][model['modelId']] if model else 10000
             units=e['quantity']*factor*rules['lightIncrementMinor']

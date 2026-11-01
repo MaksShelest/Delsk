@@ -23,7 +23,7 @@ public sealed partial class SimulationEngine
         try{arrived=TrafficTravel(Body(e),motion.Path[^1]);}
         catch(RuleViolation ex){e.Reason=ex.ReasonCode;return;}
         var after=Traffic(e.Id);e.Reason=after.Reason;
-        bool worked=before.Progress!=after.Progress||position!=e.Position;
+        bool worked=before.Progress!=after.Progress||before.ProgressFraction!=after.ProgressFraction||position!=e.Position;
         if(worked)
         {
             var tx=_economy.Begin(Tick);if(wage>0)tx.Pay(_actors[e.Owner].Account,_wages,wage,"EquipmentTravelWages");tx.Commit();

@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--scenario",
+    "/workspace/Delsk/work/h2/road-units-final/e2-fixtures/ExistingFreightCarriesOneRealCargoThroughPaverBypassAndRestoresEveryStage.json",
+    "--replay",
+    "/workspace/Delsk/work/h2/road-units-final/e2-fixtures/ExistingFreightCarriesOneRealCargoThroughPaverBypassAndRestoresEveryStage.commands.jsonl",
+    "--ticks",
+    "1568",
+    "--output",
+    "/workspace/Delsk/work/h2/road-runs-final/freight"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T14:17:09.523774+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 11.624,
+  "finished_at": "2026-11-01T14:17:21.147892+00:00"
+}

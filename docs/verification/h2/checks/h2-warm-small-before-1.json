@@ -1,0 +1,17 @@
+{
+  "command": [
+    "dotnet",
+    "work/h2/deep-baseline-runtime/Research.Runner.dll",
+    "--measure-session",
+    "work/h2/paired-small-before-2/world.save.json",
+    "--operation",
+    "step",
+    "--output",
+    "work/h2/warm-small-before-1"
+  ],
+  "timeout_seconds": 600,
+  "started_at": "2026-11-01T13:47:36.720034+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 14.25,
+  "finished_at": "2026-11-01T13:47:50.970227+00:00"
+}

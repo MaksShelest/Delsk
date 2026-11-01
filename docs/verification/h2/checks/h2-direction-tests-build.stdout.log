@@ -1,0 +1,13 @@
+  Simulation.Core -> /workspace/Delsk/src/Simulation.Core/bin/Release/net10.0/Simulation.Core.dll
+  Simulation.Hosting -> /workspace/Delsk/src/Simulation.Hosting/bin/Release/net10.0/Simulation.Hosting.dll
+  Agents.Algorithmic -> /workspace/Delsk/src/Agents.Algorithmic/bin/Release/net10.0/Agents.Algorithmic.dll
+  Agents.Llm -> /workspace/Delsk/src/Agents.Llm/bin/Release/net10.0/Agents.Llm.dll
+/workspace/Delsk/tests/Simulation.Tests/H2DirectionalEtaTests.cs(16,138): error CS1061: 'ParticipantView' does not contain a definition for 'ExpectedEndTick' and no accessible extension method 'ExpectedEndTick' accepting a first argument of type 'ParticipantView' could be found (are you missing a using directive or an assembly reference?) [/workspace/Delsk/tests/Simulation.Tests/Simulation.Tests.csproj]
+
+Build FAILED.
+
+/workspace/Delsk/tests/Simulation.Tests/H2DirectionalEtaTests.cs(16,138): error CS1061: 'ParticipantView' does not contain a definition for 'ExpectedEndTick' and no accessible extension method 'ExpectedEndTick' accepting a first argument of type 'ParticipantView' could be found (are you missing a using directive or an assembly reference?) [/workspace/Delsk/tests/Simulation.Tests/Simulation.Tests.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:14.91

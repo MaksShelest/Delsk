@@ -1,0 +1,17 @@
+{
+  "command": [
+    "dotnet",
+    "build",
+    "src/Research.Runner/Research.Runner.csproj",
+    "-c",
+    "Release",
+    "--no-restore",
+    "--disable-build-servers",
+    "-m:1"
+  ],
+  "timeout_seconds": 180,
+  "started_at": "2026-11-01T07:52:51.536427+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 3.468,
+  "finished_at": "2026-11-01T07:52:55.004741+00:00"
+}

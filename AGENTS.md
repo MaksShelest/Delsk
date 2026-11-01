@@ -1,3 +1,35 @@
+## H2,01.11.2026 — текущая реализация и проверенные границы
+
+- PR76 без auto merge. Отчёт IMPLEMENTATION_REPORT_H2.md, воспроизведение
+  research/h2/README.md;38 H2 tests,24 native PNG,8 late original H1 continuations.
+- Developer journal: брать ControllerTurnsTail(capacity) до декодирования;
+  Model safety использует metadata. Полная история не удаляется.
+- Межквантовый checkpoint: BillingDistance — реальная дистанция, Movement1
+  может превышать80; предел ceil(min(model,road cap)×2,5). TrafficCellEntered
+  содержит номинальную speed≤80; в новом unbilled E2 также сохраняем этот witness.
+  Legacy predicate80 неизменён, экономические события между ticks не разрешать.
+- Primary old-profile n3 comparisons: одинаковые полные31 exports, деньги,
+  controllers/history/routes; warm save/load и восстановление инструментов.
+- Исходный ordinary maxTicks5000 не повышался. Late inputs имеют прежде
+  объявленный126000 horizon;20–35ч не доказаны. Дополнительные growth probes
+  до16200 подтверждают save/readback, не полный audited/replay horizon.
+- При выделении helpers сохранять исходные E2 fixture имена явно: CallerMemberName
+  меняет контракт check_road_e2.py. H2 fixture имена должны быть отдельными.
+
+
+- Явное обновлённое задание владельца включает движение, грунтовку и производительность;
+  H1/дополнительная G2 завершены, PR75 уже слит в29cb97d. H3 не запускать.
+- H1 diagnostic прочитал Scenario.MoveTicksPerCell1, не G1 DTO4. Прежняя строка
+  о подтверждённом1vs4/5 ниже историческая и ошибочна; отчёт H1 содержит erratum.
+- Новая конверсия Economy.Movement(version1,divisor32), World29; старые config/null
+  и World28 сохраняют прежние правила80. Не переписывать принятые договоры.
+- Session4 — полная lossless история наблюдений/выборок, читает прежние1–3.
+  Сохранять64/512MiB и600/900s, все независимые аудиты и старые suites/deadlines.
+- Сначала старый профиль: реальные late H1 обе карты, фазы/память/сохранение/экспорт,
+  точные продолжения. Новый профиль — отдельные физические/ETA/replay сравнения.
+- Грунтовка: native Playfield PNG обоих скинов, реальные прямые/угол/перекрёсток/объезд.
+  H2RoadProbe только isolated stage, запрещён ordinary AssemblyAudit.
+
 ## H1 после дополнительной G2,30.10.2026 — измеренная граница, P77 открыт
 
 - Явное новое задание пользователя разрешило H1 после visual G2; H2 не включён.

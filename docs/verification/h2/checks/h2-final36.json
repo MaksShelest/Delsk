@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python",
+    "scripts/run_test_partitions.py",
+    "--help"
+  ],
+  "timeout_seconds": 600,
+  "started_at": "2026-11-01T13:40:31.244994+00:00",
+  "exit_code": 2,
+  "elapsed_seconds": 0.016,
+  "finished_at": "2026-11-01T13:40:31.261509+00:00"
+}

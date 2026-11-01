@@ -1,0 +1,9 @@
+/workspace/Delsk/src/Simulation.Core/ElectionValidation.cs(61,245): error CS0121: The call is ambiguous between the following methods or properties: 'System.Linq.Enumerable.SelectMany<TSource, TResult>(System.Collections.Generic.IEnumerable<TSource>, System.Func<TSource, System.Collections.Generic.IEnumerable<TResult>>)' and 'System.Linq.Enumerable.SelectMany<TSource, TResult>(System.Collections.Generic.IEnumerable<TSource>, System.Func<TSource, int, System.Collections.Generic.IEnumerable<TResult>>)' [/workspace/Delsk/src/Simulation.Core/Simulation.Core.csproj]
+
+Build FAILED.
+
+/workspace/Delsk/src/Simulation.Core/ElectionValidation.cs(61,245): error CS0121: The call is ambiguous between the following methods or properties: 'System.Linq.Enumerable.SelectMany<TSource, TResult>(System.Collections.Generic.IEnumerable<TSource>, System.Func<TSource, System.Collections.Generic.IEnumerable<TResult>>)' and 'System.Linq.Enumerable.SelectMany<TSource, TResult>(System.Collections.Generic.IEnumerable<TSource>, System.Func<TSource, int, System.Collections.Generic.IEnumerable<TResult>>)' [/workspace/Delsk/src/Simulation.Core/Simulation.Core.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:12.26

@@ -46,7 +46,7 @@ public sealed partial class AlgorithmicController
                 var job=o.OwnDeliveryContracts.Where(c=>c.Supplier==Actor && c.ClosedTick is null && c.UnprovidedQuantity>0).OrderBy(c=>c.DeadlineTick).FirstOrDefault();if(job is null)continue;
                 var source=Inventory(o,truck.SourceInventory);long q=Math.Min(Free(source,job.ItemId),Math.Min(job.UnprovidedQuantity,FleetCargoCapacity(o,truck)/Volume(o,job.ItemId)));
                 int distance=Distance(o.Map,source.Position,job.Position);if(q<=0 || distance<0)continue;
-                long ticks=2L*distance*FreightCellEstimate(o)+2*q*Volume(o,job.ItemId)/Math.Max(1,o.Economics?.Handling.WorkerVolumePerTick??1)+2;
+                long ticks=FreightTicks(o,truck,source.Position,job.Position)+FreightTicks(o,truck,job.Position,source.Position)+2*q*Volume(o,job.ItemId)/Math.Max(1,o.Economics?.Handling.WorkerVolumePerTick??1)+2;
                 if(o.Tick+ticks+(o.Economics?.Labor.SalaryChangeDelayTicks??20)>job.DeadlineTick)continue;
                 revenue=q*job.UnitPriceMinor;cost=ticks*target*wage;reason="FundedDeliveryThreshold";
             }

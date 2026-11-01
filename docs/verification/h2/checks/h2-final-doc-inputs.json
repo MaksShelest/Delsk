@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python",
+    "-c",
+    "import json,hashlib,pathlib; d=json.load(open(\"docs/verification/h2/functional-inputs.json\")); assert all(hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()==s for p,s in d[\"files\"].items()); print(\"953 functional inputs exact\")"
+  ],
+  "timeout_seconds": 30,
+  "started_at": "2026-11-01T14:30:48.192253+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.115,
+  "finished_at": "2026-11-01T14:30:48.306937+00:00"
+}

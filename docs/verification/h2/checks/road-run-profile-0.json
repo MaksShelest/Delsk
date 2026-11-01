@@ -1,0 +1,17 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--export-road-profile",
+    "/workspace/Delsk/config/vnext/economy.b1-supported.json",
+    "--balance",
+    "/workspace/Delsk/config/vnext/balance.b1.json",
+    "--output",
+    "/workspace/Delsk/work/h2/road-runs-final/profile-0"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T14:18:23.098394+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.517,
+  "finished_at": "2026-11-01T14:18:23.615680+00:00"
+}

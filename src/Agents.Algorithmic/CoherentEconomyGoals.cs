@@ -42,7 +42,7 @@ public sealed partial class AlgorithmicController
             var site=o.Resources.Single(r=>r.Position==node.Position&&r.ItemId==node.ItemId);long q=Math.Min(site.Stock-site.Reserved,Math.Min(_state.Settings.BatchQuantity,FreeVolume(carrier)/Volume(o,node.ItemId)));
             var offer=BestOffer(o,node.ItemId,q,node.Position);if(q<=0||offer is null)continue;q=Math.Min(q,offer.RemainingQuantity);
             int approach=Distance(o.Map,o.Participant.Position,node.Position),loaded=Distance(o.Map,node.Position,offer.Position);if(approach<0||loaded<0)continue;
-            long ticks=checked((long)(approach+loaded)*o.Map.MoveTicksPerCell+q*o.Map.HarvestTicksPerUnit+o.Map.TradeWindowTicks+2);
+            long ticks=checked(TravelTicks(o,o.Participant.Position,node.Position)+TravelTicks(o,node.Position,offer.Position)+q*o.Map.HarvestTicksPerUnit+o.Map.TradeWindowTicks+2);
             var steps=new List<PlanStep>();Move(steps,o.Participant.Position,node.Position);steps.Add(new(new(ActionKind.Harvest,ItemId:node.ItemId,Quantity:q,Target:node.Position)));Move(steps,node.Position,offer.Position);steps.Add(new(new(ActionKind.SellAvailableToCapital,OfferId:offer.Id,ItemId:node.ItemId,Quantity:q)));
             yield return new("EarnConstructionReserve","FullTrip:"+node.ItemId,200000+q*offer.UnitPriceMinor*1000/Math.Max(1,ticks),steps.ToArray());
         }
@@ -104,7 +104,7 @@ public sealed partial class AlgorithmicController
             bool contract=t.ContractId!=0;if(!input&&!contract)continue;
             if(q.FeeMinor+_state.Settings.CashReserveMinor+ExecutionReserve(o)>o.Account.AvailableMinor)continue;
             long value=checked(t.Quantity*BasePrice(o,t.ItemId));long unit=Volume(o,t.ItemId),per=carrier.Capacity/unit;if(per<=0)continue;long trips=(t.Quantity+per-1)/per;
-            long manualTicks=checked((Distance(o.Map,o.Participant.Position,q.SourcePosition)+(2*trips-1)*q.LoadedDistance)*o.Map.MoveTicksPerCell+2*q.Volume/Math.Max(1,o.Economics?.Handling.PersonalVolumePerTick??1)+2*trips);
+            long manualTicks=checked((o.Map.MovementSpeedDivisor==0?(Distance(o.Map,o.Participant.Position,q.SourcePosition)+(2*trips-1)*q.LoadedDistance)*o.Map.MoveTicksPerCell:TravelTicks(o,o.Participant.Position,q.SourcePosition)+trips*TravelTicks(o,q.SourcePosition,q.DestinationPosition)+(trips-1)*TravelTicks(o,q.DestinationPosition,q.SourcePosition))+2*q.Volume/Math.Max(1,o.Economics?.Handling.PersonalVolumePerTick??1)+2*trips);
             long opportunity=checked(manualTicks*_state.Settings.BaseWageMinor);
             if(q.FeeMinor>=value||q.FeeMinor>=opportunity||q.DestinationOccupiedVolume+q.ExpectedIncomingVolume+q.Volume>q.DestinationCapacity)continue;
             if(contract&&q.FeeMinor>=t.Quantity*o.OwnDeliveryContracts.Single(d=>d.Id==t.ContractId).UnitPriceMinor)continue;

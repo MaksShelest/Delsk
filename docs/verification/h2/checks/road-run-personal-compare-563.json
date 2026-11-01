@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+    "/workspace/Delsk/work/h2/road-runs-final/personal",
+    "/workspace/Delsk/work/h2/road-runs-final/personal-saved-563",
+    "/workspace/Delsk/work/h2/road-runs-final/personal",
+    "/workspace/Delsk/work/h2/road-runs-final/personal-loaded-563"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T14:15:55.519359+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.032,
+  "finished_at": "2026-11-01T14:15:55.551818+00:00"
+}

@@ -1,0 +1,285 @@
+{
+  "stage": "succeeded",
+  "error": null,
+  "initialTick": 10800,
+  "tick": 10900,
+  "finalWorldHash": "c8e5f5dff6afbcc9e03f06ab698c45e5f2bb8c41e31b427855b0f829b6529f27",
+  "finalControllerHash": "4afcd65cafde23361b36e76fdc0da62748ad7a5cebb6ac9b3f061d61ae10ebb7",
+  "wallSeconds": 80.701777,
+  "metrics": {
+    "load-total": {
+      "calls": 1,
+      "milliseconds": 14533.5148,
+      "allocatedBytes": 5015971824
+    },
+    "history-record": {
+      "calls": 42,
+      "milliseconds": 238.5475,
+      "allocatedBytes": 105740120
+    },
+    "travel-quantum": {
+      "calls": 1000,
+      "milliseconds": 2.771399999999998,
+      "allocatedBytes": 779000
+    },
+    "observations": {
+      "calls": 100,
+      "milliseconds": 1682.3532000000007,
+      "allocatedBytes": 1739224632
+    },
+    "policy-and-feedback": {
+      "calls": 100,
+      "milliseconds": 2072.3106000000002,
+      "allocatedBytes": 883902608
+    },
+    "core-phase-0": {
+      "calls": 100,
+      "milliseconds": 19.089200000000016,
+      "allocatedBytes": 2255000
+    },
+    "core-phase-1": {
+      "calls": 100,
+      "milliseconds": 2.0248999999999993,
+      "allocatedBytes": 8200
+    },
+    "core-phase-2": {
+      "calls": 100,
+      "milliseconds": 4.838900000000002,
+      "allocatedBytes": 90200
+    },
+    "core-phase-3": {
+      "calls": 100,
+      "milliseconds": 31.693,
+      "allocatedBytes": 1773416
+    },
+    "core-phase-4": {
+      "calls": 100,
+      "milliseconds": 16.674699999999994,
+      "allocatedBytes": 672400
+    },
+    "core-phase-5": {
+      "calls": 100,
+      "milliseconds": 8.207000000000003,
+      "allocatedBytes": 98400
+    },
+    "core-phase-6": {
+      "calls": 100,
+      "milliseconds": 59.77969999999999,
+      "allocatedBytes": 15857440
+    },
+    "core-phase-7": {
+      "calls": 100,
+      "milliseconds": 16.413199999999993,
+      "allocatedBytes": 1853184
+    },
+    "core-phase-8": {
+      "calls": 100,
+      "milliseconds": 0.3999,
+      "allocatedBytes": 0
+    },
+    "core-phase-9": {
+      "calls": 100,
+      "milliseconds": 37882.98899999999,
+      "allocatedBytes": 397363704
+    },
+    "core-step": {
+      "calls": 100,
+      "milliseconds": 38044.58620000002,
+      "allocatedBytes": 419980144
+    },
+    "state-hash": {
+      "calls": 100,
+      "milliseconds": 2072.6605,
+      "allocatedBytes": 850461176
+    },
+    "sampling-including-hash": {
+      "calls": 100,
+      "milliseconds": 2529.5604000000003,
+      "allocatedBytes": 1132165024
+    },
+    "save-with-validation": {
+      "calls": 1,
+      "milliseconds": 16766.5028,
+      "allocatedBytes": 8221862008
+    }
+  },
+  "workingSetBytes": 5826641920,
+  "peakWorkingSetBytes": 6434586624,
+  "managedBytes": 5236415000,
+  "allocatedBytes": 17639323400,
+  "observationArchive": {
+    "Account": {
+      "values": 368,
+      "jsonCharacters": 38204
+    },
+    "BuildingTypes": {
+      "values": 1,
+      "jsonCharacters": 16177
+    },
+    "Buildings": {
+      "values": 6,
+      "jsonCharacters": 890
+    },
+    "BuyOffers": {
+      "values": 1,
+      "jsonCharacters": 2
+    },
+    "CapitalOffers": {
+      "values": 579,
+      "jsonCharacters": 219728300
+    },
+    "CapitalPriceHistory": {
+      "values": 181,
+      "jsonCharacters": 6082511
+    },
+    "CapitalPrices": {
+      "values": 181,
+      "jsonCharacters": 397034
+    },
+    "City": {
+      "values": 700,
+      "jsonCharacters": 746265
+    },
+    "DeliveryRules": {
+      "values": 1,
+      "jsonCharacters": 67
+    },
+    "Development": {
+      "values": 97,
+      "jsonCharacters": 814053
+    },
+    "EconomicOpportunities": {
+      "values": 2,
+      "jsonCharacters": 38
+    },
+    "Economics": {
+      "values": 1,
+      "jsonCharacters": 291
+    },
+    "Elections": {
+      "values": 40,
+      "jsonCharacters": 407889
+    },
+    "EmploymentGroups": {
+      "values": 300,
+      "jsonCharacters": 105117
+    },
+    "Enterprises": {
+      "values": 117,
+      "jsonCharacters": 72826
+    },
+    "Equipment": {
+      "values": 1,
+      "jsonCharacters": 2
+    },
+    "EquipmentTypes": {
+      "values": 1,
+      "jsonCharacters": 2553
+    },
+    "Fleet": {
+      "values": 18,
+      "jsonCharacters": 40085
+    },
+    "Inventories": {
+      "values": 793,
+      "jsonCharacters": 369444
+    },
+    "LaborMarket": {
+      "values": 46,
+      "jsonCharacters": 20611
+    },
+    "LogisticsRules": {
+      "values": 1,
+      "jsonCharacters": 246
+    },
+    "Map": {
+      "values": 2,
+      "jsonCharacters": 127126
+    },
+    "MarketOffers": {
+      "values": 1,
+      "jsonCharacters": 2
+    },
+    "MarketRules": {
+      "values": 1,
+      "jsonCharacters": 113
+    },
+    "NegotiationRules": {
+      "values": 1,
+      "jsonCharacters": 60
+    },
+    "Negotiations": {
+      "values": 1,
+      "jsonCharacters": 2
+    },
+    "OwnDeliveryContracts": {
+      "values": 1,
+      "jsonCharacters": 2
+    },
+    "OwnLogistics": {
+      "values": 1,
+      "jsonCharacters": 2
+    },
+    "OwnMarketAllocations": {
+      "values": 1,
+      "jsonCharacters": 2
+    },
+    "OwnMarketBids": {
+      "values": 1,
+      "jsonCharacters": 2
+    },
+    "OwnSupplyRequests": {
+      "values": 1,
+      "jsonCharacters": 2
+    },
+    "Participant": {
+      "values": 740,
+      "jsonCharacters": 117246
+    },
+    "PersonalAccount": {
+      "values": 3468,
+      "jsonCharacters": 14023047
+    },
+    "Plots": {
+      "values": 17,
+      "jsonCharacters": 984979
+    },
+    "Population": {
+      "values": 91,
+      "jsonCharacters": 273
+    },
+    "ProductionContent": {
+      "values": 56,
+      "jsonCharacters": 423821
+    },
+    "Resources": {
+      "values": 673,
+      "jsonCharacters": 35166231
+    },
+    "Roads": {
+      "values": 4,
+      "jsonCharacters": 195041
+    },
+    "Services": {
+      "values": 12,
+      "jsonCharacters": 7890
+    },
+    "Support": {
+      "values": 7,
+      "jsonCharacters": 861
+    },
+    "Tick": {
+      "values": 2196,
+      "jsonCharacters": 8838
+    },
+    "TradingParticipants": {
+      "values": 1,
+      "jsonCharacters": 2
+    },
+    "Unemployed": {
+      "values": 90,
+      "jsonCharacters": 270
+    }
+  },
+  "scope": "Host phase measurements; sampling includes hash; nested buckets must not be added. Economic rules unchanged."
+}

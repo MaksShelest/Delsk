@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+    "--path",
+    "/workspace/Delsk/work/h2/native-final38/source/src/Client.Godot",
+    "--rendering-method",
+    "gl_compatibility",
+    "--audio-driver",
+    "Dummy",
+    "res://H2RoadProbe.tscn",
+    "--",
+    "--map",
+    "large-districts",
+    "--output",
+    "/workspace/Delsk/work/h2/native-final38/large-districts-corner",
+    "--verify",
+    "--load",
+    "/workspace/Delsk/work/h2/final38-fixtures/large_districts-corner.save.json"
+  ],
+  "timeout_seconds": 150,
+  "started_at": "2026-11-01T18:26:01.976561+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 27.883,
+  "finished_at": "2026-11-01T18:26:29.859825+00:00"
+}

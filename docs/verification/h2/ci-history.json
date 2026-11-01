@@ -1,0 +1,83 @@
+{
+  "commit": "b16b0957e9d3b6986dd002cea33de192095c0c9c",
+  "run": 41313520862,
+  "status": "all8succeeded",
+  "jobs": [
+    {
+      "id": 124868678400,
+      "name": "retained (long-small-river-6-Hard-42)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 124868678561,
+      "name": "retained (long-small-river-6-Medium-43)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 124868678568,
+      "name": "retained (long-small-river-6-Medium-42)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 124868678590,
+      "name": "retained (long-large-districts-6-Hard-42)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 124868678593,
+      "name": "retained (long-large-districts-6-Hard-43)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 124868678629,
+      "name": "retained (long-large-districts-6-Medium-43)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 124868678647,
+      "name": "retained (long-small-river-6-Hard-43)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 124868678660,
+      "name": "retained (long-large-districts-6-Medium-42)",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "previousFailures": [
+    {
+      "commit": "43704850c497c1fb36eaad95ba0d19c25594a63d",
+      "run": 41307992828,
+      "job": 124854243313,
+      "scope": "ci-tools",
+      "reason": "Legacy minimal billing fixture had no models; suite partition test omitted H2. Fixed,30Python tests passed."
+    },
+    {
+      "commit": "43704850c497c1fb36eaad95ba0d19c25594a63d",
+      "run": 41307992845,
+      "jobs": [
+        124852260812,
+        124852260746,
+        124852260826
+      ],
+      "scope": "full-history auditor",
+      "reason": "Removed historical ground inventory absent from final registry (KeyError6090/6532/6243); validated against historical land ownership instead. Exact continuation/replay were already successful."
+    },
+    {
+      "commit": "73c42a43c608dca779dbe7ce28e47bdb51f7ceb5",
+      "run": 41312313046,
+      "job": 124869921233,
+      "scope": "old E2 fixture contract",
+      "reason": "CallerMemberName changed after helper extraction. Original names restored explicitly; full local27unit/51process/35export/24continuation gate passed. Failure retained."
+    }
+  ],
+  "limitsUnchanged": true
+}

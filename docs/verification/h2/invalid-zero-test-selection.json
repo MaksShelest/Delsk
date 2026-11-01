@@ -1,0 +1,8 @@
+{
+  "check": "h2-tail-developer-tests",
+  "processExitCode": 0,
+  "status": "invalid-evidence-zero-tests",
+  "testsPassed": 0,
+  "replacedBy": "h2-tail-developer-actual",
+  "actualTestsPassed": 19
+}

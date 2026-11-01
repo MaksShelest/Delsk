@@ -1,0 +1,8 @@
+{
+  "status": "succeeded",
+  "fullHistoryBytes": 2846087282,
+  "fullHistoryTurns": 2849,
+  "tailTurns": 256,
+  "tailObservationHashesMatchFullExport": true,
+  "scope": "Streaming raw observation JSON SHA/tick/actor/count, preview length and final world/controller hashes. Full history retained; no simulation or policy executed."
+}

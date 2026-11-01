@@ -1,0 +1,23 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--scenario",
+    "/workspace/Delsk/work/h2/road-units-final/e2-fixtures/automatic-2.json",
+    "--replay",
+    "/workspace/Delsk/work/h2/road-units-final/e2-fixtures/automatic-2.commands.jsonl",
+    "--ticks",
+    "561",
+    "--output",
+    "/workspace/Delsk/work/h2/road-runs-final/automatic-saved-541",
+    "--checkpoint",
+    "/workspace/Delsk/work/h2/road-runs-final/automatic-541.save.json",
+    "--checkpoint-at",
+    "541"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T14:16:00.952866+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 5.291,
+  "finished_at": "2026-11-01T14:16:06.243624+00:00"
+}

@@ -78,7 +78,7 @@ internal sealed class ModelServices : IDisposable
     }
     public static void CheckSafety(GameSession session)
     {
-        var resolved = session.ControllerTurns.Where(t => t.Decision.ModelTrace?.Resolution is "ModelResolved" or "FallbackResolved").ToArray();
+        var resolved = session.ControllerTurnMetadata.Where(t => t.Decision.ModelTrace?.Resolution is "ModelResolved" or "FallbackResolved").ToArray();
         if (resolved.Length != 3 || resolved.Count(t => t.Decision.ModelTrace!.Resolution == "ModelResolved") != 1 ||
             resolved.Count(t => t.Decision.ModelTrace!.ReasonCode == "DecisionIdentityMismatch") != 1 ||
             resolved.Count(t => t.Decision.ModelTrace!.ReasonCode == "DecisionDeadline") != 1 ||

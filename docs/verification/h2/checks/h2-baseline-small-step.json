@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-v",
+    "dotnet",
+    "work/h2/instrumented-baseline-runtime/Research.Runner.dll",
+    "--measure-session",
+    "work/h1-retained-resume/long-small-river-6-Medium-42/world/checkpoints/10800-a1.save.json",
+    "--ticks",
+    "10900",
+    "--operation",
+    "step",
+    "--output",
+    "work/h2/baseline-small-step"
+  ],
+  "timeout_seconds": 600,
+  "started_at": "2026-11-01T06:56:01.944140+00:00",
+  "launch_error": "[Errno 2] No such file or directory: '/usr/bin/time'",
+  "exit_code": 1,
+  "elapsed_seconds": 0.001,
+  "finished_at": "2026-11-01T06:56:01.945235+00:00"
+}

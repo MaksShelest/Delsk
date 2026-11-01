@@ -49,10 +49,10 @@ public sealed partial class SimulationEngine
         var reserved=new HashSet<Cell>();
         foreach(var t in _traffic.Values)
         {
-            Require(FindBody(t.VehicleId) is not null&&t.Progress is >=0 and <800&&t.Index>=0&&(t.Path.Length==0?t.Index==0&&t.Progress==0:t.Index<t.Path.Length)&&t.WaitingSince>=0&&t.WaitingSince<=Tick&&t.StoppedSince>=0&&t.StoppedSince<=Tick&&
+            Require(FindBody(t.VehicleId) is not null&&t.Progress is >=0 and <800&&t.ProgressFraction is >=0 and <1_000_000&&(UsesAcceleratedMovement||t.ProgressFraction==0)&&t.Index>=0&&(t.Path.Length==0?t.Index==0&&!HasRoadProgress(t):t.Index<t.Path.Length)&&t.WaitingSince>=0&&t.WaitingSince<=Tick&&t.StoppedSince>=0&&t.StoppedSince<=Tick&&
                 t.ExitQuanta>=0&&t.Priority>=0&&t.AdvancedTick>=0&&t.AdvancedTick<=Tick+1&&t.AdvancedQuanta is >=0 and <=10&&t.Path.Skip(t.Index).All(_map.Walkable)&&t.Path.Zip(t.Path.Skip(1)).All(p=>Manhattan(p.First,p.Second)==1));
             if(t.Path.Length>0)Require(VehicleCargo(FindBody(t.VehicleId)!).Position==t.Path[t.Index]);
-            if(t.Progress>0)Require(t.Index<t.Path.Length-1&&reserved.Add(t.Path[t.Index+1])&&!ReservedByOther(t.VehicleId,t.Path[t.Index+1]));
+            if(HasRoadProgress(t))Require(t.Index<t.Path.Length-1&&reserved.Add(t.Path[t.Index+1])&&!ReservedByOther(t.VehicleId,t.Path[t.Index+1]));
             if(t.Resume is {} r)Require(_map.Walkable(r)&&t.YieldTo>=0);
         }
         Require(_roadOrders.Select(o=>o.Id).Distinct().Count()==_roadOrders.Count&&_roadOrders.Select(o=>(o.Cell,o.Level)).Distinct().Count()==_roadOrders.Count);

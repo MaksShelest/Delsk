@@ -1,0 +1,23 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--scenario",
+    "/workspace/Delsk/work/h2/road-units-final/e2-fixtures/OpposingVehiclesYieldThroughDeclaredCorridorWithoutOverlapAndRestoreExactly.json",
+    "--replay",
+    "/workspace/Delsk/work/h2/road-units-final/e2-fixtures/OpposingVehiclesYieldThroughDeclaredCorridorWithoutOverlapAndRestoreExactly.commands.jsonl",
+    "--ticks",
+    "361",
+    "--output",
+    "/workspace/Delsk/work/h2/road-runs-final/opposing-saved-234",
+    "--checkpoint",
+    "/workspace/Delsk/work/h2/road-runs-final/opposing-234.save.json",
+    "--checkpoint-at",
+    "234"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T14:16:44.492173+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 3.784,
+  "finished_at": "2026-11-01T14:16:48.275905+00:00"
+}

@@ -1,0 +1,29 @@
+{
+  "rows": [
+    {
+      "map": "small",
+      "initialTick": 10900,
+      "tick": 12700,
+      "wallSeconds": 147.1384025,
+      "peakGiB": 0.8727684020996094,
+      "managedMiB": 987.0756301879883,
+      "envelopeBytes": 4782715,
+      "decodedBytes": 32792689,
+      "stateHash": "909b1877e7969fa2df0a12c51cda969b643c7511099ca11ddfb1956119a1f908",
+      "controllerHash": "aafc462c3584d6711d0df4ca85506416c31c0909a4a2d734b38682c3be0f19ca"
+    },
+    {
+      "map": "large",
+      "initialTick": 14400,
+      "tick": 16200,
+      "wallSeconds": 259.3837395,
+      "peakGiB": 1.5422019958496094,
+      "managedMiB": 1277.6238174438477,
+      "envelopeBytes": 5344644,
+      "decodedBytes": 36968863,
+      "stateHash": "101cf38d1e9a023d8469b0091c9d43faafc0227409586978224b087f02b37150",
+      "controllerHash": "577a7b74d4c69d33ce1cc7a9191758dfbd688e556f6189071928b67e88c87179"
+    }
+  ],
+  "scope": "Additional1800ticks from already compact Session4; unchanged old rules and controllers. Actual save includes readback validation. Additional-horizon replay/audits not claimed."
+}

@@ -1,0 +1,11 @@
+{
+  "profile": "movement-1-divisor-32",
+  "highwayModel": "vector200",
+  "nominalSpeed": 45,
+  "progressFraction": 500000,
+  "restoredQuantaCompared": 13,
+  "highwayTest": "h2-final38-h2-5",
+  "unbilledCrossingTest": "h2-final38-h2-8",
+  "legacyPredicateChanged": false,
+  "scope": "Real paid road60 construction, manual explicit turn, fractional save/load and exact replay; new unbilled E2 manual crossing also restored between economic ticks."
+}

@@ -14,9 +14,20 @@ public sealed partial class SimulationEngine
     }
     private bool BillingRecipient(long id)=>id==0||_actors.ContainsKey(id);
     // The only new journal writes allowed between ticks are physical traffic witnesses.
-    private bool IsBillingTravelEvent(SimulationEvent e)=>Billing is not null&&e.Tick==Tick&&e.Phase==9&&
-        e.ActorId is {} owner&&FindBody(e.EntityId) is {} body&&body.Owner==owner&&e.Quantity is >0 and <=80&&
-        e.AmountMinor==0&&e.CommandId is null&&e.Type is "BillingDistance" or "TrafficCellEntered";
+    private bool IsBillingTravelEvent(SimulationEvent e)
+    {
+        bool newUnbilledTraffic=UsesAcceleratedMovement&&Roads is not null&&e.Type=="TrafficCellEntered";
+        if(Billing is null&&!newUnbilledTraffic||e.Tick!=Tick||e.Phase!=9||e.ActorId is not {} owner||
+            FindBody(e.EntityId) is not {} body||body.Owner!=owner||e.Quantity<=0||e.AmountMinor!=0||e.CommandId is not null||
+            e.Type is not ("BillingDistance" or "TrafficCellEntered"))return false;
+        if(!UsesAcceleratedMovement||e.Type=="TrafficCellEntered")return e.Quantity<=80;
+        if(e.ReasonCode is null||e.ReasonCode.Length>32)return false;
+        var parts=e.ReasonCode.Split(',');
+        if(parts.Length!=2||!int.TryParse(parts[0],out int x)||!int.TryParse(parts[1],out int z))return false;
+        int level=RoadLevel(new(x,z));if(level is <1 or >3)return false;
+        int speed=Math.Min(body.Speed,Roads!.Stages[level-1].Speed);
+        return e.Quantity<=(speed*5+1)/2;
+    }
     private void ValidateBilling()
     {
         if(Billing is null)return;

@@ -21,7 +21,7 @@ public sealed partial class SimulationEngine
     private ServiceExecutionState? InspectServiceExecution()=>ServiceExecution is null?null:new([.._serviceRuns.Values],[.._serviceCrews.Values.Select(c=>c.View())]);
     private ServiceExecutionObservation? ServiceExecutionOf(ParticipantId actor)=>ServiceExecution is null?null:new(
         [.._serviceRuns.Values.Where(r=>_serviceOrders[r.Order].Customer==actor||_serviceOrders[r.Order].Carrier==actor).Select(r=>{
-            var o=_serviceOrders[r.Order];var v=_vehicles[o.Quote.Terms.VehicleId];return new ServiceRunView(r,v.Id,VehicleCargo(v).Position,ServiceTarget(o,r),SourceRemaining(o),_economy.Accounts[o.EscrowAccount].Balance,ServiceAutomatic(v.Id),ServiceCrewOf(v.Id)?.Group.Headcount??0,r.Reason,VehicleCargo(v).Position==ServiceTarget(o,r)&&(_traffic.GetValueOrDefault(v.Id)?.Progress??0)==0);})],
+            var o=_serviceOrders[r.Order];var v=_vehicles[o.Quote.Terms.VehicleId];return new ServiceRunView(r,v.Id,VehicleCargo(v).Position,ServiceTarget(o,r),SourceRemaining(o),_economy.Accounts[o.EscrowAccount].Balance,ServiceAutomatic(v.Id),ServiceCrewOf(v.Id)?.Group.Headcount??0,r.Reason,VehicleCargo(v).Position==ServiceTarget(o,r)&&(!_traffic.TryGetValue(v.Id,out var motion)||!HasRoadProgress(motion)));})],
         [.._serviceCrews.Values.Where(c=>c.Group.Owner==actor.Value).Select(c=>c.View())],ServiceExecution);
     private void CreateServiceRun(ServiceOrder o)
     {
@@ -65,8 +65,8 @@ public sealed partial class SimulationEngine
         if(action.Kind==ActionKind.NavigateDeliveryService)
         {
             if(ServiceHandlingVehicle(vehicle.Id))throw new RuleViolation("ServiceHandlingBusy");
-            var target=ServiceTarget(o,r);var path=ServicePath(position,target,vehicle.Id);var traffic=Traffic(vehicle.Id);if(position==target&&traffic.Progress==0)return;
-            if(path.Length<2&&traffic.Progress>0)path=[position,traffic.Path[traffic.Index+1],position];
+            var target=ServiceTarget(o,r);var path=ServicePath(position,target,vehicle.Id);var traffic=Traffic(vehicle.Id);if(position==target&&!HasRoadProgress(traffic))return;
+            if(path.Length<2&&HasRoadProgress(traffic))path=[position,traffic.Path[traffic.Index+1],position];
             actor.HeadingX=actor.HeadingZ=0;actor.Job=new(_nextId++,"Move",Tick,checked(Tick+path.Length*10L),path,"",0,"",command.CommandId);
             Emit("ServiceNavigationStarted",actor.Id,o.Id,command:command.CommandId);return;
         }
@@ -78,12 +78,12 @@ public sealed partial class SimulationEngine
         RequireActionLocation(actor,action);
         if(action.Kind==ActionKind.PickupDeliveryService)
         {
-            if(r.Cancellation!=""||r.Cargo!=0||r.Stage is not ("AwaitingPickup" or "ToSource")||position!=o.Quote.SourcePosition||Traffic(vehicle.Id).Progress!=0)throw new RuleViolation("ServicePickupUnavailable");
+            if(r.Cancellation!=""||r.Cargo!=0||r.Stage is not ("AwaitingPickup" or "ToSource")||position!=o.Quote.SourcePosition||HasRoadProgress(Traffic(vehicle.Id)))throw new RuleViolation("ServicePickupUnavailable");
             StartServiceLoading(o,r);return;
         }
         if(action.Kind==ActionKind.UnloadDeliveryService)
         {
-            if(r.Cargo<=0||r.Stage is not ("ToDestination" or "AwaitingUnload" or "Returning")||position!=ServiceTarget(o,r)||Traffic(vehicle.Id).Progress!=0)throw new RuleViolation("ServiceUnloadUnavailable");
+            if(r.Cargo<=0||r.Stage is not ("ToDestination" or "AwaitingUnload" or "Returning")||position!=ServiceTarget(o,r)||HasRoadProgress(Traffic(vehicle.Id)))throw new RuleViolation("ServiceUnloadUnavailable");
             _serviceRuns[o.Id]=r with{Stage=r.Stage=="Returning"?"UnloadingReturn":"Unloading",WorkRemainder=0,StageStartedTick=Tick,Reason="Handling"};return;
         }
         throw new RuleViolation("UnknownAction");
@@ -99,11 +99,12 @@ public sealed partial class SimulationEngine
     {
         for(int q=0;q<TravelQuantaPerTick;q++)
         {
-            var t=Traffic(vehicle.Id);var continuing=t.Progress>0&&!t.Path.IsDefaultOrEmpty&&(t.Resume??t.Path[^1])!=target;
+            if(UsesAcceleratedMovement)vehicle=_vehicles[vehicle.Id];
+            var t=Traffic(vehicle.Id);var continuing=HasRoadProgress(t)&&!t.Path.IsDefaultOrEmpty&&(t.Resume??t.Path[^1])!=target;
             bool arrived=TrafficTravel(vehicle,continuing?t.Resume??t.Path[^1]:target,1);
             if(!continuing&&arrived)return true;
         }
-        return VehicleCargo(vehicle).Position==target&&Traffic(vehicle.Id).Progress==0;
+        return VehicleCargo(vehicle).Position==target&&!HasRoadProgress(Traffic(vehicle.Id));
     }
     private void AdvanceServiceMovement()
     {
@@ -113,7 +114,7 @@ public sealed partial class SimulationEngine
             var r=_serviceRuns[o.Id];var v=_vehicles[o.Quote.Terms.VehicleId];if(!ServiceAutomatic(v.Id))continue;
             if(Tick<=r.StageStartedTick||r.Stage is "Loading" or "Unloading" or "UnloadingReturn")continue;
             var target=ServiceTarget(o,r);
-            if(VehicleCargo(v).Position==target&&Traffic(v.Id).Progress==0)
+            if(VehicleCargo(v).Position==target&&!HasRoadProgress(Traffic(v.Id)))
             {
                 if(r.Stage is "AwaitingPickup" or "ToSource")StartServiceLoading(o,r);
                 else _serviceRuns[o.Id]=r with{Stage=r.Stage=="Returning"?"UnloadingReturn":"Unloading",WorkRemainder=0,StageStartedTick=Tick,Reason="Handling"};continue;
@@ -122,7 +123,7 @@ public sealed partial class SimulationEngine
             var before=Traffic(v.Id);var at=VehicleCargo(v).Position;
             try
             {
-                bool arrived=ServiceTrafficTravel(v,target);bool worked=before.Progress!=Traffic(v.Id).Progress||at!=VehicleCargo(v).Position;
+                bool arrived=ServiceTrafficTravel(v,target);bool worked=before.Progress!=Traffic(v.Id).Progress||before.ProgressFraction!=Traffic(v.Id).ProgressFraction||at!=VehicleCargo(v).Position;
                 _serviceRuns[o.Id]=r with{LastWorkedTick=worked?Tick:r.LastWorkedTick,Reason=arrived?"Arrived":Traffic(v.Id).Reason};
             }
             catch(RuleViolation ex){_serviceRuns[o.Id]=r with{Reason=ex.ReasonCode};}
@@ -141,7 +142,7 @@ public sealed partial class SimulationEngine
         {
             var r=_serviceRuns[o.Id];if(r.Stage is not ("Loading" or "Unloading" or "UnloadingReturn")||Tick<=r.StageStartedTick||r.LastWorkedTick==Tick)continue;
             var v=_vehicles[o.Quote.Terms.VehicleId];bool loading=r.Stage=="Loading",returning=r.Stage=="UnloadingReturn";
-            if(VehicleCargo(v).Position!=(loading?o.Quote.SourcePosition:ServiceTarget(o,r))||Traffic(v.Id).Progress!=0||!ServiceDriverReady(o,r))
+            if(VehicleCargo(v).Position!=(loading?o.Quote.SourcePosition:ServiceTarget(o,r))||HasRoadProgress(Traffic(v.Id))||!ServiceDriverReady(o,r))
             {_serviceRuns[o.Id]=r with{Reason=ServiceAutomatic(v.Id)?"NoStaff":"ServiceDriverRequired"};continue;}
             if(!returning&&o.Quote.Terms.ContractId!=0&&_deliveryContracts.Single(d=>d.Id==o.Quote.Terms.ContractId).ClosedTick is not null)
             {RequestServiceCancellation(o,false,"GoodsContractClosed");continue;}

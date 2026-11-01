@@ -17,6 +17,7 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
     private readonly List<TickSample> _samples = [];
     private readonly List<LaborSample> _laborSamples = [];
     public SimulationEngine Engine { get; } = engine;
+    public SessionMeasurements? Measurements {get;set;}
     public string SessionId { get; } = sessionId;
     public long SessionEpoch { get; private set; } = 1;
     public event Action<GameSession>? TickCompleted;
@@ -70,22 +71,30 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
         long start = measured ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
         SubmitControllerInputs();
         long coreStart = measured ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
+        var coreMark=Measurements?.Start()??default;
         Engine.Step();
+        Measurements?.End("core-step",coreMark);
         long sampleStart = measured ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
+        var sampleMark=Measurements?.Start()??default;
         var state = Engine.Inspect();
         var actor = state.Participants[0];
         _samples.Add(new(state.Tick, state.Accounts.Single(a => a.Id == actor.AccountId).BalanceMinor,
             state.Accounts.Single(a => a.Kind == "WagesSink").BalanceMinor,
             state.Accounts.Single(a => a.Kind == "Treasury").BalanceMinor,
             state.Flows.Sum(f => f.Harvested), state.Flows.Sum(f => f.Produced),
-            state.Flows.Sum(f => f.Exported), Engine.ComputeStateHash(), state.Population, state.Unemployed));
+            state.Flows.Sum(f => f.Exported), MeasuredStateHash(), state.Population, state.Unemployed));
         _laborSamples.Add(new(state.Tick, state.EmploymentGroups));
         SampleControllers(state);
+        Measurements?.End("sampling-including-hash",sampleMark);
         TickCompleted?.Invoke(this);
         if (measured) StepMeasured?.Invoke(new(
             System.Diagnostics.Stopwatch.GetElapsedTime(start,coreStart).TotalMilliseconds,
             System.Diagnostics.Stopwatch.GetElapsedTime(coreStart,sampleStart).TotalMilliseconds,
             System.Diagnostics.Stopwatch.GetElapsedTime(sampleStart).TotalMilliseconds));
+    }
+    private string MeasuredStateHash()
+    {
+        var mark=Measurements?.Start()??default;string hash=Engine.ComputeStateHash();Measurements?.End("state-hash",mark);return hash;
     }
     public void SetPaused(bool paused) => Paused = paused;
     public void SetTravelHeading(ParticipantId actor, int x, int z)
@@ -104,7 +113,10 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
         if (Engine.WaitingForBallots) { SubmitPlaybackInputs(); PumpVoting(); return; }
         if (Paused) return;
         SubmitPlaybackInputs();
-        if (Engine.MoveTravelQuantum())
+        var mark=Measurements?.Start()??default;
+        bool closes=Engine.MoveTravelQuantum();
+        Measurements?.End("travel-quantum",mark);
+        if (closes)
         {
             _closingTravelTick = true;
             try { Step(); }

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "dotnet",
+    "build",
+    "tests/Simulation.Tests/Simulation.Tests.csproj",
+    "-c",
+    "Release",
+    "--no-restore",
+    "--disable-build-servers",
+    "-m:1"
+  ],
+  "timeout_seconds": 180,
+  "started_at": "2026-11-01T11:42:57.984283+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 18.632,
+  "finished_at": "2026-11-01T11:43:16.616215+00:00"
+}

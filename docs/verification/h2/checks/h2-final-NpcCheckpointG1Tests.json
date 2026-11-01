@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+    "-noColor",
+    "-noLogo",
+    "-parallelMode",
+    "none",
+    "-class",
+    "Simulation.Tests.NpcCheckpointG1Tests",
+    "-result-trx",
+    "work/h2/final-NpcCheckpointG1Tests.trx"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T08:36:51.561901+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 52.547,
+  "finished_at": "2026-11-01T08:37:44.108768+00:00"
+}

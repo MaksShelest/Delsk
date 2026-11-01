@@ -1400,9 +1400,9 @@
   },
   "vNext": {
     "projectionVersion": "workshops-projection-1",
-    "sourceSha256": "711e08a681cf27442b4e9c37b56ce7b2713c39d9ecf65ce3f761c92cfc8ee3ec",
-    "fullBalanceSha256": "c14c3130c8e51ae84093f6c32081d01d0d3151da4d872d3fe2d0c344e684b398",
-    "catalogSha256": "38b0bcb53ecef3c6a7131e449c78acded67450bb2c0ab8311084d7b357dcc197",
+    "sourceSha256": "060e3c07343ba2b682692a19c0e3de3622155343844998eb7a9c4a15f6ece550",
+    "fullBalanceSha256": "5352b6e48b39f4548ddb0fea404603ed200528798b6a40130d521648dc65765d",
+    "catalogSha256": "e727187a4fe438cdd50a062374c6c62d62b9b9d7eba01fe9842df769560eea02",
     "baselineProfileSha256": "b3da26be46960e876327a0dcca960c48575b6a98c9080eacb283a4a3f2c7317c",
     "projectionPayloadSha256": "3f5e486f71dc24c8ece5f6eccbe38a32b4c797dda32fd2057cf96bcfb346a700",
     "fixedParticipants": 4,

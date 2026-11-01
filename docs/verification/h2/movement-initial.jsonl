@@ -1,0 +1,9 @@
+{"kind":"walking","distance":1,"offroad":false,"legacyTicks":4,"fastTicks":2,"ratio":2}
+{"kind":"walking","distance":5,"offroad":false,"legacyTicks":20,"fastTicks":8,"ratio":2.5}
+{"kind":"walking","distance":25,"offroad":false,"legacyTicks":100,"fastTicks":40,"ratio":2.5}
+{"kind":"walking","distance":100,"offroad":false,"legacyTicks":400,"fastTicks":160,"ratio":2.5}
+{"kind":"walking","distance":100,"offroad":true,"legacyTicks":500,"fastTicks":200,"ratio":2.5}
+{"kind":"sputnik20","level":1,"distance":100,"legacyTicks":400,"fastTicks":160,"roadUnits":8000000000000,"ratio":2.5}
+{"kind":"muravey70","level":1,"distance":100,"legacyTicks":400,"fastTicks":160,"roadUnits":8000000000000,"ratio":2.5}
+{"kind":"vector200","level":1,"distance":100,"legacyTicks":400,"fastTicks":160,"roadUnits":16000000000000,"ratio":2.5}
+{"kind":"trakt_d1","level":1,"distance":100,"legacyTicks":800,"fastTicks":320,"roadUnits":16000000000000,"ratio":2.5}

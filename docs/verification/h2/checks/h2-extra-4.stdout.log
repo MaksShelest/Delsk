@@ -1,0 +1,22 @@
+  Discovering: Simulation.Tests
+  Discovered:  Simulation.Tests
+  Starting:    Simulation.Tests
+    Simulation.Tests.H2RoadSceneTests.BuildRealCornerAndRetainTheActiveBypassOnBothDesignedMaps(key: "small_river") [FAIL]
+      System.InvalidOperationException : Sequence contains no elements
+      Stack Trace:
+           at System.Linq.ThrowHelper.ThrowNoElementsException()
+           at System.Linq.Enumerable.First[TSource](IEnumerable`1 source)
+        tests/Simulation.Tests/H2RoadSceneTests.cs(15,0): at Simulation.Tests.H2RoadSceneTests.BuildRealCornerAndRetainTheActiveBypassOnBothDesignedMaps(String key)
+           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+           at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+    Simulation.Tests.H2RoadSceneTests.BuildRealCornerAndRetainTheActiveBypassOnBothDesignedMaps(key: "large_districts") [FAIL]
+      System.InvalidOperationException : Sequence contains no elements
+      Stack Trace:
+           at System.Linq.ThrowHelper.ThrowNoElementsException()
+           at System.Linq.Enumerable.First[TSource](IEnumerable`1 source)
+        tests/Simulation.Tests/H2RoadSceneTests.cs(15,0): at Simulation.Tests.H2RoadSceneTests.BuildRealCornerAndRetainTheActiveBypassOnBothDesignedMaps(String key)
+           at InvokeStub_H2RoadSceneTests.BuildRealCornerAndRetainTheActiveBypassOnBothDesignedMaps(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Finished:    Simulation.Tests (ID = 'b00ba06d382565ef33cd4232e1a7f682a055199d54044b1e7c966bb403320b88')
+=== TEST EXECUTION SUMMARY ===
+   Simulation.Tests  Total: 2, Errors: 0, Failed: 2, Skipped: 0, Not Run: 0, Time: 4.778s

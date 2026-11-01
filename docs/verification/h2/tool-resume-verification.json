@@ -1,0 +1,15 @@
+{
+  "status": "succeeded",
+  "initialTick": 30,
+  "checkpointTick": 40,
+  "finalTick": 42,
+  "stateHash": "7d79747ad306f87d25580d1793cf0ad96ff35454b43981ecadb5f00805f64424",
+  "controllerStateHash": "5ff18127a76f6d5268074829f66e33a4f7d4f396c2bfb87badc3fd5b26120b4f",
+  "exactExports": 31,
+  "replayWorldExact": true,
+  "independentAccountingAudits": 3,
+  "independentPublicAudits": 3,
+  "independentFullHistoryAudits": 2,
+  "limitsUnchanged": true,
+  "originalMovementRetained": true
+}

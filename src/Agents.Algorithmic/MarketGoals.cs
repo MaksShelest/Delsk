@@ -45,8 +45,8 @@ public sealed partial class AlgorithmicController
             long q=Math.Min(need,Math.Min(offer.Quantity,Math.Min(budget/Math.Max(1,limit),volume/Volume(o,offer.ItemId))));
             if(q<=0 || o.OwnMarketBids.Any(b=>b.OfferId==offer.Id) || offer.BasePriceMinor>limit || !Reachable(o,offer.Position))continue;
             var node=o.Map.ResourceNodes.Where(n=>AvailableResource(o,n)).Where(n=>n.ItemId==offer.ItemId && Reachable(o,n.Position)).OrderBy(n=>Distance(o.Map,o.Participant.Position,n.Position)).FirstOrDefault();
-            long mining=node is null?long.MaxValue:checked((long)Distance(o.Map,o.Participant.Position,node.Position)*o.Map.MoveTicksPerCell+q*o.Map.HarvestTicksPerUnit);
-            long buying=checked((long)Distance(o.Map,o.Participant.Position,offer.Position)*o.Map.MoveTicksPerCell+o.Map.TradeWindowTicks+2);
+            long mining=node is null?long.MaxValue:checked(TravelTicks(o,o.Participant.Position,node.Position)+q*o.Map.HarvestTicksPerUnit);
+            long buying=checked(TravelTicks(o,o.Participant.Position,offer.Position)+o.Map.TradeWindowTicks+2);
             if(mining<=buying && offer.BasePriceMinor>=BasePrice(o,offer.ItemId))continue;
             yield return One("BuyInputs",offer.ItemId+":"+offer.Id,170000,
                 new(ActionKind.SubmitBuyRequest,MarketOfferId:offer.Id,Quantity:q,MaximumPriceMinor:limit));

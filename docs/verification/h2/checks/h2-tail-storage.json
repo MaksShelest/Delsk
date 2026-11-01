@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+    "-noColor",
+    "-noLogo",
+    "-parallelMode",
+    "none",
+    "-class",
+    "Simulation.Tests.H2StorageTests",
+    "-result-trx",
+    "work/h2/tail-storage.trx"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T14:54:28.789173+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 19.392,
+  "finished_at": "2026-11-01T14:54:48.181742+00:00"
+}

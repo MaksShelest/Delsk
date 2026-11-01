@@ -16,7 +16,8 @@ public sealed record RoadOrder(long Id, Cell Cell, int Level, long Reward, long 
 public sealed record TrafficVehicle(long VehicleId, ImmutableArray<Cell> Path, int Index=0, int Progress=0,
     long WaitingSince=0, long StoppedSince=0, int ExitX=0, int ExitZ=0, int ExitQuanta=0,
     string Reason="Parked", Cell? Resume=null, long Priority=0, long YieldTo=0,
-    long AdvancedTick=0, int AdvancedQuanta=0, bool Assistance=false, int FacingX=0, int FacingZ=-1);
+    long AdvancedTick=0, int AdvancedQuanta=0, bool Assistance=false, int FacingX=0, int FacingZ=-1,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] int ProgressFraction=0);
 public sealed record RoadsState(ulong RandomState, long NextOrderTick, ImmutableArray<RoadCell> Cells,
     ImmutableArray<RoadWork> Works, ImmutableArray<RoadBypass> Bypasses,
     ImmutableArray<RoadOrder> Orders, ImmutableArray<TrafficVehicle> Traffic);

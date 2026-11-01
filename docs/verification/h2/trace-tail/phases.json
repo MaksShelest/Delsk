@@ -1,0 +1,35 @@
+{
+  "stage": "succeeded",
+  "error": null,
+  "initialTick": 12700,
+  "tick": 12700,
+  "finalWorldHash": "e74ac3fb959dec6317aa2d9c3743ab4b7816e28cbc29b8357504f190d5919012",
+  "finalControllerHash": "c09fcbca013cf819b13423ec56554227f5d170dff57b4a595f5bb93899dc464e",
+  "wallSeconds": 16.1205595,
+  "metrics": {
+    "load-total": {
+      "calls": 1,
+      "milliseconds": 8269.8679,
+      "allocatedBytes": 1284207200
+    },
+    "trace-tail-256": {
+      "calls": 1,
+      "milliseconds": 7663.7425,
+      "allocatedBytes": 1676607920
+    }
+  },
+  "workingSetBytes": 1340395520,
+  "peakWorkingSetBytes": 1340395520,
+  "managedBytes": 798731880,
+  "allocatedBytes": 2966347808,
+  "observationArchive": {
+    "storage": "structural-json-dag-v2",
+    "nodes": 50589,
+    "shapes": 90,
+    "scalarCharacters": 40572,
+    "turns": 2849,
+    "decodeCacheBytes": 16760720
+  },
+  "movementProfile": "legacy-divisor-80",
+  "scope": "Host phase measurements; sampling includes hash; nested buckets must not be added. Rules are loaded unchanged from the save."
+}

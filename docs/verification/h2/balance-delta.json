@@ -1,0 +1,55 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "onlyDesignChanges": [
+    "date2026-11-01",
+    "speed divisor80→32"
+  ],
+  "generatedProfiles": {
+    "economy.b1-supported.json": {
+      "worldExact": true,
+      "npcExact": true
+    },
+    "economy.c1-storage.json": {
+      "worldExact": true,
+      "npcExact": true
+    },
+    "economy.d1-workshops.json": {
+      "worldExact": true,
+      "npcExact": true
+    },
+    "economy.d2-development.json": {
+      "worldExact": true,
+      "npcExact": true
+    },
+    "economy.d3-production.json": {
+      "worldExact": true,
+      "npcExact": true
+    },
+    "economy.e1-fleet.json": {
+      "worldExact": true,
+      "npcExact": true
+    },
+    "economy.e2-roads.json": {
+      "worldExact": true,
+      "npcExact": true
+    },
+    "economy.e3-accounts.json": {
+      "worldExact": true,
+      "npcExact": true
+    },
+    "economy.f1-services.json": {
+      "worldExact": true,
+      "npcExact": true
+    },
+    "economy.f2-services.json": {
+      "worldExact": true,
+      "npcExact": true
+    },
+    "economy.g1-npc.json": {
+      "worldExact": true,
+      "npcExact": true
+    }
+  },
+  "pricesXpNominalSpeedsAndEconomicTimersExact": true,
+  "newGameMovement": "applied only at OrdinaryNewGame.Resolve; old config loaded unchanged"
+}

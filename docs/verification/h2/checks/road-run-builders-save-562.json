@@ -1,0 +1,23 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--scenario",
+    "/workspace/Delsk/work/h2/road-units-final/e2-fixtures/ASecondBuildersHighwayRetainsCityBaseAndFirstBuildersRoadRights.json",
+    "--replay",
+    "/workspace/Delsk/work/h2/road-units-final/e2-fixtures/ASecondBuildersHighwayRetainsCityBaseAndFirstBuildersRoadRights.commands.jsonl",
+    "--ticks",
+    "1031",
+    "--output",
+    "/workspace/Delsk/work/h2/road-runs-final/builders-saved-562",
+    "--checkpoint",
+    "/workspace/Delsk/work/h2/road-runs-final/builders-562.save.json",
+    "--checkpoint-at",
+    "562"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T14:16:14.902328+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 7.367,
+  "finished_at": "2026-11-01T14:16:22.269103+00:00"
+}

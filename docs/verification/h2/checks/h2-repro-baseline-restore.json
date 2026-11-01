@@ -1,0 +1,15 @@
+{
+  "command": [
+    "dotnet",
+    "restore",
+    "work/h2/repro-baseline/src/Research.Runner/Research.Runner.csproj",
+    "--locked-mode",
+    "--disable-parallel",
+    "-m:1"
+  ],
+  "timeout_seconds": 180,
+  "started_at": "2026-11-01T13:46:26.159443+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 1.431,
+  "finished_at": "2026-11-01T13:46:27.590389+00:00"
+}

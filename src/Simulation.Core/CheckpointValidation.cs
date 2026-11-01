@@ -95,6 +95,7 @@ public sealed partial class SimulationEngine
         foreach (var actor in _actors.Values)
         {
             if (actor.Job is not { } j) continue;
+            if(j.TimedEdges is not null&&(!UsesAcceleratedMovement||j.Kind!="Move"||Roads is not null&&DrivenVehicle(actor.Id) is not null))throw new CheckpointException("InvalidTimedMove");
             if (j.Id < 1000 || j.StartTick < 1 || j.StartTick > Tick || j.CompletionTick <= Tick ||
                 !_seenCommands.ContainsKey(j.CommandId)) throw new CheckpointException("InvalidPersonalJob");
             if (j.Kind == "Move" && Roads is not null && DrivenVehicle(actor.Id) is {} movingVehicle)
@@ -109,11 +110,10 @@ public sealed partial class SimulationEngine
             else if (j.Kind == "Move")
             {
                 if (j.Path.Length < 2 || j.PathIndex < 0 || j.PathIndex >= j.Path.Length - 1 ||
-                    j.SegmentTicks < 0 || j.SegmentTicks >= PersonalMoveTicks(actor,j.Path[j.PathIndex],j.Path[j.PathIndex+1]) || j.Path[j.PathIndex] != actor.Position ||
+                    j.SegmentTicks < 0 || j.Path[j.PathIndex] != actor.Position ||
                     j.Path.Any(c => !_map.Walkable(c)) || j.Path.Zip(j.Path.Skip(1)).Any(p =>
                         Math.Abs(p.First.X - p.Second.X) + Math.Abs(p.First.Z - p.Second.Z) != 1) ||
-                    j.CompletionTick != checked(j.StartTick + j.Path.Zip(j.Path.Skip(1)).Sum(p=>(long)PersonalMoveTicks(actor,p.First,p.Second))) ||
-                    Tick - j.StartTick != checked(j.Path.Take(j.PathIndex+1).Zip(j.Path.Skip(1).Take(j.PathIndex)).Sum(p=>(long)PersonalMoveTicks(actor,p.First,p.Second)) + j.SegmentTicks))
+                    !ValidPersonalMoveTiming(actor,j))
                     throw new CheckpointException("InvalidPathProgress");
             }
             else if (IsHarvest(j))

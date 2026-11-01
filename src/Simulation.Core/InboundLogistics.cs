@@ -58,7 +58,7 @@ public sealed partial class SimulationEngine
         if(ParallelWorkshops)quantity=Math.Min(quantity,ingredient.Quantity);
         if (quantity <= 0) throw new RuleViolation("NoStock");
         var path = _map.FindPath(_economy.Inventories[l.Source].Position, source.Position);
-        long leg = Math.Max(1, checked((path.Length - 1L) * Logistics.MoveTicksPerCell));
+        long leg = Math.Max(1, UsesAcceleratedMovement?FreightTravelTicks(l,path):checked((path.Length - 1L) * Logistics.MoveTicksPerCell));
         return new(-1, item, path, quantity, leg, origin, e.Input, origin);
     }
 }

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "py_compile",
+    "scripts/verify_h2_late.py",
+    "scripts/verify_h2_history.py",
+    "scripts/measure_h2_performance.py",
+    "scripts/prepare_h2_baseline.py"
+  ],
+  "timeout_seconds": 30,
+  "started_at": "2026-11-01T13:53:20.550276+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.064,
+  "finished_at": "2026-11-01T13:53:20.614731+00:00"
+}

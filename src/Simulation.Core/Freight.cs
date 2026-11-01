@@ -76,7 +76,8 @@ public sealed partial class SimulationEngine
         if(l.VehicleId!=0 && l.Group.Headcount==0){l.Reason="NoStaff";return;}
         if(Roads is not null&&l.VehicleId!=0){AdvanceRoadFreight(l);return;}
         int index=t.PathIndex,segment=t.SegmentTicks;
-        if(t.Path.Length>1){if(++segment==FreightMoveTicks(l,t.Path[index],t.Path[index+1])){segment=0;++index;}}
+        if(UsesAcceleratedMovement)(index,segment)=AdvanceTimedPath(t.Path,index,segment,(a,b)=>FreightEdgeUnits(l,a,b));
+        else if(t.Path.Length>1){if(++segment==FreightMoveTicks(l,t.Path[index],t.Path[index+1])){segment=0;++index;}}
         string state=t.State;
         if(index==t.Path.Length-1)state=t.State switch {"FetchingEmpty"=>"Loading","Outbound" or "ReturningInput"=>"Unloading","ReturningCargo"=>"UnloadingReturn",_=>"Finishing"};
         l.Trip=t with {PathIndex=index,SegmentTicks=segment,Position=t.Path[index],State=state,

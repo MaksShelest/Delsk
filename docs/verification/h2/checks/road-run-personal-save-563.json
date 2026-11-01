@@ -1,0 +1,23 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--scenario",
+    "/workspace/Delsk/work/h2/road-units-final/e2-fixtures/PersonalPaverConsumesRealCargoWorksHalfSpeedAndKeepsEveryContribution.json",
+    "--replay",
+    "/workspace/Delsk/work/h2/road-units-final/e2-fixtures/PersonalPaverConsumesRealCargoWorksHalfSpeedAndKeepsEveryContribution.commands.jsonl",
+    "--ticks",
+    "601",
+    "--output",
+    "/workspace/Delsk/work/h2/road-runs-final/personal-saved-563",
+    "--checkpoint",
+    "/workspace/Delsk/work/h2/road-runs-final/personal-563.save.json",
+    "--checkpoint-at",
+    "563"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T14:15:47.511727+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 5.897,
+  "finished_at": "2026-11-01T14:15:53.408768+00:00"
+}

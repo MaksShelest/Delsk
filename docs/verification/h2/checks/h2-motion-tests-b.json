@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+    "-noColor",
+    "-noLogo",
+    "-parallelMode",
+    "none",
+    "-class",
+    "Simulation.Tests.H2MovementTests",
+    "-result-trx",
+    "work/h2/motion-tests-b.trx"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T08:04:21.450569+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 30.696,
+  "finished_at": "2026-11-01T08:04:52.146463+00:00"
+}

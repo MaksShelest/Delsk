@@ -21,7 +21,7 @@ public sealed partial class AlgorithmicController
         foreach(var step in c.Steps)
         {
             var a=step.Action;ticks++;
-            if(a.Kind==ActionKind.MoveTo){int distance=Distance(o.Map,at,a.Target);if(distance<0)return long.MaxValue;ticks+=(long)distance*o.Map.MoveTicksPerCell;at=a.Target;}
+            if(a.Kind==ActionKind.MoveTo){int distance=Distance(o.Map,at,a.Target);if(distance<0)return long.MaxValue;ticks+=TravelTicks(o,at,a.Target);at=a.Target;}
             if(a.Kind==ActionKind.Harvest)ticks+=a.Quantity*o.Map.HarvestTicksPerUnit;
             if(a.Kind is ActionKind.Transfer or ActionKind.DeliverContract or ActionKind.CollectPurchase)
                 ticks+=(a.Quantity*Volume(o,a.ItemId==""?o.OwnMarketAllocations.FirstOrDefault(x=>x.Id==a.PurchaseId)?.ItemId??o.OwnDeliveryContracts.FirstOrDefault(x=>x.Id==a.ContractId)?.ItemId??o.Map.Items[0].Id:a.ItemId)+handling.PersonalVolumePerTick-1)/handling.PersonalVolumePerTick;
@@ -147,7 +147,7 @@ public sealed partial class AlgorithmicController
         var eligible=offers.ToArray();if(eligible.Length==0)return 0;
         int distance=Distance(o.Map,source,eligible[0].Position);if(distance<0)return 0;
         long cargo=Carrier(o).Capacity/Volume(o,r.OutputItem);if(cargo==0)return 0;
-        long trip=2L*distance*o.Map.MoveTicksPerCell+2*(cargo*Volume(o,r.OutputItem)+(o.Economics?.Handling.PersonalVolumePerTick??1)-1)/(o.Economics?.Handling.PersonalVolumePerTick??1)+o.Map.TradeWindowTicks+3;
+        long trip=TravelTicks(o,source,eligible[0].Position)+TravelTicks(o,eligible[0].Position,source)+2*(cargo*Volume(o,r.OutputItem)+(o.Economics?.Handling.PersonalVolumePerTick??1)-1)/(o.Economics?.Handling.PersonalVolumePerTick??1)+o.Map.TradeWindowTicks+3;
         batches=Math.Min(batches,Math.Min(eligible.Sum(a=>a.RemainingQuantity),cargo*(ready/Math.Max(1,trip)))/r.OutputQuantity);
         long remaining=batches*r.OutputQuantity;Int128 revenue=0;
         foreach(var offer in eligible){long q=Math.Min(remaining,offer.RemainingQuantity);remaining-=q;revenue+=(Int128)q*offer.UnitPriceMinor;}

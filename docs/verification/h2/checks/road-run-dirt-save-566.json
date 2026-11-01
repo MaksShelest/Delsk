@@ -1,0 +1,23 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--scenario",
+    "/workspace/Delsk/work/h2/road-units-final/e2-fixtures/EmptyPublicCorridorCanBecomeDirtBeforeRoadOne.json",
+    "--replay",
+    "/workspace/Delsk/work/h2/road-units-final/e2-fixtures/EmptyPublicCorridorCanBecomeDirtBeforeRoadOne.commands.jsonl",
+    "--ticks",
+    "569",
+    "--output",
+    "/workspace/Delsk/work/h2/road-runs-final/dirt-saved-566",
+    "--checkpoint",
+    "/workspace/Delsk/work/h2/road-runs-final/dirt-566.save.json",
+    "--checkpoint-at",
+    "566"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T14:15:26.962778+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 5.544,
+  "finished_at": "2026-11-01T14:15:32.507216+00:00"
+}

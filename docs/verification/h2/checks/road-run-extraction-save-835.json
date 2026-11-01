@@ -1,0 +1,23 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--scenario",
+    "/workspace/Delsk/work/h2/road-units-final/e2-fixtures/ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad.json",
+    "--replay",
+    "/workspace/Delsk/work/h2/road-units-final/e2-fixtures/ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad.commands.jsonl",
+    "--ticks",
+    "858",
+    "--output",
+    "/workspace/Delsk/work/h2/road-runs-final/extraction-saved-835",
+    "--checkpoint",
+    "/workspace/Delsk/work/h2/road-runs-final/extraction-835.save.json",
+    "--checkpoint-at",
+    "835"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T14:17:48.406837+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 9.294,
+  "finished_at": "2026-11-01T14:17:57.700549+00:00"
+}

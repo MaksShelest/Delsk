@@ -1,0 +1,290 @@
+--- a/src/Simulation.Hosting/GameSession.cs
++++ b/src/Simulation.Hosting/GameSession.cs
+@@ -17,6 +17,7 @@
+     private readonly List<TickSample> _samples = [];
+     private readonly List<LaborSample> _laborSamples = [];
+     public SimulationEngine Engine { get; } = engine;
++    public SessionMeasurements? Measurements {get;set;}
+     public string SessionId { get; } = sessionId;
+     public long SessionEpoch { get; private set; } = 1;
+     public event Action<GameSession>? TickCompleted;
+@@ -70,22 +71,30 @@
+         long start = measured ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
+         SubmitControllerInputs();
+         long coreStart = measured ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
++        var coreMark=Measurements?.Start()??default;
+         Engine.Step();
++        Measurements?.End("core-step",coreMark);
+         long sampleStart = measured ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
++        var sampleMark=Measurements?.Start()??default;
+         var state = Engine.Inspect();
+         var actor = state.Participants[0];
+         _samples.Add(new(state.Tick, state.Accounts.Single(a => a.Id == actor.AccountId).BalanceMinor,
+             state.Accounts.Single(a => a.Kind == "WagesSink").BalanceMinor,
+             state.Accounts.Single(a => a.Kind == "Treasury").BalanceMinor,
+             state.Flows.Sum(f => f.Harvested), state.Flows.Sum(f => f.Produced),
+-            state.Flows.Sum(f => f.Exported), Engine.ComputeStateHash(), state.Population, state.Unemployed));
++            state.Flows.Sum(f => f.Exported), MeasuredStateHash(), state.Population, state.Unemployed));
+         _laborSamples.Add(new(state.Tick, state.EmploymentGroups));
+         SampleControllers(state);
++        Measurements?.End("sampling-including-hash",sampleMark);
+         TickCompleted?.Invoke(this);
+         if (measured) StepMeasured?.Invoke(new(
+             System.Diagnostics.Stopwatch.GetElapsedTime(start,coreStart).TotalMilliseconds,
+             System.Diagnostics.Stopwatch.GetElapsedTime(coreStart,sampleStart).TotalMilliseconds,
+             System.Diagnostics.Stopwatch.GetElapsedTime(sampleStart).TotalMilliseconds));
++    }
++    private string MeasuredStateHash()
++    {
++        var mark=Measurements?.Start()??default;string hash=Engine.ComputeStateHash();Measurements?.End("state-hash",mark);return hash;
+     }
+     public void SetPaused(bool paused) => Paused = paused;
+     public void SetTravelHeading(ParticipantId actor, int x, int z)
+@@ -104,7 +113,10 @@
+         if (Engine.WaitingForBallots) { SubmitPlaybackInputs(); PumpVoting(); return; }
+         if (Paused) return;
+         SubmitPlaybackInputs();
+-        if (Engine.MoveTravelQuantum())
++        var mark=Measurements?.Start()??default;
++        bool closes=Engine.MoveTravelQuantum();
++        Measurements?.End("travel-quantum",mark);
++        if (closes)
+         {
+             _closingTravelTick = true;
+             try { Step(); }
+--- a/src/Simulation.Core/ProductionAndTrade.cs
++++ b/src/Simulation.Core/ProductionAndTrade.cs
+@@ -162,14 +162,16 @@
+             Emit("CapitalWindowClosed", entity: offer.Definition.Id, quantity: volume);
+         }
+     }
++    public event Action<string>? InvariantBoundary;
+     public void ValidateInvariants()
+     {
+-        ValidateProductionContent();ValidateStorage();ValidateDemolition();ValidateWorkshops();ValidateIndustryDevelopment();ValidateDevelopmentBuildings();
+-        ValidateFleet();ValidateRoads();ValidateBilling();ValidateServices();ValidateServiceExecution(); ValidateResearchAudit(); ValidateResources(); ValidateExtractionRoutes(); ValidateTransfers();
++        InvariantBoundary?.Invoke("$begin");
++        ValidateProductionContent();InvariantBoundary?.Invoke("ValidateProductionContent");ValidateStorage();InvariantBoundary?.Invoke("ValidateStorage");ValidateDemolition();InvariantBoundary?.Invoke("ValidateDemolition");ValidateWorkshops();InvariantBoundary?.Invoke("ValidateWorkshops");ValidateIndustryDevelopment();InvariantBoundary?.Invoke("ValidateIndustryDevelopment");ValidateDevelopmentBuildings();InvariantBoundary?.Invoke("ValidateDevelopmentBuildings");
++        ValidateFleet();InvariantBoundary?.Invoke("ValidateFleet");ValidateRoads();InvariantBoundary?.Invoke("ValidateRoads");ValidateBilling();InvariantBoundary?.Invoke("ValidateBilling");ValidateServices();InvariantBoundary?.Invoke("ValidateServices");ValidateServiceExecution();InvariantBoundary?.Invoke("ValidateServiceExecution"); ValidateResearchAudit();InvariantBoundary?.Invoke("ValidateResearchAudit"); ValidateResources();InvariantBoundary?.Invoke("ValidateResources"); ValidateExtractionRoutes();InvariantBoundary?.Invoke("ValidateExtractionRoutes"); ValidateTransfers();InvariantBoundary?.Invoke("ValidateTransfers");
+         if (_plots.Values.Where(p => p.Definition.IsShopSite).SelectMany(p => new[] { p.Owner, p.ReservedBy }.Where(a => a.HasValue))
+             .GroupBy(a => a).Any(g => g.Count() > 1)) throw new InvalidOperationException("Shared shop site limit exceeded");
+-        _economy.Validate();
+-        ValidateLaborInvariants();
++        _economy.Validate();InvariantBoundary?.Invoke("accounts-and-inventories");
++        ValidateLaborInvariants();InvariantBoundary?.Invoke("ValidateLaborInvariants");
+         foreach (var actor in _actors.Values)
+         {
+             if (!_map.Walkable(actor.Position) || _economy.Inventories[actor.Inventory].Position != actor.Position)
+@@ -182,6 +184,7 @@
+             if (actor.Job is { } job && _completedPersonalJobs.Contains(job.Id))
+                 throw new InvalidOperationException("I08: completed job still active");
+         }
++        InvariantBoundary?.Invoke("actors");
+         foreach (var flow in _flows.Values)
+         {
+             long physical = _economy.Inventories.Values.Aggregate(0L, (n, inv) => checked(n + inv.Count(flow.Id)+inv.Overflow.Values.Where(l=>l.ItemId==flow.Id).Sum(l=>l.Quantity)));
+@@ -195,6 +198,7 @@
+                 batch.Inputs.IsDefault || !batch.Inputs.SequenceEqual(e.Recipe.Ingredients)))
+                 throw new InvalidOperationException("Invalid work in progress");
+         }
++        InvariantBoundary?.Invoke("flows-and-wip");
+         foreach (var offer in _offers.Values)
+         {
+             long budget = checked(offer.Remaining * offer.Definition.UnitPriceMinor);
+@@ -206,14 +210,14 @@
+                     reserved.Quantity != request.Quantity || reserved.Item != offer.Definition.ItemId)
+                     throw new InvalidOperationException("Reserved sale changed before closing");
+         }
+-        ValidateLandInvariants();
+-        ValidateEquipmentInvariants();
+-        ValidateNegotiations();
+-        ValidateMarketInvariants();
+-        ValidateDeliveryInvariants();
+-        ValidateLogisticsInvariants();
+-        ValidateCapitalDemandInvariants();
+-        ValidateSupportInvariants();
+-        ValidateElectionInvariants();
++        ValidateLandInvariants();InvariantBoundary?.Invoke("ValidateLandInvariants");
++        ValidateEquipmentInvariants();InvariantBoundary?.Invoke("ValidateEquipmentInvariants");
++        ValidateNegotiations();InvariantBoundary?.Invoke("ValidateNegotiations");
++        ValidateMarketInvariants();InvariantBoundary?.Invoke("ValidateMarketInvariants");
++        ValidateDeliveryInvariants();InvariantBoundary?.Invoke("ValidateDeliveryInvariants");
++        ValidateLogisticsInvariants();InvariantBoundary?.Invoke("ValidateLogisticsInvariants");
++        ValidateCapitalDemandInvariants();InvariantBoundary?.Invoke("ValidateCapitalDemandInvariants");
++        ValidateSupportInvariants();InvariantBoundary?.Invoke("ValidateSupportInvariants");
++        ValidateElectionInvariants();InvariantBoundary?.Invoke("ValidateElectionInvariants");
+     }
+ }
+--- /dev/null
++++ b/src/Simulation.Hosting/SessionMeasurements.cs
+@@ -0,0 +1,18 @@
++using System.Diagnostics;
++namespace Simulation.Hosting;
++
++/// <summary>Opt-in host measurements; absent from world state, controller inputs and checkpoints.</summary>
++public sealed class SessionMeasurements
++{
++    public sealed record Metric(long Calls,double Milliseconds,long AllocatedBytes);
++    private readonly Dictionary<string,Metric> _metrics=[];
++    public readonly record struct Mark(long Timestamp,long Allocated);
++    public Mark Start()=>new(Stopwatch.GetTimestamp(),GC.GetTotalAllocatedBytes(false));
++    public void End(string phase,Mark mark)
++    {
++        var previous=_metrics.GetValueOrDefault(phase)??new(0,0,0);
++        _metrics[phase]=new(previous.Calls+1,previous.Milliseconds+Stopwatch.GetElapsedTime(mark.Timestamp).TotalMilliseconds,
++            previous.AllocatedBytes+Math.Max(0,GC.GetTotalAllocatedBytes(false)-mark.Allocated));
++    }
++    public IReadOnlyDictionary<string,Metric> Capture()=>new Dictionary<string,Metric>(_metrics);
++}
+--- a/src/Simulation.Core/SimulationEngine.cs
++++ b/src/Simulation.Core/SimulationEngine.cs
+@@ -135,6 +135,8 @@
+         }
+         _pending.Add(command); return null;
+     }
++    /// <summary>Optional host instrumentation only; callbacks must be pure. No clock enters Core.</summary>
++    public event Action<int>? StepPhaseBoundary;
+     public void Step()
+     {
+         if (WaitingForBallots) return;
+@@ -143,6 +145,7 @@
+         _stepping = true;
+         try
+         {
++            StepPhaseBoundary?.Invoke(-1);
+             ++Tick; _phase = 0; AdvanceFleet(); AdvanceStorageConstruction(); AdvanceWorkshopInstallations(); AdvanceProductionContent(); AdvanceOverflow(); AdvanceResourceIntervals(); MaintainRoadFreightTimes(); ApplyWages();
+             var due = _pending.Where(c => c.NotBeforeTick <= Tick).ToArray();
+             foreach (var c in due) _pending.Remove(c);
+@@ -156,18 +159,27 @@
+                     if (c.n >= _config.MaxCommandsPerActorTick) Reject(c.c, "CommandBudgetExceeded");
+                     else if (c.c.ExpiresAtTick < Tick) Reject(c.c, "CommandExpired");
+                     else allowed.Add(c.c);
++            StepPhaseBoundary?.Invoke(0);
+             _phase = 1;
+             foreach (var c in allowed.Where(c => IsManagement(c.Action.Kind))) Execute(c);
++            StepPhaseBoundary?.Invoke(1);
+             _phase = 2; AdvanceServiceMovement(); AdvanceTrafficAssistance(); AdvanceEquipmentMovements(); AdvanceMovements(); AdvanceLogisticsMovements();
++            StepPhaseBoundary?.Invoke(2);
+             _phase = 3; AcceptLogisticsArrivals(); ReserveSupportResources();
+             foreach (var c in allowed.Where(c => !IsManagement(c.Action.Kind))) Execute(c);
+             AdvanceTransfers(); AdvanceServiceHandling(); AdvanceOverflow(); ReserveSupportResources();
++            StepPhaseBoundary?.Invoke(3);
+             _phase = 4; AdvanceHarvests(); AdvanceWork(); AdvanceRoadWorks();
++            StepPhaseBoundary?.Invoke(4);
+             _phase = 5; AdvanceLabor();
++            StepPhaseBoundary?.Invoke(5);
+             _phase = 6; CloseVehiclePurchases(); CloseCapitalWindows(); AdvanceMarketWindows(); CloseBuyWindows(); AdvanceCapitalDemand();
++            StepPhaseBoundary?.Invoke(6);
+             _phase = 7; AdvanceServices(); AdvanceOverflow(true); ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders(); ExpireSupport(); ExpireNegotiations();AdvanceIndustryQuests();AdvanceBilling();
++            StepPhaseBoundary?.Invoke(7);
+             _phase = 8; AdvanceElections();
+-            _phase = 9; AdvanceCityStage(); ValidateInvariants(); Emit("TickCommitted");
++            StepPhaseBoundary?.Invoke(8);
++            _phase = 9; AdvanceCityStage();  ValidateInvariants(); Emit("TickCommitted"); StepPhaseBoundary?.Invoke(9);
+         }
+         finally { _stepping = false; }
+     }
+--- a/src/Simulation.Hosting/SessionControllers.cs
++++ b/src/Simulation.Hosting/SessionControllers.cs
+@@ -52,6 +52,7 @@
+     public event Action<ControllerTurn>? ControllerDecided;
+     private void RecordTurn(ControllerTurn turn)
+     {
++        var mark=Measurements?.Start()??default;
+         if(_observationPool is not null||turn.Observation.EconomicOpportunities is not null)
+         {
+             if(_observationPool is null)
+@@ -62,9 +63,11 @@
+             turn=_observationPool.Add(turn);
+         }
+         _controllerTurns.Add(turn);ControllerDecided?.Invoke(turn);
++        Measurements?.End("history-record",mark);
+     }
+     public ControllerCheckpoint[] ControllerStates => _unrestoredControllers.Length > 0 ? _unrestoredControllers.ToArray() :
+         _controllers.OrderBy(c => c.Actor.Value).Select(c => c.Capture()).ToArray();
++    public object ObservationArchiveStatistics()=>_observationPool?.Statistics()??new Dictionary<string,object>();
+     public ControllerTurn[] ControllerTurns => _controllerTurns.ToArray();
+     public ControllerSample[] ControllerSamples => _controllerSamples.ToArray();
+     public void AttachControllers(IEnumerable<IController> controllers)
+@@ -98,7 +101,10 @@
+         if (_controllers.Length == 0) return;
+         foreach (var controller in _controllers) controller.BeginDecisionBarrier(Engine.Tick);
+         // Freeze every observation before any policy or submission is called. World mutations still occur only in Step.
++        var observationMark=Measurements?.Start()??default;
+         var observations = _controllers.Select(c => Engine.ObserveController(c.Actor,c.UsesEconomicPlanning)).ToArray();
++        Measurements?.End("observations",observationMark);
++        var decisionMark=Measurements?.Start()??default;
+         var decisions = new ControllerDecision[_controllers.Length];
+         var feedback = new ImmutableArray<CommandResult>[_controllers.Length];
+         for (int i = 0; i < _controllers.Length; i++)
+@@ -110,6 +116,7 @@
+                 throw new InvalidOperationException("Controller exceeded equal command budget");
+             awaiting.RemoveAll(id => feedback[i].Any(r => r.CommandId == id));
+         }
++        Measurements?.End("policy-and-feedback",decisionMark);
+         foreach (var controller in _controllers) controller.EndDecisionBarrier(Engine.Tick);
+         for (int i = 0; i < _controllers.Length; i++)
+         {
+--- a/src/Simulation.Hosting/ControllerObservationArchive.cs
++++ b/src/Simulation.Hosting/ControllerObservationArchive.cs
+@@ -29,6 +29,7 @@
+         }
+         var full=turn with{Observation=observation};_turns.Add(new(full with{Observation=null!},fields));return full;
+     }
++    internal object Statistics()=>_values.GroupBy(f=>Properties[f.Property].Name).ToDictionary(g=>g.Key,g=>(object)new{Values=g.Count(),JsonCharacters=g.Sum(f=>(long)f.Json.Length)});
+     internal ControllerObservationArchive Capture()=>new(1,Properties.Select(p=>p.Name).ToArray(),_values.ToArray(),_turns.ToArray());
+     internal static (ControllerObservationPool Pool,ControllerTurn[] Turns) Restore(ControllerObservationArchive saved,long tick,int actors)
+     {
+--- /dev/null
++++ b/src/Research.Runner/H2PerformanceCommand.cs
+@@ -0,0 +1,39 @@
++using System.Diagnostics;
++using System.Text.Json;
++using Simulation.Core;
++using Simulation.Hosting;
++using Agents.Algorithmic;
++
++internal static class H2PerformanceCommand
++{
++    internal static int Run(string[] args)
++    {
++        string directory="";GameSession? session=null;var metrics=new SessionMeasurements();var wall=Stopwatch.StartNew();string stage="arguments";
++        long initialTick=0;string? error=null;string? finalWorldHash=null,finalControllerHash=null;
++        try
++        {
++            var options=new Dictionary<string,string>();for(int i=0;i<args.Length;i+=2){if(i+1>=args.Length||args[i] is not("--measure-session" or "--output" or "--ticks" or "--operation"))throw new ArgumentException("Invalid measure-session arguments");options.Add(args[i],args[i+1]);}
++            directory=options["--output"];if(Directory.Exists(directory)&&Directory.EnumerateFileSystemEntries(directory).Any())throw new ArgumentException("Measurement output must be empty");Directory.CreateDirectory(directory);
++            stage="load";Save();var mark=metrics.Start();session=CheckpointStore.Load(options["--measure-session"]).Session;session.RestoreControllers(c=>c.Kind==SelfBallotController.Kind?SelfBallotController.Restore(c):AlgorithmicController.Restore(c));metrics.End("load-total",mark);session.Measurements=metrics;initialTick=session.Engine.Tick;
++            SessionMeasurements.Mark phaseMark=default;session.Engine.StepPhaseBoundary+=phase=>{if(phase>=0)metrics.End("core-phase-"+phase,phaseMark);phaseMark=metrics.Start();};
++            SessionMeasurements.Mark invariantMark=default;session.Engine.InvariantBoundary+=name=>{if(name!="$begin")metrics.End("invariant-"+name,invariantMark);invariantMark=metrics.Start();};
++            long final=options.TryGetValue("--ticks",out var t)?long.Parse(t):initialTick;stage="step";Save();
++            while(session.Engine.Tick<final){session.Step();if(session.Engine.Tick%10==0)Save();}
++            if(session.Engine.WaitingForBallots&&!session.PumpVoting())throw new InvalidOperationException("WaitingForBallots");
++            finalWorldHash=session.Engine.ComputeStateHash();finalControllerHash=session.ComputeControllerStateHash();
++            string operation=options.GetValueOrDefault("--operation","step");
++            if(operation=="save")
++            {stage="save";Save();mark=metrics.Start();CheckpointStore.Save(session,Path.Combine(directory,"world.save.json"));metrics.End("save-with-validation",mark);}
++            else if(operation=="export")
++            {stage="export";Save();mark=metrics.Start();RunArtifacts.Export(session,session.Engine.Configuration(),Path.Combine(directory,"exports"),"H2-measure","loaded",wall.Elapsed.TotalMilliseconds);metrics.End("export",mark);}
++            else if(operation!="step")throw new ArgumentException("Unknown operation");
++            stage="succeeded";Save();return 0;
++        }
++        catch(Exception ex){error=ex.GetType().Name+": "+ex.Message;stage="failed";Save();Console.Error.WriteLine(error);return 1;}
++        void Save()
++        {
++            if(directory.Length==0)return;Directory.CreateDirectory(directory);var process=Process.GetCurrentProcess();
++            File.WriteAllText(Path.Combine(directory,"phases.json"),JsonSerializer.Serialize(new{Stage=stage,Error=error,InitialTick=initialTick,Tick=session?.Engine.Tick,FinalWorldHash=finalWorldHash,FinalControllerHash=finalControllerHash,WallSeconds=wall.Elapsed.TotalSeconds,Metrics=metrics.Capture(),WorkingSetBytes=process.WorkingSet64,PeakWorkingSetBytes=process.PeakWorkingSet64,ManagedBytes=GC.GetTotalMemory(false),AllocatedBytes=GC.GetTotalAllocatedBytes(false),ObservationArchive=session?.ObservationArchiveStatistics(),MovementProfile="legacy-divisor-80",Scope="Host phase measurements; sampling includes hash; nested buckets must not be added. Rules are loaded unchanged from the save."},new JsonSerializerOptions(SimulationJson.Options){WriteIndented=true}));
++        }
++    }
++}
+--- a/src/Research.Runner/Program.cs
++++ b/src/Research.Runner/Program.cs
+@@ -7,6 +7,8 @@
+ 
+ if(args.Contains("--export-npc-economy-profile",StringComparer.Ordinal)||args.Contains("--export-service-runs-profile",StringComparer.Ordinal)||args.Contains("--export-service-profile",StringComparer.Ordinal)||args.Contains("--export-billing-profile",StringComparer.Ordinal)||args.Contains("--export-road-profile",StringComparer.Ordinal)||args.Contains("--export-fleet-profile",StringComparer.Ordinal)||args.Contains("--export-production-profile",StringComparer.Ordinal)||args.Contains("--export-storage-profile",StringComparer.Ordinal)||args.Contains("--export-workshop-profile",StringComparer.Ordinal)||args.Contains("--export-development-profile",StringComparer.Ordinal))return StorageProfileCommand.Run(args);
+ if(args.Contains("--export-map-design",StringComparer.Ordinal))return MapDesignCommand.Run(args);
++
++if(args.Contains("--measure-session",StringComparer.Ordinal))return H2PerformanceCommand.Run(args);
+ 
+ // Catalog-only commands must return before any model runtime, controller or world exists.
+ if (args.Contains("--validate-vnext-catalog", StringComparer.Ordinal)) return VNextCatalogCommand.Run(args);

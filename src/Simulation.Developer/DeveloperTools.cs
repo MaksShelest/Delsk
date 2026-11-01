@@ -23,7 +23,7 @@ public sealed class DeveloperTools : IDisposable
     {
         if(capacity is <1 or >1024)throw new ArgumentOutOfRangeException(nameof(capacity));
         _session=session;_human=human;_capacity=capacity;
-        foreach(var turn in session.ControllerTurns.TakeLast(capacity))Record(turn);
+        foreach(var turn in session.ControllerTurnsTail(capacity))Record(turn);
         session.ControllerDecided+=Record;
     }
     private static string Text(object? value,int limit=16384)

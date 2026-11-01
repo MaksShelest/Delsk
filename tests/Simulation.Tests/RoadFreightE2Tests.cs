@@ -25,9 +25,10 @@ public class RoadFreightE2Tests
         Assert.True(bound>0,string.Join("\n",trace));Assert.True(restored);Assert.Equal(2,s.Engine.InspectRoads()!.Cells.Single(c=>c.Cell==order.Cell).Level);
         Assert.Contains(s.Engine.Ledger(),l=>l.Reason=="RoadWages");Assert.Contains(s.Engine.Ledger(),l=>l.Reason=="RoadOrderReward");RoadE2Tests.Exact(s);
     }
-    [Fact]public void ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad()
+    [Fact]public void ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad()=>CheckExtraction(false);
+    internal static void CheckExtraction(bool fast)
     {
-        var d=RoadE2Tests.Prepared();var source=d.ResourceNodes.Single(r=>r.ItemId=="wood") with{Position=new(0,3),Rules=new(Public:false,InitialOwner:2,Capacity:2,RegenerationQuantity:0)};var target=new Cell(20,3);
+        var d=RoadE2Tests.Prepared();if(fast)d=d with{Economy=d.Economy! with{Movement=new()}};var source=d.ResourceNodes.Single(r=>r.ItemId=="wood") with{Position=new(0,3),Rules=new(Public:false,InitialOwner:2,Capacity:2,RegenerationQuantity:0)};var target=new Cell(20,3);
         d=d with{ResourceNodes=[..d.ResourceNodes.Select(r=>r.ItemId=="wood"?source:r),source with{Position=target,Rules=new(Public:false,InitialOwner:2)},source with{Position=new(21,3),Rules=new(Public:true)}],
             Layout=d.Layout! with{ResourceDistricts=[..d.Layout!.ResourceDistricts.Select(r=>r.Item=="wood"?r with{Cells=[source.Position,target,new(21,3)],PublicCells=[new(21,3)]}:r)]}};
         var s=new GameSession(new(d));var paver=RoadE2Tests.Paver(s);RoadE2Tests.Step(s,new(ActionKind.LeaveVehicle));
@@ -49,7 +50,7 @@ public class RoadFreightE2Tests
         {Directory.CreateDirectory(debug);File.WriteAllText(Path.Combine(debug,"extraction-stopped.json"),s.Engine.CreateCheckpointJson());}
         Assert.True(bound>0,"Extraction movement did not arrive");Assert.True(bypass,"Extraction did not physically use the bypass");Assert.True(restored,"Expected a restore inside the bypass");s.AdvanceTo(s.Engine.Tick+20);
         Assert.True(FleetE1Tests.Stock(s,machine.StorageId,"wood")>0);Assert.Single(s.Engine.Inspect().Equipment);Assert.Single(s.Engine.InspectFleet()!.Vehicles);
-        Assert.Contains(s.Engine.Ledger(),l=>l.Reason=="EquipmentTravelWages");RoadE2Tests.Exact(s);
+        Assert.Contains(s.Engine.Ledger(),l=>l.Reason=="EquipmentTravelWages");RoadE2Tests.Exact(s,fast?"h2-extraction":nameof(ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad));
     }
     internal static ScenarioDefinition Definition()
     {
@@ -63,9 +64,11 @@ public class RoadFreightE2Tests
             Layout=layout with{IndustrialLots=[..layout.IndustrialLots,new("lot-3",cells,new(36,3))],RoadCenterCells=centre,RoadCorridorCells=corridor,InitialCityDirtCells=centre,
                 TurnCells=[new(4,1),new(12,1),new(20,1),new(28,1),new(36,1)]}};
     }
-    [Fact]public void ExistingFreightCarriesOneRealCargoThroughPaverBypassAndRestoresEveryStage()
+    [Fact]public void ExistingFreightCarriesOneRealCargoThroughPaverBypassAndRestoresEveryStage()=>CheckFreight(false);
+    internal static void CheckFreight(bool fast)
     {
-        var s=new GameSession(new(Definition()));var paver=RoadE2Tests.Paver(s);RoadE2Tests.Step(s,new(ActionKind.LeaveVehicle));
+        var definition=Definition();if(fast)definition=definition with{Economy=definition.Economy! with{Movement=new()}};
+        var s=new GameSession(new(definition));var paver=RoadE2Tests.Paver(s);RoadE2Tests.Step(s,new(ActionKind.LeaveVehicle));
         RoadE2Tests.Step(s,RoadE2Tests.Work(paver,mode:EquipmentMode.Automatic));while(s.Engine.InspectRoads()!.Works.Single().Batch is null)s.Step();
         RoadE2Tests.Step(s,RoadE2Tests.Work(paver,mode:EquipmentMode.Automatic,enabled:false));
         var car=FleetE1Tests.Buy(s,"muravey70");StorageC1Tests.Harvest(s,"wood",30);
@@ -90,6 +93,6 @@ public class RoadFreightE2Tests
         }
         Assert.True(bound>0);Assert.True(bypass);Assert.Contains("Outbound",stages);Assert.Contains("ReturningEmpty",stages);
         Assert.Equal(30,FleetE1Tests.Stock(s,destination,"wood"));Assert.Equal(0,FleetE1Tests.Stock(s,car.CargoInventory,"wood"));
-        Assert.Equal(car.CargoInventory,s.Engine.Observe(new(1)).OwnLogistics.Single().CargoInventory);RoadE2Tests.Exact(s);
+        Assert.Equal(car.CargoInventory,s.Engine.Observe(new(1)).OwnLogistics.Single().CargoInventory);RoadE2Tests.Exact(s,fast?"h2-freight":nameof(ExistingFreightCarriesOneRealCargoThroughPaverBypassAndRestoresEveryStage));
     }
 }

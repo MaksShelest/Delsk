@@ -22,7 +22,7 @@ public sealed partial class AlgorithmicController
                 o.EmploymentGroups.Any(g=>g.Id==l.GroupId && g.Headcount>=FleetCrewMinimum(o,l)) &&
                 Free(Inventory(o,l.SourceInventory),c.ItemId)>0 &&
                 Distance(o.Map,Inventory(o,l.SourceInventory).Position,c.Position)>=0 &&
-                (long)Distance(o.Map,Inventory(o,l.SourceInventory).Position,c.Position)*FreightCellEstimate(o)+2<=c.DeadlineTick-o.Tick);
+                FreightTicks(o,l,Inventory(o,l.SourceInventory).Position,c.Position)+2<=c.DeadlineTick-o.Tick);
             if(automatic)continue;
             long carried=Free(carrier,c.ItemId);
             long stock=o.Inventories.Where(i=>i.Id!=carrier.Id).Select(i=>Free(i,c.ItemId)).DefaultIfEmpty(0).Max();
@@ -51,8 +51,8 @@ public sealed partial class AlgorithmicController
                     if(q<Math.Min(_state.Settings.BatchQuantity,Math.Max(1,cargo/2)))continue;
                     int distance=Distance(o.Map,source.Position,offer.Position);if(distance<0)continue;
                     long waiting=Math.Max(0,(system.Trip?.EndTick??o.Tick)-o.Tick);
-                    if(waiting+o.Map.TradeWindowTicks+3+(long)distance*FreightCellEstimate(o)>o.DeliveryRules.ContractTtlTicks)continue;
-                    long payroll=checked(crew.Capacity*(crew.PendingWageMinor??crew.WageMinor)*Math.Max(2L,2L*distance*FreightCellEstimate(o)));
+                    if(waiting+o.Map.TradeWindowTicks+3+FreightTicks(o,system,source.Position,offer.Position)>o.DeliveryRules.ContractTtlTicks)continue;
+                    long payroll=checked(crew.Capacity*(crew.PendingWageMinor??crew.WageMinor)*Math.Max(2L,FreightTicks(o,system,source.Position,offer.Position)+FreightTicks(o,system,offer.Position,source.Position)));
                     long bond=checked((long)((Int128)q*offer.UnitPriceMinor*o.DeliveryRules.FineBasisPoints/10000));
                     long unitCost=checked((RecipeInputValue(o,recipe)+recipe.EnergyPerBatchMinor+
                         recipe.RequiredStaff*_state.Settings.BaseWageMinor*recipe.FullStaffTicks)/recipe.OutputQuantity);

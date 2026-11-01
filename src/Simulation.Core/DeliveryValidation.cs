@@ -4,6 +4,9 @@ public sealed partial class SimulationEngine
 {
     private void ValidateDeliveryInvariants()
     {
+        var capitalSettled=_settlements.ToLookup(s=>s.OfferId);
+        var capitalContracts=_deliveryContracts.ToLookup(d=>d.CapitalOfferId);
+        var buyerContracts=_deliveryContracts.ToLookup(d=>d.BuyOfferId);
         foreach (var state in _buyOffers.Values)
         {
             var o = state.View;
@@ -15,7 +18,7 @@ public sealed partial class SimulationEngine
                 o.ExpiresAtTick != checked(o.CreatedTick + Delivery.OfferTtlTicks) || o.Window < 1 ||
                 o.RemainingQuantity < 0 || o.AllocatedQuantity < 0 || o.ReleasedQuantity < 0 ||
                 checked(o.RemainingQuantity + o.AllocatedQuantity + o.ReleasedQuantity) != o.Quantity ||
-                _deliveryContracts.Where(d => d.BuyOfferId == o.Id).Sum(d => d.Quantity) != o.AllocatedQuantity ||
+                buyerContracts[o.Id].Sum(d => d.Quantity) != o.AllocatedQuantity ||
                 (o.Status == "Open" ? o.RemainingQuantity == 0 || o.ExpiresAtTick <= Tick || o.ReleasedQuantity != 0 :
                     o.Status is not ("Exhausted" or "Cancelled" or "Expired") || o.RemainingQuantity != 0 ||
                     state.Requests.Count > 0 || o.CutoffTick is not null ||
@@ -32,8 +35,8 @@ public sealed partial class SimulationEngine
         foreach (var o in _offers.Values)
         {
             if (o.Window < 1 || (o.SupplyRequests.Count > 0 && o.Cutoff is null) ||
-                o.Definition.Quantity != checked(o.Remaining + o.ReleasedQuantity + _settlements.Where(s => s.OfferId == o.Definition.Id).Sum(s => s.Accepted) +
-                    _deliveryContracts.Where(d => d.CapitalOfferId == o.Definition.Id).Sum(d => d.Quantity)))
+                o.Definition.Quantity != checked(o.Remaining + o.ReleasedQuantity + capitalSettled[o.Definition.Id].Sum(s => s.Accepted) +
+                    capitalContracts[o.Definition.Id].Sum(d => d.Quantity)))
                 throw new InvalidOperationException("Capital delivery quota mismatch");
             foreach (var pair in o.SupplyRequests)
             {
