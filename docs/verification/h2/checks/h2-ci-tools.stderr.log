@@ -1,0 +1,70 @@
+test_identical_assets_and_settings_without_managed_code_or_editor_cache (test_asset_import_stage.AssetImportStageTests.test_identical_assets_and_settings_without_managed_code_or_editor_cache) ... ok
+test_refuses_source_parent_and_nonempty_output (test_asset_import_stage.AssetImportStageTests.test_refuses_source_parent_and_nonempty_output) ... ok
+test_actual_split_signed_residue_partial_principal_and_zero_fractional_penalty (test_billing_audit.BillingAuditTests.test_actual_split_signed_residue_partial_principal_and_zero_fractional_penalty) ... ERROR
+test_distance_rights_interest_replay_payout_and_privacy_corruption_is_rejected (test_billing_audit.BillingAuditTests.test_distance_rights_interest_replay_payout_and_privacy_corruption_is_rejected) ... ok
+test_changed_source_refuses_cache_before_copying_anything (test_ci_tools.ImportCacheTests.test_changed_source_refuses_cache_before_copying_anything) ... ok
+test_identical_assets_reuse_only_resources_and_leave_developer_assemblies_intact (test_ci_tools.ImportCacheTests.test_identical_assets_reuse_only_resources_and_leave_developer_assemblies_intact) ... ok
+test_missing_cached_binary_is_fatal (test_ci_tools.ImportCacheTests.test_missing_cached_binary_is_fatal) ... ok
+test_source_changed_after_import_is_rejected_even_if_stage_matches (test_ci_tools.ImportCacheTests.test_source_changed_after_import_is_rejected_even_if_stage_matches) ... ok
+test_verification_is_read_only_and_rejects_unimported_assets (test_ci_tools.ImportCacheTests.test_verification_is_read_only_and_rejects_unimported_assets) ... ok
+test_wrong_source_metadata_and_empty_cache_are_fatal (test_ci_tools.ImportCacheTests.test_wrong_source_metadata_and_empty_cache_are_fatal) ... ok
+test_all_actual_theory_rows_count_and_bad_result_is_rejected (test_ci_tools.PartitionsTests.test_all_actual_theory_rows_count_and_bad_result_is_rejected) ... ok
+test_disjoint_jobs_preserve_every_partition_and_deadlines (test_ci_tools.PartitionsTests.test_disjoint_jobs_preserve_every_partition_and_deadlines) ... FAIL
+test_every_class_including_future_and_developer_has_exactly_one_partition (test_ci_tools.PartitionsTests.test_every_class_including_future_and_developer_has_exactly_one_partition) ... ok
+test_corrupt_stock_money_cargo_driver_and_privacy_are_rejected (test_fleet_audit.FleetAuditTests.test_corrupt_stock_money_cargo_driver_and_privacy_are_rejected) ... ok
+test_real_shapes_and_balanced_acquisition_are_accepted (test_fleet_audit.FleetAuditTests.test_real_shapes_and_balanced_acquisition_are_accepted) ... ok
+test_asphalt_cutoff_uses_completed_plant_not_future_knowledge (test_import_audit.ImportAuditTests.test_asphalt_cutoff_uses_completed_plant_not_future_knowledge) ... ok
+test_bad_exports_are_rejected (test_import_audit.ImportAuditTests.test_bad_exports_are_rejected) ... ok
+test_capped_zero_refill_still_requires_its_scheduled_event (test_import_audit.ImportAuditTests.test_capped_zero_refill_still_requires_its_scheduled_event) ... ok
+test_legacy_profile_cannot_hide_an_import_flow (test_import_audit.ImportAuditTests.test_legacy_profile_cannot_hide_an_import_flow) ... ok
+test_paid_stock_refill_and_partial_physical_pickup (test_import_audit.ImportAuditTests.test_paid_stock_refill_and_partial_physical_pickup) ... ok
+test_corrupt_contribution_speed_position_money_private_and_e3_rejected (test_road_audit.RoadAuditTests.test_corrupt_contribution_speed_position_money_private_and_e3_rejected) ... ok
+test_valid_independent_physical_history (test_road_audit.RoadAuditTests.test_valid_independent_physical_history) ... ok
+test_five_trip_frozen_quote_and_escrow (test_service_audit.ServiceAuditTests.test_five_trip_frozen_quote_and_escrow) ... ok
+test_price_capacity_duplicate_accept_lease_and_payout_corruption (test_service_audit.ServiceAuditTests.test_price_capacity_duplicate_accept_lease_and_payout_corruption) ... ok
+test_five_trip_frozen_quote_and_escrow (test_service_audit.ServiceExecutionAuditTests.test_five_trip_frozen_quote_and_escrow) ... ok
+test_physical_partial_receipt_and_payment (test_service_audit.ServiceExecutionAuditTests.test_physical_partial_receipt_and_payment) ... ok
+test_price_capacity_duplicate_accept_lease_and_payout_corruption (test_service_audit.ServiceExecutionAuditTests.test_price_capacity_duplicate_accept_lease_and_payout_corruption) ... ok
+test_receipt_cargo_recipient_and_duplicate_payment_corruption (test_service_audit.ServiceExecutionAuditTests.test_receipt_cargo_recipient_and_duplicate_payment_corruption) ... ok
+
+======================================================================
+ERROR: test_actual_split_signed_residue_partial_principal_and_zero_fractional_penalty (test_billing_audit.BillingAuditTests.test_actual_split_signed_residue_partial_principal_and_zero_fractional_penalty)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/Delsk/tests/Checks/test_billing_audit.py", line 27, in test_actual_split_signed_residue_partial_principal_and_zero_fractional_penalty
+    def test_actual_split_signed_residue_partial_principal_and_zero_fractional_penalty(self):self.check(self.fixture())
+                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Delsk/tests/Checks/test_billing_audit.py", line 25, in check
+    with contextlib.redirect_stdout(io.StringIO()):verify(folder)
+                                                   ^^^^^^^^^^^^^^
+  File "/workspace/Delsk/scripts/billing_audit.py", line 49, in verify
+    nominal=next(m['speed'] for m in config['economy']['fleet']['models'] if m['id']==vehicle[identity]['modelId']) if identity in vehicle else max(1,80//config['moveTicksPerCell'])
+                                     ~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'fleet'
+
+======================================================================
+FAIL: test_disjoint_jobs_preserve_every_partition_and_deadlines (test_ci_tools.PartitionsTests.test_disjoint_jobs_preserve_every_partition_and_deadlines)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/Delsk/tests/Checks/test_ci_tools.py", line 25, in test_disjoint_jobs_preserve_every_partition_and_deadlines
+    self.assertFalse(old&new);self.assertEqual(old|new,set(PARTITIONS))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Items in the second set but not the first:
+Partition(name='-h2-0', include=('Simulation.Tests.H2StorageTests',), exclude=())
+Partition(name='-h2-10', include=('Simulation.Tests.H2ExtractionMovementTests',), exclude=())
+Partition(name='-h2-9', include=('Simulation.Tests.H2FreightMovementTests',), exclude=())
+Partition(name='-h2-3', include=('Simulation.Tests.H2RoadStagesTests',), exclude=())
+Partition(name='-h2-12', include=('Simulation.Tests.H2RoadChangeTests',), exclude=())
+Partition(name='-h2-5', include=('Simulation.Tests.H2HighwayTruckTests',), exclude=())
+Partition(name='-h2-7', include=('Simulation.Tests.H2ServiceMovementTests',), exclude=())
+Partition(name='-h2-8', include=('Simulation.Tests.H2TrafficSafetyTests',), exclude=())
+Partition(name='-h2-1', include=('Simulation.Tests.H2MovementTests',), exclude=())
+Partition(name='-h2-6', include=('Simulation.Tests.H2RoadSceneTests',), exclude=())
+Partition(name='-h2-2', include=('Simulation.Tests.H2VehicleMovementTests',), exclude=())
+Partition(name='-h2-11', include=('Simulation.Tests.H2DirectionalEtaTests',), exclude=())
+Partition(name='-h2-4', include=('Simulation.Tests.H2HighwayCarTests',), exclude=())
+
+----------------------------------------------------------------------
+Ran 28 tests in 0.054s
+
+FAILED (failures=1, errors=1)

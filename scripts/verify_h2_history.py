@@ -17,7 +17,7 @@ def verify(folder):
   for raw in events:
    event=json.loads(raw)
    if event['type']=='PlotPurchased':purchases[value(event['entityId'])]=(value(event['actorId']),event['tick'])
- historical_ground={};ground_by_plot={};historical_checks=0
+ historical_ground={};historical_checks=0
  accounts={value(p['id']):value(p['accountId']) for p in world['participants']}
  personal={value(p['id']):value(p['inventoryId']) for p in world['participants']}
  path=folder/'decisions.jsonl';opener=open
@@ -28,8 +28,10 @@ def verify(folder):
    digest.update(raw);turn=json.loads(raw);actor=value(turn['actor']);o=turn['observation'];tick=turn['tick']
    assert previous<=tick<=summary['tick'] and tick==o['tick'];previous=tick
    assert value(o['participant']['id'])==actor and value(o['account']['id'])==accounts[actor]
+   assert value(o['participant']['accountId'])==accounts[actor]
    assert value(o['participant']['inventoryId'])==personal[actor]
    assert not {'scenario','config','seed','journal','ledger','stateHash','accounts'}&set(o)
+   ground_by_plot={}
    for inventory in o['inventories']:
     identity=value(inventory['id'])
     if identity in inventories:assert inventories[identity]==actor;continue

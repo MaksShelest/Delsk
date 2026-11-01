@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests/Checks",
+    "-v"
+  ],
+  "timeout_seconds": 30,
+  "started_at": "2026-11-01T13:36:49.398190+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.215,
+  "finished_at": "2026-11-01T13:36:49.613333+00:00"
+}

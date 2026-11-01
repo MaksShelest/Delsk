@@ -1,0 +1,860 @@
+{
+  "scope": "Serial same-host old-profile100ticks plus cold Session3 load and actual save/readback; original first slow small run retained. Timing repeats are not economic replicates. Nested phase totals overlap.",
+  "rows": [
+    {
+      "map": "small",
+      "version": "before",
+      "repeats": 3,
+      "range": [
+        10800,
+        10900
+      ],
+      "worldHashes": [
+        "c8e5f5dff6afbcc9e03f06ab698c45e5f2bb8c41e31b427855b0f829b6529f27"
+      ],
+      "controllerHashes": [
+        "4afcd65cafde23361b36e76fdc0da62748ad7a5cebb6ac9b3f061d61ae10ebb7"
+      ],
+      "stats": {
+        "wallSeconds": {
+          "min": 41.9737607,
+          "median": 44.6191584,
+          "max": 80.701777
+        },
+        "peakWorkingSetBytes": {
+          "min": 6182010880,
+          "median": 6183895040,
+          "max": 6434586624
+        },
+        "managedBytes": {
+          "min": 5236415000,
+          "median": 5860410992,
+          "max": 5860410992
+        },
+        "allocatedBytes": {
+          "min": 17525878800,
+          "median": 17525986024,
+          "max": 17639323400
+        }
+      },
+      "phases": {
+        "load-total": {
+          "min": 11853.6331,
+          "median": 12537.3834,
+          "max": 14533.5148
+        },
+        "history-record": {
+          "min": 238.5475,
+          "median": 247.39879999999994,
+          "max": 260.135
+        },
+        "travel-quantum": {
+          "min": 2.771399999999998,
+          "median": 2.8167999999999913,
+          "max": 3.386499999999997
+        },
+        "observations": {
+          "min": 1632.8880999999997,
+          "median": 1662.8629,
+          "max": 1682.3532000000007
+        },
+        "policy-and-feedback": {
+          "min": 2072.3106000000002,
+          "median": 2126.5552000000007,
+          "max": 2191.2413000000006
+        },
+        "core-phase-0": {
+          "min": 19.089200000000016,
+          "median": 19.797299999999993,
+          "max": 21.232700000000012
+        },
+        "core-phase-1": {
+          "min": 2.0248999999999993,
+          "median": 2.1203,
+          "max": 2.1841000000000004
+        },
+        "core-phase-2": {
+          "min": 4.715000000000001,
+          "median": 4.838900000000002,
+          "max": 4.949599999999999
+        },
+        "core-phase-3": {
+          "min": 27.751900000000003,
+          "median": 29.8721,
+          "max": 31.693
+        },
+        "core-phase-4": {
+          "min": 13.357399999999988,
+          "median": 15.356200000000008,
+          "max": 16.674699999999994
+        },
+        "core-phase-5": {
+          "min": 7.199899999999997,
+          "median": 8.207000000000003,
+          "max": 9.032600000000032
+        },
+        "core-phase-6": {
+          "min": 51.67800000000002,
+          "median": 59.77969999999999,
+          "max": 69.33090000000004
+        },
+        "core-phase-7": {
+          "min": 13.617199999999999,
+          "median": 16.413199999999993,
+          "max": 17.1101
+        },
+        "core-phase-8": {
+          "min": 0.3999,
+          "median": 0.6224999999999986,
+          "max": 0.7145999999999983
+        },
+        "core-phase-9": {
+          "min": 8139.9791000000005,
+          "median": 8746.0742,
+          "max": 37882.98899999999
+        },
+        "core-step": {
+          "min": 8287.2571,
+          "median": 8914.312100000003,
+          "max": 38044.58620000002
+        },
+        "state-hash": {
+          "min": 2072.6605,
+          "median": 2149.396799999999,
+          "max": 2244.060700000001
+        },
+        "sampling-including-hash": {
+          "min": 2529.5604000000003,
+          "median": 2569.3828000000003,
+          "max": 2689.9243
+        },
+        "save-with-validation": {
+          "min": 13003.3458,
+          "median": 14089.1752,
+          "max": 16766.5028
+        }
+      }
+    },
+    {
+      "map": "small",
+      "version": "final-after",
+      "repeats": 3,
+      "range": [
+        10800,
+        10900
+      ],
+      "worldHashes": [
+        "c8e5f5dff6afbcc9e03f06ab698c45e5f2bb8c41e31b427855b0f829b6529f27"
+      ],
+      "controllerHashes": [
+        "4afcd65cafde23361b36e76fdc0da62748ad7a5cebb6ac9b3f061d61ae10ebb7"
+      ],
+      "stats": {
+        "wallSeconds": {
+          "min": 30.1705881,
+          "median": 35.7151738,
+          "max": 36.5896351
+        },
+        "peakWorkingSetBytes": {
+          "min": 4404273152,
+          "median": 4405256192,
+          "max": 4407107584
+        },
+        "managedBytes": {
+          "min": 4135796128,
+          "median": 4139525432,
+          "max": 4139860192
+        },
+        "allocatedBytes": {
+          "min": 14236932976,
+          "median": 14241154800,
+          "max": 14241918840
+        }
+      },
+      "phases": {
+        "load-total": {
+          "min": 18884.1326,
+          "median": 21100.0015,
+          "max": 23626.2582
+        },
+        "invariant-ValidateProductionContent": {
+          "min": 424.0875000000002,
+          "median": 485.28919999999965,
+          "max": 603.0836000000002
+        },
+        "invariant-ValidateStorage": {
+          "min": 8.511600000000001,
+          "median": 9.8037,
+          "max": 14.619700000000003
+        },
+        "invariant-ValidateDemolition": {
+          "min": 1.7321999999999995,
+          "median": 1.951599999999999,
+          "max": 2.4792000000000005
+        },
+        "invariant-ValidateWorkshops": {
+          "min": 36.59119999999998,
+          "median": 41.3087,
+          "max": 48.621499999999976
+        },
+        "invariant-ValidateIndustryDevelopment": {
+          "min": 8.936200000000007,
+          "median": 10.713099999999997,
+          "max": 11.543799999999994
+        },
+        "invariant-ValidateDevelopmentBuildings": {
+          "min": 8.469499999999998,
+          "median": 9.785200000000001,
+          "max": 12.9209
+        },
+        "invariant-ValidateFleet": {
+          "min": 1.574100000000001,
+          "median": 1.686599999999999,
+          "max": 1.9269999999999996
+        },
+        "invariant-ValidateRoads": {
+          "min": 292.00560000000013,
+          "median": 312.0767999999999,
+          "max": 338.3664999999999
+        },
+        "invariant-ValidateBilling": {
+          "min": 1.124800000000001,
+          "median": 1.2965999999999998,
+          "max": 2.1249999999999996
+        },
+        "invariant-ValidateServices": {
+          "min": 0.5859,
+          "median": 0.7673000000000002,
+          "max": 1.1506
+        },
+        "invariant-ValidateServiceExecution": {
+          "min": 0.35930000000000006,
+          "median": 0.5386,
+          "max": 0.6218999999999999
+        },
+        "invariant-ValidateResearchAudit": {
+          "min": 50.37040000000001,
+          "median": 54.711,
+          "max": 63.16449999999998
+        },
+        "invariant-ValidateResources": {
+          "min": 4.970600000000001,
+          "median": 5.019799999999999,
+          "max": 5.0747
+        },
+        "invariant-ValidateExtractionRoutes": {
+          "min": 0.0618,
+          "median": 0.07840000000000001,
+          "max": 0.0966000000000001
+        },
+        "invariant-ValidateTransfers": {
+          "min": 5.3116999999999965,
+          "median": 6.226400000000001,
+          "max": 12.662800000000002
+        },
+        "invariant-accounts-and-inventories": {
+          "min": 8.563499999999996,
+          "median": 9.428000000000004,
+          "max": 11.316199999999995
+        },
+        "invariant-ValidateLaborInvariants": {
+          "min": 1.6212000000000006,
+          "median": 1.6364000000000005,
+          "max": 2.1763000000000003
+        },
+        "invariant-actors": {
+          "min": 0.4265,
+          "median": 0.4975000000000001,
+          "max": 1.0837
+        },
+        "invariant-flows-and-wip": {
+          "min": 12.632300000000004,
+          "median": 13.763000000000002,
+          "max": 15.7135
+        },
+        "invariant-ValidateLandInvariants": {
+          "min": 43.36159999999998,
+          "median": 45.40110000000003,
+          "max": 50.84270000000001
+        },
+        "invariant-ValidateEquipmentInvariants": {
+          "min": 0.14009999999999997,
+          "median": 0.17020000000000002,
+          "max": 0.9763999999999997
+        },
+        "invariant-ValidateNegotiations": {
+          "min": 1.1107999999999998,
+          "median": 1.4211,
+          "max": 1.4244
+        },
+        "invariant-ValidateMarketInvariants": {
+          "min": 0.21480000000000005,
+          "median": 0.44689999999999996,
+          "max": 0.5627
+        },
+        "invariant-ValidateDeliveryInvariants": {
+          "min": 63.64560000000002,
+          "median": 73.41679999999998,
+          "max": 75.62339999999996
+        },
+        "invariant-ValidateLogisticsInvariants": {
+          "min": 0.13070000000000004,
+          "median": 0.18100000000000008,
+          "max": 0.5541000000000007
+        },
+        "invariant-ValidateCapitalDemandInvariants": {
+          "min": 699.8052000000002,
+          "median": 721.1223999999995,
+          "max": 881.085
+        },
+        "invariant-ValidateSupportInvariants": {
+          "min": 16.628999999999994,
+          "median": 19.7457,
+          "max": 20.54490000000001
+        },
+        "invariant-ValidateElectionInvariants": {
+          "min": 44.39329999999998,
+          "median": 46.10110000000001,
+          "max": 50.8997
+        },
+        "history-record": {
+          "min": 1108.6419,
+          "median": 1240.0748,
+          "max": 1513.4892
+        },
+        "travel-quantum": {
+          "min": 2.906200000000006,
+          "median": 4.1221000000000245,
+          "max": 4.711900000000092
+        },
+        "observations": {
+          "min": 529.3902999999998,
+          "median": 575.7300000000002,
+          "max": 646.4540000000001
+        },
+        "policy-and-feedback": {
+          "min": 1937.3665999999996,
+          "median": 2094.0458,
+          "max": 2760.2312000000015
+        },
+        "core-phase-0": {
+          "min": 20.017400000000006,
+          "median": 22.096699999999995,
+          "max": 22.327000000000005
+        },
+        "core-phase-1": {
+          "min": 1.733299999999999,
+          "median": 1.816499999999999,
+          "max": 2.3913
+        },
+        "core-phase-2": {
+          "min": 4.732199999999995,
+          "median": 5.3188,
+          "max": 6.683899999999997
+        },
+        "core-phase-3": {
+          "min": 29.192899999999995,
+          "median": 32.281099999999995,
+          "max": 34.78889999999999
+        },
+        "core-phase-4": {
+          "min": 12.634999999999994,
+          "median": 15.715099999999994,
+          "max": 19.616799999999994
+        },
+        "core-phase-5": {
+          "min": 7.152099999999997,
+          "median": 7.438199999999997,
+          "max": 8.882399999999993
+        },
+        "core-phase-6": {
+          "min": 64.79409999999999,
+          "median": 71.2035,
+          "max": 81.55340000000001
+        },
+        "core-phase-7": {
+          "min": 20.472500000000004,
+          "median": 21.036100000000005,
+          "max": 26.6782
+        },
+        "core-phase-8": {
+          "min": 0.3674000000000001,
+          "median": 0.6502999999999997,
+          "max": 0.8852999999999991
+        },
+        "core-phase-9": {
+          "min": 1484.3411999999998,
+          "median": 1531.0458999999998,
+          "max": 1876.4103000000011
+        },
+        "core-step": {
+          "min": 1648.5837,
+          "median": 1715.1991000000005,
+          "max": 2076.8560000000007
+        },
+        "state-hash": {
+          "min": 1921.6491999999992,
+          "median": 2096.1852999999996,
+          "max": 2725.101399999999
+        },
+        "sampling-including-hash": {
+          "min": 2350.2232999999997,
+          "median": 2567.9865999999993,
+          "max": 3318.796799999999
+        },
+        "save-with-validation": {
+          "min": 2917.7768,
+          "median": 3064.3623,
+          "max": 4303.5788
+        }
+      }
+    },
+    {
+      "map": "large",
+      "version": "before",
+      "repeats": 3,
+      "range": [
+        12600,
+        12700
+      ],
+      "worldHashes": [
+        "e74ac3fb959dec6317aa2d9c3743ab4b7816e28cbc29b8357504f190d5919012"
+      ],
+      "controllerHashes": [
+        "c09fcbca013cf819b13423ec56554227f5d170dff57b4a595f5bb93899dc464e"
+      ],
+      "stats": {
+        "wallSeconds": {
+          "min": 97.018633,
+          "median": 97.2020651,
+          "max": 103.7625112
+        },
+        "peakWorkingSetBytes": {
+          "min": 5848723456,
+          "median": 6195867648,
+          "max": 6357393408
+        },
+        "managedBytes": {
+          "min": 5639377072,
+          "median": 5639377296,
+          "max": 5671931632
+        },
+        "allocatedBytes": {
+          "min": 20365144616,
+          "median": 20365185768,
+          "max": 20365665672
+        }
+      },
+      "phases": {
+        "load-total": {
+          "min": 11966.1342,
+          "median": 12237.3663,
+          "max": 13260.6816
+        },
+        "history-record": {
+          "min": 199.03719999999998,
+          "median": 205.6154,
+          "max": 236.1894
+        },
+        "travel-quantum": {
+          "min": 2.2308999999999903,
+          "median": 2.3417999999999894,
+          "max": 2.5214999999999885
+        },
+        "observations": {
+          "min": 2511.2337,
+          "median": 2611.0861,
+          "max": 2752.2003
+        },
+        "policy-and-feedback": {
+          "min": 5726.4249,
+          "median": 6474.0697,
+          "max": 6605.992200000001
+        },
+        "core-phase-0": {
+          "min": 25.659199999999984,
+          "median": 32.102,
+          "max": 33.4353
+        },
+        "core-phase-1": {
+          "min": 0.5335000000000006,
+          "median": 0.6076000000000003,
+          "max": 0.9784000000000004
+        },
+        "core-phase-2": {
+          "min": 6.430600000000002,
+          "median": 6.519399999999999,
+          "max": 8.504699999999996
+        },
+        "core-phase-3": {
+          "min": 27.638999999999992,
+          "median": 28.975899999999996,
+          "max": 32.4593
+        },
+        "core-phase-4": {
+          "min": 18.840299999999992,
+          "median": 23.51559999999999,
+          "max": 23.89470000000001
+        },
+        "core-phase-5": {
+          "min": 12.9676,
+          "median": 15.634399999999992,
+          "max": 24.790199999999945
+        },
+        "core-phase-6": {
+          "min": 56.26670000000001,
+          "median": 58.01120000000001,
+          "max": 58.8685
+        },
+        "core-phase-7": {
+          "min": 22.390699999999995,
+          "median": 26.7075,
+          "max": 27.926
+        },
+        "core-phase-8": {
+          "min": 0.3849000000000004,
+          "median": 0.4011000000000005,
+          "max": 0.4547000000000005
+        },
+        "core-phase-9": {
+          "min": 51504.64689999998,
+          "median": 54965.22539999998,
+          "max": 55991.29129999999
+        },
+        "core-step": {
+          "min": 51700.1286,
+          "median": 55146.82670000003,
+          "max": 56202.47670000001
+        },
+        "state-hash": {
+          "min": 2489.9674999999997,
+          "median": 2639.3001999999997,
+          "max": 2908.0638999999996
+        },
+        "sampling-including-hash": {
+          "min": 3372.8692,
+          "median": 3537.189799999999,
+          "max": 4288.5183000000025
+        },
+        "save-with-validation": {
+          "min": 12801.1511,
+          "median": 14546.7758,
+          "max": 16998.671
+        }
+      }
+    },
+    {
+      "map": "large",
+      "version": "final-after",
+      "repeats": 3,
+      "range": [
+        12600,
+        12700
+      ],
+      "worldHashes": [
+        "e74ac3fb959dec6317aa2d9c3743ab4b7816e28cbc29b8357504f190d5919012"
+      ],
+      "controllerHashes": [
+        "c09fcbca013cf819b13423ec56554227f5d170dff57b4a595f5bb93899dc464e"
+      ],
+      "stats": {
+        "wallSeconds": {
+          "min": 35.1730543,
+          "median": 36.0789121,
+          "max": 42.4176094
+        },
+        "peakWorkingSetBytes": {
+          "min": 4657291264,
+          "median": 4660494336,
+          "max": 4905037824
+        },
+        "managedBytes": {
+          "min": 4648012344,
+          "median": 4717713072,
+          "max": 4721811872
+        },
+        "allocatedBytes": {
+          "min": 16127883872,
+          "median": 16131509696,
+          "max": 16133069368
+        }
+      },
+      "phases": {
+        "load-total": {
+          "min": 18630.7614,
+          "median": 19907.3154,
+          "max": 22523.7861
+        },
+        "invariant-ValidateProductionContent": {
+          "min": 417.7711000000001,
+          "median": 459.29519999999997,
+          "max": 520.9051999999996
+        },
+        "invariant-ValidateStorage": {
+          "min": 8.789899999999996,
+          "median": 9.6904,
+          "max": 11.037300000000007
+        },
+        "invariant-ValidateDemolition": {
+          "min": 1.687200000000002,
+          "median": 2.4511999999999996,
+          "max": 3.1033000000000017
+        },
+        "invariant-ValidateWorkshops": {
+          "min": 49.49790000000001,
+          "median": 52.45130000000002,
+          "max": 58.98950000000003
+        },
+        "invariant-ValidateIndustryDevelopment": {
+          "min": 12.035500000000026,
+          "median": 12.18070000000003,
+          "max": 18.336599999999986
+        },
+        "invariant-ValidateDevelopmentBuildings": {
+          "min": 9.0032,
+          "median": 9.169799999999999,
+          "max": 10.9748
+        },
+        "invariant-ValidateFleet": {
+          "min": 2.2882000000000002,
+          "median": 2.6990999999999996,
+          "max": 2.7609999999999983
+        },
+        "invariant-ValidateRoads": {
+          "min": 1554.7998000000005,
+          "median": 1656.5732000000003,
+          "max": 1688.5615999999998
+        },
+        "invariant-ValidateBilling": {
+          "min": 1.2122,
+          "median": 1.2841999999999998,
+          "max": 1.3842999999999996
+        },
+        "invariant-ValidateServices": {
+          "min": 0.8402000000000002,
+          "median": 1.0115999999999996,
+          "max": 1.1449000000000005
+        },
+        "invariant-ValidateServiceExecution": {
+          "min": 0.3370000000000001,
+          "median": 0.3409000000000001,
+          "max": 0.49169999999999986
+        },
+        "invariant-ValidateResearchAudit": {
+          "min": 44.51319999999999,
+          "median": 49.08040000000002,
+          "max": 51.00380000000002
+        },
+        "invariant-ValidateResources": {
+          "min": 8.174600000000002,
+          "median": 8.650899999999998,
+          "max": 11.2115
+        },
+        "invariant-ValidateExtractionRoutes": {
+          "min": 0.08100000000000007,
+          "median": 0.08710000000000014,
+          "max": 0.1539
+        },
+        "invariant-ValidateTransfers": {
+          "min": 6.704400000000001,
+          "median": 7.465200000000001,
+          "max": 9.191799999999999
+        },
+        "invariant-accounts-and-inventories": {
+          "min": 7.3934000000000015,
+          "median": 7.6084,
+          "max": 8.031600000000005
+        },
+        "invariant-ValidateLaborInvariants": {
+          "min": 1.376000000000001,
+          "median": 1.5650000000000008,
+          "max": 1.8713000000000004
+        },
+        "invariant-actors": {
+          "min": 0.43500000000000005,
+          "median": 0.46560000000000024,
+          "max": 0.49500000000000005
+        },
+        "invariant-flows-and-wip": {
+          "min": 8.678299999999998,
+          "median": 9.327199999999996,
+          "max": 11.0389
+        },
+        "invariant-ValidateLandInvariants": {
+          "min": 43.99419999999998,
+          "median": 49.750599999999984,
+          "max": 50.85160000000002
+        },
+        "invariant-ValidateEquipmentInvariants": {
+          "min": 0.1531,
+          "median": 0.15499999999999997,
+          "max": 0.1751
+        },
+        "invariant-ValidateNegotiations": {
+          "min": 1.235299999999999,
+          "median": 1.4661000000000002,
+          "max": 1.6465999999999996
+        },
+        "invariant-ValidateMarketInvariants": {
+          "min": 0.15210000000000007,
+          "median": 0.18160000000000007,
+          "max": 0.3785000000000002
+        },
+        "invariant-ValidateDeliveryInvariants": {
+          "min": 60.64899999999999,
+          "median": 68.9415,
+          "max": 78.16550000000001
+        },
+        "invariant-ValidateLogisticsInvariants": {
+          "min": 0.1397,
+          "median": 0.14830000000000013,
+          "max": 0.15610000000000007
+        },
+        "invariant-ValidateCapitalDemandInvariants": {
+          "min": 683.9545999999999,
+          "median": 743.1318999999999,
+          "max": 796.0850000000004
+        },
+        "invariant-ValidateSupportInvariants": {
+          "min": 15.301900000000007,
+          "median": 18.020100000000003,
+          "max": 19.5398
+        },
+        "invariant-ValidateElectionInvariants": {
+          "min": 43.55760000000001,
+          "median": 45.697400000000016,
+          "max": 48.891199999999984
+        },
+        "history-record": {
+          "min": 670.1434,
+          "median": 703.6489,
+          "max": 971.8905
+        },
+        "travel-quantum": {
+          "min": 2.5543999999999936,
+          "median": 2.780499999999993,
+          "max": 2.969299999999998
+        },
+        "observations": {
+          "min": 550.3971,
+          "median": 558.5271999999998,
+          "max": 707.0895000000002
+        },
+        "policy-and-feedback": {
+          "min": 4808.286300000002,
+          "median": 4840.4346000000005,
+          "max": 6328.859899999998
+        },
+        "core-phase-0": {
+          "min": 29.119599999999995,
+          "median": 29.449199999999994,
+          "max": 34.205600000000004
+        },
+        "core-phase-1": {
+          "min": 0.49769999999999986,
+          "median": 0.5214000000000002,
+          "max": 0.5381000000000005
+        },
+        "core-phase-2": {
+          "min": 5.774399999999995,
+          "median": 6.152600000000006,
+          "max": 6.697400000000001
+        },
+        "core-phase-3": {
+          "min": 24.179399999999998,
+          "median": 30.032600000000002,
+          "max": 35.0745
+        },
+        "core-phase-4": {
+          "min": 17.74189999999999,
+          "median": 20.05869999999999,
+          "max": 25.39520000000002
+        },
+        "core-phase-5": {
+          "min": 8.855800000000016,
+          "median": 12.365600000000015,
+          "max": 14.036700000000025
+        },
+        "core-phase-6": {
+          "min": 60.27010000000003,
+          "median": 70.60759999999998,
+          "max": 80.32699999999996
+        },
+        "core-phase-7": {
+          "min": 23.242699999999996,
+          "median": 23.357499999999998,
+          "max": 36.645599999999995
+        },
+        "core-phase-8": {
+          "min": 0.38460000000000005,
+          "median": 0.39520000000000005,
+          "max": 0.4591999999999997
+        },
+        "core-phase-9": {
+          "min": 2402.5711999999994,
+          "median": 2426.7147000000004,
+          "max": 2684.426400000001
+        },
+        "core-step": {
+          "min": 2592.3697000000006,
+          "median": 2615.822400000001,
+          "max": 2908.9138
+        },
+        "state-hash": {
+          "min": 2127.3447000000006,
+          "median": 2183.625500000001,
+          "max": 2655.336400000002
+        },
+        "sampling-including-hash": {
+          "min": 2892.5601999999985,
+          "median": 2954.7777999999985,
+          "max": 3815.615299999999
+        },
+        "save-with-validation": {
+          "min": 3127.9691,
+          "median": 3854.9797,
+          "max": 3866.933
+        }
+      }
+    }
+  ],
+  "inputs": {
+    "work/h1-retained-resume/long-large-districts-6-Hard-42/world/checkpoints/12600-a1.save.json": "8613c2addc7828d7720228cb1d6638c3d592e149b2dc2db2e5f208b52337a59d",
+    "work/h1-retained-resume/long-large-districts-6-Hard-43/world/checkpoints/12600-a1.save.json": "02bd51abbf37c3f311fe34e461dabe16d3f8fb30ade7b5bc0c3d7108bce17440",
+    "work/h1-retained-resume/long-large-districts-6-Medium-42/world/checkpoints/12600-a1.save.json": "1f91e6280d266a13694902d5d924e07dd981d095f55c40638f0fd775940f0656",
+    "work/h1-retained-resume/long-large-districts-6-Medium-43/world/checkpoints/12600-a1.save.json": "2898e396d28eda3a75898627092015fa1cb44f80a51a1d685229794a74bdc91a",
+    "work/h1-retained-resume/long-small-river-6-Hard-42/world/checkpoints/9000-a1.save.json": "98031caed8f18d48e810ddd6bd61d38fdf39cd1eadf0963f767ab8e389f23029",
+    "work/h1-retained-resume/long-small-river-6-Hard-43/world/checkpoints/10800-a1.save.json": "de1297007e62f3830c9aa000edd751a2d54758571780171f5e24717814c13da2",
+    "work/h1-retained-resume/long-small-river-6-Medium-42/world/checkpoints/10800-a1.save.json": "eb70c1915584d9fc351b34768d3961258508b9392ed20cad918702940adbeceb",
+    "work/h1-retained-resume/long-small-river-6-Medium-43/world/checkpoints/10800-a1.save.json": "a550a76131ab52149a6dd8fa6f1dd46b63d776e41b1b181cc1c7e82408ce5023"
+  },
+  "runtimes": {
+    "deep-baseline-runtime": {
+      "Agents.Llm.dll": "476ed56de5831ccd23df86cadcaf9b0adbe120cd52f16e82ef5125080bf8355e",
+      "Simulation.Core.dll": "60285aeeb551f50ae87fb8ea75cc53637905903abd1ccb0e04f96af94dbce2de",
+      "Agents.Algorithmic.dll": "b0eb648f47bba00d440f617bdcbc40da0ee84ef02b16287b2833828cfa78ea80",
+      "Simulation.Hosting.dll": "35f7e2129cb0442c9db8b18353d01486c42a70b6a1c9bccfaf39b4689b13046f",
+      "Research.Runner.dll": "2f3793291031d2ea432f7da04d51c7146f1f1b6eb05b392c448a3c07daf8350e",
+      "Research.Runner.deps.json": "87255c54e03fc1e268a900cc838c7f841b97b838cc9e07d51108f0a47c249157",
+      "Research.Runner.runtimeconfig.json": "9950d4583cfc9a106857c0d5b8a75b53e8774852b57b80bc3823a74d44a4d87f"
+    },
+    "final-runtime": {
+      "Agents.Llm.dll": "bcffca7031e3c1907b76c43065d23d1d10d8605e06597c972b430dd9ca03dbd8",
+      "Simulation.Core.dll": "3fdbe2fb6446e7f69e4d59bc4b1e79ea0d25e066df0075a47108f9d201fb56fc",
+      "Agents.Algorithmic.dll": "72a7e0e85911b92efb457ab737b7cd544528eebe98f120a5dec8c93ca7db67db",
+      "Simulation.Hosting.dll": "5f3f2364c80413199398e3f954ac2754b0b6aa1e42b6fa90cc8cdf3da3f77d52",
+      "Research.Runner.dll": "7941512fe80b666fa4bf40a2dc2fadbff13c886093955709894c24c1d89c636f",
+      "Research.Runner.deps.json": "87255c54e03fc1e268a900cc838c7f841b97b838cc9e07d51108f0a47c249157",
+      "Research.Runner.runtimeconfig.json": "9950d4583cfc9a106857c0d5b8a75b53e8774852b57b80bc3823a74d44a4d87f"
+    },
+    "current-runtime": {
+      "Agents.Llm.dll": "2de6d5b9b40e979108e6cf8fc59a1fb789e9083efbd76d819e69f180835a6865",
+      "Simulation.Core.dll": "2669a848ee74c4f6465fa7a34653a047d75d590d69021139fb38f94f7807a148",
+      "Agents.Algorithmic.dll": "7f02ed1e283aecf40be9dd3dc50ea2100021072f30009e6a93e5123f71b53d2e",
+      "Simulation.Hosting.dll": "af0eb6b563fd09b9a1e007ab6663b3454a8b74baf1089a0ce0656b5781a949cc",
+      "Research.Runner.dll": "adf399a021894a79e9c46a036df0fc5114a998f34daaae77a61bfa140ac61001",
+      "Research.Runner.deps.json": "87255c54e03fc1e268a900cc838c7f841b97b838cc9e07d51108f0a47c249157",
+      "Research.Runner.runtimeconfig.json": "9950d4583cfc9a106857c0d5b8a75b53e8774852b57b80bc3823a74d44a4d87f"
+    }
+  }
+}

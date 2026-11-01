@@ -35,11 +35,13 @@ def main():
     for label in ('before','after'):tasks.append(dict(name=f'{case.name}-{label}-{n+1}',case=case.name,start=start,end=start+100,runtime=label,timeout=600,operation='save'))
   if a.late:tasks.append(dict(name=case.name+'-late',case=case.name,start=start,end=start+1800,runtime='after',timeout=900,operation='save'))
  if not tasks:raise ValueError('No retained H1 checkpoints')
- frozen=dict(inputs=inputs,before=runtime(a.before_runtime),after=runtime(a.after_runtime),tasks=tasks)
+ frozen=dict(inputs=inputs,before=runtime(a.before_runtime),after=runtime(a.after_runtime),helpers={x.name:digest(x) for x in sorted((ROOT/'scripts').glob('*.py'))},tasks=tasks)
  if journal.exists():
   state=json.loads(journal.read_text());assert state['frozen']==frozen,'Inputs, runtime or protocol changed: use a distinct cohort/output'
  else:
-  state=dict(version=1,scope='H2 old movement rules, same saved controllers, all history; timing repeats are not new worlds',host=dict(platform=platform.platform(),cpuCount=os.cpu_count(),python=sys.version),frozen=frozen,attempts=[]);write(journal,state)
+  (out/'helpers').mkdir()
+  for name in frozen['helpers']:(out/'helpers'/name).write_bytes((ROOT/'scripts'/name).read_bytes())
+  state=dict(version=2,scope='H2 old movement rules, same saved controllers, all history; timing repeats are not new worlds',host=dict(platform=platform.platform(),cpuCount=os.cpu_count(),python=sys.version),frozen=frozen,attempts=[]);write(journal,state)
  for task in tasks:
   attempts=[r for r in state['attempts'] if r['task']==task['name']]
   if any(r['status']=='succeeded' for r in attempts):continue

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "dotnet",
+    "build",
+    "Delsk.sln",
+    "-c",
+    "Release",
+    "--no-restore",
+    "--disable-build-servers",
+    "-m:1"
+  ],
+  "timeout_seconds": 180,
+  "started_at": "2026-11-01T11:39:38.332855+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 48.926,
+  "finished_at": "2026-11-01T11:40:27.259730+00:00"
+}

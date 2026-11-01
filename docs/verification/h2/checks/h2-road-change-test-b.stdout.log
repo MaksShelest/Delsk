@@ -1,0 +1,16 @@
+  Discovering: Simulation.Tests
+  Discovered:  Simulation.Tests
+  Starting:    Simulation.Tests
+    Simulation.Tests.H2RoadChangeTests.FootRouteRestoresWhenDirtCompletesDuringItsCurrentOffroadEdge [FAIL]
+      Simulation.Core.CheckpointException : InvalidPathProgress
+      Stack Trace:
+        src/Simulation.Core/CheckpointValidation.cs(117,0): at Simulation.Core.SimulationEngine.ValidateCheckpointState()
+        src/Simulation.Core/Checkpoint.cs(146,0): at Simulation.Core.SimulationEngine.FromCheckpointJson(String json)
+        src/Simulation.Hosting/SessionCheckpoint.cs(104,0): at Simulation.Hosting.GameSession.FromSessionJson(String json, Action beforeStep)
+        src/Simulation.Hosting/CheckpointStore.cs(55,0): at Simulation.Hosting.CheckpointStore.Decode(String json, Action beforeStep)
+        tests/Simulation.Tests/H2RoadChangeTests.cs(14,0): at Simulation.Tests.H2RoadChangeTests.FootRouteRestoresWhenDirtCompletesDuringItsCurrentOffroadEdge()
+           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Finished:    Simulation.Tests (ID = 'b00ba06d382565ef33cd4232e1a7f682a055199d54044b1e7c966bb403320b88')
+=== TEST EXECUTION SUMMARY ===
+   Simulation.Tests  Total: 1, Errors: 0, Failed: 1, Skipped: 0, Not Run: 0, Time: 5.326s

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "scripts/verify_public_economy.py",
+    "work/h2/export-small-after/exports"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T13:50:16.623102+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.918,
+  "finished_at": "2026-11-01T13:50:17.540696+00:00"
+}

@@ -23,12 +23,14 @@ def main():
   else:raise ValueError('Research writer is still active')
  with lock.open('x') as f:f.write(str(os.getpid()))
  atexit.register(lambda:lock.unlink(missing_ok=True))
- runtime=a.runtime.resolve();frozen=dict(checkpointSha256=sha(a.checkpoint),runtime={x.name:sha(x) for x in sorted(runtime.iterdir()) if x.suffix in ('.dll','.json')},extension=a.extension,resumeTicks=a.resume_ticks)
+ runtime=a.runtime.resolve();frozen=dict(checkpointSha256=sha(a.checkpoint),runtime={x.name:sha(x) for x in sorted(runtime.iterdir()) if x.suffix in ('.dll','.json')},helpers={x.name:sha(x) for x in sorted((ROOT/'scripts').glob('*.py'))},extension=a.extension,resumeTicks=a.resume_ticks)
  journal=out/'journal.json'
  if journal.exists():
   state=json.loads(journal.read_text());assert state['frozen']==frozen,'Inputs/binary/protocol changed; use a new cohort/output'
  else:
-  shutil.copytree(runtime,out/'runtime');state=dict(version=1,frozen=frozen,stages={},scope='H2 engineering continuation; original H1 resolved rules and policies; not new economic replicates');write(journal,state)
+  shutil.copytree(runtime,out/'runtime');(out/'helpers').mkdir()
+  for name in frozen['helpers']:shutil.copyfile(ROOT/'scripts'/name,out/'helpers'/name)
+  state=dict(version=2,frozen=frozen,stages={},scope='H2 engineering continuation; original H1 resolved rules and policies; not new economic replicates');write(journal,state)
  assert {name:sha(out/'runtime'/name) for name in frozen['runtime']}==frozen['runtime'],'Retained H2 runtime changed'
  runner=['dotnet',str(out/'runtime/Research.Runner.dll')]
  def run(name,timeout,cmd):
@@ -77,5 +79,7 @@ def main():
    assert h.hexdigest()==expected;archives[str(packed.relative_to(out))]=dict(uncompressedBytes=path.stat().st_size,uncompressedSha256=expected,gzipBytes=packed.stat().st_size,gzipSha256=sha(packed));path.unlink()
  write(out/'trace-archives.json',archives)
  final_state=json.loads((out/'resumed/summary.json').read_text());result=dict(status='succeeded',initialTick=start,checkpointTick=end,finalTick=final,stateHash=final_state['stateHash'],controllerStateHash=final_state['controllerStateHash'],exactExports=len(exact['files']),replayWorldExact=True,independentAccountingAudits=3,independentPublicAudits=3,independentFullHistoryAudits=2,limitsUnchanged=True,originalMovementRetained=True)
- write(out/'verification.json',result);return 0
+ write(out/'verification.json',result)
+ evidence=dict(verification=result,phases={name:json.loads((out/name/'phases.json').read_text()) for name in ['identify','segment','continuous']},traceArchives=archives)
+ write(out/'evidence-summary.json',evidence);print(json.dumps(evidence));return 0
 if __name__=='__main__':sys.exit(main())

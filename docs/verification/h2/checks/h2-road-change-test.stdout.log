@@ -1,0 +1,14 @@
+  Discovering: Simulation.Tests
+  Discovered:  Simulation.Tests
+  Starting:    Simulation.Tests
+    Simulation.Tests.H2RoadChangeTests.FootRouteRestoresWhenDirtCompletesDuringItsCurrentOffroadEdge [FAIL]
+      Assert.Equal() Failure: Values differ
+      Expected: Cell { X = 17, Z = 3 }
+      Actual:   Cell { X = 0, Z = 1 }
+      Stack Trace:
+        tests/Simulation.Tests/H2RoadChangeTests.cs(15,0): at Simulation.Tests.H2RoadChangeTests.FootRouteRestoresWhenDirtCompletesDuringItsCurrentOffroadEdge()
+           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Finished:    Simulation.Tests (ID = 'b00ba06d382565ef33cd4232e1a7f682a055199d54044b1e7c966bb403320b88')
+=== TEST EXECUTION SUMMARY ===
+   Simulation.Tests  Total: 1, Errors: 0, Failed: 1, Skipped: 0, Not Run: 0, Time: 5.627s

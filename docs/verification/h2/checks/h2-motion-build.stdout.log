@@ -1,0 +1,13 @@
+  Simulation.Core -> /workspace/Delsk/src/Simulation.Core/bin/Release/net10.0/Simulation.Core.dll
+  Simulation.Hosting -> /workspace/Delsk/src/Simulation.Hosting/bin/Release/net10.0/Simulation.Hosting.dll
+/workspace/Delsk/src/Agents.Algorithmic/MovementForecasts.cs(8,73): error CS0122: 'RuleViolation' is inaccessible due to its protection level [/workspace/Delsk/src/Agents.Algorithmic/Agents.Algorithmic.csproj]
+/workspace/Delsk/src/Agents.Algorithmic/MovementForecasts.cs(14,110): error CS0122: 'RuleViolation' is inaccessible due to its protection level [/workspace/Delsk/src/Agents.Algorithmic/Agents.Algorithmic.csproj]
+
+Build FAILED.
+
+/workspace/Delsk/src/Agents.Algorithmic/MovementForecasts.cs(8,73): error CS0122: 'RuleViolation' is inaccessible due to its protection level [/workspace/Delsk/src/Agents.Algorithmic/Agents.Algorithmic.csproj]
+/workspace/Delsk/src/Agents.Algorithmic/MovementForecasts.cs(14,110): error CS0122: 'RuleViolation' is inaccessible due to its protection level [/workspace/Delsk/src/Agents.Algorithmic/Agents.Algorithmic.csproj]
+    0 Warning(s)
+    2 Error(s)
+
+Time Elapsed 00:00:27.17

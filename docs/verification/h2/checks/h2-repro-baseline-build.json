@@ -1,0 +1,17 @@
+{
+  "command": [
+    "dotnet",
+    "build",
+    "work/h2/repro-baseline/src/Research.Runner/Research.Runner.csproj",
+    "-c",
+    "Release",
+    "--no-restore",
+    "--disable-build-servers",
+    "-m:1"
+  ],
+  "timeout_seconds": 180,
+  "started_at": "2026-11-01T13:46:27.630435+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 31.591,
+  "finished_at": "2026-11-01T13:46:59.221503+00:00"
+}

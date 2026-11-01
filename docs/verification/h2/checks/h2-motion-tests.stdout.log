@@ -1,0 +1,54 @@
+  Discovering: Simulation.Tests
+  Discovered:  Simulation.Tests
+  Starting:    Simulation.Tests
+    Simulation.Tests.H2MovementTests.FastFootMotionRestoresExactlyInsideEdgeAndKeepsEconomicClockAndWalls [FAIL]
+      System.ArgumentException : Invalid scenario settings
+      Stack Trace:
+        src/Simulation.Core/World.cs(148,0): at Simulation.Core.ScenarioValidation.Validate(ScenarioDefinition s)
+        src/Simulation.Core/SimulationEngine.cs(38,0): at Simulation.Core.SimulationEngine..ctor(ScenarioDefinition config)
+        tests/Simulation.Tests/H2MovementTests.cs(39,0): at Simulation.Tests.H2MovementTests.FastFootMotionRestoresExactlyInsideEdgeAndKeepsEconomicClockAndWalls()
+           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+    Simulation.Tests.H2MovementTests.WalkingLongRoutesCarryFractionalTimeAndMatchRouteForecast(distance: 1, offroad: False) [FAIL]
+      System.ArgumentException : Invalid scenario settings
+      Stack Trace:
+        src/Simulation.Core/World.cs(148,0): at Simulation.Core.ScenarioValidation.Validate(ScenarioDefinition s)
+        src/Simulation.Core/SimulationEngine.cs(38,0): at Simulation.Core.SimulationEngine..ctor(ScenarioDefinition config)
+        tests/Simulation.Tests/H2MovementTests.cs(29,0): at Simulation.Tests.H2MovementTests.WalkingLongRoutesCarryFractionalTimeAndMatchRouteForecast(Int32 distance, Boolean offroad)
+           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+           at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+    Simulation.Tests.H2MovementTests.WalkingLongRoutesCarryFractionalTimeAndMatchRouteForecast(distance: 5, offroad: False) [FAIL]
+      System.ArgumentException : Invalid scenario settings
+      Stack Trace:
+        src/Simulation.Core/World.cs(148,0): at Simulation.Core.ScenarioValidation.Validate(ScenarioDefinition s)
+        src/Simulation.Core/SimulationEngine.cs(38,0): at Simulation.Core.SimulationEngine..ctor(ScenarioDefinition config)
+        tests/Simulation.Tests/H2MovementTests.cs(29,0): at Simulation.Tests.H2MovementTests.WalkingLongRoutesCarryFractionalTimeAndMatchRouteForecast(Int32 distance, Boolean offroad)
+           at InvokeStub_H2MovementTests.WalkingLongRoutesCarryFractionalTimeAndMatchRouteForecast(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+    Simulation.Tests.H2MovementTests.WalkingLongRoutesCarryFractionalTimeAndMatchRouteForecast(distance: 25, offroad: False) [FAIL]
+      System.ArgumentException : Invalid scenario settings
+      Stack Trace:
+        src/Simulation.Core/World.cs(148,0): at Simulation.Core.ScenarioValidation.Validate(ScenarioDefinition s)
+        src/Simulation.Core/SimulationEngine.cs(38,0): at Simulation.Core.SimulationEngine..ctor(ScenarioDefinition config)
+        tests/Simulation.Tests/H2MovementTests.cs(29,0): at Simulation.Tests.H2MovementTests.WalkingLongRoutesCarryFractionalTimeAndMatchRouteForecast(Int32 distance, Boolean offroad)
+           at InvokeStub_H2MovementTests.WalkingLongRoutesCarryFractionalTimeAndMatchRouteForecast(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+    Simulation.Tests.H2MovementTests.WalkingLongRoutesCarryFractionalTimeAndMatchRouteForecast(distance: 100, offroad: False) [FAIL]
+      System.ArgumentException : Invalid scenario settings
+      Stack Trace:
+        src/Simulation.Core/World.cs(148,0): at Simulation.Core.ScenarioValidation.Validate(ScenarioDefinition s)
+        src/Simulation.Core/SimulationEngine.cs(38,0): at Simulation.Core.SimulationEngine..ctor(ScenarioDefinition config)
+        tests/Simulation.Tests/H2MovementTests.cs(29,0): at Simulation.Tests.H2MovementTests.WalkingLongRoutesCarryFractionalTimeAndMatchRouteForecast(Int32 distance, Boolean offroad)
+           at InvokeStub_H2MovementTests.WalkingLongRoutesCarryFractionalTimeAndMatchRouteForecast(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+    Simulation.Tests.H2MovementTests.WalkingLongRoutesCarryFractionalTimeAndMatchRouteForecast(distance: 100, offroad: True) [FAIL]
+      System.ArgumentException : Invalid scenario settings
+      Stack Trace:
+        src/Simulation.Core/World.cs(148,0): at Simulation.Core.ScenarioValidation.Validate(ScenarioDefinition s)
+        src/Simulation.Core/SimulationEngine.cs(38,0): at Simulation.Core.SimulationEngine..ctor(ScenarioDefinition config)
+        tests/Simulation.Tests/H2MovementTests.cs(29,0): at Simulation.Tests.H2MovementTests.WalkingLongRoutesCarryFractionalTimeAndMatchRouteForecast(Int32 distance, Boolean offroad)
+           at InvokeStub_H2MovementTests.WalkingLongRoutesCarryFractionalTimeAndMatchRouteForecast(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Finished:    Simulation.Tests (ID = 'b00ba06d382565ef33cd4232e1a7f682a055199d54044b1e7c966bb403320b88')
+=== TEST EXECUTION SUMMARY ===
+   Simulation.Tests  Total: 8, Errors: 0, Failed: 6, Skipped: 0, Not Run: 0, Time: 32.259s

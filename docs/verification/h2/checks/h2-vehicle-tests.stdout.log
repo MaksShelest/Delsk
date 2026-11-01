@@ -1,0 +1,56 @@
+  Discovering: Simulation.Tests
+  Discovered:  Simulation.Tests
+  Starting:    Simulation.Tests
+    Simulation.Tests.H2VehicleMovementTests.FastManualVehicleStopsAtNextCentreAndRestoresWithinQuantum [FAIL]
+      System.ArgumentException : Invalid resolved map layout
+      Stack Trace:
+        src/Simulation.Core/MapLayout.cs(19,0): at Simulation.Core.ScenarioValidation.<ValidateMapLayout>g__Require|9_0(Boolean valid)
+        src/Simulation.Core/MapLayout.cs(32,0): at Simulation.Core.ScenarioValidation.ValidateMapLayout(ScenarioDefinition s)
+        src/Simulation.Core/World.cs(229,0): at Simulation.Core.ScenarioValidation.Validate(ScenarioDefinition s)
+        src/Simulation.Core/SimulationEngine.cs(38,0): at Simulation.Core.SimulationEngine..ctor(ScenarioDefinition config)
+        tests/Simulation.Tests/H2VehicleMovementTests.cs(24,0): at Simulation.Tests.H2VehicleMovementTests.FastManualVehicleStopsAtNextCentreAndRestoresWithinQuantum()
+           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+    Simulation.Tests.H2VehicleMovementTests.AllBodiesUseSameConversionAndDistanceBillingAcrossLongDirtRoutes(model: "sputnik20") [FAIL]
+      System.ArgumentException : Invalid resolved map layout
+      Stack Trace:
+        src/Simulation.Core/MapLayout.cs(19,0): at Simulation.Core.ScenarioValidation.<ValidateMapLayout>g__Require|9_0(Boolean valid)
+        src/Simulation.Core/MapLayout.cs(32,0): at Simulation.Core.ScenarioValidation.ValidateMapLayout(ScenarioDefinition s)
+        src/Simulation.Core/World.cs(229,0): at Simulation.Core.ScenarioValidation.Validate(ScenarioDefinition s)
+        src/Simulation.Core/SimulationEngine.cs(38,0): at Simulation.Core.SimulationEngine..ctor(ScenarioDefinition config)
+        tests/Simulation.Tests/H2VehicleMovementTests.cs(14,0): at Simulation.Tests.H2VehicleMovementTests.AllBodiesUseSameConversionAndDistanceBillingAcrossLongDirtRoutes(String model)
+           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+           at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+    Simulation.Tests.H2VehicleMovementTests.AllBodiesUseSameConversionAndDistanceBillingAcrossLongDirtRoutes(model: "muravey70") [FAIL]
+      System.ArgumentException : Invalid resolved map layout
+      Stack Trace:
+        src/Simulation.Core/MapLayout.cs(19,0): at Simulation.Core.ScenarioValidation.<ValidateMapLayout>g__Require|9_0(Boolean valid)
+        src/Simulation.Core/MapLayout.cs(32,0): at Simulation.Core.ScenarioValidation.ValidateMapLayout(ScenarioDefinition s)
+        src/Simulation.Core/World.cs(229,0): at Simulation.Core.ScenarioValidation.Validate(ScenarioDefinition s)
+        src/Simulation.Core/SimulationEngine.cs(38,0): at Simulation.Core.SimulationEngine..ctor(ScenarioDefinition config)
+        tests/Simulation.Tests/H2VehicleMovementTests.cs(14,0): at Simulation.Tests.H2VehicleMovementTests.AllBodiesUseSameConversionAndDistanceBillingAcrossLongDirtRoutes(String model)
+           at InvokeStub_H2VehicleMovementTests.AllBodiesUseSameConversionAndDistanceBillingAcrossLongDirtRoutes(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+    Simulation.Tests.H2VehicleMovementTests.AllBodiesUseSameConversionAndDistanceBillingAcrossLongDirtRoutes(model: "vector200") [FAIL]
+      System.ArgumentException : Invalid resolved map layout
+      Stack Trace:
+        src/Simulation.Core/MapLayout.cs(19,0): at Simulation.Core.ScenarioValidation.<ValidateMapLayout>g__Require|9_0(Boolean valid)
+        src/Simulation.Core/MapLayout.cs(32,0): at Simulation.Core.ScenarioValidation.ValidateMapLayout(ScenarioDefinition s)
+        src/Simulation.Core/World.cs(229,0): at Simulation.Core.ScenarioValidation.Validate(ScenarioDefinition s)
+        src/Simulation.Core/SimulationEngine.cs(38,0): at Simulation.Core.SimulationEngine..ctor(ScenarioDefinition config)
+        tests/Simulation.Tests/H2VehicleMovementTests.cs(14,0): at Simulation.Tests.H2VehicleMovementTests.AllBodiesUseSameConversionAndDistanceBillingAcrossLongDirtRoutes(String model)
+           at InvokeStub_H2VehicleMovementTests.AllBodiesUseSameConversionAndDistanceBillingAcrossLongDirtRoutes(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+    Simulation.Tests.H2VehicleMovementTests.AllBodiesUseSameConversionAndDistanceBillingAcrossLongDirtRoutes(model: "trakt_d1") [FAIL]
+      System.ArgumentException : Invalid resolved map layout
+      Stack Trace:
+        src/Simulation.Core/MapLayout.cs(19,0): at Simulation.Core.ScenarioValidation.<ValidateMapLayout>g__Require|9_0(Boolean valid)
+        src/Simulation.Core/MapLayout.cs(32,0): at Simulation.Core.ScenarioValidation.ValidateMapLayout(ScenarioDefinition s)
+        src/Simulation.Core/World.cs(229,0): at Simulation.Core.ScenarioValidation.Validate(ScenarioDefinition s)
+        src/Simulation.Core/SimulationEngine.cs(38,0): at Simulation.Core.SimulationEngine..ctor(ScenarioDefinition config)
+        tests/Simulation.Tests/H2VehicleMovementTests.cs(14,0): at Simulation.Tests.H2VehicleMovementTests.AllBodiesUseSameConversionAndDistanceBillingAcrossLongDirtRoutes(String model)
+           at InvokeStub_H2VehicleMovementTests.AllBodiesUseSameConversionAndDistanceBillingAcrossLongDirtRoutes(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Finished:    Simulation.Tests (ID = 'b00ba06d382565ef33cd4232e1a7f682a055199d54044b1e7c966bb403320b88')
+=== TEST EXECUTION SUMMARY ===
+   Simulation.Tests  Total: 5, Errors: 0, Failed: 5, Skipped: 0, Not Run: 0, Time: 0.860s

@@ -1,0 +1,36 @@
+  Discovering: Simulation.Tests
+  Discovered:  Simulation.Tests
+  Starting:    Simulation.Tests
+    Simulation.Tests.H2RoadStagesTests.BuiltSurfacesKeepTheirCapsAndAccelerateRealVehicles(level: 2, model: "sputnik20") [FAIL]
+      Assert.Equal() Failure: Values differ
+      Expected: Accepted
+      Actual:   Rejected
+      Stack Trace:
+        tests/Simulation.Tests/StorageC1Tests.cs(23,0): at Simulation.Tests.StorageC1Tests.Step(GameSession s, GameAction a, Int64 actor, Boolean accepted)
+        tests/Simulation.Tests/StorageC1Tests.cs(31,0): at Simulation.Tests.StorageC1Tests.Put(GameSession s, InventoryId target, String item, Int64 q, Int64 actor)
+        tests/Simulation.Tests/H2RoadStagesTests.cs(20,0): at Simulation.Tests.H2RoadStagesTests.BuiltSurfacesKeepTheirCapsAndAccelerateRealVehicles(Int32 level, String model)
+           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+           at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+    Simulation.Tests.H2RoadStagesTests.BuiltSurfacesKeepTheirCapsAndAccelerateRealVehicles(level: 3, model: "sputnik20") [FAIL]
+      Assert.Equal() Failure: Values differ
+      Expected: Accepted
+      Actual:   Rejected
+      Stack Trace:
+        tests/Simulation.Tests/StorageC1Tests.cs(23,0): at Simulation.Tests.StorageC1Tests.Step(GameSession s, GameAction a, Int64 actor, Boolean accepted)
+        tests/Simulation.Tests/StorageC1Tests.cs(31,0): at Simulation.Tests.StorageC1Tests.Put(GameSession s, InventoryId target, String item, Int64 q, Int64 actor)
+        tests/Simulation.Tests/H2RoadStagesTests.cs(20,0): at Simulation.Tests.H2RoadStagesTests.BuiltSurfacesKeepTheirCapsAndAccelerateRealVehicles(Int32 level, String model)
+           at InvokeStub_H2RoadStagesTests.BuiltSurfacesKeepTheirCapsAndAccelerateRealVehicles(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+    Simulation.Tests.H2RoadStagesTests.BuiltSurfacesKeepTheirCapsAndAccelerateRealVehicles(level: 3, model: "vector200") [FAIL]
+      Assert.Equal() Failure: Values differ
+      Expected: Accepted
+      Actual:   Rejected
+      Stack Trace:
+        tests/Simulation.Tests/StorageC1Tests.cs(23,0): at Simulation.Tests.StorageC1Tests.Step(GameSession s, GameAction a, Int64 actor, Boolean accepted)
+        tests/Simulation.Tests/StorageC1Tests.cs(31,0): at Simulation.Tests.StorageC1Tests.Put(GameSession s, InventoryId target, String item, Int64 q, Int64 actor)
+        tests/Simulation.Tests/H2RoadStagesTests.cs(20,0): at Simulation.Tests.H2RoadStagesTests.BuiltSurfacesKeepTheirCapsAndAccelerateRealVehicles(Int32 level, String model)
+           at InvokeStub_H2RoadStagesTests.BuiltSurfacesKeepTheirCapsAndAccelerateRealVehicles(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Finished:    Simulation.Tests (ID = 'b00ba06d382565ef33cd4232e1a7f682a055199d54044b1e7c966bb403320b88')
+=== TEST EXECUTION SUMMARY ===
+   Simulation.Tests  Total: 3, Errors: 0, Failed: 3, Skipped: 0, Not Run: 0, Time: 73.404s

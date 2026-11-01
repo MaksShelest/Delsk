@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "scripts/verify_results.py",
+    "work/h2/export-small-before/exports"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T13:49:39.790435+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 2.434,
+  "finished_at": "2026-11-01T13:49:42.224921+00:00"
+}
