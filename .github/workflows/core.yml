@@ -164,6 +164,9 @@ jobs:
           python scripts/run_check.py --name roads-build --timeout 180 -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
       - name: E2 physical works, traffic, continuation and independent audits
         run: python scripts/run_check.py --name roads-e2 --timeout 600 -- python scripts/check_road_e2.py --fixtures artifacts/road-fixtures --output artifacts/roads-e2
+      - name: Publish bounded E2 results and failure diagnostics
+        if: always()
+        run: python scripts/report_check_results.py artifacts artifacts/roads-e2
       - uses: actions/upload-artifact@v4
         if: always()
         with:

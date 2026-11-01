@@ -98,3 +98,19 @@
 - Историческая ground-проверка уточнена: ID сохраняет связь с владельцем/plot,
   но после сноса допустим новый ground ID на той же земле в другой момент;
   внутри одного наблюдения дубль запрещён. Participant.accountId также сверяется.
+
+01.11.2026,14:15UTC — длинные проверки и контракты дорожных fixtures
+
+- CI73c42a4:8/8 retained late миров прошли все14 стадий,31-file continuation,
+  world replay,3accounting/3public/2history audits каждый. Windows/UI оба pass.
+- Полная E2 runner цепочка выявила ошибку рефакторинга тестов: CallerMemberName
+  после выделения CheckFreight/CheckExtraction изменил имена fixture файлов.
+  Старый check_road_e2.py ждёт прежние имена. Восстановлены явным nameof(Fact),
+  H2 fixtures получили собственные имена. Игровые правила/проверки не менялись.
+  В CI добавлен always-print bounded E2 stdout/stderr; исходный failure сохранён.
+- Дополнительные тёплые1800тиков: Small10900→12700,147,14s/0,87GiB peak,
+  Large14400→16200,259,38s/1,54GiB. Реальный save/readback прошёл, envelope
+  4,78/5,34MB, decoded32,79/36,97MB. Это отдельные storage/growth probes;
+  дополнительный replay/audited horizon16200 пока не заявлен.
+- Повторное выполнение нового durable tool с тем же output прошло:14 стадий,
+ 97 helper SHA/copies, контрольные30→40→42, всё31 exact и все8 аудитов.

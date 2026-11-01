@@ -1,0 +1,229 @@
+{
+  "rows": [
+    {
+      "map": "small",
+      "versions": {
+        "before": {
+          "warmLoadSeconds": [
+            13.8627258,
+            13.806845,
+            12.5132181
+          ],
+          "warmPeakGiB": [
+            4.138927459716797,
+            4.172615051269531,
+            4.171699523925781
+          ],
+          "warmMedianSeconds": 13.806845,
+          "envelopeBytes": 42356884,
+          "decodedBytes": 504359339,
+          "exportSeconds": 17.7251165,
+          "exportWallSeconds": 30.9389494,
+          "exportPeakGiB": 5.871730804443359,
+          "exportBytes": {
+            "workshops.json": 347,
+            "research-modifications.json": 2,
+            "scenario.json": 443976,
+            "controllers.json": 39022,
+            "personal-accounts.json": 68589,
+            "elections.json": 50696,
+            "physical-state.json": 82617,
+            "logistics.json": 19,
+            "summary.json": 3101559,
+            "production-content.json": 1482,
+            "market.json": 53,
+            "support.json": 825,
+            "development.json": 7042,
+            "commands.jsonl": 1144838,
+            "services.json": 96,
+            "fleet.json": 1063,
+            "capital-demand.json": 2663496,
+            "final-state.json": 4533786,
+            "agents.csv": 5341140,
+            "public-events.jsonl": 3727588,
+            "negotiations.json": 2,
+            "manifest.json": 40793,
+            "roads.json": 121457,
+            "public-economy.json": 1569,
+            "metrics.csv": 1136890,
+            "demolition.json": 4,
+            "model-decisions.jsonl": 0,
+            "delivery.json": 64,
+            "events.jsonl": 5053892,
+            "ledger.jsonl": 693507,
+            "labor.csv": 694853,
+            "decisions.jsonl": 2374540141,
+            "billing.json": 648
+          }
+        },
+        "after": {
+          "warmLoadSeconds": [
+            7.5900680000000005,
+            7.3036815,
+            9.426349700000001
+          ],
+          "warmPeakGiB": [
+            0.4846534729003906,
+            0.48482513427734375,
+            0.4863929748535156
+          ],
+          "warmMedianSeconds": 7.5900680000000005,
+          "envelopeBytes": 4038713,
+          "decodedBytes": 27474099,
+          "exportSeconds": 11.6054426,
+          "exportWallSeconds": 19.2438784,
+          "exportPeakGiB": 0.6569786071777344,
+          "exportBytes": {
+            "workshops.json": 347,
+            "research-modifications.json": 2,
+            "scenario.json": 443976,
+            "controllers.json": 39022,
+            "personal-accounts.json": 68589,
+            "elections.json": 50696,
+            "physical-state.json": 82617,
+            "logistics.json": 19,
+            "summary.json": 3101558,
+            "production-content.json": 1482,
+            "market.json": 53,
+            "support.json": 825,
+            "development.json": 7042,
+            "commands.jsonl": 1144838,
+            "services.json": 96,
+            "fleet.json": 1063,
+            "capital-demand.json": 2663496,
+            "final-state.json": 4533786,
+            "agents.csv": 5341140,
+            "public-events.jsonl": 3727588,
+            "negotiations.json": 2,
+            "manifest.json": 40793,
+            "roads.json": 121457,
+            "public-economy.json": 1569,
+            "metrics.csv": 1136890,
+            "demolition.json": 4,
+            "model-decisions.jsonl": 0,
+            "delivery.json": 64,
+            "events.jsonl": 5053892,
+            "ledger.jsonl": 693507,
+            "labor.csv": 694853,
+            "decisions.jsonl": 2374540141,
+            "billing.json": 648
+          }
+        }
+      },
+      "exactExports": 31
+    },
+    {
+      "map": "large",
+      "versions": {
+        "before": {
+          "warmLoadSeconds": [
+            14.4816959,
+            12.746236000000001,
+            14.3073903
+          ],
+          "warmPeakGiB": [
+            3.6778488159179688,
+            3.678791046142578,
+            3.7051162719726562
+          ],
+          "warmMedianSeconds": 14.3073903,
+          "envelopeBytes": 37225993,
+          "decodedBytes": 480977180,
+          "exportSeconds": 14.5957981,
+          "exportWallSeconds": 28.5652112,
+          "exportPeakGiB": 3.808940887451172,
+          "exportBytes": {
+            "workshops.json": 290,
+            "research-modifications.json": 2,
+            "scenario.json": 1145579,
+            "controllers.json": 47244,
+            "personal-accounts.json": 69047,
+            "elections.json": 55456,
+            "physical-state.json": 247076,
+            "logistics.json": 19,
+            "summary.json": 3581093,
+            "production-content.json": 1482,
+            "market.json": 53,
+            "support.json": 825,
+            "development.json": 4347,
+            "commands.jsonl": 991420,
+            "services.json": 96,
+            "fleet.json": 1067,
+            "capital-demand.json": 3101960,
+            "final-state.json": 5323825,
+            "agents.csv": 6109727,
+            "public-events.jsonl": 3629531,
+            "negotiations.json": 2,
+            "manifest.json": 49027,
+            "roads.json": 431051,
+            "public-economy.json": 1849,
+            "metrics.csv": 1310137,
+            "demolition.json": 4,
+            "model-decisions.jsonl": 0,
+            "delivery.json": 64,
+            "events.jsonl": 4937074,
+            "ledger.jsonl": 627653,
+            "labor.csv": 266426,
+            "decisions.jsonl": 2846087282,
+            "billing.json": 648
+          }
+        },
+        "after": {
+          "warmLoadSeconds": [
+            8.641026,
+            7.0013576,
+            8.5643613
+          ],
+          "warmPeakGiB": [
+            0.4838905334472656,
+            0.48398590087890625,
+            0.48403167724609375
+          ],
+          "warmMedianSeconds": 8.5643613,
+          "envelopeBytes": 4149009,
+          "decodedBytes": 28141188,
+          "exportSeconds": 15.2595394,
+          "exportWallSeconds": 23.379277,
+          "exportPeakGiB": 1.1621932983398438,
+          "exportBytes": {
+            "workshops.json": 290,
+            "research-modifications.json": 2,
+            "scenario.json": 1145579,
+            "controllers.json": 47244,
+            "personal-accounts.json": 69047,
+            "elections.json": 55456,
+            "physical-state.json": 247076,
+            "logistics.json": 19,
+            "summary.json": 3581092,
+            "production-content.json": 1482,
+            "market.json": 53,
+            "support.json": 825,
+            "development.json": 4347,
+            "commands.jsonl": 991420,
+            "services.json": 96,
+            "fleet.json": 1067,
+            "capital-demand.json": 3101960,
+            "final-state.json": 5323825,
+            "agents.csv": 6109727,
+            "public-events.jsonl": 3629531,
+            "negotiations.json": 2,
+            "manifest.json": 49027,
+            "roads.json": 431051,
+            "public-economy.json": 1849,
+            "metrics.csv": 1310137,
+            "demolition.json": 4,
+            "model-decisions.jsonl": 0,
+            "delivery.json": 64,
+            "events.jsonl": 4937074,
+            "ledger.jsonl": 627653,
+            "labor.csv": 266426,
+            "decisions.jsonl": 2846087282,
+            "billing.json": 648
+          }
+        }
+      },
+      "exactExports": 31
+    }
+  ],
+  "scope": "Same saved world10900/12700: old Session3 vs new Session4, no added simulation ticks,3 serial load repetitions; actual complete exports and all independent audits."
+}

@@ -1,0 +1,7 @@
+{
+  "base": "29cb97d8f8517930d07fe7422139efca0799a009",
+  "instrumentationPatchSha256": "3733928e1c57899f9844ab7ef948624e16820933fecea7d375e63b5f45f98aef",
+  "sameCompleteCheckpointBytes": true,
+  "checkpointSha256": "a88ef68080478eabbe06fc76a82eb365e6477c78d59b0bfc94930caa1de2ba9c",
+  "scope": "Reconstructed baseline with detailed invariant timing hooks vs original frozen before runtime. Same input12600,100ticks, exact whole Session3 envelope12700, not only world hash."
+}

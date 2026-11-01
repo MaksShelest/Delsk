@@ -50,7 +50,7 @@ public class RoadFreightE2Tests
         {Directory.CreateDirectory(debug);File.WriteAllText(Path.Combine(debug,"extraction-stopped.json"),s.Engine.CreateCheckpointJson());}
         Assert.True(bound>0,"Extraction movement did not arrive");Assert.True(bypass,"Extraction did not physically use the bypass");Assert.True(restored,"Expected a restore inside the bypass");s.AdvanceTo(s.Engine.Tick+20);
         Assert.True(FleetE1Tests.Stock(s,machine.StorageId,"wood")>0);Assert.Single(s.Engine.Inspect().Equipment);Assert.Single(s.Engine.InspectFleet()!.Vehicles);
-        Assert.Contains(s.Engine.Ledger(),l=>l.Reason=="EquipmentTravelWages");RoadE2Tests.Exact(s);
+        Assert.Contains(s.Engine.Ledger(),l=>l.Reason=="EquipmentTravelWages");RoadE2Tests.Exact(s,fast?"h2-extraction":nameof(ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad));
     }
     internal static ScenarioDefinition Definition()
     {
@@ -93,6 +93,6 @@ public class RoadFreightE2Tests
         }
         Assert.True(bound>0);Assert.True(bypass);Assert.Contains("Outbound",stages);Assert.Contains("ReturningEmpty",stages);
         Assert.Equal(30,FleetE1Tests.Stock(s,destination,"wood"));Assert.Equal(0,FleetE1Tests.Stock(s,car.CargoInventory,"wood"));
-        Assert.Equal(car.CargoInventory,s.Engine.Observe(new(1)).OwnLogistics.Single().CargoInventory);RoadE2Tests.Exact(s);
+        Assert.Equal(car.CargoInventory,s.Engine.Observe(new(1)).OwnLogistics.Single().CargoInventory);RoadE2Tests.Exact(s,fast?"h2-freight":nameof(ExistingFreightCarriesOneRealCargoThroughPaverBypassAndRestoresEveryStage));
     }
 }

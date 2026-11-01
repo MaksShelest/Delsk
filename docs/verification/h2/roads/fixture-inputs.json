@@ -1,0 +1,43 @@
+{
+  "scope": "Exact authoritative funded work/corner saves supplied to native-final; fixture source plus full game/renderer hashes in source-inputs.json. No save payload or binaries embedded in Git.",
+  "fixtures": {
+    "large_districts-corner.save.json": {
+      "bytes": 466877,
+      "sha256": "829081d26b220f9118efc09936f8b23d88c0b41705e646713c6744efd0d036ac"
+    },
+    "large_districts-work.save.json": {
+      "bytes": 460272,
+      "sha256": "6b7cf92a79c6abf64cb86e9a87118ea000e66ea33b939d5785345a18c2448c36"
+    },
+    "small_river-corner.save.json": {
+      "bytes": 229909,
+      "sha256": "277de82533538de8c2f27b56043184b4f0057238d88ce2fc819ea12fdf521d02"
+    },
+    "small_river-work.save.json": {
+      "bytes": 224948,
+      "sha256": "ea5448227d28ad75fd36068ef6eac88e78b196a7ff2f265cd8740eb1a79b6afc"
+    }
+  },
+  "preparationSources": {
+    "tests/Simulation.Tests/H2RoadSceneTests.cs": {
+      "bytes": 2735,
+      "sha256": "bf7d50149506ecd7d3f0e563335b60b9102f50cddabf1787726f44c5bb6cdc45"
+    },
+    "tests/Simulation.Tests/RoadE2Tests.cs": {
+      "bytes": 13523,
+      "sha256": "2db1b6e601aa57313df73feef7dbe8a5160c870d359cd547273beb2180e825d9"
+    },
+    "tests/Simulation.Tests/StorageC1Tests.cs": {
+      "bytes": 20642,
+      "sha256": "5fadd840e83b3e8fd2798b6d534f8942dc25f45467d4ea5cdfdd7315f2dc91ad"
+    },
+    "tests/Simulation.Tests/FleetE1Tests.cs": {
+      "bytes": 25941,
+      "sha256": "608d3627e15501ed7ddd1a3e43ec57376b2c7743f3f9fdef9eb715057601f680"
+    },
+    "tests/Simulation.Tests/BillingE3Tests.cs": {
+      "bytes": 8281,
+      "sha256": "4e057f4aeffba66391c5ec4fda35ed5e933c6e54b8a83610353f9c3a3f403398"
+    }
+  }
+}
