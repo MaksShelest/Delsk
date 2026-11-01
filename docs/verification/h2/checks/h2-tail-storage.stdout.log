@@ -1,0 +1,16 @@
+  Discovering: Simulation.Tests
+  Discovered:  Simulation.Tests
+  Starting:    Simulation.Tests
+    Simulation.Tests.H2StorageTests.BoundedHistoryTailPreservesCompleteObservationsAfterLoadWithoutChangingSession [FAIL]
+      Assert.Equal() Failure: Strings differ
+                                             ↓ (pos 105)
+      Expected: ···"E9U5SslIoNlXSUUgvykzOUrIx0lAoSS4tTU5Ss0hJzilN1lMrz"···
+      Actual:   ···"E9U5SslIoNlXSUUgvykzOUrIx1lAoSS4tTU5Ss0hJzilN1lMrz"···
+                                             ↑ (pos 105)
+      Stack Trace:
+        tests/Simulation.Tests/H2StorageTests.cs(23,0): at Simulation.Tests.H2StorageTests.BoundedHistoryTailPreservesCompleteObservationsAfterLoadWithoutChangingSession()
+           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Finished:    Simulation.Tests (ID = 'b00ba06d382565ef33cd4232e1a7f682a055199d54044b1e7c966bb403320b88')
+=== TEST EXECUTION SUMMARY ===
+   Simulation.Tests  Total: 7, Errors: 0, Failed: 1, Skipped: 0, Not Run: 0, Time: 18.841s

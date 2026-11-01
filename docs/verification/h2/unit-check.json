@@ -1,10 +1,10 @@
 {
   "status": "succeeded",
-  "passed": 36,
+  "passed": 38,
   "partitions": [
     {
       "file": "tests-h2-0.trx",
-      "passed": 6
+      "passed": 7
     },
     {
       "file": "tests-h2-1.trx",
@@ -36,7 +36,7 @@
     },
     {
       "file": "tests-h2-8.trx",
-      "passed": 3
+      "passed": 4
     },
     {
       "file": "tests-h2-9.trx",

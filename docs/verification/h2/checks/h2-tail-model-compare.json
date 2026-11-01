@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python",
+    "scripts/verify_checkpoint_exports.py",
+    "work/h2/tail-model-safety",
+    "work/h2/tail-model-loaded"
+  ],
+  "timeout_seconds": 15,
+  "started_at": "2026-11-01T17:59:22.131675+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.064,
+  "finished_at": "2026-11-01T17:59:22.195992+00:00"
+}

@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+    "-noColor",
+    "-noLogo",
+    "-parallelMode",
+    "none",
+    "-class",
+    "Simulation.Tests.Developer.DeveloperToolsTests",
+    "-result-trx",
+    "work/h2/tail-developer.trx"
+  ],
+  "timeout_seconds": 180,
+  "started_at": "2026-11-01T17:49:27.513438+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.522,
+  "finished_at": "2026-11-01T17:49:28.035248+00:00"
+}

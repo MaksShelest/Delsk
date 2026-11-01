@@ -79,7 +79,7 @@ Core/invariant, sampling/hash и policy/history нельзя складыват�
 ## Новое движение и реальные кадры
 
 `python scripts/check_headless.py --suite h2 --phase tests --output work/h2-unit`
-проверяет36 ordinary tests с прежним120s пределом каждой части. Дополнительно
+проверяет38 ordinary tests с прежним120s пределом каждой части. Дополнительно
 действующий check_npc_g1.py на обеих картах/3/6/10NPC делает новую1800-tick
 непрерывную игру, checkpoint900/load и replay; это отдельная Movement1 когорта.
 
@@ -93,3 +93,27 @@ python scripts/check_h2_roads.py --godot /path/to/Godot --fixtures work/road-fix
 24 viewport PNG, native-check, исходные SHA и ordinary AssemblyAudit сохраняются.
 Probe внедряется только в отдельную копию; обычный клиент его не содержит.
 Хеши и bounds дополняют ручной просмотр каждого вида/скина.
+
+
+## Ограниченный хвост Developer-журнала
+
+Журнал показывает последние256 записей и не должен сначала разворачивать
+всю историю. После обычной сборки на большом сохранении12700:
+
+```sh
+python scripts/run_check.py --name trace-tail --timeout 600 --log-directory work/checks -- dotnet src/Research.Runner/bin/Release/net10.0/Research.Runner.dll --measure-session AFTER.save.json --operation tail --output work/trace-tail
+python scripts/verify_h2_trace_tail.py work/export-after/exports work/trace-tail --output work/trace-tail/verification.json
+```
+
+Probe сериализует/хеширует только последний хвост, проверка независимо читает
+полный JSONL/gzip потоком и сверяет каждое наблюдение, actor/tick и итоговые хеши.
+Полная история остаётся доступна отдельно. API ControllerTurnsTail выбирает
+диапазон до декодирования DTO; DeveloperTools использует его, model safety
+проверяет metadata. Явная материализация ControllerTurns по-прежнему полная.
+
+
+Для безопасного перехода на новую скорость заранее скопируйте рабочий
+`user://play-<режим>-production-recipes-1.json` в отдельный архивный файл/папку.
+Автоматический `.bak` ротируется и не заменяет такую копию. Затем начните новую
+обычную партию; загрузка сохранённой старой копии оставляет прежнюю скорость.
+Не меняйте вручную movement/schema или принятые quotes внутри старого save.

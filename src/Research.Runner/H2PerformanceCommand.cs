@@ -26,6 +26,19 @@ internal static class H2PerformanceCommand
             {stage="save";Save();mark=metrics.Start();CheckpointStore.Save(session,Path.Combine(directory,"world.save.json"));metrics.End("save-with-validation",mark);}
             else if(operation=="export")
             {stage="export";Save();mark=metrics.Start();RunArtifacts.Export(session,session.Engine.Configuration(),Path.Combine(directory,"exports"),"H2-measure","loaded",wall.Elapsed.TotalMilliseconds);metrics.End("export",mark);}
+            else if(operation=="tail")
+            {
+                stage="trace-tail";Save();mark=metrics.Start();int count=0;
+                using(var writer=new StreamWriter(Path.Combine(directory,"trace-tail.jsonl")))
+                    foreach(var turn in session.ControllerTurnsTail(256))
+                    {
+                        string observation=JsonSerializer.Serialize(turn.Observation,SimulationJson.Options);
+                        string hash=Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(observation)));
+                        writer.WriteLine(JsonSerializer.Serialize(new{turn.Tick,turn.Actor,ObservationSha256=hash,PreviewCharacters=Math.Min(observation.Length,16384)},SimulationJson.Options));++count;
+                    }
+                if(count!=Math.Min(256,session.ControllerTurnCount))throw new InvalidOperationException("Incomplete bounded history tail");
+                metrics.End("trace-tail-256",mark);
+            }
             else if(operation!="step")throw new ArgumentException("Unknown operation");
             stage="succeeded";Save();return 0;
         }

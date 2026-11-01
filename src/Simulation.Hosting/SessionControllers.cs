@@ -69,6 +69,11 @@ public sealed partial class GameSession
     public ControllerCheckpoint[] ControllerStates => _unrestoredControllers.Length > 0 ? _unrestoredControllers.ToArray() :
         _controllers.OrderBy(c => c.Actor.Value).Select(c => c.Capture()).ToArray();
     public IEnumerable<ControllerTurn> EnumerateControllerTurns()=>_observationPool is null?_controllerTurns:_observationPool.Enumerate();
+    public IEnumerable<ControllerTurn> ControllerTurnsTail(int count)
+    {
+        if(count<0)throw new ArgumentOutOfRangeException(nameof(count));
+        return _observationPool is null?_controllerTurns.TakeLast(count):_observationPool.Enumerate(Math.Max(0,_observationPool.Count-count));
+    }
     public IEnumerable<ControllerTurn> ControllerTurnMetadata=>_observationPool is null?_controllerTurns:_observationPool.Metadata();
     public int ControllerTurnCount=>_observationPool?.Count??_controllerTurns.Count;
     public ControllerTurn[] ControllerTurns => EnumerateControllerTurns().ToArray();

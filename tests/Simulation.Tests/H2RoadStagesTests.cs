@@ -28,6 +28,18 @@ public class H2RoadStagesTests
             }
             StorageC1Tests.Move(s,new(19,2));RoadE2Tests.Step(s,new(ActionKind.LeaveVehicle));
             var car=BillingE3Tests.Car(s,model,2);long eta=fast==1?MovementTiming.PersonalTicks(s.Engine.ObserveController(new(2),true),new(6,1),new(18,1)):0;
+            if(fast==1&&level==3&&model=="vector200")
+            {
+                if(s.Engine.InspectFleet()!.Vehicles.Single(v=>v.Id==car.Id).FacingX==-1)
+                    RoadE2Tests.Step(s,new(ActionKind.TurnVehicle,VehicleId:car.Id),2);
+                s.SetTravelHeading(new(2),1,0);s.AdvanceTravelQuantum();
+                var partial=s.Engine.InspectRoads()!.Traffic.Single(t=>t.VehicleId==car.Id);
+                Assert.True(partial.ProgressFraction==500000,System.Text.Json.JsonSerializer.Serialize(partial,SimulationJson.Options));
+                var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));
+                for(int q=0;q<13;q++){s.AdvanceTravelQuantum();copy.AdvanceTravelQuantum();Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());}
+                s.SetTravelHeading(new(2),0,0);s.CompleteTravelTick();s.Step();StorageC1Tests.Move(s,new(4,1),2);StorageC1Tests.Move(s,new(6,1),2);
+                eta=MovementTiming.PersonalTicks(s.Engine.ObserveController(new(2),true),new(6,1),new(18,1));
+            }
             times[fast]=H2MovementTests.MoveTime(s,new(18,1),2);if(fast==1){Assert.Equal(eta,times[fast]);RoadE2Tests.Exact(s,"h2-surface-"+level+model);}
             Assert.Equal(new[]{20,40,60},s.Engine.EconomyRules.Roads!.Stages.Select(r=>r.Speed));
         }

@@ -1,0 +1,15 @@
+  Discovering: Simulation.Tests
+  Discovered:  Simulation.Tests
+  Starting:    Simulation.Tests
+    Simulation.Tests.H2HighwayTruckTests.HighwayStillCapsAtModelFortyFive [FAIL]
+      Assert.Equal() Failure: Values differ
+      Expected: 500000
+      Actual:   0
+      Stack Trace:
+        tests/Simulation.Tests/H2RoadStagesTests.cs(34,0): at Simulation.Tests.H2RoadStagesTests.Run(Int32 level, String model)
+        tests/Simulation.Tests/H2RoadStagesTests.cs(51,0): at Simulation.Tests.H2HighwayTruckTests.HighwayStillCapsAtModelFortyFive()
+           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Finished:    Simulation.Tests (ID = 'b00ba06d382565ef33cd4232e1a7f682a055199d54044b1e7c966bb403320b88')
+=== TEST EXECUTION SUMMARY ===
+   Simulation.Tests  Total: 1, Errors: 0, Failed: 1, Skipped: 0, Not Run: 0, Time: 45.555s

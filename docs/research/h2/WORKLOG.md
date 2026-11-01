@@ -126,3 +126,39 @@
   deadlines сохранены. Функциональные953inputs отделены от report-only changes.
 - Оставшиеся ordinary5000/первая legacy-конверсия/20–35ч/полный JSONL явно
   перечислены в отчёте. H3 не начат, автослияние не включалось.
+
+01.11.2026,17:50UTC — bounded Developer history read
+
+- Финальная проверка production callers нашла ControllerTurns.ToArray().TakeLast
+  в DeveloperTools. API ControllerTurnsTail выбирает диапазон до декодирования;
+  видимые записи и полная сохранённая история прежние. Model safety использует
+  metadata, поскольку наблюдения при этой проверке не читаются.
+- На Large12700: load+tail/SHA16,12s, tail7,66s, peak1,25GiB. Независимый streaming
+  verifier подтвердил256 точных observation SHA/actor/tick против2,85GB полного
+  экспорта. Это не заявленный paired speedup Developer UI или аппаратный FPS.
+-7 storage tests прошли, включая whole-save equality до/после чтения. Первый
+  новый тест сравнивал разные load epochs; исправлен baseline самого теста,
+  правило Epoch+1 при load сохранено. Исходный failed TRX/log сохранён.
+- Первый Developer запуск имел неправильный namespace и0tests (не pass).
+  Правильный Simulation.Tests.DeveloperToolsTests:19passed,0fail/skip.
+- Python corruption/cache/partition/audit suite:32passed. Все3 CI workflows
+  на1b42948 завершились success до этого read-side изменения. Повторяются
+ 37H2/native и model safety, функциональные fingerprints обновляются отдельно.
+
+01.11.2026,18:15UTC — fractional road save regression
+
+- Дополнительный highway45 mid-quantum test сначала корректно встретил
+  TurnRequired: ручной противоположный курс требует явного разворота. Setup
+  исправлен обычным TurnVehicle, правило управления не обходилось.
+- Затем получен реальный NotCommittedTick при112 единицах BillingDistance:
+  межквантовый predicate оставался≤80. Исправлен только Movement1 на cap модели/
+  покрытия×2,5 с округлением вверх. TrafficCellEntered хранит nominal speed≤80;
+  разрешён также для нового unbilled E2, где денежного события вообще нет.
+  Legacy predicate80, owner/type/phase/command/amount guards сохранены.
+- Highway45: progressFraction500000, сохранение,13квантов exact continuation,
+  возврат через законный разворот, ETA/полный replay прошли. Отдельный unbilled
+  manual cell entry→save/load также pass; новый38й test включён в H2 suite.
+- Все38 ordinary H2 tests прошли в полном13-part запуске без skips/failures.
+  Native повторяется на окончательном BillingValidation source; правила денег,
+  производства и обработки не менялись. Полный CI1b42948 ранее success во всех
+  трёх workflows, последняя корректировка будет собственным новым коммитом.

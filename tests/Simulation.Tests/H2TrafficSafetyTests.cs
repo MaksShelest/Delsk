@@ -4,6 +4,18 @@ using Xunit;
 namespace Simulation.Tests;
 public class H2TrafficSafetyTests
 {
+    [Fact]public void UnbilledNewProfileRestoresAfterManualCellEntryBetweenEconomicTicks()
+    {
+        var d=H2MovementTests.LongRoad(true);d=d with{Economy=d.Economy! with{Billing=null}};
+        var s=new GameSession(new(d));var car=BillingE3Tests.Car(s);
+        if(s.Engine.InspectFleet()!.Vehicles.Single(v=>v.Id==car.Id).FacingX==-1)
+            RoadE2Tests.Step(s,new(ActionKind.TurnVehicle,VehicleId:car.Id));
+        s.SetTravelHeading(new(1),1,0);for(int q=0;q<17;q++)s.AdvanceTravelQuantum();
+        Assert.Equal(7,s.Engine.TravelQuantum);Assert.Equal(new Cell(7,1),s.Engine.Observe(new(1)).Participant.Position);
+        var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));
+        for(int q=0;q<33;q++){s.AdvanceTravelQuantum();copy.AdvanceTravelQuantum();Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());}
+        Assert.Null(s.Engine.InspectBilling());s.SetTravelHeading(new(1),0,0);s.CompleteTravelTick();RoadE2Tests.Exact(s,"h2-unbilled-manual-entry");
+    }
     [Fact]public void OpposingAcceleratedVehiclesYieldWithoutPushingAndRestoreWhileWaiting()
     {
         var d=BillingE3Tests.Prepared();var s=new GameSession(new(d with{Economy=d.Economy! with{Movement=new()}}));

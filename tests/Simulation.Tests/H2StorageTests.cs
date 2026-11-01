@@ -11,6 +11,17 @@ namespace Simulation.Tests;
 
 public class H2StorageTests
 {
+    [Fact]public void BoundedHistoryTailPreservesCompleteObservationsAfterLoadWithoutChangingSession()
+    {
+        var s=Frozen();string before=CheckpointStore.Encode(s);
+        var expected=s.ControllerTurns.TakeLast(3).ToArray();
+        var copy=CheckpointStore.Decode(before);Restore(copy);string copyBefore=CheckpointStore.Encode(copy);
+        Assert.Equal(JsonSerializer.Serialize(expected,SimulationJson.Options),JsonSerializer.Serialize(copy.ControllerTurnsTail(3),SimulationJson.Options));
+        Assert.All(copy.ControllerTurnsTail(3),t=>Assert.NotNull(t.Observation));
+        Assert.Empty(copy.ControllerTurnsTail(0));Assert.Equal(s.ControllerTurnCount,copy.ControllerTurnsTail(int.MaxValue).Count());
+        Assert.Throws<ArgumentOutOfRangeException>(()=>copy.ControllerTurnsTail(-1));
+        Assert.Equal(copyBefore,CheckpointStore.Encode(copy));
+    }
     internal static GameSession Frozen()
     {
         using var data=typeof(H2StorageTests).Assembly.GetManifestResourceStream("Fixture.h1-session3-g2-smoke.json.gz")!;

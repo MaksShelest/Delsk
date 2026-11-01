@@ -1,0 +1,58 @@
+{
+  "status": "succeeded",
+  "passed": 37,
+  "partitions": [
+    {
+      "file": "tests-h2-0.trx",
+      "passed": 7
+    },
+    {
+      "file": "tests-h2-1.trx",
+      "passed": 8
+    },
+    {
+      "file": "tests-h2-2.trx",
+      "passed": 5
+    },
+    {
+      "file": "tests-h2-3.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-h2-4.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-h2-5.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-h2-6.trx",
+      "passed": 2
+    },
+    {
+      "file": "tests-h2-7.trx",
+      "passed": 3
+    },
+    {
+      "file": "tests-h2-8.trx",
+      "passed": 3
+    },
+    {
+      "file": "tests-h2-9.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-h2-10.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-h2-11.trx",
+      "passed": 3
+    },
+    {
+      "file": "tests-h2-12.trx",
+      "passed": 1
+    }
+  ]
+}

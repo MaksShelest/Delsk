@@ -17,7 +17,9 @@ H3 не начат. Результаты новой версии движени�
 
 Сохранения без этого поля сохраняют прежний темп. Новая геометрия движения
 имеет World29, старая — World28; старый reader не примет новый мир молча.
-Для безопасного перехода оставьте исходное сохранение и начните новую партию.
+Для безопасного перехода сначала отдельно скопируйте рабочий
+`user://play-<режим>-production-recipes-1.json` в архивный файл/папку, затем начните
+новую партию. `.bak` автоматически ротируется и не заменяет отдельную копию.
 Внутреннего переключателя правил посреди поездки нет. Принятые цены/сроки
 старых заказов не переоцениваются. Новый Session4 читает Session1–3,
 Envelope2 и пределы64/512MiB прежние.
@@ -170,6 +172,15 @@ JSONL decisions остаётся2 374 540 141/2 846 087 282байт: одина�
 хеши, что исходный frozen before runtime. Новые helper journals имеют version2:
 фиксируют SHA Python tools и их копии, не подменяя прежние v1 attempts.
 
+Финальная проверка потребителей истории нашла ещё один путь большого расхода
+памяти: DeveloperTools делал ControllerTurns.ToArray перед выбором последних256.
+Теперь диапазон выбирается до декодирования DTO; видимые наблюдения/решения
+журнала сохранены. Model safety читает metadata. На Large12700 загрузка+чтение/
+сериализация/SHA хвоста заняли16,12s, из них хвост7,66s, peak1,25GiB. Это не
+парный speedup UI. Независимый streaming audit подтвердил все256 наблюдений
+против полного2,85GB экспорта; хеши мира/контроллеров прежние. Добавлен тест
+полного сохранения до/после чтения. Данные — в verification/h2/trace-tail.
+
 ## Поздние миры, восстановление и независимые проверки
 
 Все8 оригинальных late H1 checkpoints прошли следующий прежде неудачный
@@ -205,26 +216,40 @@ decoded32,79/36,97MB. [Данные](verification/h2/performance/warm-growth-sum
 
 Проверки программного объёма:
 
-- 36 H2 tests: старый golden848deb54, Session1–3→4, весь архив/повреждения,
+- 38 H2 tests: старый golden848deb54, Session1–3→4, весь архив/повреждения,
   новая физика/ETA/сервисы/логистика/встречные машины/объезды/ручное управление,
   save/load/replay в движении и при завершении покрытия.
 - 27 прежних E2 tests; полный E2 runner51процесс/35экспортов/24сравнения после
   восстановления старых имён fixtures. [Gate](verification/h2/road-run-check.json).
-- 30 Python corruption/partition/cache/audit tests прошли.
+- 32 Python corruption/partition/cache/audit tests прошли.
 - Прежние ordinary/Developer suites и runner gates Core/production/fleet/billing/
-  services/service-runs, NPC actions сохранены. Результаты CI доступны по [runs](https://github.com/MaksShelest/Delsk/actions).
+  services/service-runs, NPC actions сохранены. Результаты CI доступны по [runs](https://github.com/MaksShelest/Delsk/actions). Полный
+  [Core run1b42948](https://github.com/MaksShelest/Delsk/actions/runs/41316937134)
+  и late/platform того же коммита прошли; последующий read-side fix проверен отдельно.
 - Новая Movement1 когорта: обе карты×3/6/10NPC,1800тиков, checkpoint900/load,
   все файлы продолжения и command replay совпали; бухгалтерские и публичные
   проверки прошли. Один seed42/Medium, это smoke, не калибровка Hard или баланса.
 - Windows replay и city UX UI прошли в [platform run](https://github.com/MaksShelest/Delsk/actions/runs/41313520899).
   Native roads отдельно:24 настоящих viewport PNG,689 source inputs всё ещё совпадают.
 
-[953 функциональных исходника](verification/h2/functional-inputs.json) зафиксированы
+[955 функциональных исходников](verification/h2/functional-inputs.json) зафиксированы
 отдельно от отчётных файлов. [История CI failures](verification/h2/ci-history.json). В финальном
 required verify H2 suite включён как обязательная зависимость; старые suites,
 процессы600/900s и прочие пределы не ослаблены. Первые CI failures сохранены:
 минимальная billing fixture/разбиение suite, исторический ground inventory audit,
 имена двух E2 fixtures. Исправления проверялись повторно, ошибки не объявлялись pass.
+
+Дополнительная проверка дробного движения обнаружила реальный отказ сохранения
+между квантами на быстром покрытии: IsBillingTravelEvent ещё ограничивал
+BillingDistance прежними80 единицами. Для Movement1 предел теперь выводится
+из модели и покрытия: ceil(min(speed,cap)×2,5). TrafficCellEntered по-прежнему
+содержит номинальную скорость и ограничен80. Владельцы, phase9, виды событий,
+отсутствие command/amount и проходимая реальная дорога проверяются; произвольные
+экономические события после commit не разрешены. В новой E2-конфигурации без
+счетов допускается только физический TrafficCellEntered. Старый профиль
+сохраняет прежний predicate80. На модели45 реально сохранены/восстановлены
+500000 микродолей progress,13 последующих квантов совпали; unbilled crossing
+также проверен отдельным тестом. Новые тесты входят в итоговые38.
 
 ## Баланс и исправление вывода H1
 

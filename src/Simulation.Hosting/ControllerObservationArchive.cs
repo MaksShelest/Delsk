@@ -41,9 +41,9 @@ internal sealed class ControllerObservationPool
         }
         return value;
     }
-    internal IEnumerable<ControllerTurn> Enumerate()
+    internal IEnumerable<ControllerTurn> Enumerate(int start=0)
     {
-        foreach(var item in _turns)
+        foreach(var item in _turns.Skip(start))
         {
             var observation=JsonSerializer.Deserialize<ControllerObservation>("{}",SimulationJson.Options)!;
             for(int p=0;p<Properties.Length;p++)Properties[p].SetValue(observation,Read(p,item.Fields[p]));

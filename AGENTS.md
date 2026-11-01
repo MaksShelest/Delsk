@@ -1,7 +1,13 @@
 ## H2,01.11.2026 — текущая реализация и проверенные границы
 
 - PR76 без auto merge. Отчёт IMPLEMENTATION_REPORT_H2.md, воспроизведение
-  research/h2/README.md;36 H2 tests,24 native PNG,8 late original H1 continuations.
+  research/h2/README.md;38 H2 tests,24 native PNG,8 late original H1 continuations.
+- Developer journal: брать ControllerTurnsTail(capacity) до декодирования;
+  Model safety использует metadata. Полная история не удаляется.
+- Межквантовый checkpoint: BillingDistance — реальная дистанция, Movement1
+  может превышать80; предел ceil(min(model,road cap)×2,5). TrafficCellEntered
+  содержит номинальную speed≤80; в новом unbilled E2 также сохраняем этот witness.
+  Legacy predicate80 неизменён, экономические события между ticks не разрешать.
 - Primary old-profile n3 comparisons: одинаковые полные31 exports, деньги,
   controllers/history/routes; warm save/load и восстановление инструментов.
 - Исходный ordinary maxTicks5000 не повышался. Late inputs имеют прежде
