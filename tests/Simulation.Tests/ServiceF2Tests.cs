@@ -26,11 +26,11 @@ public class ServiceF2Tests
     {Navigate(s,id);Step(s,new(ActionKind.PickupDeliveryService,ServiceId:id));Until(s,()=>Run(s).Stage=="ToDestination");}
     internal static void Deliver(GameSession s,long id)
     {Navigate(s,id);Step(s,new(ActionKind.UnloadDeliveryService,ServiceId:id));Until(s,()=>Run(s).Cargo==0);}
-    internal static void Exact(GameSession s,string name)
+    internal static void Exact(GameSession s,string name,bool replay=true)
     {
         var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());
         for(int i=0;i<3;i++){s.Step();copy.Step();Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());}
-        var replay=GameSession.Replay(s.Engine.Configuration(),s.CommandTape,s.Engine.Tick);Assert.Equal(s.Engine.ComputeStateHash(),replay.Engine.ComputeStateHash());
+        if(replay){var repeated=GameSession.Replay(s.Engine.Configuration(),s.CommandTape,s.Engine.Tick);Assert.Equal(s.Engine.ComputeStateHash(),repeated.Engine.ComputeStateHash());}
         if(Environment.GetEnvironmentVariable("DELSK_F2_EVIDENCE") is not {} output)return;
         Directory.CreateDirectory(output);File.WriteAllText(Path.Combine(output,name+".json"),JsonSerializer.Serialize(s.Engine.Configuration(),SimulationJson.Options));
         File.WriteAllText(Path.Combine(output,name+".commands.jsonl"),string.Join('\n',s.CommandTape.Select(c=>JsonSerializer.Serialize(c,SimulationJson.Options)))+"\n");

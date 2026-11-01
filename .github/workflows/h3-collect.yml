@@ -1,0 +1,64 @@
+name: H3 retained measurement collection
+on:
+  pull_request:
+    types: [synchronize]
+    paths: ['docs/research/h3/collect.json']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Extract original journals, successful segment metrics and both audits
+        uses: actions/github-script@v7
+        env:
+          H3_ARTIFACT_TOKEN: ${{ github.token }}
+        with:
+          script: |
+            const fs=require('fs'), cp=require('child_process');
+            const config=JSON.parse(fs.readFileSync('docs/research/h3/collect.json','utf8'));
+            if(!Number.isSafeInteger(config.run)||config.run<=0)throw Error('Invalid retained run');
+            const run=await github.rest.actions.getWorkflowRun({...context.repo,run_id:config.run});
+            if(run.data.status!='completed')throw Error('Source measurement run still active; do not silently publish a partial collection');
+            const artifacts=await github.paginate(github.rest.actions.listWorkflowRunArtifacts,{...context.repo,run_id:config.run,per_page:100});
+            const worlds=artifacts.filter(a=>a.name.startsWith('h3-')&&!a.expired);
+            fs.mkdirSync('work/analysis',{recursive:true});
+            fs.writeFileSync('work/analysis/source-artifacts.json',JSON.stringify({run:run.data,artifacts},null,2));
+            for(const a of worlds){
+              const endpoint=`https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/actions/artifacts/${a.id}/zip`;
+              const response=await fetch(endpoint,{headers:{Authorization:'Bearer '+process.env.H3_ARTIFACT_TOKEN,Accept:'application/vnd.github+json'},redirect:'manual'});
+              if(response.status!==302)throw Error('Artifact redirect status '+response.status);
+              const location=response.headers.get('location');await response.arrayBuffer();
+              const result=cp.spawnSync('python',['scripts/collect_h3_artifact.py','--url-stdin','--output','work/evidence'],{encoding:'utf8',input:JSON.stringify({url:location})});
+              process.stdout.write(result.stdout||'');process.stderr.write(result.stderr||'');
+              if(result.status!==0)throw Error('Invalid/missing original world journal: '+a.name);
+            }
+      - name: Require all192 worlds and verify original audits before statistics
+        run: python scripts/analyze_h3.py --study work/evidence --output work/analysis --require-complete-collection
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h3-audited-summary
+          path: |
+            work/analysis/
+            work/evidence/
+          retention-days: 90
+      - name: Preserve verified compact measurements in the authorized H3 branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/verification/h3/economy
+          cp work/analysis/summary.json work/analysis/observations.json.gz work/analysis/collection-verification.json work/analysis/source-artifacts.json docs/verification/h3/economy/
+          git config user.name MaksShelest
+          git config user.email 195903640+MaksShelest@users.noreply.github.com
+          git add docs/verification/h3/economy
+          git commit -m 'H3: preserve original audited world measurements without rerunning them'
+          git push origin HEAD:refs/heads/feat/vnext-h3-compact-acceptance

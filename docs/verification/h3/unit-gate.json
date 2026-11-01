@@ -1,0 +1,32 @@
+{
+  "suite": "h3",
+  "status": "succeeded",
+  "testsPassed": 19,
+  "testPartitions": [
+    {
+      "file": "tests-h3-0.trx",
+      "passed": 11
+    },
+    {
+      "file": "tests-h3-1.trx",
+      "passed": 4
+    },
+    {
+      "file": "tests-h3-2.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-h3-3.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-h3-4.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-h3-5.trx",
+      "passed": 1
+    }
+  ],
+  "scope": "Exhaustive ordinary unit phase; runner checks are a separate required gate"
+}

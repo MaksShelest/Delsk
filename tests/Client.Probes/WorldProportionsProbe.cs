@@ -1,6 +1,7 @@
 using Godot;
 using Simulation.Core;
 using Simulation.Hosting;
+using Agents.Algorithmic;
 using System.Reflection;
 using System.Text.Json;
 
@@ -102,7 +103,40 @@ public partial class WorldProportionsProbe : Control
             }
             var copy=CheckpointStore.Decode(CheckpointStore.Encode(session));Check(copy.Engine.ComputeStateHash()==hash,"Save restore changed geometry/state");
             Check(JsonSerializer.Serialize(copy.Engine.Configuration(),SimulationJson.Options)==JsonSerializer.Serialize(scenario,SimulationJson.Options),"Restore substituted map");
-            System.IO.File.WriteAllText(output+"/native-check.json",JsonSerializer.Serialize(new{status="succeeded",map,participantCount=scenario.Participants.Length,prepared=args.Contains("--load"),layout=scenario.Layout?.Version,measures,checks=new[]{"real Playfield and resolved "+scenario.Participants.Length+"-participant world","both skin families, six camera views per designed map","skin change preserves authoritative world","cell picking at close/district/overview scales","checkpoint preserves exact resolved geometry"},scope="Native Godot/X11 software renderer; camera framed in isolated probe; not physical device acceptance"},new JsonSerializerOptions{WriteIndented=true}));
+            if(args.Contains("--natural-save"))
+            {
+                Check(session.ControllerStates.Any(c=>c.Kind==SelfBallotController.Kind),"Client discarded the saved observer ballot policy");
+                copy.RestoreControllers(c=>c.Kind==SelfBallotController.Kind?SelfBallotController.Restore(c):AlgorithmicController.Restore(c));
+                session.SetPaused(false);copy.SetPaused(false);
+                for(int tick=0;tick<3;tick++)
+                {
+                    session.Step();copy.Step();
+                    Check(session.Engine.ComputeStateHash()==copy.Engine.ComputeStateHash(),"Runner/client natural continuation changed the world");
+                    Check(session.ComputeControllerStateHash()==copy.ComputeControllerStateHash(),"Runner/client natural continuation changed policy memory");
+                }
+                session.SetPaused(true);
+            }
+            if(args.Contains("--motion"))
+            {
+                //180 frames at30fps; one authoritative travel quantum every3frames:
+                //60quanta = six active seconds, with the ordinary NPC controllers.
+                string frames=System.IO.Path.Combine(output,"motion");System.IO.Directory.CreateDirectory(frames);
+                var start=session.Engine.Observe(new(1)).Participant.Position;
+                var focus=new Vector3(start.X,0,start.Z+2);float distance=6;
+                long initialTick=session.Engine.Tick;session.SetPaused(false);session.SetTravelHeading(new(1),0,1);
+                for(int frame=0;frame<180;frame++)
+                {
+                    if(frame%3==0)session.AdvanceTravelQuantum();
+                    Call(app,"Refresh");camera.Position=focus+new Vector3(0,distance,distance*.7f);camera.LookAt(focus,Vector3.Up);
+                    await Frames(1);await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
+                    GetViewport().GetTexture().GetImage().SavePng(System.IO.Path.Combine(frames,frame.ToString("D4")+".png"));
+                }
+                session.SetTravelHeading(new(1),0,0);session.SetPaused(true);
+                Check(session.Engine.Tick==initialTick+6,"Motion clip changed the six-second economic clock");
+                Check(session.Engine.Observe(new(1)).Participant.Position!=start,"Motion clip did not move the actual actor");
+                System.IO.File.WriteAllText(output+"/motion.json",JsonSerializer.Serialize(new{frames=180,fps=30,activeSeconds=6,travelQuanta=60,initialTick,start,end=session.Engine.Observe(new(1)).Participant.Position,scope="Real Playfield, ordinary Movement1 commands; recorded frame playback, software renderer, synthetic heading. Not physical keyboard or FPS acceptance."}));
+            }
+            System.IO.File.WriteAllText(output+"/native-check.json",JsonSerializer.Serialize(new{status="succeeded",map,participantCount=scenario.Participants.Length,loaded=args.Contains("--load"),prepared=args.Contains("--load")&&!args.Contains("--natural-save"),naturalSave=args.Contains("--natural-save"),layout=scenario.Layout?.Version,measures,checks=new[]{"real Playfield and resolved "+scenario.Participants.Length+"-participant world","both skin families, six camera views per designed map","skin change preserves authoritative world","cell picking at close/district/overview scales","checkpoint preserves exact resolved geometry"},scope="Native Godot/X11 software renderer; camera framed in isolated probe; not physical device acceptance"},new JsonSerializerOptions{WriteIndented=true}));
             RemoveChild(app);app.QueueFree();await Frames(8);GC.Collect();GC.WaitForPendingFinalizers();await Frames();GD.Print("WORLD_PROPORTIONS_PASS");GetTree().Quit();
         }
         catch(Exception e){GD.PushError(e.ToString());if(output.Length>0)System.IO.File.WriteAllText(output+"/failure.txt",e.ToString());GetTree().Quit(1);}

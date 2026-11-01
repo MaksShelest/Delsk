@@ -4,6 +4,7 @@ import argparse,hashlib,json,os,shutil,subprocess,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser(description=__doc__);p.add_argument('--godot',required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--verify',action='store_true');p.add_argument('--asset-cache',type=Path);p.add_argument('--fixtures',type=Path,required=True)
+p.add_argument('--maps',nargs='+',choices=['small-river','large-districts','compact-valley'],default=['small-river','large-districts'])
 a=p.parse_args();out=a.output.resolve()
 if out.exists() and any(out.iterdir()):p.error('Use a new/empty output')
 out.mkdir(parents=True,exist_ok=True);stage=out/'source';project=stage/'src/Client.Godot'
@@ -29,7 +30,7 @@ if cache is None:
 check('asset-reuse',60,[sys.executable,ROOT/'scripts/reuse_godot_imports.py','--source',cache,'--target',project,'--report',out/'asset-reuse.json'])
 check('asset-verify',30,[sys.executable,ROOT/'scripts/reuse_godot_imports.py','--source',project,'--verify-only','--report',out/'asset-verify.json'])
 base=(project/'project.godot').read_text()
-cases=[(m,a.fixtures.resolve()/(m.replace('-','_')+'-'+state+'.save.json'),'-'+state) for m in ['small-river','large-districts'] for state in ['corner','work']]
+cases=[(m,a.fixtures.resolve()/(m.replace('-','_')+'-'+state+'.save.json'),'-'+state) for m in a.maps for state in ['corner','work']]
 for map_key,save,suffix in cases:
  tag=map_key+suffix;folder=out/tag;folder.mkdir();(project/'project.godot').write_text(base.replace('[application]','[application]\nconfig/use_custom_user_dir=true\nconfig/custom_user_dir_name="Delsk-h2-roads-'+out.name+'-'+tag+'"',1))
  check(tag,150,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','res://H2RoadProbe.tscn','--','--map',map_key,'--output',folder,*(['--verify'] if a.verify else []),*(['--load',save] if save else [])],os.environ|{'XDG_DATA_HOME':str(out/'userdata')})
@@ -37,4 +38,4 @@ for map_key,save,suffix in cases:
  assert json.loads((folder/'native-check.json').read_text())['status']=='succeeded'
 assert all(hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest for name,digest in inputs.items()),'Source changed during native capture'
 (out/'source-inputs.json').write_text(json.dumps(inputs,indent=2)+'\n')
-print('Native H2 road captures passed: both designed maps, real work/corner saves, both skins')
+print('Native road captures passed:',', '.join(a.maps),'; real work/corner saves, both skins')

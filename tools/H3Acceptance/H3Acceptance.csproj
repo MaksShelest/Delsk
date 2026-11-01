@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Simulation.Hosting/Simulation.Hosting.csproj" />
+    <ProjectReference Include="../../src/Agents.Algorithmic/Agents.Algorithmic.csproj" />
+  </ItemGroup>
+</Project>

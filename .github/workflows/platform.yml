@@ -42,6 +42,19 @@ jobs:
         run: |
           python scripts/run_check.py --name client-metadata --timeout 120 -- dotnet run --project tools/AssemblyAudit -c Release -- src/Client.Godot/.godot/mono/temp/bin/Debug
           exit $LASTEXITCODE
+      - name: Record available real local LLM runtime separately from software gates
+        shell: python
+        run: |
+          import json,pathlib,platform,shutil,subprocess
+          runtime=shutil.which('ollama')
+          report=dict(platform=platform.platform(),environment='GitHub hosted Windows VM',runtime=runtime,
+            status='unavailable' if runtime is None else 'runtime-found-inference-still-required',inferencePerformed=False,
+            scope='Availability evidence only. No fake response or historical run establishes a current real model inference; physical user Windows acceptance remains separate.')
+          if runtime:
+            result=subprocess.run([runtime,'--version'],capture_output=True,text=True,timeout=15)
+            report.update(versionExitCode=result.returncode,versionOutput=result.stdout,versionError=result.stderr)
+          path=pathlib.Path('artifacts/h3-real-runtime.json');path.parent.mkdir(parents=True,exist_ok=True)
+          path.write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
       - name: Import and replay shared core on Windows
         shell: pwsh
         run: |

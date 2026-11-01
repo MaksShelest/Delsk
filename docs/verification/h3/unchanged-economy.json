@@ -1,0 +1,108 @@
+{
+  "base": "b87bc90a84845f509cf256bb227dbcf2952a43ad",
+  "files": [
+    {
+      "path": "config/economy.json",
+      "beforeSha256": "b3da26be46960e876327a0dcca960c48575b6a98c9080eacb283a4a3f2c7317c",
+      "afterSha256": "b3da26be46960e876327a0dcca960c48575b6a98c9080eacb283a4a3f2c7317c",
+      "unchanged": true
+    },
+    {
+      "path": "config/vnext/balance.b1.json",
+      "beforeSha256": "5352b6e48b39f4548ddb0fea404603ed200528798b6a40130d521648dc65765d",
+      "afterSha256": "5352b6e48b39f4548ddb0fea404603ed200528798b6a40130d521648dc65765d",
+      "unchanged": true
+    },
+    {
+      "path": "config/vnext/catalog.b1.json",
+      "beforeSha256": "e727187a4fe438cdd50a062374c6c62d62b9b9d7eba01fe9842df769560eea02",
+      "afterSha256": "e727187a4fe438cdd50a062374c6c62d62b9b9d7eba01fe9842df769560eea02",
+      "unchanged": true
+    },
+    {
+      "path": "config/vnext/economy.b1-supported.json",
+      "beforeSha256": "1faf99371054e866c425f2dfe043dead3d52721cd6ea46c6a603b2ca45bae992",
+      "afterSha256": "1faf99371054e866c425f2dfe043dead3d52721cd6ea46c6a603b2ca45bae992",
+      "unchanged": true
+    },
+    {
+      "path": "config/vnext/economy.c1-storage.json",
+      "beforeSha256": "692821793c690f97499e86429142d48a7897b769b0901ed2823cafc901b7b3c5",
+      "afterSha256": "692821793c690f97499e86429142d48a7897b769b0901ed2823cafc901b7b3c5",
+      "unchanged": true
+    },
+    {
+      "path": "config/vnext/economy.d1-workshops.json",
+      "beforeSha256": "aa7b08fa140e3f4ebe565f944d243e72f6a8268667b523421e998f694eb1a469",
+      "afterSha256": "aa7b08fa140e3f4ebe565f944d243e72f6a8268667b523421e998f694eb1a469",
+      "unchanged": true
+    },
+    {
+      "path": "config/vnext/economy.d2-development.json",
+      "beforeSha256": "6b62449fe827415a68df611405e6ef1304041879371acb6050796f4f697222f2",
+      "afterSha256": "6b62449fe827415a68df611405e6ef1304041879371acb6050796f4f697222f2",
+      "unchanged": true
+    },
+    {
+      "path": "config/vnext/economy.d3-production.json",
+      "beforeSha256": "72f38c37224fc04b51efe18a20b256c014129902725a8ded1d8f6bc2667099c9",
+      "afterSha256": "72f38c37224fc04b51efe18a20b256c014129902725a8ded1d8f6bc2667099c9",
+      "unchanged": true
+    },
+    {
+      "path": "config/vnext/economy.e1-fleet.json",
+      "beforeSha256": "b16cc54c7e807f932ea529adffe4c4f7054e0fc92f410978567d78ea692d8c50",
+      "afterSha256": "b16cc54c7e807f932ea529adffe4c4f7054e0fc92f410978567d78ea692d8c50",
+      "unchanged": true
+    },
+    {
+      "path": "config/vnext/economy.e2-roads.json",
+      "beforeSha256": "493f154861344529950b90e7555d268fe1374d42dcbea26265bc31955f0ff2c0",
+      "afterSha256": "493f154861344529950b90e7555d268fe1374d42dcbea26265bc31955f0ff2c0",
+      "unchanged": true
+    },
+    {
+      "path": "config/vnext/economy.e3-accounts.json",
+      "beforeSha256": "8133b55485c4a7f561aa350ed5bbde74874511ea86af40e4cba65d6f3440ec20",
+      "afterSha256": "8133b55485c4a7f561aa350ed5bbde74874511ea86af40e4cba65d6f3440ec20",
+      "unchanged": true
+    },
+    {
+      "path": "config/vnext/economy.f1-services.json",
+      "beforeSha256": "a7815ec8f4bd37741d9b25b2eea98c332927a52a5bcbbe3f5dc5cdcd5ff2f7d1",
+      "afterSha256": "a7815ec8f4bd37741d9b25b2eea98c332927a52a5bcbbe3f5dc5cdcd5ff2f7d1",
+      "unchanged": true
+    },
+    {
+      "path": "config/vnext/economy.f2-services.json",
+      "beforeSha256": "fe1c02de0ba7764bec58191032486ff6ec70c368cd4ca534099f717e790ced5b",
+      "afterSha256": "fe1c02de0ba7764bec58191032486ff6ec70c368cd4ca534099f717e790ced5b",
+      "unchanged": true
+    },
+    {
+      "path": "config/vnext/economy.g1-npc.json",
+      "beforeSha256": "ab85047286d6289214ae2505987faa58aee934e781e758efd4c9e41522f3e865",
+      "afterSha256": "ab85047286d6289214ae2505987faa58aee934e781e758efd4c9e41522f3e865",
+      "unchanged": true
+    },
+    {
+      "path": "docs/vnext/data/BALANCE_VNEXT.json",
+      "beforeSha256": "060e3c07343ba2b682692a19c0e3de3622155343844998eb7a9c4a15f6ece550",
+      "afterSha256": "060e3c07343ba2b682692a19c0e3de3622155343844998eb7a9c4a15f6ece550",
+      "unchanged": true
+    },
+    {
+      "path": "scenarios/vnext/large-districts.json",
+      "beforeSha256": "0c7c755d3a68868efde8286eae3cd290c1ab6364064026a949729e91f32c4dec",
+      "afterSha256": "0c7c755d3a68868efde8286eae3cd290c1ab6364064026a949729e91f32c4dec",
+      "unchanged": true
+    },
+    {
+      "path": "scenarios/vnext/small-river.json",
+      "beforeSha256": "e5125a5b6031453293518b59708affb7a33a176e31592ff4c5793c7398e7be82",
+      "afterSha256": "e5125a5b6031453293518b59708affb7a33a176e31592ff4c5793c7398e7be82",
+      "unchanged": true
+    }
+  ],
+  "scope": "All existing config files, authoritative BALANCE and both old vNext snapshots byte exact. Ordinary horizon is an explicit new-game resolver change, not a saved config migration."
+}

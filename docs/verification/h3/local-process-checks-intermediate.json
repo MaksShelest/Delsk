@@ -1,0 +1,735 @@
+{
+  "scope": "Intermediate actual attempts, including tool/setup errors; not a final gate",
+  "checks": [
+    {
+      "name": "h3-H3CompactServiceTests",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3CompactServiceTests",
+        "-result-trx",
+        "work/h3/H3CompactServiceTests.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T22:32:22.331412+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 13.266,
+      "finished_at": "2026-11-01T22:32:35.597674+00:00"
+    },
+    {
+      "name": "h3-H3DistrictServiceTests",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3DistrictServiceTests",
+        "-result-trx",
+        "work/h3/H3DistrictServiceTests.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T22:32:54.476659+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 120.002,
+      "finished_at": "2026-11-01T22:34:54.479394+00:00"
+    },
+    {
+      "name": "h3-H3RiverServiceTests",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3RiverServiceTests",
+        "-result-trx",
+        "work/h3/H3RiverServiceTests.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T22:32:35.635146+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 18.801,
+      "finished_at": "2026-11-01T22:32:54.436029+00:00"
+    },
+    {
+      "name": "h3-H3RoadSceneTests",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3RoadSceneTests",
+        "-result-trx",
+        "work/h3/H3RoadSceneTests.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T22:34:54.550883+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 7.193,
+      "finished_at": "2026-11-01T22:35:01.744360+00:00"
+    },
+    {
+      "name": "h3-android-cli-download",
+      "command": [
+        "curl",
+        "--fail",
+        "--location",
+        "--silent",
+        "--show-error",
+        "--max-time",
+        "170",
+        "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip",
+        "--output",
+        "work/h3/downloads/android-cli.zip"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:12:37.917233+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 35.59,
+      "finished_at": "2026-11-01T22:13:13.506949+00:00"
+    },
+    {
+      "name": "h3-android-licenses",
+      "command": [
+        "bash",
+        "-c",
+        "yes | /workspace/Delsk/work/h3/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/workspace/Delsk/work/h3/android-sdk --proxy=http --proxy_host=proxy --proxy_port=8080 --licenses"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:15:07.284940+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.6,
+      "finished_at": "2026-11-01T22:15:12.885115+00:00"
+    },
+    {
+      "name": "h3-android-sdk",
+      "command": [
+        "/workspace/Delsk/work/h3/android-sdk/cmdline-tools/latest/bin/sdkmanager",
+        "--sdk_root=/workspace/Delsk/work/h3/android-sdk",
+        "--proxy=http",
+        "--proxy_host=proxy",
+        "--proxy_port=8080",
+        "platforms;android-36",
+        "build-tools;36.1.0",
+        "platform-tools"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-11-01T22:15:12.922049+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 53.819,
+      "finished_at": "2026-11-01T22:16:06.741207+00:00"
+    },
+    {
+      "name": "h3-client-build",
+      "command": [
+        "dotnet",
+        "build",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:05:23.585474+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 39.87,
+      "finished_at": "2026-11-01T22:06:03.456054+00:00"
+    },
+    {
+      "name": "h3-client-restore",
+      "command": [
+        "dotnet",
+        "restore",
+        "src/Client.Godot/Delsk.Client.csproj",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:02:13.661776+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.374,
+      "finished_at": "2026-11-01T22:02:15.035407+00:00"
+    },
+    {
+      "name": "h3-debian-packages-download",
+      "command": [
+        "curl",
+        "--fail",
+        "--location",
+        "--silent",
+        "--show-error",
+        "--max-time",
+        "170",
+        "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz",
+        "--output",
+        "work/h3/downloads/debian-packages.xz"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:13:13.559022+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.784,
+      "finished_at": "2026-11-01T22:13:17.343136+00:00"
+    },
+    {
+      "name": "h3-deep-build",
+      "command": [
+        "dotnet",
+        "build",
+        "tests/Simulation.Tests/Simulation.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:32:00.587314+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 21.707,
+      "finished_at": "2026-11-01T22:32:22.294470+00:00"
+    },
+    {
+      "name": "h3-horizon-tests-b",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.HorizonH3Tests",
+        "-result-trx",
+        "work/h3/horizon-tests-b.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T22:04:11.900240+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 43.977,
+      "finished_at": "2026-11-01T22:04:55.877330+00:00"
+    },
+    {
+      "name": "h3-horizon-tests",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.HorizonH3Tests",
+        "-result-trx",
+        "work/h3/horizon-tests.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T22:01:25.204555+00:00",
+      "timed_out": true,
+      "exit_code": 124,
+      "elapsed_seconds": 120.034,
+      "finished_at": "2026-11-01T22:03:25.238549+00:00",
+      "stdoutTail": "  Discovering: Simulation.Tests\n  Discovered:  Simulation.Tests\n  Starting:    Simulation.Tests\n",
+      "stderrTail": ""
+    },
+    {
+      "name": "h3-jdk-download",
+      "command": [
+        "curl",
+        "--fail",
+        "--location",
+        "--silent",
+        "--show-error",
+        "--max-time",
+        "170",
+        "https://deb.debian.org/debian/pool/main/o/openjdk-21/openjdk-21-jdk-headless_21.0.12.1+1-1~deb13u1_amd64.deb",
+        "--output",
+        "work/h3/downloads/jdk.deb"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:13:40.900745+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 21.186,
+      "finished_at": "2026-11-01T22:14:02.086774+00:00"
+    },
+    {
+      "name": "h3-map-export",
+      "command": [
+        "dotnet",
+        "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+        "--export-map-design",
+        "docs/vnext/maps/compact_valley.json",
+        "--economy",
+        "config/vnext/economy.b1-supported.json",
+        "--output",
+        "work/h3/map-export"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-11-01T21:59:19.628663+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.365,
+      "finished_at": "2026-11-01T21:59:19.994005+00:00"
+    },
+    {
+      "name": "h3-map-tests",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.CompactH3Tests",
+        "-result-trx",
+        "work/h3/map-tests.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T22:01:20.826866+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.34,
+      "finished_at": "2026-11-01T22:01:25.166464+00:00"
+    },
+    {
+      "name": "h3-motion-encode",
+      "command": [
+        "ffmpeg",
+        "-y",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-framerate",
+        "30",
+        "-i",
+        "work/h3/native-motion/compact-valley/motion/%04d.png",
+        "-c:v",
+        "libx264",
+        "-crf",
+        "22",
+        "-pix_fmt",
+        "yuv420p",
+        "-movflags",
+        "+faststart",
+        "work/h3/compact-motion.mp4"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-11-01T22:57:40.993954+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.899,
+      "finished_at": "2026-11-01T22:57:45.893255+00:00"
+    },
+    {
+      "name": "h3-player-walkthrough-b",
+      "command": [
+        "dotnet",
+        "tools/H3Acceptance/bin/Release/net10.0/H3Acceptance.dll",
+        "work/h3/player-walkthrough-b",
+        "compact-valley"
+      ],
+      "timeout_seconds": 900,
+      "started_at": "2026-11-01T22:14:48.235048+00:00",
+      "exit_code": -6,
+      "elapsed_seconds": 72.952,
+      "finished_at": "2026-11-01T22:16:01.187274+00:00",
+      "stdoutTail": "H3 ordinary-start: tick=0\nH3 earning: tick=101; cash=20498; target=60000\nH3 earning: tick=107; cash=20973; target=60000\nH3 earning: tick=173; cash=22163; target=60000\nH3 earning: tick=239; cash=23207; target=60000\nH3 earning: tick=305; cash=23606; target=60000\nH3 earning: tick=311; cash=24029; target=60000\nH3 earning: tick=377; cash=25113; target=60000\nH3 earning: tick=486; cash=26129; target=60000\nH3 earning: tick=492; cash=26566; target=60000\nH3 earning: tick=558; cash=27073; target=60000\nH3 earning: tick=624; cash=28307; target=60000\nH3 earning: tick=690; cash=29417; target=60000\nH3 earning: tick=756; cash=29847; target=60000\nH3 earning: tick=822; cash=30319; target=60000\nH3 earning: tick=931; cash=31415; target=60000\nH3 earning: tick=937; cash=32373; target=60000\nH3 earning: tick=1003; cash=32768; target=60000\nH3 earning: tick=1069; cash=33226; target=60000\nH3 earning: tick=1135; cash=34368; target=60000\nH3 earning: tick=1201; cash=35488; target=60000\nH3 earning: tick=1310; cash=35982; target=60000\nH3 earning: tick=1316; cash=36451; target=60000\nH3 earning: tick=1382; cash=37621; target=60000\nH3 earning: tick=1388; cash=38679; target=60000\nH3 earning: tick=1454; cash=39088; target=60000\nH3 earning: tick=1520; cash=39523; target=60000\nH3 earning: tick=1586; cash=40593; target=60000\nH3 earning: tick=1695; cash=41603; target=60000\nH3 earning: tick=1701; cash=42043; target=60000\nH3 earning: tick=1767; cash=42540; target=60000\nH3 earning: tick=1833; cash=43796; target=60000\nH3 earning: tick=1899; cash=44898; target=60000\nH3 earning: tick=1965; cash=45341; target=60000\nH3 earning: tick=2031; cash=45803; target=60000\nH3 earning: tick=2140; cash=46867; target=60000\nH3 earning: tick=2146; cash=47825; target=60000\nH3 earning: tick=2212; cash=48226; target=60000\nH3 earning: tick=2278; cash=48678; target=60000\nH3 earning: tick=2344; cash=49830; target=60000\nH3 earning: tick=2350; cash=50924; target=60000\nH3 earning: tick=2460; cash=51385; target=60000\nH3 earning: tick=2526; cash=51881; target=60000\nH3 earning: tick=2532; cash=53047; target=60000\nH3 earning: tick=2598; cash=54085; target=60000\nH3 earning: tick=2664; cash=54486; target=60000\nH3 earning: tick=2730; cash=54920; target=60000\nH3 earning: tick=2796; cash=56000; target=60000\nH3 earning: tick=2905; cash=57012; target=60000\nH3 earning: tick=2911; cash=57447; target=60000\nH3 earning: tick=2977; cash=57954; target=60000\nH3 earning: tick=3043; cash=59210; target=60000\nH3 earning: tick=3109; cash=60338; target=60000\n",
+      "stderrTail": "Unhandled exception. System.InvalidOperationException: Harvest failed: NoCapacity\n   at Program.<<Main>$>g__Require|0_3(Boolean value, String reason) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 85\n   at Program.<>c__DisplayClass0_0.<<Main>$>g__Wood|12(Int64 quantity) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 110\n   at Program.<>c__DisplayClass0_0.<<Main>$>g__SupplyGround|14(InventoryId ground, String item, Int64 quantity) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 123\n   at Program.<Main>$(String[] args) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 36\n"
+    },
+    {
+      "name": "h3-player-walkthrough-c",
+      "command": [
+        "dotnet",
+        "tools/H3Acceptance/bin/Release/net10.0/H3Acceptance.dll",
+        "work/h3/player-walkthrough-c",
+        "compact-valley",
+        "work/h3/player-walkthrough-b/last-safe.save.json"
+      ],
+      "timeout_seconds": 900,
+      "started_at": "2026-11-01T22:17:20.324143+00:00",
+      "exit_code": -15,
+      "elapsed_seconds": 53.636,
+      "finished_at": "2026-11-01T22:18:13.960553+00:00",
+      "stdoutTail": "H3 ordinary-start: tick=0\nH3 earning: tick=101; cash=20498; target=60000\nH3 earning: tick=107; cash=20973; target=60000\nH3 earning: tick=173; cash=22163; target=60000\nH3 earning: tick=239; cash=23207; target=60000\nH3 earning: tick=305; cash=23606; target=60000\nH3 earning: tick=311; cash=24029; target=60000\nH3 earning: tick=377; cash=25113; target=60000\nH3 earning: tick=486; cash=26129; target=60000\nH3 earning: tick=492; cash=26566; target=60000\nH3 earning: tick=558; cash=27073; target=60000\nH3 earning: tick=624; cash=28307; target=60000\nH3 earning: tick=690; cash=29417; target=60000\nH3 earning: tick=756; cash=29847; target=60000\nH3 earning: tick=822; cash=30319; target=60000\nH3 earning: tick=931; cash=31415; target=60000\nH3 earning: tick=937; cash=32373; target=60000\nH3 earning: tick=1003; cash=32768; target=60000\nH3 earning: tick=1069; cash=33226; target=60000\nH3 earning: tick=1135; cash=34368; target=60000\nH3 earning: tick=1201; cash=35488; target=60000\nH3 earning: tick=1310; cash=35982; target=60000\nH3 earning: tick=1316; cash=36451; target=60000\nH3 earning: tick=1382; cash=37621; target=60000\nH3 earning: tick=1388; cash=38679; target=60000\nH3 earning: tick=1454; cash=39088; target=60000\nH3 earning: tick=1520; cash=39523; target=60000\nH3 earning: tick=1586; cash=40593; target=60000\nH3 earning: tick=1695; cash=41603; target=60000\nH3 earning: tick=1701; cash=42043; target=60000\nH3 earning: tick=1767; cash=42540; target=60000\nH3 earning: tick=1833; cash=43796; target=60000\nH3 earning: tick=1899; cash=44898; target=60000\nH3 earning: tick=1965; cash=45341; target=60000\nH3 earning: tick=2031; cash=45803; target=60000\nH3 earning: tick=2140; cash=46867; target=60000\nH3 earning: tick=2146; cash=47825; target=60000\nH3 earning: tick=2212; cash=48226; target=60000\nH3 earning: tick=2278; cash=48678; target=60000\nH3 earning: tick=2344; cash=49830; target=60000\nH3 earning: tick=2350; cash=50924; target=60000\nH3 earning: tick=2460; cash=51385; target=60000\nH3 earning: tick=2526; cash=51881; target=60000\nH3 earning: tick=2532; cash=53047; target=60000\nH3 earning: tick=2598; cash=54085; target=60000\nH3 earning: tick=2664; cash=54486; target=60000\nH3 earning: tick=2730; cash=54920; target=60000\n",
+      "stderrTail": ""
+    },
+    {
+      "name": "h3-player-walkthrough-d",
+      "command": [
+        "dotnet",
+        "tools/H3Acceptance/bin/Release/net10.0/H3Acceptance.dll",
+        "work/h3/player-walkthrough-d",
+        "compact-valley",
+        "work/h3/player-walkthrough-b/last-safe.save.json"
+      ],
+      "timeout_seconds": 900,
+      "started_at": "2026-11-01T22:18:18.044007+00:00",
+      "exit_code": -6,
+      "elapsed_seconds": 24.687,
+      "finished_at": "2026-11-01T22:18:42.731281+00:00",
+      "stdoutTail": "H3 resumed-ordinary-start: tick=3193\n",
+      "stderrTail": "Unhandled exception. System.InvalidOperationException: earn-and-supply: Build: BuildAtContourAnchor\n   at Program.<<Main>$>g__Require|0_4(Boolean value, String reason) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 91\n   at Program.<>c__DisplayClass0_0.<<Main>$>g__Do|11(GameAction action) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 101\n   at Program.<Main>$(String[] args) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 46\n"
+    },
+    {
+      "name": "h3-player-walkthrough-e",
+      "command": [
+        "dotnet",
+        "tools/H3Acceptance/bin/Release/net10.0/H3Acceptance.dll",
+        "work/h3/player-walkthrough-e",
+        "compact-valley",
+        "work/h3/player-walkthrough-b/last-safe.save.json"
+      ],
+      "timeout_seconds": 900,
+      "started_at": "2026-11-01T22:20:16.418841+00:00",
+      "exit_code": -6,
+      "elapsed_seconds": 428.561,
+      "finished_at": "2026-11-01T22:27:24.980291+00:00",
+      "stdoutTail": "h=10507; target=190000\nH3 earning: tick=5968; cash=11623; target=190000\nH3 earning: tick=6034; cash=12083; target=190000\nH3 earning: tick=6143; cash=13243; target=190000\nH3 earning: tick=6149; cash=13755; target=190000\nH3 earning: tick=6215; cash=14797; target=190000\nH3 earning: tick=6281; cash=15204; target=190000\nH3 earning: tick=6347; cash=15636; target=190000\nH3 earning: tick=6413; cash=16728; target=190000\nH3 earning: tick=6479; cash=17246; target=190000\nH3 earning: tick=6588; cash=17764; target=190000\nH3 earning: tick=6594; cash=18257; target=190000\nH3 earning: tick=6600; cash=18698; target=190000\nH3 earning: tick=6666; cash=19966; target=190000\nH3 earning: tick=6672; cash=21110; target=190000\nH3 earning: tick=6738; cash=21541; target=190000\nH3 earning: tick=6804; cash=22016; target=190000\nH3 earning: tick=6870; cash=22554; target=190000\nH3 earning: tick=6979; cash=23092; target=190000\nH3 earning: tick=6985; cash=24032; target=190000\nH3 earning: tick=6991; cash=24432; target=190000\nH3 earning: tick=7057; cash=24889; target=190000\nH3 earning: tick=7123; cash=26063; target=190000\nH3 earning: tick=7189; cash=27181; target=190000\nH3 earning: tick=7255; cash=27648; target=190000\nH3 earning: tick=7364; cash=28806; target=190000\nH3 earning: tick=7370; cash=29316; target=190000\nH3 earning: tick=7436; cash=30352; target=190000\nH3 earning: tick=7502; cash=30758; target=190000\nH3 earning: tick=7508; cash=31181; target=190000\nH3 earning: tick=7574; cash=32265; target=190000\nH3 earning: tick=7640; cash=32770; target=190000\nH3 earning: tick=7749; cash=33277; target=190000\nH3 earning: tick=7755; cash=33782; target=190000\nH3 earning: tick=7761; cash=34218; target=190000\nH3 earning: tick=7827; cash=35484; target=190000\nH3 earning: tick=7893; cash=36608; target=190000\nH3 earning: tick=7959; cash=37042; target=190000\nH3 earning: tick=8025; cash=37505; target=190000\nH3 earning: tick=8091; cash=38044; target=190000\nH3 earning: tick=8200; cash=38583; target=190000\nH3 earning: tick=8206; cash=39539; target=190000\nH3 earning: tick=8212; cash=39937; target=190000\nH3 earning: tick=8278; cash=40391; target=190000\nH3 earning: tick=8344; cash=41571; target=190000\nH3 earning: tick=8350; cash=42695; target=190000\nH3 earning: tick=8416; cash=43168; target=190000\nH3 earning: tick=8525; cash=43674; target=190000\nH3 earning: tick=8531; cash=44842; target=190000\nH3 earning: tick=8597; cash=45894; target=190000\nH3 earning: tick=8663; cash=46297; target=190000\nH3 earning: tick=8729; cash=46721; target=190000\nH3 earning: tick=8795; cash=47801; target=190000\nH3 earning: tick=8861; cash=48309; target=190000\nH3 earning: tick=8970; cash=48817; target=190000\nH3 earning: tick=8976; cash=49317; target=190000\nH3 earning: tick=8982; cash=49751; target=190000\nH3 earning: tick=9048; cash=51019; target=190000\nH3 earning: tick=9114; cash=52127; target=190000\nH3 earning: tick=9180; cash=52572; target=190000\nH3 earning: tick=9246; cash=53039; target=190000\nH3 earning: tick=9252; cash=53588; target=190000\nH3 earning: tick=9361; cash=54137; target=190000\nH3 earning: tick=9367; cash=55071; target=190000\nH3 earning: tick=9373; cash=55467; target=190000\nH3 earning: tick=9439; cash=55922; target=190000\nH3 earning: tick=9505; cash=57080; target=190000\nH3 earning: tick=9571; cash=58182; target=190000\nH3 earning: tick=9637; cash=58656; target=190000\nH3 earning: tick=9746; cash=59816; target=190000\nH3 earning: tick=9752; cash=60322; target=190000\nH3 earning: tick=9818; cash=61354; target=190000\nH3 earning: tick=9884; cash=61757; target=190000\nH3 earning: tick=9950; cash=62190; target=190000\nH3 earning: tick=10016; cash=63264; target=190000\nH3 earning: tick=10082; cash=63772; target=190000\nH3 earning: tick=10191; cash=64280; target=190000\nH3 earning: tick=10197; cash=64777; target=190000\nH3 earning: tick=10203; cash=65214; target=190000\nH3 earning: tick=10209; cash=66468; target=190000\nH3 earning: tick=10275; cash=67600; target=190000\nH3 earning: tick=10341; cash=68041; target=190000\nH3 earning: tick=10407; cash=68501; target=190000\nH3 earning: tick=10473; cash=69033; target=190000\nH3 earning: tick=10582; cash=69565; target=190000\nH3 earning: tick=10588; cash=70511; target=190000\nH3 earning: tick=10594; cash=70916; target=190000\nH3 earning: tick=10660; cash=71381; target=190000\nH3 earning: tick=10726; cash=72523; target=190000\nH3 earning: tick=10792; cash=73611; target=190000\nH3 earning: tick=10858; cash=74086; target=190000\nH3 earning: tick=10967; cash=75272; target=190000\nH3 earning: tick=10973; cash=75779; target=190000\nH3 earning: tick=11039; cash=76809; target=190000\nH3 earning: tick=11105; cash=77220; target=190000\nH3 earning: tick=11111; cash=77654; target=190000\nH3 earning: tick=11177; cash=78722; target=190000\nH3 earning: tick=11243; cash=79233; target=190000\nH3 earning: tick=11352; cash=79744; target=190000\nH3 earning: tick=11358; cash=80242; target=190000\nH3 earning: tick=11364; cash=80681; target=190000\nH3 earning: tick=11430; cash=81941; target=190000\nH3 earning: tick=11496; cash=83063; target=190000\nH3 earning: tick=11562; cash=83497; target=190000\nH3 earning: tick=11628; cash=83964; target=190000\nH3 earning: tick=11694; cash=84510; target=190000\nH3 earning: tick=11803; cash=85056; target=190000\nH3 earning: tick=11809; cash=86014; target=190000\nH3 earning: tick=11815; cash=86420; target=190000\nH3 earning: tick=11881; cash=86887; target=190000\nH3 earning: tick=11887; cash=88063; target=190000\nH3 earning: tick=11953; cash=89157; target=190000\nH3 earning: tick=12019; cash=89614; target=190000\nH3 earning: tick=12128; cash=90770; target=190000\nH3 earning: tick=12134; cash=91281; target=190000\nH3 earning: tick=12200; cash=92327; target=190000\nH3 earning: tick=12266; cash=92735; target=190000\nH3 earning: tick=12332; cash=93159; target=190000\nH3 earning: tick=12398; cash=94239; target=190000\nH3 earning: tick=12464; cash=94751; target=190000\nH3 earning: tick=12573; cash=95263; target=190000\nH3 earning: tick=12579; cash=95760; target=190000\n",
+      "stderrTail": "Unhandled exception. System.InvalidOperationException: Natural earning budget exhausted\n   at Program.<<Main>$>g__Require|0_4(Boolean value, String reason) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 95\n   at Program.<>c__DisplayClass0_0.<<Main>$>g__Earn|16(Int64 target) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 150\n   at Program.<Main>$(String[] args) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 72\n"
+    },
+    {
+      "name": "h3-player-walkthrough",
+      "command": [
+        "dotnet",
+        "tools/H3Acceptance/bin/Release/net10.0/H3Acceptance.dll",
+        "work/h3/player-walkthrough",
+        "compact-valley"
+      ],
+      "timeout_seconds": 900,
+      "started_at": "2026-11-01T22:12:30.884684+00:00",
+      "exit_code": -6,
+      "elapsed_seconds": 50.418,
+      "finished_at": "2026-11-01T22:13:21.302906+00:00",
+      "stdoutTail": "H3 ordinary-start: tick=0\n",
+      "stderrTail": "Unhandled exception. System.InvalidOperationException: earn-and-supply: Harvest: ResourceDepleted\n   at Program.<<Main>$>g__Require|0_3(Boolean value, String reason) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 85\n   at Program.<>c__DisplayClass0_0.<<Main>$>g__Do|10(GameAction action) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 95\n   at Program.<>c__DisplayClass0_0.<<Main>$>g__Wood|12(Int64 quantity) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 102\n   at Program.<>c__DisplayClass0_0.<<Main>$>g__Earn|15(Int64 target) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 121\n   at Program.<Main>$(String[] args) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 30\n"
+    },
+    {
+      "name": "h3-prepared-final",
+      "command": [
+        "python3",
+        "scripts/check_h3_prepared.py",
+        "--fixtures",
+        "work/h3/unit-final/f2-fixtures",
+        "--output",
+        "work/h3/prepared-final"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-11-01T22:40:56.126506+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 255.981,
+      "finished_at": "2026-11-01T22:45:12.107203+00:00"
+    },
+    {
+      "name": "h3-python-checks-b",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Checks",
+        "-v"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-11-01T22:27:57.347830+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.215,
+      "finished_at": "2026-11-01T22:27:57.563083+00:00"
+    },
+    {
+      "name": "h3-python-checks-c",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Checks",
+        "-v"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-11-01T22:53:57.444992+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.847,
+      "finished_at": "2026-11-01T22:53:58.292275+00:00"
+    },
+    {
+      "name": "h3-python-checks",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Checks",
+        "-v"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-11-01T22:13:07.001053+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.316,
+      "finished_at": "2026-11-01T22:13:07.316864+00:00"
+    },
+    {
+      "name": "h3-restore",
+      "command": [
+        "dotnet",
+        "restore",
+        "Delsk.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T21:57:51.432220+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.368,
+      "finished_at": "2026-11-01T21:57:52.800574+00:00"
+    },
+    {
+      "name": "h3-runner-build",
+      "command": [
+        "dotnet",
+        "build",
+        "src/Research.Runner/Research.Runner.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T21:58:46.867173+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 29.075,
+      "finished_at": "2026-11-01T21:59:15.942428+00:00"
+    },
+    {
+      "name": "h3-sample-download",
+      "command": [
+        "python3",
+        "-c",
+        "import json,urllib.request,shutil; from pathlib import Path; data=json.loads(Path(\"work/h3/sample-download.json\").read_text()); response=urllib.request.urlopen(data[\"url\"],timeout=120); output=open(\"work/h3/sample.zip\",\"wb\"); shutil.copyfileobj(response,output); output.close()"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:39:48.637982+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 0.115,
+      "finished_at": "2026-11-01T22:39:48.752925+00:00",
+      "stdoutTail": "",
+      "stderrTail": "Traceback (most recent call last):\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/urllib/request.py\", line 1344, in do_open\n    h.request(req.get_method(), req.selector, req.data, headers,\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py\", line 1386, in request\n    self._send_request(method, url, body, headers, encode_chunked)\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py\", line 1432, in _send_request\n    self.endheaders(body, encode_chunked=encode_chunked)\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py\", line 1381, in endheaders\n    self._send_output(message_body, encode_chunked=encode_chunked)\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py\", line 1141, in _send_output\n    self.send(msg)\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py\", line 1085, in send\n    self.connect()\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py\", line 1520, in connect\n    super().connect()\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py\", line 1061, in connect\n    self._tunnel()\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py\", line 1029, in _tunnel\n    raise OSError(f\"Tunnel connection failed: {code} {message.strip()}\")\nOSError: Tunnel connection failed: 403 Forbidden\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/urllib/request.py\", line 215, in urlopen\n    return opener.open(url, data, timeout)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/urllib/request.py\", line 515, in open\n    response = self._open(req, data)\n               ^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/urllib/request.py\", line 532, in _open\n    result = self._call_chain(self.handle_open, protocol, protocol +\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/urllib/request.py\", line 492, in _call_chain\n    result = func(*args)\n             ^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/urllib/request.py\", line 1392, in https_open\n    return self.do_open(http.client.HTTPSConnection, req,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/urllib/request.py\", line 1347, in do_open\n    raise URLError(err)\nurllib.error.URLError: <urlopen error Tunnel connection failed: 403 Forbidden>\n"
+    },
+    {
+      "name": "h3-templates-download",
+      "command": [
+        "curl",
+        "--fail",
+        "--location",
+        "--silent",
+        "--show-error",
+        "--max-time",
+        "170",
+        "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_export_templates.tpz",
+        "--output",
+        "work/h3/templates.tpz"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:03:07.156748+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 163.387,
+      "finished_at": "2026-11-01T22:05:50.544371+00:00"
+    },
+    {
+      "name": "h3-tests-build-b",
+      "command": [
+        "dotnet",
+        "build",
+        "tests/Simulation.Tests/Simulation.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:03:53.725439+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 18.131,
+      "finished_at": "2026-11-01T22:04:11.856554+00:00"
+    },
+    {
+      "name": "h3-tests-build",
+      "command": [
+        "dotnet",
+        "build",
+        "tests/Simulation.Tests/Simulation.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:00:38.641523+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 17.599,
+      "finished_at": "2026-11-01T22:00:56.240779+00:00"
+    },
+    {
+      "name": "h3-unit-final",
+      "command": [
+        "python3",
+        "scripts/check_headless.py",
+        "--suite",
+        "h3",
+        "--phase",
+        "tests",
+        "--output",
+        "work/h3/unit-final"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-11-01T22:38:07.288574+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 168.8,
+      "finished_at": "2026-11-01T22:40:56.088428+00:00"
+    },
+    {
+      "name": "h3-walk-build-b",
+      "command": [
+        "dotnet",
+        "build",
+        "tools/H3Acceptance/H3Acceptance.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:14:44.708690+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.49,
+      "finished_at": "2026-11-01T22:14:48.199156+00:00"
+    },
+    {
+      "name": "h3-walk-build-c",
+      "command": [
+        "dotnet",
+        "build",
+        "tools/H3Acceptance/H3Acceptance.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:17:17.005456+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 3.277,
+      "finished_at": "2026-11-01T22:17:20.282752+00:00",
+      "stdoutTail": "  Simulation.Core -> /workspace/Delsk/src/Simulation.Core/bin/Release/net10.0/Simulation.Core.dll\n  Simulation.Hosting -> /workspace/Delsk/src/Simulation.Hosting/bin/Release/net10.0/Simulation.Hosting.dll\n  Agents.Algorithmic -> /workspace/Delsk/src/Agents.Algorithmic/bin/Release/net10.0/Agents.Algorithmic.dll\n/workspace/Delsk/tools/H3Acceptance/Program.cs(24,27): error CS0117: 'ScenarioValidation' does not contain a definition for 'Hash' [/workspace/Delsk/tools/H3Acceptance/H3Acceptance.csproj]\n/workspace/Delsk/tools/H3Acceptance/Program.cs(24,84): error CS0117: 'ScenarioValidation' does not contain a definition for 'Hash' [/workspace/Delsk/tools/H3Acceptance/H3Acceptance.csproj]\n\nBuild FAILED.\n\n/workspace/Delsk/tools/H3Acceptance/Program.cs(24,27): error CS0117: 'ScenarioValidation' does not contain a definition for 'Hash' [/workspace/Delsk/tools/H3Acceptance/H3Acceptance.csproj]\n/workspace/Delsk/tools/H3Acceptance/Program.cs(24,84): error CS0117: 'ScenarioValidation' does not contain a definition for 'Hash' [/workspace/Delsk/tools/H3Acceptance/H3Acceptance.csproj]\n    0 Warning(s)\n    2 Error(s)\n\nTime Elapsed 00:00:02.99\n",
+      "stderrTail": ""
+    },
+    {
+      "name": "h3-walk-build-d",
+      "command": [
+        "dotnet",
+        "build",
+        "tools/H3Acceptance/H3Acceptance.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:18:14.664682+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.331,
+      "finished_at": "2026-11-01T22:18:17.995925+00:00"
+    },
+    {
+      "name": "h3-walk-build-e",
+      "command": [
+        "dotnet",
+        "build",
+        "tools/H3Acceptance/H3Acceptance.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:20:12.682967+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.693,
+      "finished_at": "2026-11-01T22:20:16.376510+00:00"
+    },
+    {
+      "name": "h3-walk-build-f",
+      "command": [
+        "dotnet",
+        "build",
+        "tools/H3Acceptance/H3Acceptance.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:30:45.513465+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 3.599,
+      "finished_at": "2026-11-01T22:30:49.112285+00:00",
+      "stdoutTail": "  Simulation.Core -> /workspace/Delsk/src/Simulation.Core/bin/Release/net10.0/Simulation.Core.dll\n  Simulation.Hosting -> /workspace/Delsk/src/Simulation.Hosting/bin/Release/net10.0/Simulation.Hosting.dll\n  Agents.Algorithmic -> /workspace/Delsk/src/Agents.Algorithmic/bin/Release/net10.0/Agents.Algorithmic.dll\n/workspace/Delsk/tools/H3Acceptance/Program.cs(69,24): error CS8602: Dereference of a possibly null reference. [/workspace/Delsk/tools/H3Acceptance/H3Acceptance.csproj]\n\nBuild FAILED.\n\n/workspace/Delsk/tools/H3Acceptance/Program.cs(69,24): error CS8602: Dereference of a possibly null reference. [/workspace/Delsk/tools/H3Acceptance/H3Acceptance.csproj]\n    0 Warning(s)\n    1 Error(s)\n\nTime Elapsed 00:00:03.28\n",
+      "stderrTail": ""
+    },
+    {
+      "name": "h3-walk-build",
+      "command": [
+        "dotnet",
+        "build",
+        "tools/H3Acceptance/H3Acceptance.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:11:50.414389+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 26.142,
+      "finished_at": "2026-11-01T22:12:16.556814+00:00"
+    },
+    {
+      "name": "h3-walk-restore",
+      "command": [
+        "dotnet",
+        "restore",
+        "tools/H3Acceptance/H3Acceptance.csproj",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T22:11:49.010812+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.368,
+      "finished_at": "2026-11-01T22:11:50.378885+00:00"
+    }
+  ]
+}

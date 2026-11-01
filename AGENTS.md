@@ -1,3 +1,32 @@
+## H3,02.11.2026 — текущая работа после слитого H2
+
+- Явное задание владельца разрешило H3; историческое «H3 не начинать» ниже
+  относится только к H2. Основа b87bc90/PR76, ветка
+  feat/vnext-h3-compact-acceptance, PR77 draft без auto merge.
+- Новая compact_valley / «Малая долина»32×27:24 контура2×3,8 районов3×3
+  (8public/64private),11stalls/spawns,125городских грунтовых клеток,
+  354защищённых corridor cells. G2 layout2, оба скина, полный G1 профиль.
+  Старые карты/config/BALANCE побайтно сохранены. Только новый ordinary
+  Resolve получает maxTicks1000000; saved horizon/движение/условия прежние.
+- Прогресс и отказы: docs/WORKLOG_H3.md.19ordinary H3 tests иprepared gate:
+  41процесс/21экспорт/18точных сравнений31файла на всех трёх картах.
+  Не ослаблять старые suites/deadlines; H3 suite отдельная disjoint partition.
+- SelfBallotController из runner теперь читается Godot composition root,
+  с сохранением controller memory. Natural save t5604 реально загружен в
+  Playfield;3следующих тика совпали по world/controller hashes. Новые обычные
+  партии клиента по-прежнему используют ручное голосование человека.
+- H3 study41355595793:180ordinary5000 +12extended142/143, независимая
+  Movement1 когорта, actual horizon1000000 без override. Не перезапускать
+  тяжёлое исследование из-за документов/новых probes. Extended batch не
+  считать достижением126000. Сохранять pending/failed/censored, исходные SHA,
+  каждый accounting/public audit, всю историю и600/900s/64/512MiB.
+- Коллекция читает ZIP ranges только для исходных journal/metrics/audits,
+  проверяет CRC выбранных записей, не заявляет полную SHA-сверку огромного ZIP.
+  Итоговая статистика требует все192case и единый frozen fingerprint.
+- Native36PNG трёх карт/11участников, compact roads12PNG, natural-loaded
+  сцена и180кадров6активных секунд. Linux/Xorg/llvmpipe иsynthetic input
+  не закрывают physical Windows/Android/FPS/живую Windows LLM.
+
 ## H2,01.11.2026 — текущая реализация и проверенные границы
 
 - PR76 без auto merge. Отчёт IMPLEMENTATION_REPORT_H2.md, воспроизведение
