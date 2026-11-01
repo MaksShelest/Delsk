@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+    "-noColor",
+    "-noLogo",
+    "-parallelMode",
+    "none",
+    "-class",
+    "Simulation.Tests.H2HighwayTruckTests",
+    "-result-trx",
+    "work/h2/H2HighwayTruckTests-c.trx"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-01T08:24:21.648501+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 58.643,
+  "finished_at": "2026-11-01T08:25:20.291870+00:00"
+}

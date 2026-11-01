@@ -32,7 +32,7 @@ public sealed partial class GameSession
         if (_unrestoredControllers.Length > 0) throw new InvalidOperationException("RestoreControllers required");
         long barrier = ++_ballotBarrier;
         foreach (var c in _controllers) c.BeginBallotBarrier(barrier);
-        var observations = _controllers.Select(c=>Engine.ObserveController(c.Actor,c.UsesEconomicPlanning)).ToArray();
+        var observations = Engine.ObserveControllers(_controllers.Select(c=>(c.Actor,c.UsesEconomicPlanning)));
         var decisions = _controllers.Select((c,i)=>observations[i].Elections.Voting!.Awaiting.Contains(c.Actor) ? c.DecideBallot(observations[i]) : null).ToArray();
         long election = observations.FirstOrDefault()?.Elections.Voting?.Election.Value ?? 0;
         foreach (var c in _controllers) c.EndBallotBarrier(barrier,election);
@@ -52,20 +52,28 @@ public sealed partial class GameSession
     public event Action<ControllerTurn>? ControllerDecided;
     private void RecordTurn(ControllerTurn turn)
     {
+        var mark=Measurements?.Start()??default;
         if(_observationPool is not null||turn.Observation.EconomicOpportunities is not null)
         {
             if(_observationPool is null)
             {
                 _observationPool=new();
-                for(int i=0;i<_controllerTurns.Count;i++)_controllerTurns[i]=_observationPool.Add(_controllerTurns[i]);
+                foreach(var old in _controllerTurns)_observationPool.Add(old);
+                _controllerTurns.Clear();
             }
             turn=_observationPool.Add(turn);
         }
-        _controllerTurns.Add(turn);ControllerDecided?.Invoke(turn);
+        if(_observationPool is null)_controllerTurns.Add(turn);ControllerDecided?.Invoke(turn);
+        Measurements?.End("history-record",mark);
     }
     public ControllerCheckpoint[] ControllerStates => _unrestoredControllers.Length > 0 ? _unrestoredControllers.ToArray() :
         _controllers.OrderBy(c => c.Actor.Value).Select(c => c.Capture()).ToArray();
-    public ControllerTurn[] ControllerTurns => _controllerTurns.ToArray();
+    public IEnumerable<ControllerTurn> EnumerateControllerTurns()=>_observationPool is null?_controllerTurns:_observationPool.Enumerate();
+    public IEnumerable<ControllerTurn> ControllerTurnMetadata=>_observationPool is null?_controllerTurns:_observationPool.Metadata();
+    public int ControllerTurnCount=>_observationPool?.Count??_controllerTurns.Count;
+    public ControllerTurn[] ControllerTurns => EnumerateControllerTurns().ToArray();
+    public void WriteControllerTurns(Stream stream)
+    {if(_observationPool is not null){_observationPool.WriteLines(stream);return;}using var writer=new StreamWriter(stream,new System.Text.UTF8Encoding(false),1024,true);foreach(var turn in _controllerTurns)writer.WriteLine(JsonSerializer.Serialize(turn,SimulationJson.Options));}
     public ControllerSample[] ControllerSamples => _controllerSamples.ToArray();
     public void AttachControllers(IEnumerable<IController> controllers)
     {
@@ -98,7 +106,10 @@ public sealed partial class GameSession
         if (_controllers.Length == 0) return;
         foreach (var controller in _controllers) controller.BeginDecisionBarrier(Engine.Tick);
         // Freeze every observation before any policy or submission is called. World mutations still occur only in Step.
-        var observations = _controllers.Select(c => Engine.ObserveController(c.Actor,c.UsesEconomicPlanning)).ToArray();
+        var observationMark=Measurements?.Start()??default;
+        var observations = Engine.ObserveControllers(_controllers.Select(c=>(c.Actor,c.UsesEconomicPlanning)));
+        Measurements?.End("observations",observationMark);
+        var decisionMark=Measurements?.Start()??default;
         var decisions = new ControllerDecision[_controllers.Length];
         var feedback = new ImmutableArray<CommandResult>[_controllers.Length];
         for (int i = 0; i < _controllers.Length; i++)
@@ -110,6 +121,7 @@ public sealed partial class GameSession
                 throw new InvalidOperationException("Controller exceeded equal command budget");
             awaiting.RemoveAll(id => feedback[i].Any(r => r.CommandId == id));
         }
+        Measurements?.End("policy-and-feedback",decisionMark);
         foreach (var controller in _controllers) controller.EndDecisionBarrier(Engine.Tick);
         for (int i = 0; i < _controllers.Length; i++)
         {
@@ -130,7 +142,7 @@ public sealed partial class GameSession
         {
             var actor = world.Participants.Single(p => p.Id == c.Actor);
             var stocks = world.Inventories.Where(i => i.OwnerId == c.Actor).SelectMany(i => i.Stock).ToArray();
-            var last = _controllerTurns.LastOrDefault(t => t.Actor == c.Actor);
+            var last = _observationPool is null?_controllerTurns.LastOrDefault(t=>t.Actor==c.Actor):_observationPool.Last(c.Actor.Value);
             _controllerSamples.Add(new(world.Tick, c.Actor.Value, world.Accounts.Single(a => a.Id == actor.AccountId).BalanceMinor,
                 stocks.Sum(s => checked(s.Quantity * items[s.ItemId].BasePriceMinor)), stocks.Sum(s => s.Quantity),
                 world.EmploymentGroups.Where(g => g.OwnerId == c.Actor).Sum(g => g.Headcount),
@@ -144,8 +156,10 @@ public sealed partial class GameSession
     {
         var states = ControllerStates;
         var awaiting = _controllerAwaiting.OrderBy(x => x.Key).Select(x => new KeyValuePair<long, string[]>(x.Key, x.Value.ToArray())).ToArray();
-        return new(states, awaiting, _observationPool is null?ControllerTurns:[], ControllerSamples, DigestControllerState(states, awaiting)){ObservationArchive=_observationPool?.Capture()};
+        var samples=ControllerSamples;var archive=_observationPool?.Capture(samples);
+        return new(states, awaiting, _observationPool is null?ControllerTurns:[], archive is null?samples:[], DigestControllerState(states, awaiting)){ObservationArchive=archive};
     }
+    public object ObservationArchiveStatistics()=>_observationPool?.Statistics()??new Dictionary<string,object>();
     public string ComputeControllerStateHash()
     {
         var awaiting=_controllerAwaiting.OrderBy(x=>x.Key).Select(x=>new KeyValuePair<long,string[]>(x.Key,x.Value.ToArray())).ToArray();
@@ -156,20 +170,22 @@ public sealed partial class GameSession
         if(saved.ObservationArchive is {} archive)
         {
             if(saved.Turns.Length!=0)throw new CheckpointException("MixedObservationHistory");
-            var restored=ControllerObservationPool.Restore(archive,Engine.Tick,saved.States.Length);_observationPool=restored.Pool;saved=saved with{Turns=restored.Turns};
+            var restored=ControllerObservationPool.Restore(archive,Engine.Tick,saved.States.Length);_observationPool=restored.Pool;if(restored.Samples is not null&&saved.Samples.Length!=0)throw new CheckpointException("MixedControllerSampleHistory");saved=saved with{Turns=restored.Turns,Samples=restored.Samples??saved.Samples};
         }
         var participants = Engine.Inspect().Participants.Select(p => p.Id.Value).ToHashSet();
+        var tapeActor=_tape.Select(t=>(t.AuthenticatedActor.Value,t.Command.CommandId)).ToHashSet();
+        var tapeTick=_tape.Select(t=>(t.AuthenticatedActor.Value,t.SubmittedAtTick,t.Command.CommandId)).ToHashSet();
         var ids = saved.States.Select(c => c.Actor.Value).ToHashSet();
         if (saved.States.Length != ids.Count || saved.States.Any(c => !participants.Contains(c.Actor.Value) ||
             string.IsNullOrWhiteSpace(c.Kind) || c.Kind.Length > 80 || c.Version < 1 || c.StateJson.Length > 1024 * 1024 ||
             c.PendingCommandIds.IsDefault || !c.PendingCommandIds.SequenceEqual(saved.Awaiting.SingleOrDefault(p => p.Key == c.Actor.Value).Value ?? [])) ||
             saved.Awaiting.Length != ids.Count || saved.Awaiting.Select(p => p.Key).Distinct().Count() != ids.Count ||
             saved.Awaiting.Any(p => !ids.Contains(p.Key) || p.Value.Distinct().Count() != p.Value.Length ||
-                p.Value.Any(id => !_tape.Any(t => t.AuthenticatedActor.Value == p.Key && t.Command.CommandId == id))) ||
+                p.Value.Any(id => !tapeActor.Contains((p.Key,id)))) ||
             saved.Turns.Where((t, i) => i > 0 && t.Tick < saved.Turns[i - 1].Tick).Any() ||
             saved.Turns.Any(t => !ids.Contains(t.Actor.Value) || t.Tick < 0 || t.Tick > Engine.Tick || (t.Tick == Engine.Tick && !t.Voting) ||
                 t.Observation.Tick != t.Tick || t.Observation.Participant.Id != t.Actor ||
-                t.CommandIds.Any(id => !_tape.Any(c => c.AuthenticatedActor == t.Actor && c.SubmittedAtTick == t.Tick && c.Command.CommandId == id))) ||
+                t.CommandIds.Any(id => !tapeTick.Contains((t.Actor.Value,t.Tick,id)))) ||
             saved.Samples.GroupBy(s => s.ActorId).Any(g => g.Count() != Engine.Tick ||
                 g.Where((s, i) => s.Tick != i + 1).Any()) ||
             (saved.States.Length > 0 && saved.Samples.Select(s => s.ActorId).Distinct().Count() != saved.States.Length && Engine.Tick > 0) ||
@@ -178,6 +194,6 @@ public sealed partial class GameSession
             throw new CheckpointException("InvalidSessionControllers");
         _unrestoredControllers = saved.States;
         foreach (var pair in saved.Awaiting) _controllerAwaiting.Add(pair.Key, pair.Value.ToList());
-        _controllerTurns.AddRange(saved.Turns); _controllerSamples.AddRange(saved.Samples);
+        if(_observationPool is null)_controllerTurns.AddRange(saved.Turns); _controllerSamples.AddRange(saved.Samples);
     }
 }

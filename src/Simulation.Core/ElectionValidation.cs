@@ -47,9 +47,9 @@ public sealed partial class SimulationEngine
             voting.Submitted.IsDefault || voting.Submitted.Length >= _actors.Count ||
             voting.Submitted.Select(v=>v.Voter).Distinct().Count()!=voting.Submitted.Length ||
             voting.Submitted.Any(v=>!_actors.ContainsKey(v.Voter.Value) || !_actors.ContainsKey(v.Candidate.Value) || _voteChoices.GetValueOrDefault(v.Voter.Value)!=v.Candidate.Value) ||
-            !voting.Submitted.Select(v=>v.Voter.Value).Order().SequenceEqual(_events.Where(e=>e.Type=="BallotSubmitted" && e.EntityId==voting.Election.Value).Select(e=>e.ActorId!.Value.Value).Order())))
+            !voting.Submitted.Select(v=>v.Voter.Value).Order().SequenceEqual(EventsOfType("BallotSubmitted",voting.Election.Value).Select(e=>e.ActorId!.Value.Value).Order())))
             throw new InvalidOperationException("Invalid frozen voting snapshot");
-        if (_events.Count(e=>e.Type=="VotingOpened") != (Elections.PauseForBallots ? _electionResults.Count + (WaitingForBallots?1:0) : 0))
+        if (EventsOfType("VotingOpened").Count != (Elections.PauseForBallots ? _electionResults.Count + (WaitingForBallots?1:0) : 0))
             throw new InvalidOperationException("Invalid voting stage journal");
         // Reconstruct numeric employment from the committed journal, not from another copy of Staff.
         // This also validates old ballots after later hiring, construction and new purchases.
@@ -58,6 +58,7 @@ public sealed partial class SimulationEngine
         foreach (var b in _config.Buildings ?? [])
             if (_buildingTypes[b.TypeId].Kind == BuildingKind.Production) counts.Add(b.Id, b.Staff);
         long population = _config.Population;
+        var employmentEvents=new[]{"RoadCrewCreated","LoadingPlatformCreated","EquipmentPurchased","LogisticsPurchased","BuildingConstructed","WorkshopOutfitCompleted","VehicleAssigned","EmploymentChanged","PopulationGrew","VoteChoiceChanged"}.SelectMany(type=>EventsOfType(type)).OrderBy(e=>e.Sequence).ToArray();
         int cursor = 0;
         var choices = new Dictionary<long, long>();
         for (int i = 0; i < _electionResults.Count; i++)
@@ -66,9 +67,9 @@ public sealed partial class SimulationEngine
             if (r.Id.Value != i + 1 || r.VotingTick != checked((i + 1L) * period) || r.VotingTick > Tick ||
                 r.Employment.IsDefault || r.Ballots.IsDefault || r.Tally.IsDefault)
                 throw new InvalidOperationException("Invalid election result identity");
-            while (cursor < _events.Count && _events[cursor].Tick <= r.VotingTick)
+            while (cursor < employmentEvents.Length && employmentEvents[cursor].Tick <= r.VotingTick)
             {
-                var e = _events[cursor++];
+                var e = employmentEvents[cursor++];
                 if ((e.Type is "RoadCrewCreated" or "LoadingPlatformCreated" or "EquipmentPurchased" or "LogisticsPurchased" or "BuildingConstructed") && known.ContainsKey(e.EntityId))
                     counts.Add(e.EntityId, 0);
                 else if(e.Type=="WorkshopOutfitCompleted"&&known.ContainsKey(e.Quantity))counts.Add(e.Quantity,0);
@@ -93,10 +94,10 @@ public sealed partial class SimulationEngine
                 r.TotalWeight != checked(Elections.BaseVote * actors.Length + r.Population - r.Unemployed) ||
                 r.Winner != r.Tally.Where(t => (Int128)2 * t.Weight > r.TotalWeight).Select(t => (ParticipantId?)t.Candidate).SingleOrDefault())
                 throw new InvalidOperationException("Invalid strict majority or total election weight");
-            var ballotEvents = _events.Where(e => e.Type == "ElectionBallot" && e.EntityId == r.Id.Value).ToArray();
+            var ballotEvents = EventsOfType("ElectionBallot",r.Id.Value).ToArray();
             if(Elections.PauseForBallots)
             {
-                var submitted=_events.Where(e=>e.Type=="BallotSubmitted" && e.EntityId==r.Id.Value).ToArray();
+                var submitted=EventsOfType("BallotSubmitted",r.Id.Value).ToArray();
                 if(!submitted.Select(e=>e.ActorId!.Value.Value).Order().SequenceEqual(actors) || submitted.Any(e=>e.Tick!=r.VotingTick || e.Phase!=9 ||
                     e.CommandId is not { } command || !_seenCommands.TryGetValue(command,out var input) || !IsImmediateBallot(input) || input.Action.Election!=r.Id ||
                     input.Action.Candidate!=r.Ballots.Single(b=>b.Voter==e.ActorId).Candidate))throw new InvalidOperationException("Invalid submitted ballot journal");
@@ -105,29 +106,29 @@ public sealed partial class SimulationEngine
                 e.ActorId != r.Ballots[index].Voter || e.Quantity != r.Ballots[index].Weight ||
                 e.ReasonCode != r.Ballots[index].Candidate.Value.ToString(CultureInfo.InvariantCulture)).Any())
                 throw new InvalidOperationException("Election journal ballot mismatch");
-            var completed = _events.SingleOrDefault(e => e.Type == "ElectionCompleted" && e.EntityId == r.Id.Value);
+            var completed = EventsOfType("ElectionCompleted",r.Id.Value).SingleOrDefault();
             if (completed is null || completed.Tick != r.VotingTick || completed.Phase != resultPhase || completed.Quantity != r.TotalWeight ||
                 completed.ReasonCode != (r.Winner?.Value.ToString(CultureInfo.InvariantCulture) ?? "NoMajority"))
                 throw new InvalidOperationException("Election journal result mismatch");
         }
         // No hidden carry of a previous election's choice; declared choices remain private until voting.
         long lastVote = _electionResults.LastOrDefault()?.VotingTick ?? 0;
-        var pendingChoices = _events.Where(e => e.Type == "VoteChoiceChanged" && e.Tick > lastVote)
+        var pendingChoices = EventsOfType("VoteChoiceChanged").Where(e=> e.Tick > lastVote)
             .GroupBy(e => e.ActorId!.Value.Value).ToDictionary(g => g.Key, g => long.Parse(g.Last().ReasonCode, CultureInfo.InvariantCulture));
         if (!_voteChoices.OrderBy(c => c.Key).SequenceEqual(pendingChoices.OrderBy(c => c.Key)) ||
-            _events.Count(e => e.Type == "ElectionCompleted") != _electionResults.Count ||
-            _events.Count(e => e.Type == "FirstVictory") != (_firstVictory is null ? 0 : 1) ||
-            _events.Count(e => e.Type == "SandboxStarted") != (_sandboxStartedAtTick.HasValue ? 1 : 0))
+            EventsOfType("ElectionCompleted").Count != _electionResults.Count ||
+            EventsOfType("FirstVictory").Count != (_firstVictory is null ? 0 : 1) ||
+            EventsOfType("SandboxStarted").Count != (_sandboxStartedAtTick.HasValue ? 1 : 0))
             throw new InvalidOperationException("Election state differs from journal");
         if (_firstVictory is { } first)
         {
-            var won = _events.Single(e => e.Type == "FirstVictory");
+            var won = EventsOfType("FirstVictory").Single();
             if (won.ActorId != first.Winner || won.EntityId != first.Election.Value || won.Tick != first.Tick || won.Phase != resultPhase)
                 throw new InvalidOperationException("First victory journal mismatch");
         }
         if (_sandboxStartedAtTick is { } started)
         {
-            var sandbox = _events.Single(e => e.Type == "SandboxStarted");
+            var sandbox = EventsOfType("SandboxStarted").Single();
             if (sandbox.Tick != started || sandbox.Phase != 1 || sandbox.EntityId != _firstVictory!.Election.Value ||
                 sandbox.ActorId != _firstVictory.Winner)
                 throw new InvalidOperationException("Sandbox journal mismatch");

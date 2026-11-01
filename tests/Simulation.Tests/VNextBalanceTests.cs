@@ -32,7 +32,7 @@ public class VNextBalanceTests
     {
         var read=VNextBalanceReader.Read(Bytes("vnext-balance.json"));Assert.True(read.IsValid);var b=read.Balance!;
         Assert.Equal(34,b.Items.Length);Assert.Equal(23,b.Recipes.Length);Assert.Equal(6,b.Industries.Length);Assert.Equal(5,b.Vehicles.Length);Assert.Equal(8,b.Resources.Count);
-        Assert.Equal(100,b.Rules.MoneyMinorPerCoin);Assert.Equal(80,b.Rules.BaseSpeedUnitsPerCellTick);
+        Assert.Equal(100,b.Rules.MoneyMinorPerCoin);Assert.Equal(32,b.Rules.BaseSpeedUnitsPerCellTick);
         Assert.Equal(new long[]{0,2500,4500,6500,8500,10000},b.Rules.StaffRateBp.ToArray());
         Assert.Equal(900000,b.EnterpriseTiers.Single(t=>t.Level==5).PriceMinor);
         Assert.Equal(60000,b.Warehouses.Single(t=>t.Level==3).PriceMinor);Assert.Equal(35000,b.AdditionalWorkshopOutfits["machinery"].PriceMinor);

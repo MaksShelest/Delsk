@@ -162,14 +162,16 @@ public sealed partial class SimulationEngine
             Emit("CapitalWindowClosed", entity: offer.Definition.Id, quantity: volume);
         }
     }
+    public event Action<string>? InvariantBoundary;
     public void ValidateInvariants()
     {
-        ValidateProductionContent();ValidateStorage();ValidateDemolition();ValidateWorkshops();ValidateIndustryDevelopment();ValidateDevelopmentBuildings();
-        ValidateFleet();ValidateRoads();ValidateBilling();ValidateServices();ValidateServiceExecution(); ValidateResearchAudit(); ValidateResources(); ValidateExtractionRoutes(); ValidateTransfers();
+        InvariantBoundary?.Invoke("$begin");
+        ValidateProductionContent();InvariantBoundary?.Invoke("ValidateProductionContent");ValidateStorage();InvariantBoundary?.Invoke("ValidateStorage");ValidateDemolition();InvariantBoundary?.Invoke("ValidateDemolition");ValidateWorkshops();InvariantBoundary?.Invoke("ValidateWorkshops");ValidateIndustryDevelopment();InvariantBoundary?.Invoke("ValidateIndustryDevelopment");ValidateDevelopmentBuildings();InvariantBoundary?.Invoke("ValidateDevelopmentBuildings");
+        ValidateFleet();InvariantBoundary?.Invoke("ValidateFleet");ValidateRoads();InvariantBoundary?.Invoke("ValidateRoads");ValidateBilling();InvariantBoundary?.Invoke("ValidateBilling");ValidateServices();InvariantBoundary?.Invoke("ValidateServices");ValidateServiceExecution();InvariantBoundary?.Invoke("ValidateServiceExecution"); ValidateResearchAudit();InvariantBoundary?.Invoke("ValidateResearchAudit"); ValidateResources();InvariantBoundary?.Invoke("ValidateResources"); ValidateExtractionRoutes();InvariantBoundary?.Invoke("ValidateExtractionRoutes"); ValidateTransfers();InvariantBoundary?.Invoke("ValidateTransfers");
         if (_plots.Values.Where(p => p.Definition.IsShopSite).SelectMany(p => new[] { p.Owner, p.ReservedBy }.Where(a => a.HasValue))
             .GroupBy(a => a).Any(g => g.Count() > 1)) throw new InvalidOperationException("Shared shop site limit exceeded");
-        _economy.Validate();
-        ValidateLaborInvariants();
+        _economy.Validate();InvariantBoundary?.Invoke("accounts-and-inventories");
+        ValidateLaborInvariants();InvariantBoundary?.Invoke("ValidateLaborInvariants");
         foreach (var actor in _actors.Values)
         {
             if (!_map.Walkable(actor.Position) || _economy.Inventories[actor.Inventory].Position != actor.Position)
@@ -182,6 +184,7 @@ public sealed partial class SimulationEngine
             if (actor.Job is { } job && _completedPersonalJobs.Contains(job.Id))
                 throw new InvalidOperationException("I08: completed job still active");
         }
+        InvariantBoundary?.Invoke("actors");
         foreach (var flow in _flows.Values)
         {
             long physical = _economy.Inventories.Values.Aggregate(0L, (n, inv) => checked(n + inv.Count(flow.Id)+inv.Overflow.Values.Where(l=>l.ItemId==flow.Id).Sum(l=>l.Quantity)));
@@ -195,6 +198,7 @@ public sealed partial class SimulationEngine
                 batch.Inputs.IsDefault || !batch.Inputs.SequenceEqual(e.Recipe.Ingredients)))
                 throw new InvalidOperationException("Invalid work in progress");
         }
+        InvariantBoundary?.Invoke("flows-and-wip");
         foreach (var offer in _offers.Values)
         {
             long budget = checked(offer.Remaining * offer.Definition.UnitPriceMinor);
@@ -206,14 +210,14 @@ public sealed partial class SimulationEngine
                     reserved.Quantity != request.Quantity || reserved.Item != offer.Definition.ItemId)
                     throw new InvalidOperationException("Reserved sale changed before closing");
         }
-        ValidateLandInvariants();
-        ValidateEquipmentInvariants();
-        ValidateNegotiations();
-        ValidateMarketInvariants();
-        ValidateDeliveryInvariants();
-        ValidateLogisticsInvariants();
-        ValidateCapitalDemandInvariants();
-        ValidateSupportInvariants();
-        ValidateElectionInvariants();
+        ValidateLandInvariants();InvariantBoundary?.Invoke("ValidateLandInvariants");
+        ValidateEquipmentInvariants();InvariantBoundary?.Invoke("ValidateEquipmentInvariants");
+        ValidateNegotiations();InvariantBoundary?.Invoke("ValidateNegotiations");
+        ValidateMarketInvariants();InvariantBoundary?.Invoke("ValidateMarketInvariants");
+        ValidateDeliveryInvariants();InvariantBoundary?.Invoke("ValidateDeliveryInvariants");
+        ValidateLogisticsInvariants();InvariantBoundary?.Invoke("ValidateLogisticsInvariants");
+        ValidateCapitalDemandInvariants();InvariantBoundary?.Invoke("ValidateCapitalDemandInvariants");
+        ValidateSupportInvariants();InvariantBoundary?.Invoke("ValidateSupportInvariants");
+        ValidateElectionInvariants();InvariantBoundary?.Invoke("ValidateElectionInvariants");
     }
 }

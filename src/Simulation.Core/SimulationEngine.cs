@@ -135,6 +135,8 @@ public sealed partial class SimulationEngine
         }
         _pending.Add(command); return null;
     }
+    /// <summary>Optional host instrumentation only; callbacks must be pure. No clock enters Core.</summary>
+    public event Action<int>? StepPhaseBoundary;
     public void Step()
     {
         if (WaitingForBallots) return;
@@ -143,6 +145,7 @@ public sealed partial class SimulationEngine
         _stepping = true;
         try
         {
+            StepPhaseBoundary?.Invoke(-1);
             ++Tick; _phase = 0; AdvanceFleet(); AdvanceStorageConstruction(); AdvanceWorkshopInstallations(); AdvanceProductionContent(); AdvanceOverflow(); AdvanceResourceIntervals(); MaintainRoadFreightTimes(); ApplyWages();
             var due = _pending.Where(c => c.NotBeforeTick <= Tick).ToArray();
             foreach (var c in due) _pending.Remove(c);
@@ -156,18 +159,27 @@ public sealed partial class SimulationEngine
                     if (c.n >= _config.MaxCommandsPerActorTick) Reject(c.c, "CommandBudgetExceeded");
                     else if (c.c.ExpiresAtTick < Tick) Reject(c.c, "CommandExpired");
                     else allowed.Add(c.c);
+            StepPhaseBoundary?.Invoke(0);
             _phase = 1;
             foreach (var c in allowed.Where(c => IsManagement(c.Action.Kind))) Execute(c);
+            StepPhaseBoundary?.Invoke(1);
             _phase = 2; AdvanceServiceMovement(); AdvanceTrafficAssistance(); AdvanceEquipmentMovements(); AdvanceMovements(); AdvanceLogisticsMovements();
+            StepPhaseBoundary?.Invoke(2);
             _phase = 3; AcceptLogisticsArrivals(); ReserveSupportResources();
             foreach (var c in allowed.Where(c => !IsManagement(c.Action.Kind))) Execute(c);
             AdvanceTransfers(); AdvanceServiceHandling(); AdvanceOverflow(); ReserveSupportResources();
+            StepPhaseBoundary?.Invoke(3);
             _phase = 4; AdvanceHarvests(); AdvanceWork(); AdvanceRoadWorks();
+            StepPhaseBoundary?.Invoke(4);
             _phase = 5; AdvanceLabor();
+            StepPhaseBoundary?.Invoke(5);
             _phase = 6; CloseVehiclePurchases(); CloseCapitalWindows(); AdvanceMarketWindows(); CloseBuyWindows(); AdvanceCapitalDemand();
+            StepPhaseBoundary?.Invoke(6);
             _phase = 7; AdvanceServices(); AdvanceOverflow(true); ExpirePlotReservations(); ExpirePurchases(); ExpireDelivery(); ExpireCapitalOrders(); ExpireSupport(); ExpireNegotiations();AdvanceIndustryQuests();AdvanceBilling();
+            StepPhaseBoundary?.Invoke(7);
             _phase = 8; AdvanceElections();
-            _phase = 9; AdvanceCityStage(); ValidateInvariants(); Emit("TickCommitted");
+            StepPhaseBoundary?.Invoke(8);
+            _phase = 9; AdvanceCityStage(); ValidateInvariants(); Emit("TickCommitted"); StepPhaseBoundary?.Invoke(9);
         }
         finally { _stepping = false; }
     }
@@ -284,7 +296,7 @@ public sealed partial class SimulationEngine
         {StartRoadMove(actor,roadVehicle,c);return;}
         if (actor.Job is not null && !IsHarvest(actor.Job) || HasSale(actor.Id)) RequireIdle(actor);
         Cell[] path = _map.FindPath(actor.Position, c.Action.Target);
-        long arrival = checked(Tick + path.Zip(path.Skip(1)).Sum(p => (long)PersonalMoveTicks(actor,p.First,p.Second)));
+        long arrival = checked(Tick + PersonalPathTicks(actor,path));
         if (path.Length > 1) foreach (var t in _transfers.Values.Where(t=>t.Owner.Value==actor.Id).ToArray()) CancelTransfer(t,"MovementStarted");
         if (path.Length > 1 && IsHarvest(actor.Job)) CancelHarvest(actor, "MovementStarted");
         actor.HeadingX = 0; actor.HeadingZ = 0; actor.OffsetX = TravelCenter; actor.OffsetZ = TravelCenter;
@@ -343,6 +355,7 @@ public sealed partial class SimulationEngine
             if (actor.Job is not { Kind: "Move" } job || job.StartTick >= Tick) continue;
             if(Roads is not null&&DrivenVehicle(actor.Id) is {} roadVehicle)
             {AdvanceRoadMove(actor,roadVehicle,job);continue;}
+            if(UsesAcceleratedMovement){AdvanceFastPersonalMove(actor,job);continue;}
             ++job.SegmentTicks;
             if (job.SegmentTicks < PersonalMoveTicks(actor,job.Path[job.PathIndex],job.Path[job.PathIndex+1])) continue;
             job.SegmentTicks = 0; ++job.PathIndex; actor.Position = job.Path[job.PathIndex];
@@ -413,7 +426,7 @@ public sealed partial class SimulationEngine
     public ParticipantObservation Observe(ParticipantId actorId)
     {
         if (!_actors.ContainsKey(actorId.Value)) throw new ArgumentException("Participant not available");
-        var view = Inspect(); var actor = view.Participants.Single(a => a.Id == actorId);
+        var view = _controllerBatchView??Inspect(); var actor = view.Participants.Single(a => a.Id == actorId);
         return new(Tick, actor, view.Accounts.Single(a => a.Id == actor.AccountId),
             view.Inventories.Where(i => i.OwnerId == actorId).ToArray(), view.Enterprises.Where(e => e.OwnerId == actorId).ToArray(), view.CapitalOffers,
             view.Plots, view.Buildings.Where(b => b.OwnerId == actorId).ToArray(), CopyBuildingCatalog(),
@@ -423,7 +436,7 @@ public sealed partial class SimulationEngine
             view.MarketBids.Where(b => b.Buyer == actorId).ToArray(),
             view.MarketAllocations.Where(a => a.Buyer == actorId || a.Seller == actorId).ToArray(), Market, view.BuyOffers.Where(o => o.Status == "Open" || o.Buyer == actorId).ToArray(),
             view.SupplyRequests.Where(r => r.Supplier == actorId).ToArray(),
-            view.DeliveryContracts.Where(d => d.Supplier == actorId || d.Buyer == actorId).ToArray(), Delivery, view.Logistics.Where(l => l.OwnerId == actorId).ToArray(), Logistics, PublicCapitalPrices(false), PublicCapitalPrices(true), ObserveElections(actorId), ObserveSupport(actorId), PublicEconomy()) { Resources = ResourceSites(),Negotiations=ObserveNegotiations(actorId),NegotiationRules=NegotiationRules,TradingParticipants=TradingParticipants() };
+            view.DeliveryContracts.Where(d => d.Supplier == actorId || d.Buyer == actorId).ToArray(), Delivery, view.Logistics.Where(l => l.OwnerId == actorId).ToArray(), Logistics, _controllerBatchPrices??PublicCapitalPrices(false), _controllerBatchHistory??PublicCapitalPrices(true), ObserveElections(actorId), ObserveSupport(actorId), _controllerBatchEconomy??PublicEconomy()) { Resources = _controllerBatchResources??ResourceSites(),Negotiations=ObserveNegotiations(actorId),NegotiationRules=NegotiationRules,TradingParticipants=TradingParticipants() };
     }
     public string ComputeStateHash()
     {

@@ -726,3 +726,26 @@ jobs:
           SERVICES_RESULT: ${{ needs.services.result }}
           FLEET_RESULT: ${{ needs.fleet.result }}
         run: test "$RESEARCH_H1_RESULT" = success && test "$CITY_UX_UNIT_RESULT" = success && test "$CITY_UX_DEVELOPER_RESULT" = success && test "$NPC_UNIT_RESULT" = success && test "$NPC_DEVELOPER_RESULT" = success && test "$NPC_ACTIONS_RESULT" = success && test "$NPC_NATURAL_RESULT" = success && test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success && test "$ROADS_RESULT" = success && test "$ROAD_UNIT_RESULT" = success && test "$ROAD_DEVELOPER_RESULT" = success && test "$BILLING_UNIT_RESULT" = success && test "$BILLING_DEVELOPER_RESULT" = success && test "$BILLING_RESULT" = success && test "$SERVICES_UNIT_RESULT" = success && test "$SERVICES_DEVELOPER_RESULT" = success && test "$SERVICES_RESULT" = success && test "$RUNS_UNIT_RESULT" = success && test "$RUNS_DEVELOPER_RESULT" = success && test "$RUNS_RESULT" = success
+  h2-engineering-unit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: H2 storage, movement, safety and native-scene preparations
+        run: python scripts/run_check.py --name h2-unit --timeout 600 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --phase tests --suite h2 --output artifacts/h2-unit
+      - name: Publish actual H2 results
+        if: always()
+        run: python scripts/report_check_results.py artifacts/h2-unit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h2-engineering-unit
+          path: artifacts/

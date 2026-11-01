@@ -7,7 +7,8 @@ public record RecordedPlaybackState(RecordedCommand[] Commands, long FinalTick, 
 internal record SavedSession(int SchemaVersion, string SessionId, long Epoch, bool Paused,
     string WorldJson, KeyValuePair<long, long>[] Sequences, RecordedCommand[] Tape, TickSample[] Samples,
     LaborSample[] LaborSamples, RecordedPlaybackState? Playback, SavedControllers? Controllers = null,
-    ResearchModification[]? ResearchPlayback=null,int ResearchIndex=0);
+    ResearchModification[]? ResearchPlayback=null,int ResearchIndex=0,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] LaborHistoryArchive? LaborArchive=null);
 
 public sealed partial class GameSession
 {
@@ -84,9 +85,10 @@ public sealed partial class GameSession
     internal string CreateSessionJson()
     {
         var controllers=SaveControllers();
-        return JsonSerializer.Serialize(new SavedSession(controllers.ObservationArchive is null?2:3, SessionId, SessionEpoch, Paused,
+        return JsonSerializer.Serialize(new SavedSession(controllers.ObservationArchive is null?2:controllers.ObservationArchive.Version==2?4:3, SessionId, SessionEpoch, Paused,
             Engine.CreateCheckpointJson(), _sequences.OrderBy(x => x.Key).ToArray(), CommandTape, Samples,
-            LaborSamples, _playback, controllers,_researchPlayback,_researchIndex), SimulationJson.Options);
+            controllers.ObservationArchive?.Version==2?[]:LaborSamples, _playback, controllers,_researchPlayback,_researchIndex,
+            controllers.ObservationArchive?.Version==2?LaborHistoryArchive.Create(_laborSamples):null), SimulationJson.Options);
     }
     internal static GameSession FromSessionJson(string json, Action? beforeStep = null)
     {
@@ -94,9 +96,11 @@ public sealed partial class GameSession
         {
             var s = JsonSerializer.Deserialize<SavedSession>(json, SimulationJson.Options)
                 ?? throw new CheckpointException("EmptySessionCheckpoint");
-            if (s.SchemaVersion is not (1 or 2 or 3)) throw new CheckpointException("UnknownSessionSchema");
+            if (s.SchemaVersion is not (1 or 2 or 3 or 4)) throw new CheckpointException("UnknownSessionSchema");
             if (string.IsNullOrWhiteSpace(s.SessionId) || s.SessionId.Length > 80 || s.Epoch < 1 || s.Epoch == long.MaxValue)
                 throw new CheckpointException("InvalidSessionIdentity");
+            if(s.LaborArchive is not null)
+            {if(s.SchemaVersion!=4||s.LaborSamples.Length!=0)throw new CheckpointException("MixedLaborHistory");s=s with{LaborSamples=s.LaborArchive.Restore(s.Samples)};}
             var session = new GameSession(SimulationEngine.FromCheckpointJson(s.WorldJson), s.SessionId, beforeStep)
                 { SessionEpoch = s.Epoch + 1, Paused = s.Paused, _playback = s.Playback };
             session._playbackNeedsTravel = s.Playback?.Commands.Any(c => c.TravelQuantum != 0 || c.Command.Action.Kind == ActionKind.SetTravelHeading) ?? false;
@@ -123,8 +127,9 @@ public sealed partial class GameSession
                 p.Commands.Take(p.NextIndex).Any(c => c.SubmittedAtTick > tick || !session._tape.Contains(c)) ||
                 p.Commands.Skip(p.NextIndex).Any(c => c.SubmittedAtTick < tick)))
                 throw new CheckpointException("InvalidPlaybackCursor");
-            if(s.SchemaVersion==3&&s.Controllers?.ObservationArchive is null)throw new CheckpointException("MissingObservationArchive");
-            if (s.SchemaVersion is 2 or 3 && s.Controllers is null) throw new CheckpointException("MissingSessionControllers");
+            if(s.SchemaVersion==4&&s.Controllers?.ObservationArchive?.Version!=2||s.SchemaVersion==3&&s.Controllers?.ObservationArchive?.Version!=1)throw new CheckpointException("ObservationArchiveSchemaMismatch");
+            if(s.SchemaVersion is 3 or 4&&s.Controllers?.ObservationArchive is null)throw new CheckpointException("MissingObservationArchive");
+            if (s.SchemaVersion is 2 or 3 or 4 && s.Controllers is null) throw new CheckpointException("MissingSessionControllers");
             if (s.Controllers is not null) session.LoadControllers(s.Controllers);
             return session;
         }

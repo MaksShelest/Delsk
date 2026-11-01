@@ -298,12 +298,12 @@ public sealed partial class AlgorithmicController
     private static CapitalOfferView? BestOffer(ControllerObservation o, string item, long q, Cell source)
         => o.CapitalOffers.Where(a => a.ItemId == item && a.RemainingQuantity > 0 &&
             Distance(o.Map, source, a.Position) >= 0 && (a.ExpiresAtTick is null ||
-            a.ExpiresAtTick>=o.Tick+(long)Distance(o.Map,source,a.Position)*o.Map.MoveTicksPerCell+o.Map.TradeWindowTicks+2)).OrderByDescending(a => Rate(o, a, q, source)).ThenBy(a => a.Id).FirstOrDefault();
+            a.ExpiresAtTick>=o.Tick+TravelTicks(o,source,a.Position)+o.Map.TradeWindowTicks+2)).OrderByDescending(a => Rate(o, a, q, source)).ThenBy(a => a.Id).FirstOrDefault();
     private static long Rate(ControllerObservation o, CapitalOfferView offer, long q, Cell source)
     {
         long distance = Distance(o.Map, source, offer.Position);
         if (distance < 0 || q <= 0) return 0;
-        long ticks = checked(distance * o.Map.MoveTicksPerCell + q * o.Map.HarvestTicksPerUnit + o.Map.TradeWindowTicks + 1);
+        long ticks = checked(TravelTicks(o,source,offer.Position) + q * o.Map.HarvestTicksPerUnit + o.Map.TradeWindowTicks + 1);
         return checked(Math.Min(q, offer.RemainingQuantity) * offer.UnitPriceMinor / ticks);
     }
     internal static int Distance(ControllerMap map, Cell from, Cell to)

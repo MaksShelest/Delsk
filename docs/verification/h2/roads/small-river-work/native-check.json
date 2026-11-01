@@ -1,0 +1,31 @@
+{
+  "status": "succeeded",
+  "map": "small-river",
+  "participantCount": 4,
+  "prepared": true,
+  "layout": "map-adapter-2",
+  "measures": [
+    {
+      "set": "classic",
+      "personBounds": {
+        "size": "(0.21333334, 0.48, 0.2142565)",
+        "position": "(-0.10666667, 0, -0.10712825)"
+      }
+    },
+    {
+      "set": "cozy",
+      "personBounds": {
+        "size": "(0.27097997, 0.48, 0.16062096)",
+        "position": "(-0.13548999, 0, -0.08031062)"
+      }
+    }
+  ],
+  "checks": [
+    "real Playfield and resolved 4-participant world",
+    "both skins: actual straight, built corner, junction and working bypass at close and overview scales",
+    "skin change preserves authoritative world",
+    "cell picking at close/district/overview scales",
+    "checkpoint preserves exact resolved geometry"
+  ],
+  "scope": "Native Godot/X11 software renderer; camera framed in isolated probe; not physical device acceptance"
+}

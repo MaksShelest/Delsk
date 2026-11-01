@@ -1,0 +1,78 @@
+name: H2 retained late worlds
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/h2-late.yml'
+      - 'src/**'
+      - 'scripts/verify_h2_late.py'
+      - 'scripts/restore_h1_for_h2.py'
+      - 'scripts/verify_h2_history.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  retained:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        case:
+          - long-small-river-6-Medium-42
+          - long-small-river-6-Medium-43
+          - long-small-river-6-Hard-42
+          - long-small-river-6-Hard-43
+          - long-large-districts-6-Medium-42
+          - long-large-districts-6-Medium-43
+          - long-large-districts-6-Hard-42
+          - long-large-districts-6-Hard-43
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+      CASE_ID: ${{ matrix.case }}
+      DELSK_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Original H1 retained manifest and parts, unchanged
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 40954434118
+          github-token: ${{ github.token }}
+          pattern: h1-resume-${{ matrix.case }}-*
+          merge-multiple: true
+          path: work/bundle
+      - name: Verify every original byte before the distinct H2 cohort
+        run: python scripts/restore_h1_for_h2.py --bundle work/bundle --output work/original
+      - name: Bounded locked restore
+        run: python scripts/run_check.py --name restore --timeout 180 --log-directory work/build-checks -- dotnet restore Delsk.sln --locked-mode --disable-parallel -m:1
+      - name: Bounded ordinary build
+        run: python scripts/run_check.py --name build --timeout 180 --log-directory work/build-checks -- dotnet build Delsk.sln -c Release --no-restore --disable-build-servers -m:1
+      - name: Late continuation, exact full history, replay and independent audits
+        shell: python
+        run: |
+          import json, pathlib, subprocess, sys
+          original=pathlib.Path('work/original')
+          journal=json.loads((original/'trajectory.json').read_text())
+          subprocess.run([sys.executable,'scripts/verify_h2_late.py',
+            '--checkpoint',str(original/journal['lastCheckpoint']),
+            '--runtime','src/Research.Runner/bin/Release/net10.0',
+            '--output','work/h2-result'],check=True)
+      - name: Publish actual outcomes and failures
+        if: always()
+        run: python scripts/report_check_results.py work/h2-result work/build-checks
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h2-late-${{ matrix.case }}
+          path: |
+            work/h2-result/
+            work/build-checks/
+            work/original/h2-source-verification.json
+          compression-level: 1
+          retention-days: 90

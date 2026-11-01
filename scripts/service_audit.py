@@ -19,10 +19,11 @@ def verify(folder):
     for o in services['orders']:
         q=o['quote'];t=q['terms'];model=models[vehicles[t['vehicleId']]['modelId']];volume=t['quantity']*items[t['itemId']]['unitVolume'];per=model['capacityVolume']//items[t['itemId']]['unitVolume'];trips=(t['quantity']+per-1)//per
         assert q['volume']==volume and q['quantityPerTrip']==per and q['trips']==trips
-        assert q['loadedDistance']==len(q['loaded'])-1>0 and q['etaTicks']==q['travelTicks']+q['handlingTicks']>0
+        handover=2*trips if config['economy'].get('movement') and config['economy'].get('serviceExecution') else 0
+        assert q['loadedDistance']==len(q['loaded'])-1>0 and q['etaTicks']==q['travelTicks']+q['handlingTicks']+handover>0
         assert q['bufferTicks']==max(rules['minimumBufferTicks'],(q['etaTicks']*rules['bufferBasisPoints']+9999)//10000)
         blocks=((volume+rules['volumeBlock']-1)//rules['volumeBlock'])*((q['loadedDistance']+rules['distanceBlock']-1)//rules['distanceBlock'])
-        numerator=(rules['fixedFeeMinor']+rules['blockFeeMinor']*blocks)*SCALE*10000+(rules['driverWageMinor']*(q['etaTicks']+q['extraStaffTicks'])*SCALE+q['roadUnits'])*rules['costMarkupBasisPoints']
+        numerator=(rules['fixedFeeMinor']+rules['blockFeeMinor']*blocks)*SCALE*10000+(rules['driverWageMinor']*(q['etaTicks']-handover+q['extraStaffTicks'])*SCALE+q['roadUnits'])*rules['costMarkupBasisPoints']
         assert q['feeMinor']==max(rules['minimumFeeMinor'],(numerator+SCALE*10000-1)//(SCALE*10000))
         assert o['respondByTick']>=o['createdTick']+rules['responseTicks']
         assert len([e for e in events if e['type']=='ServiceRequested' and e['entityId']==o['id']])==1

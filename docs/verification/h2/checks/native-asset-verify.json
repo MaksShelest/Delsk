@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/workspace/Delsk/scripts/reuse_godot_imports.py",
+    "--source",
+    "/workspace/Delsk/work/h2/native-roads-refined/source/src/Client.Godot",
+    "--verify-only",
+    "--report",
+    "/workspace/Delsk/work/h2/native-roads-refined/asset-verify.json"
+  ],
+  "timeout_seconds": 30,
+  "started_at": "2026-11-01T08:30:42.757735+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.115,
+  "finished_at": "2026-11-01T08:30:42.872326+00:00"
+}

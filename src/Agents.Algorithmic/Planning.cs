@@ -50,7 +50,7 @@ public sealed partial class AlgorithmicController
         foreach(var step in steps)
         {
             ticks=checked(ticks+1);var a=step.Action;
-            if(a.Kind==ActionKind.MoveTo){int d=Distance(o.Map,position,a.Target);if(d<0)return long.MaxValue;ticks=checked(ticks+(long)d*o.Map.MoveTicksPerCell);position=a.Target;}
+            if(a.Kind==ActionKind.MoveTo){int d=Distance(o.Map,position,a.Target);if(d<0)return long.MaxValue;ticks=checked(ticks+TravelTicks(o,position,a.Target));position=a.Target;}
             if(a.Kind==ActionKind.Harvest){
                 var machine=o.Equipment.FirstOrDefault(m=>m.Id==a.Equipment);
                 ticks=checked(ticks+(machine is null?a.Quantity*o.Map.HarvestTicksPerUnit:

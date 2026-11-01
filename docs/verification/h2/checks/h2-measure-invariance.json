@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "work/h2/instrumented-baseline-runtime/Research.Runner.dll",
+    "--measure-session",
+    "work/h1-post-smoke/checkpoints/30-a1.save.json",
+    "--ticks",
+    "60",
+    "--operation",
+    "export",
+    "--output",
+    "work/h2/instrument-invariance"
+  ],
+  "timeout_seconds": 180,
+  "started_at": "2026-11-01T06:55:51.424834+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 4.74,
+  "finished_at": "2026-11-01T06:55:56.164710+00:00"
+}

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "author": "Шелестов Максим Евгеньевич",
+  "legacy": {"economy_movement": null, "speed_divisor": 80, "world_schema": 28},
+  "new_game": {"economy_movement": {"version": 1, "speedDivisor": 32}, "world_schema": 29},
+  "economic_tick_seconds": 1,
+  "nominal_speed_values_changed": false,
+  "old_save_automatic_migration": false,
+  "old_accepted_terms_recalculated": false,
+  "safe_transition": "Keep the original save and start a new game; loading retains the saved conversion.",
+  "timing": "Walking paths carry microticks between cells; vehicle quanta carry remaining active time through each individually reserved edge. Round each complete leg up to an economic tick. Handling remains whole ticks."
+}

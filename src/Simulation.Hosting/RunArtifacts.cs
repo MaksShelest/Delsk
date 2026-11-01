@@ -24,7 +24,7 @@ public static class RunArtifacts
         var json = new JsonSerializerOptions(SimulationJson.Options) { WriteIndented = true };
         WriteJson("manifest.json", new
         {
-            ScenarioId = definition.Id, definition.Seed, definition.EconomyProfileId, SchemaVersion = SimulationEngine.CheckpointSchemaVersion,
+            ScenarioId = definition.Id, definition.Seed, definition.EconomyProfileId, SchemaVersion = session.Engine.ActiveCheckpointSchemaVersion,
             SimulationEngine.RulesVersion, ConfigHash = session.Engine.ConfigHash, TimingPolicy = timingPolicy, Script = script,
             Controller = session.ControllerStates.Any(c => c.Kind.StartsWith("hybrid-", StringComparison.Ordinal)) ? "hybrid" : session.HasControllers ? "algorithmic" : session.PlaybackFinalTick.HasValue ? "recorded-inputs" : "scripted",
             Controllers = session.ControllerStates, ControllerStateHash = session.ComputeControllerStateHash(), Model = modelMetadata, RuntimeVersion = Environment.Version.ToString(),
@@ -37,8 +37,8 @@ public static class RunArtifacts
         });
         WriteJson("summary.json", new { Status = status, Failure = failure, state.Tick, StateHash = session.Engine.ComputeStateHash(),
             ControllerStateHash = session.ComputeControllerStateHash(),
-            ControllerDecisionTurns = session.ControllerTurns.Length,
-            ControllerRejections = session.ControllerTurns.Sum(t => t.Feedback.Count(r => r.Status == ResultStatus.Rejected)),
+            ControllerDecisionTurns = session.ControllerTurnCount,
+            ControllerRejections = session.ControllerTurnMetadata.Sum(t => t.Feedback.Count(r => r.Status == ResultStatus.Rejected)),
             StartupMilliseconds=startupMilliseconds, ElapsedMilliseconds = elapsedMilliseconds, AverageMillisecondsPerTick = state.Tick > 0 ? elapsedMilliseconds / state.Tick : (double?)null,
             state.InitialMoneyMinor, state.ExternalMoneyInMinor, state.ExternalMoneyOutMinor, state.Accounts, state.Flows,
             state.Settlements, state.MarketOffers, state.MarketBids, state.MarketAllocations, state.BuyOffers, state.SupplyRequests, state.DeliveryContracts, state.Logistics, state.CapitalDemand, state.Elections, state.Population, state.Unemployed, state.EmploymentGroups, state.PopulationGrowth, RamBytes = (long?)null, RamMeasurementReason = "not measured" });
@@ -72,8 +72,8 @@ public static class RunArtifacts
         WriteLines("commands.jsonl", session.CommandTape);
         WriteLines("ledger.jsonl", session.Engine.Ledger());
         WriteJson("controllers.json", session.ControllerStates);
-        WriteLines("decisions.jsonl", session.ControllerTurns);
-        WriteLines("model-decisions.jsonl", session.ControllerTurns.Where(t => t.Decision.ModelTrace is not null)
+        using(var turns=File.Create(Path.Combine(directory,"decisions.jsonl")))session.WriteControllerTurns(turns);
+        WriteLines("model-decisions.jsonl", session.ControllerTurnMetadata.Where(t => t.Decision.ModelTrace is not null)
             .Select(t => new { t.Tick, t.Actor, Trace = t.Decision.ModelTrace }));
         using var agents = new StreamWriter(Path.Combine(directory, "agents.csv"), false, new UTF8Encoding(false));
         agents.WriteLine("tick,actor_id,cash_minor,stock_base_value_minor,stock_units,headcount,enterprises,equipment,busy,goal,reason");
@@ -91,7 +91,7 @@ public static class RunArtifacts
             foreach (var group in sample.EmploymentGroups)
                 labor.WriteLine(FormattableString.Invariant($"{sample.Tick},{group.Id.Value},{group.OwnerId.Value},{group.Headcount},{group.Capacity},{group.WageMinor},{group.AttractionWageMinor},{group.TargetHeadcount},{group.Ready},{group.ReadinessReason},{group.MobilityCredit}"));
         static string CsvText(string value) => "\"" + value.Replace("\"", "\"\"", StringComparison.Ordinal) + "\"";
-        void WriteJson(string name, object value) => File.WriteAllText(Path.Combine(directory, name), JsonSerializer.Serialize(value, json), new UTF8Encoding(false));
+        void WriteJson(string name, object value) {using var output=File.Create(Path.Combine(directory,name));JsonSerializer.Serialize(output,value,json);}
         void WriteLines<T>(string name, IEnumerable<T> values)
         {
             using var writer = new StreamWriter(Path.Combine(directory, name), false, new UTF8Encoding(false));

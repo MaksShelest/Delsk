@@ -1,0 +1,8 @@
+{
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "cpuCount": 3,
+  "dotnetProcessorCount": 2,
+  "scope": "Local machine; do not compare wall/RSS to GitHub H1 workers as matched pairs",
+  "memoryLimits": "unchanged64MiB envelope/512MiB decoded;600/900s processes",
+  "cpuModel": "INTEL(R) XEON(R) PLATINUM 8573C"
+}

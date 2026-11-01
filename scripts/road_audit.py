@@ -90,7 +90,8 @@ def verify_roads(folder):
     for t in roads['traffic']:
         p=list(map(cell,t['path']));i=t['index'];assert 0<=t['progress']<800 and 0<=t['advancedQuanta']<=10
         if p:assert positions[t['vehicleId']]==p[i]
-        if t['progress']:
+        fraction=t.get('progressFraction',0);assert 0<=fraction<1_000_000 and (config['economy'].get('movement') or fraction==0)
+        if t['progress'] or fraction:
             assert i<len(p)-1 and p[i+1] not in reserved
             reserved.add(p[i+1]);assert not any(at==p[i+1] for v,at in positions.items() if v!=t['vehicleId'])
     assert all(positions[v]==cell(inventory[vehicles[v]['cargoInventory']['value']]['position']) for v in vehicles)

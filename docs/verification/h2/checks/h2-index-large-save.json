@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "work/h2/index-runtime/Research.Runner.dll",
+    "--measure-session",
+    "work/h1-retained-resume/long-large-districts-6-Medium-42/world/checkpoints/12600-a1.save.json",
+    "--ticks",
+    "12700",
+    "--operation",
+    "save",
+    "--output",
+    "work/h2/index-large-save"
+  ],
+  "timeout_seconds": 900,
+  "started_at": "2026-11-01T07:14:53.374171+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 44.183,
+  "finished_at": "2026-11-01T07:15:37.556771+00:00"
+}

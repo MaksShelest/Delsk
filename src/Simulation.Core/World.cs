@@ -8,8 +8,9 @@ internal sealed class GridMap
     private readonly int _width;
     private readonly int _height;
     private readonly HashSet<Cell> _blocked;
-    public GridMap(ScenarioDefinition scenario)
-    { _width = scenario.MapWidth; _height = scenario.MapHeight; _blocked = scenario.BlockedCells.ToHashSet(); }
+    public GridMap(ScenarioDefinition scenario):this(scenario.MapWidth,scenario.MapHeight,scenario.BlockedCells) {}
+    public GridMap(int width,int height,IEnumerable<Cell> blocked)
+    {_width=width;_height=height;_blocked=blocked.ToHashSet();}
     private HashSet<Cell> _buildingWalls = [];
     public void SetBuildingWalls(IEnumerable<Cell> walls) => _buildingWalls=walls.ToHashSet();
     public bool Walkable(Cell c) => c.X >= 0 && c.Z >= 0 && c.X < _width && c.Z < _height && !_blocked.Contains(c) && !_buildingWalls.Contains(c);
@@ -227,6 +228,11 @@ public static partial class ScenarioValidation
         catch (OverflowException ex) { throw new ArgumentException("Scenario arithmetic overflow", ex); }
         ValidateMapLayout(s);ValidateFleetRules(s);ValidateRoadRules(s);ValidateWorkshopContent(s);ValidateDevelopmentContent(s);ValidateProductionContent(s);
     }
-    internal static string Hash<T>(T value) => Convert.ToHexString(SHA256.HashData(
-        JsonSerializer.SerializeToUtf8Bytes(value, SimulationJson.Options))).ToLowerInvariant();
+    internal static string Hash<T>(T value)
+    {
+        using var hash=SHA256.Create();
+        using var stream=new System.Security.Cryptography.CryptoStream(Stream.Null,hash,System.Security.Cryptography.CryptoStreamMode.Write);
+        JsonSerializer.Serialize(stream,value,SimulationJson.Options);stream.FlushFinalBlock();
+        return Convert.ToHexStringLower(hash.Hash!);
+    }
 }

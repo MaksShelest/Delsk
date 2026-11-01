@@ -32,7 +32,7 @@ public static class HiringEconomics
         var r=o.Map.Recipes.Single(r=>r.Id==e.RecipeId);var input=o.Inventories.Single(i=>i.Id==e.InputId);var output=o.Inventories.Single(i=>i.Id==e.OutputId);
         var rules=o.Economics?.Labor??new();var handling=o.Economics?.Handling??new();int horizon=settings.WageReviewTicks;
         int distance=AlgorithmicController.Distance(o.Map,o.Participant.Position,input.Position);
-        int delay=wage==group.WageMinor?0:(int)Math.Min(horizon,Math.Max(0,distance)*o.Map.MoveTicksPerCell+rules.SalaryChangeDelayTicks+rules.StepTicks);
+        int delay=wage==group.WageMinor?0:(int)Math.Min(horizon,Math.Max(0,AlgorithmicController.TravelTicks(o,o.Participant.Position,input.Position))+rules.SalaryChangeDelayTicks+rules.StepTicks);
         int target=ExpectedStaff(o,group,wage);
         // Apply the same numerical mobility limit as an upper estimate, without choosing any world's random tie.
         long moves=(group.MobilityCredit+(long)(Math.Max(0,horizon-delay)/rules.StepTicks)*group.Capacity*rules.MobilityNumerator)/rules.MobilityDenominator;
@@ -60,7 +60,7 @@ public static class HiringEconomics
         var carrier=o.Inventories.Single(i=>i.Id==o.Participant.InventoryId);
         long volume=o.Map.Items.Single(i=>i.Id==r.OutputItem).UnitVolume;
         long cargo=carrier.Capacity/volume;if(cargo==0)return Empty("NoCargoSpace");
-        long trip=checked(2L*route*o.Map.MoveTicksPerCell+2*Ceil(cargo*volume,handling.PersonalVolumePerTick)+o.Map.TradeWindowTicks+3);
+        long trip=checked((AlgorithmicController.TravelTicks(o,output.Position,terminal.Value)+AlgorithmicController.TravelTicks(o,terminal.Value,output.Position))+2*Ceil(cargo*volume,handling.PersonalVolumePerTick)+o.Map.TradeWindowTicks+3);
         long shippable=Limit((Int128)cargo*Math.Max(1,horizon/Math.Max(1,trip)));
         batches=Math.Min(batches,Math.Min(demand,shippable)/r.OutputQuantity);if(batches<=0)return Empty("SupplyOrDemandLimit");
         long units=batches*r.OutputQuantity,remaining=units;Int128 revenue=0;
@@ -77,7 +77,7 @@ public static class HiringEconomics
             (Int128)Ceil(needed-first,Math.Max(1,Rate(n1)))*n1*wage;
         // Manual shipping has an opportunity cost even when no transport payroll is charged.
         long opportunity=o.CapitalOffers.Where(a=>o.Resources.Any(n=>n.ItemId==a.ItemId && n.Stock>n.Reserved && (n.Public || n.Owner==o.Participant.Id || n.Tenant==o.Participant.Id)))
-            .Select(a=>a.UnitPriceMinor/Math.Max(1,o.Map.HarvestTicksPerUnit+2L*route*o.Map.MoveTicksPerCell/Math.Max(1,cargo))).DefaultIfEmpty(0).Max();
+            .Select(a=>a.UnitPriceMinor/Math.Max(1,o.Map.HarvestTicksPerUnit+(AlgorithmicController.TravelTicks(o,output.Position,terminal.Value)+AlgorithmicController.TravelTicks(o,terminal.Value,output.Position))/Math.Max(1,cargo))).DefaultIfEmpty(0).Max();
         Int128 transport=(Int128)Ceil(units,cargo)*trip*opportunity;
         Int128 energy=(Int128)batches*(workshops?checked(r.FullStaffTicks*o.Economics!.Workshops!.ServiceMinorPerFullTick):r.EnergyPerBatchMinor);
         return new(wage,target,batches,Limit(revenue),Limit(raw),Limit(energy),Limit(payroll),Limit(transport),Limit(revenue-raw-energy-payroll-transport),delay,"PublishedDemandEstimate");

@@ -60,7 +60,7 @@ public sealed partial class SimulationEngine
                 (t.ContractId!=0 ? d is null || d.ItemId!=t.ItemId || t.OwnDestination.Value!=0 :
                     !_buildings.Values.Any(b=>b.Owner==l.Owner && b.Input==f.Destination.Value)) ||
                 cargo.Position!=t.Position || t.Path.IsDefaultOrEmpty || t.PathIndex<0 || t.PathIndex>=t.Path.Length || (Roads is null||l.VehicleId==0)&&t.Path[t.PathIndex]!=t.Position ||
-                t.SegmentTicks<0 || t.SegmentTicks>=(t.PathIndex<t.Path.Length-1?FreightMoveTicks(l,t.Path[t.PathIndex],t.Path[t.PathIndex+1]):1))
+                t.SegmentTicks<0 || t.SegmentTicks>=(t.PathIndex<t.Path.Length-1?(UsesAcceleratedMovement?FreightEdgeUnits(l,t.Path[t.PathIndex],t.Path[t.PathIndex+1]):FreightMoveTicks(l,t.Path[t.PathIndex],t.Path[t.PathIndex+1])):1))
                 throw new InvalidOperationException("Invalid physical freight");
             if(t.State is "ReturningEmpty" or "Finishing" && (f.Cargo!=0 || FreightRemainingSource(t)!=0) ||
                 t.State is "Outbound" or "ReturningInput" && (FreightRemainingSource(t)!=0 || f.Cargo<=0))

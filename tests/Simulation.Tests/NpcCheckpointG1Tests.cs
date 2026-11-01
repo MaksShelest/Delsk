@@ -26,7 +26,7 @@ public class NpcCheckpointG1Tests
     [Fact]public void LargeRosterArchiveRetainsEveryHistoricalViewAndContinuesExactly()
     {
         var s=Recording();string turns=JsonSerializer.Serialize(s.ControllerTurns,SimulationJson.Options);string checkpoint=CheckpointStore.Encode(s);var payload=Payload(checkpoint);
-        Assert.Equal(3,(int)payload["schemaVersion"]!);Assert.Empty(payload["controllers"]!["turns"]!.AsArray());Assert.NotNull(payload["controllers"]!["observationArchive"]);
+        Assert.Equal(4,(int)payload["schemaVersion"]!);Assert.Empty(payload["controllers"]!["turns"]!.AsArray());Assert.NotNull(payload["controllers"]!["observationArchive"]);
         Assert.True(Encoding.UTF8.GetByteCount(payload.ToJsonString())<Encoding.UTF8.GetByteCount(turns),"Shared map/catalog fields must reduce the decoded payload too");
         var copy=CheckpointStore.Decode(checkpoint);copy.RestoreControllers(AlgorithmicController.Restore);Assert.Equal(turns,JsonSerializer.Serialize(copy.ControllerTurns,SimulationJson.Options));
         for(int i=0;i<5;i++){s.Step();copy.Step();Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());Assert.Equal(s.ComputeControllerStateHash(),copy.ComputeControllerStateHash());}

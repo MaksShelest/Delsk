@@ -23,7 +23,11 @@ public record ControllerBuildingType(string Id, BuildingKind Kind, ImmutableArra
 public record ControllerEquipmentType(string Id, string ItemId, ImmutableArray<EquipmentLevelDefinition> Levels);
 public record ControllerMap(int Width, int Height, ImmutableArray<Cell> BlockedCells,
     ImmutableArray<ResourceNodeDefinition> ResourceNodes, ImmutableArray<ItemDefinition> Items,
-    ImmutableArray<RecipeDefinition> Recipes, int MoveTicksPerCell, int HarvestTicksPerUnit, int TradeWindowTicks);
+    ImmutableArray<RecipeDefinition> Recipes, int MoveTicksPerCell, int HarvestTicksPerUnit, int TradeWindowTicks,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] int MovementSpeedDivisor=0,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] ImmutableArray<Cell> MovementCorridor=default,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] ImmutableArray<Cell> MovementPublicRoad=default,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] ImmutableArray<Cell> MovementRestrictedTurns=default);
 public record ControllerEconomics(LaborSettings Labor,HandlingRules Handling,int WageExponent,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] WorkshopRules? Workshops=null);
 public record ControllerObservation(long Tick, ParticipantView Participant, AccountView Account,
@@ -94,6 +98,7 @@ public sealed partial class SimulationEngine
         var o = Observe(actor);
         var road=_config.Layout?.InitialCityDirtCells.FirstOrDefault(o.Participant.Position)??o.Participant.Position;
         int moveTicks=economicPlanning&&Fleet is not null?80/FleetSpeed(road,road):_config.MoveTicksPerCell;
+        var navigation=UsesAcceleratedMovement&&Roads is not null?_controllerBatchNavigation??MovementNavigationSnapshot():null;
         return new(o.Tick, o.Participant, o.Account,
             o.OwnInventories.Select(i => new ControllerInventory(i.Id, i.Position, i.Capacity,
                 i.OccupiedVolume, i.ReservedCapacity, [.. i.Stock])).ToImmutableArray(),
@@ -108,6 +113,6 @@ public sealed partial class SimulationEngine
             o.EquipmentTypes.Select(t => new ControllerEquipmentType(t.Id, t.ItemId, [.. t.Levels])).ToImmutableArray(),
             new(_config.MapWidth, _config.MapHeight, BlockedCells(), [.. _config.ResourceNodes],
                 [.. _config.Items], [.. _config.Recipes], moveTicks,
-                _config.HarvestTicksPerUnit, _config.TradeWindowTicks), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules, o.CapitalPrices, o.CapitalPriceHistory, o.Elections, o.Support, o.City) { EconomicOpportunities=economicPlanning?EconomicOpportunitiesOf(actor):null,Services=ServicesOf(actor),PersonalAccount=Billing is null?null:AccountOf(actor),Roads=RoadsOf(actor),Fleet=FleetOf(actor),ProductionContent=ProductionContentOf(actor),Development=DevelopmentOf(actor),Economics=new(Labor,EconomyRules.Handling??new(),EconomyRules.WageAttractionExponent,_config.Economy?.Workshops),Resources = o.Resources,Negotiations=o.Negotiations,NegotiationRules=o.NegotiationRules,TradingParticipants=o.TradingParticipants };
+                _config.HarvestTicksPerUnit, _config.TradeWindowTicks,UsesAcceleratedMovement?32:0,navigation?.Corridor??default,navigation?.Public??default,navigation?.Restricted??default), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules, o.CapitalPrices, o.CapitalPriceHistory, o.Elections, o.Support, o.City) { EconomicOpportunities=economicPlanning?EconomicOpportunitiesOf(actor):null,Services=ServicesOf(actor),PersonalAccount=Billing is null?null:AccountOf(actor),Roads=RoadsOf(actor),Fleet=FleetOf(actor),ProductionContent=ProductionContentOf(actor),Development=DevelopmentOf(actor),Economics=new(Labor,EconomyRules.Handling??new(),EconomyRules.WageAttractionExponent,_config.Economy?.Workshops),Resources = o.Resources,Negotiations=o.Negotiations,NegotiationRules=o.NegotiationRules,TradingParticipants=o.TradingParticipants };
     }
 }

@@ -255,7 +255,7 @@ public partial class PresentationStage : Node3D
         }
         if(frame.Layout is {} layout)
         {
-            foreach(var row in layout.InitialCityDirtCells.GroupBy(c=>c.Z))
+            if(frame.RoadCells.Length==0)foreach(var row in layout.InitialCityDirtCells.GroupBy(c=>c.Z))
             {
                 var cells=row.OrderBy(c=>c.X).ToArray();int begin=0;
                 for(int i=1;i<=cells.Length;i++)if(i==cells.Length || cells[i].X!=cells[i-1].X+1)

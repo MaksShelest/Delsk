@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/workspace/Delsk/scripts/verify_platform_probe.py",
+    "--log-prefix",
+    "/workspace/Delsk/work/h2/native-roads-refined/checks/large-districts-corner"
+  ],
+  "timeout_seconds": 15,
+  "started_at": "2026-11-01T08:31:46.797318+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.065,
+  "finished_at": "2026-11-01T08:31:46.862064+00:00"
+}

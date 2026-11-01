@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "author": "Шелестов Максим Евгеньевич",
+  "base": "29cb97d",
+  "date": "2026-11-01",
+  "scope": "Updated H2: performance/history, versioned 2.5x movement, connected dirt roads. No H3 or price/XP tuning.",
+  "performance": {
+    "inputs": "Original H1 post-G2 frozen late checkpoints, all8 retained; primary matched local benchmarks Medium42 both maps, pressure Hard states separately",
+    "phases": [
+      "load",
+      "observations",
+      "policy",
+      "history",
+      "core phases0..9",
+      "state hash",
+      "sampling",
+      "checkpoint encode/save-validation",
+      "export"
+    ],
+    "pairedTicks": 100,
+    "smallStart": 10800,
+    "largeStart": 12600,
+    "stops": "600s normal process /900s long process unchanged,64MiB envelope/512MiB decoded unchanged; preserve failures",
+    "comparability": "Same host, serial heavy runs, same old resolved rules and initial checkpoint; instrumented baseline frozen before optimization. Coarse initial large run overlapped an instrument build and is diagnostic only, not primary timing comparison.",
+    "timingRepeats": 3,
+    "pressureContinuation": "Each of the eight retained worlds advances1800ticks beyond its last audited checkpoint; these are engineering continuations, not new H1 worlds."
+  },
+  "movement": {
+    "cohort": "New versioned rules only; old saves/replays retain old scale and saved accepted service terms",
+    "ratio": {
+      "numerator": 5,
+      "denominator": 2
+    },
+    "economicTickSeconds": 1,
+    "conditions": "short/medium/long free cardinal paths, walking and multiple vehicle/equipment types, dirt20/road40/highway60/offroad; manual/auto/logistics/services, ETA, handling/multi-trip, distance billing, encounters/turn/stop/work bypass/in-motion save/load"
+  },
+  "visual": "Actual game scene both skins, close/overview, straight/turn/junction and active bypass",
+  "truthCorrection": "H1 one-cell probe read scenario moveTicksPerCell=1, not actual economic controller DTO. Current ObserveController already supplies4 on dirt for economicPlanning; route-specific4/5 difference remains to resolve. Keep original measurements and add erratum."
+}

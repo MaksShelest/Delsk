@@ -165,7 +165,7 @@ public sealed partial class SimulationEngine
     }
     private int PersonalMoveTicks(ActorState actor, Cell from, Cell to) => Fleet is null ? _config.MoveTicksPerCell : 80 / FleetSpeed(from, to, DrivenVehicle(actor.Id) is { } v ? Model(v.ModelId) : null);
     private int FreightMoveTicks(LogisticsState l, Cell from, Cell to) => l.Vehicle is null ? Logistics.MoveTicksPerCell : Roads is null?80/FleetSpeed(from,to,l.Vehicle):(80+FleetSpeed(from,to,l.Vehicle)-1)/FleetSpeed(from,to,l.Vehicle);
-    private long FreightTravelTicks(LogisticsState l, IEnumerable<Cell> path) { var cells = path.ToArray(); return cells.Zip(cells.Skip(1)).Sum(p => (long)FreightMoveTicks(l, p.First, p.Second)); }
+    private long FreightTravelTicks(LogisticsState l, IEnumerable<Cell> path) { var cells = path.ToArray(); if(UsesAcceleratedMovement&&Roads is not null&&l.VehicleId!=0&&cells.Length>1)cells=ServicePath(cells[0],cells[^1],l.VehicleId); return UsesAcceleratedMovement?MovementTiming.WholeTicks(cells.Zip(cells.Skip(1)).Sum(p=>FreightEdgeUnits(l,p.First,p.Second))):cells.Zip(cells.Skip(1)).Sum(p => (long)FreightMoveTicks(l, p.First, p.Second)); }
     public FleetState? InspectFleet() => Fleet is null ? null : new(_fleetRandom!.State, _nextVehicleSupply,
         [.. _dealerStock.OrderBy(v => v.Id)], [.. _vehicles.Values.OrderBy(v => v.Id)], [.. _vehicleRequests.OrderBy(r => r.VehicleId).ThenBy(r => r.Actor.Value)],
         [.. _vehiclePurchases], [.. _platforms.Values.OrderBy(p => p.Id).Select(p => p.View())]);

@@ -115,7 +115,7 @@ public sealed partial class SimulationEngine
             long q = Math.Min(source.Free(item), Math.Min(l.CargoCapacity / volume, free / volume));
             if (q <= 0) throw new RuleViolation("NoStock");
             var ownPath = _map.FindPath(source.Position, destination.Position);
-            return new(-1, item, ownPath, q, Math.Max(1, checked((ownPath.Length - 1L) * Logistics.MoveTicksPerCell)));
+            return new(-1, item, ownPath, q, Math.Max(1, UsesAcceleratedMovement?FreightTravelTicks(l,ownPath):checked((ownPath.Length - 1L) * Logistics.MoveTicksPerCell)));
         }
         int index = _deliveryContracts.FindIndex(d => d.Id == contract && d.Supplier.Value == l.Owner && d.ClosedTick is null);
         if (index < 0) throw new RuleViolation("NoActiveContract");
@@ -123,7 +123,7 @@ public sealed partial class SimulationEngine
         long quantity = Math.Min(source.Free(d.ItemId), Math.Min(d.UnprovidedQuantity, l.CargoCapacity / _items[d.ItemId].UnitVolume));
         if (quantity <= 0) throw new RuleViolation(d.UnprovidedQuantity == 0 ? "NoUnassignedQuota" : "NoStock");
         Cell[] path = _map.FindPath(source.Position, d.Position);
-        long leg = Math.Max(1, checked((path.Length - 1L) * Logistics.MoveTicksPerCell));
+        long leg = Math.Max(1, UsesAcceleratedMovement?FreightTravelTicks(l,path):checked((path.Length - 1L) * Logistics.MoveTicksPerCell));
         if (checked(Tick + 1 + leg) > d.DeadlineTick) throw new RuleViolation("ArrivalAfterDeadline");
         return new(index, d.ItemId, path, quantity, leg);
     }

@@ -10,7 +10,7 @@ public sealed partial class SimulationEngine
     private bool ServicePointBusy(long inventory)=>_serviceRuns.Values.Any(r=>r.ReturnInventory.Value==inventory&&_serviceOrders[r.Order].Active)||_serviceOrders.Values.Any(o=>o.Active&&(o.Quote.Terms.Source.Value==inventory||o.Quote.Terms.Destination.Value==inventory));
     private bool ServiceFree(OwnedVehicle v)=>v.Driver==0&&v.Installation is null&&VehicleLogistics(v.Id) is null&&
         !VehicleTransferring(v.CargoInventory.Value)&&!RoadVehicleWorking(v.Id)&&!(_roadWorks.TryGetValue(v.Id,out var w)&&w.Enabled)&&
-        !(_traffic.TryGetValue(v.Id,out var t)&&(t.Progress>0||t.Resume is not null||t.Index<t.Path.Length-1))&&VehicleCargo(v).Stock.Count==0;
+        !(_traffic.TryGetValue(v.Id,out var t)&&(HasRoadProgress(t)||t.Resume is not null||t.Index<t.Path.Length-1))&&VehicleCargo(v).Stock.Count==0;
     private BuildingState? ServiceBuilding(long inventory)=>_buildings.Values.FirstOrDefault(b=>!Demolished(b.Id)&&!PreparingDemolition(b.Id)&&!PreparingDevelopment(b.Id)&&(b.Input==inventory||b.Output==inventory));
     private long PurchaseServiceQuantity(long purchase,long except=0)=>_serviceOrders.Values.Where(o=>o.Active&&o.Id!=except&&o.Quote.Terms.PurchaseId==purchase).Sum(o=>SourceRemaining(o));
     private void CheckServicePoints(long customer,ServiceTerms terms,long except=0)
@@ -41,10 +41,14 @@ public sealed partial class SimulationEngine
         }
         else if(destination.Owner!=customer)throw new RuleViolation("ServicePointRequired");
     }
-    private Cell[] ServicePath(Cell source,Cell target,long vehicle)
+    private Cell[] ServicePath(Cell source,Cell target,long vehicle,Cell? heading=null)
     {
         bool corridor=_config.Layout!.RoadCorridorCells.Contains(source)&&_config.Layout.RoadCorridorCells.Contains(target);
-        var path=FindRoadPath(source,target,c=>_map.Walkable(c)&&!WorkBlocks(vehicle,c)&&(!corridor||PublicRoadCell(c))&&
+        bool Allow(Cell c)=>_map.Walkable(c)&&!WorkBlocks(vehicle,c)&&(!corridor||PublicRoadCell(c))&&
+            (PublicRoadCell(c)||c==source||c==target||!_roadWorks.Values.Any(w=>w.Batch is {} batch&&Manhattan(c,batch.Cell)<=2))&&
+            !_bypasses.Any(b=>b.Closing&&!b.Users.Contains(vehicle)&&b.Path.Skip(1).SkipLast(1).Contains(c));
+        var path=UsesAcceleratedMovement?RouteSearch.FindOriented(source,target,Allow,(a,b)=>MovementTiming.EdgeTimeUnits(RoadBodySpeed(a,b,Body(_vehicles[vehicle])),32),c=>MayTurn(_vehicles[vehicle],c),ServiceStartHeading(source,vehicle,heading)):
+            FindRoadPath(source,target,c=>_map.Walkable(c)&&!WorkBlocks(vehicle,c)&&(!corridor||PublicRoadCell(c))&&
             !_bypasses.Any(b=>b.Closing&&!b.Users.Contains(vehicle)&&b.Path.Skip(1).SkipLast(1).Contains(c)),c=>RoadLevel(c)>0?80/Roads!.Stages[RoadLevel(c)-1].Speed+1:12);
         if(path.Length==0)throw new RuleViolation("NoPath");return path;
     }
@@ -58,6 +62,7 @@ public sealed partial class SimulationEngine
     }
     private long PathTicks(Cell[] path,VehicleModel model)
     {
+        if(UsesAcceleratedMovement)return MovementTiming.WholeTicks(path.Zip(path.Skip(1)).Sum(p=>MovementTiming.EdgeTimeUnits(FleetSpeed(p.First,p.Second,model),32)));
         long quanta=0;for(int n=0;n<path.Length-1;n++){int a=RoadLevel(path[n]),b=RoadLevel(path[n+1]);int speed=Math.Min(model.Speed,a>0&&b>0?Roads!.Stages[Math.Min(a,b)-1].Speed:8);quanta=checked(quanta+(800+speed-1)/speed);}
         return checked((quanta+9)/10);
     }
@@ -85,15 +90,16 @@ public sealed partial class SimulationEngine
         var at=VehicleCargo(vehicle).Position;var source=ServiceExecution is null?_economy.Inventories[terms.Source.Value].Position:ServiceAccessPoint(terms.Source.Value,vehicle.Id);var dest=terms.Destination.Value==0?ServiceCapitalTerminal:ServiceExecution is null?_economy.Inventories[terms.Destination.Value].Position:ServiceAccessPoint(terms.Destination.Value,vehicle.Id);
         var approach=ServicePath(at,source,vehicle.Id);var loaded=ServicePath(source,dest,vehicle.Id);var empty=trips>1?ServicePath(dest,source,vehicle.Id):[dest];
         long travel=checked(PathTicks(approach,model)+trips*PathTicks(loaded,model)+(trips-1)*PathTicks(empty,model));
+        long road=checked(PathRoadUnits(approach,model.Id)+trips*PathRoadUnits(loaded,model.Id)+(trips-1)*PathRoadUnits(empty,model.Id));
+        if(UsesAcceleratedMovement)(approach,loaded,empty,travel,road)=OrientedServicePlan(vehicle,source,dest,trips);
         var a=ServicePlatform(terms.Source.Value,customer,vehicle.Owner.Value);var b=ServicePlatform(terms.Destination.Value,customer,vehicle.Owner.Value);
         long power=VehicleHandlingPower(vehicle),fullVolume=checked(per*unit),last=checked(volume-(trips-1)*fullVolume);
         long HandlingTicks(long v,long rate)=>checked((v-1)/rate+1);
         long load=checked((trips-1)*HandlingTicks(fullVolume,power+a.Power)+HandlingTicks(last,power+a.Power));
         long unload=checked((trips-1)*HandlingTicks(fullVolume,power+b.Power)+HandlingTicks(last,power+b.Power));
-        long handling=checked(load+unload),extra=checked(load*a.Staff+unload*b.Staff),eta=checked(travel+handling);
-        long road=checked(PathRoadUnits(approach,model.Id)+trips*PathRoadUnits(loaded,model.Id)+(trips-1)*PathRoadUnits(empty,model.Id));
+        long handling=checked(load+unload),extra=checked(load*a.Staff+unload*b.Staff),eta=checked(travel+handling+(UsesAcceleratedMovement&&ServiceExecution is not null?2*trips:0));
         var rules=Services!;long blocks=checked(((volume-1)/rules.VolumeBlock+1)*((loaded.Length-2)/rules.DistanceBlock+1));
-        Int128 baseCost=(Int128)rules.DriverWageMinor*(eta+extra)*RoadAccrualScale+road;
+        Int128 baseCost=(Int128)rules.DriverWageMinor*((UsesAcceleratedMovement?travel+handling:eta)+extra)*RoadAccrualScale+road;
         Int128 fee=(Int128)(rules.FixedFeeMinor+checked(rules.BlockFeeMinor*blocks))*RoadAccrualScale*10000+baseCost*rules.CostMarkupBasisPoints;
         long price=Math.Max(rules.MinimumFeeMinor,checked((long)((fee+RoadAccrualScale*10000-1)/(RoadAccrualScale*10000))));
         long buffer=Math.Max(rules.MinimumBufferTicks,checked((long)(((Int128)eta*rules.BufferBasisPoints+9999)/10000)));

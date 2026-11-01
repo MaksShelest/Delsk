@@ -76,7 +76,7 @@ public sealed partial class SimulationEngine
                     {
                         if(TrafficTravel(v,target))w.Reason="Arrived";else w.Reason=Traffic(v.Id).Reason;
                         var after=Traffic(v.Id);
-                        if(beforeTravel.Progress!=after.Progress||beforePosition!=cargo.Position)
+                        if(beforeTravel.Progress!=after.Progress||beforeTravel.ProgressFraction!=after.ProgressFraction||beforePosition!=cargo.Position)
                         {
                             if(travelWage>0){var travelTx=_economy.Begin(Tick);travelTx.Pay(actor.Account,_wages,travelWage,"RoadWages");travelTx.Commit();}
                             Emit("RoadWorkTravelled",actor.Id,v.Id,quantity:staff,money:travelWage);
@@ -86,7 +86,7 @@ public sealed partial class SimulationEngine
                     continue;
                 }
                 if(_roadWorks.Values.Any(other=>other!=w&&other.Batch?.Cell==target)){w.Reason="RoadCellBusy";continue;}
-                if(Traffic(v.Id).Progress!=0||VehicleTransferring(cargo.Id)){w.Reason="VehicleBusy";continue;}
+                if(HasRoadProgress(Traffic(v.Id))||VehicleTransferring(cargo.Id)){w.Reason="VehicleBusy";continue;}
                 var bypass=RoadWorkBypass(target);
                 if(bypass.IsDefaultOrEmpty){w.Reason="NoSafeBypass";continue;}
                 var rule=Roads.Stages.Single(r=>r.Level==w.Level);
@@ -122,7 +122,7 @@ public sealed partial class SimulationEngine
         {
             var b=_bypasses[i];var inside=b.Path.Skip(1).SkipLast(1).ToHashSet();
             _bypasses[i]=b with{Users=[..b.Users.Where(id=>FindBody(id) is {} body&&(inside.Contains(VehicleCargo(body).Position)||
-                _traffic.TryGetValue(id,out var t)&&t.Progress>0&&t.Index<t.Path.Length-1&&inside.Contains(t.Path[t.Index+1])))]};
+                _traffic.TryGetValue(id,out var t)&&HasRoadProgress(t)&&t.Index<t.Path.Length-1&&inside.Contains(t.Path[t.Index+1])))]};
         }
         _bypasses.RemoveAll(b=>b.Closing&&b.Users.IsEmpty);
     }
