@@ -179,7 +179,7 @@ public sealed partial class SimulationEngine
             StepPhaseBoundary?.Invoke(7);
             _phase = 8; AdvanceElections();
             StepPhaseBoundary?.Invoke(8);
-            _phase = 9; AdvanceCityStage(); ValidateInvariants(); Emit("TickCommitted"); StepPhaseBoundary?.Invoke(9);
+            _phase = 9; AdvanceCityStage(); RefreshTimedMoveEstimates(); ValidateInvariants(); Emit("TickCommitted"); StepPhaseBoundary?.Invoke(9);
         }
         finally { _stepping = false; }
     }
@@ -302,7 +302,7 @@ public sealed partial class SimulationEngine
         actor.HeadingX = 0; actor.HeadingZ = 0; actor.OffsetX = TravelCenter; actor.OffsetZ = TravelCenter;
         if (path.Length == 1) { SyncDrivenVehicle(actor); return; }
         actor.FacingX = Math.Sign(path[1].X - path[0].X); actor.FacingZ = Math.Sign(path[1].Z - path[0].Z);
-        actor.Job = new(_nextId++, "Move", Tick, arrival, path, "", 0, "", c.CommandId);
+        actor.Job = new(_nextId++, "Move", Tick, arrival, path, "", 0, "", c.CommandId){TimedEdges=UsesAcceleratedMovement?new long[path.Length-1]:null};
         SyncDrivenVehicle(actor);
         Emit("MovementStarted", actor.Id, actor.Job.Id, reason: arrival.ToString(System.Globalization.CultureInfo.InvariantCulture), command: c.CommandId);
     }

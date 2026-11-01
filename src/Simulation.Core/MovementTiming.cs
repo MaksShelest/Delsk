@@ -93,7 +93,7 @@ public sealed partial class SimulationEngine
         {
             var at=job.Path[job.PathIndex];var next=job.Path[job.PathIndex+1];
             if(!_map.Walkable(next)){job.CompletionTick=checked(Tick+1);return;}
-            long required=PersonalEdgeTimeUnits(actor,at,next),spent=Math.Min(budget,required-job.SegmentTicks);budget-=spent;job.SegmentTicks=checked(job.SegmentTicks+(int)spent);
+            long required=job.TimedEdges is {} timing?(timing[job.PathIndex]==0?timing[job.PathIndex]=PersonalEdgeTimeUnits(actor,at,next):timing[job.PathIndex]):PersonalEdgeTimeUnits(actor,at,next),spent=Math.Min(budget,required-job.SegmentTicks);budget-=spent;job.SegmentTicks=checked(job.SegmentTicks+(int)spent);
             if(job.SegmentTicks<required)break;
             job.SegmentTicks=0;++job.PathIndex;actor.Position=next;actor.OffsetX=actor.OffsetZ=TravelCenter;_economy.Inventories[actor.Inventory].Position=next;SyncDrivenVehicle(actor);
         }

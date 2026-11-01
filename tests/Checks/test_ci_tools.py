@@ -10,11 +10,11 @@ import xml.etree.ElementTree as ET
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'scripts'))
 from reuse_godot_imports import reuse
-from test_partitions import PARTITIONS, INTEGRATION, DEVELOPMENT, PHYSICAL, MODELS, FLEET, FLEET_STOCK, ROADS, TRAFFIC, ROAD_FREIGHT, ROAD_HISTORY, UX, NPC, RUNS, SERVICES, BILLING, BILLING_DISTRIBUTION, BILLING_TIMING, selected_partitions, run_suite
+from test_partitions import PARTITIONS, INTEGRATION, DEVELOPMENT, PHYSICAL, MODELS, FLEET, FLEET_STOCK, ROADS, TRAFFIC, ROAD_FREIGHT, ROAD_HISTORY, UX, NPC, RUNS, SERVICES, BILLING, BILLING_DISTRIBUTION, BILLING_TIMING, H2, selected_partitions, run_suite
 
 class PartitionsTests(unittest.TestCase):
     def test_every_class_including_future_and_developer_has_exactly_one_partition(self):
-        for name in (*INTEGRATION,*DEVELOPMENT,*PHYSICAL,*MODELS,*FLEET,*FLEET_STOCK,*ROADS,*TRAFFIC,*ROAD_FREIGHT,*ROAD_HISTORY,*SERVICES,*RUNS,*UX,*NPC,*BILLING,*BILLING_DISTRIBUTION,*BILLING_TIMING,'Simulation.Tests.FutureNewTests','Simulation.Tests.Developer.DeveloperToolsTests'):
+        for name in (*INTEGRATION,*DEVELOPMENT,*PHYSICAL,*MODELS,*FLEET,*FLEET_STOCK,*ROADS,*TRAFFIC,*ROAD_FREIGHT,*ROAD_HISTORY,*SERVICES,*RUNS,*UX,*NPC,*BILLING,*BILLING_DISTRIBUTION,*BILLING_TIMING,*H2,'Simulation.Tests.FutureNewTests','Simulation.Tests.Developer.DeveloperToolsTests'):
             self.assertEqual(sum(p.matches(name) for p in PARTITIONS),1,name)
 
     def test_disjoint_jobs_preserve_every_partition_and_deadlines(self):
@@ -22,7 +22,9 @@ class PartitionsTests(unittest.TestCase):
         self.assertTrue(ux);self.assertFalse(ux&(roads|billing|services|runs|npc))
         self.assertTrue(npc);self.assertFalse(npc&(roads|billing|services|runs));self.assertTrue(runs);self.assertFalse(runs&(roads|billing|services));self.assertFalse(roads&billing);self.assertTrue(billing)
         self.assertTrue(services);self.assertFalse(services&(roads|billing))
-        self.assertFalse(old&new);self.assertEqual(old|new,set(PARTITIONS))
+        h2=set(selected_partitions('h2'));self.assertTrue(h2);self.assertFalse(h2&(old|new))
+        self.assertEqual({c for p in h2 for c in p.include},set(H2))
+        self.assertFalse(old&new);self.assertEqual(old|new|h2,set(PARTITIONS))
         self.assertTrue(new);self.assertEqual(len(old),9)
 
     def test_all_actual_theory_rows_count_and_bad_result_is_rejected(self):

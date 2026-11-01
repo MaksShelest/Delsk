@@ -14,7 +14,8 @@ internal record SavedInventory(long Id, long Owner, Cell Position, long Capacity
     KeyValuePair<string, long>[] Stock, SavedStockHold[] Reservations, KeyValuePair<string, long>[] CapacityHolds,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] OverflowLot[]? Overflow=null);
 internal record SavedJob(long Id, string Kind, long StartTick, long CompletionTick, Cell[] Path, int PathIndex,
-    int SegmentTicks, string Item, long Quantity, string CapacityHold, string CommandId, long EquipmentId);
+    int SegmentTicks, string Item, long Quantity, string CapacityHold, string CommandId, long EquipmentId,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] long[]? TimedEdges=null);
 internal record SavedActor(long Id, long Account, long Inventory, Cell Position, SavedJob? Job,
     int OffsetX = SimulationEngine.TravelCenter, int OffsetZ = SimulationEngine.TravelCenter,
     int HeadingX = 0, int HeadingZ = 0, int FacingX = 0, int FacingZ = -1);
@@ -107,7 +108,7 @@ public sealed partial class SimulationEngine
     private static KeyValuePair<string, long>[] Ordered(Dictionary<string, long> values)
         => values.OrderBy(x => x.Key, StringComparer.Ordinal).ToArray();
     private static SavedJob? SaveJob(PersonalJob? j) => j is null ? null : new(j.Id, j.Kind, j.StartTick,
-        j.CompletionTick, j.Path.ToArray(), j.PathIndex, j.SegmentTicks, j.Item, j.Quantity, j.CapacityHold, j.CommandId, j.EquipmentId);
+        j.CompletionTick, j.Path.ToArray(), j.PathIndex, j.SegmentTicks, j.Item, j.Quantity, j.CapacityHold, j.CommandId, j.EquipmentId,j.TimedEdges?.ToArray());
     private static SavedBatch? SaveBatch(BatchState? b) => b is null ? null : new(b.Id, b.Hold, b.WorkRequired, b.WorkDone, b.EnergyPaid,b.RecipeId,b.Inputs,b.Terms);
     private static BatchState? LoadBatch(SavedBatch? b) => b is null ? null : new(b.Id, b.Hold, b.WorkRequired,b.RecipeId,b.Inputs)
         { WorkDone = b.WorkDone, EnergyPaid = b.EnergyPaid, Terms=b.Terms };
@@ -194,7 +195,7 @@ public sealed partial class SimulationEngine
                 FacingX = a.FacingX, FacingZ = a.FacingZ
             };
             if (a.Job is { } j) value.Job = new(j.Id, j.Kind, j.StartTick, j.CompletionTick, j.Path.ToArray(), j.Item,
-                j.Quantity, j.CapacityHold, j.CommandId, j.EquipmentId) { PathIndex = j.PathIndex, SegmentTicks = j.SegmentTicks };
+                j.Quantity, j.CapacityHold, j.CommandId, j.EquipmentId) { PathIndex = j.PathIndex, SegmentTicks = j.SegmentTicks,TimedEdges=j.TimedEdges?.ToArray() };
             _actors.Add(a.Id, value);
         }
         var recipes = _config.Recipes.ToDictionary(r => r.Id, StringComparer.Ordinal);
