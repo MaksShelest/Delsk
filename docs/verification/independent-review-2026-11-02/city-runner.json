@@ -1,0 +1,10 @@
+{
+  "status": "succeeded",
+  "finalTick": 243,
+  "checkpointTick": 120,
+  "exports": 3,
+  "exactContinuationComparisons": 2,
+  "independentAccounting": true,
+  "independentPublicCapital": true,
+  "scope": "Paid municipal-road debt at the city threshold; ordinary runner and complete exports."
+}

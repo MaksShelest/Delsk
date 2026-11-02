@@ -1,0 +1,45 @@
+{
+  "source": "docs/verification/h3/economy/observations.json.gz",
+  "sha256": "3310358c9c50d21f287c580a6dfe69cde52d2cedd4c27d25e91abe0a7fa1c8fb",
+  "worlds": 192,
+  "uniqueWorldIds": 192,
+  "segments": 674,
+  "segmentsWithBothSuccessfulRetainedAudits": 635,
+  "largestRetainedCheckpointBytes": 11005743,
+  "largestRetainedPeakWorkingSetBytes": 4493004800,
+  "scope": "Independent read of checked-in H3 observations and journal metadata; no re-execution of the frozen simulations or audit inputs; checkpoint and memory maxima include successful retained segments.",
+  "ordinary": {
+    "worlds": 180,
+    "statuses": {
+      "completed": 180
+    },
+    "minimumTick": 5000,
+    "maximumTick": 5000,
+    "npcMilestones": 1125,
+    "firstFactoriesObserved": 475,
+    "physicalTierIIOrHigher": 0,
+    "questsAccepted": 0,
+    "questsCompleted": 0,
+    "vehicles": 0,
+    "roadStages": 0,
+    "serviceOrders": 0,
+    "allCashLedgersReconciled": true
+  },
+  "extended": {
+    "worlds": 12,
+    "statuses": {
+      "ready": 12
+    },
+    "minimumTick": 5400,
+    "maximumTick": 16200,
+    "npcMilestones": 72,
+    "firstFactoriesObserved": 60,
+    "physicalTierIIOrHigher": 0,
+    "questsAccepted": 0,
+    "questsCompleted": 0,
+    "vehicles": 0,
+    "roadStages": 0,
+    "serviceOrders": 0,
+    "allCashLedgersReconciled": true
+  }
+}

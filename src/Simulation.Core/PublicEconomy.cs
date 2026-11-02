@@ -132,7 +132,7 @@ public sealed partial class SimulationEngine
 
     private void AdvanceCityStage()
     {
-        long capital = checked(_actors.Keys.Sum(id => CapitalOf(new(id)).TotalMinor) + _economy.Accounts[_treasury].Balance);
+        long capital = checked(_actors.Keys.Sum(id => CapitalOf(new(id)).TotalMinor) + _economy.Accounts[_treasury].Balance + BillingReceivable(0));
         int active = _enterprises.Values.Count(e => UnitsFor(e.Definition.Id).Any(w=>w.Enabled && w.Group.Headcount>0));
         int candidate = 0;
         foreach (var threshold in CityRules.Thresholds)

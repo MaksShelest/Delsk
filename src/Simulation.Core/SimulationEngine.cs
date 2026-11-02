@@ -31,6 +31,7 @@ public sealed partial class SimulationEngine
     private readonly long _wages;
     private readonly long _capital;
     public long Tick { get; private set; }
+    public bool TickLimitReached => Tick >= _config.MaxTicks;
     public string ConfigHash { get; }
 
     public SimulationEngine(ScenarioDefinition config)
@@ -141,7 +142,7 @@ public sealed partial class SimulationEngine
     {
         if (WaitingForBallots) return;
         if (_stepping) throw new InvalidOperationException("Step is not reentrant");
-        if (Tick >= _config.MaxTicks) throw new InvalidOperationException("Scenario tick limit reached");
+        if (TickLimitReached) throw new InvalidOperationException("Scenario tick limit reached");
         _stepping = true;
         try
         {

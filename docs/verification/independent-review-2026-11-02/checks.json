@@ -1,0 +1,574 @@
+{
+  "date": "2026-11-02",
+  "timezone": "Europe/Samara",
+  "base": "ebc3d2cb50338b6f04eb120426ccba857835c0e9",
+  "status": "completed_local_review_with_prior_failed_attempts_retained",
+  "ordinaryTests": {
+    "passed": 1467,
+    "partitions": 60,
+    "skipped": 0,
+    "duplicateTestIds": 0,
+    "newRegressions": 11,
+    "singleAggregateTimedOut": true,
+    "aggregateDeadline": 780,
+    "subsequentH2": 38,
+    "subsequentH3": 22,
+    "partitionDeadlinesUnchanged": true
+  },
+  "python": {
+    "checks": 43,
+    "researchLab": 64,
+    "firstResearchLabAttempt": "7 socket PermissionError in restricted sandbox; same 64 tests then passed with network enabled"
+  },
+  "headless": {
+    "exports": 102,
+    "replays": 14,
+    "exactComparisonPairs": 69,
+    "independentAudits": true
+  },
+  "cityRunner": {
+    "exports": 3,
+    "exactComparisons": 2,
+    "filesPerComparison": 30
+  },
+  "developer": {
+    "status": "succeeded",
+    "testsPassed": 11,
+    "fullDeveloperSuiteRunLocally": false,
+    "releaseNegative": "expected rejection; guard remains enabled",
+    "scope": "Developer build and all new regressions; full Developer suites remain required in PR CI."
+  },
+  "native": {
+    "cases": 3,
+    "matchedInputs": 695,
+    "renderer": "Linux Xorg/Mesa llvmpipe",
+    "injectedInput": true,
+    "physicalDeviceAcceptance": false
+  },
+  "h3": {
+    "recomputedRetainedObservations": true,
+    "renderedReportByteExact": true,
+    "newSimulationCohortRun": false
+  },
+  "unchanged": {
+    "serializationSchemas": true,
+    "profilesMapsBalance": true,
+    "readerFileMiB": 64,
+    "readerDecodedMiB": 512,
+    "financialParameters": true
+  },
+  "notVerified": [
+    "Physical Windows GPU/input/FPS",
+    "Android device lifecycle/touch/RAM/thermal limits",
+    "Fresh Android APK export in this review",
+    "Current real Windows LLM inference",
+    "Continuous manual full industrial playthrough",
+    "20–35 active hours, late tiers, natural road/service ROI",
+    "Full Developer test suite locally; required PR CI remains authoritative for that variant"
+  ],
+  "attempts": {
+    "build": {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-02T10:10:52.901912+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 31.981,
+      "finished_at": "2026-11-02T10:11:24.883339+00:00"
+    },
+    "checks-python-final": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Checks",
+        "-v"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-11-02T10:31:08.492363+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.991,
+      "finished_at": "2026-11-02T10:31:09.483204+00:00"
+    },
+    "checks-python": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Checks",
+        "-v"
+      ],
+      "timeout_seconds": 30,
+      "started_at": "2026-11-02T10:15:48.036541+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.775,
+      "finished_at": "2026-11-02T10:15:48.811844+00:00"
+    },
+    "city-before": {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.CityCapitalReviewTests",
+        "-result-trx",
+        "work/independent-review/city-before.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-02T10:19:50.068283+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 3.272,
+      "finished_at": "2026-11-02T10:19:53.340505+00:00"
+    },
+    "city-regression-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "tests/Simulation.Tests/Simulation.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-02T10:19:39.139918+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 10.9,
+      "finished_at": "2026-11-02T10:19:50.040435+00:00"
+    },
+    "developer-build-review": {
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Debug",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-02T15:10:51.274600+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 33.026,
+      "finished_at": "2026-11-02T15:11:24.300504+00:00"
+    },
+    "developer-regressions-review": {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.SessionBoundaryReviewTests",
+        "-class",
+        "Simulation.Tests.CityCapitalReviewTests",
+        "-class",
+        "Simulation.Tests.FleetTransferReviewTests",
+        "-result-trx",
+        "/workspace/Delsk/work/independent-review/developer-regressions.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-02T15:11:24.342424+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 11.747,
+      "finished_at": "2026-11-02T15:11:36.089978+00:00"
+    },
+    "developer-release-forbidden-review": {
+      "command": [
+        "dotnet",
+        "build",
+        "src/Simulation.Core/Simulation.Core.csproj",
+        "-c",
+        "Release",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-11-02T15:11:36.180585+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 0.766,
+      "finished_at": "2026-11-02T15:11:36.946929+00:00"
+    },
+    "developer-restore-review": {
+      "command": [
+        "dotnet",
+        "restore",
+        "Delsk.sln",
+        "-p:DelskDeveloper=true",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-02T15:10:49.874617+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.371,
+      "finished_at": "2026-11-02T15:10:51.245978+00:00"
+    },
+    "fixed-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "tests/Simulation.Tests/Simulation.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-02T10:21:07.759662+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 27.93,
+      "finished_at": "2026-11-02T10:21:35.689478+00:00"
+    },
+    "h2-units-final": {
+      "command": [
+        "python3",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "h2",
+        "--output",
+        "work/independent-review/h2-final"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-11-02T14:55:38.653378+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 231.543,
+      "finished_at": "2026-11-02T14:59:30.196889+00:00"
+    },
+    "h3-report-reproduction": {
+      "command": [
+        "python3",
+        "scripts/report_h3_outcomes.py",
+        "--observations",
+        "docs/verification/h3/economy/observations.json.gz",
+        "--output",
+        "work/independent-review/h3-reproduced.md"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-11-02T10:32:21.560851+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.522,
+      "finished_at": "2026-11-02T10:32:22.082630+00:00"
+    },
+    "h3-units-final": {
+      "command": [
+        "python3",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "h3",
+        "--output",
+        "work/independent-review/h3-final"
+      ],
+      "timeout_seconds": 600,
+      "started_at": "2026-11-02T14:59:30.243566+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 118.957,
+      "finished_at": "2026-11-02T15:01:29.200841+00:00"
+    },
+    "headless-runs-final": {
+      "command": [
+        "python3",
+        "scripts/check_headless.py",
+        "--phase",
+        "runs",
+        "--unit-artifacts",
+        "work/independent-review/unit-combined",
+        "--output",
+        "work/independent-review/headless-runs"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-11-02T15:07:08.370039+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 214.151,
+      "finished_at": "2026-11-02T15:10:42.520813+00:00"
+    },
+    "ordinary-all": {
+      "command": [
+        "python3",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "all",
+        "--output",
+        "work/independent-review/ordinary-all"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-11-02T10:23:10.376622+00:00",
+      "timed_out": true,
+      "exit_code": 124,
+      "elapsed_seconds": 780.003,
+      "finished_at": "2026-11-02T10:36:10.379916+00:00"
+    },
+    "ordinary-units": {
+      "command": [
+        "python3",
+        "scripts/check_headless.py",
+        "--phase",
+        "tests",
+        "--suite",
+        "previous",
+        "--output",
+        "work/independent-review/ordinary-units"
+      ],
+      "timeout_seconds": 780,
+      "started_at": "2026-11-02T10:11:41.483658+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 212.826,
+      "finished_at": "2026-11-02T10:15:14.310157+00:00"
+    },
+    "regression-build": {
+      "command": [
+        "dotnet",
+        "build",
+        "tests/Simulation.Tests/Simulation.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-02T10:17:43.333895+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 10.108,
+      "finished_at": "2026-11-02T10:17:53.441966+00:00"
+    },
+    "regressions-after": {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.FleetTransferReviewTests",
+        "-class",
+        "Simulation.Tests.SessionBoundaryReviewTests",
+        "-class",
+        "Simulation.Tests.CityCapitalReviewTests",
+        "-result-trx",
+        "work/independent-review/regressions-after.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-02T10:21:35.720831+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 7.733,
+      "finished_at": "2026-11-02T10:21:43.453572+00:00"
+    },
+    "regressions-before": {
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.FleetTransferReviewTests",
+        "-class",
+        "Simulation.Tests.SessionBoundaryReviewTests",
+        "-result-trx",
+        "work/independent-review/regressions-before.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-02T10:17:53.472252+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 4.58,
+      "finished_at": "2026-11-02T10:17:58.052100+00:00"
+    },
+    "research-lab-python-network": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Research.Lab",
+        "-v"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-11-02T10:22:14.633773+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.275,
+      "finished_at": "2026-11-02T10:22:18.908949+00:00"
+    },
+    "research-lab-python": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/Research.Lab",
+        "-v"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-11-02T10:21:40.691701+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 0.998,
+      "finished_at": "2026-11-02T10:21:41.690226+00:00"
+    },
+    "restore": {
+      "command": [
+        "dotnet",
+        "restore",
+        "Delsk.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-02T10:10:51.423698+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.431,
+      "finished_at": "2026-11-02T10:10:52.854628+00:00"
+    },
+    "city-runner": {
+      "accounting": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "/workspace/Delsk/scripts/verify_results.py",
+          "/workspace/Delsk/work/independent-review/city-runner/continuous",
+          "/workspace/Delsk/work/independent-review/city-runner/saved",
+          "/workspace/Delsk/work/independent-review/city-runner/loaded"
+        ],
+        "timeout_seconds": 60,
+        "started_at": "2026-11-02T15:10:49.509815+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.215,
+        "finished_at": "2026-11-02T15:10:49.724647+00:00"
+      },
+      "compare-loaded": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "/workspace/Delsk/scripts/verify_postg2_continuation.py",
+          "/workspace/Delsk/work/independent-review/city-runner/continuous",
+          "/workspace/Delsk/work/independent-review/city-runner/loaded",
+          "--output",
+          "/workspace/Delsk/work/independent-review/city-runner/comparison-loaded.json"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-11-02T15:10:49.446446+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.032,
+        "finished_at": "2026-11-02T15:10:49.478634+00:00"
+      },
+      "compare-saved": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "/workspace/Delsk/scripts/verify_postg2_continuation.py",
+          "/workspace/Delsk/work/independent-review/city-runner/continuous",
+          "/workspace/Delsk/work/independent-review/city-runner/saved",
+          "--output",
+          "/workspace/Delsk/work/independent-review/city-runner/comparison-saved.json"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-11-02T15:10:49.352215+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.064,
+        "finished_at": "2026-11-02T15:10:49.416599+00:00"
+      },
+      "continuous": {
+        "command": [
+          "dotnet",
+          "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "/workspace/Delsk/work/independent-review/ordinary-all/e3-fixtures/review-city-municipal-claim.json",
+          "--replay",
+          "/workspace/Delsk/work/independent-review/ordinary-all/e3-fixtures/review-city-municipal-claim.commands.jsonl",
+          "--ticks",
+          "243",
+          "--output",
+          "/workspace/Delsk/work/independent-review/city-runner/continuous"
+        ],
+        "timeout_seconds": 120,
+        "started_at": "2026-11-02T15:10:42.583661+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 2.372,
+        "finished_at": "2026-11-02T15:10:44.955869+00:00"
+      },
+      "loaded": {
+        "command": [
+          "dotnet",
+          "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--load",
+          "/workspace/Delsk/work/independent-review/city-runner/world.save.json",
+          "--output",
+          "/workspace/Delsk/work/independent-review/city-runner/loaded"
+        ],
+        "timeout_seconds": 120,
+        "started_at": "2026-11-02T15:10:47.401340+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 1.92,
+        "finished_at": "2026-11-02T15:10:49.321115+00:00"
+      },
+      "public-capital": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "/workspace/Delsk/scripts/verify_public_economy.py",
+          "/workspace/Delsk/work/independent-review/city-runner/continuous",
+          "/workspace/Delsk/work/independent-review/city-runner/saved",
+          "/workspace/Delsk/work/independent-review/city-runner/loaded"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-11-02T15:10:49.753929+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.064,
+        "finished_at": "2026-11-02T15:10:49.818245+00:00"
+      },
+      "saved": {
+        "command": [
+          "dotnet",
+          "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+          "--scenario",
+          "/workspace/Delsk/work/independent-review/ordinary-all/e3-fixtures/review-city-municipal-claim.json",
+          "--replay",
+          "/workspace/Delsk/work/independent-review/ordinary-all/e3-fixtures/review-city-municipal-claim.commands.jsonl",
+          "--ticks",
+          "243",
+          "--output",
+          "/workspace/Delsk/work/independent-review/city-runner/saved",
+          "--checkpoint",
+          "/workspace/Delsk/work/independent-review/city-runner/world.save.json",
+          "--checkpoint-at",
+          "120"
+        ],
+        "timeout_seconds": 120,
+        "started_at": "2026-11-02T15:10:44.999597+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 2.371,
+        "finished_at": "2026-11-02T15:10:47.370346+00:00"
+      }
+    }
+  }
+}
