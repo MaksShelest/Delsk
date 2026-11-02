@@ -43,6 +43,7 @@ try
     if (economics is not null && (options.ContainsKey("--load") || options.ContainsKey("--replay")))
         throw new ArgumentException("--economy only applies to a new run; load/replay use the saved resolved configuration");
     string directory = options.GetValueOrDefault("--output", "artifacts/cycle");
+    RunArtifacts.ValidateExportDestination(directory,compressControllerTurns);
     string script = options.GetValueOrDefault("--script", "cycle");
     string mode = options.GetValueOrDefault("--mode", "headless");
     if(options.ContainsKey("--new-game") && (options.ContainsKey("--load") || options.ContainsKey("--replay") || options.ContainsKey("--seed") || options.ContainsKey("--research-setup") ||

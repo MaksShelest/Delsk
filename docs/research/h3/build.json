@@ -1,8 +1,8 @@
 {
   "purpose": "H3 current-source installable Developer/Release bundles and actual Windows VM execution; no simulation cohort rerun",
   "base": "b87bc90a84845f509cf256bb227dbcf2952a43ad",
-  "revision": 4,
-  "retryReason": "Fix confirmed technical smoke Developer/Release save collision and fresh Android template bootstrap; include opt-in research history streaming in the same-source bundles.",
+  "revision": 5,
+  "retryReason": "Build final shared Hosting export-destination guard and runner CLI; repeat targets after the UTF8 native-capture fix. Original research DLLs and worlds are unaffected.",
   "platforms": [
     "windows",
     "android"

@@ -30,6 +30,11 @@ public class H3ExportTests
             Assert.Equal(Convert.ToHexStringLower(SHA256.HashData(history)),metadata["sha256"]!.GetValue<string>());
             Assert.True(JsonNode.Parse(File.ReadAllText(Path.Combine(archived,"export-complete.json")))!["complete"]!.GetValue<bool>());
             Assert.False(File.Exists(Path.Combine(archived,"decisions.jsonl")));
+            var prior=Directory.GetFiles(root,"*",SearchOption.AllDirectories).ToDictionary(p=>p,File.ReadAllBytes);
+            Assert.Throws<ArgumentException>(()=>RunArtifacts.Export(session,session.Engine.Configuration(),raw,"headless","reused-raw",0,compressControllerTurns:true));
+            Assert.Throws<ArgumentException>(()=>RunArtifacts.Export(session,session.Engine.Configuration(),archived,"headless","reused-archive",0));
+            Assert.Equal(prior.Count,Directory.GetFiles(root,"*",SearchOption.AllDirectories).Length);
+            foreach(var file in prior)Assert.Equal(file.Value,File.ReadAllBytes(file.Key));
             Assert.Equal(world,session.Engine.ComputeStateHash());Assert.Equal(controllers,session.ComputeControllerStateHash());
         }
         finally{if(Directory.Exists(root))Directory.Delete(root,true);}

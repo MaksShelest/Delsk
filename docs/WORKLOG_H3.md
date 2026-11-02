@@ -284,3 +284,17 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
   сисходнымиobservations, безновыхреплик. Исходный срез доerratum: maxNPC
   industryXP108ordinary/321extended при600дляII, QuestAccepted/Completed0/0.
   Это наблюдение, непричинныйвывод иневыполнение позднихцелей.
+- Устранён дополнительный риск stale completion/mixed raw+gzip при повторном
+  output: preflight/API отвергают каталог старого архива или compressed export
+  до записи, сохраняя каждый прежний файл. Обычный raw→raw путь прежний; progress
+  текущего запуска допустим. H3Export regression усилен проверкой immutable
+  previous artifacts в ordinary/Developer, число cases остаётся22.
+- Сначала ошибочно вызван dotnet test: SDK IPC pipe запрещён в sandbox (exit-6),
+  это не результат теста. Перешёл на штатный прямой xUnit DLL запуск проекта:
+  ordinary1/1 прошёл за2,422s/120; Developer1/1 — в180s. Builds58,81/52,68s
+  без warnings/errors; исходный IPC отказ сохранён. CLI --progress+gzip прошёл
+  с exact history, reuse destination отвергнут до simulation при target999999.
+- Самостоятельные полные CI jobs source85cf подтверждены: ordinary22+prepared
+  job125154658457, Developer22 job125154658760, обаsuccess (ci-gates.json).
+  Остальные Core downstream jobs ещё в очереди. Новый target marker revision5
+  включает текущий shared Hosting guard/runner CLI и UTF8 native harness.

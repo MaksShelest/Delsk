@@ -9,6 +9,14 @@ namespace Simulation.Hosting;
 
 public static class RunArtifacts
 {
+    public static void ValidateExportDestination(string directory,bool compressControllerTurns=false)
+    {
+        // Keep previous archives and failed attempts intact. A fresh run may
+        // already have its progress/research files here, before the export.
+        if(new[]{"decisions.jsonl.gz","decisions-storage.json","export-complete.json"}.Any(n=>File.Exists(Path.Combine(directory,n))) ||
+           compressControllerTurns&&new[]{"manifest.json","summary.json","decisions.jsonl"}.Any(n=>File.Exists(Path.Combine(directory,n))))
+            throw new ArgumentException("History archive export requires a new output directory; retain the previous attempt",nameof(directory));
+    }
     public static ScenarioDefinition LoadScenario(string path,EconomyProfile? economy=null)
     {
         if (new FileInfo(path).Length > MapDesignReader.MaximumBytes) throw new ArgumentException("Scenario file too large");
@@ -21,6 +29,7 @@ public static class RunArtifacts
     public static void Export(GameSession session, ScenarioDefinition definition, string directory,
         string timingPolicy, string script, double elapsedMilliseconds, string status = "succeeded", string? failure = null, object? modelMetadata = null, object? economyProvenance = null,double? startupMilliseconds=null,bool compressControllerTurns=false)
     {
+        ValidateExportDestination(directory,compressControllerTurns);
         Directory.CreateDirectory(directory);
         var state = session.Engine.Inspect();
         var json = new JsonSerializerOptions(SimulationJson.Options) { WriteIndented = true };
