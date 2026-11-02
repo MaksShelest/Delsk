@@ -15,6 +15,7 @@ jobs:
       original: ${{ steps.plan.outputs.original }}
       run: ${{ steps.plan.outputs.run }}
       segments: ${{ steps.plan.outputs.segments }}
+      interrupted: ${{ steps.plan.outputs.interrupted }}
     steps:
       - uses: actions/checkout@v4
       - id: plan
@@ -32,6 +33,7 @@ jobs:
             if(!Number.isInteger(c.segments)||c.segments<0||c.segments>8)throw Error('Bounded0-8 segments required');
             core.setOutput('cases',JSON.stringify({include:c.caseIds.map(id=>({id}))}));core.setOutput('original',run.data.head_sha);
             core.setOutput('run',String(c.run));core.setOutput('segments',String(c.segments));
+            core.setOutput('interrupted',String(c.resumeInterrupted===true));
   continue:
     needs: [select]
     runs-on: ubuntu-24.04
@@ -44,6 +46,7 @@ jobs:
       DOTNET_PROCESSOR_COUNT: '2'
       CASE_ID: ${{ matrix.id }}
       SEGMENTS: ${{ needs.select.outputs.segments }}
+      RESUME_INTERRUPTED: ${{ needs.select.outputs.interrupted }}
       AUDIT_SOURCE_COMMIT: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v4
@@ -77,7 +80,7 @@ jobs:
           tools=pathlib.Path(os.environ['RUNNER_TEMP'])/'h3-audit-tools'
           subprocess.run([sys.executable,str(tools/'continue_h3_audit.py'),'--root',str(pathlib.Path.cwd()),'--output','work/world',
             '--case',os.environ['CASE_ID'],'--auditor',str(tools/'verify_public_economy.py'),'--audit-commit',os.environ['AUDIT_SOURCE_COMMIT'],
-            '--segments',os.environ['SEGMENTS']],check=True)
+            '--segments',os.environ['SEGMENTS']]+(['--resume-interrupted'] if os.environ['RESUME_INTERRUPTED']=='true' else []),check=True)
       - name: Preserve actual outcomes and original failures
         if: always()
         run: python scripts/report_check_results.py work/world work/checks

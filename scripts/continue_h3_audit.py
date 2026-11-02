@@ -8,6 +8,7 @@ p=argparse.ArgumentParser(description=__doc__)
 p.add_argument('--root',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
 p.add_argument('--auditor',type=Path,required=True);p.add_argument('--audit-commit',required=True)
 p.add_argument('--case',required=True);p.add_argument('--segments',type=int,default=1)
+p.add_argument('--resume-interrupted',action='store_true',help='Retain a host-interrupted attempt and continue only its last audited checkpoint')
 a=p.parse_args();root=a.root.resolve();out=a.output.resolve();auditor=a.auditor.resolve()
 if not 0<=a.segments<=8:p.error('Use bounded0-8 segments')
 sys.path.insert(0,str(root/'scripts'))
@@ -44,6 +45,14 @@ with q.lock(out/'.worker.lock'):
     prior=state.setdefault('auditErrata',[])
     if not any(x['correctedAuditorSha256']==auditor_sha and x['continuationToolSha256']==tool_sha for x in prior):prior.append(proof)
     q.write(out/'audit-erratum.json',proof);q.write(out/'trajectory.json',state)
+    if a.resume_interrupted and state['status'] in ['running','blocked_interrupted']:
+        if state['status']=='running':
+            attempt=dict(state.pop('activeAttempt'),status='interrupted',reason='Original host job ended; only the last audited checkpoint is accepted')
+            state['segments'].append(attempt)
+        state.setdefault('interruptionRecoveries',[]).append(dict(lastSavedTick=state['lastSavedTick'],
+            lastCheckpointSha256=state.get('lastCheckpointSha256'),sourceCommit=a.audit_commit,
+            scope='Explicit continuation of the SAME world from the prior audited checkpoint; original interrupted attempt and its files remain retained.'))
+        state['status']='ready';q.write(out/'trajectory.json',state)
     if state['status']=='blocked_audit':
         index=len(state['segments'])-1;failed=state['segments'][index]
         if failed['status']!='audit_failure' or failed['runner']['exit_code']!=0:
@@ -67,6 +76,26 @@ with q.lock(out/'.worker.lock'):
         state.update(lastSavedTick=failed['targetTick'],lastCheckpoint=failed['checkpoint'],lastCheckpointSha256=record['checkpointSha256'],
             status='completed' if failed['targetTick']==state['targetTicks'] else 'ready')
         q.write(out/'trajectory.json',state);q.archive_completed(out,state)
+    # A host may have stopped during a large raw export. Retain its exact bytes
+    # with the original lossless archival helper before another segment writes.
+    # This does not promote partial output to an audited simulation result.
+    successful={r['result'] for r in state['segments'] if r.get('status')=='succeeded'}
+    if any((q.owned(out,name)/'decisions.jsonl').is_file() for name in successful):
+        code,meta=base_check('retain-completed-'+str(len(state['segments'])),180,out,[sys.executable,'-c',
+            'from pathlib import Path; import study_h3,sys; p=Path(sys.argv[1]); q=study_h3.protocol; q.archive_completed(p,q.read_metadata(p/"trajectory.json"))',out])
+        if code:raise ValueError('Completed trace archival interrupted; original evidence retained, no new segment started')
+        state.setdefault('completedTraceArchives',[]).append(meta);q.write(out/'trajectory.json',state)
+    for record in state['segments']:
+        if record['result'] in successful:continue
+        folder=q.owned(out,record['result'])
+        if not (folder/'decisions.jsonl').is_file():continue
+        tag='retain-partial-'+Path(record['result']).name
+        code,meta=base_check(tag,180,out,[sys.executable,'-c',
+            'from pathlib import Path; from study_economy_h1 import compress_turns; import sys; compress_turns(Path(sys.argv[1]))',folder])
+        if code:raise ValueError('Partial trace archive did not finish; original raw evidence remains retained')
+        state.setdefault('partialTraceArchives',[]).append(dict(result=record['result'],check=meta,
+            storage=q.read_metadata(folder/'decisions-storage.json'),scope='Lossless bytes of an incomplete/failed export; NOT a complete private history or successful segment.'))
+        q.write(out/'trajectory.json',state)
 q.run_check=corrected_check
 state=q.execute(out,case,plan,a.segments,False)
 print(json.dumps(dict(case=a.case,status=state['status'],lastSavedTick=state['lastSavedTick'],auditOnlyErratum=True,simulationBinariesUnchanged=True)))

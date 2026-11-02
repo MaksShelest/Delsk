@@ -1,0 +1,36 @@
+{
+  "sourceRun": 41355595793,
+  "pilotRun": 41408105572,
+  "pilotJob": 125154703166,
+  "case": "ordinary-compact-valley-6-Easy-43",
+  "outcome": "completed",
+  "lastSavedTick": 5000,
+  "originalFailure": {
+    "targetTick": 3600,
+    "runnerExitCode": 0,
+    "publicAuditExitCode": 1,
+    "accountingAuditExitCode": 0,
+    "preserved": true
+  },
+  "correctedReaudit": {
+    "targetTick": 3600,
+    "publicAuditExitCode": 0,
+    "accountingAuditExitCode": 0,
+    "simulationSteps": 0
+  },
+  "continuation": {
+    "fromTick": 3600,
+    "targetTick": 5000,
+    "runnerExitCode": 0,
+    "runnerSeconds": 84.225,
+    "runnerTimeoutSeconds": 600,
+    "publicAuditExitCode": 0,
+    "accountingAuditExitCode": 0
+  },
+  "artifact": {
+    "id": 13124706084,
+    "bytes": 229605725,
+    "url": "https://github.com/MaksShelest/Delsk/actions/runs/41408105572/artifacts/13124706084"
+  },
+  "provenance": "Original source checkout and frozen simulation DLL/input fingerprint were required before re-audit. Original rejection remains in the journal; actual corrected-auditor SHA is recorded outside the original fingerprint. One continued world, no additional independent replicate."
+}

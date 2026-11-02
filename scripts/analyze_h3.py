@@ -53,6 +53,8 @@ def main():
         for path in sorted(args.study.rglob('trajectory.json')):
             row=analysis.observe(path.parent);journal=analysis.read_metadata(path)
             if journal.get('auditErrata'):row['auditErrata']=journal['auditErrata']
+            for name in ['activeAttempt','interruptionRecoveries','partialTraceArchives']:
+                if name in journal:row[name]=journal[name]
             rows.append(row)
     registry_path=ROOT/'docs/research/h3/audit-erratum.json'
     registry=json.loads(registry_path.read_text()) if registry_path.exists() else None
@@ -67,6 +69,9 @@ def main():
     result['retainedOriginalAuditFailures']=sum(s['status']=='audit_failure' for r in rows for s in r['segments'])
     result['derivedReauditedSegments']=sum(bool(s.get('derivedAuditOnly')) for r in rows for s in r['segments'])
     result['auditErrata']=[dict(case=r['case']['id'],revisions=r['auditErrata']) for r in rows if r.get('auditErrata')]
+    result['uncommittedAttempts']=[dict(case=r['case']['id'],status=r['status'],lastSavedTick=r['lastSavedTick'],attempt=r['activeAttempt']) for r in rows if r.get('activeAttempt')]
+    result['comparisonLimitations']=(['Some ordinary endpoints are incomplete. Complete-case difficulty comparisons may be biased by growth-dependent audit censoring; they are provisional.']
+        if any(g['completeWorlds']!=g['plannedWorlds'] for g in result['groups']) else [])
     if args.require_complete_collection and result['missing']:
         raise ValueError('Incomplete collection; preserve missing cases explicitly')
     audits = 0
@@ -86,7 +91,9 @@ def main():
     analysis.write(args.output/'summary.json', result)
     analysis.write(args.output/'collection-verification.json', dict(worlds=len(rows), expected=result['expectedWorlds'],
         missing=len(result['missing']), successfulSegments=audits, accountingAudits=audits, publicAudits=audits,
-        allOriginalSegmentAuditsVerified=True, scope='Collection and statistical analysis; no new simulation replicates'))
+        allRecordedSuccessfulSegmentAuditsVerified=True,
+        retainedOriginalAuditFailures=result['retainedOriginalAuditFailures'],derivedReauditedSegments=result['derivedReauditedSegments'],
+        scope='Collection and statistical analysis; original failures remain failures. Explicit erratum audits are identified separately. No new simulation replicates'))
     print(json.dumps(dict(worlds=len(rows), expected=result['expectedWorlds'], missing=len(result['missing']), audits=audits)))
 
 

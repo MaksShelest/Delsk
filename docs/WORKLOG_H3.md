@@ -218,3 +218,35 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
   вfresh stage (local check видел ужесуществовавший template). Исправлен bootstrap
   через exact official android_source.zip иmatching build version; следующий
   target run проверитfresh stage. Cold240s ивсе прежние limits сохраняются.
+
+### Этап5: возобновление после ограничения сервиса, 02.11.2026
+
+- Локальный85cfbd1 был сохранён, но предыдущий push остановил automatic approval
+  review usage limit. После явного «Продолжай» обычный push успешно выполнен;
+  обхода review не было. Основа target по-прежнему b87bc90.
+- Исходный study41355595793 завершён:193jobs (matrix+192worlds),144ordinary
+  completed,36ordinary+2extended audit failures,8extended bounded batches,
+  2extended hosted35min interruptions. Пример LargeHard142 имеет audited12600
+  ипрерванную следующую попытку; отменаhost не считается экономическим pass.
+- Pilot41408105572/job125154703166 прошёл наисходныхDLL/inputs. Original
+  public-audit1 приt3600 остаётся; derived re-audit0 обоихcheckers иoriginal
+  simulator продолжил3600→5000 за84,225s/600, обаfinalaudits0. Artifact13124706084.
+  Это таже партия, не новаяреплика. Сохранён compact proof audit-pilot.json.
+- Полная коллекция исходных192worlds запрошена41408274423 безсимуляции.
+  Сводка дополнительно сохраняет activeAttempt иотдельно маркирует erratum
+  audits; complete-case difficulty comparisons припропусках явноprovisional.
+- Следующийbatch явно выбирает35остальныхordinary и12исходныхextended,
+  maximum1segment/600–900s; прерванныйhost attempt сохраняется, продолжение
+  допускается только спредыдущегоaudited checkpoint. Никакогоretry настоящих
+  timeout/checkpoint-limit outcome. Partial raw exports передновой записью
+  архивируются прежнимlosslesshelper сSHA/readback; это неполнаяистория,
+  неуспешныйsegment. Whole-job35min и64/512MiB прежние.
+-40Pythonchecks повторно прошли послеисправленияcollector metadata.
+- Fresh targets41408105541, Core41408105487/41408112872 ещё выполняются.
+  PR77 описание обновлено пофактической реализации/открытымgates, остаётсяdraft.
+- Полная исходная коллекция успешно сохраненаCIкоммитом0688841 иполучена
+  fast-forward:192/192, missing0,144complete ordinary,344NPCfirst factories
+  вcomplete endpoints. Проверка journals уточнилаlate checkpoints:9миров
+  audited14400 (включаяLargeHard142, чейjob отменён позже приархивации),
+  LargeHard143 running/lastSaved10800, twoaudit-blocked1800/3600. Поэтому
+  cancellation job неравна границе последнегоaccepted checkpoint.
