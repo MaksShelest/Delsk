@@ -1,0 +1,447 @@
+{
+  "suite": "all",
+  "status": "succeeded",
+  "testsPassed": 1467,
+  "testPartitions": [
+    {
+      "file": "tests.trx",
+      "passed": 299,
+      "source": "ordinary-all",
+      "elapsedSeconds": 15.988,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-integration.trx",
+      "passed": 55,
+      "source": "ordinary-all",
+      "elapsedSeconds": 42.942,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-d2.trx",
+      "passed": 36,
+      "source": "ordinary-all",
+      "elapsedSeconds": 14.641,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-d3.trx",
+      "passed": 38,
+      "source": "ordinary-all",
+      "elapsedSeconds": 34.903,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-d3-start.trx",
+      "passed": 1,
+      "source": "ordinary-all",
+      "elapsedSeconds": 13.667,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-e1.trx",
+      "passed": 24,
+      "source": "ordinary-all",
+      "elapsedSeconds": 29.208,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-e1-stock.trx",
+      "passed": 1,
+      "source": "ordinary-all",
+      "elapsedSeconds": 12.61,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-physical.trx",
+      "passed": 644,
+      "source": "ordinary-all",
+      "elapsedSeconds": 35.923,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-models.trx",
+      "passed": 132,
+      "source": "ordinary-all",
+      "elapsedSeconds": 16.722,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-e2-history.trx",
+      "passed": 1,
+      "source": "ordinary-all",
+      "elapsedSeconds": 10.247,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-e2-roads.trx",
+      "passed": 12,
+      "source": "ordinary-all",
+      "elapsedSeconds": 25.675,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-e2-traffic.trx",
+      "passed": 11,
+      "source": "ordinary-all",
+      "elapsedSeconds": 30.216,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-e2-freight.trx",
+      "passed": 3,
+      "source": "ordinary-all",
+      "elapsedSeconds": 16.059,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-f1-services.trx",
+      "passed": 14,
+      "source": "ordinary-all",
+      "elapsedSeconds": 15.493,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-f1-rights.trx",
+      "passed": 12,
+      "source": "ordinary-all",
+      "elapsedSeconds": 17.723,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-f1-competition.trx",
+      "passed": 1,
+      "source": "ordinary-all",
+      "elapsedSeconds": 4.376,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-e3-accounts.trx",
+      "passed": 10,
+      "source": "ordinary-all",
+      "elapsedSeconds": 12.21,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-e3-distribution.trx",
+      "passed": 4,
+      "source": "ordinary-all",
+      "elapsedSeconds": 17.816,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-e3-timing-0.trx",
+      "passed": 1,
+      "source": "ordinary-all",
+      "elapsedSeconds": 18.829,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-e3-timing-1.trx",
+      "passed": 2,
+      "source": "ordinary-all",
+      "elapsedSeconds": 12.22,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-e3-timing-2.trx",
+      "passed": 1,
+      "source": "ordinary-all",
+      "elapsedSeconds": 8.39,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-e3-timing-3.trx",
+      "passed": 1,
+      "source": "ordinary-all",
+      "elapsedSeconds": 6.346,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-e3-timing-4.trx",
+      "passed": 1,
+      "source": "ordinary-all",
+      "elapsedSeconds": 16.869,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-e3-timing-5.trx",
+      "passed": 2,
+      "source": "ordinary-all",
+      "elapsedSeconds": 10.112,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-g2-0.trx",
+      "passed": 14,
+      "source": "ordinary-all",
+      "elapsedSeconds": 8.347,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-g2-1.trx",
+      "passed": 10,
+      "source": "ordinary-all",
+      "elapsedSeconds": 9.61,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-g2-2.trx",
+      "passed": 17,
+      "source": "ordinary-all",
+      "elapsedSeconds": 13.727,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-g1-0.trx",
+      "passed": 7,
+      "source": "ordinary-all",
+      "elapsedSeconds": 5.279,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-g1-1.trx",
+      "passed": 6,
+      "source": "ordinary-all",
+      "elapsedSeconds": 19.548,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-g1-2.trx",
+      "passed": 5,
+      "source": "ordinary-all",
+      "elapsedSeconds": 16.847,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-g1-3.trx",
+      "passed": 3,
+      "source": "ordinary-all",
+      "elapsedSeconds": 6.388,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-g1-4.trx",
+      "passed": 6,
+      "source": "ordinary-all",
+      "elapsedSeconds": 6.196,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-g1-5.trx",
+      "passed": 3,
+      "source": "ordinary-all",
+      "elapsedSeconds": 18.017,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-f2-0.trx",
+      "passed": 5,
+      "source": "ordinary-all",
+      "elapsedSeconds": 12.359,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-f2-1.trx",
+      "passed": 6,
+      "source": "ordinary-all",
+      "elapsedSeconds": 27.575,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-f2-2.trx",
+      "passed": 6,
+      "source": "ordinary-all",
+      "elapsedSeconds": 14.584,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-f2-3.trx",
+      "passed": 7,
+      "source": "ordinary-all",
+      "elapsedSeconds": 11.752,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-f2-4.trx",
+      "passed": 6,
+      "source": "ordinary-all",
+      "elapsedSeconds": 35.69,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h2-0.trx",
+      "passed": 7,
+      "source": "h2-final",
+      "elapsedSeconds": 10.354,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h2-1.trx",
+      "passed": 8,
+      "source": "h2-final",
+      "elapsedSeconds": 20.695,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h2-2.trx",
+      "passed": 5,
+      "source": "h2-final",
+      "elapsedSeconds": 19.18,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h2-3.trx",
+      "passed": 1,
+      "source": "h2-final",
+      "elapsedSeconds": 16.229,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h2-4.trx",
+      "passed": 1,
+      "source": "h2-final",
+      "elapsedSeconds": 42.146,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h2-5.trx",
+      "passed": 1,
+      "source": "h2-final",
+      "elapsedSeconds": 42.729,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h2-6.trx",
+      "passed": 2,
+      "source": "h2-final",
+      "elapsedSeconds": 28.907,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h2-7.trx",
+      "passed": 3,
+      "source": "h2-final",
+      "elapsedSeconds": 9.257,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h2-8.trx",
+      "passed": 4,
+      "source": "h2-final",
+      "elapsedSeconds": 8.796,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h2-9.trx",
+      "passed": 1,
+      "source": "h2-final",
+      "elapsedSeconds": 11.373,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h2-10.trx",
+      "passed": 1,
+      "source": "h2-final",
+      "elapsedSeconds": 5.88,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h2-11.trx",
+      "passed": 3,
+      "source": "h2-final",
+      "elapsedSeconds": 6.492,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h2-12.trx",
+      "passed": 1,
+      "source": "h2-final",
+      "elapsedSeconds": 5.879,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h3-0.trx",
+      "passed": 1,
+      "source": "h3-final",
+      "elapsedSeconds": 2.277,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h3-1.trx",
+      "passed": 11,
+      "source": "h3-final",
+      "elapsedSeconds": 3.085,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h3-2.trx",
+      "passed": 4,
+      "source": "h3-final",
+      "elapsedSeconds": 35.53,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h3-3.trx",
+      "passed": 1,
+      "source": "h3-final",
+      "elapsedSeconds": 8.294,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h3-4.trx",
+      "passed": 1,
+      "source": "h3-final",
+      "elapsedSeconds": 12.173,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h3-5.trx",
+      "passed": 1,
+      "source": "h3-final",
+      "elapsedSeconds": 18.944,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h3-6.trx",
+      "passed": 1,
+      "source": "h3-final",
+      "elapsedSeconds": 10.057,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h3-7.trx",
+      "passed": 1,
+      "source": "h3-final",
+      "elapsedSeconds": 19.235,
+      "deadlineSeconds": 120
+    },
+    {
+      "file": "tests-h3-8.trx",
+      "passed": 1,
+      "source": "h3-final",
+      "elapsedSeconds": 6.455,
+      "deadlineSeconds": 120
+    }
+  ],
+  "scope": "Union of completed disjoint original partitions on final sources. The single 780s aggregate timeout is retained; H2/H3 have separate successful bounded attempts. No failed or incomplete partition is counted.",
+  "initialAggregateAttempt": {
+    "command": [
+      "python3",
+      "scripts/check_headless.py",
+      "--phase",
+      "tests",
+      "--suite",
+      "all",
+      "--output",
+      "work/independent-review/ordinary-all"
+    ],
+    "timeout_seconds": 780,
+    "started_at": "2026-11-02T10:23:10.376622+00:00",
+    "timed_out": true,
+    "exit_code": 124,
+    "elapsed_seconds": 780.003,
+    "finished_at": "2026-11-02T10:36:10.379916+00:00"
+  },
+  "testAssemblySha256": "406ba44d38bcf17696de8fba57433f404029561ade449ed7375ee452339cfa49"
+}

@@ -33,7 +33,7 @@ MODELS = tuple('Simulation.Tests.'+name for name in (
     'BallotModelTests','StrategicPlanningTests','DifficultyTests','HiringEconomicsTests','NegotiationPolicyTests','BaselineTests'))
 PRODUCTION = ('Simulation.Tests.ProductionD3Tests',)
 START = ('Simulation.Tests.ProductionD3StartTests',)
-FLEET = ('Simulation.Tests.FleetE1Tests',)
+FLEET = ('Simulation.Tests.FleetE1Tests', 'Simulation.Tests.FleetTransferReviewTests')
 FLEET_STOCK = ('Simulation.Tests.FleetE1StockTests',)
 ROAD_HISTORY = ('Simulation.Tests.RoadHistoryE2Tests',)
 ROADS = ('Simulation.Tests.RoadE2Tests',)

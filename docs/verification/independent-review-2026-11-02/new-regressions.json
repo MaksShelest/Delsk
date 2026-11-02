@@ -1,0 +1,85 @@
+{
+  "passed": 11,
+  "failed": 0,
+  "skipped": 0,
+  "initialFailingCases": 8,
+  "results": [
+    {
+      "name": "Simulation.Tests.FleetTransferReviewTests.OnlyTheDrivenEndpointSuppliesItsHandlingKit(driveDestination: False)",
+      "testId": "66008246-80c6-4090-943f-d0e76eaacc4d",
+      "outcome": "Passed",
+      "duration": "00:00:05.0039999",
+      "partition": "tests-e1.trx"
+    },
+    {
+      "name": "Simulation.Tests.FleetTransferReviewTests.OnlyTheDrivenEndpointSuppliesItsHandlingKit(driveDestination: True)",
+      "testId": "2fca3e48-8eff-4642-a473-016ce724d215",
+      "outcome": "Passed",
+      "duration": "00:00:01.7200000",
+      "partition": "tests-e1.trx"
+    },
+    {
+      "name": "Simulation.Tests.FleetTransferReviewTests.TransferBetweenTwoOwnedVehiclesCompletesAndContinuesExactly(roads: False)",
+      "testId": "6fdf7f91-3fb9-48a8-8e6a-366a03739676",
+      "outcome": "Passed",
+      "duration": "00:00:00.9450000",
+      "partition": "tests-e1.trx"
+    },
+    {
+      "name": "Simulation.Tests.FleetTransferReviewTests.TransferBetweenTwoOwnedVehiclesCompletesAndContinuesExactly(roads: True)",
+      "testId": "62b0ae40-8f37-4a13-bec8-259612239cd6",
+      "outcome": "Passed",
+      "duration": "00:00:01.0910000",
+      "partition": "tests-e1.trx"
+    },
+    {
+      "name": "Simulation.Tests.CityCapitalReviewTests.UnpaidMunicipalRoadClaimsCountTowardTheSameCapitalUsedByCityStage",
+      "testId": "624b2534-bdf1-45ef-94f7-594dc52ed98b",
+      "outcome": "Passed",
+      "duration": "00:00:01.7600000",
+      "partition": "tests.trx"
+    },
+    {
+      "name": "Simulation.Tests.SessionBoundaryReviewTests.FrozenFinalElectionAndPausedSessionKeepTheirExistingControlSemantics",
+      "testId": "b0f4091f-20d0-41ae-96a4-e98e2fa71371",
+      "outcome": "Passed",
+      "duration": "00:00:00.0200000",
+      "partition": "tests.trx"
+    },
+    {
+      "name": "Simulation.Tests.SessionBoundaryReviewTests.TickLimitRejectsAdvancementBeforeChangingTravelOrHistory(entry: \"core-quantum\")",
+      "testId": "ec658f28-d91a-445b-91da-d7f23f471f90",
+      "outcome": "Passed",
+      "duration": "00:00:00.0509999",
+      "partition": "tests.trx"
+    },
+    {
+      "name": "Simulation.Tests.SessionBoundaryReviewTests.TickLimitRejectsAdvancementBeforeChangingTravelOrHistory(entry: \"session-step\")",
+      "testId": "04ef6a43-7144-486f-a27c-8a19d59defea",
+      "outcome": "Passed",
+      "duration": "00:00:00.0370000",
+      "partition": "tests.trx"
+    },
+    {
+      "name": "Simulation.Tests.SessionBoundaryReviewTests.TickLimitRejectsAdvancementBeforeChangingTravelOrHistory(entry: \"session-quantum\")",
+      "testId": "e75dbc77-b082-4eed-968b-83d0bb6f5dd6",
+      "outcome": "Passed",
+      "duration": "00:00:00.0340000",
+      "partition": "tests.trx"
+    },
+    {
+      "name": "Simulation.Tests.SessionBoundaryReviewTests.TickLimitRejectsAdvancementBeforeChangingTravelOrHistory(entry: \"scheduler\")",
+      "testId": "3761baf8-4db3-4597-ae76-ee1787648540",
+      "outcome": "Passed",
+      "duration": "00:00:00.0350000",
+      "partition": "tests.trx"
+    },
+    {
+      "name": "Simulation.Tests.SessionBoundaryReviewTests.TickLimitDoesNotCallHostCallbackOrControllerAgain",
+      "testId": "d568da5f-6121-4d53-8dca-2037a66feac7",
+      "outcome": "Passed",
+      "duration": "00:00:00.0010000",
+      "partition": "tests.trx"
+    }
+  ]
+}

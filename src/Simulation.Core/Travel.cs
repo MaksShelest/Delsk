@@ -42,6 +42,7 @@ public sealed partial class SimulationEngine
     {
         if (WaitingForBallots) return false;
         if (_stepping) throw new InvalidOperationException("Step is not reentrant");
+        if (TickLimitReached) throw new InvalidOperationException("Scenario tick limit reached");
         int distance = QuantumDistance();
         if (distance > 0)
             foreach (var actor in _actors.Values.OrderBy(a => a.Id))

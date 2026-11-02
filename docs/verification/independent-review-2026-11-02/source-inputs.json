@@ -1,0 +1,15 @@
+{
+  "base": "ebc3d2cb50338b6f04eb120426ccba857835c0e9",
+  "inputs": {
+    "src/Simulation.Core/FleetHandling.cs": "62fbe64cebf4c2c355e2bbe56dd14fa998ab564ba2b5b76af6f58b1e517ed0cd",
+    "src/Simulation.Core/PublicEconomy.cs": "77b21f4f9b69a85ea8c19c00947fa6f715944234f948b6f63a1e563273a29b12",
+    "src/Simulation.Core/SimulationEngine.cs": "7ee216f22898d1d281fc5e4532fe9a2049f86a5ed0f56a2688c5db8fbdcf22a8",
+    "src/Simulation.Core/Travel.cs": "402a84b18c8bc13df392d73fe4f27cc75606d54a3d3a911e25be17e25b22370a",
+    "src/Simulation.Hosting/GameSession.cs": "6172cae31e06aee3bc297681a289720a80448c9424f8bf1e6dfdc4595b611c7a",
+    "scripts/test_partitions.py": "0f38796b5949bcddae2837307c6abc9b40f19b81e61a0616de7121b964074475",
+    "tests/Simulation.Tests/CityCapitalReviewTests.cs": "755bbe84bca4456e67e5f385df2b4f0c447db378992e6c6218f0b111555fdc86",
+    "tests/Simulation.Tests/SessionBoundaryReviewTests.cs": "59fbdc41892748778cc29457038ef09965493f3b27e306d0784c22ce90f19371",
+    "tests/Simulation.Tests/FleetTransferReviewTests.cs": "3e4d0f70a84ad083c18ad40562895a3e482a1ee672850e0a079a8a6ffcfc2384"
+  },
+  "scope": "Changed runtime/test/partition source bytes; no profile, map, financial configuration or serialization format changed."
+}

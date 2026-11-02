@@ -77,8 +77,9 @@ public sealed partial class SimulationEngine
     private long TransferHandlingPower(TransferOperation t)
     {
         if (Fleet is null) return Handling.PersonalVolumePerTick;
-        var v = _vehicles.Values.SingleOrDefault(v => v.CargoInventory.Value == t.Source || v.CargoInventory.Value == t.Destination);
-        long driver = v is not null && v.Driver == t.Owner.Value ? VehicleHandlingPower(v) : 10;
+        var v = _vehicles.Values.SingleOrDefault(v => v.Driver == t.Owner.Value &&
+            (v.CargoInventory.Value == t.Source || v.CargoInventory.Value == t.Destination));
+        long driver = v is not null ? VehicleHandlingPower(v) : 10;
         return checked(driver + PlatformPower(t.Source) + PlatformPower(t.Destination));
     }
     private bool MaterialAllowed(OwnedVehicle v, string item) => !Model(v.ModelId).MaterialsOnly || item is "gravel" or "asphalt" or "concrete";

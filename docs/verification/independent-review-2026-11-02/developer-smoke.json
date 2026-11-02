@@ -1,0 +1,7 @@
+{
+  "status": "succeeded",
+  "testsPassed": 11,
+  "fullDeveloperSuiteRunLocally": false,
+  "releaseNegative": "expected rejection; guard remains enabled",
+  "scope": "Developer build and all new regressions; full Developer suites remain required in PR CI."
+}

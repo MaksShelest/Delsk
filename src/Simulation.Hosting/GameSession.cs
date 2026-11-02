@@ -64,6 +64,7 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
     {
         if (Engine.WaitingForBallots) { SubmitPlaybackInputs(); PumpVoting(); return; }
         if (Paused) return;
+        if (Engine.TickLimitReached) throw new InvalidOperationException("Scenario tick limit reached");
         if (!_closingTravelTick && (PlaybackUsesTravel||Engine.UsesRoadTraffic)) { CompleteTravelTick(); return; }
         beforeStep?.Invoke();
         SubmitPlaybackInputs();
@@ -112,6 +113,7 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
     {
         if (Engine.WaitingForBallots) { SubmitPlaybackInputs(); PumpVoting(); return; }
         if (Paused) return;
+        if (Engine.TickLimitReached) throw new InvalidOperationException("Scenario tick limit reached");
         SubmitPlaybackInputs();
         var mark=Measurements?.Start()??default;
         bool closes=Engine.MoveTravelQuantum();
