@@ -25,7 +25,7 @@
             "number": 77,
             "head": {
               "ref": "feat/vnext-h3-compact-acceptance",
-              "sha": "28fef0522f15132c57c041b70c0d1b78f9f2e709",
+              "sha": "a213ef6595a391334d2352f3811052185a2ad161",
               "repo": {
                 "id": 1417528269,
                 "url": "https://api.github.com/repos/MaksShelest/Delsk",
@@ -4091,6 +4091,1470 @@
           }
         }
       ]
+    },
+    {
+      "run": {
+        "id": 41408105572,
+        "name": "H3 explicit audit erratum and original world continuation",
+        "node_id": "WFR_kwLOVH3Dzc8AAAAJpB2MZA",
+        "head_branch": "feat/vnext-h3-compact-acceptance",
+        "head_sha": "85cfbd1d6d78f000e139b0b5daa50b3f4a33de9e",
+        "path": ".github/workflows/h3-audit-resume.yml",
+        "display_title": "H3: correct unfinished-construction audit, stream full history and is…",
+        "run_number": 1,
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "workflow_id": 404248237,
+        "check_suite_id": 112213378300,
+        "check_suite_node_id": "CS_kwDOVH3Dzc8AAAAaIHBE_A",
+        "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/41408105572",
+        "html_url": "https://github.com/MaksShelest/Delsk/actions/runs/41408105572",
+        "pull_requests": [
+          {
+            "url": "https://api.github.com/repos/MaksShelest/Delsk/pulls/77",
+            "id": 5112054922,
+            "number": 77,
+            "head": {
+              "ref": "feat/vnext-h3-compact-acceptance",
+              "sha": "a213ef6595a391334d2352f3811052185a2ad161",
+              "repo": {
+                "id": 1417528269,
+                "url": "https://api.github.com/repos/MaksShelest/Delsk",
+                "name": "Delsk"
+              }
+            },
+            "base": {
+              "ref": "feat/economic-cycle-p00-p05",
+              "sha": "b87bc90a84845f509cf256bb227dbcf2952a43ad",
+              "repo": {
+                "id": 1417528269,
+                "url": "https://api.github.com/repos/MaksShelest/Delsk",
+                "name": "Delsk"
+              }
+            }
+          }
+        ],
+        "created_at": "2026-11-02T07:43:13Z",
+        "updated_at": "2026-11-02T07:47:20Z",
+        "actor": {
+          "login": "MaksShelest",
+          "id": 195903640,
+          "node_id": "U_kgDOC61AmA",
+          "avatar_url": "https://avatars.githubusercontent.com/u/195903640?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/MaksShelest",
+          "html_url": "https://github.com/MaksShelest",
+          "followers_url": "https://api.github.com/users/MaksShelest/followers",
+          "following_url": "https://api.github.com/users/MaksShelest/following{/other_user}",
+          "gists_url": "https://api.github.com/users/MaksShelest/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/MaksShelest/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/MaksShelest/subscriptions",
+          "organizations_url": "https://api.github.com/users/MaksShelest/orgs",
+          "repos_url": "https://api.github.com/users/MaksShelest/repos",
+          "events_url": "https://api.github.com/users/MaksShelest/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/MaksShelest/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "run_attempt": 1,
+        "referenced_workflows": [],
+        "run_started_at": "2026-11-02T07:43:13Z",
+        "triggering_actor": {
+          "login": "MaksShelest",
+          "id": 195903640,
+          "node_id": "U_kgDOC61AmA",
+          "avatar_url": "https://avatars.githubusercontent.com/u/195903640?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/MaksShelest",
+          "html_url": "https://github.com/MaksShelest",
+          "followers_url": "https://api.github.com/users/MaksShelest/followers",
+          "following_url": "https://api.github.com/users/MaksShelest/following{/other_user}",
+          "gists_url": "https://api.github.com/users/MaksShelest/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/MaksShelest/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/MaksShelest/subscriptions",
+          "organizations_url": "https://api.github.com/users/MaksShelest/orgs",
+          "repos_url": "https://api.github.com/users/MaksShelest/repos",
+          "events_url": "https://api.github.com/users/MaksShelest/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/MaksShelest/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "jobs_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/41408105572/jobs",
+        "logs_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/41408105572/logs",
+        "check_suite_url": "https://api.github.com/repos/MaksShelest/Delsk/check-suites/112213378300",
+        "artifacts_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/41408105572/artifacts",
+        "cancel_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/41408105572/cancel",
+        "rerun_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/41408105572/rerun",
+        "previous_attempt_url": null,
+        "workflow_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/workflows/404248237",
+        "head_commit": {
+          "id": "85cfbd1d6d78f000e139b0b5daa50b3f4a33de9e",
+          "tree_id": "0346b275eb0c4139aa1af7d214cd446898a888b2",
+          "message": "H3: correct unfinished-construction audit, stream full history and isolate smoke saves by build flavor",
+          "timestamp": "2026-11-02T01:04:43Z",
+          "author": {
+            "name": "Максим Евгеньевич Шелестов",
+            "email": "314023140a@gmail.com"
+          },
+          "committer": {
+            "name": "Максим Евгеньевич Шелестов",
+            "email": "314023140a@gmail.com"
+          }
+        },
+        "repository": {
+          "id": 1417528269,
+          "node_id": "R_kgDOVH3DzQ",
+          "name": "Delsk",
+          "full_name": "MaksShelest/Delsk",
+          "private": false,
+          "owner": {
+            "login": "MaksShelest",
+            "id": 195903640,
+            "node_id": "U_kgDOC61AmA",
+            "avatar_url": "https://avatars.githubusercontent.com/u/195903640?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/MaksShelest",
+            "html_url": "https://github.com/MaksShelest",
+            "followers_url": "https://api.github.com/users/MaksShelest/followers",
+            "following_url": "https://api.github.com/users/MaksShelest/following{/other_user}",
+            "gists_url": "https://api.github.com/users/MaksShelest/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/MaksShelest/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/MaksShelest/subscriptions",
+            "organizations_url": "https://api.github.com/users/MaksShelest/orgs",
+            "repos_url": "https://api.github.com/users/MaksShelest/repos",
+            "events_url": "https://api.github.com/users/MaksShelest/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/MaksShelest/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "html_url": "https://github.com/MaksShelest/Delsk",
+          "description": null,
+          "fork": false,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk",
+          "forks_url": "https://api.github.com/repos/MaksShelest/Delsk/forks",
+          "keys_url": "https://api.github.com/repos/MaksShelest/Delsk/keys{/key_id}",
+          "collaborators_url": "https://api.github.com/repos/MaksShelest/Delsk/collaborators{/collaborator}",
+          "teams_url": "https://api.github.com/repos/MaksShelest/Delsk/teams",
+          "hooks_url": "https://api.github.com/repos/MaksShelest/Delsk/hooks",
+          "issue_events_url": "https://api.github.com/repos/MaksShelest/Delsk/issues/events{/number}",
+          "events_url": "https://api.github.com/repos/MaksShelest/Delsk/events",
+          "assignees_url": "https://api.github.com/repos/MaksShelest/Delsk/assignees{/user}",
+          "branches_url": "https://api.github.com/repos/MaksShelest/Delsk/branches{/branch}",
+          "tags_url": "https://api.github.com/repos/MaksShelest/Delsk/tags",
+          "blobs_url": "https://api.github.com/repos/MaksShelest/Delsk/git/blobs{/sha}",
+          "git_tags_url": "https://api.github.com/repos/MaksShelest/Delsk/git/tags{/sha}",
+          "git_refs_url": "https://api.github.com/repos/MaksShelest/Delsk/git/refs{/sha}",
+          "trees_url": "https://api.github.com/repos/MaksShelest/Delsk/git/trees{/sha}",
+          "statuses_url": "https://api.github.com/repos/MaksShelest/Delsk/statuses/{sha}",
+          "languages_url": "https://api.github.com/repos/MaksShelest/Delsk/languages",
+          "stargazers_url": "https://api.github.com/repos/MaksShelest/Delsk/stargazers",
+          "contributors_url": "https://api.github.com/repos/MaksShelest/Delsk/contributors",
+          "subscribers_url": "https://api.github.com/repos/MaksShelest/Delsk/subscribers",
+          "subscription_url": "https://api.github.com/repos/MaksShelest/Delsk/subscription",
+          "commits_url": "https://api.github.com/repos/MaksShelest/Delsk/commits{/sha}",
+          "git_commits_url": "https://api.github.com/repos/MaksShelest/Delsk/git/commits{/sha}",
+          "comments_url": "https://api.github.com/repos/MaksShelest/Delsk/comments{/number}",
+          "issue_comment_url": "https://api.github.com/repos/MaksShelest/Delsk/issues/comments{/number}",
+          "contents_url": "https://api.github.com/repos/MaksShelest/Delsk/contents/{+path}",
+          "compare_url": "https://api.github.com/repos/MaksShelest/Delsk/compare/{base}...{head}",
+          "merges_url": "https://api.github.com/repos/MaksShelest/Delsk/merges",
+          "archive_url": "https://api.github.com/repos/MaksShelest/Delsk/{archive_format}{/ref}",
+          "downloads_url": "https://api.github.com/repos/MaksShelest/Delsk/downloads",
+          "issues_url": "https://api.github.com/repos/MaksShelest/Delsk/issues{/number}",
+          "pulls_url": "https://api.github.com/repos/MaksShelest/Delsk/pulls{/number}",
+          "milestones_url": "https://api.github.com/repos/MaksShelest/Delsk/milestones{/number}",
+          "notifications_url": "https://api.github.com/repos/MaksShelest/Delsk/notifications{?since,all,participating}",
+          "labels_url": "https://api.github.com/repos/MaksShelest/Delsk/labels{/name}",
+          "releases_url": "https://api.github.com/repos/MaksShelest/Delsk/releases{/id}",
+          "deployments_url": "https://api.github.com/repos/MaksShelest/Delsk/deployments"
+        },
+        "head_repository": {
+          "id": 1417528269,
+          "node_id": "R_kgDOVH3DzQ",
+          "name": "Delsk",
+          "full_name": "MaksShelest/Delsk",
+          "private": false,
+          "owner": {
+            "login": "MaksShelest",
+            "id": 195903640,
+            "node_id": "U_kgDOC61AmA",
+            "avatar_url": "https://avatars.githubusercontent.com/u/195903640?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/MaksShelest",
+            "html_url": "https://github.com/MaksShelest",
+            "followers_url": "https://api.github.com/users/MaksShelest/followers",
+            "following_url": "https://api.github.com/users/MaksShelest/following{/other_user}",
+            "gists_url": "https://api.github.com/users/MaksShelest/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/MaksShelest/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/MaksShelest/subscriptions",
+            "organizations_url": "https://api.github.com/users/MaksShelest/orgs",
+            "repos_url": "https://api.github.com/users/MaksShelest/repos",
+            "events_url": "https://api.github.com/users/MaksShelest/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/MaksShelest/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "html_url": "https://github.com/MaksShelest/Delsk",
+          "description": null,
+          "fork": false,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk",
+          "forks_url": "https://api.github.com/repos/MaksShelest/Delsk/forks",
+          "keys_url": "https://api.github.com/repos/MaksShelest/Delsk/keys{/key_id}",
+          "collaborators_url": "https://api.github.com/repos/MaksShelest/Delsk/collaborators{/collaborator}",
+          "teams_url": "https://api.github.com/repos/MaksShelest/Delsk/teams",
+          "hooks_url": "https://api.github.com/repos/MaksShelest/Delsk/hooks",
+          "issue_events_url": "https://api.github.com/repos/MaksShelest/Delsk/issues/events{/number}",
+          "events_url": "https://api.github.com/repos/MaksShelest/Delsk/events",
+          "assignees_url": "https://api.github.com/repos/MaksShelest/Delsk/assignees{/user}",
+          "branches_url": "https://api.github.com/repos/MaksShelest/Delsk/branches{/branch}",
+          "tags_url": "https://api.github.com/repos/MaksShelest/Delsk/tags",
+          "blobs_url": "https://api.github.com/repos/MaksShelest/Delsk/git/blobs{/sha}",
+          "git_tags_url": "https://api.github.com/repos/MaksShelest/Delsk/git/tags{/sha}",
+          "git_refs_url": "https://api.github.com/repos/MaksShelest/Delsk/git/refs{/sha}",
+          "trees_url": "https://api.github.com/repos/MaksShelest/Delsk/git/trees{/sha}",
+          "statuses_url": "https://api.github.com/repos/MaksShelest/Delsk/statuses/{sha}",
+          "languages_url": "https://api.github.com/repos/MaksShelest/Delsk/languages",
+          "stargazers_url": "https://api.github.com/repos/MaksShelest/Delsk/stargazers",
+          "contributors_url": "https://api.github.com/repos/MaksShelest/Delsk/contributors",
+          "subscribers_url": "https://api.github.com/repos/MaksShelest/Delsk/subscribers",
+          "subscription_url": "https://api.github.com/repos/MaksShelest/Delsk/subscription",
+          "commits_url": "https://api.github.com/repos/MaksShelest/Delsk/commits{/sha}",
+          "git_commits_url": "https://api.github.com/repos/MaksShelest/Delsk/git/commits{/sha}",
+          "comments_url": "https://api.github.com/repos/MaksShelest/Delsk/comments{/number}",
+          "issue_comment_url": "https://api.github.com/repos/MaksShelest/Delsk/issues/comments{/number}",
+          "contents_url": "https://api.github.com/repos/MaksShelest/Delsk/contents/{+path}",
+          "compare_url": "https://api.github.com/repos/MaksShelest/Delsk/compare/{base}...{head}",
+          "merges_url": "https://api.github.com/repos/MaksShelest/Delsk/merges",
+          "archive_url": "https://api.github.com/repos/MaksShelest/Delsk/{archive_format}{/ref}",
+          "downloads_url": "https://api.github.com/repos/MaksShelest/Delsk/downloads",
+          "issues_url": "https://api.github.com/repos/MaksShelest/Delsk/issues{/number}",
+          "pulls_url": "https://api.github.com/repos/MaksShelest/Delsk/pulls{/number}",
+          "milestones_url": "https://api.github.com/repos/MaksShelest/Delsk/milestones{/number}",
+          "notifications_url": "https://api.github.com/repos/MaksShelest/Delsk/notifications{?since,all,participating}",
+          "labels_url": "https://api.github.com/repos/MaksShelest/Delsk/labels{/name}",
+          "releases_url": "https://api.github.com/repos/MaksShelest/Delsk/releases{/id}",
+          "deployments_url": "https://api.github.com/repos/MaksShelest/Delsk/deployments"
+        }
+      },
+      "artifacts": [
+        {
+          "id": 13124706084,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNDcwNjA4NA==",
+          "name": "h3-ordinary-compact-valley-6-Easy-43",
+          "size_in_bytes": 229605725,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124706084",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124706084/zip",
+          "expired": false,
+          "digest": "sha256:a9f113b8af74a79bc386ce2f231f4756372afb362fb630428aeb0b084afa7664",
+          "created_at": "2026-11-02T07:47:17Z",
+          "updated_at": "2026-11-02T07:47:17Z",
+          "expires_at": "2027-01-31T07:43:13Z",
+          "workflow_run": {
+            "id": 41408105572,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "85cfbd1d6d78f000e139b0b5daa50b3f4a33de9e"
+          }
+        }
+      ]
+    },
+    {
+      "run": {
+        "id": 41408949052,
+        "name": "H3 explicit audit erratum and original world continuation",
+        "node_id": "WFR_kwLOVH3Dzc8AAAAJpCprPA",
+        "head_branch": "feat/vnext-h3-compact-acceptance",
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d",
+        "path": ".github/workflows/h3-audit-resume.yml",
+        "display_title": "H3: pass the original-world audit pilot and continue retained ordinar…",
+        "run_number": 2,
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "workflow_id": 404248237,
+        "check_suite_id": 112215591400,
+        "check_suite_node_id": "CS_kwDOVH3Dzc8AAAAaIJIJ6A",
+        "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/41408949052",
+        "html_url": "https://github.com/MaksShelest/Delsk/actions/runs/41408949052",
+        "pull_requests": [
+          {
+            "url": "https://api.github.com/repos/MaksShelest/Delsk/pulls/77",
+            "id": 5112054922,
+            "number": 77,
+            "head": {
+              "ref": "feat/vnext-h3-compact-acceptance",
+              "sha": "a213ef6595a391334d2352f3811052185a2ad161",
+              "repo": {
+                "id": 1417528269,
+                "url": "https://api.github.com/repos/MaksShelest/Delsk",
+                "name": "Delsk"
+              }
+            },
+            "base": {
+              "ref": "feat/economic-cycle-p00-p05",
+              "sha": "b87bc90a84845f509cf256bb227dbcf2952a43ad",
+              "repo": {
+                "id": 1417528269,
+                "url": "https://api.github.com/repos/MaksShelest/Delsk",
+                "name": "Delsk"
+              }
+            }
+          }
+        ],
+        "created_at": "2026-11-02T07:51:04Z",
+        "updated_at": "2026-11-02T09:14:37Z",
+        "actor": {
+          "login": "MaksShelest",
+          "id": 195903640,
+          "node_id": "U_kgDOC61AmA",
+          "avatar_url": "https://avatars.githubusercontent.com/u/195903640?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/MaksShelest",
+          "html_url": "https://github.com/MaksShelest",
+          "followers_url": "https://api.github.com/users/MaksShelest/followers",
+          "following_url": "https://api.github.com/users/MaksShelest/following{/other_user}",
+          "gists_url": "https://api.github.com/users/MaksShelest/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/MaksShelest/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/MaksShelest/subscriptions",
+          "organizations_url": "https://api.github.com/users/MaksShelest/orgs",
+          "repos_url": "https://api.github.com/users/MaksShelest/repos",
+          "events_url": "https://api.github.com/users/MaksShelest/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/MaksShelest/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "run_attempt": 1,
+        "referenced_workflows": [],
+        "run_started_at": "2026-11-02T07:51:04Z",
+        "triggering_actor": {
+          "login": "MaksShelest",
+          "id": 195903640,
+          "node_id": "U_kgDOC61AmA",
+          "avatar_url": "https://avatars.githubusercontent.com/u/195903640?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/MaksShelest",
+          "html_url": "https://github.com/MaksShelest",
+          "followers_url": "https://api.github.com/users/MaksShelest/followers",
+          "following_url": "https://api.github.com/users/MaksShelest/following{/other_user}",
+          "gists_url": "https://api.github.com/users/MaksShelest/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/MaksShelest/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/MaksShelest/subscriptions",
+          "organizations_url": "https://api.github.com/users/MaksShelest/orgs",
+          "repos_url": "https://api.github.com/users/MaksShelest/repos",
+          "events_url": "https://api.github.com/users/MaksShelest/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/MaksShelest/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "jobs_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/41408949052/jobs",
+        "logs_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/41408949052/logs",
+        "check_suite_url": "https://api.github.com/repos/MaksShelest/Delsk/check-suites/112215591400",
+        "artifacts_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/41408949052/artifacts",
+        "cancel_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/41408949052/cancel",
+        "rerun_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/runs/41408949052/rerun",
+        "previous_attempt_url": null,
+        "workflow_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/workflows/404248237",
+        "head_commit": {
+          "id": "f3f49b09ab35ff2c091800e405be76d3ed09c88d",
+          "tree_id": "e504f1ed0cb49cfc452470a25f757361fe000fee",
+          "message": "H3: pass the original-world audit pilot and continue retained ordinary and late checkpoints",
+          "timestamp": "2026-11-02T07:50:55Z",
+          "author": {
+            "name": "Максим Евгеньевич Шелестов",
+            "email": "314023140a@gmail.com"
+          },
+          "committer": {
+            "name": "Максим Евгеньевич Шелестов",
+            "email": "314023140a@gmail.com"
+          }
+        },
+        "repository": {
+          "id": 1417528269,
+          "node_id": "R_kgDOVH3DzQ",
+          "name": "Delsk",
+          "full_name": "MaksShelest/Delsk",
+          "private": false,
+          "owner": {
+            "login": "MaksShelest",
+            "id": 195903640,
+            "node_id": "U_kgDOC61AmA",
+            "avatar_url": "https://avatars.githubusercontent.com/u/195903640?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/MaksShelest",
+            "html_url": "https://github.com/MaksShelest",
+            "followers_url": "https://api.github.com/users/MaksShelest/followers",
+            "following_url": "https://api.github.com/users/MaksShelest/following{/other_user}",
+            "gists_url": "https://api.github.com/users/MaksShelest/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/MaksShelest/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/MaksShelest/subscriptions",
+            "organizations_url": "https://api.github.com/users/MaksShelest/orgs",
+            "repos_url": "https://api.github.com/users/MaksShelest/repos",
+            "events_url": "https://api.github.com/users/MaksShelest/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/MaksShelest/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "html_url": "https://github.com/MaksShelest/Delsk",
+          "description": null,
+          "fork": false,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk",
+          "forks_url": "https://api.github.com/repos/MaksShelest/Delsk/forks",
+          "keys_url": "https://api.github.com/repos/MaksShelest/Delsk/keys{/key_id}",
+          "collaborators_url": "https://api.github.com/repos/MaksShelest/Delsk/collaborators{/collaborator}",
+          "teams_url": "https://api.github.com/repos/MaksShelest/Delsk/teams",
+          "hooks_url": "https://api.github.com/repos/MaksShelest/Delsk/hooks",
+          "issue_events_url": "https://api.github.com/repos/MaksShelest/Delsk/issues/events{/number}",
+          "events_url": "https://api.github.com/repos/MaksShelest/Delsk/events",
+          "assignees_url": "https://api.github.com/repos/MaksShelest/Delsk/assignees{/user}",
+          "branches_url": "https://api.github.com/repos/MaksShelest/Delsk/branches{/branch}",
+          "tags_url": "https://api.github.com/repos/MaksShelest/Delsk/tags",
+          "blobs_url": "https://api.github.com/repos/MaksShelest/Delsk/git/blobs{/sha}",
+          "git_tags_url": "https://api.github.com/repos/MaksShelest/Delsk/git/tags{/sha}",
+          "git_refs_url": "https://api.github.com/repos/MaksShelest/Delsk/git/refs{/sha}",
+          "trees_url": "https://api.github.com/repos/MaksShelest/Delsk/git/trees{/sha}",
+          "statuses_url": "https://api.github.com/repos/MaksShelest/Delsk/statuses/{sha}",
+          "languages_url": "https://api.github.com/repos/MaksShelest/Delsk/languages",
+          "stargazers_url": "https://api.github.com/repos/MaksShelest/Delsk/stargazers",
+          "contributors_url": "https://api.github.com/repos/MaksShelest/Delsk/contributors",
+          "subscribers_url": "https://api.github.com/repos/MaksShelest/Delsk/subscribers",
+          "subscription_url": "https://api.github.com/repos/MaksShelest/Delsk/subscription",
+          "commits_url": "https://api.github.com/repos/MaksShelest/Delsk/commits{/sha}",
+          "git_commits_url": "https://api.github.com/repos/MaksShelest/Delsk/git/commits{/sha}",
+          "comments_url": "https://api.github.com/repos/MaksShelest/Delsk/comments{/number}",
+          "issue_comment_url": "https://api.github.com/repos/MaksShelest/Delsk/issues/comments{/number}",
+          "contents_url": "https://api.github.com/repos/MaksShelest/Delsk/contents/{+path}",
+          "compare_url": "https://api.github.com/repos/MaksShelest/Delsk/compare/{base}...{head}",
+          "merges_url": "https://api.github.com/repos/MaksShelest/Delsk/merges",
+          "archive_url": "https://api.github.com/repos/MaksShelest/Delsk/{archive_format}{/ref}",
+          "downloads_url": "https://api.github.com/repos/MaksShelest/Delsk/downloads",
+          "issues_url": "https://api.github.com/repos/MaksShelest/Delsk/issues{/number}",
+          "pulls_url": "https://api.github.com/repos/MaksShelest/Delsk/pulls{/number}",
+          "milestones_url": "https://api.github.com/repos/MaksShelest/Delsk/milestones{/number}",
+          "notifications_url": "https://api.github.com/repos/MaksShelest/Delsk/notifications{?since,all,participating}",
+          "labels_url": "https://api.github.com/repos/MaksShelest/Delsk/labels{/name}",
+          "releases_url": "https://api.github.com/repos/MaksShelest/Delsk/releases{/id}",
+          "deployments_url": "https://api.github.com/repos/MaksShelest/Delsk/deployments"
+        },
+        "head_repository": {
+          "id": 1417528269,
+          "node_id": "R_kgDOVH3DzQ",
+          "name": "Delsk",
+          "full_name": "MaksShelest/Delsk",
+          "private": false,
+          "owner": {
+            "login": "MaksShelest",
+            "id": 195903640,
+            "node_id": "U_kgDOC61AmA",
+            "avatar_url": "https://avatars.githubusercontent.com/u/195903640?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/MaksShelest",
+            "html_url": "https://github.com/MaksShelest",
+            "followers_url": "https://api.github.com/users/MaksShelest/followers",
+            "following_url": "https://api.github.com/users/MaksShelest/following{/other_user}",
+            "gists_url": "https://api.github.com/users/MaksShelest/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/MaksShelest/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/MaksShelest/subscriptions",
+            "organizations_url": "https://api.github.com/users/MaksShelest/orgs",
+            "repos_url": "https://api.github.com/users/MaksShelest/repos",
+            "events_url": "https://api.github.com/users/MaksShelest/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/MaksShelest/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "html_url": "https://github.com/MaksShelest/Delsk",
+          "description": null,
+          "fork": false,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk",
+          "forks_url": "https://api.github.com/repos/MaksShelest/Delsk/forks",
+          "keys_url": "https://api.github.com/repos/MaksShelest/Delsk/keys{/key_id}",
+          "collaborators_url": "https://api.github.com/repos/MaksShelest/Delsk/collaborators{/collaborator}",
+          "teams_url": "https://api.github.com/repos/MaksShelest/Delsk/teams",
+          "hooks_url": "https://api.github.com/repos/MaksShelest/Delsk/hooks",
+          "issue_events_url": "https://api.github.com/repos/MaksShelest/Delsk/issues/events{/number}",
+          "events_url": "https://api.github.com/repos/MaksShelest/Delsk/events",
+          "assignees_url": "https://api.github.com/repos/MaksShelest/Delsk/assignees{/user}",
+          "branches_url": "https://api.github.com/repos/MaksShelest/Delsk/branches{/branch}",
+          "tags_url": "https://api.github.com/repos/MaksShelest/Delsk/tags",
+          "blobs_url": "https://api.github.com/repos/MaksShelest/Delsk/git/blobs{/sha}",
+          "git_tags_url": "https://api.github.com/repos/MaksShelest/Delsk/git/tags{/sha}",
+          "git_refs_url": "https://api.github.com/repos/MaksShelest/Delsk/git/refs{/sha}",
+          "trees_url": "https://api.github.com/repos/MaksShelest/Delsk/git/trees{/sha}",
+          "statuses_url": "https://api.github.com/repos/MaksShelest/Delsk/statuses/{sha}",
+          "languages_url": "https://api.github.com/repos/MaksShelest/Delsk/languages",
+          "stargazers_url": "https://api.github.com/repos/MaksShelest/Delsk/stargazers",
+          "contributors_url": "https://api.github.com/repos/MaksShelest/Delsk/contributors",
+          "subscribers_url": "https://api.github.com/repos/MaksShelest/Delsk/subscribers",
+          "subscription_url": "https://api.github.com/repos/MaksShelest/Delsk/subscription",
+          "commits_url": "https://api.github.com/repos/MaksShelest/Delsk/commits{/sha}",
+          "git_commits_url": "https://api.github.com/repos/MaksShelest/Delsk/git/commits{/sha}",
+          "comments_url": "https://api.github.com/repos/MaksShelest/Delsk/comments{/number}",
+          "issue_comment_url": "https://api.github.com/repos/MaksShelest/Delsk/issues/comments{/number}",
+          "contents_url": "https://api.github.com/repos/MaksShelest/Delsk/contents/{+path}",
+          "compare_url": "https://api.github.com/repos/MaksShelest/Delsk/compare/{base}...{head}",
+          "merges_url": "https://api.github.com/repos/MaksShelest/Delsk/merges",
+          "archive_url": "https://api.github.com/repos/MaksShelest/Delsk/{archive_format}{/ref}",
+          "downloads_url": "https://api.github.com/repos/MaksShelest/Delsk/downloads",
+          "issues_url": "https://api.github.com/repos/MaksShelest/Delsk/issues{/number}",
+          "pulls_url": "https://api.github.com/repos/MaksShelest/Delsk/pulls{/number}",
+          "milestones_url": "https://api.github.com/repos/MaksShelest/Delsk/milestones{/number}",
+          "notifications_url": "https://api.github.com/repos/MaksShelest/Delsk/notifications{?since,all,participating}",
+          "labels_url": "https://api.github.com/repos/MaksShelest/Delsk/labels{/name}",
+          "releases_url": "https://api.github.com/repos/MaksShelest/Delsk/releases{/id}",
+          "deployments_url": "https://api.github.com/repos/MaksShelest/Delsk/deployments"
+        }
+      },
+      "artifacts": [
+        {
+          "id": 13128775112,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyODc3NTExMg==",
+          "name": "h3-extended-large-districts-6-Medium-143",
+          "size_in_bytes": 546540994,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128775112",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128775112/zip",
+          "expired": false,
+          "digest": "sha256:13b6ed31e804103ea34f45ee6564762432bc77977620d71880feaaf7244163b9",
+          "created_at": "2026-11-02T09:01:08Z",
+          "updated_at": "2026-11-02T09:01:08Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13128580390,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyODU4MDM5MA==",
+          "name": "h3-extended-compact-valley-6-Hard-142",
+          "size_in_bytes": 2418568947,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128580390",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128580390/zip",
+          "expired": false,
+          "digest": "sha256:1ed7c8f5293a6009366bd2869cabd4f2548e1696ce529434ac4cad0805b47ece",
+          "created_at": "2026-11-02T08:57:24Z",
+          "updated_at": "2026-11-02T08:57:24Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13128335425,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyODMzNTQyNQ==",
+          "name": "h3-extended-compact-valley-6-Medium-143",
+          "size_in_bytes": 1872811906,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128335425",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128335425/zip",
+          "expired": false,
+          "digest": "sha256:b0503b8b57fb6d3ec210d9514df2813030fb38309b7ef3c32011d7fe606b2bc3",
+          "created_at": "2026-11-02T08:54:58Z",
+          "updated_at": "2026-11-02T08:54:58Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13128176005,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyODE3NjAwNQ==",
+          "name": "h3-extended-compact-valley-6-Medium-142",
+          "size_in_bytes": 2484343010,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128176005",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128176005/zip",
+          "expired": false,
+          "digest": "sha256:bd2de6a915ddd9982655ef0fec72daa83203e56d94c4d86e7829be04f216f1dc",
+          "created_at": "2026-11-02T08:56:26Z",
+          "updated_at": "2026-11-02T08:56:26Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127790393,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzc5MDM5Mw==",
+          "name": "h3-ordinary-large-districts-6-Medium-42",
+          "size_in_bytes": 280146847,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127790393",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127790393/zip",
+          "expired": false,
+          "digest": "sha256:71a8dd307fad8bcc713d8fb6f1e7344feef633cae450ae448bb7a247b914742e",
+          "created_at": "2026-11-02T08:45:41Z",
+          "updated_at": "2026-11-02T08:45:41Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127758318,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzc1ODMxOA==",
+          "name": "h3-extended-large-districts-6-Medium-142",
+          "size_in_bytes": 2568171178,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127758318",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127758318/zip",
+          "expired": false,
+          "digest": "sha256:77a031c6484a655cc8626b224b897de8660f1234144d2a4ae03dc99207f07c59",
+          "created_at": "2026-11-02T09:05:35Z",
+          "updated_at": "2026-11-02T09:05:35Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127730638,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzczMDYzOA==",
+          "name": "h3-ordinary-large-districts-6-Medium-48",
+          "size_in_bytes": 321237651,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127730638",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127730638/zip",
+          "expired": false,
+          "digest": "sha256:a9ab3940dbf2b2b624006a05d8e619b37650dcb38a75bedca1aed97b76494b0f",
+          "created_at": "2026-11-02T08:46:42Z",
+          "updated_at": "2026-11-02T08:46:42Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127690720,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzY5MDcyMA==",
+          "name": "h3-ordinary-large-districts-6-Medium-45",
+          "size_in_bytes": 271754729,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127690720",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127690720/zip",
+          "expired": false,
+          "digest": "sha256:794e2eb6113337418ec7cecda15400806611223a4391aa951a46857346ce4a87",
+          "created_at": "2026-11-02T08:46:22Z",
+          "updated_at": "2026-11-02T08:46:22Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127689917,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzY4OTkxNw==",
+          "name": "h3-extended-large-districts-6-Hard-142",
+          "size_in_bytes": 4388969250,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127689917",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127689917/zip",
+          "expired": false,
+          "digest": "sha256:67599f5a2e05c8187a379b4c4fe7daf0ed332f9db9ce56dcb8eeab70c4f30fbd",
+          "created_at": "2026-11-02T09:14:23Z",
+          "updated_at": "2026-11-02T09:14:23Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127645077,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzY0NTA3Nw==",
+          "name": "h3-ordinary-small-river-6-Medium-47",
+          "size_in_bytes": 194377110,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127645077",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127645077/zip",
+          "expired": false,
+          "digest": "sha256:7aa1d70bf95d6e03066f40769b4eb73cb1217c9378d1d21348827ef1fb1ca2dd",
+          "created_at": "2026-11-02T08:39:51Z",
+          "updated_at": "2026-11-02T08:39:51Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127610583,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzYxMDU4Mw==",
+          "name": "h3-ordinary-large-districts-6-Easy-42",
+          "size_in_bytes": 280092658,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127610583",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127610583/zip",
+          "expired": false,
+          "digest": "sha256:bcb042a5004424c50b2523d816d6d903fb021391c36998556e85086754d98f7a",
+          "created_at": "2026-11-02T08:43:30Z",
+          "updated_at": "2026-11-02T08:43:30Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127525703,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzUyNTcwMw==",
+          "name": "h3-ordinary-small-river-6-Easy-43",
+          "size_in_bytes": 183781780,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127525703",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127525703/zip",
+          "expired": false,
+          "digest": "sha256:ecee84d9ce02cccea2a2d76f8e6b47d450dc579360dd53b215c8c8f2939fca61",
+          "created_at": "2026-11-02T08:36:19Z",
+          "updated_at": "2026-11-02T08:36:19Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127491297,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzQ5MTI5Nw==",
+          "name": "h3-ordinary-large-districts-10-Easy-45",
+          "size_in_bytes": 512489146,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127491297",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127491297/zip",
+          "expired": false,
+          "digest": "sha256:c3129b98b671cd7daa45f2634d7e21bd7c93a0982f19a2fee8a729767838e7e3",
+          "created_at": "2026-11-02T08:47:11Z",
+          "updated_at": "2026-11-02T08:47:11Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127442468,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzQ0MjQ2OA==",
+          "name": "h3-ordinary-large-districts-10-Medium-45",
+          "size_in_bytes": 512484900,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127442468",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127442468/zip",
+          "expired": false,
+          "digest": "sha256:014161c9ce1ac2150ae809c7e77e9a9603b8fb92a784816badece7dbbbf73f5e",
+          "created_at": "2026-11-02T08:47:39Z",
+          "updated_at": "2026-11-02T08:47:39Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127398001,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzM5ODAwMQ==",
+          "name": "h3-extended-small-river-6-Medium-142",
+          "size_in_bytes": 2059293775,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127398001",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127398001/zip",
+          "expired": false,
+          "digest": "sha256:79372957e3c2c46c46226d3ff9039f68417918c01ad68148938dd84d788e3981",
+          "created_at": "2026-11-02T08:55:25Z",
+          "updated_at": "2026-11-02T08:55:25Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127390481,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzM5MDQ4MQ==",
+          "name": "h3-ordinary-small-river-6-Medium-43",
+          "size_in_bytes": 183698451,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127390481",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127390481/zip",
+          "expired": false,
+          "digest": "sha256:12c0764f12a434cf4b4fc5f3b1e1dc516149ab551716a7339f9b1894a52b416e",
+          "created_at": "2026-11-02T08:38:19Z",
+          "updated_at": "2026-11-02T08:38:19Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127378395,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzM3ODM5NQ==",
+          "name": "h3-extended-compact-valley-6-Hard-143",
+          "size_in_bytes": 2333388810,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127378395",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127378395/zip",
+          "expired": false,
+          "digest": "sha256:ffd692de3260cf35322eeeb6dd3d9b7da31b1a5e1736f6eae8d2e1b7b5a77d0d",
+          "created_at": "2026-11-02T08:56:30Z",
+          "updated_at": "2026-11-02T08:56:30Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127323827,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzMyMzgyNw==",
+          "name": "h3-extended-small-river-6-Hard-142",
+          "size_in_bytes": 2069448554,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127323827",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127323827/zip",
+          "expired": false,
+          "digest": "sha256:cace78a39b321a182f8abbfbb5e25dae465d62d37ba0484231c67a0f2781e18b",
+          "created_at": "2026-11-02T08:59:14Z",
+          "updated_at": "2026-11-02T08:59:14Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127256531,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzI1NjUzMQ==",
+          "name": "h3-ordinary-small-river-6-Easy-51",
+          "size_in_bytes": 192228073,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127256531",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127256531/zip",
+          "expired": false,
+          "digest": "sha256:7076bf73a21bb2a38591a503f735976bf1c09f5e543b392cde5dc35c09311518",
+          "created_at": "2026-11-02T08:35:55Z",
+          "updated_at": "2026-11-02T08:35:55Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127248133,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzI0ODEzMw==",
+          "name": "h3-ordinary-large-districts-6-Medium-47",
+          "size_in_bytes": 276433735,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127248133",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127248133/zip",
+          "expired": false,
+          "digest": "sha256:a52bdb9219faa392320843e40198902783aff471d9ea4141126466fc4e5ef8f4",
+          "created_at": "2026-11-02T08:46:18Z",
+          "updated_at": "2026-11-02T08:46:18Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127224359,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzIyNDM1OQ==",
+          "name": "h3-extended-small-river-6-Hard-143",
+          "size_in_bytes": 1830720410,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127224359",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127224359/zip",
+          "expired": false,
+          "digest": "sha256:c3bc8a881b22e50b6aea8fe2e02a8c73801aa43cd7259223e6ab6b0186d53323",
+          "created_at": "2026-11-02T09:01:17Z",
+          "updated_at": "2026-11-02T09:01:17Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127174971,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzE3NDk3MQ==",
+          "name": "h3-extended-large-districts-6-Hard-143",
+          "size_in_bytes": 1829865786,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127174971",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127174971/zip",
+          "expired": false,
+          "digest": "sha256:b7866ec82f48f1984ef519bd1ea9980471331b75fe6437df41cd952b591b1778",
+          "created_at": "2026-11-02T09:04:39Z",
+          "updated_at": "2026-11-02T09:04:39Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127162338,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzE2MjMzOA==",
+          "name": "h3-ordinary-small-river-6-Medium-50",
+          "size_in_bytes": 208054648,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127162338",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127162338/zip",
+          "expired": false,
+          "digest": "sha256:57db69099f0f7aea6408170a0ae84f3f85c57a01a25fbe006994cb1e75c784ed",
+          "created_at": "2026-11-02T08:41:45Z",
+          "updated_at": "2026-11-02T08:41:45Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13127156177,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNzE1NjE3Nw==",
+          "name": "h3-ordinary-small-river-6-Easy-50",
+          "size_in_bytes": 207977080,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127156177",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127156177/zip",
+          "expired": false,
+          "digest": "sha256:80c91002d40c32fbdc8d0f75ba910d0993d2aa3e3be5721b2f2ec35e6bee4358",
+          "created_at": "2026-11-02T08:38:33Z",
+          "updated_at": "2026-11-02T08:38:33Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126947240,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjk0NzI0MA==",
+          "name": "h3-ordinary-small-river-6-Easy-45",
+          "size_in_bytes": 197837198,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126947240",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126947240/zip",
+          "expired": false,
+          "digest": "sha256:3994df12b6572b3072c62e84226c3ab12e20ea956e9596266510e378358954dd",
+          "created_at": "2026-11-02T08:34:46Z",
+          "updated_at": "2026-11-02T08:34:46Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126913470,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjkxMzQ3MA==",
+          "name": "h3-ordinary-large-districts-6-Easy-48",
+          "size_in_bytes": 321240376,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126913470",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126913470/zip",
+          "expired": false,
+          "digest": "sha256:b0eae8ad393fb1dc15c2140db663167abe8654a3e4997ffad60d5dcb97026abe",
+          "created_at": "2026-11-02T08:45:03Z",
+          "updated_at": "2026-11-02T08:45:03Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126809221,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjgwOTIyMQ==",
+          "name": "h3-ordinary-large-districts-6-Easy-47",
+          "size_in_bytes": 276246115,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126809221",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126809221/zip",
+          "expired": false,
+          "digest": "sha256:c88ab1756bbb7af9e1d6777c3cc4f0950610677fa31616c25c562db9947a4ac2",
+          "created_at": "2026-11-02T08:45:01Z",
+          "updated_at": "2026-11-02T08:45:01Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126791357,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjc5MTM1Nw==",
+          "name": "h3-ordinary-compact-valley-6-Hard-45",
+          "size_in_bytes": 240458746,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126791357",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126791357/zip",
+          "expired": false,
+          "digest": "sha256:81ecd679e4da04ed7d74d0a19b653e46ba84191c7958a82e594c5028883abeed",
+          "created_at": "2026-11-02T08:32:38Z",
+          "updated_at": "2026-11-02T08:32:38Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126722662,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjcyMjY2Mg==",
+          "name": "h3-ordinary-compact-valley-10-Medium-42",
+          "size_in_bytes": 381551941,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126722662",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126722662/zip",
+          "expired": false,
+          "digest": "sha256:d312cc4a5c6bdd92fec340ecdc5382e745a1c4f24d2515468d81ae5dd6f823b5",
+          "created_at": "2026-11-02T08:34:11Z",
+          "updated_at": "2026-11-02T08:34:11Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126694954,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjY5NDk1NA==",
+          "name": "h3-extended-small-river-6-Medium-143",
+          "size_in_bytes": 211727815,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126694954",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126694954/zip",
+          "expired": false,
+          "digest": "sha256:d95cbfe02b39c0f1d6524d9724a0b7654d85033c2eec1ab1747e0f8e1e4fe903",
+          "created_at": "2026-11-02T08:50:48Z",
+          "updated_at": "2026-11-02T08:50:48Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126663765,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjY2Mzc2NQ==",
+          "name": "h3-ordinary-small-river-10-Hard-45",
+          "size_in_bytes": 312905505,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126663765",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126663765/zip",
+          "expired": false,
+          "digest": "sha256:5afebdd4bd98c9bb3380d936eb53526dc948525f3f564655d053648513a7b67b",
+          "created_at": "2026-11-02T08:43:41Z",
+          "updated_at": "2026-11-02T08:43:41Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126642079,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjY0MjA3OQ==",
+          "name": "h3-ordinary-small-river-6-Easy-44",
+          "size_in_bytes": 183185452,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126642079",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126642079/zip",
+          "expired": false,
+          "digest": "sha256:ce601a8b223feeeec202249d62390f6443b220162e6a0c75de882e5486157926",
+          "created_at": "2026-11-02T08:35:26Z",
+          "updated_at": "2026-11-02T08:35:26Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126417096,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjQxNzA5Ng==",
+          "name": "h3-ordinary-compact-valley-6-Hard-42",
+          "size_in_bytes": 240899219,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126417096",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126417096/zip",
+          "expired": false,
+          "digest": "sha256:5a235c409b038b47a6a2aae56a66160a0ddb090254c6b3964a61c97efaca3095",
+          "created_at": "2026-11-02T08:30:40Z",
+          "updated_at": "2026-11-02T08:30:40Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126409006,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjQwOTAwNg==",
+          "name": "h3-ordinary-small-river-6-Medium-44",
+          "size_in_bytes": 183070377,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126409006",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126409006/zip",
+          "expired": false,
+          "digest": "sha256:8af3ce54c7a5e2e1ba56bfb5e7ddfdfc701da85cf22a25276e25e3ac573aeeb3",
+          "created_at": "2026-11-02T08:38:48Z",
+          "updated_at": "2026-11-02T08:38:48Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126388573,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjM4ODU3Mw==",
+          "name": "h3-ordinary-small-river-6-Hard-51",
+          "size_in_bytes": 193925114,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126388573",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126388573/zip",
+          "expired": false,
+          "digest": "sha256:b293cd7a3e4eecf7dea705f9fc2bf15fbb4e898a3858d205d28b44fc09f22051",
+          "created_at": "2026-11-02T08:40:36Z",
+          "updated_at": "2026-11-02T08:40:36Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126363276,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjM2MzI3Ng==",
+          "name": "h3-ordinary-small-river-6-Easy-47",
+          "size_in_bytes": 194476863,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126363276",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126363276/zip",
+          "expired": false,
+          "digest": "sha256:de100117ade28d530140e42b20f045f0e6896b0806a9456a9ff54c73e80b71ac",
+          "created_at": "2026-11-02T08:35:34Z",
+          "updated_at": "2026-11-02T08:35:34Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126199739,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjE5OTczOQ==",
+          "name": "h3-ordinary-large-districts-6-Easy-45",
+          "size_in_bytes": 271783252,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126199739",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126199739/zip",
+          "expired": false,
+          "digest": "sha256:3b85e7bf4c1c245c26ce8716478ed7db6357752f59acba955abf8ac8cf229218",
+          "created_at": "2026-11-02T08:44:51Z",
+          "updated_at": "2026-11-02T08:44:51Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126163790,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjE2Mzc5MA==",
+          "name": "h3-ordinary-compact-valley-10-Easy-42",
+          "size_in_bytes": 390879319,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126163790",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126163790/zip",
+          "expired": false,
+          "digest": "sha256:da2c0cba3e0f3928d0e88ed74d47199f7b581dc3557621fdd11abf1a14018255",
+          "created_at": "2026-11-02T08:31:30Z",
+          "updated_at": "2026-11-02T08:31:30Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13126044192,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNjA0NDE5Mg==",
+          "name": "h3-ordinary-small-river-6-Medium-42",
+          "size_in_bytes": 215392023,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126044192",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126044192/zip",
+          "expired": false,
+          "digest": "sha256:48e5ad390cd5a725b6f9a20e2e8b896697e90e78f15463c057d5365e12d5901b",
+          "created_at": "2026-11-02T08:36:48Z",
+          "updated_at": "2026-11-02T08:36:48Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13125719761,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNTcxOTc2MQ==",
+          "name": "h3-ordinary-compact-valley-10-Hard-46",
+          "size_in_bytes": 384342833,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125719761",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125719761/zip",
+          "expired": false,
+          "digest": "sha256:408a0b5c21fa5dda1ba0951e8d0d52f2322997c5d705ff5924ead3b4373961cb",
+          "created_at": "2026-11-02T08:32:22Z",
+          "updated_at": "2026-11-02T08:32:22Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13125714902,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNTcxNDkwMg==",
+          "name": "h3-ordinary-small-river-6-Easy-42",
+          "size_in_bytes": 215312112,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125714902",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125714902/zip",
+          "expired": false,
+          "digest": "sha256:513a6ec386235ce236a586ea93e4f766a418f5feb8f776454ab25bc1fd0dfd8e",
+          "created_at": "2026-11-02T08:31:49Z",
+          "updated_at": "2026-11-02T08:31:49Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13125557085,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNTU1NzA4NQ==",
+          "name": "h3-ordinary-compact-valley-6-Medium-42",
+          "size_in_bytes": 213590607,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125557085",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125557085/zip",
+          "expired": false,
+          "digest": "sha256:3775a4ff026abc0aef8bc3a27cfcfea09af223f3afbb1043f614f05e7f2e882c",
+          "created_at": "2026-11-02T08:12:17Z",
+          "updated_at": "2026-11-02T08:12:17Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13125383860,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNTM4Mzg2MA==",
+          "name": "h3-ordinary-compact-valley-6-Medium-43",
+          "size_in_bytes": 229507094,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125383860",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125383860/zip",
+          "expired": false,
+          "digest": "sha256:72855b91ec4e6c928083ecf6faa21a8493a99f1cffe0cad4cb2831ac09c642c7",
+          "created_at": "2026-11-02T08:16:01Z",
+          "updated_at": "2026-11-02T08:16:01Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13125289129,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNTI4OTEyOQ==",
+          "name": "h3-ordinary-compact-valley-6-Easy-51",
+          "size_in_bytes": 238510656,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125289129",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125289129/zip",
+          "expired": false,
+          "digest": "sha256:cca710b0dd42479a6eda26dabeb88fc8757db4bf0b1b20c22b0f8195e2d46f23",
+          "created_at": "2026-11-02T08:13:40Z",
+          "updated_at": "2026-11-02T08:13:40Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13124903247,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNDkwMzI0Nw==",
+          "name": "h3-ordinary-compact-valley-6-Medium-51",
+          "size_in_bytes": 240987807,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124903247",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124903247/zip",
+          "expired": false,
+          "digest": "sha256:59ec0b3955a898da2ac2a6722bca3bf2afaf0e00a084517346ac5c27196ccc5d",
+          "created_at": "2026-11-02T08:07:45Z",
+          "updated_at": "2026-11-02T08:07:45Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13124843994,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNDg0Mzk5NA==",
+          "name": "h3-ordinary-compact-valley-6-Medium-46",
+          "size_in_bytes": 255062660,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124843994",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124843994/zip",
+          "expired": false,
+          "digest": "sha256:2c987803986346c64c75db6c8e164da6df6eeaf30d5b5ba3fc1ea129a4b46365",
+          "created_at": "2026-11-02T08:12:31Z",
+          "updated_at": "2026-11-02T08:12:31Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        },
+        {
+          "id": 13124564139,
+          "node_id": "MDg6QXJ0aWZhY3QxMzEyNDU2NDEzOQ==",
+          "name": "h3-ordinary-compact-valley-6-Easy-46",
+          "size_in_bytes": 255245698,
+          "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124564139",
+          "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124564139/zip",
+          "expired": false,
+          "digest": "sha256:644b950223d5a9719ddfbc9474a1f5b7c602512161b0ddc9e7f78b8c0f2f6085",
+          "created_at": "2026-11-02T08:07:34Z",
+          "updated_at": "2026-11-02T08:07:34Z",
+          "expires_at": "2027-01-31T07:51:04Z",
+          "workflow_run": {
+            "id": 41408949052,
+            "repository_id": 1417528269,
+            "head_repository_id": 1417528269,
+            "head_branch": "feat/vnext-h3-compact-acceptance",
+            "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
+          }
+        }
+      ]
     }
   ],
   "chains": {
@@ -4099,6 +5563,11 @@
         "run": 41355595793,
         "artifact": 13110800067,
         "digest": "sha256:fceb1f055c995f0d782a3878820e89131c531e59106c8f3e8ab844d127fb61f5"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127689917,
+        "digest": "sha256:67599f5a2e05c8187a379b4c4fe7daf0ed332f9db9ce56dcb8eeab70c4f30fbd"
       }
     ],
     "h3-extended-large-districts-6-Hard-143": [
@@ -4106,6 +5575,11 @@
         "run": 41355595793,
         "artifact": 13110681182,
         "digest": "sha256:145123153f7c29496bc1cc72002ef14816f953e2935302d9c3cf4daf217d235b"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127174971,
+        "digest": "sha256:b7866ec82f48f1984ef519bd1ea9980471331b75fe6437df41cd952b591b1778"
       }
     ],
     "h3-extended-compact-valley-6-Medium-143": [
@@ -4113,6 +5587,11 @@
         "run": 41355595793,
         "artifact": 13110300401,
         "digest": "sha256:2f02f769ced875482dc687ea80c2a4aeda046af8f680538cc363b12126dff6c6"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13128335425,
+        "digest": "sha256:b0503b8b57fb6d3ec210d9514df2813030fb38309b7ef3c32011d7fe606b2bc3"
       }
     ],
     "h3-extended-compact-valley-6-Hard-143": [
@@ -4120,6 +5599,11 @@
         "run": 41355595793,
         "artifact": 13110185443,
         "digest": "sha256:c79c34d938b4a9207130ace60c00181096ca0a8529f4fa0a46bcdb202909babd"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127378395,
+        "digest": "sha256:ffd692de3260cf35322eeeb6dd3d9b7da31b1a5e1736f6eae8d2e1b7b5a77d0d"
       }
     ],
     "h3-extended-small-river-6-Hard-143": [
@@ -4127,6 +5611,11 @@
         "run": 41355595793,
         "artifact": 13110126320,
         "digest": "sha256:dc5a03c0735fb0501a94226a7fff0b3b58772ede49ba14b8c49aecb46e91f2fd"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127224359,
+        "digest": "sha256:c3bc8a881b22e50b6aea8fe2e02a8c73801aa43cd7259223e6ab6b0186d53323"
       }
     ],
     "h3-extended-small-river-6-Hard-142": [
@@ -4134,6 +5623,11 @@
         "run": 41355595793,
         "artifact": 13109907964,
         "digest": "sha256:3f91a0038772be5b3b223cc289c6f0cb54dbfa304c7562296fbf5984988e1afc"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127323827,
+        "digest": "sha256:cace78a39b321a182f8abbfbb5e25dae465d62d37ba0484231c67a0f2781e18b"
       }
     ],
     "h3-extended-compact-valley-6-Hard-142": [
@@ -4141,6 +5635,11 @@
         "run": 41355595793,
         "artifact": 13109831986,
         "digest": "sha256:590c9dae9a5622549ca0757b499afbef486536d56e134781525ace4e3ca06fa9"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13128580390,
+        "digest": "sha256:1ed7c8f5293a6009366bd2869cabd4f2548e1696ce529434ac4cad0805b47ece"
       }
     ],
     "h3-extended-large-districts-6-Medium-142": [
@@ -4148,6 +5647,11 @@
         "run": 41355595793,
         "artifact": 13109668495,
         "digest": "sha256:e4b901823477644b9636924833d72ef337f3b7d289424991601e54b811da1726"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127758318,
+        "digest": "sha256:77a031c6484a655cc8626b224b897de8660f1234144d2a4ae03dc99207f07c59"
       }
     ],
     "h3-extended-compact-valley-6-Medium-142": [
@@ -4155,6 +5659,11 @@
         "run": 41355595793,
         "artifact": 13109367044,
         "digest": "sha256:f0535dc498642d47be9f5cb23152a4e1ad7a2ac1ad5edbb4bcd65bcbfd93e0dd"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13128176005,
+        "digest": "sha256:bd2de6a915ddd9982655ef0fec72daa83203e56d94c4d86e7829be04f216f1dc"
       }
     ],
     "h3-extended-small-river-6-Medium-142": [
@@ -4162,6 +5671,11 @@
         "run": 41355595793,
         "artifact": 13109334304,
         "digest": "sha256:3d2cee5051e8586e7f99df8cc7e57638dc8f6201f8b9adcd67ebc4bbea6a1fce"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127398001,
+        "digest": "sha256:79372957e3c2c46c46226d3ff9039f68417918c01ad68148938dd84d788e3981"
       }
     ],
     "h3-ordinary-large-districts-10-Medium-43": [
@@ -4218,6 +5732,11 @@
         "run": 41355595793,
         "artifact": 13108721511,
         "digest": "sha256:822f84d9c8fee382c5d3bd6512e899aad8fca2f0719e9baa4032cdf446568c3c"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127491297,
+        "digest": "sha256:c3129b98b671cd7daa45f2634d7e21bd7c93a0982f19a2fee8a729767838e7e3"
       }
     ],
     "h3-ordinary-large-districts-10-Hard-44": [
@@ -4232,6 +5751,11 @@
         "run": 41355595793,
         "artifact": 13108673637,
         "digest": "sha256:cf5cce6473df2ec5b3c154e7090ec2a2d047228c6f673c75dc6d1bbb53b07eef"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126694954,
+        "digest": "sha256:d95cbfe02b39c0f1d6524d9724a0b7654d85033c2eec1ab1747e0f8e1e4fe903"
       }
     ],
     "h3-ordinary-large-districts-10-Hard-43": [
@@ -4260,6 +5784,11 @@
         "run": 41355595793,
         "artifact": 13108407475,
         "digest": "sha256:51e3af2c949180e4dae80218510908ea71f7b85c4089cf2265256fbe11090868"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127442468,
+        "digest": "sha256:014161c9ce1ac2150ae809c7e77e9a9603b8fb92a784816badece7dbbbf73f5e"
       }
     ],
     "h3-ordinary-large-districts-10-Easy-44": [
@@ -4274,6 +5803,11 @@
         "run": 41355595793,
         "artifact": 13108294928,
         "digest": "sha256:3c1021351f8f7ffd84033b8f96f358902904264300b495d70c3b96522d45f958"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13128775112,
+        "digest": "sha256:13b6ed31e804103ea34f45ee6564762432bc77977620d71880feaaf7244163b9"
       }
     ],
     "h3-ordinary-large-districts-6-Hard-50": [
@@ -4372,6 +5906,11 @@
         "run": 41355595793,
         "artifact": 13106861604,
         "digest": "sha256:c06a0a2e28d1514c00342f9cdc75c39cd83b38457855cd553c6c412468b46691"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127690720,
+        "digest": "sha256:794e2eb6113337418ec7cecda15400806611223a4391aa951a46857346ce4a87"
       }
     ],
     "h3-ordinary-large-districts-6-Easy-49": [
@@ -4400,6 +5939,11 @@
         "run": 41355595793,
         "artifact": 13106295489,
         "digest": "sha256:4a7ceee04fd6bec6dd1efaa620f878913e828701bee567e6b7f122a837c019ca"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127610583,
+        "digest": "sha256:bcb042a5004424c50b2523d816d6d903fb021391c36998556e85086754d98f7a"
       }
     ],
     "h3-ordinary-large-districts-6-Easy-47": [
@@ -4407,6 +5951,11 @@
         "run": 41355595793,
         "artifact": 13106251587,
         "digest": "sha256:fced2b673f398085e972dd7ef47f5e2087e4ebdf972a16434bf611e9ed4aea9a"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126809221,
+        "digest": "sha256:c88ab1756bbb7af9e1d6777c3cc4f0950610677fa31616c25c562db9947a4ac2"
       }
     ],
     "h3-ordinary-large-districts-6-Medium-47": [
@@ -4414,6 +5963,11 @@
         "run": 41355595793,
         "artifact": 13106249466,
         "digest": "sha256:be87f12eee5406d93e3c2886f708ef14cfad56ea163702e9f7e7fd49f00e271b"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127248133,
+        "digest": "sha256:a52bdb9219faa392320843e40198902783aff471d9ea4141126466fc4e5ef8f4"
       }
     ],
     "h3-ordinary-large-districts-6-Medium-44": [
@@ -4428,6 +5982,11 @@
         "run": 41355595793,
         "artifact": 13106224707,
         "digest": "sha256:5d71d3887809dea6d5041228fda093b7aa681256124a95ff61ac8aa53d448821"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127730638,
+        "digest": "sha256:a9ab3940dbf2b2b624006a05d8e619b37650dcb38a75bedca1aed97b76494b0f"
       }
     ],
     "h3-ordinary-large-districts-3-Hard-43": [
@@ -4596,6 +6155,11 @@
         "run": 41355595793,
         "artifact": 13105329940,
         "digest": "sha256:f20a8a76c148fbcb459ad764ff291864975fb37e8fca1b66f42a92d32536084a"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127790393,
+        "digest": "sha256:71a8dd307fad8bcc713d8fb6f1e7344feef633cae450ae448bb7a247b914742e"
       }
     ],
     "h3-ordinary-large-districts-6-Easy-48": [
@@ -4603,6 +6167,11 @@
         "run": 41355595793,
         "artifact": 13105304772,
         "digest": "sha256:85f4e96b90082925fb40dd18deb0223575ea0ba23ba4feb41350fcd9d554a3bd"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126913470,
+        "digest": "sha256:b0eae8ad393fb1dc15c2140db663167abe8654a3e4997ffad60d5dcb97026abe"
       }
     ],
     "h3-ordinary-small-river-6-Hard-48": [
@@ -4617,6 +6186,11 @@
         "run": 41355595793,
         "artifact": 13105141320,
         "digest": "sha256:b42ffc49e2109d2be0a2aacc4858925f948eefd0b4aeecc1aa17eb2632196974"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126663765,
+        "digest": "sha256:5afebdd4bd98c9bb3380d936eb53526dc948525f3f564655d053648513a7b67b"
       }
     ],
     "h3-ordinary-large-districts-3-Easy-43": [
@@ -4652,6 +6226,11 @@
         "run": 41355595793,
         "artifact": 13104989841,
         "digest": "sha256:368a9f286e07b18af0c36187debf0feafde059c63d93f418a88b57ee8b2a5333"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126199739,
+        "digest": "sha256:3b85e7bf4c1c245c26ce8716478ed7db6357752f59acba955abf8ac8cf229218"
       }
     ],
     "h3-ordinary-small-river-10-Medium-44": [
@@ -4701,6 +6280,11 @@
         "run": 41355595793,
         "artifact": 13104806491,
         "digest": "sha256:6f01bdfa5f82c2b266d0ca7db66dfb2330757100ed32afb9ad12f4fbc259ae85"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127156177,
+        "digest": "sha256:80c91002d40c32fbdc8d0f75ba910d0993d2aa3e3be5721b2f2ec35e6bee4358"
       }
     ],
     "h3-ordinary-small-river-6-Medium-44": [
@@ -4708,6 +6292,11 @@
         "run": 41355595793,
         "artifact": 13104806406,
         "digest": "sha256:316049ace24973b20a211cf1f3294de37aff681e43b27c9c7e5f066000a52140"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126409006,
+        "digest": "sha256:8af3ce54c7a5e2e1ba56bfb5e7ddfdfc701da85cf22a25276e25e3ac573aeeb3"
       }
     ],
     "h3-ordinary-small-river-10-Easy-44": [
@@ -4743,6 +6332,11 @@
         "run": 41355595793,
         "artifact": 13104772101,
         "digest": "sha256:cffbd2c52678ac4e8b0ff6e8441306b2d89a6cfb05a75db94eb22af40fd6fb91"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127256531,
+        "digest": "sha256:7076bf73a21bb2a38591a503f735976bf1c09f5e543b392cde5dc35c09311518"
       }
     ],
     "h3-ordinary-small-river-6-Hard-51": [
@@ -4750,6 +6344,11 @@
         "run": 41355595793,
         "artifact": 13104758156,
         "digest": "sha256:f51b581b89c7b3792d0081266140b0a74e57a5bcb9b93fc218935d725ca3fb45"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126388573,
+        "digest": "sha256:b293cd7a3e4eecf7dea705f9fc2bf15fbb4e898a3858d205d28b44fc09f22051"
       }
     ],
     "h3-ordinary-small-river-3-Easy-42": [
@@ -4764,6 +6363,11 @@
         "run": 41355595793,
         "artifact": 13104706501,
         "digest": "sha256:e7c2c63fe9a5bf4bd592d811e9572ecfea45e9b919ec74ab6f0b2af02f6efd38"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127525703,
+        "digest": "sha256:ecee84d9ce02cccea2a2d76f8e6b47d450dc579360dd53b215c8c8f2939fca61"
       }
     ],
     "h3-ordinary-small-river-10-Easy-45": [
@@ -4799,6 +6403,11 @@
         "run": 41355595793,
         "artifact": 13104642359,
         "digest": "sha256:7eccb0cf1277dbf548f27a191c03ce010e84e04fe79141342274309aeab05e5f"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13125714902,
+        "digest": "sha256:513a6ec386235ce236a586ea93e4f766a418f5feb8f776454ab25bc1fd0dfd8e"
       }
     ],
     "h3-ordinary-small-river-6-Medium-43": [
@@ -4806,6 +6415,11 @@
         "run": 41355595793,
         "artifact": 13104642323,
         "digest": "sha256:8aa7fc001e8d559c36e242504fb998c6feb67138f88bd55581250dada273103c"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127390481,
+        "digest": "sha256:12c0764f12a434cf4b4fc5f3b1e1dc516149ab551716a7339f9b1894a52b416e"
       }
     ],
     "h3-ordinary-small-river-6-Easy-48": [
@@ -4834,6 +6448,11 @@
         "run": 41355595793,
         "artifact": 13104577502,
         "digest": "sha256:d1760b761f6ee9595f49241572fd2bb6be82e34a535b438255402fccb077e5dd"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126947240,
+        "digest": "sha256:3994df12b6572b3072c62e84226c3ab12e20ea956e9596266510e378358954dd"
       }
     ],
     "h3-ordinary-small-river-6-Hard-50": [
@@ -4925,6 +6544,11 @@
         "run": 41355595793,
         "artifact": 13104393903,
         "digest": "sha256:d380a774cd6c677d2eaceda56f3df6767998621b98b1d22534da7f5b5bae9262"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126044192,
+        "digest": "sha256:48e5ad390cd5a725b6f9a20e2e8b896697e90e78f15463c057d5365e12d5901b"
       }
     ],
     "h3-ordinary-small-river-6-Easy-46": [
@@ -4946,6 +6570,11 @@
         "run": 41355595793,
         "artifact": 13104372988,
         "digest": "sha256:61f3645f1d0d53f3253c3dd475a5d6b7e1cf96e677a515929b544b192642bbb1"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126642079,
+        "digest": "sha256:ce601a8b223feeeec202249d62390f6443b220162e6a0c75de882e5486157926"
       }
     ],
     "h3-ordinary-small-river-3-Easy-44": [
@@ -5002,6 +6631,11 @@
         "run": 41355595793,
         "artifact": 13104280000,
         "digest": "sha256:83e6021b79ec61eaae3e974fbde6e0d5281b313263c76693a0dec50bc0e5eb2e"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13125289129,
+        "digest": "sha256:cca710b0dd42479a6eda26dabeb88fc8757db4bf0b1b20c22b0f8195e2d46f23"
       }
     ],
     "h3-ordinary-compact-valley-6-Medium-43": [
@@ -5009,6 +6643,11 @@
         "run": 41355595793,
         "artifact": 13104275136,
         "digest": "sha256:4ea45096dbfbad9d80fdaa87d5ef4d1763a79b6209c51b8215770a4508eca7a0"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13125383860,
+        "digest": "sha256:72855b91ec4e6c928083ecf6faa21a8493a99f1cffe0cad4cb2831ac09c642c7"
       }
     ],
     "h3-ordinary-compact-valley-6-Medium-48": [
@@ -5037,6 +6676,11 @@
         "run": 41355595793,
         "artifact": 13104216770,
         "digest": "sha256:9e3ad2719943f8d618d691fe9674e20cc2f60cef9535dee1ebccf31aacfcbe6e"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126722662,
+        "digest": "sha256:d312cc4a5c6bdd92fec340ecdc5382e745a1c4f24d2515468d81ae5dd6f823b5"
       }
     ],
     "h3-ordinary-compact-valley-6-Hard-47": [
@@ -5072,6 +6716,11 @@
         "run": 41355595793,
         "artifact": 13104123628,
         "digest": "sha256:797bce3af3e0546f184b514c506d7e1f8500a2b40bc0d06ebb2d107f996ab468"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127645077,
+        "digest": "sha256:7aa1d70bf95d6e03066f40769b4eb73cb1217c9378d1d21348827ef1fb1ca2dd"
       }
     ],
     "h3-ordinary-small-river-3-Easy-45": [
@@ -5114,6 +6763,11 @@
         "run": 41355595793,
         "artifact": 13104051808,
         "digest": "sha256:efb8c2bcc6f8b81d6a90fd19a8ce1808306dd18a28c9b771e73c8048e4d39850"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126163790,
+        "digest": "sha256:da2c0cba3e0f3928d0e88ed74d47199f7b581dc3557621fdd11abf1a14018255"
       }
     ],
     "h3-ordinary-compact-valley-10-Hard-46": [
@@ -5121,6 +6775,11 @@
         "run": 41355595793,
         "artifact": 13104042336,
         "digest": "sha256:540aada7f964585b25b53b9c4f80e9ba131e4da54650bbc5d54452707be8b5cc"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13125719761,
+        "digest": "sha256:408a0b5c21fa5dda1ba0951e8d0d52f2322997c5d705ff5924ead3b4373961cb"
       }
     ],
     "h3-ordinary-small-river-10-Medium-42": [
@@ -5170,6 +6829,11 @@
         "run": 41355595793,
         "artifact": 13103948968,
         "digest": "sha256:f069bbc208c5b3edffcd81567bdf7ca71341c008e562ff01b36a6c9a69b0389d"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13127162338,
+        "digest": "sha256:57db69099f0f7aea6408170a0ae84f3f85c57a01a25fbe006994cb1e75c784ed"
       }
     ],
     "h3-ordinary-small-river-6-Medium-51": [
@@ -5184,6 +6848,11 @@
         "run": 41355595793,
         "artifact": 13103928694,
         "digest": "sha256:2f625b230b75f2ef743c345b67f19e6c98c71cfcbe29b977808fe6f0b20f9612"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126363276,
+        "digest": "sha256:de100117ade28d530140e42b20f045f0e6896b0806a9456a9ff54c73e80b71ac"
       }
     ],
     "h3-ordinary-compact-valley-10-Hard-45": [
@@ -5198,6 +6867,11 @@
         "run": 41355595793,
         "artifact": 13103886005,
         "digest": "sha256:b78935ffff5addb13c159c349db1068aa7c174d84ba6c550960036d22fd6317c"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13124564139,
+        "digest": "sha256:644b950223d5a9719ddfbc9474a1f5b7c602512161b0ddc9e7f78b8c0f2f6085"
       }
     ],
     "h3-ordinary-compact-valley-10-Easy-45": [
@@ -5254,6 +6928,11 @@
         "run": 41355595793,
         "artifact": 13103767834,
         "digest": "sha256:65112e9dc736801689a1dbda7b4ff06b2a1bce59b86e80b8c6c1021b21cdcdc8"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13124903247,
+        "digest": "sha256:59ec0b3955a898da2ac2a6722bca3bf2afaf0e00a084517346ac5c27196ccc5d"
       }
     ],
     "h3-ordinary-compact-valley-10-Medium-46": [
@@ -5296,6 +6975,11 @@
         "run": 41355595793,
         "artifact": 13103608405,
         "digest": "sha256:982c61700caddb4ab2cb0704bebb1db209bcef919e2983e428af1bad00afaf88"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13124843994,
+        "digest": "sha256:2c987803986346c64c75db6c8e164da6df6eeaf30d5b5ba3fc1ea129a4b46365"
       }
     ],
     "h3-ordinary-compact-valley-3-Easy-42": [
@@ -5317,6 +7001,11 @@
         "run": 41355595793,
         "artifact": 13103548798,
         "digest": "sha256:aac8e8b49c6e9fa8cb07dbdd3005c3e2c40ae89c1b17861be91dae7548f2728f"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126791357,
+        "digest": "sha256:81ecd679e4da04ed7d74d0a19b653e46ba84191c7958a82e594c5028883abeed"
       }
     ],
     "h3-ordinary-compact-valley-3-Easy-46": [
@@ -5352,6 +7041,11 @@
         "run": 41355595793,
         "artifact": 13103424688,
         "digest": "sha256:4cc3fd098796d23a10bb124866d55ed69717d8cdbc489392a9b39f0a6e6cfe56"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13126417096,
+        "digest": "sha256:5a235c409b038b47a6a2aae56a66160a0ddb090254c6b3964a61c97efaca3095"
       }
     ],
     "h3-ordinary-compact-valley-6-Medium-50": [
@@ -5373,6 +7067,11 @@
         "run": 41355595793,
         "artifact": 13103308828,
         "digest": "sha256:b0a0d2affd8e5d96488b8711d531c3b48bc3eea63271bc1998d1137d60c9fac7"
+      },
+      {
+        "run": 41408105572,
+        "artifact": 13124706084,
+        "digest": "sha256:a9f113b8af74a79bc386ce2f231f4756372afb362fb630428aeb0b084afa7664"
       }
     ],
     "h3-ordinary-compact-valley-6-Easy-44": [
@@ -5415,6 +7114,11 @@
         "run": 41355595793,
         "artifact": 13103139999,
         "digest": "sha256:777ff7598db020a192f64b1eba3069fd56501afb47ceb2241f0e78dc29411039"
+      },
+      {
+        "run": 41408949052,
+        "artifact": 13125557085,
+        "digest": "sha256:3775a4ff026abc0aef8bc3a27cfcfea09af223f3afbb1043f614f05e7f2e882c"
       }
     ],
     "h3-ordinary-compact-valley-3-Medium-46": [
@@ -5441,214 +7145,214 @@
   },
   "selected": [
     {
-      "id": 13110800067,
-      "node_id": "MDg6QXJ0aWZhY3QxMzExMDgwMDA2Nw==",
+      "id": 13127689917,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzY4OTkxNw==",
       "name": "h3-extended-large-districts-6-Hard-142",
-      "size_in_bytes": 4682446661,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13110800067",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13110800067/zip",
+      "size_in_bytes": 4388969250,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127689917",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127689917/zip",
       "expired": false,
-      "digest": "sha256:fceb1f055c995f0d782a3878820e89131c531e59106c8f3e8ab844d127fb61f5",
-      "created_at": "2026-11-02T01:42:33Z",
-      "updated_at": "2026-11-02T01:42:33Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:67599f5a2e05c8187a379b4c4fe7daf0ed332f9db9ce56dcb8eeab70c4f30fbd",
+      "created_at": "2026-11-02T09:14:23Z",
+      "updated_at": "2026-11-02T09:14:23Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13110681182,
-      "node_id": "MDg6QXJ0aWZhY3QxMzExMDY4MTE4Mg==",
+      "id": 13127174971,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzE3NDk3MQ==",
       "name": "h3-extended-large-districts-6-Hard-143",
-      "size_in_bytes": 1316979549,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13110681182",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13110681182/zip",
+      "size_in_bytes": 1829865786,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127174971",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127174971/zip",
       "expired": false,
-      "digest": "sha256:145123153f7c29496bc1cc72002ef14816f953e2935302d9c3cf4daf217d235b",
-      "created_at": "2026-11-02T01:47:04Z",
-      "updated_at": "2026-11-02T01:47:04Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:b7866ec82f48f1984ef519bd1ea9980471331b75fe6437df41cd952b591b1778",
+      "created_at": "2026-11-02T09:04:39Z",
+      "updated_at": "2026-11-02T09:04:39Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13110300401,
-      "node_id": "MDg6QXJ0aWZhY3QxMzExMDMwMDQwMQ==",
+      "id": 13128335425,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyODMzNTQyNQ==",
       "name": "h3-extended-compact-valley-6-Medium-143",
-      "size_in_bytes": 1455554260,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13110300401",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13110300401/zip",
+      "size_in_bytes": 1872811906,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128335425",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128335425/zip",
       "expired": false,
-      "digest": "sha256:2f02f769ced875482dc687ea80c2a4aeda046af8f680538cc363b12126dff6c6",
-      "created_at": "2026-11-02T01:23:21Z",
-      "updated_at": "2026-11-02T01:23:21Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:b0503b8b57fb6d3ec210d9514df2813030fb38309b7ef3c32011d7fe606b2bc3",
+      "created_at": "2026-11-02T08:54:58Z",
+      "updated_at": "2026-11-02T08:54:58Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13110185443,
-      "node_id": "MDg6QXJ0aWZhY3QxMzExMDE4NTQ0Mw==",
+      "id": 13127378395,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzM3ODM5NQ==",
       "name": "h3-extended-compact-valley-6-Hard-143",
-      "size_in_bytes": 1793719429,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13110185443",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13110185443/zip",
+      "size_in_bytes": 2333388810,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127378395",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127378395/zip",
       "expired": false,
-      "digest": "sha256:c79c34d938b4a9207130ace60c00181096ca0a8529f4fa0a46bcdb202909babd",
-      "created_at": "2026-11-02T01:20:56Z",
-      "updated_at": "2026-11-02T01:20:56Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:ffd692de3260cf35322eeeb6dd3d9b7da31b1a5e1736f6eae8d2e1b7b5a77d0d",
+      "created_at": "2026-11-02T08:56:30Z",
+      "updated_at": "2026-11-02T08:56:30Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13110126320,
-      "node_id": "MDg6QXJ0aWZhY3QxMzExMDEyNjMyMA==",
+      "id": 13127224359,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzIyNDM1OQ==",
       "name": "h3-extended-small-river-6-Hard-143",
-      "size_in_bytes": 1422007111,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13110126320",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13110126320/zip",
+      "size_in_bytes": 1830720410,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127224359",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127224359/zip",
       "expired": false,
-      "digest": "sha256:dc5a03c0735fb0501a94226a7fff0b3b58772ede49ba14b8c49aecb46e91f2fd",
-      "created_at": "2026-11-02T01:31:26Z",
-      "updated_at": "2026-11-02T01:31:26Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:c3bc8a881b22e50b6aea8fe2e02a8c73801aa43cd7259223e6ab6b0186d53323",
+      "created_at": "2026-11-02T09:01:17Z",
+      "updated_at": "2026-11-02T09:01:17Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13109907964,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwOTkwNzk2NA==",
+      "id": 13127323827,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzMyMzgyNw==",
       "name": "h3-extended-small-river-6-Hard-142",
-      "size_in_bytes": 1572660665,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13109907964",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13109907964/zip",
+      "size_in_bytes": 2069448554,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127323827",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127323827/zip",
       "expired": false,
-      "digest": "sha256:3f91a0038772be5b3b223cc289c6f0cb54dbfa304c7562296fbf5984988e1afc",
-      "created_at": "2026-11-02T01:32:53Z",
-      "updated_at": "2026-11-02T01:32:53Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:cace78a39b321a182f8abbfbb5e25dae465d62d37ba0484231c67a0f2781e18b",
+      "created_at": "2026-11-02T08:59:14Z",
+      "updated_at": "2026-11-02T08:59:14Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13109831986,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwOTgzMTk4Ng==",
+      "id": 13128580390,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyODU4MDM5MA==",
       "name": "h3-extended-compact-valley-6-Hard-142",
-      "size_in_bytes": 1872564623,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13109831986",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13109831986/zip",
+      "size_in_bytes": 2418568947,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128580390",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128580390/zip",
       "expired": false,
-      "digest": "sha256:590c9dae9a5622549ca0757b499afbef486536d56e134781525ace4e3ca06fa9",
-      "created_at": "2026-11-02T01:25:17Z",
-      "updated_at": "2026-11-02T01:25:17Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:1ed7c8f5293a6009366bd2869cabd4f2548e1696ce529434ac4cad0805b47ece",
+      "created_at": "2026-11-02T08:57:24Z",
+      "updated_at": "2026-11-02T08:57:24Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13109668495,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwOTY2ODQ5NQ==",
+      "id": 13127758318,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzc1ODMxOA==",
       "name": "h3-extended-large-districts-6-Medium-142",
-      "size_in_bytes": 1996915407,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13109668495",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13109668495/zip",
+      "size_in_bytes": 2568171178,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127758318",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127758318/zip",
       "expired": false,
-      "digest": "sha256:e4b901823477644b9636924833d72ef337f3b7d289424991601e54b811da1726",
-      "created_at": "2026-11-02T01:32:07Z",
-      "updated_at": "2026-11-02T01:32:07Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:77a031c6484a655cc8626b224b897de8660f1234144d2a4ae03dc99207f07c59",
+      "created_at": "2026-11-02T09:05:35Z",
+      "updated_at": "2026-11-02T09:05:35Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13109367044,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwOTM2NzA0NA==",
+      "id": 13128176005,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyODE3NjAwNQ==",
       "name": "h3-extended-compact-valley-6-Medium-142",
-      "size_in_bytes": 1872465782,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13109367044",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13109367044/zip",
+      "size_in_bytes": 2484343010,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128176005",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128176005/zip",
       "expired": false,
-      "digest": "sha256:f0535dc498642d47be9f5cb23152a4e1ad7a2ac1ad5edbb4bcd65bcbfd93e0dd",
-      "created_at": "2026-11-02T01:24:15Z",
-      "updated_at": "2026-11-02T01:24:15Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:bd2de6a915ddd9982655ef0fec72daa83203e56d94c4d86e7829be04f216f1dc",
+      "created_at": "2026-11-02T08:56:26Z",
+      "updated_at": "2026-11-02T08:56:26Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13109334304,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwOTMzNDMwNA==",
+      "id": 13127398001,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzM5ODAwMQ==",
       "name": "h3-extended-small-river-6-Medium-142",
-      "size_in_bytes": 1566750266,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13109334304",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13109334304/zip",
+      "size_in_bytes": 2059293775,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127398001",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127398001/zip",
       "expired": false,
-      "digest": "sha256:3d2cee5051e8586e7f99df8cc7e57638dc8f6201f8b9adcd67ebc4bbea6a1fce",
-      "created_at": "2026-11-02T01:28:30Z",
-      "updated_at": "2026-11-02T01:28:30Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:79372957e3c2c46c46226d3ff9039f68417918c01ad68148938dd84d788e3981",
+      "created_at": "2026-11-02T08:55:25Z",
+      "updated_at": "2026-11-02T08:55:25Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13109195782,
@@ -5798,25 +7502,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13108721511,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwODcyMTUxMQ==",
+      "id": 13127491297,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzQ5MTI5Nw==",
       "name": "h3-ordinary-large-districts-10-Easy-45",
-      "size_in_bytes": 712215656,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13108721511",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13108721511/zip",
+      "size_in_bytes": 512489146,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127491297",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127491297/zip",
       "expired": false,
-      "digest": "sha256:822f84d9c8fee382c5d3bd6512e899aad8fca2f0719e9baa4032cdf446568c3c",
-      "created_at": "2026-11-02T00:55:19Z",
-      "updated_at": "2026-11-02T00:55:19Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:c3129b98b671cd7daa45f2634d7e21bd7c93a0982f19a2fee8a729767838e7e3",
+      "created_at": "2026-11-02T08:47:11Z",
+      "updated_at": "2026-11-02T08:47:11Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13108674968,
@@ -5840,25 +7544,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13108673637,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwODY3MzYzNw==",
+      "id": 13126694954,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjY5NDk1NA==",
       "name": "h3-extended-small-river-6-Medium-143",
-      "size_in_bytes": 147246396,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13108673637",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13108673637/zip",
+      "size_in_bytes": 211727815,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126694954",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126694954/zip",
       "expired": false,
-      "digest": "sha256:cf5cce6473df2ec5b3c154e7090ec2a2d047228c6f673c75dc6d1bbb53b07eef",
-      "created_at": "2026-11-02T01:01:33Z",
-      "updated_at": "2026-11-02T01:01:33Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:d95cbfe02b39c0f1d6524d9724a0b7654d85033c2eec1ab1747e0f8e1e4fe903",
+      "created_at": "2026-11-02T08:50:48Z",
+      "updated_at": "2026-11-02T08:50:48Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13108597458,
@@ -5924,25 +7628,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13108407475,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwODQwNzQ3NQ==",
+      "id": 13127442468,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzQ0MjQ2OA==",
       "name": "h3-ordinary-large-districts-10-Medium-45",
-      "size_in_bytes": 712240428,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13108407475",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13108407475/zip",
+      "size_in_bytes": 512484900,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127442468",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127442468/zip",
       "expired": false,
-      "digest": "sha256:51e3af2c949180e4dae80218510908ea71f7b85c4089cf2265256fbe11090868",
-      "created_at": "2026-11-02T00:58:22Z",
-      "updated_at": "2026-11-02T00:58:22Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:014161c9ce1ac2150ae809c7e77e9a9603b8fb92a784816badece7dbbbf73f5e",
+      "created_at": "2026-11-02T08:47:39Z",
+      "updated_at": "2026-11-02T08:47:39Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13108373405,
@@ -5966,25 +7670,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13108294928,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwODI5NDkyOA==",
+      "id": 13128775112,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyODc3NTExMg==",
       "name": "h3-extended-large-districts-6-Medium-143",
-      "size_in_bytes": 505689884,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13108294928",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13108294928/zip",
+      "size_in_bytes": 546540994,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128775112",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13128775112/zip",
       "expired": false,
-      "digest": "sha256:3c1021351f8f7ffd84033b8f96f358902904264300b495d70c3b96522d45f958",
-      "created_at": "2026-11-02T01:17:00Z",
-      "updated_at": "2026-11-02T01:17:00Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:13b6ed31e804103ea34f45ee6564762432bc77977620d71880feaaf7244163b9",
+      "created_at": "2026-11-02T09:01:08Z",
+      "updated_at": "2026-11-02T09:01:08Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13108016390,
@@ -6260,25 +7964,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13106861604,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNjg2MTYwNA==",
+      "id": 13127690720,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzY5MDcyMA==",
       "name": "h3-ordinary-large-districts-6-Medium-45",
-      "size_in_bytes": 378424707,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13106861604",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13106861604/zip",
+      "size_in_bytes": 271754729,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127690720",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127690720/zip",
       "expired": false,
-      "digest": "sha256:c06a0a2e28d1514c00342f9cdc75c39cd83b38457855cd553c6c412468b46691",
-      "created_at": "2026-11-01T23:56:33Z",
-      "updated_at": "2026-11-01T23:56:33Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:794e2eb6113337418ec7cecda15400806611223a4391aa951a46857346ce4a87",
+      "created_at": "2026-11-02T08:46:22Z",
+      "updated_at": "2026-11-02T08:46:22Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13106741137,
@@ -6344,67 +8048,67 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13106295489,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNjI5NTQ4OQ==",
+      "id": 13127610583,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzYxMDU4Mw==",
       "name": "h3-ordinary-large-districts-6-Easy-42",
-      "size_in_bytes": 389578064,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13106295489",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13106295489/zip",
+      "size_in_bytes": 280092658,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127610583",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127610583/zip",
       "expired": false,
-      "digest": "sha256:4a7ceee04fd6bec6dd1efaa620f878913e828701bee567e6b7f122a837c019ca",
-      "created_at": "2026-11-01T23:37:48Z",
-      "updated_at": "2026-11-01T23:37:48Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:bcb042a5004424c50b2523d816d6d903fb021391c36998556e85086754d98f7a",
+      "created_at": "2026-11-02T08:43:30Z",
+      "updated_at": "2026-11-02T08:43:30Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13106251587,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNjI1MTU4Nw==",
+      "id": 13126809221,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjgwOTIyMQ==",
       "name": "h3-ordinary-large-districts-6-Easy-47",
-      "size_in_bytes": 386895372,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13106251587",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13106251587/zip",
+      "size_in_bytes": 276246115,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126809221",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126809221/zip",
       "expired": false,
-      "digest": "sha256:fced2b673f398085e972dd7ef47f5e2087e4ebdf972a16434bf611e9ed4aea9a",
-      "created_at": "2026-11-01T23:43:56Z",
-      "updated_at": "2026-11-01T23:43:56Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:c88ab1756bbb7af9e1d6777c3cc4f0950610677fa31616c25c562db9947a4ac2",
+      "created_at": "2026-11-02T08:45:01Z",
+      "updated_at": "2026-11-02T08:45:01Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13106249466,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNjI0OTQ2Ng==",
+      "id": 13127248133,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzI0ODEzMw==",
       "name": "h3-ordinary-large-districts-6-Medium-47",
-      "size_in_bytes": 386991679,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13106249466",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13106249466/zip",
+      "size_in_bytes": 276433735,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127248133",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127248133/zip",
       "expired": false,
-      "digest": "sha256:be87f12eee5406d93e3c2886f708ef14cfad56ea163702e9f7e7fd49f00e271b",
-      "created_at": "2026-11-02T00:03:42Z",
-      "updated_at": "2026-11-02T00:03:42Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:a52bdb9219faa392320843e40198902783aff471d9ea4141126466fc4e5ef8f4",
+      "created_at": "2026-11-02T08:46:18Z",
+      "updated_at": "2026-11-02T08:46:18Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13106238748,
@@ -6428,25 +8132,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13106224707,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNjIyNDcwNw==",
+      "id": 13127730638,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzczMDYzOA==",
       "name": "h3-ordinary-large-districts-6-Medium-48",
-      "size_in_bytes": 446987382,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13106224707",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13106224707/zip",
+      "size_in_bytes": 321237651,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127730638",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127730638/zip",
       "expired": false,
-      "digest": "sha256:5d71d3887809dea6d5041228fda093b7aa681256124a95ff61ac8aa53d448821",
-      "created_at": "2026-11-02T00:04:33Z",
-      "updated_at": "2026-11-02T00:04:33Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:a9ab3940dbf2b2b624006a05d8e619b37650dcb38a75bedca1aed97b76494b0f",
+      "created_at": "2026-11-02T08:46:42Z",
+      "updated_at": "2026-11-02T08:46:42Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13106150111,
@@ -6932,46 +8636,46 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13105329940,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNTMyOTk0MA==",
+      "id": 13127790393,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzc5MDM5Mw==",
       "name": "h3-ordinary-large-districts-6-Medium-42",
-      "size_in_bytes": 389614999,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13105329940",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13105329940/zip",
+      "size_in_bytes": 280146847,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127790393",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127790393/zip",
       "expired": false,
-      "digest": "sha256:f20a8a76c148fbcb459ad764ff291864975fb37e8fca1b66f42a92d32536084a",
-      "created_at": "2026-11-01T23:49:19Z",
-      "updated_at": "2026-11-01T23:49:19Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:71a8dd307fad8bcc713d8fb6f1e7344feef633cae450ae448bb7a247b914742e",
+      "created_at": "2026-11-02T08:45:41Z",
+      "updated_at": "2026-11-02T08:45:41Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13105304772,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNTMwNDc3Mg==",
+      "id": 13126913470,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjkxMzQ3MA==",
       "name": "h3-ordinary-large-districts-6-Easy-48",
-      "size_in_bytes": 447009010,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13105304772",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13105304772/zip",
+      "size_in_bytes": 321240376,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126913470",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126913470/zip",
       "expired": false,
-      "digest": "sha256:85f4e96b90082925fb40dd18deb0223575ea0ba23ba4feb41350fcd9d554a3bd",
-      "created_at": "2026-11-01T23:50:05Z",
-      "updated_at": "2026-11-01T23:50:05Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:b0eae8ad393fb1dc15c2140db663167abe8654a3e4997ffad60d5dcb97026abe",
+      "created_at": "2026-11-02T08:45:03Z",
+      "updated_at": "2026-11-02T08:45:03Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13105200393,
@@ -6995,25 +8699,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13105141320,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNTE0MTMyMA==",
+      "id": 13126663765,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjY2Mzc2NQ==",
       "name": "h3-ordinary-small-river-10-Hard-45",
-      "size_in_bytes": 385036101,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13105141320",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13105141320/zip",
+      "size_in_bytes": 312905505,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126663765",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126663765/zip",
       "expired": false,
-      "digest": "sha256:b42ffc49e2109d2be0a2aacc4858925f948eefd0b4aeecc1aa17eb2632196974",
-      "created_at": "2026-11-01T23:13:46Z",
-      "updated_at": "2026-11-01T23:13:46Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:5afebdd4bd98c9bb3380d936eb53526dc948525f3f564655d053648513a7b67b",
+      "created_at": "2026-11-02T08:43:41Z",
+      "updated_at": "2026-11-02T08:43:41Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13105106380,
@@ -7100,25 +8804,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13104989841,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDk4OTg0MQ==",
+      "id": 13126199739,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjE5OTczOQ==",
       "name": "h3-ordinary-large-districts-6-Easy-45",
-      "size_in_bytes": 378440900,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104989841",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104989841/zip",
+      "size_in_bytes": 271783252,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126199739",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126199739/zip",
       "expired": false,
-      "digest": "sha256:368a9f286e07b18af0c36187debf0feafde059c63d93f418a88b57ee8b2a5333",
-      "created_at": "2026-11-01T23:39:52Z",
-      "updated_at": "2026-11-01T23:39:52Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:3b85e7bf4c1c245c26ce8716478ed7db6357752f59acba955abf8ac8cf229218",
+      "created_at": "2026-11-02T08:44:51Z",
+      "updated_at": "2026-11-02T08:44:51Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13104971544,
@@ -7247,46 +8951,46 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13104806491,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDgwNjQ5MQ==",
+      "id": 13127156177,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzE1NjE3Nw==",
       "name": "h3-ordinary-small-river-6-Easy-50",
-      "size_in_bytes": 150226530,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104806491",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104806491/zip",
+      "size_in_bytes": 207977080,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127156177",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127156177/zip",
       "expired": false,
-      "digest": "sha256:6f01bdfa5f82c2b266d0ca7db66dfb2330757100ed32afb9ad12f4fbc259ae85",
-      "created_at": "2026-11-01T22:53:27Z",
-      "updated_at": "2026-11-01T22:53:27Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:80c91002d40c32fbdc8d0f75ba910d0993d2aa3e3be5721b2f2ec35e6bee4358",
+      "created_at": "2026-11-02T08:38:33Z",
+      "updated_at": "2026-11-02T08:38:33Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13104806406,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDgwNjQwNg==",
+      "id": 13126409006,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjQwOTAwNg==",
       "name": "h3-ordinary-small-river-6-Medium-44",
-      "size_in_bytes": 132635494,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104806406",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104806406/zip",
+      "size_in_bytes": 183070377,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126409006",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126409006/zip",
       "expired": false,
-      "digest": "sha256:316049ace24973b20a211cf1f3294de37aff681e43b27c9c7e5f066000a52140",
-      "created_at": "2026-11-01T22:52:45Z",
-      "updated_at": "2026-11-01T22:52:45Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:8af3ce54c7a5e2e1ba56bfb5e7ddfdfc701da85cf22a25276e25e3ac573aeeb3",
+      "created_at": "2026-11-02T08:38:48Z",
+      "updated_at": "2026-11-02T08:38:48Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13104798980,
@@ -7373,46 +9077,46 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13104772101,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDc3MjEwMQ==",
+      "id": 13127256531,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzI1NjUzMQ==",
       "name": "h3-ordinary-small-river-6-Easy-51",
-      "size_in_bytes": 236015311,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104772101",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104772101/zip",
+      "size_in_bytes": 192228073,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127256531",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127256531/zip",
       "expired": false,
-      "digest": "sha256:cffbd2c52678ac4e8b0ff6e8441306b2d89a6cfb05a75db94eb22af40fd6fb91",
-      "created_at": "2026-11-01T22:55:20Z",
-      "updated_at": "2026-11-01T22:55:20Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:7076bf73a21bb2a38591a503f735976bf1c09f5e543b392cde5dc35c09311518",
+      "created_at": "2026-11-02T08:35:55Z",
+      "updated_at": "2026-11-02T08:35:55Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13104758156,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDc1ODE1Ng==",
+      "id": 13126388573,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjM4ODU3Mw==",
       "name": "h3-ordinary-small-river-6-Hard-51",
-      "size_in_bytes": 238756605,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104758156",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104758156/zip",
+      "size_in_bytes": 193925114,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126388573",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126388573/zip",
       "expired": false,
-      "digest": "sha256:f51b581b89c7b3792d0081266140b0a74e57a5bcb9b93fc218935d725ca3fb45",
-      "created_at": "2026-11-01T23:01:57Z",
-      "updated_at": "2026-11-01T23:01:57Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:b293cd7a3e4eecf7dea705f9fc2bf15fbb4e898a3858d205d28b44fc09f22051",
+      "created_at": "2026-11-02T08:40:36Z",
+      "updated_at": "2026-11-02T08:40:36Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13104755671,
@@ -7436,25 +9140,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13104706501,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDcwNjUwMQ==",
+      "id": 13127525703,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzUyNTcwMw==",
       "name": "h3-ordinary-small-river-6-Easy-43",
-      "size_in_bytes": 131251596,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104706501",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104706501/zip",
+      "size_in_bytes": 183781780,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127525703",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127525703/zip",
       "expired": false,
-      "digest": "sha256:e7c2c63fe9a5bf4bd592d811e9572ecfea45e9b919ec74ab6f0b2af02f6efd38",
-      "created_at": "2026-11-01T22:49:39Z",
-      "updated_at": "2026-11-01T22:49:39Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:ecee84d9ce02cccea2a2d76f8e6b47d450dc579360dd53b215c8c8f2939fca61",
+      "created_at": "2026-11-02T08:36:19Z",
+      "updated_at": "2026-11-02T08:36:19Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13104699057,
@@ -7541,46 +9245,46 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13104642359,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDY0MjM1OQ==",
+      "id": 13125714902,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNTcxNDkwMg==",
       "name": "h3-ordinary-small-river-6-Easy-42",
-      "size_in_bytes": 265224824,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104642359",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104642359/zip",
+      "size_in_bytes": 215312112,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125714902",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125714902/zip",
       "expired": false,
-      "digest": "sha256:7eccb0cf1277dbf548f27a191c03ce010e84e04fe79141342274309aeab05e5f",
-      "created_at": "2026-11-01T22:52:32Z",
-      "updated_at": "2026-11-01T22:52:32Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:513a6ec386235ce236a586ea93e4f766a418f5feb8f776454ab25bc1fd0dfd8e",
+      "created_at": "2026-11-02T08:31:49Z",
+      "updated_at": "2026-11-02T08:31:49Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13104642323,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDY0MjMyMw==",
+      "id": 13127390481,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzM5MDQ4MQ==",
       "name": "h3-ordinary-small-river-6-Medium-43",
-      "size_in_bytes": 131252437,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104642323",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104642323/zip",
+      "size_in_bytes": 183698451,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127390481",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127390481/zip",
       "expired": false,
-      "digest": "sha256:8aa7fc001e8d559c36e242504fb998c6feb67138f88bd55581250dada273103c",
-      "created_at": "2026-11-01T22:52:19Z",
-      "updated_at": "2026-11-01T22:52:19Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:12c0764f12a434cf4b4fc5f3b1e1dc516149ab551716a7339f9b1894a52b416e",
+      "created_at": "2026-11-02T08:38:19Z",
+      "updated_at": "2026-11-02T08:38:19Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13104622843,
@@ -7646,25 +9350,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13104577502,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDU3NzUwMg==",
+      "id": 13126947240,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjk0NzI0MA==",
       "name": "h3-ordinary-small-river-6-Easy-45",
-      "size_in_bytes": 242701160,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104577502",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104577502/zip",
+      "size_in_bytes": 197837198,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126947240",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126947240/zip",
       "expired": false,
-      "digest": "sha256:d1760b761f6ee9595f49241572fd2bb6be82e34a535b438255402fccb077e5dd",
-      "created_at": "2026-11-01T22:51:43Z",
-      "updated_at": "2026-11-01T22:51:43Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:3994df12b6572b3072c62e84226c3ab12e20ea956e9596266510e378358954dd",
+      "created_at": "2026-11-02T08:34:46Z",
+      "updated_at": "2026-11-02T08:34:46Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13104569439,
@@ -7919,25 +9623,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13104393903,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDM5MzkwMw==",
+      "id": 13126044192,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjA0NDE5Mg==",
       "name": "h3-ordinary-small-river-6-Medium-42",
-      "size_in_bytes": 265281260,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104393903",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104393903/zip",
+      "size_in_bytes": 215392023,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126044192",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126044192/zip",
       "expired": false,
-      "digest": "sha256:d380a774cd6c677d2eaceda56f3df6767998621b98b1d22534da7f5b5bae9262",
-      "created_at": "2026-11-01T22:55:50Z",
-      "updated_at": "2026-11-01T22:55:50Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:48e5ad390cd5a725b6f9a20e2e8b896697e90e78f15463c057d5365e12d5901b",
+      "created_at": "2026-11-02T08:36:48Z",
+      "updated_at": "2026-11-02T08:36:48Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13104388397,
@@ -7982,25 +9686,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13104372988,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDM3Mjk4OA==",
+      "id": 13126642079,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjY0MjA3OQ==",
       "name": "h3-ordinary-small-river-6-Easy-44",
-      "size_in_bytes": 132660056,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104372988",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104372988/zip",
+      "size_in_bytes": 183185452,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126642079",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126642079/zip",
       "expired": false,
-      "digest": "sha256:61f3645f1d0d53f3253c3dd475a5d6b7e1cf96e677a515929b544b192642bbb1",
-      "created_at": "2026-11-01T22:50:48Z",
-      "updated_at": "2026-11-01T22:50:48Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:ce601a8b223feeeec202249d62390f6443b220162e6a0c75de882e5486157926",
+      "created_at": "2026-11-02T08:35:26Z",
+      "updated_at": "2026-11-02T08:35:26Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13104367398,
@@ -8150,46 +9854,46 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13104280000,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDI4MDAwMA==",
+      "id": 13125289129,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNTI4OTEyOQ==",
       "name": "h3-ordinary-compact-valley-6-Easy-51",
-      "size_in_bytes": 157194334,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104280000",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104280000/zip",
+      "size_in_bytes": 238510656,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125289129",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125289129/zip",
       "expired": false,
-      "digest": "sha256:83e6021b79ec61eaae3e974fbde6e0d5281b313263c76693a0dec50bc0e5eb2e",
-      "created_at": "2026-11-01T22:28:58Z",
-      "updated_at": "2026-11-01T22:28:58Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:cca710b0dd42479a6eda26dabeb88fc8757db4bf0b1b20c22b0f8195e2d46f23",
+      "created_at": "2026-11-02T08:13:40Z",
+      "updated_at": "2026-11-02T08:13:40Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13104275136,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDI3NTEzNg==",
+      "id": 13125383860,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNTM4Mzg2MA==",
       "name": "h3-ordinary-compact-valley-6-Medium-43",
-      "size_in_bytes": 149786256,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104275136",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104275136/zip",
+      "size_in_bytes": 229507094,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125383860",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125383860/zip",
       "expired": false,
-      "digest": "sha256:4ea45096dbfbad9d80fdaa87d5ef4d1763a79b6209c51b8215770a4508eca7a0",
-      "created_at": "2026-11-01T22:29:35Z",
-      "updated_at": "2026-11-01T22:29:35Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:72855b91ec4e6c928083ecf6faa21a8493a99f1cffe0cad4cb2831ac09c642c7",
+      "created_at": "2026-11-02T08:16:01Z",
+      "updated_at": "2026-11-02T08:16:01Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13104265832,
@@ -8255,25 +9959,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13104216770,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDIxNjc3MA==",
+      "id": 13126722662,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjcyMjY2Mg==",
       "name": "h3-ordinary-compact-valley-10-Medium-42",
-      "size_in_bytes": 240240303,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104216770",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104216770/zip",
+      "size_in_bytes": 381551941,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126722662",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126722662/zip",
       "expired": false,
-      "digest": "sha256:9e3ad2719943f8d618d691fe9674e20cc2f60cef9535dee1ebccf31aacfcbe6e",
-      "created_at": "2026-11-01T22:37:58Z",
-      "updated_at": "2026-11-01T22:37:58Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:d312cc4a5c6bdd92fec340ecdc5382e745a1c4f24d2515468d81ae5dd6f823b5",
+      "created_at": "2026-11-02T08:34:11Z",
+      "updated_at": "2026-11-02T08:34:11Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13104216641,
@@ -8360,25 +10064,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13104123628,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDEyMzYyOA==",
+      "id": 13127645077,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzY0NTA3Nw==",
       "name": "h3-ordinary-small-river-6-Medium-47",
-      "size_in_bytes": 238946268,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104123628",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104123628/zip",
+      "size_in_bytes": 194377110,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127645077",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127645077/zip",
       "expired": false,
-      "digest": "sha256:797bce3af3e0546f184b514c506d7e1f8500a2b40bc0d06ebb2d107f996ab468",
-      "created_at": "2026-11-01T22:58:15Z",
-      "updated_at": "2026-11-01T22:58:15Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:7aa1d70bf95d6e03066f40769b4eb73cb1217c9378d1d21348827ef1fb1ca2dd",
+      "created_at": "2026-11-02T08:39:51Z",
+      "updated_at": "2026-11-02T08:39:51Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13104102396,
@@ -8486,46 +10190,46 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13104051808,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDA1MTgwOA==",
+      "id": 13126163790,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjE2Mzc5MA==",
       "name": "h3-ordinary-compact-valley-10-Easy-42",
-      "size_in_bytes": 460327054,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104051808",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104051808/zip",
+      "size_in_bytes": 390879319,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126163790",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126163790/zip",
       "expired": false,
-      "digest": "sha256:efb8c2bcc6f8b81d6a90fd19a8ce1808306dd18a28c9b771e73c8048e4d39850",
-      "created_at": "2026-11-01T22:39:09Z",
-      "updated_at": "2026-11-01T22:39:09Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:da2c0cba3e0f3928d0e88ed74d47199f7b581dc3557621fdd11abf1a14018255",
+      "created_at": "2026-11-02T08:31:30Z",
+      "updated_at": "2026-11-02T08:31:30Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
-      "id": 13104042336,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwNDA0MjMzNg==",
+      "id": 13125719761,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNTcxOTc2MQ==",
       "name": "h3-ordinary-compact-valley-10-Hard-46",
-      "size_in_bytes": 453944373,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104042336",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13104042336/zip",
+      "size_in_bytes": 384342833,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125719761",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125719761/zip",
       "expired": false,
-      "digest": "sha256:540aada7f964585b25b53b9c4f80e9ba131e4da54650bbc5d54452707be8b5cc",
-      "created_at": "2026-11-01T22:43:21Z",
-      "updated_at": "2026-11-01T22:43:21Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:408a0b5c21fa5dda1ba0951e8d0d52f2322997c5d705ff5924ead3b4373961cb",
+      "created_at": "2026-11-02T08:32:22Z",
+      "updated_at": "2026-11-02T08:32:22Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13104039603,
@@ -8654,25 +10358,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13103948968,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwMzk0ODk2OA==",
+      "id": 13127162338,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNzE2MjMzOA==",
       "name": "h3-ordinary-small-river-6-Medium-50",
-      "size_in_bytes": 150171797,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103948968",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103948968/zip",
+      "size_in_bytes": 208054648,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127162338",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13127162338/zip",
       "expired": false,
-      "digest": "sha256:f069bbc208c5b3edffcd81567bdf7ca71341c008e562ff01b36a6c9a69b0389d",
-      "created_at": "2026-11-01T22:57:11Z",
-      "updated_at": "2026-11-01T22:57:11Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:57db69099f0f7aea6408170a0ae84f3f85c57a01a25fbe006994cb1e75c784ed",
+      "created_at": "2026-11-02T08:41:45Z",
+      "updated_at": "2026-11-02T08:41:45Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13103944400,
@@ -8696,25 +10400,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13103928694,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwMzkyODY5NA==",
+      "id": 13126363276,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjM2MzI3Ng==",
       "name": "h3-ordinary-small-river-6-Easy-47",
-      "size_in_bytes": 239100299,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103928694",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103928694/zip",
+      "size_in_bytes": 194476863,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126363276",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126363276/zip",
       "expired": false,
-      "digest": "sha256:2f625b230b75f2ef743c345b67f19e6c98c71cfcbe29b977808fe6f0b20f9612",
-      "created_at": "2026-11-01T22:52:55Z",
-      "updated_at": "2026-11-01T22:52:55Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:de100117ade28d530140e42b20f045f0e6896b0806a9456a9ff54c73e80b71ac",
+      "created_at": "2026-11-02T08:35:34Z",
+      "updated_at": "2026-11-02T08:35:34Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13103924555,
@@ -8738,25 +10442,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13103886005,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwMzg4NjAwNQ==",
+      "id": 13124564139,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNDU2NDEzOQ==",
       "name": "h3-ordinary-compact-valley-6-Easy-46",
-      "size_in_bytes": 172263847,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103886005",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103886005/zip",
+      "size_in_bytes": 255245698,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124564139",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124564139/zip",
       "expired": false,
-      "digest": "sha256:b78935ffff5addb13c159c349db1068aa7c174d84ba6c550960036d22fd6317c",
-      "created_at": "2026-11-01T22:28:09Z",
-      "updated_at": "2026-11-01T22:28:09Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:644b950223d5a9719ddfbc9474a1f5b7c602512161b0ddc9e7f78b8c0f2f6085",
+      "created_at": "2026-11-02T08:07:34Z",
+      "updated_at": "2026-11-02T08:07:34Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13103864000,
@@ -8906,25 +10610,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13103767834,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwMzc2NzgzNA==",
+      "id": 13124903247,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNDkwMzI0Nw==",
       "name": "h3-ordinary-compact-valley-6-Medium-51",
-      "size_in_bytes": 157666812,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103767834",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103767834/zip",
+      "size_in_bytes": 240987807,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124903247",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124903247/zip",
       "expired": false,
-      "digest": "sha256:65112e9dc736801689a1dbda7b4ff06b2a1bce59b86e80b8c6c1021b21cdcdc8",
-      "created_at": "2026-11-01T22:31:53Z",
-      "updated_at": "2026-11-01T22:31:53Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:59ec0b3955a898da2ac2a6722bca3bf2afaf0e00a084517346ac5c27196ccc5d",
+      "created_at": "2026-11-02T08:07:45Z",
+      "updated_at": "2026-11-02T08:07:45Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13103744287,
@@ -9032,25 +10736,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13103608405,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwMzYwODQwNQ==",
+      "id": 13124843994,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNDg0Mzk5NA==",
       "name": "h3-ordinary-compact-valley-6-Medium-46",
-      "size_in_bytes": 172328994,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103608405",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103608405/zip",
+      "size_in_bytes": 255062660,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124843994",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124843994/zip",
       "expired": false,
-      "digest": "sha256:982c61700caddb4ab2cb0704bebb1db209bcef919e2983e428af1bad00afaf88",
-      "created_at": "2026-11-01T22:31:26Z",
-      "updated_at": "2026-11-01T22:31:26Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:2c987803986346c64c75db6c8e164da6df6eeaf30d5b5ba3fc1ea129a4b46365",
+      "created_at": "2026-11-02T08:12:31Z",
+      "updated_at": "2026-11-02T08:12:31Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13103590837,
@@ -9095,25 +10799,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13103548798,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwMzU0ODc5OA==",
+      "id": 13126791357,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjc5MTM1Nw==",
       "name": "h3-ordinary-compact-valley-6-Hard-45",
-      "size_in_bytes": 152960336,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103548798",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103548798/zip",
+      "size_in_bytes": 240458746,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126791357",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126791357/zip",
       "expired": false,
-      "digest": "sha256:aac8e8b49c6e9fa8cb07dbdd3005c3e2c40ae89c1b17861be91dae7548f2728f",
-      "created_at": "2026-11-01T22:31:55Z",
-      "updated_at": "2026-11-01T22:31:55Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:81ecd679e4da04ed7d74d0a19b653e46ba84191c7958a82e594c5028883abeed",
+      "created_at": "2026-11-02T08:32:38Z",
+      "updated_at": "2026-11-02T08:32:38Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13103476515,
@@ -9200,25 +10904,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13103424688,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwMzQyNDY4OA==",
+      "id": 13126417096,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNjQxNzA5Ng==",
       "name": "h3-ordinary-compact-valley-6-Hard-42",
-      "size_in_bytes": 284060989,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103424688",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103424688/zip",
+      "size_in_bytes": 240899219,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126417096",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13126417096/zip",
       "expired": false,
-      "digest": "sha256:4cc3fd098796d23a10bb124866d55ed69717d8cdbc489392a9b39f0a6e6cfe56",
-      "created_at": "2026-11-01T22:34:24Z",
-      "updated_at": "2026-11-01T22:34:24Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:5a235c409b038b47a6a2aae56a66160a0ddb090254c6b3964a61c97efaca3095",
+      "created_at": "2026-11-02T08:30:40Z",
+      "updated_at": "2026-11-02T08:30:40Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13103419443,
@@ -9263,25 +10967,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13103308828,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwMzMwODgyOA==",
+      "id": 13124706084,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNDcwNjA4NA==",
       "name": "h3-ordinary-compact-valley-6-Easy-43",
-      "size_in_bytes": 149631686,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103308828",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103308828/zip",
+      "size_in_bytes": 229605725,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124706084",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13124706084/zip",
       "expired": false,
-      "digest": "sha256:b0a0d2affd8e5d96488b8711d531c3b48bc3eea63271bc1998d1137d60c9fac7",
-      "created_at": "2026-11-01T22:26:28Z",
-      "updated_at": "2026-11-01T22:26:28Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:a9f113b8af74a79bc386ce2f231f4756372afb362fb630428aeb0b084afa7664",
+      "created_at": "2026-11-02T07:47:17Z",
+      "updated_at": "2026-11-02T07:47:17Z",
+      "expires_at": "2027-01-31T07:43:13Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408105572,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "85cfbd1d6d78f000e139b0b5daa50b3f4a33de9e"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408105572
     },
     {
       "id": 13103279360,
@@ -9389,25 +11093,25 @@
       "sourceRun": 41355595793
     },
     {
-      "id": 13103139999,
-      "node_id": "MDg6QXJ0aWZhY3QxMzEwMzEzOTk5OQ==",
+      "id": 13125557085,
+      "node_id": "MDg6QXJ0aWZhY3QxMzEyNTU1NzA4NQ==",
       "name": "h3-ordinary-compact-valley-6-Medium-42",
-      "size_in_bytes": 141558385,
-      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103139999",
-      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13103139999/zip",
+      "size_in_bytes": 213590607,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125557085",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13125557085/zip",
       "expired": false,
-      "digest": "sha256:777ff7598db020a192f64b1eba3069fd56501afb47ceb2241f0e78dc29411039",
-      "created_at": "2026-11-01T22:28:17Z",
-      "updated_at": "2026-11-01T22:28:17Z",
-      "expires_at": "2027-01-30T22:08:33Z",
+      "digest": "sha256:3775a4ff026abc0aef8bc3a27cfcfea09af223f3afbb1043f614f05e7f2e882c",
+      "created_at": "2026-11-02T08:12:17Z",
+      "updated_at": "2026-11-02T08:12:17Z",
+      "expires_at": "2027-01-31T07:51:04Z",
       "workflow_run": {
-        "id": 41355595793,
+        "id": 41408949052,
         "repository_id": 1417528269,
         "head_repository_id": 1417528269,
         "head_branch": "feat/vnext-h3-compact-acceptance",
-        "head_sha": "ec0886b4e5d2297716d1c99e381c4f500c1e26de"
+        "head_sha": "f3f49b09ab35ff2c091800e405be76d3ed09c88d"
       },
-      "sourceRun": 41355595793
+      "sourceRun": 41408949052
     },
     {
       "id": 13102943253,
