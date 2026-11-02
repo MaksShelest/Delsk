@@ -8,7 +8,7 @@
   354защищённых corridor cells. G2 layout2, оба скина, полный G1 профиль.
   Старые карты/config/BALANCE побайтно сохранены. Только новый ordinary
   Resolve получает maxTicks1000000; saved horizon/движение/условия прежние.
-- Прогресс и отказы: docs/WORKLOG_H3.md.21ordinary/21Developer +1archive each;22cases H3 иprepared gate:
+- Прогресс и отказы: docs/WORKLOG_H3.md. CI85cf:22ordinary/22Developer; H3 prepared gate:
   41процесс/21экспорт/18точных сравнений31файла на всех трёх картах.
   Не ослаблять старые suites/deadlines; H3 suite отдельная disjoint partition.
 - SelfBallotController из runner теперь читается Godot composition root,

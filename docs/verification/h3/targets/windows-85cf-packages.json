@@ -1,0 +1,24 @@
+{
+  "status": "succeeded",
+  "platform": "windows",
+  "packages": [
+    {
+      "flavor": "developer",
+      "package": "developer/DelskProbe.exe",
+      "sha256": "4ec2d40f41c1c954673fa4f6274bab4c1700d048b5bba24ecfc11eef1829d2b0",
+      "bytes": 103297536
+    },
+    {
+      "flavor": "release",
+      "package": "release/DelskProbe.exe",
+      "sha256": "73239dbdb15e1f99b808fc55e1ec97b37320c8d3ea50f73003670d2bb595f619",
+      "bytes": 109392384
+    }
+  ],
+  "sourceCommit": "85cfbd1d6d78f000e139b0b5daa50b3f4a33de9e",
+  "tools": {
+    "dotnet": "10.0.401",
+    "godot": "4.7.2.stable.mono"
+  },
+  "scope": "Test-signed cross-platform packages; no hardware execution or real model inference implied. Code is an isolated copy; no test probes."
+}

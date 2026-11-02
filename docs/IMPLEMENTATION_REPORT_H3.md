@@ -7,7 +7,7 @@
 База `b87bc90a84845f509cf256bb227dbcf2952a43ad` содержит H2/PR76;
 ветка `feat/vnext-h3-compact-acceptance`, [PR77](https://github.com/MaksShelest/Delsk/pull/77)
 draft, без auto merge. Первичная реализация `ec0886b`, функциональный этап
-`4175455`; ordinary21/21 и Developer21/21 после разделения большой prepared
+`4175455`; ordinary22/22 и Developer22/22 в CI85cf после разделения большой prepared
 траектории на независимые bounded phases. [Ход работы и все неудачи](WORKLOG_H3.md),
 [воспроизведение](research/h3/README.md).
 
@@ -58,7 +58,7 @@ SelfBallotController.Restore, сохраняя память. Natural save t5604�
 | Три карты, оба оформления, входы и пропорции |36PNG/3карты/11участников, source-inputs; natural-loaded | Настоящий Linux Godot/Xorg/llvmpipe; изображения просмотрены |
 | Грунтовка и движение |12roadPNG,180viewport frames/60quanta/6активных секунд | Прямые/повороты/перекрёстки/объезд; запись144,863s/150, не FPS benchmark |
 | RU/EN, карта города, масштаб и ввод | city-gate.json:3/6/10NPC,640RU/800EN/360EN | Native synthetic keyboard/mouse/touch, pause/help/filters/save; не physical mobile |
-| Developer/Release и режим бога | ordinary21/Developer21, native Windows HUD, negative Release, published APK/Windows metadata | Пройдено;180/120s не повышены, исходный Developer timeout сохранён |
+| Developer/Release и режим бога | ordinary22/Developer22 CI, native Windows HUD, negative Release, published APK/Windows metadata | Пройдено;180/120s не повышены, исходный Developer timeout сохранён |
 | Windows/Android и реальная Windows LLM | Windows1132hashes в каждом flavor, реальные ARM64 APK/подписи/CRC, [инструкция](research/h3/TARGET_ACCEPTANCE.md) | Windows VM и cross APK пройдены. Первый Release launch exit1 был collision technical probe saves иисправлен; physical device/живая модель открыты |
 | Новые измерения после H2 | study-plan, отдельный frozen run41355595793 |180ordinary+12extended в работе, результаты не смешиваются с H1 |
 
@@ -145,3 +145,38 @@ journals,119complete ordinary,34audit-blocked,39missing.299NPC first factories
 original simulator DLL/input fingerprints неизменны, original journal/failure
 сохраняются, actual corrected-auditor SHA записывается отдельно, следующий
 сегмент продолжает тотжемир. Новая независимаяреплика не создаётся.
+
+
+## Подтверждённое продолжение, 02.11.2026
+
+Полные H3 ordinary22 и Developer22 прошли в CI source85cfbd1:
+[точные jobs и границы](verification/h3/ci-gates.json). Дополнительная защита
+архивного output проверена отдельно ordinary/Developer; новый CLI-флаг gzip
+сравнивает24файла и каждый байт полной private history, поддерживает progress и
+отвергает неверное значение/повторный архив до симуляции. Default raw формат прежний.
+
+Свежие [Windows bundles](https://github.com/MaksShelest/Delsk/actions/runs/41408105541/artifacts/13124995843)
+и [Android APK](https://github.com/MaksShelest/Delsk/actions/runs/41408105541/artifacts/13124263830)
+имеют фактический source85cfbd1. Оба Windows EXE прошли последовательно в однойVM,
+обаAPK — подписи/manifest/CRC. Ошибка Python cp1252 последующего native capture
+исправлена явным UTF8. [Отдельный повтор](https://github.com/MaksShelest/Delsk/actions/runs/41409156706)
+загрузил ordinary save5604 в Windows сцену и прошёл оба оформления в прежнем лимите150s;
+экспорты пакетов не повторялись. [Provenance](verification/h3/targets/fresh-ci.json).
+Текущие финальные пакеты2feec8d с дополнительным shared Hosting guard запрошены
+в41412052805; пока не подменять ими уже подтверждённые85cf артефакты.
+
+Исходная экономическая коллекция теперь полная:192/192, missing0,144ordinary
+конечных точек5000,344первых корпусов NPC в этих конечных точках.36ordinary и
+2extended сохранили отказы исходного public auditor.9extended имеют audited14400;
+LargeHard143 имеет lastSaved10800 с незавершённой следующей попыткой. Число
+успешных jobs не равно числу принятых checkpoints: LargeHard142 отменён уже
+после принятой14400 при архивации. [Исходная коллекция](verification/h3/economy/summary.json).
+
+[Pilot](verification/h3/audit-pilot.json) сохранил исходный audit failure3600,
+успешно re-audit проверил тот же экспорт и продолжил тот же мир до5000 с двумя
+проходящими аудитами, без подмены DLL/input. Batch41408949052 продолжает35остальных
+ordinary и12исходныхextended, максимум один bounded segment в этом batch.
+Итоговых сравнений пока нет. В последних принятых исходных точках отраслевые
+задания приняты/завершены0/0; maxXP одной отрасли NPC108ordinary/321extended,
+порогII600. Это наблюдаемая граница экспозиции, а не доказанная причина темпа
+развития и не основание менять цены/XP.

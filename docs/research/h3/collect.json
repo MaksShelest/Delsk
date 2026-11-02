@@ -1,6 +1,10 @@
 {
-  "run": 41355595793,
-  "allowPartial": false,
-  "revision": 2,
-  "scope": "Complete retained original192 world collection; audit failures and interrupted late worlds remain actual outcomes. No new simulation."
+  "runs": [
+    41355595793,
+    41408105572,
+    41408949052
+  ],
+  "allowPartial": true,
+  "revision": 3,
+  "scope": "Merge latest available endpoints of the SAME original192 worlds, retaining original source chains and audit errata. Explicit interim while the47-world continuation batch is pending; no new simulation or independent replicas."
 }

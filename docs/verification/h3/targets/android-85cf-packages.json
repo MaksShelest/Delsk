@@ -1,0 +1,24 @@
+{
+  "status": "succeeded",
+  "platform": "android",
+  "packages": [
+    {
+      "flavor": "developer",
+      "package": "developer/DelskH3.apk",
+      "sha256": "bf5416a74826b431f144f25817eaa248a541cc44da322eac02a624ca9d9ac565",
+      "bytes": 102949317
+    },
+    {
+      "flavor": "release",
+      "package": "release/DelskH3.apk",
+      "sha256": "86ad8fcc86fe72bc122561f508d1e8fa8dbf5daf8cded2ae20c9ffe13e5855af",
+      "bytes": 95935954
+    }
+  ],
+  "sourceCommit": "85cfbd1d6d78f000e139b0b5daa50b3f4a33de9e",
+  "tools": {
+    "dotnet": "10.0.401",
+    "godot": "4.7.2.stable.mono"
+  },
+  "scope": "Test-signed cross-platform packages; no hardware execution or real model inference implied. Code is an isolated copy; no test probes."
+}

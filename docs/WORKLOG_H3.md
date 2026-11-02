@@ -298,3 +298,18 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
   job125154658457, Developer22 job125154658760, обаsuccess (ci-gates.json).
   Остальные Core downstream jobs ещё в очереди. Новый target marker revision5
   включает текущий shared Hosting guard/runner CLI и UTF8 native harness.
+- Windows UTF8 diagnostic41409156706/job125157966666 успешно завершён:
+  реальные natural save5604/оба оформления в Playfield,150s unchanged; retained
+  EXE/APK hashes source85cf проверены без пересборки. Manifests85cf скопированы
+  из фактически проверенных JSON в targets/*-85cf-packages.json. Диагностический
+  artifact13125556684, SHA28e993edd759514408509ee3fe77335810783970e5d64ece9a286a3e06dd3f77.
+- Читаемый исходный RESULTS.md сформирован из192original journals; пока144/180
+  complete, все сравнения явно provisional. Не принимать это за corrected final.
+- В08:21UTC API ещё показывает6успешных case+select в audit batch41408949052,
+  41queued; финальные targets41412052805 и новые Core/H2/platform тоже ждут
+  runner. Cleanup остаётся queued. Готовые85cf packages/H3 gates иWindows
+  native retry от этого не отменяются. Чужие branches не отменялись.
+- Collection revision3 явно объединит original+pilot+доступные endpoints текущего
+  batch как interim, source chains сохраняются. Она не создаёт миры и не ждёт
+  «зелёного» заменой таймаутов. Окончательная collection потребует завершённых
+  sources и ручного перевода allowPartial=false после проверки всех outcomes.
