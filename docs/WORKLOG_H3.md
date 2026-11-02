@@ -271,3 +271,16 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
   Онаоставляетновейшуюrevision каждойпроверки ипочтизаконченныйCore41408105487;
   неумеетотменять study/audit/collection/targets/diagnostic. Старыеотмены/logs
   останутсянаGitHub; новыйconcurrencyпредотвращаетповторнуюочередь.
+- General runner теперь принимает явный boolean --compress-controller-turns true
+  дляновыхзапусков/load, включая failed/cancelled export; default raw прежний.
+  Build32,74s/180 безwarnings/errors. Две90-tick CLI проверки дали24byte-equal
+  exports, exact618921raw private-history bytes→56019gzip, SHA835a2954…;
+  TRUE нормализуется, неверныйzip отвергнутexit1 доworld. Frozen researchDLL
+  неподменяются. Repro/proof runner-gzip-cli.json, сохранённый позднийworld
+  по-прежнемуимеетнулевуюstep export-only командуH3Acceptance.
+- Readable RESULTS generator используетexistingworld-level statistics/18Holm
+  contrasts иlatest accepted checkpoints; NPCtimes маркируются descriptive,
+  costs/QuestXP/уровни/ROI сохраняютcensoring. Collector выдаётRESULTS рядом
+  сисходнымиobservations, безновыхреплик. Исходный срез доerratum: maxNPC
+  industryXP108ordinary/321extended при600дляII, QuestAccepted/Completed0/0.
+  Это наблюдение, непричинныйвывод иневыполнение позднихцелей.

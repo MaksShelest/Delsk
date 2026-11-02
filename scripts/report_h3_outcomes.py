@@ -79,11 +79,21 @@ for map_key in plan['maps']:
     fs=[latest(r) for r in rows if r['case']['phase']=='extended' and r['case']['map']==map_key and latest(r)]
     def flow(key):return number(median([sum(v.get(key,0) for k,v in f['actors'].items() if k!='1')/100 for f in fs]))
     lines.append(f"| {map_key} | {len(fs)} | {flow('salesRevenueMinor')} | {flow('goodsCostMinor')} / {flow('importCostMinor')} | {flow('wagesMinor')} | {flow('cashCapitalSpendingMinor')} | {flow('operatingAfterRoadDebtMinor')} |")
+tiers=json.loads((analyze_h3.ROOT/'docs/vnext/data/BALANCE_VNEXT.json').read_text(encoding='utf-8'))['enterprise_tiers']
+threshold=next(v['xp'] for v in tiers if v['level']==2)
+lines+=['','## Задания и технологические рубежи','']
+for phase in ['ordinary','extended']:
+    fs=[latest(r) for r in rows if r['case']['phase']==phase and latest(r)]
+    maximum=max((sum(v.values()) for f in fs for k,v in f['experience'].items() if not k.startswith('1:')),default=0)
+    accepted=sum(f['events'].get('IndustryQuestAccepted',0) for f in fs)
+    completed=sum(f['events'].get('IndustryQuestCompleted',0) for f in fs)
+    lines.append(f"В последних принятых точках {phase}: заданий принято {accepted}, завершено {completed}; максимальный XP одной отрасли одного NPC —{maximum}, порогII —{threshold}. Каждая партия учтена здесь один раз; длительности различаются.")
+    lines.append('')
 lines+=['','Полные snapshots содержат imports/pickups/физические остатки, rejection reasons, worker-ready samples, '
     'production batches, фактические receipts и trace/ledger reconciliation. Worker/idle samples внутри мира зависимы. '
     'Наблюдаемая атрибутируемая окупаемость не подменяется статической маржой или экстраполяцией будущих продаж. '
     'Если paybackTick отсутствует, результат остаётся цензурированным. '
     'Prepared delivery/road fixtures и scripted human отсутствуют в этой независимой когорте.','',
-    f"Источник: `{a.observations.as_posix()}`. Исходные артефакты, frozen fingerprints и audit errata находятся рядом в source-artifacts/observations/collection-verification.",'']
+    'Источник: [observations.json.gz](observations.json.gz). Исходные артефакты, frozen fingerprints и audit errata находятся рядом в [source-artifacts](source-artifacts.json) и [collection-verification](collection-verification.json).','']
 a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text('\n'.join(lines),encoding='utf-8')
 print(json.dumps(dict(worlds=len(rows),completeOrdinary=sum(g['completeWorlds'] for g in s['groups']),output=str(a.output))))

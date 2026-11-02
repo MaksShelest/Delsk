@@ -63,6 +63,7 @@ jobs:
           extra=()
           if [ "$H3_ALLOW_PARTIAL" != true ]; then extra+=(--require-complete-collection); fi
           python scripts/analyze_h3.py --study work/evidence --output work/analysis "${extra[@]}"
+          python scripts/report_h3_outcomes.py --observations work/analysis/observations.json.gz --output work/analysis/RESULTS.md
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -77,7 +78,7 @@ jobs:
           set -euo pipefail
           destination="docs/verification/h3/$H3_COLLECTION_KIND"
           mkdir -p "$destination"
-          cp work/analysis/summary.json work/analysis/observations.json.gz work/analysis/collection-verification.json work/analysis/source-artifacts.json "$destination/"
+          cp work/analysis/summary.json work/analysis/observations.json.gz work/analysis/collection-verification.json work/analysis/source-artifacts.json work/analysis/RESULTS.md "$destination/"
           git config user.name MaksShelest
           git config user.email 195903640+MaksShelest@users.noreply.github.com
           git add "$destination"

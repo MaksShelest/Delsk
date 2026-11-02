@@ -140,3 +140,17 @@ dotnet tools/H3Acceptance/bin/Release/net10.0/H3Acceptance.dll --export-checkpoi
 Этот режим не исполняет simulation/replay иобнуляет вnull performance поля.
 `decisions-storage.json` содержитraw SHA/bytes; `export-complete.json` пишется
 послеflush. Полный export требуетcompletion marker иpassing process/audits.
+
+Текущий runner позволяет сразу писать полную историю в gzip:
+
+```bash
+dotnet src/Research.Runner/bin/Release/net10.0/Research.Runner.dll --load PATH_TO_SAVE --ticks FINAL_TICK --output artifacts/new-output --compress-controller-turns true
+python scripts/report_h3_outcomes.py --observations docs/verification/h3/economy/observations.json.gz --output artifacts/h3-analysis/RESULTS.md
+```
+
+Boolean флага проверяется; default остаётся raw. Этот флаг меняет только хранение
+экспорта, включая failed/cancelled output. Проверка90тиков сравнила24экспорта и
+каждый байт полной private history с default; неверное значение отвергается до
+создания мира. В исходную замороженную когорту новые DLL/флаг не подставлять.
+Её продолжения работают с сохранённым runtime и прежним форматом, затем применяют
+исходный lossless archive helper вне измеренного runner процесса.
