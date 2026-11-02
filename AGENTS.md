@@ -1,3 +1,17 @@
+## I1,02.11.2026 — корректировка скоростей
+
+- Явное задание I1 поверх b96c59ca/PR78 разрешает только скорости. I2–I8 не входят.
+- Новый ordinary MovementRules.I1: version2, multiplier3/divisor40, running10/8,
+  vehicle offroad10; RoadStage20/40/60 и model60/34/52/45/10 прежние.
+- TimeScale596700 даёт точные длительности всех штатных рёбер без per-cell ceil.
+  Traffic budget переносится через каждую отдельно проверенную клетку. Не менять
+  экономическую секунду, цены, периоды или оплату фактической дистанции.
+- World29/Session/Envelope прежние. New fields default omitted: старые Movement1,
+  H3 frozen worlds и legacy не мигрировать; H3ServiceAcceptance явно выбирает H2.
+- I1 suite отдельная disjoint partition; старые deadlines/suites/audits прежние.
+  Результаты, неудачи, команды — docs/IMPLEMENTATION_REPORT_I1.md.
+- Git author только Шелестов Максим Евгеньевич; PR без merge.
+
 ## Независимое ревью,02.11.2026
 
 - Фактическая основа ebc3d2cb50338b6f04eb120426ccba857835c0e9: PR77 уже
