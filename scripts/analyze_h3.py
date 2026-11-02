@@ -4,6 +4,7 @@ Author: Шелестов Максим Евгеньевич.
 """
 import argparse
 import gzip
+import hashlib
 import json
 from pathlib import Path
 import analyze_postg2_h1 as analysis
@@ -48,8 +49,24 @@ def main():
         if data.get('formatVersion') == 2:
             rows = [dict(row, frozen=data['frozen']) for row in rows]
     else:
-        rows = [analysis.observe(p.parent) for p in sorted(args.study.rglob('trajectory.json'))]
+        rows = []
+        for path in sorted(args.study.rglob('trajectory.json')):
+            row=analysis.observe(path.parent);journal=analysis.read_metadata(path)
+            if journal.get('auditErrata'):row['auditErrata']=journal['auditErrata']
+            rows.append(row)
+    registry_path=ROOT/'docs/research/h3/audit-erratum.json'
+    registry=json.loads(registry_path.read_text()) if registry_path.exists() else None
+    for row in rows:
+        for revision in row.get('auditErrata',[]):
+            if not registry or revision['correctedAuditorSha256']!=registry['correctedAuditorSha256'] or revision['originalAuditorSha256']!=registry['originalAuditorSha256']:
+                raise ValueError('Unregistered audit erratum')
+            frozen=hashlib.sha256(json.dumps(row['frozen'],sort_keys=True).encode()).hexdigest()
+            if revision['originalFrozenSha256']!=frozen or revision['simulationBinariesAndInputsUnchanged'] is not True:
+                raise ValueError('Audit erratum cannot authorize a changed simulator/input')
     result = summarize(rows, plan)
+    result['retainedOriginalAuditFailures']=sum(s['status']=='audit_failure' for r in rows for s in r['segments'])
+    result['derivedReauditedSegments']=sum(bool(s.get('derivedAuditOnly')) for r in rows for s in r['segments'])
+    result['auditErrata']=[dict(case=r['case']['id'],revisions=r['auditErrata']) for r in rows if r.get('auditErrata')]
     if args.require_complete_collection and result['missing']:
         raise ValueError('Incomplete collection; preserve missing cases explicitly')
     audits = 0

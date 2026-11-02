@@ -1,0 +1,92 @@
+name: H3 explicit audit erratum and original world continuation
+on:
+  push:
+    branches: ['feat/vnext-h3-compact-acceptance']
+    paths: ['docs/research/h3/audit-resume.json']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  select:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    outputs:
+      cases: ${{ steps.plan.outputs.cases }}
+      original: ${{ steps.plan.outputs.original }}
+      run: ${{ steps.plan.outputs.run }}
+      segments: ${{ steps.plan.outputs.segments }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: plan
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs=require('fs');const c=JSON.parse(fs.readFileSync('docs/research/h3/audit-resume.json','utf8'));
+            if(!Number.isSafeInteger(c.run)||c.run<=0||!Array.isArray(c.caseIds)||!c.caseIds.length||new Set(c.caseIds).size!==c.caseIds.length)throw Error('Explicit retained cases required');
+            const run=await github.rest.actions.getWorkflowRun({...context.repo,run_id:c.originalRun||c.run});
+            const artifacts=await github.paginate(github.rest.actions.listWorkflowRunArtifacts,{...context.repo,run_id:c.run,per_page:100});
+            for(const id of c.caseIds){
+              if(!/^(ordinary|extended)-(compact-valley|small-river|large-districts)-(3|6|10)-(Easy|Medium|Hard)-\d+$/.test(id))throw Error('Invalid case');
+              if(artifacts.filter(a=>a.name==='h3-'+id&&!a.expired).length!==1)throw Error('Missing/duplicate retained case; never create a replacement world');
+            }
+            if(!Number.isInteger(c.segments)||c.segments<0||c.segments>8)throw Error('Bounded0-8 segments required');
+            core.setOutput('cases',JSON.stringify({include:c.caseIds.map(id=>({id}))}));core.setOutput('original',run.data.head_sha);
+            core.setOutput('run',String(c.run));core.setOutput('segments',String(c.segments));
+  continue:
+    needs: [select]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix: ${{ fromJSON(needs.select.outputs.cases) }}
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+      CASE_ID: ${{ matrix.id }}
+      SEGMENTS: ${{ needs.select.outputs.segments }}
+      AUDIT_SOURCE_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Preserve explicitly versioned audit-only tools outside the original checkout
+        shell: python
+        run: |
+          import os,pathlib,shutil
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'h3-audit-tools';out.mkdir()
+          for name in ['continue_h3_audit.py','verify_public_economy.py']:shutil.copyfile('scripts/'+name,out/name)
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.select.outputs.original }}
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ needs.select.outputs.run }}
+          github-token: ${{ github.token }}
+          name: h3-${{ matrix.id }}
+          path: work/
+      - name: Re-audit original engine output, retain the rejection, then continue the same world
+        shell: python
+        run: |
+          import os,pathlib,subprocess,sys
+          tools=pathlib.Path(os.environ['RUNNER_TEMP'])/'h3-audit-tools'
+          subprocess.run([sys.executable,str(tools/'continue_h3_audit.py'),'--root',str(pathlib.Path.cwd()),'--output','work/world',
+            '--case',os.environ['CASE_ID'],'--auditor',str(tools/'verify_public_economy.py'),'--audit-commit',os.environ['AUDIT_SOURCE_COMMIT'],
+            '--segments',os.environ['SEGMENTS']],check=True)
+      - name: Preserve actual outcomes and original failures
+        if: always()
+        run: python scripts/report_check_results.py work/world work/checks
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h3-${{ matrix.id }}
+          path: |
+            work/world/
+            work/checks/
+          compression-level: 1
+          retention-days: 90

@@ -796,7 +796,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: H3 Developer with the same21 cases and unchanged180s partition limits
+      - name: H3 Developer with the same22 cases and unchanged180s partition limits
         run: python scripts/run_check.py --name h3-developer --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --suite h3 --output artifacts/h3-developer
       - uses: actions/upload-artifact@v4
         if: always()

@@ -71,7 +71,11 @@ jobs:
             $bundle=Join-Path $env:GITHUB_WORKSPACE "artifacts/packages/$flavor/DelskProbe.exe"
             $report=Join-Path $env:GITHUB_WORKSPACE "artifacts/packages/$flavor/platform.json"
             python scripts/run_check.py --name "bundle-smoke-$flavor" --timeout 90 --log-directory artifacts/packages/checks -- $bundle --headless -- --smoke --report $report
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            if ($LASTEXITCODE -ne 0) {
+              $code=$LASTEXITCODE
+              Get-Content "artifacts/packages/checks/bundle-smoke-$flavor.stdout.log","artifacts/packages/checks/bundle-smoke-$flavor.stderr.log"
+              exit $code
+            }
             python scripts/verify_platform_probe.py --report $report --log-prefix "artifacts/packages/checks/bundle-smoke-$flavor"
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "dotnet",
+    "tools/H3Acceptance/bin/Release/net10.0/H3Acceptance.dll",
+    "work/h3/player-walkthrough-h",
+    "compact-valley",
+    "work/h3/player-walkthrough-g/paid-vehicle.save.json"
+  ],
+  "timeout_seconds": 900,
+  "started_at": "2026-11-02T00:09:59.608471+00:00",
+  "exit_code": -6,
+  "elapsed_seconds": 870.541,
+  "finished_at": "2026-11-02T00:24:30.149763+00:00"
+}

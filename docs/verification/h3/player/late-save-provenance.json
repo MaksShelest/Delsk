@@ -1,0 +1,7 @@
+{
+  "tick": 19871,
+  "sourceSha256": "7f769fe6765e6bf3da1d44a8e691b31cedaaa895f46551a363aec97196132097",
+  "gzipSha256": "e5004b284ca7de7d73aabc3c7987e0bebff36e6f9294111356358f86dfef006e",
+  "source": "Same ordinary3NPC seed42 trajectory; human paid factory, imports, materials, warehouse and vehicle. World/controller+3 exact continuation passed; full replay reached export, then original raw trace export failed ENOSPC. Separate no-step gzip export recovered every history byte.",
+  "scope": "No additional independent economic world; finite ordinary horizon1000000 and original checkpoints limits unchanged"
+}

@@ -1,0 +1,8 @@
+{
+  "status": "succeeded",
+  "completeRawBytes": 4649008380,
+  "completeRawSha256": "aa432a6c8bc103872011fefb1fd8b73bdf85757b64a4a2d93e685fcabe90252e",
+  "partialOriginalPrefixBytes": 2881224704,
+  "partialOriginalPrefixMatches": true,
+  "scope": "Full history from the committed late checkpoint; exact original failed-output prefix, complete gzip CRC/hash. No new simulation ticks or independent replicate."
+}

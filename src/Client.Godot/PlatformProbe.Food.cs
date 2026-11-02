@@ -17,7 +17,7 @@ public partial class PlatformProbe
             .ToDictionary(r=>long.Parse(r[0],CultureInfo.InvariantCulture),r=>r[1]);
         var s=new GameSession(new(d));s.ConfigurePlayback(tape,hashes.Keys.Max(),"food-chain");
         bool wip=false,paid=false,alternative=false;
-        string path=ProjectSettings.GlobalizePath($"user://platform-food-{SimulationEngine.RulesVersion}.json");
+        string path=ProbeSavePath("platform-food");
         while(s.Engine.Tick<hashes.Keys.Max())
         {
             s.Step();long tick=s.Engine.Tick;string hash=s.Engine.ComputeStateHash();

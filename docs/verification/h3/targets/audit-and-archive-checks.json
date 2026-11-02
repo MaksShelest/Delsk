@@ -1,0 +1,92 @@
+{
+  "h3-original-audit-counterexample": {
+    "command": [
+      "python3",
+      "work/h3/verify_public_economy_original.py",
+      "work/h3/capital-pending-export"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-11-02T00:50:34.520799+00:00",
+    "exit_code": 1,
+    "elapsed_seconds": 0.115,
+    "finished_at": "2026-11-02T00:50:34.636016+00:00"
+  },
+  "h3-pending-public-audit": {
+    "command": [
+      "python3",
+      "scripts/verify_public_economy.py",
+      "work/h3/capital-pending-export",
+      "work/h3/player-complete-export"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-11-02T00:41:16.831601+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.767,
+    "finished_at": "2026-11-02T00:41:17.598216+00:00"
+  },
+  "h3-pending-accounting": {
+    "command": [
+      "python3",
+      "scripts/verify_results.py",
+      "work/h3/capital-pending-export",
+      "work/h3/player-complete-export"
+    ],
+    "timeout_seconds": 60,
+    "started_at": "2026-11-02T00:41:17.638913+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 7.184,
+    "finished_at": "2026-11-02T00:41:24.823146+00:00"
+  },
+  "h3-late-checkpoint-export": {
+    "command": [
+      "dotnet",
+      "tools/H3Acceptance/bin/Release/net10.0/H3Acceptance.dll",
+      "--export-checkpoint",
+      "work/h3/player-walkthrough-h/exact-three-tick-continuation.save.json",
+      "work/h3/player-complete-export"
+    ],
+    "timeout_seconds": 900,
+    "started_at": "2026-11-02T00:38:15.232904+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 40.548,
+    "finished_at": "2026-11-02T00:38:55.780940+00:00"
+  },
+  "h3-archive-test": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+      "-noLogo",
+      "-noColor",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.H3ExportTests",
+      "-result-trx",
+      "/workspace/Delsk/work/h3/archive-tests.trx"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-11-02T00:38:08.940059+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 2.835,
+    "finished_at": "2026-11-02T00:38:11.775247+00:00"
+  },
+  "h3-archive-developer-test": {
+    "command": [
+      "dotnet",
+      "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+      "-noLogo",
+      "-noColor",
+      "-parallelMode",
+      "none",
+      "-class",
+      "Simulation.Tests.H3ExportTests",
+      "-result-trx",
+      "/workspace/Delsk/work/h3/archive-developer-tests.trx"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-11-02T00:51:21.840383+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 3.076,
+    "finished_at": "2026-11-02T00:51:24.916758+00:00"
+  }
+}

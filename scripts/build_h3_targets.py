@@ -67,7 +67,20 @@ if a.platform=='android':
  # This is a separate bounded setup phase; failed exports remain failed.
  check('android-template',120,[a.godot,'--headless','--quit','--editor','--path',project,'--install-android-build-template'])
  logs('android-template')
- build=project/'android/build';wrapper=build/('gradlew.bat' if os.name=='nt' else 'gradlew')
+ build=project/'android/build'
+ if not (build/'gradlew').is_file():
+  # The standalone editor flag can exit successfully without installing a fresh
+  # template. Install the exact official source archive, as the editor does.
+  data=Path(env['APPDATA'])/'Godot' if os.name=='nt' else Path(env.get('XDG_DATA_HOME',str(Path.home()/'.local/share')))/'godot'
+  templates=data/'export_templates/4.7.2.stable.mono'
+  if (templates/'version.txt').read_text().strip()!='4.7.2.stable.mono':raise ValueError('Wrong Android template version')
+  build.mkdir(parents=True,exist_ok=True)
+  with zipfile.ZipFile(templates/'android_source.zip') as archive:
+   for member in archive.infolist():
+    if not (build/member.filename).resolve().is_relative_to(build.resolve()):raise ValueError('Template path escape')
+   archive.extractall(build)
+  (project/'android/.build_version').write_text('4.7.2.stable.mono\n');(build/'.gdignore').touch()
+ wrapper=build/('gradlew.bat' if os.name=='nt' else 'gradlew')
  if os.name!='nt':wrapper.chmod(wrapper.stat().st_mode|0o100)
  check('gradle-build-tool-dependencies',180,[wrapper,'--no-daemon','--console=plain','--project-dir',build,'help'])
 results=[]

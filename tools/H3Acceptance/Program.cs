@@ -1,9 +1,28 @@
 using System.Diagnostics;
 using System.Text.Json;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json.Nodes;
 using Agents.Algorithmic;
 using Simulation.Core;
 using Simulation.Hosting;
+
+if(args.Length==3&&args[0]=="--export-checkpoint")
+{
+    string source=Path.GetFullPath(args[1]),destination=Path.GetFullPath(args[2]);
+    if(Directory.Exists(destination)&&Directory.EnumerateFileSystemEntries(destination).Any())throw new ArgumentException("Use a new export output");
+    var timer=Stopwatch.StartNew();var loaded=CheckpointStore.Load(source).Session;
+    loaded.RestoreControllers(c=>c.Kind==SelfBallotController.Kind?SelfBallotController.Restore(c):AlgorithmicController.Restore(c));
+    string before=loaded.Engine.ComputeStateHash(),controllers=loaded.ComputeControllerStateHash();
+    RunArtifacts.Export(loaded,loaded.Engine.Configuration(),destination,"headless","h3-checkpoint-reexport-no-steps",timer.Elapsed.TotalMilliseconds,compressControllerTurns:true);
+    var report=JsonNode.Parse(File.ReadAllText(Path.Combine(destination,"summary.json")))!;
+    report["elapsedMilliseconds"]=null;report["averageMillisecondsPerTick"]=null;
+    report["timingScope"]="Checkpoint re-export without simulation steps; export wall time is recorded separately";
+    File.WriteAllText(Path.Combine(destination,"summary.json"),report.ToJsonString());
+    if(before!=loaded.Engine.ComputeStateHash()||controllers!=loaded.ComputeControllerStateHash())throw new InvalidOperationException("Read-only export changed the session");
+    File.WriteAllText(Path.Combine(destination,"checkpoint-export.json"),JsonSerializer.Serialize(new{Source=source,SourceSha256=Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(source))),Tick=loaded.Engine.Tick,StateHash=before,ControllerStateHash=controllers,SimulationSteps=0,ElapsedSeconds=timer.Elapsed.TotalSeconds,Scope="Full lossless history streamed directly to gzip. No simulation/replay and no additional independent economic replicate."},SimulationJson.Options));
+    return;
+}
 
 // Scripted player actions on a genuine ordinary start; NPCs keep their ordinary
 // controllers. No state injection, free assets, changed recipes, XP or timers.
@@ -102,7 +121,7 @@ try
     stage="complete";
     var replay=GameSession.Replay(definition,session.CommandTape,session.Engine.Tick);
     Require(replay.Engine.ComputeStateHash()==session.Engine.ComputeStateHash(),"Walkthrough replay mismatch");
-    RunArtifacts.Export(session,definition,Path.Combine(output,"exports"),"headless","h3-scripted-player",clock.Elapsed.TotalMilliseconds);
+    RunArtifacts.Export(session,definition,Path.Combine(output,"exports"),"headless","h3-scripted-player",clock.Elapsed.TotalMilliseconds,compressControllerTurns:true);
     Write("succeeded",null);
 }
 catch(Exception error)

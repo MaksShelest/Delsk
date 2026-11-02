@@ -59,7 +59,7 @@ SelfBallotController.Restore, сохраняя память. Natural save t5604�
 | Грунтовка и движение |12roadPNG,180viewport frames/60quanta/6активных секунд | Прямые/повороты/перекрёстки/объезд; запись144,863s/150, не FPS benchmark |
 | RU/EN, карта города, масштаб и ввод | city-gate.json:3/6/10NPC,640RU/800EN/360EN | Native synthetic keyboard/mouse/touch, pause/help/filters/save; не physical mobile |
 | Developer/Release и режим бога | ordinary21/Developer21, native Windows HUD, negative Release, published APK/Windows metadata | Пройдено;180/120s не повышены, исходный Developer timeout сохранён |
-| Windows/Android и реальная Windows LLM | Windows1132hashes в каждом flavor, реальные ARM64 APK/подписи/CRC, [инструкция](research/h3/TARGET_ACCEPTANCE.md) | Windows VM и cross APK пройдены. Первый Release launch exit1 уточняется; physical device/живая модель открыты |
+| Windows/Android и реальная Windows LLM | Windows1132hashes в каждом flavor, реальные ARM64 APK/подписи/CRC, [инструкция](research/h3/TARGET_ACCEPTANCE.md) | Windows VM и cross APK пройдены. Первый Release launch exit1 был collision technical probe saves иисправлен; physical device/живая модель открыты |
 | Новые измерения после H2 | study-plan, отдельный frozen run41355595793 |180ordinary+12extended в работе, результаты не смешиваются с H1 |
 
 ## Открытые требования и ограничения
@@ -85,7 +85,7 @@ SelfBallotController.Restore, сохраняя память. Natural save t5604�
 Developer EXE выполнил1132контрольных хеша/35file restores. Тот же Release EXE,
 без пересборки, прошёл1132/35в fresh Windows VM: [diagnostic41363547781](https://github.com/MaksShelest/Delsk/actions/runs/41363547781),
 8,453s/90; Actions archive SHA и EXE SHA проверены. Исходный быстрый exit1
-на первой VM сохранён, причина ещё читается из оригинальных logs.
+на первой VM сохранён, причина подтверждена: DeveloperSessionUnsupported из-заобщего technical probe save path; добавлен developer suffix во всех7probe saves. Проверяется повторная последовательность в однойVM.
 Это не физическая Windows приёмка.
 
 Android ARM64 test APK: Developer102310949bytes,
@@ -110,3 +110,38 @@ settlement→972и полный replay0→972, с обязательным со�
 [Короткое движение](verification/h3/native/compact-motion.mp4),
 [обзор малой карты](verification/h3/native/compact-start/cozy-overview.png).
 Финальные суммы CI и новая статистика будут внесены после проверки.
+
+
+## Уточнение позднего сохранения и audit erratum
+
+Наt19868 человеческий участник обычной3NPC/seed42партии оплатил180000minor
+за«Спутник-20»; cash10406. Save19871дал3точных будущих тика по миру ипамятиNPC.
+Полный replay прошёл hash assertion, затем raw decisions export заполнил диск:
+process-6/870,541s из900. Этот исходный отказ сохранён. Изтого жеcheckpoint
+**безединого тика симуляции** восстановлен полный export за40,548s:
+4649008380raw history bytes→428687299gzip; SHA/CRC ивесь2881224704-byte
+prefix исходного partial file совпали. [Checkpoint](verification/h3/player/paid-vehicle-19871.save.json.gz),
+[полное доказательство](verification/h3/player/full-history-verification.json).
+Performance поля re-export имеютnull, это не измерение скорости симуляции.
+
+Default RunArtifacts raw format прежний. Новый explicit gzip mode пишет сразу
+вcompressed stream, считает SHA/bytes иcompletion marker послеflush. Новый
+тест сравнивает **каждый** legacy export byte, полныйprivate history инеизменность
+мира/controller state; ordinary иDeveloper прошли впрежних120/180s. Основные
+21cases прошли ранее, дополнительный archive case доводитH3suite до22.
+
+Внезависимом public capital auditor обнаружен пропуск незавершённой оплаченной
+стройки. Core уже учитывает её вWIP. Наодном итожереальном snapshot3707 прежний
+checker отвергаетcapital (exit1), исправленный иmoney audit проходят(exit0):
+39500minor =17000fee +реально потреблённые wood/steel поreference prices.
+Исправление считает specific start/material/completion/cancellation receipts;
+дубликаты ичужойowner отвергаются. Core, цены иXP не корректировались.
+
+Первый [interim срез](verification/h3/economy-intermediate/summary.json):153из192
+journals,119complete ordinary,34audit-blocked,39missing.299NPC first factories
+вcomplete endpoints. Complete-case сравнения здесь подвержены audit censoring,
+поскольку отказ чаще попадал наразвитие/стройку; окончательным результатом они
+не объявляются. Подготовлен explicit audit-only pilot наисходном failed case:
+original simulator DLL/input fingerprints неизменны, original journal/failure
+сохраняются, actual corrected-auditor SHA записывается отдельно, следующий
+сегмент продолжает тотжемир. Новая независимаяреплика не создаётся.

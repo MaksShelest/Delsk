@@ -1,0 +1,8 @@
+Unhandled exception. System.IO.IOException: No space left on device : '/workspace/Delsk/work/h3/player-walkthrough-h/exports/decisions.jsonl'
+   at System.IO.RandomAccess.WriteAtOffset(SafeFileHandle handle, ReadOnlySpan`1 buffer, Int64 fileOffset)
+   at System.IO.Strategies.BufferedFileStreamStrategy.WriteSpan(ReadOnlySpan`1 source, ArraySegment`1 arraySegment)
+   at System.Text.Json.Utf8JsonWriter.Flush()
+   at Simulation.Hosting.ControllerObservationPool.WriteLines(Stream output) in /workspace/Delsk/src/Simulation.Hosting/ControllerObservationArchive.cs:line 78
+   at Simulation.Hosting.GameSession.WriteControllerTurns(Stream stream) in /workspace/Delsk/src/Simulation.Hosting/SessionControllers.cs:line 81
+   at Simulation.Hosting.RunArtifacts.Export(GameSession session, ScenarioDefinition definition, String directory, String timingPolicy, String script, Double elapsedMilliseconds, String status, String failure, Object modelMetadata, Object economyProvenance, Nullable`1 startupMilliseconds) in /workspace/Delsk/src/Simulation.Hosting/RunArtifacts.cs:line 75
+   at Program.<Main>$(String[] args) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 105

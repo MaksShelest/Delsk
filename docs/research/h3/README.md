@@ -111,3 +111,32 @@ python scripts/analyze_h3.py --observations docs/verification/h3/economy/observa
 Large prepared service split использует исходные cuts645/972: текущие действия
 обязаны воспроизвести их мир/tape, полный prefix replay выполняется отдельно.
 Ordinary21 и Developer21, прежние120/180s; не подменять это увеличением deadline.
+
+
+## Audit erratum без подмены симуляции
+
+[audit-erratum.json](audit-erratum.json) фиксирует old/new public checker SHA.
+`h3-audit-resume.yml` восстанавливает original checkout иDLL изoriginal artifact,
+затем сверяет **весь** original fingerprint/inputs/checkpoint. Новый audit-only
+host берётся изreviewed commit отдельно вRUNNER_TEMP; егоSHA иauditorSHA
+записываются в`auditErrata`, внеoriginal frozen fingerprint. Прежний journal
+копируется байт-в-байт, отказ остаётся вsegments. Re-audit использует существующий
+runner exit0 export, не повторяет мир. Только послеобоих audits рассчитываются
+metrics ипринимается исходный checkpoint дляследующего сегмента.600/900s,
+60/30s audits,64/512MiB иseed/config остаются прежними.
+
+Collection marker можетиметь `runs:[originalRun,explicitContinuationRun]`:
+последний endpoint **того жеcase ID** выбирается одинраз, source chain сохраняется.
+Analysis проверяет зарегистрированный audit SHA иoriginal frozen SHA. Исходные
+ошибки ичислоderived re-audit segments выводятся отдельно. Нельзяобъявлять
+original failure «успешным original audit» илисчитать continuation новымn.
+
+Late history экспортировать losslessly безraw промежуточного файла:
+
+```bash
+dotnet tools/H3Acceptance/bin/Release/net10.0/H3Acceptance.dll --export-checkpoint PATH_TO_SAVE artifacts/h3-readonly-export
+```
+
+Этот режим не исполняет simulation/replay иобнуляет вnull performance поля.
+`decisions-storage.json` содержитraw SHA/bytes; `export-complete.json` пишется
+послеflush. Полный export требуетcompletion marker иpassing process/audits.

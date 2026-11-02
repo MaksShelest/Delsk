@@ -33,7 +33,8 @@ public partial class PlatformProbe : Control
     private readonly List<long> _supportRestoredTicks = [];
     private readonly List<long> _stoppedRestoredTicks=[];
     private string? _stoppedHash;
-    private string SavePath => ProjectSettings.GlobalizePath($"user://platform-checkpoint-{SimulationEngine.RulesVersion}.json");
+    private static string ProbeSavePath(string name)=>ProjectSettings.GlobalizePath($"user://{name}-{SimulationEngine.RulesVersion}{(SimulationEngine.IsDeveloperBuild?"-developer":"")}.json");
+    private string SavePath => ProbeSavePath("platform-checkpoint");
     private string _reportPath = DefaultReportPath;
 
     public override void _Ready()
@@ -172,7 +173,7 @@ public partial class PlatformProbe : Control
             .ToDictionary(row => long.Parse(row[0], CultureInfo.InvariantCulture), row => row[1]);
         var session = new GameSession(new SimulationEngine(definition));
         session.ConfigurePlayback(tape, checkpoints.Keys.Max(), "elections");
-        string path = ProjectSettings.GlobalizePath($"user://election-checkpoint-{SimulationEngine.RulesVersion}.json");
+        string path = ProbeSavePath("election-checkpoint");
         while (session.Engine.Tick < checkpoints.Keys.Max())
         {
             session.Step(); long tick = session.Engine.Tick;
@@ -205,7 +206,7 @@ public partial class PlatformProbe : Control
             .ToDictionary(row => long.Parse(row[0], CultureInfo.InvariantCulture), row => row[1]);
         var session = new GameSession(new SimulationEngine(definition));
         session.ConfigurePlayback(tape, checkpoints.Keys.Max(), "support");
-        string path = ProjectSettings.GlobalizePath($"user://support-checkpoint-{SimulationEngine.RulesVersion}.json");
+        string path = ProbeSavePath("support-checkpoint");
         while (session.Engine.Tick < checkpoints.Keys.Max())
         {
             session.Step(); long tick = session.Engine.Tick;

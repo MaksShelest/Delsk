@@ -75,7 +75,7 @@ with zipfile.ZipFile(RemoteZip(json.load(sys.stdin)['url']) if args.url_stdin el
         if member.is_dir() or not member.filename.startswith(prefix):
             continue
         relative = Path(member.filename[len(prefix):])
-        if relative.name not in {'trajectory.json', 'h1-metrics.json', 'run-progress.json', 'ordinary.json', 'decisions-storage.json'} and not (relative.parent.name == 'checks' and relative.suffix in {'.json', '.log'}):
+        if relative.name not in {'trajectory.json', 'h1-metrics.json', 'run-progress.json', 'ordinary.json', 'decisions-storage.json', 'audit-erratum.json', 'trajectory.before-audit-erratum-v1.json', 'h1-metrics.audit-v1.json'} and not (relative.parent.name == 'checks' and relative.suffix in {'.json', '.log'}):
             continue
         if relative.suffix == '.log' and member.file_size > 100000:
             continue

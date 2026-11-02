@@ -179,3 +179,42 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
   economy-intermediate с missing cases; окончательный economy по-прежнему требует
   completed source run и192journal. Trigger только по push marker, чтобы PR diff
   не перезапускал collection на каждом обновлении документов.
+
+### Этап4: найденные late/export/audit дефекты и их исправление
+
+- H/19871: late checkpoint загрузился,3следующих тика совпали по world иNPC
+  controller hashes. Полный replay прошёл обязательный world-hash assertion и
+  дошёл до RunArtifacts.Export. На decisions.jsonl кончилось место: process-6,
+  870,541s/900. Не объявлять весь H успешным. Сохранены исходные process/error,
+  partial trace2881224704bytes losslessly gzip сSHA/CRC; полный источник — save.
+- Добавлен **opt-in** потоковый gzip в RunArtifacts.Export: default raw прежний,
+  алгоритмы/таймеры/Core/схемы/64/512MiB не меняются. SHA/число исходных bytes
+  считаются при записи, completion marker появляется послеflush. Новый regression
+  сравнил каждый legacy export byte и полный private history raw↔gzip;
+  ordinary120s иDeveloper180s прошли. H3 теперь22cases, прежние21 сохранены.
+- Read-only export из сохранения19871 без симуляции/повторного replay завершён
+  за40,548s/900. Полная история4649008380bytes →428687299gzip, SHAaa432a6c…,
+  весь исходный partial prefix совпал. Денежный/public/privacy snapshots прошли.
+  В derived re-export performance поля обнулены вnull: это не timing симуляции.
+- Python auditor пропускал paid unfinished StorageConstruction/Development WIP.
+  Core PublicEconomy.cs:82 учитывает его сC1. Реальный ordinary save3707:
+  17000cash +реальные wood/steel материалы =39500minor WIP. На одном итомже
+  re-export original auditor1, corrected0 иaccounting0. Новая сверка использует
+  квитанции started/materials/completed/cancelled, не balancing delta; duplicate/
+  wrong-owner/unknown closure отвергаются. Цены/XP иCore капитал не менялись.
+- Interim source collected153worlds,39missing,34blocked audit,119complete ordinary,
+  299NPC first factories вcomplete endpoints. Это НЕ final study: audit censoring
+  исключает развивающиеся миры иможет смещать complete-case сравнения. Original
+  отказы сохраняются, не переименованы вуспех. Запущенявный audit-erratum pilot
+  дляодного исходного case сfrozen DLL/input checks, backup original journal,
+  re-audit original exports ипродолжением тойже партии. Новыхреплик нет.
+- Windows original Release fault точно DeveloperSessionUnsupported: technical
+  PlatformProbe делил save paths сDeveloper. Все7probe paths теперь имеют тотже
+  developer suffix, чтоordinary Playfield. Самзащитный запрет Release читать
+  Developer save остаётся. Существующие пользовательские saves не тронуты.
+- Actual Windows runtime report: Ollama runtime=null/unavailable,
+  inferencePerformed=false. Живая модель недоступна, hardware/LLM gate открыт.
+- Android CI41365831107 выявил standalone --install-template exit0 безgradlew
+  вfresh stage (local check видел ужесуществовавший template). Исправлен bootstrap
+  через exact official android_source.zip иmatching build version; следующий
+  target run проверитfresh stage. Cold240s ивсе прежние limits сохраняются.

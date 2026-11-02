@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.IO.Compression;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Simulation.Core;
@@ -17,7 +19,7 @@ public static class RunArtifacts
         ScenarioValidation.Validate(scenario); return scenario;
     }
     public static void Export(GameSession session, ScenarioDefinition definition, string directory,
-        string timingPolicy, string script, double elapsedMilliseconds, string status = "succeeded", string? failure = null, object? modelMetadata = null, object? economyProvenance = null,double? startupMilliseconds=null)
+        string timingPolicy, string script, double elapsedMilliseconds, string status = "succeeded", string? failure = null, object? modelMetadata = null, object? economyProvenance = null,double? startupMilliseconds=null,bool compressControllerTurns=false)
     {
         Directory.CreateDirectory(directory);
         var state = session.Engine.Inspect();
@@ -72,7 +74,18 @@ public static class RunArtifacts
         WriteLines("commands.jsonl", session.CommandTape);
         WriteLines("ledger.jsonl", session.Engine.Ledger());
         WriteJson("controllers.json", session.ControllerStates);
-        using(var turns=File.Create(Path.Combine(directory,"decisions.jsonl")))session.WriteControllerTurns(turns);
+        if(compressControllerTurns)
+        {
+            long bytes;string digest;
+            using(var file=File.Create(Path.Combine(directory,"decisions.jsonl.gz")))
+            using(var zip=new GZipStream(file,CompressionLevel.Fastest))
+            using(var measured=new HistoryDigestStream(zip))
+            {session.WriteControllerTurns(measured);bytes=measured.Bytes;digest=measured.Finish();}
+            WriteJson("decisions-storage.json",new{Version=1,Format="gzip",UncompressedBytes=bytes,Sha256=digest,
+                CompressedBytes=new FileInfo(Path.Combine(directory,"decisions.jsonl.gz")).Length});
+        }
+        else
+        {using var turns=File.Create(Path.Combine(directory,"decisions.jsonl"));session.WriteControllerTurns(turns);}
         WriteLines("model-decisions.jsonl", session.ControllerTurnMetadata.Where(t => t.Decision.ModelTrace is not null)
             .Select(t => new { t.Tick, t.Actor, Trace = t.Decision.ModelTrace }));
         using var agents = new StreamWriter(Path.Combine(directory, "agents.csv"), false, new UTF8Encoding(false));
@@ -90,6 +103,11 @@ public static class RunArtifacts
         foreach (var sample in session.LaborSamples)
             foreach (var group in sample.EmploymentGroups)
                 labor.WriteLine(FormattableString.Invariant($"{sample.Tick},{group.Id.Value},{group.OwnerId.Value},{group.Headcount},{group.Capacity},{group.WageMinor},{group.AttractionWageMinor},{group.TargetHeadcount},{group.Ready},{group.ReadinessReason},{group.MobilityCredit}"));
+        if(compressControllerTurns)
+        {
+            agents.Flush();csv.Flush();labor.Flush();
+            WriteJson("export-complete.json",new{Complete=true,Tick=state.Tick,ControllerDecisionTurns=session.ControllerTurnCount,ControllerHistory="decisions.jsonl.gz"});
+        }
         static string CsvText(string value) => "\"" + value.Replace("\"", "\"\"", StringComparison.Ordinal) + "\"";
         void WriteJson(string name, object value) {using var output=File.Create(Path.Combine(directory,name));JsonSerializer.Serialize(output,value,json);}
         void WriteLines<T>(string name, IEnumerable<T> values)
@@ -98,4 +116,21 @@ public static class RunArtifacts
             foreach (var value in values) writer.WriteLine(JsonSerializer.Serialize(value, SimulationJson.Options));
         }
     }
+    private sealed class HistoryDigestStream(Stream destination):Stream
+    {
+        private readonly IncrementalHash _hash=IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+        public long Bytes{get;private set;}
+        public string Finish()=>Convert.ToHexStringLower(_hash.GetHashAndReset());
+        public override void Write(byte[] buffer,int offset,int count)=>Write(buffer.AsSpan(offset,count));
+        public override void Write(ReadOnlySpan<byte> buffer){_hash.AppendData(buffer);Bytes=checked(Bytes+buffer.Length);destination.Write(buffer);}
+        public override void Flush()=>destination.Flush();
+        public override bool CanRead=>false;public override bool CanSeek=>false;public override bool CanWrite=>true;
+        public override long Length=>throw new NotSupportedException();
+        public override long Position{get=>Bytes;set=>throw new NotSupportedException();}
+        public override int Read(byte[] buffer,int offset,int count)=>throw new NotSupportedException();
+        public override long Seek(long offset,SeekOrigin origin)=>throw new NotSupportedException();
+        public override void SetLength(long value)=>throw new NotSupportedException();
+        protected override void Dispose(bool disposing){if(disposing)_hash.Dispose();base.Dispose(disposing);}
+    }
+
 }

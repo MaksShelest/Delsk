@@ -1,9 +1,10 @@
 {
   "purpose": "H3 current-source installable Developer/Release bundles and actual Windows VM execution; no simulation cohort rerun",
   "base": "b87bc90a84845f509cf256bb227dbcf2952a43ad",
-  "revision": 3,
-  "retryReason": "Add Android artifact delivery after real local Developer/Release APK verification; Windows retained bundles already passed VM replay without rebuilding.",
+  "revision": 4,
+  "retryReason": "Fix confirmed technical smoke Developer/Release save collision and fresh Android template bootstrap; include opt-in research history streaming in the same-source bundles.",
   "platforms": [
+    "windows",
     "android"
   ]
 }

@@ -25,17 +25,24 @@ jobs:
           script: |
             const fs=require('fs'), cp=require('child_process');
             const config=JSON.parse(fs.readFileSync('docs/research/h3/collect.json','utf8'));
-            if(!Number.isSafeInteger(config.run)||config.run<=0)throw Error('Invalid retained run');
-            const run=await github.rest.actions.getWorkflowRun({...context.repo,run_id:config.run});
+            const ids=config.runs||[config.run];
+            if(!Array.isArray(ids)||!ids.length||new Set(ids).size!==ids.length||ids.some(id=>!Number.isSafeInteger(id)||id<=0))throw Error('Invalid retained source runs');
             const partial=config.allowPartial===true;
-            if(run.data.status!='completed'&&!partial)throw Error('Source measurement run still active; complete collection was requested');
             fs.appendFileSync(process.env.GITHUB_ENV,'H3_COLLECTION_KIND='+(partial?'economy-intermediate':'economy')+'\n');
             fs.appendFileSync(process.env.GITHUB_ENV,'H3_ALLOW_PARTIAL='+String(partial)+'\n');
-            const artifacts=await github.paginate(github.rest.actions.listWorkflowRunArtifacts,{...context.repo,run_id:config.run,per_page:100});
-            const worlds=artifacts.filter(a=>a.name.startsWith('h3-')&&!a.expired);
+            const sources=[],selected=new Map(),chains={};
+            for(const id of ids){
+              const run=await github.rest.actions.getWorkflowRun({...context.repo,run_id:id});
+              if(run.data.status!='completed'&&!partial)throw Error('A retained source run is still active; complete collection was requested');
+              const artifacts=await github.paginate(github.rest.actions.listWorkflowRunArtifacts,{...context.repo,run_id:id,per_page:100});
+              const cases=artifacts.filter(a=>/^h3-(ordinary|extended)-/.test(a.name)&&!a.expired);
+              if(new Set(cases.map(a=>a.name)).size!==cases.length)throw Error('Duplicate retained artifact names within one source run');
+              sources.push({run:run.data,artifacts});
+              for(const a of cases){selected.set(a.name,{...a,sourceRun:id});(chains[a.name]||=[]).push({run:id,artifact:a.id,digest:a.digest});}
+            }
+            const worlds=[...selected.values()];
             fs.mkdirSync('work/analysis',{recursive:true});
-            fs.writeFileSync('work/analysis/source-artifacts.json',JSON.stringify({run:run.data,artifacts},null,2));
-            if(new Set(worlds.map(a=>a.name)).size!==worlds.length)throw Error('Duplicate retained artifact names');
+            fs.writeFileSync('work/analysis/source-artifacts.json',JSON.stringify({sources,chains,selected:worlds,scope:'Later explicit continuation replaces the selected endpoint of the SAME world; original artifacts remain retained, no additional replicate.'},null,2));
             async function collect(a){
               const endpoint=`https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/actions/artifacts/${a.id}/zip`;
               const response=await fetch(endpoint,{headers:{Authorization:'Bearer '+process.env.H3_ARTIFACT_TOKEN,Accept:'application/vnd.github+json'},redirect:'manual'});
