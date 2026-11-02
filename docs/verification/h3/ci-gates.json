@@ -27,5 +27,11 @@
       "url": "https://github.com/MaksShelest/Delsk/actions/runs/41408105487/job/125154658760"
     }
   ],
-  "scope": "Actual completed jobs, verified through GitHub job status/logs and their mandatory gate assertions. This does not imply completion of the remaining Core workflow jobs or physical hardware acceptance."
+  "scope": "Actual completed jobs, verified through GitHub job status/logs and their mandatory gate assertions. This does not imply completion of the remaining Core workflow jobs or physical hardware acceptance.",
+  "h2RetainedWorldRegression": {
+    "run": 41408112964,
+    "status": "succeeded",
+    "worlds": 8,
+    "scope": "All8 retained H1/H2 worlds passed continuation/history/replay/audits on H3 source85cf. Not additional independent H3 economic replicates."
+  }
 }

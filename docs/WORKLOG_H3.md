@@ -313,3 +313,14 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
   batch как interim, source chains сохраняются. Она не создаёт миры и не ждёт
   «зелёного» заменой таймаутов. Окончательная collection потребует завершённых
   sources и ручного перевода allowPartial=false после проверки всех outcomes.
+- Обновлённый API подтвердил8/8success в H2 retained regression41408112964
+  source85cf (последнийjob завершился08:11:15UTC); ci-gates.json дополнен.
+  Это совместимость старых retained миров, не дополнительные репликиH3.
+- На08:27UTC остаются41queued в audit batch иqueued финальные targets/select,
+  collector иcleanup. Незапущенный cleanup job не имеет логов (BlobNotFound),
+  поэтому он не объявлен выполненным. Доступные средства не дают прямой cancel
+  Actions; GH CLI не имеет действительного token. Сохранён allowlisted cleanup
+  дляпервого доступного runner; чужие ветки и research outcomes не затрагиваются.
+  Следующий этап после выдачи runners: проверить все47outcomes, собрать original+
+  pilot+batch, продолжитьтолько ready extended сисходнымиDLL доцели илиреального
+  первого failure/limit, затем full collection иокончательная матрица/PR.
