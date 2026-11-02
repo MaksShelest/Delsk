@@ -21,7 +21,7 @@ public sealed record MovementRules(int Version=1,int SpeedDivisor=32,
     public int OffroadVehicleSpeed()=>NominalSpeeds?.VehicleOffroad??8;
     public long EdgeTime(int speed)=>checked(((long)SpeedDivisor*TimeScale+speed*Multiplier-1)/(speed*Multiplier));
     public long WholeTicks(long time)=>checked((time+TimeScale-1)/TimeScale);
-    public long UnmodelledEdgeTime(int legacyTicks)=>Version==2?checked((long)legacyTicks*TimeScale/3):checked((long)legacyTicks*TimeScale*2/5);
+    public long UnmodelledEdgeTime(int legacyTicks)=>checked((long)legacyTicks*TimeScale*2/5);
 }
 public static class MovementTiming
 {
@@ -80,7 +80,15 @@ public static class MovementTiming
         for(int n=0;n<path.Length-1;n++)
         {
             int a=levels?.GetValueOrDefault(path[n])??0,b=levels?.GetValueOrDefault(path[n+1])??0;
-            total=checked(total+(model is null?rules.UnmodelledEdgeTime(o.LogisticsRules.MoveTicksPerCell):rules.EdgeTime(Math.Min(model.Speed,a>0&&b>0?o.Roads!.Rules.Stages.Single(s=>s.Level==Math.Min(a,b)).Speed:rules.OffroadVehicleSpeed()))));
+            long edge;
+            if(model is null&&rules.Version!=2)edge=rules.UnmodelledEdgeTime(o.LogisticsRules.MoveTicksPerCell);
+            else
+            {
+                int maximum=model?.Speed??Math.Max(1,80/o.LogisticsRules.MoveTicksPerCell);
+                int limit=a>0&&b>0?o.Roads!.Rules.Stages.Single(s=>s.Level==Math.Min(a,b)).Speed:rules.OffroadVehicleSpeed();
+                edge=rules.EdgeTime(Math.Min(maximum,limit));
+            }
+            total=checked(total+edge);
         }
         return rules.WholeTicks(total);
     }
@@ -96,7 +104,13 @@ public sealed partial class SimulationEngine
         =>Fleet is null&&Movement.Version!=2?Movement.UnmodelledEdgeTime(_config.MoveTicksPerCell):Movement.EdgeTime(FleetSpeed(from,to,DrivenVehicle(actor.Id) is {} v?Model(v.ModelId):null));
     private long PersonalPathTicks(ActorState actor,Cell[] path)
         =>UsesAcceleratedMovement?Movement.WholeTicks(path.Zip(path.Skip(1)).Sum(p=>PersonalEdgeTimeUnits(actor,p.First,p.Second))):path.Zip(path.Skip(1)).Sum(p=>(long)PersonalMoveTicks(actor,p.First,p.Second));
-    private long FreightEdgeUnits(LogisticsState l,Cell a,Cell b)=>l.Vehicle is null?Movement.UnmodelledEdgeTime(Logistics.MoveTicksPerCell):Movement.EdgeTime(FleetSpeed(a,b,l.Vehicle));
+    private long FreightEdgeUnits(LogisticsState l,Cell a,Cell b)
+    {
+        if(l.Vehicle is null&&Movement.Version!=2)return Movement.UnmodelledEdgeTime(Logistics.MoveTicksPerCell);
+        int maximum=l.Vehicle?.Speed??Math.Max(1,80/Logistics.MoveTicksPerCell);
+        return Movement.EdgeTime(VehicleSurfaceSpeed(a,b,maximum));
+    }
+    private long EquipmentEdgeTime(Cell a,Cell b)=>Movement.Version==2?Movement.EdgeTime(VehicleSurfaceSpeed(a,b,Math.Max(1,80/_config.MoveTicksPerCell))):Movement.UnmodelledEdgeTime(_config.MoveTicksPerCell);
     private (int Index,int Segment) AdvanceTimedPath(IReadOnlyList<Cell> path,int index,int segment,Func<Cell,Cell,long> duration)
     {
         long budget=MotionTimeScale;

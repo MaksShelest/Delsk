@@ -152,17 +152,15 @@ public sealed partial class SimulationEngine
         VehicleCargo(v).Position = actor.Position;
         _vehicles[v.Id] = v with { OffsetX = actor.OffsetX, OffsetZ = actor.OffsetZ, FacingX = actor.FacingX, FacingZ = actor.FacingZ };
     }
-    private int FleetSpeed(Cell from, Cell to, VehicleModel? model = null)
+    private bool RoadSurface(Cell from,Cell to)=>Roads is not null?RoadLevel(from)>0&&RoadLevel(to)>0:
+        _config.Layout is {} layout&&layout.InitialCityDirtCells.Contains(from)&&layout.InitialCityDirtCells.Contains(to);
+    private int VehicleSurfaceSpeed(Cell from,Cell to,int maximum)
     {
-        if(Roads is not null)
-        {
-            int a=RoadLevel(from),b=RoadLevel(to);
-            int limit=a>0&&b>0?Roads.Stages.Single(s=>s.Level==Math.Min(a,b)).Speed:Movement.OffroadVehicleSpeed();
-            return model is null?Movement.RunningSpeed(a>0&&b>0):Math.Min(model.Speed,limit);
-        }
-        bool road = _config.Layout is {} layout && layout.InitialCityDirtCells.Contains(from) && layout.InitialCityDirtCells.Contains(to);
-        return model is null ? Movement.RunningSpeed(road) : Math.Min(model.Speed, road ? 20 : Movement.OffroadVehicleSpeed());
+        int limit=RoadSurface(from,to)?Roads is null?20:Roads.Stages.Single(s=>s.Level==Math.Min(RoadLevel(from),RoadLevel(to))).Speed:Movement.OffroadVehicleSpeed();
+        return Math.Min(maximum,limit);
     }
+    private int FleetSpeed(Cell from, Cell to, VehicleModel? model = null)
+        =>model is null?Movement.RunningSpeed(RoadSurface(from,to)):VehicleSurfaceSpeed(from,to,model.Speed);
     private int PersonalMoveTicks(ActorState actor, Cell from, Cell to) => Fleet is null ? _config.MoveTicksPerCell : 80 / FleetSpeed(from, to, DrivenVehicle(actor.Id) is { } v ? Model(v.ModelId) : null);
     private int FreightMoveTicks(LogisticsState l, Cell from, Cell to) => l.Vehicle is null ? Logistics.MoveTicksPerCell : Roads is null?80/FleetSpeed(from,to,l.Vehicle):(80+FleetSpeed(from,to,l.Vehicle)-1)/FleetSpeed(from,to,l.Vehicle);
     private long FreightTravelTicks(LogisticsState l, IEnumerable<Cell> path) { var cells = path.ToArray(); if(UsesAcceleratedMovement&&Roads is not null&&l.VehicleId!=0&&cells.Length>1)cells=ServicePath(cells[0],cells[^1],l.VehicleId); return UsesAcceleratedMovement?Movement.WholeTicks(cells.Zip(cells.Skip(1)).Sum(p=>FreightEdgeUnits(l,p.First,p.Second))):cells.Zip(cells.Skip(1)).Sum(p => (long)FreightMoveTicks(l, p.First, p.Second)); }
