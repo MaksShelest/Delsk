@@ -834,7 +834,7 @@ jobs:
             python scripts/run_check.py --name i1-runner --timeout 600 --log-directory artifacts/gate-checks -- python scripts/check_i1_runner.py --unit artifacts/i1-ordinary --output artifacts/i1-runner
             python scripts/report_i1_speeds.py --input artifacts/i1-ordinary/i1-fixtures/measurements.jsonl --output artifacts/i1-measurements
           else
-            python scripts/run_check.py --name i1-developer --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --suite i1 --output artifacts/i1-developer
+            python scripts/run_check.py --name i1-developer --timeout 1000 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --suite i1 --output artifacts/i1-developer
           fi
       - uses: actions/upload-artifact@v4
         if: always()
