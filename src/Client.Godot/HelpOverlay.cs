@@ -1,11 +1,13 @@
 using Godot;
 using Simulation.Hosting;
+using Simulation.Core;
 
 /// <summary>One contextual handbook. Pause belongs to Playfield and is restored when this closes.</summary>
 public partial class HelpOverlay : ColorRect
 {
     public event System.Action? Closed;
     private readonly string _language;
+    private readonly MovementRules? _movement;
     private readonly RichTextLabel _body;
     private readonly OptionButton _topics;
     private readonly VBoxContainer _brief=new();
@@ -14,9 +16,9 @@ public partial class HelpOverlay : ColorRect
     private readonly Button _rules;
     private bool _full;
     private static readonly string[] Keys = ["basics", "harvest", "land", "exchange", "market", "production", "workers", "logistics", "politics", "holdings", "city", "dealership", "map", "services", "account", "overflow", "journey"];
-    public HelpOverlay(string language, string topic)
+    public HelpOverlay(string language, string topic,MovementRules? movement=null)
     {
-        Name="HelpTablet";_language=language;Theme=TabletDesign.Theme;
+        Name="HelpTablet";_language=language;_movement=movement;Theme=TabletDesign.Theme;
         Color=new Color(.12f,.25f,.20f,.94f);MouseFilter=MouseFilterEnum.Stop;SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         var panel=new PanelContainer();panel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);panel.OffsetTop=66;panel.OffsetBottom=-18;panel.OffsetLeft=32;panel.OffsetRight=-32;
         panel.AddThemeStyleboxOverride("panel",TabletDesign.Box("f7f3e8",28,22));AddChild(panel);UiSafeArea.Panel(panel);Ready+=()=>UiSafeArea.Keyboard(this);
@@ -48,7 +50,7 @@ public partial class HelpOverlay : ColorRect
         _rules.Text=_full?L("Краткие шаги ‹","Quick steps ‹"):L("Полные правила ›","Full rules ›");
         foreach(Node n in _brief.GetChildren()){_brief.RemoveChild(n);n.QueueFree();}
         var heading=new HBoxContainer();heading.AddChild(TabletDesign.Art(Icon(key),new(62,62)));var text=TabletDesign.Heading(Title(key),25);text.SizeFlagsHorizontal=SizeFlags.ExpandFill;heading.AddChild(text);_brief.AddChild(TabletDesign.Wrap(heading,true));
-        string[] steps=Steps(key);
+        string[] steps=key=="basics"?[MovementHelp(),..Steps(key)]:Steps(key);
         for(int i=0;i<steps.Length;i++)
         {
             var row=new HBoxContainer();row.AddChild(TabletDesign.Art(i==1?"check":Icon(key),new(38,38)));
@@ -92,6 +94,9 @@ public partial class HelpOverlay : ColorRect
         "politics" => L("Выборы и поддержка", "Elections and support"),
         _ => L("Управление и время", "Controls and time")
     };
+    private string MovementHelp()=>_movement?.Version==2
+        ?L("Все персонажи бегут: 10 км/ч по любой дороге, 8 км/ч вне дороги. Машины: до 10/20/40/60 км/ч вне дороги/на грунтовке/дороге I/магистрали II, с учётом максимума модели. Персонаж движется в 3 раза быстрее исходной игры и в 1,2 раза быстрее H2. Один тик остаётся секундой; производство, погрузка и сроки прежние. Старые сохранения сохраняют свой профиль.\n\n", "All characters run: 10 km/h on every road, 8 km/h off road. Vehicles: up to 10/20/40/60 km/h off road/on dirt/road I/highway II, capped by the model. Characters move 3 times faster than the original game and 1.2 times faster than H2. One tick remains one second; production, handling and deadlines keep their timers. Old saves retain their profile.\n\n")
+        :L(_movement is null?"В этой партии исходный профиль движения: пешком 20/16 км/ч на дороге/вне дороги, машины до 8 км/ч вне дороги.\n\n":"В этой партии сохранён профиль H2: движение ×2,5 при пеших номиналах 20/16 км/ч и автомобильном лимите 8 км/ч вне дороги.\n\n", _movement is null?"This game uses the original movement profile: walking 20/16 km/h on/off road, vehicles up to 8 km/h off road.\n\n":"This game retains H2 movement: ×2.5 with walking nominal speeds 20/16 km/h and an off-road vehicle cap of 8 km/h.\n\n");
     private string Text(string key) => key switch
     {
         "map" or "services" or "account" or "overflow" or "journey"=>string.Join("\n\n",Steps(key)),
@@ -106,7 +111,7 @@ public partial class HelpOverlay : ColorRect
         "workers" => L("«Работники: 1 из 2» означает, что нанят один человек при двух рабочих местах. Для запуска может требоваться минимальный штат.\n\nНайм и переход работников происходят постепенно. Новая ставка начинает влиять с задержкой. Зарплата платится за фактическую работу; при простое оплата не списывается, но люди постепенно уходят.\n\nСтавка показана за одного работника за рабочий тик. В обычной игре один тик соответствует одной секунде активного игрового времени.", "Workers: 1 of 2 means one hired worker and two workplaces. Starting may require a minimum crew.\n\nHiring and movement between employers take time. Wage changes have a delay. Pay is charged for actual work; idle workers are unpaid and gradually leave.\n\nWages are per worker per working tick. One tick corresponds to one second of active game time."),
         "logistics" => L("Грузовик предприятия может отвозить его продукцию на собственный склад или в лавку и подвозить сырьё оттуда. Выбирайте источник и получателя.\n\nРабота производства, подвоз сырья и отправка продукции включаются раздельно. Машине нужны товар, свободное место, экипаж и деньги на зарплату.\n\nВыключение направления не отменяет начатый рейс: машина заканчивает его. Нельзя менять маршрут уже выполняемого рейса.", "An enterprise truck can deliver its output to your warehouse or shop and collect inputs from there. Choose source and destination.\n\nProduction, inbound collection and outbound delivery are separate switches. Trucks need stock, destination space, crew and payroll funds.\n\nDisabling a direction does not cancel a trip in progress. An active trip route cannot be changed."),
         "politics" => L("Цель партии — победить на выборах. Голос участника и голоса его текущих работников образуют его блок. Для победы нужно строго больше половины голосов. Безработные в текущих правилах не голосуют.\n\nДоговор поддержки связывает голос после выполнения условий компенсации. Его подробности видят только стороны. Капитал и количество работников сами по себе не заменяют результат выборов.", "Win the election to win the game. Each participant controls their own vote and their current workers' votes. Victory requires strictly more than half. Unemployed citizens do not vote under current rules.\n\nSupport agreements bind votes after compensation conditions are fulfilled. Details are private to the parties. Capital and workforce alone do not replace the election result."),
-        _ => L("Новые партии: перемещение в 2,5 раза быстрее при прежних скоростях машин и ограничениях дороги. Один активный тик по-прежнему равен секунде; производство, погрузка и сроки не ускорены. Старые сохранения сохраняют прежний темп. Чтобы перейти безопасно, оставьте исходное сохранение и начните новую партию.\n\nWASD — движение. Стрелки выбирают контекстное действие, Enter или Space подтверждают. Мышью можно нажимать кнопки и узнавать сведения об объектах.\n\nEscape открывает меню и останавливает мир. Планшеты по умолчанию тоже открываются с паузой. Можно подготовить действие и включить время переключателем. Разрешённое движение возобновляет время; при выходе из области объекта планшет закрывается.\n\nСправка останавливает мир. После её закрытия сохраняется прежнее состояние паузы. В Debug действия выполняются по тикам.", "New games move 2.5 times faster with the same vehicle speeds and road limits. An active tick remains one second; production, handling and deadlines keep their timers. Old saves retain their movement pace. Keep the original save and start a new game to switch safely.\n\nWASD moves. Arrows select a contextual action; Enter or Space confirms. Use the mouse for buttons and object information.\n\nEscape opens the menu and pauses the world. Tablets open paused by default. Prepare an action and run time with the switch. Allowed movement resumes time; leaving the object area closes its tablet.\n\nHelp pauses the world and preserves the previous pause state when closed. Debug executes actions one tick at a time.")
+        _ => MovementHelp()+L("WASD — движение. Стрелки выбирают контекстное действие, Enter или Space подтверждают. Мышью можно нажимать кнопки и узнавать сведения об объектах.\n\nEscape открывает меню и останавливает мир. Планшеты по умолчанию тоже открываются с паузой. Можно подготовить действие и включить время переключателем. Разрешённое движение возобновляет время; при выходе из области объекта планшет закрывается.\n\nСправка останавливает мир. После её закрытия сохраняется прежнее состояние паузы. В Debug действия выполняются по тикам.", "WASD moves. Arrows select a contextual action; Enter or Space confirms. Use the mouse for buttons and object information.\n\nEscape opens the menu and pauses the world. Tablets open paused by default. Prepare an action and run time with the switch. Allowed movement resumes time; leaving the object area closes its tablet.\n\nHelp pauses the world and preserves the previous pause state when closed. Debug executes actions one tick at a time.")
     };
     private string L(string ru, string en) => PlayerText.Local(_language, ru, en);
 }

@@ -47,7 +47,7 @@ public sealed partial class SimulationEngine
         bool Allow(Cell c)=>_map.Walkable(c)&&!WorkBlocks(vehicle,c)&&(!corridor||PublicRoadCell(c))&&
             (PublicRoadCell(c)||c==source||c==target||!_roadWorks.Values.Any(w=>w.Batch is {} batch&&Manhattan(c,batch.Cell)<=2))&&
             !_bypasses.Any(b=>b.Closing&&!b.Users.Contains(vehicle)&&b.Path.Skip(1).SkipLast(1).Contains(c));
-        var path=UsesAcceleratedMovement?RouteSearch.FindOriented(source,target,Allow,(a,b)=>MovementTiming.EdgeTimeUnits(RoadBodySpeed(a,b,Body(_vehicles[vehicle])),32),c=>MayTurn(_vehicles[vehicle],c),ServiceStartHeading(source,vehicle,heading)):
+        var path=UsesAcceleratedMovement?RouteSearch.FindOriented(source,target,Allow,(a,b)=>Movement.EdgeTime(RoadBodySpeed(a,b,Body(_vehicles[vehicle]))),c=>MayTurn(_vehicles[vehicle],c),ServiceStartHeading(source,vehicle,heading)):
             FindRoadPath(source,target,c=>_map.Walkable(c)&&!WorkBlocks(vehicle,c)&&(!corridor||PublicRoadCell(c))&&
             !_bypasses.Any(b=>b.Closing&&!b.Users.Contains(vehicle)&&b.Path.Skip(1).SkipLast(1).Contains(c)),c=>RoadLevel(c)>0?80/Roads!.Stages[RoadLevel(c)-1].Speed+1:12);
         if(path.Length==0)throw new RuleViolation("NoPath");return path;
@@ -62,7 +62,7 @@ public sealed partial class SimulationEngine
     }
     private long PathTicks(Cell[] path,VehicleModel model)
     {
-        if(UsesAcceleratedMovement)return MovementTiming.WholeTicks(path.Zip(path.Skip(1)).Sum(p=>MovementTiming.EdgeTimeUnits(FleetSpeed(p.First,p.Second,model),32)));
+        if(UsesAcceleratedMovement)return Movement.WholeTicks(path.Zip(path.Skip(1)).Sum(p=>Movement.EdgeTime(FleetSpeed(p.First,p.Second,model))));
         long quanta=0;for(int n=0;n<path.Length-1;n++){int a=RoadLevel(path[n]),b=RoadLevel(path[n+1]);int speed=Math.Min(model.Speed,a>0&&b>0?Roads!.Stages[Math.Min(a,b)-1].Speed:8);quanta=checked(quanta+(800+speed-1)/speed);}
         return checked((quanta+9)/10);
     }
