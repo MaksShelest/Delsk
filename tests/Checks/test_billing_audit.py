@@ -25,6 +25,15 @@ class BillingAuditTests(unittest.TestCase):
             with contextlib.redirect_stdout(io.StringIO()):verify(folder)
             claims,debt=capital(folder);self.assertEqual(sum(claims.values()),sum(debt.values()))
     def test_actual_split_signed_residue_partial_principal_and_zero_fractional_penalty(self):self.check(self.fixture())
+    def test_i1_quantum_distance_bound_preserves_total_charge_and_rejects_h2_or_overspeed(self):
+        d=self.fixture();e=d['scenario.json']['economy'];e['movement']=dict(version=2,speedDivisor=40,speedMultiplier=3,nominalSpeeds=dict(runningRoad=10,runningOffroad=8,vehicleOffroad=10));e['fleet']=dict(models=[dict(id='car',speed=60)]);e['roads']=dict(stages=[dict(speed=s) for s in [20,40,60]])
+        sample=d['events.jsonl'][1];tail=[v for v in d['events.jsonl'][1:] if v['type']!='BillingDistance']
+        d['events.jsonl']=[d['events.jsonl'][0]]+[dict(sample,quantity=q) for q in [240,240,240,80]]+tail
+        self.check(d)
+        bad=copy.deepcopy(d);bad['scenario.json']['economy']['movement']=dict(version=1,speedDivisor=32)
+        with self.assertRaises(AssertionError):self.check(bad)
+        bad=copy.deepcopy(d);bad['events.jsonl'][1]['quantity']=241;bad['events.jsonl'][4]['quantity']=79
+        with self.assertRaises(AssertionError):self.check(bad)
     def test_distance_rights_interest_replay_payout_and_privacy_corruption_is_rejected(self):
         mutations=[lambda d:d.pop('billing.json'),lambda d:d['scenario.json']['economy'].update(billing=None),lambda d:d['events.jsonl'][1].update(quantity=40),lambda d:d['events.jsonl'][0]['actorId'].update(value=3),lambda d:d['billing.json']['invoices'][0].update(penaltyMinor=1),lambda d:d['events.jsonl'][-3].update(tick=1120),lambda d:d['events.jsonl'].append(copy.deepcopy(d['events.jsonl'][-1])),lambda d:d['ledger.jsonl'].append(copy.deepcopy(d['ledger.jsonl'][-1])),lambda d:d['billing.json']['accruals'][0].update(units=0),lambda d:d['public-events.jsonl'].append(dict(type='BillingInvoiceCreated'))]
         for n,mutate in enumerate(mutations):

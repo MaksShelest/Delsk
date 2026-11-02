@@ -11,6 +11,8 @@ internal static class H3ServiceAcceptance
     internal static void Check(string map,bool stopAtFirstCargo=false)
     {
         var d=OrdinaryNewGame.Resolve(MapDesignTests.Template(map),NpcEconomyG1Tests.Profile(),new(),vnextBalance:MapDesignTests.Balance()).Scenario;
+        // This cohort is compared byte-for-byte with frozen H3 Movement1 worlds.
+        d=d with{Economy=d.Economy! with{Movement=MovementRules.H2}};
         var source=d.Layout!.IndustrialLots[0].Cells[0];var target=d.Layout.IndustrialLots[1].Cells[0];
         // Explicit prepared exposure: money, personal capacity and two empty warehouses.
         // Exact geography, public resource stocks, full H2/G1 rules and timers stay intact.

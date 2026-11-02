@@ -26,9 +26,9 @@ public class RoadFreightE2Tests
         Assert.Contains(s.Engine.Ledger(),l=>l.Reason=="RoadWages");Assert.Contains(s.Engine.Ledger(),l=>l.Reason=="RoadOrderReward");RoadE2Tests.Exact(s);
     }
     [Fact]public void ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad()=>CheckExtraction(false);
-    internal static void CheckExtraction(bool fast)
+    internal static void CheckExtraction(bool fast,MovementRules? movement=null)
     {
-        var d=RoadE2Tests.Prepared();if(fast)d=d with{Economy=d.Economy! with{Movement=new()}};var source=d.ResourceNodes.Single(r=>r.ItemId=="wood") with{Position=new(0,3),Rules=new(Public:false,InitialOwner:2,Capacity:2,RegenerationQuantity:0)};var target=new Cell(20,3);
+        var d=RoadE2Tests.Prepared();if(movement is not null)d=d with{Economy=d.Economy! with{Movement=movement}};if(fast)d=d with{Economy=d.Economy! with{Movement=new()}};var source=d.ResourceNodes.Single(r=>r.ItemId=="wood") with{Position=new(0,3),Rules=new(Public:false,InitialOwner:2,Capacity:2,RegenerationQuantity:0)};var target=new Cell(20,3);
         d=d with{ResourceNodes=[..d.ResourceNodes.Select(r=>r.ItemId=="wood"?source:r),source with{Position=target,Rules=new(Public:false,InitialOwner:2)},source with{Position=new(21,3),Rules=new(Public:true)}],
             Layout=d.Layout! with{ResourceDistricts=[..d.Layout!.ResourceDistricts.Select(r=>r.Item=="wood"?r with{Cells=[source.Position,target,new(21,3)],PublicCells=[new(21,3)]}:r)]}};
         var s=new GameSession(new(d));var paver=RoadE2Tests.Paver(s);RoadE2Tests.Step(s,new(ActionKind.LeaveVehicle));
@@ -65,9 +65,9 @@ public class RoadFreightE2Tests
                 TurnCells=[new(4,1),new(12,1),new(20,1),new(28,1),new(36,1)]}};
     }
     [Fact]public void ExistingFreightCarriesOneRealCargoThroughPaverBypassAndRestoresEveryStage()=>CheckFreight(false);
-    internal static void CheckFreight(bool fast)
+    internal static void CheckFreight(bool fast,MovementRules? movement=null)
     {
-        var definition=Definition();if(fast)definition=definition with{Economy=definition.Economy! with{Movement=new()}};
+        var definition=Definition();if(movement is not null)definition=definition with{Economy=definition.Economy! with{Movement=movement}};if(fast)definition=definition with{Economy=definition.Economy! with{Movement=new()}};
         var s=new GameSession(new(definition));var paver=RoadE2Tests.Paver(s);RoadE2Tests.Step(s,new(ActionKind.LeaveVehicle));
         RoadE2Tests.Step(s,RoadE2Tests.Work(paver,mode:EquipmentMode.Automatic));while(s.Engine.InspectRoads()!.Works.Single().Batch is null)s.Step();
         RoadE2Tests.Step(s,RoadE2Tests.Work(paver,mode:EquipmentMode.Automatic,enabled:false));

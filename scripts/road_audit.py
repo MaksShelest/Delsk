@@ -12,6 +12,10 @@ def verify_roads(folder):
     if rules is None:
         assert not path.exists(),'Unexpected roads export'
         return
+    movement=config['economy'].get('movement') or {}
+    i1=movement.get('version')==2
+    if i1:assert movement['speedDivisor']==40 and movement['speedMultiplier']==3 and movement['nominalSpeeds']==dict(runningRoad=10,runningOffroad=8,vehicleOffroad=10)
+    elif movement:assert movement['version']==1 and movement['speedDivisor']==32 and movement.get('speedMultiplier',0)==0 and movement.get('nominalSpeeds') is None
     state=json.loads((folder/'final-state.json').read_text());roads=json.loads(path.read_text());fleet=json.loads((folder/'fleet.json').read_text())
     events=[json.loads(s) for s in (folder/'events.jsonl').read_text().splitlines()]
     ledger=[json.loads(s) for s in (folder/'ledger.jsonl').read_text().splitlines()]
@@ -66,7 +70,7 @@ def verify_roads(folder):
             if after in corridor:assert not any(p==after for v,p in positions.items() if v!=identity),'Overlapping physical vehicles'
             positions[identity]=after
             a=len(built.get(before,[]));b=len(built.get(after,[]))
-            cap=stages[min(a,b)]['speed'] if a and b else 8
+            cap=stages[min(a,b)]['speed'] if a and b else 10 if i1 else 8
             assert 0<e['quantity']<=min(cap,models[vehicles[identity]['modelId']]['speed'])
         elif kind=='RoadOrderPaid':
             assert identity not in paid;paid[identity]=(owner(e),e['amountMinor'])
@@ -90,7 +94,7 @@ def verify_roads(folder):
     for t in roads['traffic']:
         p=list(map(cell,t['path']));i=t['index'];assert 0<=t['progress']<800 and 0<=t['advancedQuanta']<=10
         if p:assert positions[t['vehicleId']]==p[i]
-        fraction=t.get('progressFraction',0);assert 0<=fraction<1_000_000 and (config['economy'].get('movement') or fraction==0)
+        fraction=t.get('progressFraction',0);assert 0<=fraction<(596700 if i1 else 1_000_000) and (config['economy'].get('movement') or fraction==0)
         if t['progress'] or fraction:
             assert i<len(p)-1 and p[i+1] not in reserved
             reserved.add(p[i+1]);assert not any(at==p[i+1] for v,at in positions.items() if v!=t['vehicleId'])

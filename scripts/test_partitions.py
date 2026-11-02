@@ -48,7 +48,8 @@ NPC=tuple("Simulation.Tests."+n for n in ("NpcEconomyG1Tests","NpcDeliveryG1Test
 RUNS=tuple("Simulation.Tests."+n for n in ("ServiceF2Tests","ServiceSettlementF2Tests","ServiceControlF2Tests","ServicePointsF2Tests","ServiceGoodsF2Tests"))
 H2=("Simulation.Tests.H2StorageTests","Simulation.Tests.H2MovementTests","Simulation.Tests.H2VehicleMovementTests","Simulation.Tests.H2RoadStagesTests","Simulation.Tests.H2HighwayCarTests","Simulation.Tests.H2HighwayTruckTests","Simulation.Tests.H2RoadSceneTests","Simulation.Tests.H2ServiceMovementTests","Simulation.Tests.H2TrafficSafetyTests","Simulation.Tests.H2FreightMovementTests","Simulation.Tests.H2ExtractionMovementTests","Simulation.Tests.H2DirectionalEtaTests","Simulation.Tests.H2RoadChangeTests")
 H3=("Simulation.Tests.H3ExportTests","Simulation.Tests.CompactH3Tests","Simulation.Tests.HorizonH3Tests","Simulation.Tests.H3CompactServiceTests","Simulation.Tests.H3RiverServiceTests","Simulation.Tests.H3DistrictServiceTests","Simulation.Tests.H3DistrictSettlementTests","Simulation.Tests.H3DistrictReplayTests","Simulation.Tests.H3RoadSceneTests")
-PARTITIONS = (Partition('', exclude=H3 + H2 + UX + NPC + RUNS + SERVICES + BILLING_TIMING + BILLING + BILLING_DISTRIBUTION + ROAD_HISTORY + ROADS + TRAFFIC + ROAD_FREIGHT + INTEGRATION + DEVELOPMENT + PRODUCTION + START + FLEET + FLEET_STOCK + PHYSICAL + MODELS), Partition('-integration', include=INTEGRATION), Partition('-d2', include=DEVELOPMENT), Partition('-d3', include=PRODUCTION), Partition('-d3-start', include=START), Partition('-e1', include=FLEET), Partition('-e1-stock', include=FLEET_STOCK), Partition('-physical', include=PHYSICAL), Partition('-models', include=MODELS), Partition('-e2-history',include=ROAD_HISTORY), Partition('-e2-roads',include=ROADS), Partition('-e2-traffic',include=TRAFFIC), Partition('-e2-freight',include=ROAD_FREIGHT),Partition('-f1-services',include=(SERVICES[0],)),Partition('-f1-rights',include=(SERVICES[1],)),Partition('-f1-competition',include=(SERVICES[2],)),Partition('-e3-accounts',include=BILLING),Partition('-e3-distribution',include=BILLING_DISTRIBUTION),*(Partition('-e3-timing-'+str(n),include=(name,)) for n,name in enumerate(BILLING_TIMING)))
+I1=tuple('Simulation.Tests.'+n for n in ('I1WalkingTests','I1TrafficSafetyTests','I1IntegrationTests','I1OffroadVehicleTests','I1DirtVehicleTests','I1RoadVehicleTests','I1HighwayVehicleTests','I1HighSpeedSafetyTests','I1RoadTractorTests','I1HighwayTractorTests'))
+PARTITIONS = (Partition('', exclude=I1 + H3 + H2 + UX + NPC + RUNS + SERVICES + BILLING_TIMING + BILLING + BILLING_DISTRIBUTION + ROAD_HISTORY + ROADS + TRAFFIC + ROAD_FREIGHT + INTEGRATION + DEVELOPMENT + PRODUCTION + START + FLEET + FLEET_STOCK + PHYSICAL + MODELS), Partition('-integration', include=INTEGRATION), Partition('-d2', include=DEVELOPMENT), Partition('-d3', include=PRODUCTION), Partition('-d3-start', include=START), Partition('-e1', include=FLEET), Partition('-e1-stock', include=FLEET_STOCK), Partition('-physical', include=PHYSICAL), Partition('-models', include=MODELS), Partition('-e2-history',include=ROAD_HISTORY), Partition('-e2-roads',include=ROADS), Partition('-e2-traffic',include=TRAFFIC), Partition('-e2-freight',include=ROAD_FREIGHT),Partition('-f1-services',include=(SERVICES[0],)),Partition('-f1-rights',include=(SERVICES[1],)),Partition('-f1-competition',include=(SERVICES[2],)),Partition('-e3-accounts',include=BILLING),Partition('-e3-distribution',include=BILLING_DISTRIBUTION),*(Partition('-e3-timing-'+str(n),include=(name,)) for n,name in enumerate(BILLING_TIMING)))
 
 PARTITIONS+=tuple(Partition("-g2-"+str(n),include=(name,)) for n,name in enumerate(UX))
 PARTITIONS+=tuple(Partition("-g1-"+str(n),include=(name,)) for n,name in enumerate(NPC))
@@ -57,9 +58,11 @@ PARTITIONS+=tuple(Partition("-f2-"+str(n),include=(name,)) for n,name in enumera
 PARTITIONS+=tuple(Partition('-h2-'+str(n),include=(name,)) for n,name in enumerate(H2))
 PARTITIONS+=tuple(Partition('-h3-'+str(n),include=(name,)) for n,name in enumerate(H3))
 
+PARTITIONS+=tuple(Partition('-i1-'+str(n),include=(name,)) for n,name in enumerate(I1))
+
 def selected_partitions(suite='all'):
-    if suite not in ('all','previous','roads','billing','services','runs','npc','ux','h2','h3'):raise ValueError('Unknown suite')
-    return tuple(p for p in PARTITIONS if suite=='all' or suite=='h3' and p.name.startswith('-h3-') or suite=='h2' and p.name.startswith('-h2-') or suite=='ux' and p.name.startswith('-g2-') or suite=='npc' and p.name.startswith('-g1-') or suite=='runs' and p.name.startswith('-f2-') or suite=='services' and p.name.startswith('-f1-') or suite=='roads' and p.name.startswith('-e2-') or suite=='billing' and p.name.startswith('-e3-') or suite=='previous' and not p.name.startswith(('-e2-','-e3-','-f1-','-f2-','-g1-','-g2-','-h2-','-h3-')))
+    if suite not in ('all','previous','roads','billing','services','runs','npc','ux','h2','h3','i1'):raise ValueError('Unknown suite')
+    return tuple(p for p in PARTITIONS if suite=='all' or suite=='i1' and p.name.startswith('-i1-') or suite=='h3' and p.name.startswith('-h3-') or suite=='h2' and p.name.startswith('-h2-') or suite=='ux' and p.name.startswith('-g2-') or suite=='npc' and p.name.startswith('-g1-') or suite=='runs' and p.name.startswith('-f2-') or suite=='services' and p.name.startswith('-f1-') or suite=='roads' and p.name.startswith('-e2-') or suite=='billing' and p.name.startswith('-e3-') or suite=='previous' and not p.name.startswith(('-e2-','-e3-','-f1-','-f2-','-g1-','-g2-','-h2-','-h3-','-i1-')))
 
 def run_suite(check, dotnet, assembly, output, prefix='tests', timeout=120, suite='all'):
     """All future classes enter the base partition. Reject skips, failures and overlaps in actual TRX."""
@@ -68,7 +71,10 @@ def run_suite(check, dotnet, assembly, output, prefix='tests', timeout=120, suit
     seen = set()
     for part in selected_partitions(suite):
         path = output / ('tests' + part.name + '.trx')
-        check(prefix + part.name, timeout, [dotnet, str(assembly), '-noColor', '-noLogo', '-parallelMode', 'none', *part.filters(), '-result-trx', str(path)])
+        # New I1 long-road fixtures build121 paid cells in three saved profiles.
+        # Existing ordinary120/Developer180 limits remain unchanged.
+        limit=max(timeout, {'-i1-5':180,'-i1-6':300,'-i1-7':180,'-i1-8':240,'-i1-9':300}.get(part.name,0))
+        check(prefix + part.name, limit, [dotnet, str(assembly), '-noColor', '-noLogo', '-parallelMode', 'none', *part.filters(), '-result-trx', str(path)])
         root = ET.parse(path).getroot()
         counters = next(e for e in root.iter() if e.tag.endswith('Counters')).attrib
         passed = int(counters['passed'])

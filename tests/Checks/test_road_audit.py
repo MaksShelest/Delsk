@@ -23,6 +23,14 @@ class RoadAuditTests(unittest.TestCase):
                 (Path(folder)/name).write_text(text)
             with contextlib.redirect_stdout(io.StringIO()):verify_roads(folder)
     def test_valid_independent_physical_history(self):self.verify(self.fixture())
+    def test_i1_offroad_nominal_ten_is_valid_but_old_profile_and_eleven_are_rejected(self):
+        d=self.fixture();d['scenario.json']['economy']['movement']=dict(version=2,speedDivisor=40,speedMultiplier=3,nominalSpeeds=dict(runningRoad=10,runningOffroad=8,vehicleOffroad=10))
+        d['scenario.json']['layout']['initialCityDirtCells']=d['scenario.json']['layout']['initialCityDirtCells'][:1];d['roads.json']['cells']=d['roads.json']['cells'][:1];d['events.jsonl'][-1]['quantity']=10
+        self.verify(d)
+        bad=copy.deepcopy(d);bad['scenario.json']['economy'].pop('movement')
+        with self.assertRaises(AssertionError):self.verify(bad)
+        bad=copy.deepcopy(d);bad['events.jsonl'][-1]['quantity']=11
+        with self.assertRaises(AssertionError):self.verify(bad)
     def test_corrupt_contribution_speed_position_money_private_and_e3_rejected(self):
         mutations=[lambda d:d['roads.json']['cells'][0]['contributions'].clear(),lambda d:d['events.jsonl'][-1].update(quantity=40),lambda d:d['events.jsonl'][-1].update(reasonCode='0,0>2,0'),lambda d:d['final-state.json']['inventories'][0].update(position=dict(x=0,z=0)),lambda d:d['ledger.jsonl'].append(dict(reason='RoadWages',amountMinor=1)),lambda d:d['public-events.jsonl'].append(dict(type='RoadWorkStarted')),lambda d:d['ledger.jsonl'].append(dict(reason='RoadInvoice',amountMinor=1))]
         for n,mutate in enumerate(mutations):

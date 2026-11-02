@@ -28,6 +28,10 @@ def verify(folder):
         assert not any(json.loads(line)['reason'].startswith(('RoadPrincipal:','RoadRevenue:','RoadPenalty:')) for line in (folder/'ledger.jsonl').read_text().splitlines()),'E3 payments in an older profile'
         return
     assert (folder/'billing.json').is_file(),'Missing E3 accounting export'
+    movement=config['economy'].get('movement') or {}
+    i1=movement.get('version')==2
+    if i1:assert movement['speedDivisor']==40 and movement['speedMultiplier']==3 and movement['nominalSpeeds']==dict(runningRoad=10,runningOffroad=8,vehicleOffroad=10)
+    elif movement:assert movement['version']==1 and movement['speedDivisor']==32 and movement.get('speedMultiplier',0)==0 and movement.get('nominalSpeeds') is None
     state=load('billing.json');rules=config['economy']['billing']
     world=load('final-state.json');fleet=load('fleet.json')
     ledger=[json.loads(s) for s in (folder/'ledger.jsonl').read_text().splitlines()]
@@ -50,7 +54,7 @@ def verify(folder):
             if config['economy'].get('movement'):
                 nominal=next(m['speed'] for m in config['economy']['fleet']['models'] if m['id']==vehicle[identity]['modelId']) if identity in vehicle else max(1,80//config['moveTicksPerCell'])
                 cap=config['economy']['roads']['stages'][len(layers[cell])-1]['speed']
-                limit=(min(nominal,cap)*5+1)//2
+                limit=min(nominal,cap)*6 if i1 else (min(nominal,cap)*5+1)//2
             assert e['quantity']<=limit
             model=vehicle.get(identity);assert actor==(model['owner']['value'] if model else machine[identity]['ownerId']['value'])
             factor=rules['classFactors'][model['modelId']] if model else 10000
