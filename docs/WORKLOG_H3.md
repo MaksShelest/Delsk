@@ -352,3 +352,11 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
   исторические queued/failure статусы и открытые hardware/late research gates.
   Эти документальные изменения публикуются, пока исправленный collector читает
   уже готовые192мира; publisher должен сохранить их при получении свежей ветки.
+- Исправленный collector41420716323/job125195314908 success:192/192,180ordinary
+  complete,475NPCfirst factories,635двойныхaudit segments,38explicit re-audits,
+  original38failures сохранены, blocked0/missing0. Artifact13129308994.
+  Publisher commit543d3a8 получил parentb1acd5d, появившийся во время чтения
+  данных, и опубликован безforce. Это воспроизводит исходную гонку успешно.
+- Extended ready checkpoints5400–16200 остаются исследовательской экспозицией,
+  а не proof126000/20–35h. Новая задача владельца — исправить актуальные ошибки
+  проверок и разобраться с merge readiness, поэтому тяжёлые миры не перезапускаются.

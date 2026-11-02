@@ -4,9 +4,10 @@
 
 Актуальный игровой код прошёл все35проверок PR622a33a, включая Core и Windows platform.
 Финальные Windows/Android Developer/Release packages source2feec8d собраны и
-проверены. Найден и исправлен отдельный сбой публикации статистики при движении
-ветки;43Pythonchecks проходят, сбор готовых192миров выполняется повторно без
-симуляции. Полная версия не объявлена принятой: аппаратные gates и поздние
+проверены. Исправлен отдельный сбой публикации статистики при движении ветки;
+43Pythonchecks проходят, collector41420716323 успешно опубликовал192/192мира,
+все180ordinary достигли5000,635сегментов имеют оба успешных аудита. Все38исходных
+отказов сохранены и перепроверены явно исправленным аудитором. Полная версия не объявлена принятой: аппаратные gates и поздние
 экономические цели остаются открытыми. Старые статусы очереди ниже — история.
 База `b87bc90a84845f509cf256bb227dbcf2952a43ad` содержит H2/PR76;
 ветка `feat/vnext-h3-compact-acceptance`, [PR77](https://github.com/MaksShelest/Delsk/pull/77)
@@ -64,12 +65,13 @@ SelfBallotController.Restore, сохраняя память. Natural save t5604�
 | RU/EN, карта города, масштаб и ввод | city-gate.json:3/6/10NPC,640RU/800EN/360EN | Native synthetic keyboard/mouse/touch, pause/help/filters/save; не physical mobile |
 | Developer/Release и режим бога | ordinary22/Developer22 CI, native Windows HUD, negative Release, published APK/Windows metadata | Пройдено;180/120s не повышены, исходный Developer timeout сохранён |
 | Windows/Android и реальная Windows LLM | Windows1132hashes в каждом flavor, реальные ARM64 APK/подписи/CRC, [инструкция](research/h3/TARGET_ACCEPTANCE.md) | Windows VM и cross APK пройдены. Первый Release launch exit1 был collision technical probe saves иисправлен; physical device/живая модель открыты |
-| Новые измерения после H2 | study-plan, отдельный frozen run41355595793 |180ordinary+12extended в работе, результаты не смешиваются с H1 |
+| Новые измерения после H2 | study-plan, original+audit continuation, [RESULTS](verification/h3/economy/RESULTS.md) |180/180ordinary5000;12extended имеют принятые5400–16200, target126000 открыт; с H1 не смешиваются |
 
 ## Открытые требования и ограничения
 
-1. Новая естественная когорта и её поздние bounded continuations ещё выполняются.
-   Нет основания заявлять20–35часов, развитиеII–V, полную окупаемость,
+1. Все180обычных партий завершены до5000; поздние bounded continuations
+   двенадцати миров имеют принятые5400–16200. Нет основания заявлять20–35часов,
+   развитиеII–V, полную окупаемость,
    достаточность XPот заданий либо устойчивое промышленное преимуществоHard.
 2. Пользовательская цепочка выполняется scripted human через Core Send.
    Доставка и дороги проверены отдельно в явно подготовленных мирах;
@@ -191,3 +193,27 @@ ordinary и12исходныхextended, максимум один bounded segment
 исследовательский batch имеет6успешных cases+select и41queued без активного
 runner; финальные targets/select также queued. Эти пункты остаются открытыми,
 а новые результаты не объявляются проверенными до получения actual artifacts.
+
+
+## Исправление публикации и состояние перед review
+
+На622a33a все35PRchecks прошли. Единственный актуальный внешний workflow failure
+был в публикации готовой статистики: collector41412960060 получил fetch-first,
+поскольку ветка продвинулась. Исправленный publisher проверен43Pythonchecks и
+успешно выполнен в41420716323. Его commit543d3a8 сохраняет документальный commit
+b1acd5d, появившийся после запуска collector; force не применялся.
+
+Актуальная [полная сводка](verification/h3/economy/RESULTS.md):192/192мира,
+180/180ordinary5000,475первых корпусовNPC в этих конечных точках;635принятых
+сегментов с accounting/public audits,38явно re-audited segments. Исходные38отказов
+сохранены. Blocked worlds0, missing0. Двенадцать extended остаютсяready на
+5400–16200: это конец ограниченного batch, не достижение126000 и не доказательство
+позднего баланса. Продолжения не добавляют независимых реплик.
+
+Все игровые Windows/Android артефакты2feec8d успешно проверены:
+[Windows](https://github.com/MaksShelest/Delsk/actions/runs/41412052805/artifacts/13126088602),
+[Android](https://github.com/MaksShelest/Delsk/actions/runs/41412052805/artifacts/13126367716),
+[digests/provenance](verification/h3/targets/final-ci.json). Публикация данных и
+документальные commits не меняют этот скомпилированный игровой код. PR переводится
+изDraft вReady for review; автоматическое слияние не включается. Аппаратные и
+поздние экономические gates остаются перечисленными выше.
