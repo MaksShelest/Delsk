@@ -250,3 +250,13 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
   audited14400 (включаяLargeHard142, чейjob отменён позже приархивации),
   LargeHard143 running/lastSaved10800, twoaudit-blocked1800/3600. Поэтому
   cancellation job неравна границе последнегоaccepted checkpoint.
+- Fresh targets41408105541: Androidjob125154750997 success (официальныйfresh
+  template/Gradlebootstrap, обаexports240s/подписи/manifest). Artifact13124263830,
+  ZIP SHA57904f94498762b11c3eb3931d9831846fed03b45fbbd2201ed019b78411ca71.
+  Windowsjob125154751074 обаbundles экспортировал, audited ивыполнил подряд
+  smokeDeveloper0/smokeRelease0 втойжеVM. Artifact13124995843/ZIP
+  8253c15683d96aa08d85654b9a76dee0f550e44aa85e5ddeca773d9b00847119.
+  Последующийnativecapture отказал вPython read_text(project.godot): cp1252
+  нечитаетрусскийUTF8. Это harnessdefect дооткрытиясцены, неуспешныйnativepass.
+  ВсеtextIO check_world_proportions теперьявноUTF8; diagnostic повторяеттолько
+  native-load5604, читает retained85cf manifests/hashes безповторногоexport.

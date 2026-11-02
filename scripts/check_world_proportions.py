@@ -26,7 +26,7 @@ check('ordinary-restore',180,['dotnet','restore',project/'Delsk.Client.csproj','
 check('ordinary-build',180,['dotnet','build',project/'Delsk.Client.csproj','--no-restore','--disable-build-servers','-m:1'])
 check('ordinary-audit',120,['dotnet','run','--project',ROOT/'tools/AssemblyAudit','-c','Release','--',project/'.godot/mono/temp/bin/Debug'])
 name='WorldProportionsProbe';shutil.copyfile(ROOT/'tests/Client.Probes'/(name+'.cs'),project/(name+'.cs'))
-(project/(name+'.tscn')).write_text('[gd_scene load_steps=2 format=3]\n[ext_resource type="Script" path="res://'+name+'.cs" id="1"]\n[node name="'+name+'" type="Control"]\nlayout_mode=3\nanchors_preset=15\nanchor_right=1.0\nanchor_bottom=1.0\nscript=ExtResource("1")\n')
+(project/(name+'.tscn')).write_text('[gd_scene load_steps=2 format=3]\n[ext_resource type="Script" path="res://'+name+'.cs" id="1"]\n[node name="'+name+'" type="Control"]\nlayout_mode=3\nanchors_preset=15\nanchor_right=1.0\nanchor_bottom=1.0\nscript=ExtResource("1")\n',encoding='utf-8')
 check('probe-build',180,['dotnet','build',project/'Delsk.Client.csproj','--no-restore','--disable-build-servers','-m:1'])
 cache=a.asset_cache
 if cache is None:
@@ -34,16 +34,16 @@ if cache is None:
  check('asset-import',120,[a.godot,'--headless','--path',cache,'--editor','--import','--quit'])
 check('asset-reuse',60,[sys.executable,ROOT/'scripts/reuse_godot_imports.py','--source',cache,'--target',project,'--report',out/'asset-reuse.json'])
 check('asset-verify',30,[sys.executable,ROOT/'scripts/reuse_godot_imports.py','--source',project,'--verify-only','--report',out/'asset-verify.json'])
-base=(project/'project.godot').read_text()
+base=(project/'project.godot').read_text(encoding='utf-8')
 cases=[(m,None,'') for m in a.maps]
 if a.save:cases=[(a.maps[0],a.save.resolve(),'-saved')]
 if a.legacy_save_dir:cases += [(m,a.legacy_save_dir.resolve()/(m+'-adapter1.save.json'),'-adapter1') for m in ['small-river','large-districts']]
 if a.fleet_save_dir:cases += [(m,a.fleet_save_dir.resolve()/(m.replace('-','_')+'-purchased.save.json'),'-purchased') for m in ['small-river','large-districts']]
 for map_key,save,suffix in cases:
- tag=map_key+suffix;folder=out/tag;folder.mkdir();(project/'project.godot').write_text(base.replace('[application]','[application]\nconfig/use_custom_user_dir=true\nconfig/custom_user_dir_name="Delsk-proportions-'+out.name+'-'+tag+'"',1))
+ tag=map_key+suffix;folder=out/tag;folder.mkdir();(project/'project.godot').write_text(base.replace('[application]','[application]\nconfig/use_custom_user_dir=true\nconfig/custom_user_dir_name="Delsk-proportions-'+out.name+'-'+tag+'"',1),encoding='utf-8')
  check(tag,150,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','res://WorldProportionsProbe.tscn','--','--map',map_key,'--output',folder,*(['--verify'] if a.verify else []),*(['--motion'] if a.motion and map_key=='compact-valley' else []),*(['--natural-save'] if a.natural_save else []),*(['--load',save] if save else [])],os.environ|{'XDG_DATA_HOME':str(out/'userdata')})
  check(tag+'-logs',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks'/tag])
- assert json.loads((folder/'native-check.json').read_text())['status']=='succeeded'
+ assert json.loads((folder/'native-check.json').read_text(encoding='utf-8'))['status']=='succeeded'
 assert all(hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest for name,digest in inputs.items()),'Source changed during native capture'
-(out/'source-inputs.json').write_text(json.dumps(inputs,indent=2)+'\n')
+(out/'source-inputs.json').write_text(json.dumps(inputs,indent=2)+'\n',encoding='utf-8')
 print('Native proportions/captures passed:',', '.join(a.maps),'; both skins')

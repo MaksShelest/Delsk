@@ -1,6 +1,7 @@
 {
-  "run": 41362439343,
-  "scope": "Read original failure and actual Windows runtime availability only; successful retained Release execution is already recorded in41363547781. No new export or simulation.",
+  "run": 41408105541,
+  "scope": "Retain successful85cfbd1 Windows/Android bundles and hashes. Retry ONLY the failed Windows rendered natural-save capture after explicit UTF8 decoding fix; do not rebuild or rerun bundle exports.",
   "readOnly": true,
-  "revision": 2
+  "nativeSave": true,
+  "revision": 3
 }
