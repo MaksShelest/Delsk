@@ -249,6 +249,18 @@ public class I1HighSpeedSafetyTests
         Assert.Equal(400,s.Engine.InspectRoads()!.Traffic.Single(t=>t.VehicleId==car.Id).Progress);
         Assert.Equal(27L*SimulationEngine.RoadAccrualScale/2,BillingE3Tests.TotalUnits(s,2)-before);
         s.SetTravelHeading(new(2),0,0);s.CompleteTravelTick();Assert.Equal(new Cell(13,1),s.Engine.Observe(new(2)).Participant.Position);
+        // Five highway cells followed by an off-road exit finish in 22/9s.
+        // At t=2 the exit has advanced 533+1/3 of its 800 distance units.
+        // Check the genuinely nonzero saved fraction, not only a straight-road save.
+        before=BillingE3Tests.TotalUnits(s,2);
+        s.Send(new(2),new(ActionKind.MoveTo,Target:new(18,2)));s.Step();tick=s.Engine.Tick;
+        s.Step();s.Step();var exit=s.Engine.InspectRoads()!.Traffic.Single(t=>t.VehicleId==car.Id);
+        Assert.Equal(533,exit.Progress);Assert.Equal(198900,exit.ProgressFraction);
+        copy=CheckpointStore.Decode(CheckpointStore.Encode(s));s.Step();copy.Step();
+        Assert.Equal(3,s.Engine.Tick-tick);Assert.Equal(new Cell(18,2),s.Engine.Observe(new(2)).Participant.Position);
+        Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());
+        Assert.Equal(18L*SimulationEngine.RoadAccrualScale,BillingE3Tests.TotalUnits(s,2)-before);
+        RoadE2Tests.Exact(s,"i1-highway-exit-fraction");
     }
 }
 
