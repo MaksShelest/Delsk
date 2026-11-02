@@ -99,7 +99,7 @@ public sealed partial class SimulationEngine
     public bool UsesAcceleratedMovement=>_config.Economy?.Movement is not null;
     private MovementRules Movement=>_config.Economy?.Movement??MovementRules.H2;
     private int MotionTimeScale=>Movement.TimeScale;
-    private long RoadMotionRate(int speed)=>checked(speed*(Movement.Version==2?60L:25L));
+    private long RoadMotionRate(int speed)=>checked(speed*800L*Movement.Multiplier/Movement.SpeedDivisor);
     private long PersonalEdgeTimeUnits(ActorState actor,Cell from,Cell to)
         =>Fleet is null&&Movement.Version!=2?Movement.UnmodelledEdgeTime(_config.MoveTicksPerCell):Movement.EdgeTime(FleetSpeed(from,to,DrivenVehicle(actor.Id) is {} v?Model(v.ModelId):null));
     private long PersonalPathTicks(ActorState actor,Cell[] path)

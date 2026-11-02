@@ -156,7 +156,13 @@ public sealed partial class SimulationEngine
         _config.Layout is {} layout&&layout.InitialCityDirtCells.Contains(from)&&layout.InitialCityDirtCells.Contains(to);
     private int VehicleSurfaceSpeed(Cell from,Cell to,int maximum)
     {
-        int limit=RoadSurface(from,to)?Roads is null?20:Roads.Stages.Single(s=>s.Level==Math.Min(RoadLevel(from),RoadLevel(to))).Speed:Movement.OffroadVehicleSpeed();
+        int limit;
+        if(Roads is not null)
+        {
+            int level=Math.Min(RoadLevel(from),RoadLevel(to));
+            limit=level>0?Roads.Stages[level-1].Speed:Movement.OffroadVehicleSpeed();
+        }
+        else limit=RoadSurface(from,to)?20:Movement.OffroadVehicleSpeed();
         return Math.Min(maximum,limit);
     }
     private int FleetSpeed(Cell from, Cell to, VehicleModel? model = null)

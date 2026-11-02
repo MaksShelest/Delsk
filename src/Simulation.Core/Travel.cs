@@ -65,7 +65,7 @@ public sealed partial class SimulationEngine
 
     private int QuantumDistance()
     {
-        int total = UsesAcceleratedMovement?Movement.Version==2?TravelUnitsPerCell*3/_config.MoveTicksPerCell:TravelUnitsPerCell*5/(2*_config.MoveTicksPerCell):TravelUnitsPerCell / _config.MoveTicksPerCell;
+        int total = UsesAcceleratedMovement?Movement.Version==2?Movement.RunningSpeed(false)*Movement.Multiplier*TravelUnitsPerCell/Movement.SpeedDivisor:TravelUnitsPerCell*5/(2*_config.MoveTicksPerCell):TravelUnitsPerCell / _config.MoveTicksPerCell;
         int share = total / TravelQuantaPerTick;
         int extra = total % TravelQuantaPerTick;
         return share + (_travelQuantum < extra ? 1 : 0);
