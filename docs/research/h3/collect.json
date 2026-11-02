@@ -4,7 +4,7 @@
     41408105572,
     41408949052
   ],
-  "allowPartial": true,
-  "revision": 3,
-  "scope": "Merge latest available endpoints of the SAME original192 worlds, retaining original source chains and audit errata. Explicit interim while the47-world continuation batch is pending; no new simulation or independent replicas."
+  "allowPartial": false,
+  "revision": 4,
+  "scope": "All three retained source runs are completed. Collect all192 original worlds with their completed audit-erratum continuations. Full collection is not completion of the extended126000-tick research target. No simulation rerun."
 }

@@ -324,3 +324,24 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
   Следующий этап после выдачи runners: проверить все47outcomes, собрать original+
   pilot+batch, продолжитьтолько ready extended сисходнымиDLL доцели илиреального
   первого failure/limit, затем full collection иокончательная матрица/PR.
+
+### Проверка красных статусов по запросу владельца, 02.11.2026
+
+- Актуальный PR622a33a: все35checks success, mergeable/clean, кнопка слияния
+  отключена исключительно Draft. Старые красные aggregate статусы включают
+  отменённые устаревшие CI, исторические исправленные failures и action_required;
+  их нельзя трактовать как35упавших тестов текущего кода.
+- Отдельный collector41412960060 действительно завершился failure: analysis
+ 192/192/584audit segments и artifact13126572556 прошли; только Git push был
+  отвергнут fetch-first после движения ветки. Игра/данные не падали. Исправление:
+  publisher получает свежийHEAD, сохраняет несвязанные commits и делает обычный
+  fast-forward push, с тремя bounded retries при новой гонке. Force не используется;
+  новые измерения в том же destination и dirty tracked work отвергаются.
+- Три регрессии с настоящими локальными bareGit remotes проверили исходную гонку,
+  сохранность чужих measurement updates и несохранённой работы.43Python checks
+  прошли за0,925s. Новый collector marker собирает уже завершённые original+
+  pilot+47-case batch без повторной симуляции. Extended target126000 остаётся
+  отдельным исследовательским вопросом, не замаскирован полным сбором192worlds.
+- Финальные targets41412052805 source2feec8d и H2 late41412052703 ужеsuccess;
+  прежняя запись об очереди теперь историческая. После исправления collector
+  обновить матрицу/PR и перевести PR изDraft вReady for review, без merge.
