@@ -265,3 +265,9 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
   push +PRopened вместоcumulative-PR synchronizes: реальные измененияsrc илиего
   worker/verifier/workflow по-прежнему запускают все8миров; записиcollect/audit
   отчётов больше не повторяют H2. Составsuites, budgets, oldchecks прежние.
+- Скопившиеся pre-concurrency Core/platform/H2 runs занимают очередь;47actual
+  audit continuations ещёнеполучилиrunner. Добавленаоднократная cleanup automation
+  сявнымallowlist толькоэтойH3ветки/трёхregressionworkflows/после07:42UTC.
+  Онаоставляетновейшуюrevision каждойпроверки ипочтизаконченныйCore41408105487;
+  неумеетотменять study/audit/collection/targets/diagnostic. Старыеотмены/logs
+  останутсянаGitHub; новыйconcurrencyпредотвращаетповторнуюочередь.

@@ -1,0 +1,6 @@
+{
+  "revision": 1,
+  "createdAfter": "2026-11-02T07:42:00Z",
+  "keepRuns": [41408105487],
+  "scope": "Cancel only obsolete duplicate Core/platform/H2 regression runs on this H3 branch. Keep newest regression revisions and nearly completed first software gate. Never cancel any research cohort, audit continuation, retained collection, target export or diagnostic."
+}
