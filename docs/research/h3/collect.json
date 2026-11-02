@@ -1,6 +1,6 @@
 {
   "run": 41355595793,
-  "allowPartial": true,
-  "revision": 1,
-  "scope": "Interim extraction of existing audited world journals; pending/missing cases remain explicit, final collection still requires192"
+  "allowPartial": false,
+  "revision": 2,
+  "scope": "Complete retained original192 world collection; audit failures and interrupted late worlds remain actual outcomes. No new simulation."
 }
