@@ -260,3 +260,8 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
   нечитаетрусскийUTF8. Это harnessdefect дооткрытиясцены, неуспешныйnativepass.
   ВсеtextIO check_world_proportions теперьявноUTF8; diagnostic повторяеттолько
   native-load5604, читает retained85cf manifests/hashes безповторногоexport.
+- CI scheduling: Core/platform concurrency наветку отменяет устаревшие проверки
+  следующих revisions, сохраняя актуальный gate. H2 late теперь source-sensitive
+  push +PRopened вместоcumulative-PR synchronizes: реальные измененияsrc илиего
+  worker/verifier/workflow по-прежнему запускают все8миров; записиcollect/audit
+  отчётов больше не повторяют H2. Составsuites, budgets, oldchecks прежние.

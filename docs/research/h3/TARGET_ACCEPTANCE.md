@@ -79,3 +79,11 @@ RAM/FPS/максимальное время кадра. Проверить RU/EN
 память и load time измерять на устройстве. Новый ordinary maxTicks1m обеспечивает
 технический горизонт, но не обещает мобильную производительность на277часах.
 Сохранить evidence и оставшиеся дефекты до объявления аппаратного pass.
+
+Свежие доступные пакеты source85cfbd1:
+[Windows Developer/Release](https://github.com/MaksShelest/Delsk/actions/runs/41408105541/artifacts/13124995843),
+[Android Developer/Release](https://github.com/MaksShelest/Delsk/actions/runs/41408105541/artifacts/13124263830).
+ОбаWindowsEXE прошли smoke последовательно втойжеVM, обаAPK — подписи/manifest.
+ОбщийWindowsjob отказал уже послеэтого приPythonдекодированиифайла nativeprobe;
+это неотменяет bundle checks инеозначаетуспех последующегоnativecapture.
+[Source/artifact digests иточнаяграница](../../verification/h3/targets/fresh-ci.json).
