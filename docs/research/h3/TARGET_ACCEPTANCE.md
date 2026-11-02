@@ -80,10 +80,20 @@ RAM/FPS/максимальное время кадра. Проверить RU/EN
 технический горизонт, но не обещает мобильную производительность на277часах.
 Сохранить evidence и оставшиеся дефекты до объявления аппаратного pass.
 
-Свежие доступные пакеты source85cfbd1:
+Промежуточные сохранённые пакеты source85cfbd1 (история диагностики):
 [Windows Developer/Release](https://github.com/MaksShelest/Delsk/actions/runs/41408105541/artifacts/13124995843),
 [Android Developer/Release](https://github.com/MaksShelest/Delsk/actions/runs/41408105541/artifacts/13124263830).
 ОбаWindowsEXE прошли smoke последовательно втойжеVM, обаAPK — подписи/manifest.
 ОбщийWindowsjob отказал уже послеэтого приPythonдекодированиифайла nativeprobe;
 это неотменяет bundle checks инеозначаетуспех последующегоnativecapture.
 [Source/artifact digests иточнаяграница](../../verification/h3/targets/fresh-ci.json).
+
+
+Итоговые доступные пакеты игрового кода source2feec8d:
+[Windows Developer/Release](https://github.com/MaksShelest/Delsk/actions/runs/41412052805/artifacts/13126088602),
+[Android Developer/Release](https://github.com/MaksShelest/Delsk/actions/runs/41412052805/artifacts/13126367716).
+ОбаWindowsEXE выполнили smoke в однойVM, actual ordinary save5604 прошёл оба
+оформления в настоящей сцене. ОбаAPK прошли signatures/manifest/CRC.
+[Полные artifact digests и provenance](../../verification/h3/targets/final-ci.json).
+Последующие изменения затрагивают сбор/публикацию измерений и документацию,
+скомпилированный игровой код совпадает с этим source. Аппаратная приёмка отдельно.

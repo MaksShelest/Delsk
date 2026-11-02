@@ -345,3 +345,10 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
 - Финальные targets41412052805 source2feec8d и H2 late41412052703 ужеsuccess;
   прежняя запись об очереди теперь историческая. После исправления collector
   обновить матрицу/PR и перевести PR изDraft вReady for review, без merge.
+- Подтверждены actual final target logs2feec8d: обаWindowsEXE smoke0, native
+  ordinary5604/оба оформления0; обаAndroidAPK signatures/manifest0. Ссылки и
+  ZIP digests обновлены в TARGET_ACCEPTANCE и targets/final-ci.json.
+- Основная матрица теперь явно различает актуальные зелёные35PRchecks,
+  исторические queued/failure статусы и открытые hardware/late research gates.
+  Эти документальные изменения публикуются, пока исправленный collector читает
+  уже готовые192мира; publisher должен сохранить их при получении свежей ветки.

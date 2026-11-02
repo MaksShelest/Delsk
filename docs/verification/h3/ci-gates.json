@@ -33,5 +33,13 @@
     "status": "succeeded",
     "worlds": 8,
     "scope": "All8 retained H1/H2 worlds passed continuation/history/replay/audits on H3 source85cf. Not additional independent H3 economic replicates."
+  },
+  "completePullRequestRegression": {
+    "sourceCommit": "622a33abfdedc570c7363364e4cb4d9eada8392c",
+    "checks": 35,
+    "status": "succeeded",
+    "coreRun": 41413316545,
+    "platformRun": 41413316732,
+    "scope": "All35 current PR checks passed before the measurement-publication-only repair. New43Python checks additionally cover that repair."
   }
 }
