@@ -1,0 +1,18 @@
+{
+  "status": "failed",
+  "error": "System.InvalidOperationException: Harvest failed: NoCapacity\n   at Program.\u003C\u003CMain\u003E$\u003Eg__Require|0_3(Boolean value, String reason) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 85\n   at Program.\u003C\u003Ec__DisplayClass0_0.\u003C\u003CMain\u003E$\u003Eg__Wood|12(Int64 quantity) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 110\n   at Program.\u003C\u003Ec__DisplayClass0_0.\u003C\u003CMain\u003E$\u003Eg__SupplyGround|14(InventoryId ground, String item, Int64 quantity) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 123\n   at Program.\u003CMain\u003E$(String[] args) in /workspace/Delsk/tools/H3Acceptance/Program.cs:line 36",
+  "stage": "earn-and-supply",
+  "map": "compact-valley",
+  "tick": 3193,
+  "milestones": [
+    {
+      "name": "ordinary-start",
+      "tick": 0,
+      "cash": 20000
+    }
+  ],
+  "elapsedSeconds": 72.8788768,
+  "scope": "Scripted human through ordinary commands with three autonomous NPCs. No Developer. Natural earning/land/import/construction/production XP/warehouse/vehicle; later delivery/road chain is a separate acceptance gate.",
+  "stateHash": "b73e43df9acd9c2e5c8af31061e222d5843fcbfda9dee7efb869f80bc2685f8f",
+  "maxTicks": 1000000
+}

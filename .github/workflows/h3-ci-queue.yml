@@ -1,0 +1,34 @@
+name: H3 obsolete regression queue cleanup
+on:
+  push:
+    branches: ['feat/vnext-h3-compact-acceptance']
+    paths: ['docs/research/h3/ci-queue.json']
+permissions:
+  contents: read
+  actions: write
+jobs:
+  obsolete-regressions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const fs=require('fs');
+            const plan=JSON.parse(fs.readFileSync('docs/research/h3/ci-queue.json','utf8'));
+            const branch='feat/vnext-h3-compact-acceptance';
+            if(context.ref!=='refs/heads/'+branch)throw Error('H3 branch only');
+            const allowed=new Set(['.github/workflows/core.yml','.github/workflows/platform.yml','.github/workflows/h2-late.yml']);
+            const keep=new Set(plan.keepRuns);
+            const response=await github.paginate(github.rest.actions.listWorkflowRunsForRepo,{...context.repo,branch,per_page:100});
+            const active=response.filter(r=>allowed.has(r.path)&&r.head_branch===branch&&['queued','in_progress','waiting','pending'].includes(r.status));
+            // Keep the newest revision of every regression workflow and the
+            // nearly completed first software gate. Research/target/collection
+            // runs are outside this explicit allowlist and cannot be cancelled.
+            for(const path of allowed){const latest=active.filter(r=>r.path===path).sort((a,b)=>b.id-a.id)[0];if(latest)keep.add(latest.id);}
+            const obsolete=active.filter(r=>!keep.has(r.id)&&r.created_at>=plan.createdAfter);
+            for(const r of obsolete){
+              console.log(JSON.stringify({action:'cancel obsolete duplicate regression',run:r.id,path:r.path,sha:r.head_sha,preservedRuns:[...keep]}));
+              await github.rest.actions.cancelWorkflowRun({...context.repo,run_id:r.id});
+            }

@@ -1,0 +1,7957 @@
+{
+  "id": "compact_valley",
+  "seed": 17,
+  "mapWidth": 32,
+  "mapHeight": 27,
+  "blockedCells": [
+    {
+      "x": 0,
+      "z": 19
+    },
+    {
+      "x": 1,
+      "z": 19
+    },
+    {
+      "x": 0,
+      "z": 20
+    },
+    {
+      "x": 1,
+      "z": 20
+    },
+    {
+      "x": 3,
+      "z": 19
+    },
+    {
+      "x": 4,
+      "z": 19
+    },
+    {
+      "x": 3,
+      "z": 20
+    },
+    {
+      "x": 4,
+      "z": 20
+    },
+    {
+      "x": 5,
+      "z": 19
+    },
+    {
+      "x": 6,
+      "z": 19
+    },
+    {
+      "x": 5,
+      "z": 20
+    },
+    {
+      "x": 6,
+      "z": 20
+    }
+  ],
+  "items": [
+    {
+      "id": "wood",
+      "unitVolume": 2,
+      "basePriceMinor": 500
+    },
+    {
+      "id": "grain",
+      "unitVolume": 1,
+      "basePriceMinor": 300
+    },
+    {
+      "id": "stone",
+      "unitVolume": 1,
+      "basePriceMinor": 300
+    },
+    {
+      "id": "iron_ore",
+      "unitVolume": 1,
+      "basePriceMinor": 400
+    },
+    {
+      "id": "copper_ore",
+      "unitVolume": 1,
+      "basePriceMinor": 500
+    },
+    {
+      "id": "sand",
+      "unitVolume": 1,
+      "basePriceMinor": 200
+    },
+    {
+      "id": "beet",
+      "unitVolume": 1,
+      "basePriceMinor": 300
+    },
+    {
+      "id": "milk",
+      "unitVolume": 1,
+      "basePriceMinor": 400
+    },
+    {
+      "id": "coke",
+      "unitVolume": 1,
+      "basePriceMinor": 400
+    },
+    {
+      "id": "soda",
+      "unitVolume": 1,
+      "basePriceMinor": 300
+    },
+    {
+      "id": "limestone",
+      "unitVolume": 1,
+      "basePriceMinor": 200
+    },
+    {
+      "id": "cement",
+      "unitVolume": 1,
+      "basePriceMinor": 500
+    },
+    {
+      "id": "bitumen",
+      "unitVolume": 1,
+      "basePriceMinor": 600
+    },
+    {
+      "id": "plank",
+      "unitVolume": 1,
+      "basePriceMinor": 900
+    },
+    {
+      "id": "steel",
+      "unitVolume": 1,
+      "basePriceMinor": 2500
+    },
+    {
+      "id": "copper",
+      "unitVolume": 1,
+      "basePriceMinor": 3600
+    },
+    {
+      "id": "gravel",
+      "unitVolume": 1,
+      "basePriceMinor": 800
+    },
+    {
+      "id": "flour",
+      "unitVolume": 1,
+      "basePriceMinor": 900
+    },
+    {
+      "id": "sugar",
+      "unitVolume": 1,
+      "basePriceMinor": 1500
+    },
+    {
+      "id": "bread",
+      "unitVolume": 1,
+      "basePriceMinor": 2100
+    },
+    {
+      "id": "cheese",
+      "unitVolume": 1,
+      "basePriceMinor": 5000
+    },
+    {
+      "id": "curd",
+      "unitVolume": 1,
+      "basePriceMinor": 3300
+    },
+    {
+      "id": "cream",
+      "unitVolume": 1,
+      "basePriceMinor": 2800
+    },
+    {
+      "id": "wire",
+      "unitVolume": 1,
+      "basePriceMinor": 2900
+    },
+    {
+      "id": "beam",
+      "unitVolume": 2,
+      "basePriceMinor": 7200
+    },
+    {
+      "id": "steel_sheet",
+      "unitVolume": 1,
+      "basePriceMinor": 4100
+    },
+    {
+      "id": "glass",
+      "unitVolume": 1,
+      "basePriceMinor": 3400
+    },
+    {
+      "id": "concrete",
+      "unitVolume": 1,
+      "basePriceMinor": 3900
+    },
+    {
+      "id": "asphalt",
+      "unitVolume": 1,
+      "basePriceMinor": 3900
+    },
+    {
+      "id": "furniture",
+      "unitVolume": 4,
+      "basePriceMinor": 20700
+    },
+    {
+      "id": "window",
+      "unitVolume": 2,
+      "basePriceMinor": 13200
+    },
+    {
+      "id": "pastry",
+      "unitVolume": 1,
+      "basePriceMinor": 5000
+    },
+    {
+      "id": "motor",
+      "unitVolume": 4,
+      "basePriceMinor": 23400
+    },
+    {
+      "id": "conveyor",
+      "unitVolume": 10,
+      "basePriceMinor": 66500
+    }
+  ],
+  "recipes": [
+    {
+      "id": "saw_planks",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "plank",
+      "outputQuantity": 4,
+      "fullStaffTicks": 16,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 32,
+      "inputs": [
+        {
+          "itemId": "wood",
+          "quantity": 2
+        }
+      ]
+    },
+    {
+      "id": "smelt_steel",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "steel",
+      "outputQuantity": 2,
+      "fullStaffTicks": 20,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 40,
+      "inputs": [
+        {
+          "itemId": "coke",
+          "quantity": 1
+        },
+        {
+          "itemId": "iron_ore",
+          "quantity": 3
+        }
+      ]
+    },
+    {
+      "id": "smelt_copper",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "copper",
+      "outputQuantity": 1,
+      "fullStaffTicks": 16,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 32,
+      "inputs": [
+        {
+          "itemId": "copper_ore",
+          "quantity": 2
+        }
+      ]
+    },
+    {
+      "id": "crush_stone",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "gravel",
+      "outputQuantity": 5,
+      "fullStaffTicks": 20,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 40,
+      "inputs": [
+        {
+          "itemId": "stone",
+          "quantity": 3
+        }
+      ]
+    },
+    {
+      "id": "mill_flour",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "flour",
+      "outputQuantity": 4,
+      "fullStaffTicks": 16,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 32,
+      "inputs": [
+        {
+          "itemId": "grain",
+          "quantity": 3
+        }
+      ]
+    },
+    {
+      "id": "make_sugar",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "sugar",
+      "outputQuantity": 2,
+      "fullStaffTicks": 12,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 24,
+      "inputs": [
+        {
+          "itemId": "beet",
+          "quantity": 3
+        }
+      ]
+    },
+    {
+      "id": "bake_bread",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "bread",
+      "outputQuantity": 4,
+      "fullStaffTicks": 32,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 64,
+      "inputs": [
+        {
+          "itemId": "flour",
+          "quantity": 3
+        }
+      ]
+    },
+    {
+      "id": "make_cheese",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "cheese",
+      "outputQuantity": 1,
+      "fullStaffTicks": 24,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 48,
+      "inputs": [
+        {
+          "itemId": "milk",
+          "quantity": 3
+        }
+      ]
+    },
+    {
+      "id": "make_curd",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "curd",
+      "outputQuantity": 1,
+      "fullStaffTicks": 16,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 32,
+      "inputs": [
+        {
+          "itemId": "milk",
+          "quantity": 2
+        }
+      ]
+    },
+    {
+      "id": "make_cream",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "cream",
+      "outputQuantity": 2,
+      "fullStaffTicks": 28,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 56,
+      "inputs": [
+        {
+          "itemId": "milk",
+          "quantity": 3
+        }
+      ]
+    },
+    {
+      "id": "draw_wire",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "wire",
+      "outputQuantity": 4,
+      "fullStaffTicks": 48,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 96,
+      "inputs": [
+        {
+          "itemId": "copper",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "roll_beams",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "beam",
+      "outputQuantity": 2,
+      "fullStaffTicks": 30,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 60,
+      "inputs": [
+        {
+          "itemId": "steel",
+          "quantity": 3
+        }
+      ]
+    },
+    {
+      "id": "roll_sheet",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "steel_sheet",
+      "outputQuantity": 3,
+      "fullStaffTicks": 40,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 80,
+      "inputs": [
+        {
+          "itemId": "steel",
+          "quantity": 2
+        }
+      ]
+    },
+    {
+      "id": "make_glass",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "glass",
+      "outputQuantity": 3,
+      "fullStaffTicks": 60,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 120,
+      "inputs": [
+        {
+          "itemId": "limestone",
+          "quantity": 1
+        },
+        {
+          "itemId": "sand",
+          "quantity": 4
+        },
+        {
+          "itemId": "soda",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "mix_concrete",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "concrete",
+      "outputQuantity": 4,
+      "fullStaffTicks": 80,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 160,
+      "inputs": [
+        {
+          "itemId": "cement",
+          "quantity": 1
+        },
+        {
+          "itemId": "gravel",
+          "quantity": 3
+        },
+        {
+          "itemId": "sand",
+          "quantity": 2
+        }
+      ]
+    },
+    {
+      "id": "mix_asphalt",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "asphalt",
+      "outputQuantity": 4,
+      "fullStaffTicks": 80,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 160,
+      "inputs": [
+        {
+          "itemId": "bitumen",
+          "quantity": 1
+        },
+        {
+          "itemId": "gravel",
+          "quantity": 3
+        },
+        {
+          "itemId": "sand",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "assemble_furniture",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "furniture",
+      "outputQuantity": 1,
+      "fullStaffTicks": 48,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 96,
+      "inputs": [
+        {
+          "itemId": "plank",
+          "quantity": 6
+        },
+        {
+          "itemId": "steel",
+          "quantity": 2
+        }
+      ]
+    },
+    {
+      "id": "assemble_windows",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "window",
+      "outputQuantity": 2,
+      "fullStaffTicks": 64,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 128,
+      "inputs": [
+        {
+          "itemId": "glass",
+          "quantity": 2
+        },
+        {
+          "itemId": "plank",
+          "quantity": 4
+        },
+        {
+          "itemId": "steel",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "bake_milk",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "pastry",
+      "outputQuantity": 3,
+      "fullStaffTicks": 60,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 120,
+      "inputs": [
+        {
+          "itemId": "flour",
+          "quantity": 2
+        },
+        {
+          "itemId": "milk",
+          "quantity": 2
+        },
+        {
+          "itemId": "sugar",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "bake_curd",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "pastry",
+      "outputQuantity": 4,
+      "fullStaffTicks": 80,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 160,
+      "inputs": [
+        {
+          "itemId": "curd",
+          "quantity": 1
+        },
+        {
+          "itemId": "flour",
+          "quantity": 2
+        },
+        {
+          "itemId": "sugar",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "bake_cream",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "pastry",
+      "outputQuantity": 3,
+      "fullStaffTicks": 48,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 96,
+      "inputs": [
+        {
+          "itemId": "cream",
+          "quantity": 1
+        },
+        {
+          "itemId": "flour",
+          "quantity": 2
+        },
+        {
+          "itemId": "sugar",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "assemble_motor",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "motor",
+      "outputQuantity": 1,
+      "fullStaffTicks": 64,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 128,
+      "inputs": [
+        {
+          "itemId": "steel",
+          "quantity": 2
+        },
+        {
+          "itemId": "wire",
+          "quantity": 2
+        }
+      ]
+    },
+    {
+      "id": "assemble_conveyor",
+      "inputItem": "",
+      "inputQuantity": 0,
+      "outputItem": "conveyor",
+      "outputQuantity": 1,
+      "fullStaffTicks": 120,
+      "requiredStaff": 5,
+      "minimumStaff": 1,
+      "energyPerBatchMinor": 240,
+      "inputs": [
+        {
+          "itemId": "motor",
+          "quantity": 1
+        },
+        {
+          "itemId": "plank",
+          "quantity": 4
+        },
+        {
+          "itemId": "steel",
+          "quantity": 4
+        }
+      ]
+    }
+  ],
+  "participants": [
+    {
+      "id": 1,
+      "cashMinor": 20000,
+      "position": {
+        "x": 11,
+        "z": 0
+      },
+      "inventoryCapacity": 20,
+      "publicPreferenceItem": ""
+    },
+    {
+      "id": 2,
+      "cashMinor": 20000,
+      "position": {
+        "x": 11,
+        "z": 1
+      },
+      "inventoryCapacity": 20,
+      "publicPreferenceItem": "wood"
+    },
+    {
+      "id": 3,
+      "cashMinor": 20000,
+      "position": {
+        "x": 11,
+        "z": 2
+      },
+      "inventoryCapacity": 20,
+      "publicPreferenceItem": "grain"
+    },
+    {
+      "id": 4,
+      "cashMinor": 20000,
+      "position": {
+        "x": 11,
+        "z": 3
+      },
+      "inventoryCapacity": 20,
+      "publicPreferenceItem": "milk"
+    }
+  ],
+  "enterprises": [],
+  "capitalOffers": [],
+  "resourceNodes": [
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 0
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 4,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 1,
+        "z": 0
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 4,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 2,
+        "z": 0
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 4,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 1
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 4,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 1,
+        "z": 1
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 4,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 2,
+        "z": 1
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 4,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 0,
+        "z": 2
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 4,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 1,
+        "z": 2
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 4,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "wood",
+      "position": {
+        "x": 2,
+        "z": 2
+      },
+      "rules": {
+        "public": true,
+        "capacity": 60,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 12,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 5,
+        "z": 0
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 6,
+        "z": 0
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 7,
+        "z": 0
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 5,
+        "z": 1
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 6,
+        "z": 1
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 7,
+        "z": 1
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 5,
+        "z": 2
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 6,
+        "z": 2
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 7,
+        "z": 2
+      },
+      "rules": {
+        "public": true,
+        "capacity": 60,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 24,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 0,
+        "z": 5
+      },
+      "rules": {
+        "public": false,
+        "capacity": 80,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 1,
+        "z": 5
+      },
+      "rules": {
+        "public": false,
+        "capacity": 80,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 2,
+        "z": 5
+      },
+      "rules": {
+        "public": false,
+        "capacity": 80,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 0,
+        "z": 6
+      },
+      "rules": {
+        "public": false,
+        "capacity": 80,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 1,
+        "z": 6
+      },
+      "rules": {
+        "public": false,
+        "capacity": 80,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 2,
+        "z": 6
+      },
+      "rules": {
+        "public": false,
+        "capacity": 80,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 0,
+        "z": 7
+      },
+      "rules": {
+        "public": false,
+        "capacity": 80,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 1,
+        "z": 7
+      },
+      "rules": {
+        "public": false,
+        "capacity": 80,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "milk",
+      "position": {
+        "x": 2,
+        "z": 7
+      },
+      "rules": {
+        "public": true,
+        "capacity": 40,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 30,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 5,
+        "z": 5
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 6,
+        "z": 5
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 7,
+        "z": 5
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 5,
+        "z": 6
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 6,
+        "z": 6
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 7,
+        "z": 6
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 5,
+        "z": 7
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 6,
+        "z": 7
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 10,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "beet",
+      "position": {
+        "x": 7,
+        "z": 7
+      },
+      "rules": {
+        "public": true,
+        "capacity": 50,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 30,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "iron_ore",
+      "position": {
+        "x": 0,
+        "z": 10
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 12,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "iron_ore",
+      "position": {
+        "x": 1,
+        "z": 10
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 12,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "iron_ore",
+      "position": {
+        "x": 2,
+        "z": 10
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 12,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "iron_ore",
+      "position": {
+        "x": 0,
+        "z": 11
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 12,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "iron_ore",
+      "position": {
+        "x": 1,
+        "z": 11
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 12,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "iron_ore",
+      "position": {
+        "x": 2,
+        "z": 11
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 12,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "iron_ore",
+      "position": {
+        "x": 0,
+        "z": 12
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 12,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "iron_ore",
+      "position": {
+        "x": 1,
+        "z": 12
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 12,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "iron_ore",
+      "position": {
+        "x": 2,
+        "z": 12
+      },
+      "rules": {
+        "public": true,
+        "capacity": 60,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 36,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "copper_ore",
+      "position": {
+        "x": 5,
+        "z": 10
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 16,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "copper_ore",
+      "position": {
+        "x": 6,
+        "z": 10
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 16,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "copper_ore",
+      "position": {
+        "x": 7,
+        "z": 10
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 16,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "copper_ore",
+      "position": {
+        "x": 5,
+        "z": 11
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 16,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "copper_ore",
+      "position": {
+        "x": 6,
+        "z": 11
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 16,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "copper_ore",
+      "position": {
+        "x": 7,
+        "z": 11
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 16,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "copper_ore",
+      "position": {
+        "x": 5,
+        "z": 12
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 16,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "copper_ore",
+      "position": {
+        "x": 6,
+        "z": 12
+      },
+      "rules": {
+        "public": false,
+        "capacity": 100,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 16,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "copper_ore",
+      "position": {
+        "x": 7,
+        "z": 12
+      },
+      "rules": {
+        "public": true,
+        "capacity": 50,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 48,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "stone",
+      "position": {
+        "x": 0,
+        "z": 15
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "stone",
+      "position": {
+        "x": 1,
+        "z": 15
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "stone",
+      "position": {
+        "x": 2,
+        "z": 15
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "stone",
+      "position": {
+        "x": 0,
+        "z": 16
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "stone",
+      "position": {
+        "x": 1,
+        "z": 16
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "stone",
+      "position": {
+        "x": 2,
+        "z": 16
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "stone",
+      "position": {
+        "x": 0,
+        "z": 17
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "stone",
+      "position": {
+        "x": 1,
+        "z": 17
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "stone",
+      "position": {
+        "x": 2,
+        "z": 17
+      },
+      "rules": {
+        "public": true,
+        "capacity": 80,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 24,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "sand",
+      "position": {
+        "x": 5,
+        "z": 15
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 6,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "sand",
+      "position": {
+        "x": 6,
+        "z": 15
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 6,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "sand",
+      "position": {
+        "x": 7,
+        "z": 15
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 6,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "sand",
+      "position": {
+        "x": 5,
+        "z": 16
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 6,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "sand",
+      "position": {
+        "x": 6,
+        "z": 16
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 6,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "sand",
+      "position": {
+        "x": 7,
+        "z": 16
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 6,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "sand",
+      "position": {
+        "x": 5,
+        "z": 17
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 6,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "sand",
+      "position": {
+        "x": 6,
+        "z": 17
+      },
+      "rules": {
+        "public": false,
+        "capacity": 160,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 6,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "sand",
+      "position": {
+        "x": 7,
+        "z": 17
+      },
+      "rules": {
+        "public": true,
+        "capacity": 80,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 18,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    }
+  ],
+  "harvestTicksPerUnit": 2,
+  "moveTicksPerCell": 1,
+  "tradeWindowTicks": 5,
+  "maxCommandsPerActorTick": 8,
+  "population": 20,
+  "maxTicks": 5000,
+  "plots": [
+    {
+      "id": 1,
+      "position": {
+        "x": 13,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 2,
+      "position": {
+        "x": 14,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 13,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 4,
+      "position": {
+        "x": 14,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 13,
+        "z": 2
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 14,
+        "z": 2
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 7,
+      "position": {
+        "x": 16,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 8,
+      "position": {
+        "x": 17,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 9,
+      "position": {
+        "x": 16,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 10,
+      "position": {
+        "x": 17,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 11,
+      "position": {
+        "x": 16,
+        "z": 2
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 12,
+      "position": {
+        "x": 17,
+        "z": 2
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 13,
+      "position": {
+        "x": 19,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 14,
+      "position": {
+        "x": 20,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 15,
+      "position": {
+        "x": 19,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 16,
+      "position": {
+        "x": 20,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 17,
+      "position": {
+        "x": 19,
+        "z": 2
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 18,
+      "position": {
+        "x": 20,
+        "z": 2
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 19,
+      "position": {
+        "x": 22,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 20,
+      "position": {
+        "x": 23,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 21,
+      "position": {
+        "x": 22,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 22,
+      "position": {
+        "x": 23,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 23,
+      "position": {
+        "x": 22,
+        "z": 2
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 24,
+      "position": {
+        "x": 23,
+        "z": 2
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 25,
+      "position": {
+        "x": 25,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 26,
+      "position": {
+        "x": 26,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 27,
+      "position": {
+        "x": 25,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 28,
+      "position": {
+        "x": 26,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 29,
+      "position": {
+        "x": 25,
+        "z": 2
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 30,
+      "position": {
+        "x": 26,
+        "z": 2
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 31,
+      "position": {
+        "x": 28,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 32,
+      "position": {
+        "x": 29,
+        "z": 0
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 33,
+      "position": {
+        "x": 28,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 34,
+      "position": {
+        "x": 29,
+        "z": 1
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 35,
+      "position": {
+        "x": 28,
+        "z": 2
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 36,
+      "position": {
+        "x": 29,
+        "z": 2
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 37,
+      "position": {
+        "x": 13,
+        "z": 6
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 38,
+      "position": {
+        "x": 14,
+        "z": 6
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 39,
+      "position": {
+        "x": 13,
+        "z": 7
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 40,
+      "position": {
+        "x": 14,
+        "z": 7
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 41,
+      "position": {
+        "x": 13,
+        "z": 8
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 42,
+      "position": {
+        "x": 14,
+        "z": 8
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 43,
+      "position": {
+        "x": 16,
+        "z": 6
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 44,
+      "position": {
+        "x": 17,
+        "z": 6
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 45,
+      "position": {
+        "x": 16,
+        "z": 7
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 46,
+      "position": {
+        "x": 17,
+        "z": 7
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 47,
+      "position": {
+        "x": 16,
+        "z": 8
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 48,
+      "position": {
+        "x": 17,
+        "z": 8
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 49,
+      "position": {
+        "x": 19,
+        "z": 6
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 50,
+      "position": {
+        "x": 20,
+        "z": 6
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 51,
+      "position": {
+        "x": 19,
+        "z": 7
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 52,
+      "position": {
+        "x": 20,
+        "z": 7
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 53,
+      "position": {
+        "x": 19,
+        "z": 8
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 54,
+      "position": {
+        "x": 20,
+        "z": 8
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 55,
+      "position": {
+        "x": 22,
+        "z": 6
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 56,
+      "position": {
+        "x": 23,
+        "z": 6
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 57,
+      "position": {
+        "x": 22,
+        "z": 7
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 58,
+      "position": {
+        "x": 23,
+        "z": 7
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 59,
+      "position": {
+        "x": 22,
+        "z": 8
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 60,
+      "position": {
+        "x": 23,
+        "z": 8
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 61,
+      "position": {
+        "x": 25,
+        "z": 6
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 62,
+      "position": {
+        "x": 26,
+        "z": 6
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 63,
+      "position": {
+        "x": 25,
+        "z": 7
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 64,
+      "position": {
+        "x": 26,
+        "z": 7
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 65,
+      "position": {
+        "x": 25,
+        "z": 8
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 66,
+      "position": {
+        "x": 26,
+        "z": 8
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 67,
+      "position": {
+        "x": 28,
+        "z": 6
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 68,
+      "position": {
+        "x": 29,
+        "z": 6
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 69,
+      "position": {
+        "x": 28,
+        "z": 7
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 70,
+      "position": {
+        "x": 29,
+        "z": 7
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 71,
+      "position": {
+        "x": 28,
+        "z": 8
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 72,
+      "position": {
+        "x": 29,
+        "z": 8
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 73,
+      "position": {
+        "x": 13,
+        "z": 12
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 74,
+      "position": {
+        "x": 14,
+        "z": 12
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 75,
+      "position": {
+        "x": 13,
+        "z": 13
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 76,
+      "position": {
+        "x": 14,
+        "z": 13
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 77,
+      "position": {
+        "x": 13,
+        "z": 14
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 78,
+      "position": {
+        "x": 14,
+        "z": 14
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 79,
+      "position": {
+        "x": 16,
+        "z": 12
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 80,
+      "position": {
+        "x": 17,
+        "z": 12
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 81,
+      "position": {
+        "x": 16,
+        "z": 13
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 82,
+      "position": {
+        "x": 17,
+        "z": 13
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 83,
+      "position": {
+        "x": 16,
+        "z": 14
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 84,
+      "position": {
+        "x": 17,
+        "z": 14
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 85,
+      "position": {
+        "x": 19,
+        "z": 12
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 86,
+      "position": {
+        "x": 20,
+        "z": 12
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 87,
+      "position": {
+        "x": 19,
+        "z": 13
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 88,
+      "position": {
+        "x": 20,
+        "z": 13
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 89,
+      "position": {
+        "x": 19,
+        "z": 14
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 90,
+      "position": {
+        "x": 20,
+        "z": 14
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 91,
+      "position": {
+        "x": 22,
+        "z": 12
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 92,
+      "position": {
+        "x": 23,
+        "z": 12
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 93,
+      "position": {
+        "x": 22,
+        "z": 13
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 94,
+      "position": {
+        "x": 23,
+        "z": 13
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 95,
+      "position": {
+        "x": 22,
+        "z": 14
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 96,
+      "position": {
+        "x": 23,
+        "z": 14
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 97,
+      "position": {
+        "x": 25,
+        "z": 12
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 98,
+      "position": {
+        "x": 26,
+        "z": 12
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 99,
+      "position": {
+        "x": 25,
+        "z": 13
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 100,
+      "position": {
+        "x": 26,
+        "z": 13
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 101,
+      "position": {
+        "x": 25,
+        "z": 14
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 102,
+      "position": {
+        "x": 26,
+        "z": 14
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 103,
+      "position": {
+        "x": 28,
+        "z": 12
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 104,
+      "position": {
+        "x": 29,
+        "z": 12
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 105,
+      "position": {
+        "x": 28,
+        "z": 13
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 106,
+      "position": {
+        "x": 29,
+        "z": 13
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 107,
+      "position": {
+        "x": 28,
+        "z": 14
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 108,
+      "position": {
+        "x": 29,
+        "z": 14
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 109,
+      "position": {
+        "x": 13,
+        "z": 18
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 110,
+      "position": {
+        "x": 14,
+        "z": 18
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 111,
+      "position": {
+        "x": 13,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 112,
+      "position": {
+        "x": 14,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 113,
+      "position": {
+        "x": 13,
+        "z": 20
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 114,
+      "position": {
+        "x": 14,
+        "z": 20
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 115,
+      "position": {
+        "x": 16,
+        "z": 18
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 116,
+      "position": {
+        "x": 17,
+        "z": 18
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 117,
+      "position": {
+        "x": 16,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 118,
+      "position": {
+        "x": 17,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 119,
+      "position": {
+        "x": 16,
+        "z": 20
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 120,
+      "position": {
+        "x": 17,
+        "z": 20
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 121,
+      "position": {
+        "x": 19,
+        "z": 18
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 122,
+      "position": {
+        "x": 20,
+        "z": 18
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 123,
+      "position": {
+        "x": 19,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 124,
+      "position": {
+        "x": 20,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 125,
+      "position": {
+        "x": 19,
+        "z": 20
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 126,
+      "position": {
+        "x": 20,
+        "z": 20
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 127,
+      "position": {
+        "x": 22,
+        "z": 18
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 128,
+      "position": {
+        "x": 23,
+        "z": 18
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 129,
+      "position": {
+        "x": 22,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 130,
+      "position": {
+        "x": 23,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 131,
+      "position": {
+        "x": 22,
+        "z": 20
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 132,
+      "position": {
+        "x": 23,
+        "z": 20
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 133,
+      "position": {
+        "x": 25,
+        "z": 18
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 134,
+      "position": {
+        "x": 26,
+        "z": 18
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 135,
+      "position": {
+        "x": 25,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 136,
+      "position": {
+        "x": 26,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 137,
+      "position": {
+        "x": 25,
+        "z": 20
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 138,
+      "position": {
+        "x": 26,
+        "z": 20
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 139,
+      "position": {
+        "x": 28,
+        "z": 18
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 140,
+      "position": {
+        "x": 29,
+        "z": 18
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 141,
+      "position": {
+        "x": 28,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 142,
+      "position": {
+        "x": 29,
+        "z": 19
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 143,
+      "position": {
+        "x": 28,
+        "z": 20
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 144,
+      "position": {
+        "x": 29,
+        "z": 20
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null
+    },
+    {
+      "id": 145,
+      "position": {
+        "x": 14,
+        "z": 24
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null,
+      "isShopSite": true
+    },
+    {
+      "id": 146,
+      "position": {
+        "x": 15,
+        "z": 24
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null,
+      "isShopSite": true
+    },
+    {
+      "id": 147,
+      "position": {
+        "x": 16,
+        "z": 24
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null,
+      "isShopSite": true
+    },
+    {
+      "id": 148,
+      "position": {
+        "x": 17,
+        "z": 24
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null,
+      "isShopSite": true
+    },
+    {
+      "id": 149,
+      "position": {
+        "x": 18,
+        "z": 24
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null,
+      "isShopSite": true
+    },
+    {
+      "id": 150,
+      "position": {
+        "x": 19,
+        "z": 24
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null,
+      "isShopSite": true
+    },
+    {
+      "id": 151,
+      "position": {
+        "x": 20,
+        "z": 24
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null,
+      "isShopSite": true
+    },
+    {
+      "id": 152,
+      "position": {
+        "x": 21,
+        "z": 24
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null,
+      "isShopSite": true
+    },
+    {
+      "id": 153,
+      "position": {
+        "x": 22,
+        "z": 24
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null,
+      "isShopSite": true
+    },
+    {
+      "id": 154,
+      "position": {
+        "x": 23,
+        "z": 24
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null,
+      "isShopSite": true
+    },
+    {
+      "id": 155,
+      "position": {
+        "x": 24,
+        "z": 24
+      },
+      "priceMinor": 10000,
+      "isCorridor": false,
+      "ownerId": null,
+      "shopParticipantId": null,
+      "isShopSite": true
+    }
+  ],
+  "buildingTypes": [
+    {
+      "id": "warehouse",
+      "kind": "Warehouse",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        },
+        {
+          "x": 1,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "",
+          "priceMinor": 10000,
+          "materials": [
+            {
+              "itemId": "plank",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 200,
+          "outputCapacity": 0,
+          "staffCapacity": 0,
+          "wageMinor": 0,
+          "workRateMultiplier": 1
+        }
+      ],
+      "walls": [
+        {
+          "x": 1,
+          "z": 0
+        }
+      ]
+    },
+    {
+      "id": "shop",
+      "kind": "Shop",
+      "footprint": [
+        {
+          "x": 0,
+          "z": 0
+        }
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "recipeId": "",
+          "priceMinor": 10000,
+          "materials": [
+            {
+              "itemId": "wood",
+              "quantity": 10
+            }
+          ],
+          "inputCapacity": 200,
+          "outputCapacity": 0,
+          "staffCapacity": 0,
+          "wageMinor": 0,
+          "workRateMultiplier": 1
+        }
+      ],
+      "walls": null
+    }
+  ],
+  "buildings": [],
+  "landReservationTicks": 120,
+  "maxActivePlotReservations": 4,
+  "labor": {
+    "stepTicks": 10,
+    "salaryChangeDelayTicks": 20,
+    "mobilityNumerator": 1,
+    "mobilityDenominator": 10,
+    "growthPeriodTicks": 120,
+    "growthPerPeriod": 1
+  },
+  "equipmentTypes": [],
+  "market": {
+    "auctionRoundTicks": 5,
+    "auctionRounds": 2,
+    "minimumRaiseMinor": 1,
+    "pickupTtlTicks": 120,
+    "pickupFineBasisPoints": 500
+  },
+  "delivery": {
+    "contractTtlTicks": 180,
+    "fineBasisPoints": 500,
+    "offerTtlTicks": 180
+  },
+  "logistics": {
+    "purchasePriceMinor": 20000,
+    "cargoCapacity": 10,
+    "moveTicksPerCell": 1,
+    "minimumCrew": 2,
+    "crewCapacity": 2,
+    "wageMinor": 20,
+    "upgrade": {
+      "priceMinor": 30000,
+      "materials": [
+        {
+          "itemId": "plank",
+          "quantity": 10
+        }
+      ],
+      "cargoCapacity": 20,
+      "minimumCrew": 3,
+      "crewCapacity": 3
+    }
+  },
+  "capitalDemand": {
+    "terminal": {
+      "x": 3,
+      "z": 21
+    },
+    "periodTicks": 60,
+    "bootstrapBaseBudgetMinor": 20000,
+    "demandNumerator": 11,
+    "demandDenominator": 10,
+    "commonWaveTicks": 600,
+    "itemWaveTicks": 240,
+    "orderTtlTicks": 180,
+    "priceScaleBasisPoints": 10000
+  },
+  "elections": {
+    "periodTicks": 600,
+    "baseVote": 1,
+    "pauseForBallots": true
+  },
+  "support": {
+    "tradingPoint": {
+      "x": 3,
+      "z": 21
+    },
+    "sectionCapacity": 80
+  },
+  "economy": {
+    "playerWageStepMinor": 5,
+    "reservationFeeBasisPoints": 1000,
+    "wageAttractionExponent": 3,
+    "commonPriceMinimumBasisPoints": 9000,
+    "commonPriceMaximumBasisPoints": 11000,
+    "itemPriceMinimumBasisPoints": 8000,
+    "itemPriceMaximumBasisPoints": 12000,
+    "noiseMinimumBasisPoints": 9800,
+    "noiseMaximumBasisPoints": 10200,
+    "demandWeightMinimumBasisPoints": 5000,
+    "demandWeightMaximumBasisPoints": 15000,
+    "city": {
+      "confirmationTicks": 30,
+      "settlement": {
+        "capitalMinor": 150000,
+        "population": 25,
+        "activeProductions": 1
+      },
+      "smallTown": {
+        "capitalMinor": 400000,
+        "population": 40,
+        "activeProductions": 3
+      },
+      "developedTown": {
+        "capitalMinor": 1000000,
+        "population": 80,
+        "activeProductions": 6
+      }
+    },
+    "handling": {
+      "personalVolumePerTick": 4,
+      "workerVolumePerTick": 4
+    },
+    "negotiations": {
+      "ttlTicks": 60,
+      "maxVersions": 4,
+      "maxActivePerParticipant": 16
+    }
+  },
+  "economyProfileId": "vnext-b1-supported-1",
+  "layout": {
+    "version": "map-adapter-2",
+    "sourceId": "compact_valley",
+    "sourceName": "\u041C\u0430\u043B\u0430\u044F \u0434\u043E\u043B\u0438\u043D\u0430",
+    "sourceSha256": "0196b02928d12ad6be23239f82ead6d285e4d897cc87d7e395c9e9ee6463dbbc",
+    "maxParticipants": 11,
+    "roadCenterCells": [
+      {
+        "x": 0,
+        "z": 25
+      },
+      {
+        "x": 1,
+        "z": 25
+      },
+      {
+        "x": 2,
+        "z": 25
+      },
+      {
+        "x": 3,
+        "z": 25
+      },
+      {
+        "x": 4,
+        "z": 25
+      },
+      {
+        "x": 5,
+        "z": 25
+      },
+      {
+        "x": 6,
+        "z": 25
+      },
+      {
+        "x": 7,
+        "z": 25
+      },
+      {
+        "x": 8,
+        "z": 25
+      },
+      {
+        "x": 9,
+        "z": 2
+      },
+      {
+        "x": 9,
+        "z": 7
+      },
+      {
+        "x": 9,
+        "z": 12
+      },
+      {
+        "x": 9,
+        "z": 17
+      },
+      {
+        "x": 9,
+        "z": 25
+      },
+      {
+        "x": 10,
+        "z": 2
+      },
+      {
+        "x": 10,
+        "z": 7
+      },
+      {
+        "x": 10,
+        "z": 12
+      },
+      {
+        "x": 10,
+        "z": 17
+      },
+      {
+        "x": 10,
+        "z": 25
+      },
+      {
+        "x": 11,
+        "z": 0
+      },
+      {
+        "x": 11,
+        "z": 1
+      },
+      {
+        "x": 11,
+        "z": 2
+      },
+      {
+        "x": 11,
+        "z": 3
+      },
+      {
+        "x": 11,
+        "z": 4
+      },
+      {
+        "x": 11,
+        "z": 5
+      },
+      {
+        "x": 11,
+        "z": 6
+      },
+      {
+        "x": 11,
+        "z": 7
+      },
+      {
+        "x": 11,
+        "z": 8
+      },
+      {
+        "x": 11,
+        "z": 9
+      },
+      {
+        "x": 11,
+        "z": 10
+      },
+      {
+        "x": 11,
+        "z": 11
+      },
+      {
+        "x": 11,
+        "z": 12
+      },
+      {
+        "x": 11,
+        "z": 13
+      },
+      {
+        "x": 11,
+        "z": 14
+      },
+      {
+        "x": 11,
+        "z": 15
+      },
+      {
+        "x": 11,
+        "z": 16
+      },
+      {
+        "x": 11,
+        "z": 17
+      },
+      {
+        "x": 11,
+        "z": 18
+      },
+      {
+        "x": 11,
+        "z": 19
+      },
+      {
+        "x": 11,
+        "z": 20
+      },
+      {
+        "x": 11,
+        "z": 21
+      },
+      {
+        "x": 11,
+        "z": 22
+      },
+      {
+        "x": 11,
+        "z": 23
+      },
+      {
+        "x": 11,
+        "z": 24
+      },
+      {
+        "x": 11,
+        "z": 25
+      },
+      {
+        "x": 12,
+        "z": 4
+      },
+      {
+        "x": 12,
+        "z": 10
+      },
+      {
+        "x": 12,
+        "z": 16
+      },
+      {
+        "x": 12,
+        "z": 22
+      },
+      {
+        "x": 13,
+        "z": 4
+      },
+      {
+        "x": 13,
+        "z": 10
+      },
+      {
+        "x": 13,
+        "z": 16
+      },
+      {
+        "x": 13,
+        "z": 22
+      },
+      {
+        "x": 14,
+        "z": 4
+      },
+      {
+        "x": 14,
+        "z": 10
+      },
+      {
+        "x": 14,
+        "z": 16
+      },
+      {
+        "x": 14,
+        "z": 22
+      },
+      {
+        "x": 15,
+        "z": 4
+      },
+      {
+        "x": 15,
+        "z": 10
+      },
+      {
+        "x": 15,
+        "z": 16
+      },
+      {
+        "x": 15,
+        "z": 22
+      },
+      {
+        "x": 16,
+        "z": 4
+      },
+      {
+        "x": 16,
+        "z": 10
+      },
+      {
+        "x": 16,
+        "z": 16
+      },
+      {
+        "x": 16,
+        "z": 22
+      },
+      {
+        "x": 17,
+        "z": 4
+      },
+      {
+        "x": 17,
+        "z": 10
+      },
+      {
+        "x": 17,
+        "z": 16
+      },
+      {
+        "x": 17,
+        "z": 22
+      },
+      {
+        "x": 18,
+        "z": 4
+      },
+      {
+        "x": 18,
+        "z": 10
+      },
+      {
+        "x": 18,
+        "z": 16
+      },
+      {
+        "x": 18,
+        "z": 22
+      },
+      {
+        "x": 19,
+        "z": 4
+      },
+      {
+        "x": 19,
+        "z": 10
+      },
+      {
+        "x": 19,
+        "z": 16
+      },
+      {
+        "x": 19,
+        "z": 22
+      },
+      {
+        "x": 20,
+        "z": 4
+      },
+      {
+        "x": 20,
+        "z": 10
+      },
+      {
+        "x": 20,
+        "z": 16
+      },
+      {
+        "x": 20,
+        "z": 22
+      },
+      {
+        "x": 21,
+        "z": 4
+      },
+      {
+        "x": 21,
+        "z": 10
+      },
+      {
+        "x": 21,
+        "z": 16
+      },
+      {
+        "x": 21,
+        "z": 22
+      },
+      {
+        "x": 22,
+        "z": 4
+      },
+      {
+        "x": 22,
+        "z": 10
+      },
+      {
+        "x": 22,
+        "z": 16
+      },
+      {
+        "x": 22,
+        "z": 22
+      },
+      {
+        "x": 23,
+        "z": 4
+      },
+      {
+        "x": 23,
+        "z": 10
+      },
+      {
+        "x": 23,
+        "z": 16
+      },
+      {
+        "x": 23,
+        "z": 22
+      },
+      {
+        "x": 24,
+        "z": 4
+      },
+      {
+        "x": 24,
+        "z": 10
+      },
+      {
+        "x": 24,
+        "z": 16
+      },
+      {
+        "x": 24,
+        "z": 22
+      },
+      {
+        "x": 25,
+        "z": 4
+      },
+      {
+        "x": 25,
+        "z": 10
+      },
+      {
+        "x": 25,
+        "z": 16
+      },
+      {
+        "x": 25,
+        "z": 22
+      },
+      {
+        "x": 26,
+        "z": 4
+      },
+      {
+        "x": 26,
+        "z": 10
+      },
+      {
+        "x": 26,
+        "z": 16
+      },
+      {
+        "x": 26,
+        "z": 22
+      },
+      {
+        "x": 27,
+        "z": 4
+      },
+      {
+        "x": 27,
+        "z": 10
+      },
+      {
+        "x": 27,
+        "z": 16
+      },
+      {
+        "x": 27,
+        "z": 22
+      },
+      {
+        "x": 28,
+        "z": 4
+      },
+      {
+        "x": 28,
+        "z": 10
+      },
+      {
+        "x": 28,
+        "z": 16
+      },
+      {
+        "x": 28,
+        "z": 22
+      },
+      {
+        "x": 29,
+        "z": 4
+      },
+      {
+        "x": 29,
+        "z": 10
+      },
+      {
+        "x": 29,
+        "z": 16
+      },
+      {
+        "x": 29,
+        "z": 22
+      },
+      {
+        "x": 30,
+        "z": 4
+      },
+      {
+        "x": 30,
+        "z": 10
+      },
+      {
+        "x": 30,
+        "z": 16
+      },
+      {
+        "x": 30,
+        "z": 22
+      },
+      {
+        "x": 31,
+        "z": 4
+      },
+      {
+        "x": 31,
+        "z": 10
+      },
+      {
+        "x": 31,
+        "z": 16
+      },
+      {
+        "x": 31,
+        "z": 22
+      }
+    ],
+    "roadCorridorCells": [
+      {
+        "x": 0,
+        "z": 24
+      },
+      {
+        "x": 0,
+        "z": 25
+      },
+      {
+        "x": 0,
+        "z": 26
+      },
+      {
+        "x": 1,
+        "z": 24
+      },
+      {
+        "x": 1,
+        "z": 25
+      },
+      {
+        "x": 1,
+        "z": 26
+      },
+      {
+        "x": 2,
+        "z": 24
+      },
+      {
+        "x": 2,
+        "z": 25
+      },
+      {
+        "x": 2,
+        "z": 26
+      },
+      {
+        "x": 3,
+        "z": 24
+      },
+      {
+        "x": 3,
+        "z": 25
+      },
+      {
+        "x": 3,
+        "z": 26
+      },
+      {
+        "x": 4,
+        "z": 24
+      },
+      {
+        "x": 4,
+        "z": 25
+      },
+      {
+        "x": 4,
+        "z": 26
+      },
+      {
+        "x": 5,
+        "z": 24
+      },
+      {
+        "x": 5,
+        "z": 25
+      },
+      {
+        "x": 5,
+        "z": 26
+      },
+      {
+        "x": 6,
+        "z": 24
+      },
+      {
+        "x": 6,
+        "z": 25
+      },
+      {
+        "x": 6,
+        "z": 26
+      },
+      {
+        "x": 7,
+        "z": 24
+      },
+      {
+        "x": 7,
+        "z": 25
+      },
+      {
+        "x": 7,
+        "z": 26
+      },
+      {
+        "x": 8,
+        "z": 2
+      },
+      {
+        "x": 8,
+        "z": 7
+      },
+      {
+        "x": 8,
+        "z": 12
+      },
+      {
+        "x": 8,
+        "z": 17
+      },
+      {
+        "x": 8,
+        "z": 24
+      },
+      {
+        "x": 8,
+        "z": 25
+      },
+      {
+        "x": 8,
+        "z": 26
+      },
+      {
+        "x": 9,
+        "z": 1
+      },
+      {
+        "x": 9,
+        "z": 2
+      },
+      {
+        "x": 9,
+        "z": 3
+      },
+      {
+        "x": 9,
+        "z": 6
+      },
+      {
+        "x": 9,
+        "z": 7
+      },
+      {
+        "x": 9,
+        "z": 8
+      },
+      {
+        "x": 9,
+        "z": 11
+      },
+      {
+        "x": 9,
+        "z": 12
+      },
+      {
+        "x": 9,
+        "z": 13
+      },
+      {
+        "x": 9,
+        "z": 16
+      },
+      {
+        "x": 9,
+        "z": 17
+      },
+      {
+        "x": 9,
+        "z": 18
+      },
+      {
+        "x": 9,
+        "z": 24
+      },
+      {
+        "x": 9,
+        "z": 25
+      },
+      {
+        "x": 9,
+        "z": 26
+      },
+      {
+        "x": 10,
+        "z": 0
+      },
+      {
+        "x": 10,
+        "z": 1
+      },
+      {
+        "x": 10,
+        "z": 2
+      },
+      {
+        "x": 10,
+        "z": 3
+      },
+      {
+        "x": 10,
+        "z": 4
+      },
+      {
+        "x": 10,
+        "z": 5
+      },
+      {
+        "x": 10,
+        "z": 6
+      },
+      {
+        "x": 10,
+        "z": 7
+      },
+      {
+        "x": 10,
+        "z": 8
+      },
+      {
+        "x": 10,
+        "z": 9
+      },
+      {
+        "x": 10,
+        "z": 10
+      },
+      {
+        "x": 10,
+        "z": 11
+      },
+      {
+        "x": 10,
+        "z": 12
+      },
+      {
+        "x": 10,
+        "z": 13
+      },
+      {
+        "x": 10,
+        "z": 14
+      },
+      {
+        "x": 10,
+        "z": 15
+      },
+      {
+        "x": 10,
+        "z": 16
+      },
+      {
+        "x": 10,
+        "z": 17
+      },
+      {
+        "x": 10,
+        "z": 18
+      },
+      {
+        "x": 10,
+        "z": 19
+      },
+      {
+        "x": 10,
+        "z": 20
+      },
+      {
+        "x": 10,
+        "z": 21
+      },
+      {
+        "x": 10,
+        "z": 22
+      },
+      {
+        "x": 10,
+        "z": 23
+      },
+      {
+        "x": 10,
+        "z": 24
+      },
+      {
+        "x": 10,
+        "z": 25
+      },
+      {
+        "x": 10,
+        "z": 26
+      },
+      {
+        "x": 11,
+        "z": 0
+      },
+      {
+        "x": 11,
+        "z": 1
+      },
+      {
+        "x": 11,
+        "z": 2
+      },
+      {
+        "x": 11,
+        "z": 3
+      },
+      {
+        "x": 11,
+        "z": 4
+      },
+      {
+        "x": 11,
+        "z": 5
+      },
+      {
+        "x": 11,
+        "z": 6
+      },
+      {
+        "x": 11,
+        "z": 7
+      },
+      {
+        "x": 11,
+        "z": 8
+      },
+      {
+        "x": 11,
+        "z": 9
+      },
+      {
+        "x": 11,
+        "z": 10
+      },
+      {
+        "x": 11,
+        "z": 11
+      },
+      {
+        "x": 11,
+        "z": 12
+      },
+      {
+        "x": 11,
+        "z": 13
+      },
+      {
+        "x": 11,
+        "z": 14
+      },
+      {
+        "x": 11,
+        "z": 15
+      },
+      {
+        "x": 11,
+        "z": 16
+      },
+      {
+        "x": 11,
+        "z": 17
+      },
+      {
+        "x": 11,
+        "z": 18
+      },
+      {
+        "x": 11,
+        "z": 19
+      },
+      {
+        "x": 11,
+        "z": 20
+      },
+      {
+        "x": 11,
+        "z": 21
+      },
+      {
+        "x": 11,
+        "z": 22
+      },
+      {
+        "x": 11,
+        "z": 23
+      },
+      {
+        "x": 11,
+        "z": 24
+      },
+      {
+        "x": 11,
+        "z": 25
+      },
+      {
+        "x": 11,
+        "z": 26
+      },
+      {
+        "x": 12,
+        "z": 0
+      },
+      {
+        "x": 12,
+        "z": 1
+      },
+      {
+        "x": 12,
+        "z": 2
+      },
+      {
+        "x": 12,
+        "z": 3
+      },
+      {
+        "x": 12,
+        "z": 4
+      },
+      {
+        "x": 12,
+        "z": 5
+      },
+      {
+        "x": 12,
+        "z": 6
+      },
+      {
+        "x": 12,
+        "z": 7
+      },
+      {
+        "x": 12,
+        "z": 8
+      },
+      {
+        "x": 12,
+        "z": 9
+      },
+      {
+        "x": 12,
+        "z": 10
+      },
+      {
+        "x": 12,
+        "z": 11
+      },
+      {
+        "x": 12,
+        "z": 12
+      },
+      {
+        "x": 12,
+        "z": 13
+      },
+      {
+        "x": 12,
+        "z": 14
+      },
+      {
+        "x": 12,
+        "z": 15
+      },
+      {
+        "x": 12,
+        "z": 16
+      },
+      {
+        "x": 12,
+        "z": 17
+      },
+      {
+        "x": 12,
+        "z": 18
+      },
+      {
+        "x": 12,
+        "z": 19
+      },
+      {
+        "x": 12,
+        "z": 20
+      },
+      {
+        "x": 12,
+        "z": 21
+      },
+      {
+        "x": 12,
+        "z": 22
+      },
+      {
+        "x": 12,
+        "z": 23
+      },
+      {
+        "x": 12,
+        "z": 24
+      },
+      {
+        "x": 12,
+        "z": 25
+      },
+      {
+        "x": 13,
+        "z": 3
+      },
+      {
+        "x": 13,
+        "z": 4
+      },
+      {
+        "x": 13,
+        "z": 5
+      },
+      {
+        "x": 13,
+        "z": 9
+      },
+      {
+        "x": 13,
+        "z": 10
+      },
+      {
+        "x": 13,
+        "z": 11
+      },
+      {
+        "x": 13,
+        "z": 15
+      },
+      {
+        "x": 13,
+        "z": 16
+      },
+      {
+        "x": 13,
+        "z": 17
+      },
+      {
+        "x": 13,
+        "z": 21
+      },
+      {
+        "x": 13,
+        "z": 22
+      },
+      {
+        "x": 13,
+        "z": 23
+      },
+      {
+        "x": 14,
+        "z": 3
+      },
+      {
+        "x": 14,
+        "z": 4
+      },
+      {
+        "x": 14,
+        "z": 5
+      },
+      {
+        "x": 14,
+        "z": 9
+      },
+      {
+        "x": 14,
+        "z": 10
+      },
+      {
+        "x": 14,
+        "z": 11
+      },
+      {
+        "x": 14,
+        "z": 15
+      },
+      {
+        "x": 14,
+        "z": 16
+      },
+      {
+        "x": 14,
+        "z": 17
+      },
+      {
+        "x": 14,
+        "z": 21
+      },
+      {
+        "x": 14,
+        "z": 22
+      },
+      {
+        "x": 14,
+        "z": 23
+      },
+      {
+        "x": 15,
+        "z": 3
+      },
+      {
+        "x": 15,
+        "z": 4
+      },
+      {
+        "x": 15,
+        "z": 5
+      },
+      {
+        "x": 15,
+        "z": 9
+      },
+      {
+        "x": 15,
+        "z": 10
+      },
+      {
+        "x": 15,
+        "z": 11
+      },
+      {
+        "x": 15,
+        "z": 15
+      },
+      {
+        "x": 15,
+        "z": 16
+      },
+      {
+        "x": 15,
+        "z": 17
+      },
+      {
+        "x": 15,
+        "z": 21
+      },
+      {
+        "x": 15,
+        "z": 22
+      },
+      {
+        "x": 15,
+        "z": 23
+      },
+      {
+        "x": 16,
+        "z": 3
+      },
+      {
+        "x": 16,
+        "z": 4
+      },
+      {
+        "x": 16,
+        "z": 5
+      },
+      {
+        "x": 16,
+        "z": 9
+      },
+      {
+        "x": 16,
+        "z": 10
+      },
+      {
+        "x": 16,
+        "z": 11
+      },
+      {
+        "x": 16,
+        "z": 15
+      },
+      {
+        "x": 16,
+        "z": 16
+      },
+      {
+        "x": 16,
+        "z": 17
+      },
+      {
+        "x": 16,
+        "z": 21
+      },
+      {
+        "x": 16,
+        "z": 22
+      },
+      {
+        "x": 16,
+        "z": 23
+      },
+      {
+        "x": 17,
+        "z": 3
+      },
+      {
+        "x": 17,
+        "z": 4
+      },
+      {
+        "x": 17,
+        "z": 5
+      },
+      {
+        "x": 17,
+        "z": 9
+      },
+      {
+        "x": 17,
+        "z": 10
+      },
+      {
+        "x": 17,
+        "z": 11
+      },
+      {
+        "x": 17,
+        "z": 15
+      },
+      {
+        "x": 17,
+        "z": 16
+      },
+      {
+        "x": 17,
+        "z": 17
+      },
+      {
+        "x": 17,
+        "z": 21
+      },
+      {
+        "x": 17,
+        "z": 22
+      },
+      {
+        "x": 17,
+        "z": 23
+      },
+      {
+        "x": 18,
+        "z": 3
+      },
+      {
+        "x": 18,
+        "z": 4
+      },
+      {
+        "x": 18,
+        "z": 5
+      },
+      {
+        "x": 18,
+        "z": 9
+      },
+      {
+        "x": 18,
+        "z": 10
+      },
+      {
+        "x": 18,
+        "z": 11
+      },
+      {
+        "x": 18,
+        "z": 15
+      },
+      {
+        "x": 18,
+        "z": 16
+      },
+      {
+        "x": 18,
+        "z": 17
+      },
+      {
+        "x": 18,
+        "z": 21
+      },
+      {
+        "x": 18,
+        "z": 22
+      },
+      {
+        "x": 18,
+        "z": 23
+      },
+      {
+        "x": 19,
+        "z": 3
+      },
+      {
+        "x": 19,
+        "z": 4
+      },
+      {
+        "x": 19,
+        "z": 5
+      },
+      {
+        "x": 19,
+        "z": 9
+      },
+      {
+        "x": 19,
+        "z": 10
+      },
+      {
+        "x": 19,
+        "z": 11
+      },
+      {
+        "x": 19,
+        "z": 15
+      },
+      {
+        "x": 19,
+        "z": 16
+      },
+      {
+        "x": 19,
+        "z": 17
+      },
+      {
+        "x": 19,
+        "z": 21
+      },
+      {
+        "x": 19,
+        "z": 22
+      },
+      {
+        "x": 19,
+        "z": 23
+      },
+      {
+        "x": 20,
+        "z": 3
+      },
+      {
+        "x": 20,
+        "z": 4
+      },
+      {
+        "x": 20,
+        "z": 5
+      },
+      {
+        "x": 20,
+        "z": 9
+      },
+      {
+        "x": 20,
+        "z": 10
+      },
+      {
+        "x": 20,
+        "z": 11
+      },
+      {
+        "x": 20,
+        "z": 15
+      },
+      {
+        "x": 20,
+        "z": 16
+      },
+      {
+        "x": 20,
+        "z": 17
+      },
+      {
+        "x": 20,
+        "z": 21
+      },
+      {
+        "x": 20,
+        "z": 22
+      },
+      {
+        "x": 20,
+        "z": 23
+      },
+      {
+        "x": 21,
+        "z": 3
+      },
+      {
+        "x": 21,
+        "z": 4
+      },
+      {
+        "x": 21,
+        "z": 5
+      },
+      {
+        "x": 21,
+        "z": 9
+      },
+      {
+        "x": 21,
+        "z": 10
+      },
+      {
+        "x": 21,
+        "z": 11
+      },
+      {
+        "x": 21,
+        "z": 15
+      },
+      {
+        "x": 21,
+        "z": 16
+      },
+      {
+        "x": 21,
+        "z": 17
+      },
+      {
+        "x": 21,
+        "z": 21
+      },
+      {
+        "x": 21,
+        "z": 22
+      },
+      {
+        "x": 21,
+        "z": 23
+      },
+      {
+        "x": 22,
+        "z": 3
+      },
+      {
+        "x": 22,
+        "z": 4
+      },
+      {
+        "x": 22,
+        "z": 5
+      },
+      {
+        "x": 22,
+        "z": 9
+      },
+      {
+        "x": 22,
+        "z": 10
+      },
+      {
+        "x": 22,
+        "z": 11
+      },
+      {
+        "x": 22,
+        "z": 15
+      },
+      {
+        "x": 22,
+        "z": 16
+      },
+      {
+        "x": 22,
+        "z": 17
+      },
+      {
+        "x": 22,
+        "z": 21
+      },
+      {
+        "x": 22,
+        "z": 22
+      },
+      {
+        "x": 22,
+        "z": 23
+      },
+      {
+        "x": 23,
+        "z": 3
+      },
+      {
+        "x": 23,
+        "z": 4
+      },
+      {
+        "x": 23,
+        "z": 5
+      },
+      {
+        "x": 23,
+        "z": 9
+      },
+      {
+        "x": 23,
+        "z": 10
+      },
+      {
+        "x": 23,
+        "z": 11
+      },
+      {
+        "x": 23,
+        "z": 15
+      },
+      {
+        "x": 23,
+        "z": 16
+      },
+      {
+        "x": 23,
+        "z": 17
+      },
+      {
+        "x": 23,
+        "z": 21
+      },
+      {
+        "x": 23,
+        "z": 22
+      },
+      {
+        "x": 23,
+        "z": 23
+      },
+      {
+        "x": 24,
+        "z": 3
+      },
+      {
+        "x": 24,
+        "z": 4
+      },
+      {
+        "x": 24,
+        "z": 5
+      },
+      {
+        "x": 24,
+        "z": 9
+      },
+      {
+        "x": 24,
+        "z": 10
+      },
+      {
+        "x": 24,
+        "z": 11
+      },
+      {
+        "x": 24,
+        "z": 15
+      },
+      {
+        "x": 24,
+        "z": 16
+      },
+      {
+        "x": 24,
+        "z": 17
+      },
+      {
+        "x": 24,
+        "z": 21
+      },
+      {
+        "x": 24,
+        "z": 22
+      },
+      {
+        "x": 24,
+        "z": 23
+      },
+      {
+        "x": 25,
+        "z": 3
+      },
+      {
+        "x": 25,
+        "z": 4
+      },
+      {
+        "x": 25,
+        "z": 5
+      },
+      {
+        "x": 25,
+        "z": 9
+      },
+      {
+        "x": 25,
+        "z": 10
+      },
+      {
+        "x": 25,
+        "z": 11
+      },
+      {
+        "x": 25,
+        "z": 15
+      },
+      {
+        "x": 25,
+        "z": 16
+      },
+      {
+        "x": 25,
+        "z": 17
+      },
+      {
+        "x": 25,
+        "z": 21
+      },
+      {
+        "x": 25,
+        "z": 22
+      },
+      {
+        "x": 25,
+        "z": 23
+      },
+      {
+        "x": 26,
+        "z": 3
+      },
+      {
+        "x": 26,
+        "z": 4
+      },
+      {
+        "x": 26,
+        "z": 5
+      },
+      {
+        "x": 26,
+        "z": 9
+      },
+      {
+        "x": 26,
+        "z": 10
+      },
+      {
+        "x": 26,
+        "z": 11
+      },
+      {
+        "x": 26,
+        "z": 15
+      },
+      {
+        "x": 26,
+        "z": 16
+      },
+      {
+        "x": 26,
+        "z": 17
+      },
+      {
+        "x": 26,
+        "z": 21
+      },
+      {
+        "x": 26,
+        "z": 22
+      },
+      {
+        "x": 26,
+        "z": 23
+      },
+      {
+        "x": 27,
+        "z": 3
+      },
+      {
+        "x": 27,
+        "z": 4
+      },
+      {
+        "x": 27,
+        "z": 5
+      },
+      {
+        "x": 27,
+        "z": 9
+      },
+      {
+        "x": 27,
+        "z": 10
+      },
+      {
+        "x": 27,
+        "z": 11
+      },
+      {
+        "x": 27,
+        "z": 15
+      },
+      {
+        "x": 27,
+        "z": 16
+      },
+      {
+        "x": 27,
+        "z": 17
+      },
+      {
+        "x": 27,
+        "z": 21
+      },
+      {
+        "x": 27,
+        "z": 22
+      },
+      {
+        "x": 27,
+        "z": 23
+      },
+      {
+        "x": 28,
+        "z": 3
+      },
+      {
+        "x": 28,
+        "z": 4
+      },
+      {
+        "x": 28,
+        "z": 5
+      },
+      {
+        "x": 28,
+        "z": 9
+      },
+      {
+        "x": 28,
+        "z": 10
+      },
+      {
+        "x": 28,
+        "z": 11
+      },
+      {
+        "x": 28,
+        "z": 15
+      },
+      {
+        "x": 28,
+        "z": 16
+      },
+      {
+        "x": 28,
+        "z": 17
+      },
+      {
+        "x": 28,
+        "z": 21
+      },
+      {
+        "x": 28,
+        "z": 22
+      },
+      {
+        "x": 28,
+        "z": 23
+      },
+      {
+        "x": 29,
+        "z": 3
+      },
+      {
+        "x": 29,
+        "z": 4
+      },
+      {
+        "x": 29,
+        "z": 5
+      },
+      {
+        "x": 29,
+        "z": 9
+      },
+      {
+        "x": 29,
+        "z": 10
+      },
+      {
+        "x": 29,
+        "z": 11
+      },
+      {
+        "x": 29,
+        "z": 15
+      },
+      {
+        "x": 29,
+        "z": 16
+      },
+      {
+        "x": 29,
+        "z": 17
+      },
+      {
+        "x": 29,
+        "z": 21
+      },
+      {
+        "x": 29,
+        "z": 22
+      },
+      {
+        "x": 29,
+        "z": 23
+      },
+      {
+        "x": 30,
+        "z": 3
+      },
+      {
+        "x": 30,
+        "z": 4
+      },
+      {
+        "x": 30,
+        "z": 5
+      },
+      {
+        "x": 30,
+        "z": 9
+      },
+      {
+        "x": 30,
+        "z": 10
+      },
+      {
+        "x": 30,
+        "z": 11
+      },
+      {
+        "x": 30,
+        "z": 15
+      },
+      {
+        "x": 30,
+        "z": 16
+      },
+      {
+        "x": 30,
+        "z": 17
+      },
+      {
+        "x": 30,
+        "z": 21
+      },
+      {
+        "x": 30,
+        "z": 22
+      },
+      {
+        "x": 30,
+        "z": 23
+      },
+      {
+        "x": 31,
+        "z": 3
+      },
+      {
+        "x": 31,
+        "z": 4
+      },
+      {
+        "x": 31,
+        "z": 5
+      },
+      {
+        "x": 31,
+        "z": 9
+      },
+      {
+        "x": 31,
+        "z": 10
+      },
+      {
+        "x": 31,
+        "z": 11
+      },
+      {
+        "x": 31,
+        "z": 15
+      },
+      {
+        "x": 31,
+        "z": 16
+      },
+      {
+        "x": 31,
+        "z": 17
+      },
+      {
+        "x": 31,
+        "z": 21
+      },
+      {
+        "x": 31,
+        "z": 22
+      },
+      {
+        "x": 31,
+        "z": 23
+      }
+    ],
+    "initialCityDirtCells": [
+      {
+        "x": 0,
+        "z": 25
+      },
+      {
+        "x": 1,
+        "z": 25
+      },
+      {
+        "x": 2,
+        "z": 25
+      },
+      {
+        "x": 3,
+        "z": 25
+      },
+      {
+        "x": 4,
+        "z": 25
+      },
+      {
+        "x": 5,
+        "z": 25
+      },
+      {
+        "x": 6,
+        "z": 25
+      },
+      {
+        "x": 7,
+        "z": 25
+      },
+      {
+        "x": 8,
+        "z": 25
+      },
+      {
+        "x": 9,
+        "z": 2
+      },
+      {
+        "x": 9,
+        "z": 7
+      },
+      {
+        "x": 9,
+        "z": 12
+      },
+      {
+        "x": 9,
+        "z": 17
+      },
+      {
+        "x": 9,
+        "z": 25
+      },
+      {
+        "x": 10,
+        "z": 2
+      },
+      {
+        "x": 10,
+        "z": 7
+      },
+      {
+        "x": 10,
+        "z": 12
+      },
+      {
+        "x": 10,
+        "z": 17
+      },
+      {
+        "x": 10,
+        "z": 25
+      },
+      {
+        "x": 11,
+        "z": 0
+      },
+      {
+        "x": 11,
+        "z": 1
+      },
+      {
+        "x": 11,
+        "z": 2
+      },
+      {
+        "x": 11,
+        "z": 3
+      },
+      {
+        "x": 11,
+        "z": 4
+      },
+      {
+        "x": 11,
+        "z": 5
+      },
+      {
+        "x": 11,
+        "z": 6
+      },
+      {
+        "x": 11,
+        "z": 7
+      },
+      {
+        "x": 11,
+        "z": 8
+      },
+      {
+        "x": 11,
+        "z": 9
+      },
+      {
+        "x": 11,
+        "z": 10
+      },
+      {
+        "x": 11,
+        "z": 11
+      },
+      {
+        "x": 11,
+        "z": 12
+      },
+      {
+        "x": 11,
+        "z": 13
+      },
+      {
+        "x": 11,
+        "z": 14
+      },
+      {
+        "x": 11,
+        "z": 15
+      },
+      {
+        "x": 11,
+        "z": 16
+      },
+      {
+        "x": 11,
+        "z": 17
+      },
+      {
+        "x": 11,
+        "z": 18
+      },
+      {
+        "x": 11,
+        "z": 19
+      },
+      {
+        "x": 11,
+        "z": 20
+      },
+      {
+        "x": 11,
+        "z": 21
+      },
+      {
+        "x": 11,
+        "z": 22
+      },
+      {
+        "x": 11,
+        "z": 23
+      },
+      {
+        "x": 11,
+        "z": 24
+      },
+      {
+        "x": 11,
+        "z": 25
+      },
+      {
+        "x": 12,
+        "z": 4
+      },
+      {
+        "x": 12,
+        "z": 10
+      },
+      {
+        "x": 12,
+        "z": 16
+      },
+      {
+        "x": 12,
+        "z": 22
+      },
+      {
+        "x": 13,
+        "z": 4
+      },
+      {
+        "x": 13,
+        "z": 10
+      },
+      {
+        "x": 13,
+        "z": 16
+      },
+      {
+        "x": 13,
+        "z": 22
+      },
+      {
+        "x": 14,
+        "z": 4
+      },
+      {
+        "x": 14,
+        "z": 10
+      },
+      {
+        "x": 14,
+        "z": 16
+      },
+      {
+        "x": 14,
+        "z": 22
+      },
+      {
+        "x": 15,
+        "z": 4
+      },
+      {
+        "x": 15,
+        "z": 10
+      },
+      {
+        "x": 15,
+        "z": 16
+      },
+      {
+        "x": 15,
+        "z": 22
+      },
+      {
+        "x": 16,
+        "z": 4
+      },
+      {
+        "x": 16,
+        "z": 10
+      },
+      {
+        "x": 16,
+        "z": 16
+      },
+      {
+        "x": 16,
+        "z": 22
+      },
+      {
+        "x": 17,
+        "z": 4
+      },
+      {
+        "x": 17,
+        "z": 10
+      },
+      {
+        "x": 17,
+        "z": 16
+      },
+      {
+        "x": 17,
+        "z": 22
+      },
+      {
+        "x": 18,
+        "z": 4
+      },
+      {
+        "x": 18,
+        "z": 10
+      },
+      {
+        "x": 18,
+        "z": 16
+      },
+      {
+        "x": 18,
+        "z": 22
+      },
+      {
+        "x": 19,
+        "z": 4
+      },
+      {
+        "x": 19,
+        "z": 10
+      },
+      {
+        "x": 19,
+        "z": 16
+      },
+      {
+        "x": 19,
+        "z": 22
+      },
+      {
+        "x": 20,
+        "z": 4
+      },
+      {
+        "x": 20,
+        "z": 10
+      },
+      {
+        "x": 20,
+        "z": 16
+      },
+      {
+        "x": 20,
+        "z": 22
+      },
+      {
+        "x": 21,
+        "z": 4
+      },
+      {
+        "x": 21,
+        "z": 10
+      },
+      {
+        "x": 21,
+        "z": 16
+      },
+      {
+        "x": 21,
+        "z": 22
+      },
+      {
+        "x": 22,
+        "z": 4
+      },
+      {
+        "x": 22,
+        "z": 10
+      },
+      {
+        "x": 22,
+        "z": 16
+      },
+      {
+        "x": 22,
+        "z": 22
+      },
+      {
+        "x": 23,
+        "z": 4
+      },
+      {
+        "x": 23,
+        "z": 10
+      },
+      {
+        "x": 23,
+        "z": 16
+      },
+      {
+        "x": 23,
+        "z": 22
+      },
+      {
+        "x": 24,
+        "z": 4
+      },
+      {
+        "x": 24,
+        "z": 10
+      },
+      {
+        "x": 24,
+        "z": 16
+      },
+      {
+        "x": 24,
+        "z": 22
+      },
+      {
+        "x": 25,
+        "z": 4
+      },
+      {
+        "x": 25,
+        "z": 10
+      },
+      {
+        "x": 25,
+        "z": 16
+      },
+      {
+        "x": 25,
+        "z": 22
+      },
+      {
+        "x": 26,
+        "z": 4
+      },
+      {
+        "x": 26,
+        "z": 10
+      },
+      {
+        "x": 26,
+        "z": 16
+      },
+      {
+        "x": 26,
+        "z": 22
+      },
+      {
+        "x": 27,
+        "z": 4
+      },
+      {
+        "x": 27,
+        "z": 10
+      },
+      {
+        "x": 27,
+        "z": 16
+      },
+      {
+        "x": 27,
+        "z": 22
+      },
+      {
+        "x": 28,
+        "z": 4
+      },
+      {
+        "x": 28,
+        "z": 10
+      },
+      {
+        "x": 28,
+        "z": 16
+      },
+      {
+        "x": 28,
+        "z": 22
+      },
+      {
+        "x": 29,
+        "z": 4
+      },
+      {
+        "x": 29,
+        "z": 10
+      },
+      {
+        "x": 29,
+        "z": 16
+      },
+      {
+        "x": 29,
+        "z": 22
+      },
+      {
+        "x": 30,
+        "z": 4
+      },
+      {
+        "x": 30,
+        "z": 10
+      },
+      {
+        "x": 30,
+        "z": 16
+      },
+      {
+        "x": 30,
+        "z": 22
+      },
+      {
+        "x": 31,
+        "z": 4
+      },
+      {
+        "x": 31,
+        "z": 10
+      },
+      {
+        "x": 31,
+        "z": 16
+      },
+      {
+        "x": 31,
+        "z": 22
+      }
+    ],
+    "industrialLots": [
+      {
+        "id": "valley_lot_01",
+        "cells": [
+          {
+            "x": 13,
+            "z": 0
+          },
+          {
+            "x": 14,
+            "z": 0
+          },
+          {
+            "x": 13,
+            "z": 1
+          },
+          {
+            "x": 14,
+            "z": 1
+          },
+          {
+            "x": 13,
+            "z": 2
+          },
+          {
+            "x": 14,
+            "z": 2
+          }
+        ],
+        "entry": {
+          "x": 13,
+          "z": 3
+        }
+      },
+      {
+        "id": "valley_lot_02",
+        "cells": [
+          {
+            "x": 16,
+            "z": 0
+          },
+          {
+            "x": 17,
+            "z": 0
+          },
+          {
+            "x": 16,
+            "z": 1
+          },
+          {
+            "x": 17,
+            "z": 1
+          },
+          {
+            "x": 16,
+            "z": 2
+          },
+          {
+            "x": 17,
+            "z": 2
+          }
+        ],
+        "entry": {
+          "x": 16,
+          "z": 3
+        }
+      },
+      {
+        "id": "valley_lot_03",
+        "cells": [
+          {
+            "x": 19,
+            "z": 0
+          },
+          {
+            "x": 20,
+            "z": 0
+          },
+          {
+            "x": 19,
+            "z": 1
+          },
+          {
+            "x": 20,
+            "z": 1
+          },
+          {
+            "x": 19,
+            "z": 2
+          },
+          {
+            "x": 20,
+            "z": 2
+          }
+        ],
+        "entry": {
+          "x": 19,
+          "z": 3
+        }
+      },
+      {
+        "id": "valley_lot_04",
+        "cells": [
+          {
+            "x": 22,
+            "z": 0
+          },
+          {
+            "x": 23,
+            "z": 0
+          },
+          {
+            "x": 22,
+            "z": 1
+          },
+          {
+            "x": 23,
+            "z": 1
+          },
+          {
+            "x": 22,
+            "z": 2
+          },
+          {
+            "x": 23,
+            "z": 2
+          }
+        ],
+        "entry": {
+          "x": 22,
+          "z": 3
+        }
+      },
+      {
+        "id": "valley_lot_05",
+        "cells": [
+          {
+            "x": 25,
+            "z": 0
+          },
+          {
+            "x": 26,
+            "z": 0
+          },
+          {
+            "x": 25,
+            "z": 1
+          },
+          {
+            "x": 26,
+            "z": 1
+          },
+          {
+            "x": 25,
+            "z": 2
+          },
+          {
+            "x": 26,
+            "z": 2
+          }
+        ],
+        "entry": {
+          "x": 25,
+          "z": 3
+        }
+      },
+      {
+        "id": "valley_lot_06",
+        "cells": [
+          {
+            "x": 28,
+            "z": 0
+          },
+          {
+            "x": 29,
+            "z": 0
+          },
+          {
+            "x": 28,
+            "z": 1
+          },
+          {
+            "x": 29,
+            "z": 1
+          },
+          {
+            "x": 28,
+            "z": 2
+          },
+          {
+            "x": 29,
+            "z": 2
+          }
+        ],
+        "entry": {
+          "x": 28,
+          "z": 3
+        }
+      },
+      {
+        "id": "valley_lot_07",
+        "cells": [
+          {
+            "x": 13,
+            "z": 6
+          },
+          {
+            "x": 14,
+            "z": 6
+          },
+          {
+            "x": 13,
+            "z": 7
+          },
+          {
+            "x": 14,
+            "z": 7
+          },
+          {
+            "x": 13,
+            "z": 8
+          },
+          {
+            "x": 14,
+            "z": 8
+          }
+        ],
+        "entry": {
+          "x": 13,
+          "z": 9
+        }
+      },
+      {
+        "id": "valley_lot_08",
+        "cells": [
+          {
+            "x": 16,
+            "z": 6
+          },
+          {
+            "x": 17,
+            "z": 6
+          },
+          {
+            "x": 16,
+            "z": 7
+          },
+          {
+            "x": 17,
+            "z": 7
+          },
+          {
+            "x": 16,
+            "z": 8
+          },
+          {
+            "x": 17,
+            "z": 8
+          }
+        ],
+        "entry": {
+          "x": 16,
+          "z": 9
+        }
+      },
+      {
+        "id": "valley_lot_09",
+        "cells": [
+          {
+            "x": 19,
+            "z": 6
+          },
+          {
+            "x": 20,
+            "z": 6
+          },
+          {
+            "x": 19,
+            "z": 7
+          },
+          {
+            "x": 20,
+            "z": 7
+          },
+          {
+            "x": 19,
+            "z": 8
+          },
+          {
+            "x": 20,
+            "z": 8
+          }
+        ],
+        "entry": {
+          "x": 19,
+          "z": 9
+        }
+      },
+      {
+        "id": "valley_lot_10",
+        "cells": [
+          {
+            "x": 22,
+            "z": 6
+          },
+          {
+            "x": 23,
+            "z": 6
+          },
+          {
+            "x": 22,
+            "z": 7
+          },
+          {
+            "x": 23,
+            "z": 7
+          },
+          {
+            "x": 22,
+            "z": 8
+          },
+          {
+            "x": 23,
+            "z": 8
+          }
+        ],
+        "entry": {
+          "x": 22,
+          "z": 9
+        }
+      },
+      {
+        "id": "valley_lot_11",
+        "cells": [
+          {
+            "x": 25,
+            "z": 6
+          },
+          {
+            "x": 26,
+            "z": 6
+          },
+          {
+            "x": 25,
+            "z": 7
+          },
+          {
+            "x": 26,
+            "z": 7
+          },
+          {
+            "x": 25,
+            "z": 8
+          },
+          {
+            "x": 26,
+            "z": 8
+          }
+        ],
+        "entry": {
+          "x": 25,
+          "z": 9
+        }
+      },
+      {
+        "id": "valley_lot_12",
+        "cells": [
+          {
+            "x": 28,
+            "z": 6
+          },
+          {
+            "x": 29,
+            "z": 6
+          },
+          {
+            "x": 28,
+            "z": 7
+          },
+          {
+            "x": 29,
+            "z": 7
+          },
+          {
+            "x": 28,
+            "z": 8
+          },
+          {
+            "x": 29,
+            "z": 8
+          }
+        ],
+        "entry": {
+          "x": 28,
+          "z": 9
+        }
+      },
+      {
+        "id": "valley_lot_13",
+        "cells": [
+          {
+            "x": 13,
+            "z": 12
+          },
+          {
+            "x": 14,
+            "z": 12
+          },
+          {
+            "x": 13,
+            "z": 13
+          },
+          {
+            "x": 14,
+            "z": 13
+          },
+          {
+            "x": 13,
+            "z": 14
+          },
+          {
+            "x": 14,
+            "z": 14
+          }
+        ],
+        "entry": {
+          "x": 13,
+          "z": 15
+        }
+      },
+      {
+        "id": "valley_lot_14",
+        "cells": [
+          {
+            "x": 16,
+            "z": 12
+          },
+          {
+            "x": 17,
+            "z": 12
+          },
+          {
+            "x": 16,
+            "z": 13
+          },
+          {
+            "x": 17,
+            "z": 13
+          },
+          {
+            "x": 16,
+            "z": 14
+          },
+          {
+            "x": 17,
+            "z": 14
+          }
+        ],
+        "entry": {
+          "x": 16,
+          "z": 15
+        }
+      },
+      {
+        "id": "valley_lot_15",
+        "cells": [
+          {
+            "x": 19,
+            "z": 12
+          },
+          {
+            "x": 20,
+            "z": 12
+          },
+          {
+            "x": 19,
+            "z": 13
+          },
+          {
+            "x": 20,
+            "z": 13
+          },
+          {
+            "x": 19,
+            "z": 14
+          },
+          {
+            "x": 20,
+            "z": 14
+          }
+        ],
+        "entry": {
+          "x": 19,
+          "z": 15
+        }
+      },
+      {
+        "id": "valley_lot_16",
+        "cells": [
+          {
+            "x": 22,
+            "z": 12
+          },
+          {
+            "x": 23,
+            "z": 12
+          },
+          {
+            "x": 22,
+            "z": 13
+          },
+          {
+            "x": 23,
+            "z": 13
+          },
+          {
+            "x": 22,
+            "z": 14
+          },
+          {
+            "x": 23,
+            "z": 14
+          }
+        ],
+        "entry": {
+          "x": 22,
+          "z": 15
+        }
+      },
+      {
+        "id": "valley_lot_17",
+        "cells": [
+          {
+            "x": 25,
+            "z": 12
+          },
+          {
+            "x": 26,
+            "z": 12
+          },
+          {
+            "x": 25,
+            "z": 13
+          },
+          {
+            "x": 26,
+            "z": 13
+          },
+          {
+            "x": 25,
+            "z": 14
+          },
+          {
+            "x": 26,
+            "z": 14
+          }
+        ],
+        "entry": {
+          "x": 25,
+          "z": 15
+        }
+      },
+      {
+        "id": "valley_lot_18",
+        "cells": [
+          {
+            "x": 28,
+            "z": 12
+          },
+          {
+            "x": 29,
+            "z": 12
+          },
+          {
+            "x": 28,
+            "z": 13
+          },
+          {
+            "x": 29,
+            "z": 13
+          },
+          {
+            "x": 28,
+            "z": 14
+          },
+          {
+            "x": 29,
+            "z": 14
+          }
+        ],
+        "entry": {
+          "x": 28,
+          "z": 15
+        }
+      },
+      {
+        "id": "valley_lot_19",
+        "cells": [
+          {
+            "x": 13,
+            "z": 18
+          },
+          {
+            "x": 14,
+            "z": 18
+          },
+          {
+            "x": 13,
+            "z": 19
+          },
+          {
+            "x": 14,
+            "z": 19
+          },
+          {
+            "x": 13,
+            "z": 20
+          },
+          {
+            "x": 14,
+            "z": 20
+          }
+        ],
+        "entry": {
+          "x": 13,
+          "z": 21
+        }
+      },
+      {
+        "id": "valley_lot_20",
+        "cells": [
+          {
+            "x": 16,
+            "z": 18
+          },
+          {
+            "x": 17,
+            "z": 18
+          },
+          {
+            "x": 16,
+            "z": 19
+          },
+          {
+            "x": 17,
+            "z": 19
+          },
+          {
+            "x": 16,
+            "z": 20
+          },
+          {
+            "x": 17,
+            "z": 20
+          }
+        ],
+        "entry": {
+          "x": 16,
+          "z": 21
+        }
+      },
+      {
+        "id": "valley_lot_21",
+        "cells": [
+          {
+            "x": 19,
+            "z": 18
+          },
+          {
+            "x": 20,
+            "z": 18
+          },
+          {
+            "x": 19,
+            "z": 19
+          },
+          {
+            "x": 20,
+            "z": 19
+          },
+          {
+            "x": 19,
+            "z": 20
+          },
+          {
+            "x": 20,
+            "z": 20
+          }
+        ],
+        "entry": {
+          "x": 19,
+          "z": 21
+        }
+      },
+      {
+        "id": "valley_lot_22",
+        "cells": [
+          {
+            "x": 22,
+            "z": 18
+          },
+          {
+            "x": 23,
+            "z": 18
+          },
+          {
+            "x": 22,
+            "z": 19
+          },
+          {
+            "x": 23,
+            "z": 19
+          },
+          {
+            "x": 22,
+            "z": 20
+          },
+          {
+            "x": 23,
+            "z": 20
+          }
+        ],
+        "entry": {
+          "x": 22,
+          "z": 21
+        }
+      },
+      {
+        "id": "valley_lot_23",
+        "cells": [
+          {
+            "x": 25,
+            "z": 18
+          },
+          {
+            "x": 26,
+            "z": 18
+          },
+          {
+            "x": 25,
+            "z": 19
+          },
+          {
+            "x": 26,
+            "z": 19
+          },
+          {
+            "x": 25,
+            "z": 20
+          },
+          {
+            "x": 26,
+            "z": 20
+          }
+        ],
+        "entry": {
+          "x": 25,
+          "z": 21
+        }
+      },
+      {
+        "id": "valley_lot_24",
+        "cells": [
+          {
+            "x": 28,
+            "z": 18
+          },
+          {
+            "x": 29,
+            "z": 18
+          },
+          {
+            "x": 28,
+            "z": 19
+          },
+          {
+            "x": 29,
+            "z": 19
+          },
+          {
+            "x": 28,
+            "z": 20
+          },
+          {
+            "x": 29,
+            "z": 20
+          }
+        ],
+        "entry": {
+          "x": 28,
+          "z": 21
+        }
+      }
+    ],
+    "resourceDistricts": [
+      {
+        "id": "valley_wood",
+        "item": "wood",
+        "profile": "wood",
+        "cells": [
+          {
+            "x": 0,
+            "z": 0
+          },
+          {
+            "x": 1,
+            "z": 0
+          },
+          {
+            "x": 2,
+            "z": 0
+          },
+          {
+            "x": 0,
+            "z": 1
+          },
+          {
+            "x": 1,
+            "z": 1
+          },
+          {
+            "x": 2,
+            "z": 1
+          },
+          {
+            "x": 0,
+            "z": 2
+          },
+          {
+            "x": 1,
+            "z": 2
+          },
+          {
+            "x": 2,
+            "z": 2
+          }
+        ],
+        "publicCells": [
+          {
+            "x": 2,
+            "z": 2
+          }
+        ]
+      },
+      {
+        "id": "valley_grain",
+        "item": "grain",
+        "profile": "grain",
+        "cells": [
+          {
+            "x": 5,
+            "z": 0
+          },
+          {
+            "x": 6,
+            "z": 0
+          },
+          {
+            "x": 7,
+            "z": 0
+          },
+          {
+            "x": 5,
+            "z": 1
+          },
+          {
+            "x": 6,
+            "z": 1
+          },
+          {
+            "x": 7,
+            "z": 1
+          },
+          {
+            "x": 5,
+            "z": 2
+          },
+          {
+            "x": 6,
+            "z": 2
+          },
+          {
+            "x": 7,
+            "z": 2
+          }
+        ],
+        "publicCells": [
+          {
+            "x": 7,
+            "z": 2
+          }
+        ]
+      },
+      {
+        "id": "valley_milk",
+        "item": "milk",
+        "profile": "milk",
+        "cells": [
+          {
+            "x": 0,
+            "z": 5
+          },
+          {
+            "x": 1,
+            "z": 5
+          },
+          {
+            "x": 2,
+            "z": 5
+          },
+          {
+            "x": 0,
+            "z": 6
+          },
+          {
+            "x": 1,
+            "z": 6
+          },
+          {
+            "x": 2,
+            "z": 6
+          },
+          {
+            "x": 0,
+            "z": 7
+          },
+          {
+            "x": 1,
+            "z": 7
+          },
+          {
+            "x": 2,
+            "z": 7
+          }
+        ],
+        "publicCells": [
+          {
+            "x": 2,
+            "z": 7
+          }
+        ]
+      },
+      {
+        "id": "valley_beet",
+        "item": "beet",
+        "profile": "beet",
+        "cells": [
+          {
+            "x": 5,
+            "z": 5
+          },
+          {
+            "x": 6,
+            "z": 5
+          },
+          {
+            "x": 7,
+            "z": 5
+          },
+          {
+            "x": 5,
+            "z": 6
+          },
+          {
+            "x": 6,
+            "z": 6
+          },
+          {
+            "x": 7,
+            "z": 6
+          },
+          {
+            "x": 5,
+            "z": 7
+          },
+          {
+            "x": 6,
+            "z": 7
+          },
+          {
+            "x": 7,
+            "z": 7
+          }
+        ],
+        "publicCells": [
+          {
+            "x": 7,
+            "z": 7
+          }
+        ]
+      },
+      {
+        "id": "valley_iron_ore",
+        "item": "iron_ore",
+        "profile": "iron_ore",
+        "cells": [
+          {
+            "x": 0,
+            "z": 10
+          },
+          {
+            "x": 1,
+            "z": 10
+          },
+          {
+            "x": 2,
+            "z": 10
+          },
+          {
+            "x": 0,
+            "z": 11
+          },
+          {
+            "x": 1,
+            "z": 11
+          },
+          {
+            "x": 2,
+            "z": 11
+          },
+          {
+            "x": 0,
+            "z": 12
+          },
+          {
+            "x": 1,
+            "z": 12
+          },
+          {
+            "x": 2,
+            "z": 12
+          }
+        ],
+        "publicCells": [
+          {
+            "x": 2,
+            "z": 12
+          }
+        ]
+      },
+      {
+        "id": "valley_copper_ore",
+        "item": "copper_ore",
+        "profile": "copper_ore",
+        "cells": [
+          {
+            "x": 5,
+            "z": 10
+          },
+          {
+            "x": 6,
+            "z": 10
+          },
+          {
+            "x": 7,
+            "z": 10
+          },
+          {
+            "x": 5,
+            "z": 11
+          },
+          {
+            "x": 6,
+            "z": 11
+          },
+          {
+            "x": 7,
+            "z": 11
+          },
+          {
+            "x": 5,
+            "z": 12
+          },
+          {
+            "x": 6,
+            "z": 12
+          },
+          {
+            "x": 7,
+            "z": 12
+          }
+        ],
+        "publicCells": [
+          {
+            "x": 7,
+            "z": 12
+          }
+        ]
+      },
+      {
+        "id": "valley_stone",
+        "item": "stone",
+        "profile": "stone",
+        "cells": [
+          {
+            "x": 0,
+            "z": 15
+          },
+          {
+            "x": 1,
+            "z": 15
+          },
+          {
+            "x": 2,
+            "z": 15
+          },
+          {
+            "x": 0,
+            "z": 16
+          },
+          {
+            "x": 1,
+            "z": 16
+          },
+          {
+            "x": 2,
+            "z": 16
+          },
+          {
+            "x": 0,
+            "z": 17
+          },
+          {
+            "x": 1,
+            "z": 17
+          },
+          {
+            "x": 2,
+            "z": 17
+          }
+        ],
+        "publicCells": [
+          {
+            "x": 2,
+            "z": 17
+          }
+        ]
+      },
+      {
+        "id": "valley_sand",
+        "item": "sand",
+        "profile": "sand",
+        "cells": [
+          {
+            "x": 5,
+            "z": 15
+          },
+          {
+            "x": 6,
+            "z": 15
+          },
+          {
+            "x": 7,
+            "z": 15
+          },
+          {
+            "x": 5,
+            "z": 16
+          },
+          {
+            "x": 6,
+            "z": 16
+          },
+          {
+            "x": 7,
+            "z": 16
+          },
+          {
+            "x": 5,
+            "z": 17
+          },
+          {
+            "x": 6,
+            "z": 17
+          },
+          {
+            "x": 7,
+            "z": 17
+          }
+        ],
+        "publicCells": [
+          {
+            "x": 7,
+            "z": 17
+          }
+        ]
+      }
+    ],
+    "civicObjects": [
+      {
+        "id": "valley_town_hall",
+        "kind": "town_hall",
+        "footprint": [
+          {
+            "x": 0,
+            "z": 19
+          },
+          {
+            "x": 1,
+            "z": 19
+          },
+          {
+            "x": 2,
+            "z": 19
+          },
+          {
+            "x": 0,
+            "z": 20
+          },
+          {
+            "x": 1,
+            "z": 20
+          },
+          {
+            "x": 2,
+            "z": 20
+          },
+          {
+            "x": 0,
+            "z": 21
+          },
+          {
+            "x": 1,
+            "z": 21
+          },
+          {
+            "x": 2,
+            "z": 21
+          }
+        ],
+        "sourceBuilding": [
+          {
+            "x": 0,
+            "z": 19
+          },
+          {
+            "x": 1,
+            "z": 19
+          },
+          {
+            "x": 0,
+            "z": 20
+          },
+          {
+            "x": 1,
+            "z": 20
+          }
+        ],
+        "parking": null,
+        "body": [
+          {
+            "x": 0,
+            "z": 19
+          },
+          {
+            "x": 1,
+            "z": 19
+          },
+          {
+            "x": 0,
+            "z": 20
+          },
+          {
+            "x": 1,
+            "z": 20
+          }
+        ],
+        "entry": {
+          "x": 1,
+          "z": 21
+        }
+      },
+      {
+        "id": "valley_terminal",
+        "kind": "terminal",
+        "footprint": [
+          {
+            "x": 3,
+            "z": 19
+          },
+          {
+            "x": 4,
+            "z": 19
+          },
+          {
+            "x": 3,
+            "z": 20
+          },
+          {
+            "x": 4,
+            "z": 20
+          },
+          {
+            "x": 3,
+            "z": 21
+          },
+          {
+            "x": 4,
+            "z": 21
+          }
+        ],
+        "sourceBuilding": [
+          {
+            "x": 3,
+            "z": 19
+          },
+          {
+            "x": 4,
+            "z": 19
+          },
+          {
+            "x": 3,
+            "z": 20
+          },
+          {
+            "x": 4,
+            "z": 20
+          }
+        ],
+        "parking": null,
+        "body": [
+          {
+            "x": 3,
+            "z": 19
+          },
+          {
+            "x": 4,
+            "z": 19
+          },
+          {
+            "x": 3,
+            "z": 20
+          },
+          {
+            "x": 4,
+            "z": 20
+          }
+        ],
+        "entry": {
+          "x": 3,
+          "z": 21
+        }
+      },
+      {
+        "id": "valley_dealership",
+        "kind": "dealership",
+        "footprint": [
+          {
+            "x": 5,
+            "z": 19
+          },
+          {
+            "x": 6,
+            "z": 19
+          },
+          {
+            "x": 7,
+            "z": 19
+          },
+          {
+            "x": 8,
+            "z": 19
+          },
+          {
+            "x": 9,
+            "z": 19
+          },
+          {
+            "x": 5,
+            "z": 20
+          },
+          {
+            "x": 6,
+            "z": 20
+          },
+          {
+            "x": 7,
+            "z": 20
+          },
+          {
+            "x": 8,
+            "z": 20
+          },
+          {
+            "x": 9,
+            "z": 20
+          },
+          {
+            "x": 5,
+            "z": 21
+          },
+          {
+            "x": 6,
+            "z": 21
+          },
+          {
+            "x": 7,
+            "z": 21
+          },
+          {
+            "x": 8,
+            "z": 21
+          },
+          {
+            "x": 9,
+            "z": 21
+          },
+          {
+            "x": 5,
+            "z": 22
+          },
+          {
+            "x": 6,
+            "z": 22
+          },
+          {
+            "x": 7,
+            "z": 22
+          },
+          {
+            "x": 8,
+            "z": 22
+          },
+          {
+            "x": 9,
+            "z": 22
+          },
+          {
+            "x": 5,
+            "z": 23
+          },
+          {
+            "x": 6,
+            "z": 23
+          },
+          {
+            "x": 7,
+            "z": 23
+          },
+          {
+            "x": 8,
+            "z": 23
+          },
+          {
+            "x": 9,
+            "z": 23
+          }
+        ],
+        "sourceBuilding": [
+          {
+            "x": 5,
+            "z": 19
+          },
+          {
+            "x": 6,
+            "z": 19
+          },
+          {
+            "x": 5,
+            "z": 20
+          },
+          {
+            "x": 6,
+            "z": 20
+          }
+        ],
+        "parking": [
+          {
+            "x": 5,
+            "z": 22
+          },
+          {
+            "x": 6,
+            "z": 22
+          },
+          {
+            "x": 7,
+            "z": 22
+          },
+          {
+            "x": 8,
+            "z": 22
+          }
+        ],
+        "body": [
+          {
+            "x": 5,
+            "z": 19
+          },
+          {
+            "x": 6,
+            "z": 19
+          },
+          {
+            "x": 5,
+            "z": 20
+          },
+          {
+            "x": 6,
+            "z": 20
+          }
+        ],
+        "entry": {
+          "x": 5,
+          "z": 21
+        }
+      }
+    ],
+    "marketStalls": [
+      {
+        "id": "valley_stall_01",
+        "cell": {
+          "x": 14,
+          "z": 24
+        }
+      },
+      {
+        "id": "valley_stall_02",
+        "cell": {
+          "x": 15,
+          "z": 24
+        }
+      },
+      {
+        "id": "valley_stall_03",
+        "cell": {
+          "x": 16,
+          "z": 24
+        }
+      },
+      {
+        "id": "valley_stall_04",
+        "cell": {
+          "x": 17,
+          "z": 24
+        }
+      },
+      {
+        "id": "valley_stall_05",
+        "cell": {
+          "x": 18,
+          "z": 24
+        }
+      },
+      {
+        "id": "valley_stall_06",
+        "cell": {
+          "x": 19,
+          "z": 24
+        }
+      },
+      {
+        "id": "valley_stall_07",
+        "cell": {
+          "x": 20,
+          "z": 24
+        }
+      },
+      {
+        "id": "valley_stall_08",
+        "cell": {
+          "x": 21,
+          "z": 24
+        }
+      },
+      {
+        "id": "valley_stall_09",
+        "cell": {
+          "x": 22,
+          "z": 24
+        }
+      },
+      {
+        "id": "valley_stall_10",
+        "cell": {
+          "x": 23,
+          "z": 24
+        }
+      },
+      {
+        "id": "valley_stall_11",
+        "cell": {
+          "x": 24,
+          "z": 24
+        }
+      }
+    ],
+    "spawnCells": [
+      {
+        "x": 11,
+        "z": 0
+      },
+      {
+        "x": 11,
+        "z": 1
+      },
+      {
+        "x": 11,
+        "z": 2
+      },
+      {
+        "x": 11,
+        "z": 3
+      },
+      {
+        "x": 11,
+        "z": 4
+      },
+      {
+        "x": 11,
+        "z": 5
+      },
+      {
+        "x": 11,
+        "z": 6
+      },
+      {
+        "x": 11,
+        "z": 7
+      },
+      {
+        "x": 11,
+        "z": 8
+      },
+      {
+        "x": 11,
+        "z": 9
+      },
+      {
+        "x": 11,
+        "z": 10
+      }
+    ],
+    "turnCells": [
+      {
+        "x": 11,
+        "z": 4
+      },
+      {
+        "x": 11,
+        "z": 10
+      },
+      {
+        "x": 11,
+        "z": 16
+      },
+      {
+        "x": 11,
+        "z": 22
+      },
+      {
+        "x": 11,
+        "z": 25
+      }
+    ],
+    "passingBays": "Protected side cells along the spine and branches; never private land.",
+    "assignment": "startup-rotation-1; 24 independent full six-cell lots; no free ownership; eight public sources."
+  }
+}

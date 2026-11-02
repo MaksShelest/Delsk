@@ -7,7 +7,7 @@ from pathlib import Path
 from collections import Counter
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser(description=__doc__)
-p.add_argument('--map',choices=['small-river','large-districts'],required=True)
+p.add_argument('--map',choices=['small-river','large-districts','compact-valley'],required=True)
 p.add_argument('--bots',type=int,choices=[3,6,10],required=True)
 p.add_argument('--difficulty',choices=['Easy','Medium','Hard'],default='Medium')
 p.add_argument('--ticks',type=int,default=1800)

@@ -1,0 +1,128 @@
+name: H3 compact map and new movement cohort
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - 'src/**'
+      - 'scenarios/**'
+      - 'tests/**'
+      - 'scripts/study_h3.py'
+      - 'docs/research/h3/study-plan.json'
+      - '.github/workflows/h3.yml'
+  push:
+    paths: ['docs/research/h3/resume.json']
+  workflow_dispatch:
+    inputs:
+      resume_run:
+        description: 'Original retained run, 0 for a new distinct cohort'
+        default: '0'
+        required: true
+      phase:
+        description: 'all, ordinary or extended'
+        default: 'all'
+        required: true
+      retry_failed:
+        type: boolean
+        default: false
+permissions:
+  contents: read
+  actions: read
+jobs:
+  matrix:
+    runs-on: ubuntu-24.04
+    outputs:
+      cases: ${{ steps.cases.outputs.cases }}
+      source: ${{ steps.inspect.outputs.source }}
+      resume: ${{ steps.inspect.outputs.resume }}
+      retry: ${{ steps.inspect.outputs.retry }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: inspect
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs=require('fs');
+            const marker=context.eventName=='push'?JSON.parse(fs.readFileSync('docs/research/h3/resume.json','utf8')):{};
+            const id=Number(marker.run||context.payload.inputs?.resume_run||0);
+            if(!Number.isSafeInteger(id)||id<0)throw Error('Invalid resume run');
+            const phase=marker.phase||context.payload.inputs?.phase||'all';
+            if(!['all','ordinary','extended'].includes(phase))throw Error('Invalid phase');
+            let source=context.payload.pull_request?.head.sha||context.sha,artifacts=[];
+            if(id){const run=await github.rest.actions.getWorkflowRun({...context.repo,run_id:id});source=run.data.head_sha;
+              artifacts=await github.paginate(github.rest.actions.listWorkflowRunArtifacts,{...context.repo,run_id:id,per_page:100});}
+            fs.writeFileSync(process.env.RUNNER_TEMP+'/h3-resume-artifacts.json',JSON.stringify({phase,artifacts,resume:id}));
+            core.setOutput('source',source);core.setOutput('resume',String(id));
+            core.setOutput('retry',String(marker.retryFailed||context.payload.inputs?.retry_failed=='true'));
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.inspect.outputs.source }}
+      - id: cases
+        shell: python
+        run: |
+          import json,os,subprocess
+          from pathlib import Path
+          old=json.loads((Path(os.environ['RUNNER_TEMP'])/'h3-resume-artifacts.json').read_text())
+          cases=json.loads(subprocess.check_output(['python','scripts/study_h3.py','--matrix',old['phase']],text=True))
+          for case in cases['include']:
+            matches=[a for a in old['artifacts'] if a['name']=='h3-'+case['id'] and not a['expired']]
+            if len(matches)>1 or old['resume'] and not matches:raise ValueError('Missing/duplicate retained case; do not replace it with a new world')
+            case['artifact']=matches[0]['name'] if matches else ''
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('cases='+json.dumps(cases,separators=(',',':'))+'\n')
+  natural:
+    needs: [matrix]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 12
+      matrix: ${{ fromJSON(needs.matrix.outputs.cases) }}
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+      DELSK_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+      CASE_ID: ${{ matrix.id }}
+      CASE_PHASE: ${{ matrix.phase }}
+      RETRY_FAILED: ${{ needs.matrix.outputs.retry }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.matrix.outputs.source }}
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore retained world, full history and original runtime
+        if: matrix.artifact != ''
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ needs.matrix.outputs.resume }}
+          github-token: ${{ github.token }}
+          name: ${{ matrix.artifact }}
+          path: work/
+      - name: Bounded locked restore
+        if: matrix.artifact == ''
+        run: python scripts/run_check.py --name restore --timeout 180 --log-directory work/checks -- dotnet restore Delsk.sln --locked-mode --disable-parallel -m:1
+      - name: Bounded runner build
+        if: matrix.artifact == ''
+        run: python scripts/run_check.py --name build --timeout 180 --log-directory work/checks -- dotnet build src/Research.Runner/Research.Runner.csproj -c Release --no-restore --disable-build-servers -m:1
+      - name: Distinct H3 worlds, retained failures and audited checkpoints
+        shell: python
+        run: |
+          import os, subprocess, sys
+          # Extended worlds are explicitly bounded batches, never claimed complete at a batch boundary.
+          segments = '8' if os.environ['CASE_PHASE'] == 'extended' else '3'
+          subprocess.run([sys.executable,'scripts/study_h3.py','--case',os.environ['CASE_ID'],
+            '--output','work/world','--segments',segments]+(['--retry-failed'] if os.environ['RETRY_FAILED']=='true' else []),check=True)
+      - name: Publish actual outcomes
+        if: always()
+        run: python scripts/report_check_results.py work/world work/checks
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h3-${{ matrix.id }}
+          path: |
+            work/world/
+            work/checks/
+          compression-level: 1
+          retention-days: 90

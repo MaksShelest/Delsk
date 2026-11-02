@@ -6,7 +6,7 @@ import argparse,hashlib,json,os,shutil,subprocess,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser(description=__doc__);p.add_argument('--godot',required=True);p.add_argument('--output',required=True,type=Path)
-p.add_argument('--case',choices=['all','small','large','narrow','forms'],default='all');p.add_argument('--fixtures',type=Path);p.add_argument('--display');p.add_argument('--asset-cache',type=Path);p.add_argument('--reuse-stage',action='store_true');p.add_argument('--attempt',type=int,default=1)
+p.add_argument('--case',choices=['all','small','large','narrow','forms','compact'],default='all');p.add_argument('--fixtures',type=Path);p.add_argument('--display');p.add_argument('--asset-cache',type=Path);p.add_argument('--reuse-stage',action='store_true');p.add_argument('--attempt',type=int,default=1)
 a=p.parse_args();out=a.output.resolve();stage=out/'source';project=stage/'src/Client.Godot';marker=stage/'.delsk-city-ux-stage';prefix='a'+str(a.attempt)
 if a.attempt<1:p.error('Use a positive attempt number')
 if a.case=='forms' and a.fixtures is None:p.error('--case forms requires --fixtures')
@@ -52,8 +52,8 @@ env=os.environ.copy()
 if a.display:env.update(DISPLAY=a.display,LIBGL_ALWAYS_SOFTWARE='1')
 cases=[]
 base_project=(project/'project.godot').read_text(encoding='utf-8')
-for map_key,count,language,width in [('small-river',6,'ru',640),('large-districts',10,'en',1100),('large-districts',10,'ru',360)]:
-    tag='small' if map_key=='small-river' else 'large' if width>500 else 'narrow'
+for map_key,count,language,width in [('small-river',6,'ru',640),('large-districts',10,'en',1100),('large-districts',10,'ru',360),('compact-valley',3,'ru',640),('compact-valley',6,'en',800),('compact-valley',10,'en',360)]:
+    tag='compact' if map_key=='compact-valley' else 'small' if map_key=='small-river' else 'large' if width>500 else 'narrow'
     if a.case not in ('all',tag):continue
     name=map_key+'-'+str(count)+'-'+language+'-'+str(width);folder=case_root/name;folder.mkdir()
     identity=hashlib.sha256(str(folder).encode()).hexdigest()[:16]

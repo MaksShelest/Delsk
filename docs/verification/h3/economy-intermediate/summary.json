@@ -1,0 +1,6079 @@
+{
+  "version": 1,
+  "groups": [
+    {
+      "map": "compact-valley",
+      "bots": 3,
+      "difficulty": "Easy",
+      "plannedWorlds": 5,
+      "completeWorlds": 5,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 5,
+          "median": 65220.0,
+          "q1": 61309.0,
+          "q3": 70167.0,
+          "iqr": 8858.0,
+          "minimum": 57115,
+          "maximum": 75683,
+          "mean": 65898.8
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 5,
+          "median": 73013.0,
+          "q1": 71322.0,
+          "q3": 75335.0,
+          "iqr": 4013.0,
+          "minimum": 38414,
+          "maximum": 80196,
+          "mean": 67656.0
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 5,
+          "median": 73013.0,
+          "q1": 71322.0,
+          "q3": 75335.0,
+          "iqr": 4013.0,
+          "minimum": 38414,
+          "maximum": 80196,
+          "mean": 67656.0
+        },
+        "employment": {
+          "n": 5,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 1.0,
+          "iqr": 1.0,
+          "minimum": 0,
+          "maximum": 5,
+          "mean": 1.2
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 5,
+          "median": 22.58221842857143,
+          "q1": 17.044128642857142,
+          "q3": 30.206918357142854,
+          "iqr": 13.162789714285712,
+          "minimum": 15.729595857142858,
+          "maximum": 32.9050555,
+          "mean": 23.69358335714286
+        }
+      },
+      "firstFactoriesObserved": 15,
+      "npcMilestones": 15,
+      "censoredNpcMilestones": 0,
+      "worldsWithFactory": 5,
+      "levelsObserved": {
+        "1": 15,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 450
+      },
+      "questXpShare": 0.0,
+      "batches": 108,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "compact-valley",
+      "bots": 3,
+      "difficulty": "Medium",
+      "plannedWorlds": 5,
+      "completeWorlds": 5,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 5,
+          "median": 61309.0,
+          "q1": 59788.0,
+          "q3": 73076.0,
+          "iqr": 13288.0,
+          "minimum": 57115,
+          "maximum": 81130,
+          "mean": 66483.6
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 5,
+          "median": 75729.0,
+          "q1": 64689.0,
+          "q3": 91458.0,
+          "iqr": 26769.0,
+          "minimum": 36696,
+          "maximum": 96588,
+          "mean": 73032.0
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 5,
+          "median": 75729.0,
+          "q1": 64689.0,
+          "q3": 91458.0,
+          "iqr": 26769.0,
+          "minimum": 36696,
+          "maximum": 96588,
+          "mean": 73032.0
+        },
+        "employment": {
+          "n": 5,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 1.0,
+          "iqr": 1.0,
+          "minimum": 0,
+          "maximum": 2,
+          "mean": 0.6
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 5,
+          "median": 30.294466999999997,
+          "q1": 30.18502214285714,
+          "q3": 31.030022214285715,
+          "iqr": 0.8450000714285757,
+          "minimum": 28.33491857142857,
+          "maximum": 31.48012535714286,
+          "mean": 30.264911057142854
+        }
+      },
+      "firstFactoriesObserved": 15,
+      "npcMilestones": 15,
+      "censoredNpcMilestones": 0,
+      "worldsWithFactory": 5,
+      "levelsObserved": {
+        "1": 15,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 439
+      },
+      "questXpShare": 0.0,
+      "batches": 107,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "compact-valley",
+      "bots": 3,
+      "difficulty": "Hard",
+      "plannedWorlds": 5,
+      "completeWorlds": 5,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 5,
+          "median": 76730.0,
+          "q1": 74256.0,
+          "q3": 81874.0,
+          "iqr": 7618.0,
+          "minimum": 72775,
+          "maximum": 84518,
+          "mean": 78030.6
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 5,
+          "median": 89147.0,
+          "q1": 84571.0,
+          "q3": 94183.0,
+          "iqr": 9612.0,
+          "minimum": 78652,
+          "maximum": 114624,
+          "mean": 92235.4
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 5,
+          "median": 89147.0,
+          "q1": 84571.0,
+          "q3": 94183.0,
+          "iqr": 9612.0,
+          "minimum": 78652,
+          "maximum": 114624,
+          "mean": 92235.4
+        },
+        "employment": {
+          "n": 5,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.0,
+          "iqr": 0.0,
+          "minimum": 0,
+          "maximum": 2,
+          "mean": 0.4
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 5,
+          "median": 29.061250714285716,
+          "q1": 17.884763071428573,
+          "q3": 30.4766175,
+          "iqr": 12.591854428571427,
+          "minimum": 17.570225785714285,
+          "maximum": 32.51566692857143,
+          "mean": 25.5017048
+        }
+      },
+      "firstFactoriesObserved": 15,
+      "npcMilestones": 15,
+      "censoredNpcMilestones": 0,
+      "worldsWithFactory": 5,
+      "levelsObserved": {
+        "1": 15,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 394
+      },
+      "questXpShare": 0.0,
+      "batches": 95,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "compact-valley",
+      "bots": 6,
+      "difficulty": "Easy",
+      "plannedWorlds": 10,
+      "completeWorlds": 7,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 7,
+        "blocked_audit": 3
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 7,
+          "median": 71104.0,
+          "q1": 65160.75,
+          "q3": 71370.25,
+          "iqr": 6209.5,
+          "minimum": 62244.5,
+          "maximum": 73522.5,
+          "mean": 68561.85714285714
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 7,
+          "median": 209253.0,
+          "q1": 198549.0,
+          "q3": 215012.5,
+          "iqr": 16463.5,
+          "minimum": 162862,
+          "maximum": 241814,
+          "mean": 205864.57142857142
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 7,
+          "median": 209253.0,
+          "q1": 198549.0,
+          "q3": 215012.5,
+          "iqr": 16463.5,
+          "minimum": 162862,
+          "maximum": 241814,
+          "mean": 205864.57142857142
+        },
+        "employment": {
+          "n": 7,
+          "median": 3.0,
+          "q1": 1.0,
+          "q3": 4.0,
+          "iqr": 3.0,
+          "minimum": 0,
+          "maximum": 5,
+          "mean": 2.5714285714285716
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 7,
+          "median": 30.00565471428571,
+          "q1": 28.052837250000003,
+          "q3": 35.35805882142857,
+          "iqr": 7.305221571428568,
+          "minimum": 26.568953714285712,
+          "maximum": 46.56701028571429,
+          "mean": 32.8519158367347
+        }
+      },
+      "firstFactoriesObserved": 28,
+      "npcMilestones": 42,
+      "censoredNpcMilestones": 14,
+      "worldsWithFactory": 7,
+      "levelsObserved": {
+        "1": 28,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 978
+      },
+      "questXpShare": 0.0,
+      "batches": 234,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "compact-valley",
+      "bots": 6,
+      "difficulty": "Medium",
+      "plannedWorlds": 10,
+      "completeWorlds": 6,
+      "missingWorlds": 0,
+      "states": {
+        "blocked_audit": 4,
+        "completed": 6
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 6,
+          "median": 69392.25,
+          "q1": 66334.375,
+          "q3": 71285.375,
+          "iqr": 4951.0,
+          "minimum": 60755.5,
+          "maximum": 73820.0,
+          "mean": 68431.91666666667
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 6,
+          "median": 213409.0,
+          "q1": 198467.75,
+          "q3": 217827.0,
+          "iqr": 19359.25,
+          "minimum": 182520,
+          "maximum": 226563,
+          "mean": 208114.66666666666
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 6,
+          "median": 213409.0,
+          "q1": 198467.75,
+          "q3": 217827.0,
+          "iqr": 19359.25,
+          "minimum": 182520,
+          "maximum": 226563,
+          "mean": 208114.66666666666
+        },
+        "employment": {
+          "n": 6,
+          "median": 0.5,
+          "q1": 0.0,
+          "q3": 1.0,
+          "iqr": 1.0,
+          "minimum": 0,
+          "maximum": 5,
+          "mean": 1.1666666666666667
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 6,
+          "median": 46.51138035714286,
+          "q1": 45.242418053571434,
+          "q3": 48.847695892857146,
+          "iqr": 3.605277839285712,
+          "minimum": 34.43026235714286,
+          "maximum": 50.38489571428572,
+          "mean": 45.380636190476196
+        }
+      },
+      "firstFactoriesObserved": 24,
+      "npcMilestones": 36,
+      "censoredNpcMilestones": 12,
+      "worldsWithFactory": 6,
+      "levelsObserved": {
+        "1": 24,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 838
+      },
+      "questXpShare": 0.0,
+      "batches": 199,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "compact-valley",
+      "bots": 6,
+      "difficulty": "Hard",
+      "plannedWorlds": 10,
+      "completeWorlds": 8,
+      "missingWorlds": 0,
+      "states": {
+        "blocked_audit": 2,
+        "completed": 8
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 8,
+          "median": 67784.25,
+          "q1": 59444.375,
+          "q3": 73349.75,
+          "iqr": 13905.375,
+          "minimum": 54743.5,
+          "maximum": 80872.5,
+          "mean": 67172.0
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 8,
+          "median": 204058.5,
+          "q1": 182464.25,
+          "q3": 237430.5,
+          "iqr": 54966.25,
+          "minimum": 179804,
+          "maximum": 246951,
+          "mean": 209829.625
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 8,
+          "median": 204058.5,
+          "q1": 182464.25,
+          "q3": 237430.5,
+          "iqr": 54966.25,
+          "minimum": 179804,
+          "maximum": 246951,
+          "mean": 209829.625
+        },
+        "employment": {
+          "n": 8,
+          "median": 1.5,
+          "q1": 0.0,
+          "q3": 4.25,
+          "iqr": 4.25,
+          "minimum": 0,
+          "maximum": 8,
+          "mean": 2.5
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 8,
+          "median": 47.73198382142857,
+          "q1": 45.60203203571429,
+          "q3": 48.30864246428572,
+          "iqr": 2.7066104285714303,
+          "minimum": 44.59954907142858,
+          "maximum": 52.91367642857143,
+          "mean": 47.712944785714285
+        }
+      },
+      "firstFactoriesObserved": 26,
+      "npcMilestones": 48,
+      "censoredNpcMilestones": 22,
+      "worldsWithFactory": 8,
+      "levelsObserved": {
+        "1": 26,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 864
+      },
+      "questXpShare": 0.0,
+      "batches": 197,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "compact-valley",
+      "bots": 10,
+      "difficulty": "Easy",
+      "plannedWorlds": 5,
+      "completeWorlds": 4,
+      "missingWorlds": 0,
+      "states": {
+        "blocked_audit": 1,
+        "completed": 4
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 4,
+          "median": 66926.0,
+          "q1": 66442.75,
+          "q3": 67567.75,
+          "iqr": 1125.0,
+          "minimum": 66251.5,
+          "maximum": 68234.5,
+          "mean": 67084.5
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 4,
+          "median": 387443.5,
+          "q1": 365030.5,
+          "q3": 408583.0,
+          "iqr": 43552.5,
+          "minimum": 355033,
+          "maximum": 414760,
+          "mean": 386170.0
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 4,
+          "median": 387443.5,
+          "q1": 365030.5,
+          "q3": 408583.0,
+          "iqr": 43552.5,
+          "minimum": 355033,
+          "maximum": 414760,
+          "mean": 386170.0
+        },
+        "employment": {
+          "n": 4,
+          "median": 0.5,
+          "q1": 0.0,
+          "q3": 2.0,
+          "iqr": 2.0,
+          "minimum": 0,
+          "maximum": 5,
+          "mean": 1.5
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 4,
+          "median": 71.24705042857143,
+          "q1": 63.352908857142864,
+          "q3": 72.22542949999999,
+          "iqr": 8.872520642857125,
+          "minimum": 41.428358571428575,
+          "maximum": 73.40269228571428,
+          "mean": 64.33128792857143
+        }
+      },
+      "firstFactoriesObserved": 22,
+      "npcMilestones": 40,
+      "censoredNpcMilestones": 18,
+      "worldsWithFactory": 4,
+      "levelsObserved": {
+        "1": 22,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 687
+      },
+      "questXpShare": 0.0,
+      "batches": 144,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "compact-valley",
+      "bots": 10,
+      "difficulty": "Medium",
+      "plannedWorlds": 5,
+      "completeWorlds": 4,
+      "missingWorlds": 0,
+      "states": {
+        "blocked_audit": 1,
+        "completed": 4
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 4,
+          "median": 68746.75,
+          "q1": 67058.125,
+          "q3": 69812.125,
+          "iqr": 2754.0,
+          "minimum": 63722.5,
+          "maximum": 71278.0,
+          "mean": 68123.5
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 4,
+          "median": 385879.5,
+          "q1": 374557.25,
+          "q3": 396947.25,
+          "iqr": 22390.0,
+          "minimum": 363245,
+          "maximum": 407496,
+          "mean": 385625.0
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 4,
+          "median": 385879.5,
+          "q1": 374557.25,
+          "q3": 396947.25,
+          "iqr": 22390.0,
+          "minimum": 363245,
+          "maximum": 407496,
+          "mean": 385625.0
+        },
+        "employment": {
+          "n": 4,
+          "median": 6.0,
+          "q1": 2.25,
+          "q3": 9.25,
+          "iqr": 7.0,
+          "minimum": 0,
+          "maximum": 10,
+          "mean": 5.5
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 4,
+          "median": 44.79047632142857,
+          "q1": 38.39342060714286,
+          "q3": 54.99076598214286,
+          "iqr": 16.597345375000003,
+          "minimum": 35.738531928571426,
+          "maximum": 69.0553565,
+          "mean": 48.59371026785715
+        }
+      },
+      "firstFactoriesObserved": 23,
+      "npcMilestones": 40,
+      "censoredNpcMilestones": 17,
+      "worldsWithFactory": 4,
+      "levelsObserved": {
+        "1": 23,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 654
+      },
+      "questXpShare": 0.0,
+      "batches": 142,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "compact-valley",
+      "bots": 10,
+      "difficulty": "Hard",
+      "plannedWorlds": 5,
+      "completeWorlds": 4,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 4,
+        "blocked_audit": 1
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 4,
+          "median": 60990.75,
+          "q1": 58294.125,
+          "q3": 65798.875,
+          "iqr": 7504.75,
+          "minimum": 58009.5,
+          "maximum": 72418.0,
+          "mean": 63102.25
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 4,
+          "median": 352457.5,
+          "q1": 348054.0,
+          "q3": 366626.75,
+          "iqr": 18572.75,
+          "minimum": 348048,
+          "maximum": 395930,
+          "mean": 362223.25
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 4,
+          "median": 352457.5,
+          "q1": 348054.0,
+          "q3": 366626.75,
+          "iqr": 18572.75,
+          "minimum": 348048,
+          "maximum": 395930,
+          "mean": 362223.25
+        },
+        "employment": {
+          "n": 4,
+          "median": 3.0,
+          "q1": 0.75,
+          "q3": 6.25,
+          "iqr": 5.5,
+          "minimum": 0,
+          "maximum": 10,
+          "mean": 4.0
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 4,
+          "median": 69.83334500000001,
+          "q1": 64.62492298214286,
+          "q3": 71.34099205357143,
+          "iqr": 6.716069071428564,
+          "minimum": 51.88550735714286,
+          "maximum": 72.97808278571429,
+          "mean": 66.1325700357143
+        }
+      },
+      "firstFactoriesObserved": 16,
+      "npcMilestones": 40,
+      "censoredNpcMilestones": 24,
+      "worldsWithFactory": 4,
+      "levelsObserved": {
+        "1": 16,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 660
+      },
+      "questXpShare": 0.0,
+      "batches": 130,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "small-river",
+      "bots": 3,
+      "difficulty": "Easy",
+      "plannedWorlds": 5,
+      "completeWorlds": 5,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 5,
+          "median": 52670.0,
+          "q1": 52652.0,
+          "q3": 54912.0,
+          "iqr": 2260.0,
+          "minimum": 50191,
+          "maximum": 55710,
+          "mean": 53227.0
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 5,
+          "median": 57302.0,
+          "q1": 49801.0,
+          "q3": 59658.0,
+          "iqr": 9857.0,
+          "minimum": 38717,
+          "maximum": 74806,
+          "mean": 56056.8
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 5,
+          "median": 57302.0,
+          "q1": 49801.0,
+          "q3": 59658.0,
+          "iqr": 9857.0,
+          "minimum": 38717,
+          "maximum": 74806,
+          "mean": 56056.8
+        },
+        "employment": {
+          "n": 5,
+          "median": 1.0,
+          "q1": 0.0,
+          "q3": 3.0,
+          "iqr": 3.0,
+          "minimum": 0,
+          "maximum": 3,
+          "mean": 1.4
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 5,
+          "median": 36.45241685714286,
+          "q1": 35.84185942857143,
+          "q3": 36.926990142857136,
+          "iqr": 1.0851307142857038,
+          "minimum": 24.526117928571427,
+          "maximum": 37.08144,
+          "mean": 34.16576487142857
+        }
+      },
+      "firstFactoriesObserved": 10,
+      "npcMilestones": 15,
+      "censoredNpcMilestones": 5,
+      "worldsWithFactory": 5,
+      "levelsObserved": {
+        "1": 10,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 204
+      },
+      "questXpShare": 0.0,
+      "batches": 45,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "small-river",
+      "bots": 3,
+      "difficulty": "Medium",
+      "plannedWorlds": 5,
+      "completeWorlds": 5,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 5,
+          "median": 53921.0,
+          "q1": 53664.0,
+          "q3": 54809.0,
+          "iqr": 1145.0,
+          "minimum": 50191,
+          "maximum": 55717,
+          "mean": 53660.4
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 5,
+          "median": 58048.0,
+          "q1": 55775.0,
+          "q3": 64925.0,
+          "iqr": 9150.0,
+          "minimum": 41948,
+          "maximum": 75800,
+          "mean": 59299.2
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 5,
+          "median": 58048.0,
+          "q1": 55775.0,
+          "q3": 64925.0,
+          "iqr": 9150.0,
+          "minimum": 41948,
+          "maximum": 75800,
+          "mean": 59299.2
+        },
+        "employment": {
+          "n": 5,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.0,
+          "iqr": 0.0,
+          "minimum": 0,
+          "maximum": 4,
+          "mean": 0.8
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 5,
+          "median": 31.88031385714286,
+          "q1": 27.843207428571425,
+          "q3": 36.05954635714286,
+          "iqr": 8.216338928571432,
+          "minimum": 18.554795071428572,
+          "maximum": 38.188600214285714,
+          "mean": 30.505292585714283
+        }
+      },
+      "firstFactoriesObserved": 10,
+      "npcMilestones": 15,
+      "censoredNpcMilestones": 5,
+      "worldsWithFactory": 5,
+      "levelsObserved": {
+        "1": 10,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 176
+      },
+      "questXpShare": 0.0,
+      "batches": 39,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "small-river",
+      "bots": 3,
+      "difficulty": "Hard",
+      "plannedWorlds": 5,
+      "completeWorlds": 5,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 5,
+          "median": 48109.0,
+          "q1": 48086.0,
+          "q3": 50847.0,
+          "iqr": 2761.0,
+          "minimum": 47637,
+          "maximum": 51578,
+          "mean": 49251.4
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 5,
+          "median": 81450.0,
+          "q1": 74697.0,
+          "q3": 90384.0,
+          "iqr": 15687.0,
+          "minimum": 72911,
+          "maximum": 90699,
+          "mean": 82028.2
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 5,
+          "median": 81450.0,
+          "q1": 74697.0,
+          "q3": 90384.0,
+          "iqr": 15687.0,
+          "minimum": 72911,
+          "maximum": 90699,
+          "mean": 82028.2
+        },
+        "employment": {
+          "n": 5,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.0,
+          "iqr": 0.0,
+          "minimum": 0,
+          "maximum": 0,
+          "mean": 0.0
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 5,
+          "median": 33.4396035,
+          "q1": 19.736393071428573,
+          "q3": 34.65569478571429,
+          "iqr": 14.919301714285716,
+          "minimum": 19.122678214285717,
+          "maximum": 36.355159642857146,
+          "mean": 28.661905842857145
+        }
+      },
+      "firstFactoriesObserved": 0,
+      "npcMilestones": 15,
+      "censoredNpcMilestones": 15,
+      "worldsWithFactory": 0,
+      "levelsObserved": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {},
+      "questXpShare": null,
+      "batches": 0,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "small-river",
+      "bots": 6,
+      "difficulty": "Easy",
+      "plannedWorlds": 10,
+      "completeWorlds": 3,
+      "missingWorlds": 0,
+      "states": {
+        "blocked_audit": 7,
+        "completed": 3
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 3,
+          "median": 54737.5,
+          "q1": 53363.0,
+          "q3": 54835.5,
+          "iqr": 1472.5,
+          "minimum": 51988.5,
+          "maximum": 54933.5,
+          "mean": 53886.5
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 3,
+          "median": 86095.0,
+          "q1": 85205.0,
+          "q3": 99411.0,
+          "iqr": 14206.0,
+          "minimum": 84315,
+          "maximum": 112727,
+          "mean": 94379.0
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 3,
+          "median": 86095.0,
+          "q1": 85205.0,
+          "q3": 99411.0,
+          "iqr": 14206.0,
+          "minimum": 84315,
+          "maximum": 112727,
+          "mean": 94379.0
+        },
+        "employment": {
+          "n": 3,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 3.5,
+          "iqr": 3.5,
+          "minimum": 0,
+          "maximum": 7,
+          "mean": 2.3333333333333335
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 3,
+          "median": 44.15777585714286,
+          "q1": 43.446706250000005,
+          "q3": 51.01330889285714,
+          "iqr": 7.566602642857134,
+          "minimum": 42.735636642857145,
+          "maximum": 57.86884192857143,
+          "mean": 48.25408480952381
+        }
+      },
+      "firstFactoriesObserved": 15,
+      "npcMilestones": 18,
+      "censoredNpcMilestones": 3,
+      "worldsWithFactory": 3,
+      "levelsObserved": {
+        "1": 15,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 262
+      },
+      "questXpShare": 0.0,
+      "batches": 62,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "small-river",
+      "bots": 6,
+      "difficulty": "Medium",
+      "plannedWorlds": 10,
+      "completeWorlds": 5,
+      "missingWorlds": 0,
+      "states": {
+        "blocked_audit": 5,
+        "completed": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 5,
+          "median": 54933.5,
+          "q1": 53291.0,
+          "q3": 56197.0,
+          "iqr": 2906.0,
+          "minimum": 51988.5,
+          "maximum": 56950.0,
+          "mean": 54672.0
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 5,
+          "median": 90641.0,
+          "q1": 86624.0,
+          "q3": 105909.0,
+          "iqr": 19285.0,
+          "minimum": 86095,
+          "maximum": 112727,
+          "mean": 96399.2
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 5,
+          "median": 90641.0,
+          "q1": 86624.0,
+          "q3": 105909.0,
+          "iqr": 19285.0,
+          "minimum": 86095,
+          "maximum": 112727,
+          "mean": 96399.2
+        },
+        "employment": {
+          "n": 5,
+          "median": 5.0,
+          "q1": 0.0,
+          "q3": 5.0,
+          "iqr": 5.0,
+          "minimum": 0,
+          "maximum": 6,
+          "mean": 3.2
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 5,
+          "median": 54.68823207142857,
+          "q1": 53.54527735714286,
+          "q3": 57.50988571428571,
+          "iqr": 3.9646083571428505,
+          "minimum": 32.439538428571424,
+          "maximum": 57.80037871428572,
+          "mean": 51.19666245714286
+        }
+      },
+      "firstFactoriesObserved": 26,
+      "npcMilestones": 30,
+      "censoredNpcMilestones": 4,
+      "worldsWithFactory": 5,
+      "levelsObserved": {
+        "1": 26,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 469
+      },
+      "questXpShare": 0.0,
+      "batches": 114,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "small-river",
+      "bots": 6,
+      "difficulty": "Hard",
+      "plannedWorlds": 10,
+      "completeWorlds": 9,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 9,
+        "blocked_audit": 1
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 9,
+          "median": 49474.5,
+          "q1": 46866.5,
+          "q3": 52269.0,
+          "iqr": 5402.5,
+          "minimum": 43476.0,
+          "maximum": 53833.5,
+          "mean": 49403.055555555555
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 9,
+          "median": 156014.0,
+          "q1": 143897.0,
+          "q3": 160691.0,
+          "iqr": 16794.0,
+          "minimum": 137313,
+          "maximum": 174414,
+          "mean": 154435.22222222222
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 9,
+          "median": 156014.0,
+          "q1": 143897.0,
+          "q3": 160691.0,
+          "iqr": 16794.0,
+          "minimum": 137313,
+          "maximum": 174414,
+          "mean": 154435.22222222222
+        },
+        "employment": {
+          "n": 9,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.0,
+          "iqr": 0.0,
+          "minimum": 0,
+          "maximum": 0,
+          "mean": 0.0
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 9,
+          "median": 51.317367142857144,
+          "q1": 36.250948,
+          "q3": 53.22306878571429,
+          "iqr": 16.97212078571429,
+          "minimum": 28.39721407142857,
+          "maximum": 54.67307735714285,
+          "mean": 44.33670675396826
+        }
+      },
+      "firstFactoriesObserved": 2,
+      "npcMilestones": 54,
+      "censoredNpcMilestones": 52,
+      "worldsWithFactory": 1,
+      "levelsObserved": {
+        "1": 2,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {},
+      "questXpShare": null,
+      "batches": 0,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "small-river",
+      "bots": 10,
+      "difficulty": "Easy",
+      "plannedWorlds": 5,
+      "completeWorlds": 5,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 5,
+          "median": 50160.5,
+          "q1": 45518.5,
+          "q3": 52454.5,
+          "iqr": 6936.0,
+          "minimum": 44891.0,
+          "maximum": 54951.5,
+          "mean": 49595.2
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 5,
+          "median": 233935.0,
+          "q1": 226079.0,
+          "q3": 240795.0,
+          "iqr": 14716.0,
+          "minimum": 194441,
+          "maximum": 261023,
+          "mean": 231254.6
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 5,
+          "median": 233935.0,
+          "q1": 226079.0,
+          "q3": 240795.0,
+          "iqr": 14716.0,
+          "minimum": 194441,
+          "maximum": 261023,
+          "mean": 231254.6
+        },
+        "employment": {
+          "n": 5,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 2.0,
+          "iqr": 2.0,
+          "minimum": 0,
+          "maximum": 4,
+          "mean": 1.2
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 5,
+          "median": 79.18544257142857,
+          "q1": 77.4641855,
+          "q3": 79.918315,
+          "iqr": 2.4541295000000076,
+          "minimum": 57.803023357142855,
+          "maximum": 79.95124557142857,
+          "mean": 74.8644424
+        }
+      },
+      "firstFactoriesObserved": 21,
+      "npcMilestones": 50,
+      "censoredNpcMilestones": 29,
+      "worldsWithFactory": 5,
+      "levelsObserved": {
+        "1": 21,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 466
+      },
+      "questXpShare": 0.0,
+      "batches": 100,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "small-river",
+      "bots": 10,
+      "difficulty": "Medium",
+      "plannedWorlds": 5,
+      "completeWorlds": 5,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 5,
+          "median": 47215.0,
+          "q1": 46258.0,
+          "q3": 52465.0,
+          "iqr": 6207.0,
+          "minimum": 44045.0,
+          "maximum": 54951.5,
+          "mean": 48986.9
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 5,
+          "median": 239376.0,
+          "q1": 237624.0,
+          "q3": 239426.0,
+          "iqr": 1802.0,
+          "minimum": 210156,
+          "maximum": 260951,
+          "mean": 237506.6
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 5,
+          "median": 239376.0,
+          "q1": 237624.0,
+          "q3": 239426.0,
+          "iqr": 1802.0,
+          "minimum": 210156,
+          "maximum": 260951,
+          "mean": 237506.6
+        },
+        "employment": {
+          "n": 5,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 3.0,
+          "iqr": 3.0,
+          "minimum": 0,
+          "maximum": 4,
+          "mean": 1.4
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 5,
+          "median": 58.52082378571428,
+          "q1": 45.504383642857135,
+          "q3": 76.16385285714286,
+          "iqr": 30.65946921428572,
+          "minimum": 42.411294285714284,
+          "maximum": 76.37729142857143,
+          "mean": 59.7955292
+        }
+      },
+      "firstFactoriesObserved": 21,
+      "npcMilestones": 50,
+      "censoredNpcMilestones": 29,
+      "worldsWithFactory": 5,
+      "levelsObserved": {
+        "1": 21,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 454
+      },
+      "questXpShare": 0.0,
+      "batches": 100,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "small-river",
+      "bots": 10,
+      "difficulty": "Hard",
+      "plannedWorlds": 5,
+      "completeWorlds": 4,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 4,
+        "blocked_audit": 1
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 4,
+          "median": 47655.75,
+          "q1": 46107.125,
+          "q3": 49549.25,
+          "iqr": 3442.125,
+          "minimum": 45710.0,
+          "maximum": 50981.0,
+          "mean": 48000.625
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 4,
+          "median": 264054.5,
+          "q1": 257191.5,
+          "q3": 271375.25,
+          "iqr": 14183.75,
+          "minimum": 252621,
+          "maximum": 277319,
+          "mean": 264512.25
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 4,
+          "median": 264054.5,
+          "q1": 257191.5,
+          "q3": 271375.25,
+          "iqr": 14183.75,
+          "minimum": 252621,
+          "maximum": 277319,
+          "mean": 264512.25
+        },
+        "employment": {
+          "n": 4,
+          "median": 0.5,
+          "q1": 0.0,
+          "q3": 3.25,
+          "iqr": 3.25,
+          "minimum": 0,
+          "maximum": 10,
+          "mean": 2.75
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 4,
+          "median": 76.77666267857143,
+          "q1": 68.691599125,
+          "q3": 77.06847773214287,
+          "iqr": 8.37687860714287,
+          "minimum": 44.92068142857143,
+          "maximum": 77.45964992857142,
+          "mean": 68.98341417857142
+        }
+      },
+      "firstFactoriesObserved": 5,
+      "npcMilestones": 40,
+      "censoredNpcMilestones": 35,
+      "worldsWithFactory": 3,
+      "levelsObserved": {
+        "1": 5,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {
+        "Production": 48
+      },
+      "questXpShare": 0.0,
+      "batches": 12,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "large-districts",
+      "bots": 3,
+      "difficulty": "Easy",
+      "plannedWorlds": 5,
+      "completeWorlds": 5,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 5,
+          "median": 29238.0,
+          "q1": 28683.0,
+          "q3": 34060.0,
+          "iqr": 5377.0,
+          "minimum": 24374,
+          "maximum": 34481,
+          "mean": 30167.2
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 5,
+          "median": 49687.0,
+          "q1": 49356.0,
+          "q3": 49868.0,
+          "iqr": 512.0,
+          "minimum": 49102,
+          "maximum": 50014,
+          "mean": 49605.4
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 5,
+          "median": 49687.0,
+          "q1": 49356.0,
+          "q3": 49868.0,
+          "iqr": 512.0,
+          "minimum": 49102,
+          "maximum": 50014,
+          "mean": 49605.4
+        },
+        "employment": {
+          "n": 5,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.0,
+          "iqr": 0.0,
+          "minimum": 0,
+          "maximum": 0,
+          "mean": 0.0
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 5,
+          "median": 48.656337928571425,
+          "q1": 46.602934071428564,
+          "q3": 64.55035871428571,
+          "iqr": 17.947424642857143,
+          "minimum": 33.389908857142856,
+          "maximum": 70.2117405,
+          "mean": 52.68225601428571
+        }
+      },
+      "firstFactoriesObserved": 1,
+      "npcMilestones": 15,
+      "censoredNpcMilestones": 14,
+      "worldsWithFactory": 1,
+      "levelsObserved": {
+        "1": 1,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {},
+      "questXpShare": null,
+      "batches": 0,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "large-districts",
+      "bots": 3,
+      "difficulty": "Medium",
+      "plannedWorlds": 5,
+      "completeWorlds": 5,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 5,
+          "median": 29238.0,
+          "q1": 28683.0,
+          "q3": 34060.0,
+          "iqr": 5377.0,
+          "minimum": 24374,
+          "maximum": 34481,
+          "mean": 30167.2
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 5,
+          "median": 49687.0,
+          "q1": 49356.0,
+          "q3": 49868.0,
+          "iqr": 512.0,
+          "minimum": 49102,
+          "maximum": 50014,
+          "mean": 49605.4
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 5,
+          "median": 49687.0,
+          "q1": 49356.0,
+          "q3": 49868.0,
+          "iqr": 512.0,
+          "minimum": 49102,
+          "maximum": 50014,
+          "mean": 49605.4
+        },
+        "employment": {
+          "n": 5,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.0,
+          "iqr": 0.0,
+          "minimum": 0,
+          "maximum": 0,
+          "mean": 0.0
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 5,
+          "median": 45.79917042857142,
+          "q1": 38.06243935714286,
+          "q3": 68.46380071428571,
+          "iqr": 30.401361357142854,
+          "minimum": 36.701440000000005,
+          "maximum": 68.94003471428572,
+          "mean": 51.59337704285714
+        }
+      },
+      "firstFactoriesObserved": 1,
+      "npcMilestones": 15,
+      "censoredNpcMilestones": 14,
+      "worldsWithFactory": 1,
+      "levelsObserved": {
+        "1": 1,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {},
+      "questXpShare": null,
+      "batches": 0,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "large-districts",
+      "bots": 3,
+      "difficulty": "Hard",
+      "plannedWorlds": 5,
+      "completeWorlds": 5,
+      "missingWorlds": 0,
+      "states": {
+        "completed": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 5,
+          "median": 29238.0,
+          "q1": 28683.0,
+          "q3": 34060.0,
+          "iqr": 5377.0,
+          "minimum": 24374,
+          "maximum": 34481,
+          "mean": 30167.2
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 5,
+          "median": 49687.0,
+          "q1": 49356.0,
+          "q3": 49868.0,
+          "iqr": 512.0,
+          "minimum": 49102,
+          "maximum": 50014,
+          "mean": 49605.4
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 5,
+          "median": 49687.0,
+          "q1": 49356.0,
+          "q3": 49868.0,
+          "iqr": 512.0,
+          "minimum": 49102,
+          "maximum": 50014,
+          "mean": 49605.4
+        },
+        "employment": {
+          "n": 5,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.0,
+          "iqr": 0.0,
+          "minimum": 0,
+          "maximum": 0,
+          "mean": 0.0
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 5,
+          "median": 48.09059357142858,
+          "q1": 44.56037328571429,
+          "q3": 48.58255321428572,
+          "iqr": 4.0221799285714255,
+          "minimum": 34.31732742857143,
+          "maximum": 61.549346142857146,
+          "mean": 47.420038728571434
+        }
+      },
+      "firstFactoriesObserved": 0,
+      "npcMilestones": 15,
+      "censoredNpcMilestones": 15,
+      "worldsWithFactory": 0,
+      "levelsObserved": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {},
+      "questXpShare": null,
+      "batches": 0,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Easy",
+      "plannedWorlds": 10,
+      "completeWorlds": 6,
+      "missingWorlds": 0,
+      "states": {
+        "blocked_audit": 4,
+        "completed": 6
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 6,
+          "median": 31221.25,
+          "q1": 29162.125,
+          "q3": 34032.25,
+          "iqr": 4870.125,
+          "minimum": 28515.0,
+          "maximum": 39128.5,
+          "mean": 32255.166666666668
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 6,
+          "median": 104368.0,
+          "q1": 102702.75,
+          "q3": 105932.0,
+          "iqr": 3229.25,
+          "minimum": 102130,
+          "maximum": 106865,
+          "mean": 104388.66666666667
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 6,
+          "median": 104368.0,
+          "q1": 102702.75,
+          "q3": 105932.0,
+          "iqr": 3229.25,
+          "minimum": 102130,
+          "maximum": 106865,
+          "mean": 104388.66666666667
+        },
+        "employment": {
+          "n": 6,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.0,
+          "iqr": 0.0,
+          "minimum": 0,
+          "maximum": 2,
+          "mean": 0.3333333333333333
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 6,
+          "median": 96.77656360714286,
+          "q1": 95.57906144642857,
+          "q3": 98.22070642857142,
+          "iqr": 2.64164498214285,
+          "minimum": 54.74361735714285,
+          "maximum": 111.61111214285714,
+          "mean": 92.29830635714285
+        }
+      },
+      "firstFactoriesObserved": 2,
+      "npcMilestones": 36,
+      "censoredNpcMilestones": 34,
+      "worldsWithFactory": 2,
+      "levelsObserved": {
+        "1": 2,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {},
+      "questXpShare": null,
+      "batches": 0,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Medium",
+      "plannedWorlds": 10,
+      "completeWorlds": 4,
+      "missingWorlds": 2,
+      "states": {
+        "blocked_audit": 4,
+        "completed": 4,
+        "missing": 2
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": {
+          "n": 4,
+          "median": 29183.25,
+          "q1": 28984.5,
+          "q3": 30495.125,
+          "iqr": 1510.625,
+          "minimum": 28515.0,
+          "maximum": 34304.0,
+          "mean": 30296.375
+        },
+        "npcOperatingReceiptResultMinor": {
+          "n": 4,
+          "median": 104368.0,
+          "q1": 102842.5,
+          "q3": 105748.0,
+          "iqr": 2905.5,
+          "minimum": 102130,
+          "maximum": 106024,
+          "mean": 104222.5
+        },
+        "npcOperatingAfterRoadDebtMinor": {
+          "n": 4,
+          "median": 104368.0,
+          "q1": 102842.5,
+          "q3": 105748.0,
+          "iqr": 2905.5,
+          "minimum": 102130,
+          "maximum": 106024,
+          "mean": 104222.5
+        },
+        "employment": {
+          "n": 4,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.5,
+          "iqr": 0.5,
+          "minimum": 0,
+          "maximum": 2,
+          "mean": 0.5
+        },
+        "hostedMillisecondsPerActiveTick": {
+          "n": 4,
+          "median": 89.52726821428573,
+          "q1": 77.817521625,
+          "q3": 99.18534873214286,
+          "iqr": 21.36782710714286,
+          "minimum": 71.10071678571428,
+          "maximum": 99.74715535714284,
+          "mean": 87.47560214285714
+        }
+      },
+      "firstFactoriesObserved": 1,
+      "npcMilestones": 24,
+      "censoredNpcMilestones": 23,
+      "worldsWithFactory": 1,
+      "levelsObserved": {
+        "1": 1,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {},
+      "questXpShare": null,
+      "batches": 0,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Hard",
+      "plannedWorlds": 10,
+      "completeWorlds": 0,
+      "missingWorlds": 10,
+      "states": {
+        "missing": 10
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": null,
+        "npcOperatingReceiptResultMinor": null,
+        "npcOperatingAfterRoadDebtMinor": null,
+        "employment": null,
+        "hostedMillisecondsPerActiveTick": null
+      },
+      "firstFactoriesObserved": 0,
+      "npcMilestones": 0,
+      "censoredNpcMilestones": 0,
+      "worldsWithFactory": 0,
+      "levelsObserved": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {},
+      "questXpShare": null,
+      "batches": 0,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Easy",
+      "plannedWorlds": 5,
+      "completeWorlds": 0,
+      "missingWorlds": 5,
+      "states": {
+        "missing": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": null,
+        "npcOperatingReceiptResultMinor": null,
+        "npcOperatingAfterRoadDebtMinor": null,
+        "employment": null,
+        "hostedMillisecondsPerActiveTick": null
+      },
+      "firstFactoriesObserved": 0,
+      "npcMilestones": 0,
+      "censoredNpcMilestones": 0,
+      "worldsWithFactory": 0,
+      "levelsObserved": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {},
+      "questXpShare": null,
+      "batches": 0,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Medium",
+      "plannedWorlds": 5,
+      "completeWorlds": 0,
+      "missingWorlds": 5,
+      "states": {
+        "missing": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": null,
+        "npcOperatingReceiptResultMinor": null,
+        "npcOperatingAfterRoadDebtMinor": null,
+        "employment": null,
+        "hostedMillisecondsPerActiveTick": null
+      },
+      "firstFactoriesObserved": 0,
+      "npcMilestones": 0,
+      "censoredNpcMilestones": 0,
+      "worldsWithFactory": 0,
+      "levelsObserved": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {},
+      "questXpShare": null,
+      "batches": 0,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    },
+    {
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Hard",
+      "plannedWorlds": 5,
+      "completeWorlds": 0,
+      "missingWorlds": 5,
+      "states": {
+        "missing": 5
+      },
+      "distributions": {
+        "npcMedianCapitalChangeMinor": null,
+        "npcOperatingReceiptResultMinor": null,
+        "npcOperatingAfterRoadDebtMinor": null,
+        "employment": null,
+        "hostedMillisecondsPerActiveTick": null
+      },
+      "firstFactoriesObserved": 0,
+      "npcMilestones": 0,
+      "censoredNpcMilestones": 0,
+      "worldsWithFactory": 0,
+      "levelsObserved": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "experience": {},
+      "questXpShare": null,
+      "batches": 0,
+      "vehicles": 0,
+      "privateRoadStages": 0,
+      "serviceOrders": 0,
+      "independentUnit": "World/seed; NPC milestone rows are correlated",
+      "scope": "Complete ordinary5000 endpoints only; partial/censored trajectories retained separately"
+    }
+  ],
+  "pairs": [
+    {
+      "map": "compact-valley",
+      "bots": 3,
+      "left": "Hard",
+      "right": "Medium",
+      "plannedPairs": 5,
+      "completePairs": 5,
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "incompleteSeeds": [],
+      "primary": false,
+      "differences": [
+        3388,
+        22086,
+        17141,
+        3654,
+        11466
+      ],
+      "spread": {
+        "n": 5,
+        "median": 11466.0,
+        "q1": 3654.0,
+        "q3": 17141.0,
+        "iqr": 13487.0,
+        "minimum": 3388,
+        "maximum": 22086,
+        "mean": 11547.0
+      },
+      "signTestTwoSided": 0.0625,
+      "nonzeroPairs": 5,
+      "medianBootstrap95": [
+        3388.0,
+        22086.0
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "compact-valley",
+      "bots": 3,
+      "left": "Easy",
+      "right": "Medium",
+      "plannedPairs": 5,
+      "completePairs": 5,
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "incompleteSeeds": [],
+      "primary": false,
+      "differences": [
+        -5447,
+        5432,
+        0,
+        -2909,
+        0
+      ],
+      "spread": {
+        "n": 5,
+        "median": 0.0,
+        "q1": -2909.0,
+        "q3": 0.0,
+        "iqr": 2909.0,
+        "minimum": -5447,
+        "maximum": 5432,
+        "mean": -584.8
+      },
+      "signTestTwoSided": 1,
+      "nonzeroPairs": 3,
+      "medianBootstrap95": [
+        -5447.0,
+        5432.0
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "compact-valley",
+      "bots": 6,
+      "left": "Hard",
+      "right": "Medium",
+      "plannedPairs": 10,
+      "completePairs": 5,
+      "seeds": [
+        44,
+        47,
+        48,
+        49,
+        50
+      ],
+      "incompleteSeeds": [
+        42,
+        43,
+        45,
+        46,
+        51
+      ],
+      "primary": true,
+      "differences": [
+        7052.5,
+        -570.0,
+        4581.0,
+        5147.0,
+        2856.5
+      ],
+      "spread": {
+        "n": 5,
+        "median": 4581.0,
+        "q1": 2856.5,
+        "q3": 5147.0,
+        "iqr": 2290.5,
+        "minimum": -570.0,
+        "maximum": 7052.5,
+        "mean": 3813.4
+      },
+      "signTestTwoSided": 0.375,
+      "nonzeroPairs": 5,
+      "medianBootstrap95": [
+        -570.0,
+        7052.5
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "compact-valley",
+      "bots": 6,
+      "left": "Easy",
+      "right": "Medium",
+      "plannedPairs": 10,
+      "completePairs": 6,
+      "seeds": [
+        44,
+        45,
+        47,
+        48,
+        49,
+        50
+      ],
+      "incompleteSeeds": [
+        42,
+        43,
+        46,
+        51
+      ],
+      "primary": true,
+      "differences": [
+        -297.5,
+        1967.0,
+        1489.0,
+        -793.0,
+        -342.0,
+        1989.0
+      ],
+      "spread": {
+        "n": 6,
+        "median": 595.75,
+        "q1": -330.875,
+        "q3": 1847.5,
+        "iqr": 2178.375,
+        "minimum": -793.0,
+        "maximum": 1989.0,
+        "mean": 668.75
+      },
+      "signTestTwoSided": 1,
+      "nonzeroPairs": 6,
+      "medianBootstrap95": [
+        -567.5,
+        1978.0
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "compact-valley",
+      "bots": 10,
+      "left": "Hard",
+      "right": "Medium",
+      "plannedPairs": 5,
+      "completePairs": 3,
+      "seeds": [
+        43,
+        44,
+        45
+      ],
+      "incompleteSeeds": [
+        42,
+        46
+      ],
+      "primary": false,
+      "differences": [
+        -5333.5,
+        -7685.5,
+        3094.5
+      ],
+      "spread": {
+        "n": 3,
+        "median": -5333.5,
+        "q1": -6509.5,
+        "q3": -1119.5,
+        "iqr": 5390.0,
+        "minimum": -7685.5,
+        "maximum": 3094.5,
+        "mean": -3308.1666666666665
+      },
+      "signTestTwoSided": 1,
+      "nonzeroPairs": 3,
+      "medianBootstrap95": [
+        -7685.5,
+        3094.5
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "compact-valley",
+      "bots": 10,
+      "left": "Easy",
+      "right": "Medium",
+      "plannedPairs": 5,
+      "completePairs": 4,
+      "seeds": [
+        43,
+        44,
+        45,
+        46
+      ],
+      "incompleteSeeds": [
+        42
+      ],
+      "primary": false,
+      "differences": [
+        2529.0,
+        -3932.5,
+        -2817.0,
+        64.5
+      ],
+      "spread": {
+        "n": 4,
+        "median": -1376.25,
+        "q1": -3095.875,
+        "q3": 680.625,
+        "iqr": 3776.5,
+        "minimum": -3932.5,
+        "maximum": 2529.0,
+        "mean": -1039.0
+      },
+      "signTestTwoSided": 1,
+      "nonzeroPairs": 4,
+      "medianBootstrap95": [
+        -3932.5,
+        2529.0
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "small-river",
+      "bots": 3,
+      "left": "Hard",
+      "right": "Medium",
+      "plannedPairs": 5,
+      "completePairs": 5,
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "incompleteSeeds": [],
+      "primary": false,
+      "differences": [
+        -2554,
+        -5555,
+        -3962,
+        -2343,
+        -7631
+      ],
+      "spread": {
+        "n": 5,
+        "median": -3962.0,
+        "q1": -5555.0,
+        "q3": -2554.0,
+        "iqr": 3001.0,
+        "minimum": -7631,
+        "maximum": -2343,
+        "mean": -4409.0
+      },
+      "signTestTwoSided": 0.0625,
+      "nonzeroPairs": 5,
+      "medianBootstrap95": [
+        -7631.0,
+        -2343.0
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "small-river",
+      "bots": 3,
+      "left": "Easy",
+      "right": "Medium",
+      "plannedPairs": 5,
+      "completePairs": 5,
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "incompleteSeeds": [],
+      "primary": false,
+      "differences": [
+        0,
+        -994,
+        103,
+        -1269,
+        -7
+      ],
+      "spread": {
+        "n": 5,
+        "median": -7.0,
+        "q1": -994.0,
+        "q3": 0.0,
+        "iqr": 994.0,
+        "minimum": -1269,
+        "maximum": 103,
+        "mean": -433.4
+      },
+      "signTestTwoSided": 0.625,
+      "nonzeroPairs": 4,
+      "medianBootstrap95": [
+        -1269.0,
+        103.0
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "small-river",
+      "bots": 6,
+      "left": "Hard",
+      "right": "Medium",
+      "plannedPairs": 10,
+      "completePairs": 4,
+      "seeds": [
+        45,
+        46,
+        48,
+        49
+      ],
+      "incompleteSeeds": [
+        42,
+        43,
+        44,
+        47,
+        50,
+        51
+      ],
+      "primary": true,
+      "differences": [
+        -3365.0,
+        -1100.0,
+        -9815.0,
+        -4636.5
+      ],
+      "spread": {
+        "n": 4,
+        "median": -4000.75,
+        "q1": -5931.125,
+        "q3": -2798.75,
+        "iqr": 3132.375,
+        "minimum": -9815.0,
+        "maximum": -1100.0,
+        "mean": -4729.125
+      },
+      "signTestTwoSided": 0.125,
+      "nonzeroPairs": 4,
+      "medianBootstrap95": [
+        -9815.0,
+        -1100.0
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "small-river",
+      "bots": 6,
+      "left": "Easy",
+      "right": "Medium",
+      "plannedPairs": 10,
+      "completePairs": 3,
+      "seeds": [
+        46,
+        48,
+        49
+      ],
+      "incompleteSeeds": [
+        42,
+        43,
+        44,
+        45,
+        47,
+        50,
+        51
+      ],
+      "primary": true,
+      "differences": [
+        0.0,
+        1446.5,
+        0.0
+      ],
+      "spread": {
+        "n": 3,
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 723.25,
+        "iqr": 723.25,
+        "minimum": 0.0,
+        "maximum": 1446.5,
+        "mean": 482.1666666666667
+      },
+      "signTestTwoSided": 1,
+      "nonzeroPairs": 1,
+      "medianBootstrap95": [
+        0.0,
+        1446.5
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "small-river",
+      "bots": 10,
+      "left": "Hard",
+      "right": "Medium",
+      "plannedPairs": 5,
+      "completePairs": 4,
+      "seeds": [
+        42,
+        43,
+        44,
+        46
+      ],
+      "incompleteSeeds": [
+        45
+      ],
+      "primary": false,
+      "differences": [
+        -3393.0,
+        -18.5,
+        3766.0,
+        1665.0
+      ],
+      "spread": {
+        "n": 4,
+        "median": 823.25,
+        "q1": -862.125,
+        "q3": 2190.25,
+        "iqr": 3052.375,
+        "minimum": -3393.0,
+        "maximum": 3766.0,
+        "mean": 504.875
+      },
+      "signTestTwoSided": 1,
+      "nonzeroPairs": 4,
+      "medianBootstrap95": [
+        -3393.0,
+        3766.0
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "small-river",
+      "bots": 10,
+      "left": "Easy",
+      "right": "Medium",
+      "plannedPairs": 5,
+      "completePairs": 5,
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "incompleteSeeds": [],
+      "primary": false,
+      "differences": [
+        -10.5,
+        3902.5,
+        -1696.5,
+        0.0,
+        846.0
+      ],
+      "spread": {
+        "n": 5,
+        "median": 0.0,
+        "q1": -10.5,
+        "q3": 846.0,
+        "iqr": 856.5,
+        "minimum": -1696.5,
+        "maximum": 3902.5,
+        "mean": 608.3
+      },
+      "signTestTwoSided": 1,
+      "nonzeroPairs": 4,
+      "medianBootstrap95": [
+        -1696.5,
+        3902.5
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "large-districts",
+      "bots": 3,
+      "left": "Hard",
+      "right": "Medium",
+      "plannedPairs": 5,
+      "completePairs": 5,
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "incompleteSeeds": [],
+      "primary": false,
+      "differences": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "spread": {
+        "n": 5,
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "iqr": 0.0,
+        "minimum": 0,
+        "maximum": 0,
+        "mean": 0.0
+      },
+      "signTestTwoSided": 1,
+      "nonzeroPairs": 0,
+      "medianBootstrap95": [
+        0.0,
+        0.0
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "large-districts",
+      "bots": 3,
+      "left": "Easy",
+      "right": "Medium",
+      "plannedPairs": 5,
+      "completePairs": 5,
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "incompleteSeeds": [],
+      "primary": false,
+      "differences": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "spread": {
+        "n": 5,
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "iqr": 0.0,
+        "minimum": 0,
+        "maximum": 0,
+        "mean": 0.0
+      },
+      "signTestTwoSided": 1,
+      "nonzeroPairs": 0,
+      "medianBootstrap95": [
+        0.0,
+        0.0
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "large-districts",
+      "bots": 6,
+      "left": "Hard",
+      "right": "Medium",
+      "plannedPairs": 10,
+      "completePairs": 0,
+      "seeds": [],
+      "incompleteSeeds": [
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51
+      ],
+      "primary": true,
+      "differences": [],
+      "spread": null,
+      "signTestTwoSided": 1,
+      "nonzeroPairs": 0,
+      "medianBootstrap95": null,
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "large-districts",
+      "bots": 6,
+      "left": "Easy",
+      "right": "Medium",
+      "plannedPairs": 10,
+      "completePairs": 4,
+      "seeds": [
+        43,
+        44,
+        46,
+        49
+      ],
+      "incompleteSeeds": [
+        42,
+        45,
+        47,
+        48,
+        50,
+        51
+      ],
+      "primary": true,
+      "differences": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "spread": {
+        "n": 4,
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "iqr": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0,
+        "mean": 0.0
+      },
+      "signTestTwoSided": 1,
+      "nonzeroPairs": 0,
+      "medianBootstrap95": [
+        0.0,
+        0.0
+      ],
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "large-districts",
+      "bots": 10,
+      "left": "Hard",
+      "right": "Medium",
+      "plannedPairs": 5,
+      "completePairs": 0,
+      "seeds": [],
+      "incompleteSeeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "primary": false,
+      "differences": [],
+      "spread": null,
+      "signTestTwoSided": 1,
+      "nonzeroPairs": 0,
+      "medianBootstrap95": null,
+      "signTestHolmAdjusted": 1
+    },
+    {
+      "map": "large-districts",
+      "bots": 10,
+      "left": "Easy",
+      "right": "Medium",
+      "plannedPairs": 5,
+      "completePairs": 0,
+      "seeds": [],
+      "incompleteSeeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "primary": false,
+      "differences": [],
+      "spread": null,
+      "signTestTwoSided": 1,
+      "nonzeroPairs": 0,
+      "medianBootstrap95": null,
+      "signTestHolmAdjusted": 1
+    }
+  ],
+  "expectedWorlds": 192,
+  "recordedWorlds": 153,
+  "missing": [
+    {
+      "id": "ordinary-large-districts-6-Medium-50",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Medium",
+      "seed": 50
+    },
+    {
+      "id": "ordinary-large-districts-6-Medium-51",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Medium",
+      "seed": 51
+    },
+    {
+      "id": "ordinary-large-districts-6-Hard-42",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 42
+    },
+    {
+      "id": "ordinary-large-districts-6-Hard-43",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 43
+    },
+    {
+      "id": "ordinary-large-districts-6-Hard-44",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 44
+    },
+    {
+      "id": "ordinary-large-districts-6-Hard-45",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 45
+    },
+    {
+      "id": "ordinary-large-districts-6-Hard-46",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 46
+    },
+    {
+      "id": "ordinary-large-districts-6-Hard-47",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 47
+    },
+    {
+      "id": "ordinary-large-districts-6-Hard-48",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 48
+    },
+    {
+      "id": "ordinary-large-districts-6-Hard-49",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 49
+    },
+    {
+      "id": "ordinary-large-districts-6-Hard-50",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 50
+    },
+    {
+      "id": "ordinary-large-districts-6-Hard-51",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 51
+    },
+    {
+      "id": "ordinary-large-districts-10-Easy-42",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Easy",
+      "seed": 42
+    },
+    {
+      "id": "ordinary-large-districts-10-Easy-43",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Easy",
+      "seed": 43
+    },
+    {
+      "id": "ordinary-large-districts-10-Easy-44",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Easy",
+      "seed": 44
+    },
+    {
+      "id": "ordinary-large-districts-10-Easy-45",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Easy",
+      "seed": 45
+    },
+    {
+      "id": "ordinary-large-districts-10-Easy-46",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Easy",
+      "seed": 46
+    },
+    {
+      "id": "ordinary-large-districts-10-Medium-42",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Medium",
+      "seed": 42
+    },
+    {
+      "id": "ordinary-large-districts-10-Medium-43",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Medium",
+      "seed": 43
+    },
+    {
+      "id": "ordinary-large-districts-10-Medium-44",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Medium",
+      "seed": 44
+    },
+    {
+      "id": "ordinary-large-districts-10-Medium-45",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Medium",
+      "seed": 45
+    },
+    {
+      "id": "ordinary-large-districts-10-Medium-46",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Medium",
+      "seed": 46
+    },
+    {
+      "id": "ordinary-large-districts-10-Hard-42",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Hard",
+      "seed": 42
+    },
+    {
+      "id": "ordinary-large-districts-10-Hard-43",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Hard",
+      "seed": 43
+    },
+    {
+      "id": "ordinary-large-districts-10-Hard-44",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Hard",
+      "seed": 44
+    },
+    {
+      "id": "ordinary-large-districts-10-Hard-45",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Hard",
+      "seed": 45
+    },
+    {
+      "id": "ordinary-large-districts-10-Hard-46",
+      "phase": "ordinary",
+      "map": "large-districts",
+      "bots": 10,
+      "difficulty": "Hard",
+      "seed": 46
+    },
+    {
+      "id": "extended-compact-valley-6-Medium-142",
+      "phase": "extended",
+      "map": "compact-valley",
+      "bots": 6,
+      "difficulty": "Medium",
+      "seed": 142
+    },
+    {
+      "id": "extended-compact-valley-6-Medium-143",
+      "phase": "extended",
+      "map": "compact-valley",
+      "bots": 6,
+      "difficulty": "Medium",
+      "seed": 143
+    },
+    {
+      "id": "extended-compact-valley-6-Hard-142",
+      "phase": "extended",
+      "map": "compact-valley",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 142
+    },
+    {
+      "id": "extended-compact-valley-6-Hard-143",
+      "phase": "extended",
+      "map": "compact-valley",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 143
+    },
+    {
+      "id": "extended-small-river-6-Medium-142",
+      "phase": "extended",
+      "map": "small-river",
+      "bots": 6,
+      "difficulty": "Medium",
+      "seed": 142
+    },
+    {
+      "id": "extended-small-river-6-Medium-143",
+      "phase": "extended",
+      "map": "small-river",
+      "bots": 6,
+      "difficulty": "Medium",
+      "seed": 143
+    },
+    {
+      "id": "extended-small-river-6-Hard-142",
+      "phase": "extended",
+      "map": "small-river",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 142
+    },
+    {
+      "id": "extended-small-river-6-Hard-143",
+      "phase": "extended",
+      "map": "small-river",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 143
+    },
+    {
+      "id": "extended-large-districts-6-Medium-142",
+      "phase": "extended",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Medium",
+      "seed": 142
+    },
+    {
+      "id": "extended-large-districts-6-Medium-143",
+      "phase": "extended",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Medium",
+      "seed": 143
+    },
+    {
+      "id": "extended-large-districts-6-Hard-142",
+      "phase": "extended",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 142
+    },
+    {
+      "id": "extended-large-districts-6-Hard-143",
+      "phase": "extended",
+      "map": "large-districts",
+      "bots": 6,
+      "difficulty": "Hard",
+      "seed": 143
+    }
+  ],
+  "blocked": [
+    {
+      "case": {
+        "id": "ordinary-compact-valley-10-Easy-42",
+        "phase": "ordinary",
+        "map": "compact-valley",
+        "bots": 10,
+        "difficulty": "Easy",
+        "seed": 42
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:37:16.649765+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 93.201,
+          "finished_at": "2026-11-01T22:38:49.850381+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 88.8749751,
+          "ticksPerSecond": 15.752465735430626,
+          "workingSetBytes": 1784594432,
+          "peakWorkingSetBytes": 2700857344,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:38:49.6930014+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:38:49.899023+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.568,
+            "finished_at": "2026-11-01T22:38:51.467032+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:38:51.500748+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.916,
+            "finished_at": "2026-11-01T22:38:52.416979+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-compact-valley-10-Hard-46",
+        "phase": "ordinary",
+        "map": "compact-valley",
+        "bots": 10,
+        "difficulty": "Hard",
+        "seed": 46
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:41:57.696533+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 68.608,
+          "finished_at": "2026-11-01T22:43:06.304462+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 65.9597754,
+          "ticksPerSecond": 21.22505711261109,
+          "workingSetBytes": 1698512896,
+          "peakWorkingSetBytes": 2466504704,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:43:06.1510107+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:43:06.340536+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.016,
+            "finished_at": "2026-11-01T22:43:07.356266+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:43:07.382352+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.615,
+            "finished_at": "2026-11-01T22:43:07.997244+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-compact-valley-10-Medium-42",
+        "phase": "ordinary",
+        "map": "compact-valley",
+        "bots": 10,
+        "difficulty": "Medium",
+        "seed": 42
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:36:37.832023+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 69.892,
+          "finished_at": "2026-11-01T22:37:47.723725+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 68.0185037,
+          "ticksPerSecond": 26.463387197386997,
+          "workingSetBytes": 479916032,
+          "peakWorkingSetBytes": 699588608,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:37:47.6280604+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:37:47.759827+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.816,
+            "finished_at": "2026-11-01T22:37:48.575505+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:37:48.603475+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.615,
+            "finished_at": "2026-11-01T22:37:49.218665+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-compact-valley-6-Easy-43",
+        "phase": "ordinary",
+        "map": "compact-valley",
+        "bots": 6,
+        "difficulty": "Easy",
+        "seed": 43
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:25:18.310615+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 61.215,
+          "finished_at": "2026-11-01T22:26:19.525874+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 58.93254,
+          "ticksPerSecond": 30.54339758646072,
+          "workingSetBytes": 466542592,
+          "peakWorkingSetBytes": 568279040,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:26:19.4813139+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:26:19.570402+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.716,
+            "finished_at": "2026-11-01T22:26:20.286345+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:26:20.320621+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.214,
+            "finished_at": "2026-11-01T22:26:20.535144+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-compact-valley-6-Easy-46",
+        "phase": "ordinary",
+        "map": "compact-valley",
+        "bots": 6,
+        "difficulty": "Easy",
+        "seed": 46
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:26:36.014006+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 81.63,
+          "finished_at": "2026-11-01T22:27:57.644278+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 78.5075005,
+          "ticksPerSecond": 22.927745610752183,
+          "workingSetBytes": 362496000,
+          "peakWorkingSetBytes": 496582656,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:27:57.5573419+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:27:57.697385+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.816,
+            "finished_at": "2026-11-01T22:27:58.513195+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:27:58.554433+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.215,
+            "finished_at": "2026-11-01T22:27:58.769121+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-compact-valley-6-Easy-51",
+        "phase": "ordinary",
+        "map": "compact-valley",
+        "bots": 6,
+        "difficulty": "Easy",
+        "seed": 51
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:27:34.746836+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 73.252,
+          "finished_at": "2026-11-01T22:28:47.998448+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 70.2093943,
+          "ticksPerSecond": 25.637594768425455,
+          "workingSetBytes": 419012608,
+          "peakWorkingSetBytes": 571994112,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:28:47.6949296+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:28:48.048035+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.816,
+            "finished_at": "2026-11-01T22:28:48.863862+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:28:48.899900+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.215,
+            "finished_at": "2026-11-01T22:28:49.114567+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-compact-valley-6-Hard-42",
+        "phase": "ordinary",
+        "map": "compact-valley",
+        "bots": 6,
+        "difficulty": "Hard",
+        "seed": 42
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:32:44.274485+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 83.18,
+          "finished_at": "2026-11-01T22:34:07.454237+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 78.1212298,
+          "ticksPerSecond": 17.9208648351309,
+          "workingSetBytes": 495161344,
+          "peakWorkingSetBytes": 700125184,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:34:07.3011769+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:34:07.512624+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.317,
+            "finished_at": "2026-11-01T22:34:08.829987+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:34:08.870245+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.365,
+            "finished_at": "2026-11-01T22:34:09.235164+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-compact-valley-6-Hard-45",
+        "phase": "ordinary",
+        "map": "compact-valley",
+        "bots": 6,
+        "difficulty": "Hard",
+        "seed": 45
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:31:01.146079+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 47.779,
+          "finished_at": "2026-11-01T22:31:48.924686+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 46.0161712,
+          "ticksPerSecond": 39.11668339759654,
+          "workingSetBytes": 933318656,
+          "peakWorkingSetBytes": 1279795200,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:31:48.795146+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:31:48.962439+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.615,
+            "finished_at": "2026-11-01T22:31:49.577752+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:31:49.605092+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.214,
+            "finished_at": "2026-11-01T22:31:49.819418+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-compact-valley-6-Medium-42",
+        "phase": "ordinary",
+        "map": "compact-valley",
+        "bots": 6,
+        "difficulty": "Medium",
+        "seed": 42
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:27:27.672295+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 44.016,
+          "finished_at": "2026-11-01T22:28:11.688322+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 42.5821927,
+          "ticksPerSecond": 42.27119098073125,
+          "workingSetBytes": 427610112,
+          "peakWorkingSetBytes": 469172224,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:28:11.6091251+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:28:11.721187+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.565,
+            "finished_at": "2026-11-01T22:28:12.286099+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:28:12.312105+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.264,
+            "finished_at": "2026-11-01T22:28:12.576312+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-compact-valley-6-Medium-43",
+        "phase": "ordinary",
+        "map": "compact-valley",
+        "bots": 6,
+        "difficulty": "Medium",
+        "seed": 43
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:28:12.814770+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 73.025,
+          "finished_at": "2026-11-01T22:29:25.839773+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 70.1325204,
+          "ticksPerSecond": 25.665696737173015,
+          "workingSetBytes": 456261632,
+          "peakWorkingSetBytes": 475951104,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:29:25.5960049+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:29:25.895978+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.967,
+            "finished_at": "2026-11-01T22:29:26.862759+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:29:26.906381+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.315,
+            "finished_at": "2026-11-01T22:29:27.221305+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-compact-valley-6-Medium-46",
+        "phase": "ordinary",
+        "map": "compact-valley",
+        "bots": 6,
+        "difficulty": "Medium",
+        "seed": 46
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:29:59.517421+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 76.17,
+          "finished_at": "2026-11-01T22:31:15.687445+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 73.4433845,
+          "ticksPerSecond": 24.508674433433825,
+          "workingSetBytes": 392855552,
+          "peakWorkingSetBytes": 480735232,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:31:15.5526668+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:31:15.742964+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.816,
+            "finished_at": "2026-11-01T22:31:16.559212+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:31:16.601627+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.215,
+            "finished_at": "2026-11-01T22:31:16.816211+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-compact-valley-6-Medium-51",
+        "phase": "ordinary",
+        "map": "compact-valley",
+        "bots": 6,
+        "difficulty": "Medium",
+        "seed": 51
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:30:41.630146+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 63.489,
+          "finished_at": "2026-11-01T22:31:45.119529+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 61.2315071,
+          "ticksPerSecond": 29.39663067675824,
+          "workingSetBytes": 411279360,
+          "peakWorkingSetBytes": 508583936,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:31:44.9944483+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:31:45.163049+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.716,
+            "finished_at": "2026-11-01T22:31:45.878656+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:31:45.912800+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.214,
+            "finished_at": "2026-11-01T22:31:46.127236+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-large-districts-6-Easy-42",
+        "phase": "ordinary",
+        "map": "large-districts",
+        "bots": 6,
+        "difficulty": "Easy",
+        "seed": 42
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T23:34:59.859361+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 148.817,
+          "finished_at": "2026-11-01T23:37:28.676165+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 143.5277165,
+          "ticksPerSecond": 9.754213570310652,
+          "workingSetBytes": 688726016,
+          "peakWorkingSetBytes": 1552666624,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T23:37:28.4040142+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T23:37:28.732075+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.568,
+            "finished_at": "2026-11-01T23:37:30.300157+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T23:37:30.339811+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.265,
+            "finished_at": "2026-11-01T23:37:30.604568+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-large-districts-6-Easy-45",
+        "phase": "ordinary",
+        "map": "large-districts",
+        "bots": 6,
+        "difficulty": "Easy",
+        "seed": 45
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T23:37:03.467941+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 148.236,
+          "finished_at": "2026-11-01T23:39:31.704250+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 142.8860985,
+          "ticksPerSecond": 9.798014045432138,
+          "workingSetBytes": 680521728,
+          "peakWorkingSetBytes": 1543667712,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T23:39:31.3563196+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T23:39:31.760291+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.519,
+            "finished_at": "2026-11-01T23:39:33.279098+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T23:39:33.319222+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.465,
+            "finished_at": "2026-11-01T23:39:33.784664+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-large-districts-6-Easy-47",
+        "phase": "ordinary",
+        "map": "large-districts",
+        "bots": 6,
+        "difficulty": "Easy",
+        "seed": 47
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T23:40:56.894518+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 158.347,
+          "finished_at": "2026-11-01T23:43:35.241741+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 153.474936,
+          "ticksPerSecond": 9.122010645438548,
+          "workingSetBytes": 523083776,
+          "peakWorkingSetBytes": 1554763776,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T23:43:35.1639175+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T23:43:35.297972+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.517,
+            "finished_at": "2026-11-01T23:43:36.815448+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T23:43:36.855033+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.415,
+            "finished_at": "2026-11-01T23:43:37.270120+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-large-districts-6-Easy-48",
+        "phase": "ordinary",
+        "map": "large-districts",
+        "bots": 6,
+        "difficulty": "Easy",
+        "seed": 48
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T23:47:01.151172+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 160.621,
+          "finished_at": "2026-11-01T23:49:41.772662+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 155.691487,
+          "ticksPerSecond": 8.992142261445547,
+          "workingSetBytes": 620740608,
+          "peakWorkingSetBytes": 1545379840,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T23:49:41.665803+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T23:49:41.829489+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.518,
+            "finished_at": "2026-11-01T23:49:43.348000+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T23:49:43.389195+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.265,
+            "finished_at": "2026-11-01T23:49:43.653925+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-large-districts-6-Medium-42",
+        "phase": "ordinary",
+        "map": "large-districts",
+        "bots": 6,
+        "difficulty": "Medium",
+        "seed": 42
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T23:47:09.319693+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 112.667,
+          "finished_at": "2026-11-01T23:49:01.987115+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 109.3098623,
+          "ticksPerSecond": 12.807627514502869,
+          "workingSetBytes": 524312576,
+          "peakWorkingSetBytes": 1622474752,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T23:49:01.9119652+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T23:49:02.030108+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.266,
+            "finished_at": "2026-11-01T23:49:03.296430+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T23:49:03.325415+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.214,
+            "finished_at": "2026-11-01T23:49:03.539689+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-large-districts-6-Medium-45",
+        "phase": "ordinary",
+        "map": "large-districts",
+        "bots": 6,
+        "difficulty": "Medium",
+        "seed": 45
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T23:55:00.164995+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 80.446,
+          "finished_at": "2026-11-01T23:56:20.610532+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 78.3072314,
+          "ticksPerSecond": 17.87829776344257,
+          "workingSetBytes": 443928576,
+          "peakWorkingSetBytes": 1535967232,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T23:56:20.5537714+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T23:56:20.644958+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.866,
+            "finished_at": "2026-11-01T23:56:21.510538+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T23:56:21.536968+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.314,
+            "finished_at": "2026-11-01T23:56:21.851450+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-large-districts-6-Medium-47",
+        "phase": "ordinary",
+        "map": "large-districts",
+        "bots": 6,
+        "difficulty": "Medium",
+        "seed": 47
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-02T00:00:42.828784+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 159.144,
+          "finished_at": "2026-11-02T00:03:21.972352+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 153.801352,
+          "ticksPerSecond": 9.102650801145103,
+          "workingSetBytes": 549523456,
+          "peakWorkingSetBytes": 1555677184,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-02T00:03:21.8245291+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-02T00:03:22.027296+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.518,
+            "finished_at": "2026-11-02T00:03:23.545209+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-02T00:03:23.585386+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.415,
+            "finished_at": "2026-11-02T00:03:24.000594+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-large-districts-6-Medium-48",
+        "phase": "ordinary",
+        "map": "large-districts",
+        "bots": 6,
+        "difficulty": "Medium",
+        "seed": 48
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-02T00:01:31.571756+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 158.53,
+          "finished_at": "2026-11-02T00:04:10.101729+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 153.446972,
+          "ticksPerSecond": 9.123673030185309,
+          "workingSetBytes": 575913984,
+          "peakWorkingSetBytes": 1554354176,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-02T00:04:09.8964293+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-02T00:04:10.157223+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.518,
+            "finished_at": "2026-11-02T00:04:11.675236+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-02T00:04:11.715475+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.265,
+            "finished_at": "2026-11-02T00:04:11.980118+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-small-river-10-Hard-45",
+        "phase": "ordinary",
+        "map": "small-river",
+        "bots": 10,
+        "difficulty": "Hard",
+        "seed": 45
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T23:11:25.103962+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 120.751,
+          "finished_at": "2026-11-01T23:13:25.854642+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 116.3265707,
+          "ticksPerSecond": 12.035083571839532,
+          "workingSetBytes": 493285376,
+          "peakWorkingSetBytes": 699047936,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T23:13:25.6113359+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T23:13:25.914660+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.468,
+            "finished_at": "2026-11-01T23:13:27.383026+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T23:13:27.427552+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.265,
+            "finished_at": "2026-11-01T23:13:27.692414+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-small-river-6-Easy-42",
+        "phase": "ordinary",
+        "map": "small-river",
+        "bots": 6,
+        "difficulty": "Easy",
+        "seed": 42
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:50:43.683205+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 93.099,
+          "finished_at": "2026-11-01T22:52:16.782351+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 88.7533758,
+          "ticksPerSecond": 15.77404788697626,
+          "workingSetBytes": 459046912,
+          "peakWorkingSetBytes": 577650688,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:52:16.5988061+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:52:16.840513+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.317,
+            "finished_at": "2026-11-01T22:52:18.157859+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:52:18.197548+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.515,
+            "finished_at": "2026-11-01T22:52:18.712975+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-small-river-6-Easy-43",
+        "phase": "ordinary",
+        "map": "small-river",
+        "bots": 6,
+        "difficulty": "Easy",
+        "seed": 43
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:48:17.192968+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 74.254,
+          "finished_at": "2026-11-01T22:49:31.447244+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 72.1955186,
+          "ticksPerSecond": 24.932295451368915,
+          "workingSetBytes": 994238464,
+          "peakWorkingSetBytes": 1363468288,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:49:31.3188753+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:49:31.492143+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.716,
+            "finished_at": "2026-11-01T22:49:32.207811+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:49:32.241609+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.164,
+            "finished_at": "2026-11-01T22:49:32.405871+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-small-river-6-Easy-44",
+        "phase": "ordinary",
+        "map": "small-river",
+        "bots": 6,
+        "difficulty": "Easy",
+        "seed": 44
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:49:02.348643+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 96.123,
+          "finished_at": "2026-11-01T22:50:38.471659+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 92.7979026,
+          "ticksPerSecond": 19.396990121196986,
+          "workingSetBytes": 1258741760,
+          "peakWorkingSetBytes": 1383751680,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:50:38.2446106+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:50:38.524985+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.916,
+            "finished_at": "2026-11-01T22:50:39.441258+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:50:39.481916+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.365,
+            "finished_at": "2026-11-01T22:50:39.846807+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-small-river-6-Easy-45",
+        "phase": "ordinary",
+        "map": "small-river",
+        "bots": 6,
+        "difficulty": "Easy",
+        "seed": 45
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:50:20.411853+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 71.86,
+          "finished_at": "2026-11-01T22:51:32.271971+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 69.0470738,
+          "ticksPerSecond": 20.27602218242013,
+          "workingSetBytes": 489603072,
+          "peakWorkingSetBytes": 697417728,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:51:32.2004462+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:51:32.318684+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.217,
+            "finished_at": "2026-11-01T22:51:33.535870+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:51:33.570296+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.315,
+            "finished_at": "2026-11-01T22:51:33.885092+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-small-river-6-Easy-47",
+        "phase": "ordinary",
+        "map": "small-river",
+        "bots": 6,
+        "difficulty": "Easy",
+        "seed": 47
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:51:35.282616+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 69.382,
+          "finished_at": "2026-11-01T22:52:44.664868+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 66.6252677,
+          "ticksPerSecond": 21.01304877758863,
+          "workingSetBytes": 739676160,
+          "peakWorkingSetBytes": 1530257408,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:52:44.5845217+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:52:44.709820+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.066,
+            "finished_at": "2026-11-01T22:52:45.776275+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:52:45.810025+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.315,
+            "finished_at": "2026-11-01T22:52:46.124598+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-small-river-6-Easy-50",
+        "phase": "ordinary",
+        "map": "small-river",
+        "bots": 6,
+        "difficulty": "Easy",
+        "seed": 50
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:51:38.489962+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 98.923,
+          "finished_at": "2026-11-01T22:53:17.413347+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 95.7907361,
+          "ticksPerSecond": 18.79096114389291,
+          "workingSetBytes": 1108996096,
+          "peakWorkingSetBytes": 1376477184,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:53:17.2566634+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:53:17.464841+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.866,
+            "finished_at": "2026-11-01T22:53:18.331021+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:53:18.371144+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.365,
+            "finished_at": "2026-11-01T22:53:18.736002+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-small-river-6-Easy-51",
+        "phase": "ordinary",
+        "map": "small-river",
+        "bots": 6,
+        "difficulty": "Easy",
+        "seed": 51
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:53:33.995615+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 92.458,
+          "finished_at": "2026-11-01T22:55:06.453562+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 87.993262,
+          "ticksPerSecond": 15.910309132533353,
+          "workingSetBytes": 530563072,
+          "peakWorkingSetBytes": 755826688,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:55:06.2703739+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:55:06.511385+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.518,
+            "finished_at": "2026-11-01T22:55:08.029663+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:55:08.069441+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.415,
+            "finished_at": "2026-11-01T22:55:08.484530+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-small-river-6-Hard-51",
+        "phase": "ordinary",
+        "map": "small-river",
+        "bots": 6,
+        "difficulty": "Hard",
+        "seed": 51
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T23:00:54.135397+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 54.809,
+          "finished_at": "2026-11-01T23:01:48.944399+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 52.8744421,
+          "ticksPerSecond": 26.477820746594695,
+          "workingSetBytes": 446152704,
+          "peakWorkingSetBytes": 520445952,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T23:01:48.8881341+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T23:01:48.979452+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.715,
+            "finished_at": "2026-11-01T23:01:49.694715+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T23:01:49.721467+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.164,
+            "finished_at": "2026-11-01T23:01:49.885643+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-small-river-6-Medium-42",
+        "phase": "ordinary",
+        "map": "small-river",
+        "bots": 6,
+        "difficulty": "Medium",
+        "seed": 42
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:54:00.438543+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 95.513,
+          "finished_at": "2026-11-01T22:55:35.951290+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 91.1144159,
+          "ticksPerSecond": 15.36529632738391,
+          "workingSetBytes": 430329856,
+          "peakWorkingSetBytes": 592396288,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:55:35.6997917+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:55:36.006407+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.368,
+            "finished_at": "2026-11-01T22:55:37.374252+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:55:37.413874+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.515,
+            "finished_at": "2026-11-01T22:55:37.929328+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-small-river-6-Medium-43",
+        "phase": "ordinary",
+        "map": "small-river",
+        "bots": 6,
+        "difficulty": "Medium",
+        "seed": 43
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:51:18.814062+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 54.636,
+          "finished_at": "2026-11-01T22:52:13.450217+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 53.1389818,
+          "ticksPerSecond": 33.873437898653904,
+          "workingSetBytes": 982630400,
+          "peakWorkingSetBytes": 1363369984,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:52:13.3258789+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:52:13.485421+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.565,
+            "finished_at": "2026-11-01T22:52:14.050344+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:52:14.078147+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.114,
+            "finished_at": "2026-11-01T22:52:14.192146+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-small-river-6-Medium-44",
+        "phase": "ordinary",
+        "map": "small-river",
+        "bots": 6,
+        "difficulty": "Medium",
+        "seed": 44
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:51:43.876993+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 54.797,
+          "finished_at": "2026-11-01T22:52:38.673806+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 53.2752826,
+          "ticksPerSecond": 33.786775257762784,
+          "workingSetBytes": 909443072,
+          "peakWorkingSetBytes": 1395654656,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:52:38.582692+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:52:38.708380+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.515,
+            "finished_at": "2026-11-01T22:52:39.223264+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:52:39.251300+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.264,
+            "finished_at": "2026-11-01T22:52:39.515505+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-small-river-6-Medium-47",
+        "phase": "ordinary",
+        "map": "small-river",
+        "bots": 6,
+        "difficulty": "Medium",
+        "seed": 47
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 3600,
+      "lastAttempt": {
+        "fromTick": 3600,
+        "targetTick": 5000,
+        "attempt": 1,
+        "result": "runs/5000-a1",
+        "checkpoint": "checkpoints/5000-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "5000",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/5000-a1.save.json",
+            "--checkpoint-at",
+            "5000",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:56:31.706212+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 89.139,
+          "finished_at": "2026-11-01T22:58:00.845379+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 5000,
+          "target": 5000,
+          "startTick": 3600,
+          "percent": 100,
+          "elapsedSeconds": 84.8437146,
+          "ticksPerSecond": 16.500927695120033,
+          "workingSetBytes": 465965056,
+          "peakWorkingSetBytes": 640573440,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:58:00.661953+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:58:00.900463+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 1.368,
+            "finished_at": "2026-11-01T22:58:02.268198+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/5000-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:58:02.308298+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.365,
+            "finished_at": "2026-11-01T22:58:02.673245+00:00"
+          }
+        }
+      }
+    },
+    {
+      "case": {
+        "id": "ordinary-small-river-6-Medium-50",
+        "phase": "ordinary",
+        "map": "small-river",
+        "bots": 6,
+        "difficulty": "Medium",
+        "seed": 50
+      },
+      "status": "blocked_audit",
+      "lastSavedTick": 1800,
+      "lastAttempt": {
+        "fromTick": 1800,
+        "targetTick": 3600,
+        "attempt": 1,
+        "result": "runs/3600-a1",
+        "checkpoint": "checkpoints/3600-a1.save.json",
+        "runner": {
+          "command": [
+            "/usr/bin/time",
+            "-v",
+            "dotnet",
+            "/home/runner/work/Delsk/Delsk/work/world/runtime/Research.Runner.dll",
+            "--ticks",
+            "3600",
+            "--output",
+            "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1",
+            "--checkpoint",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/3600-a1.save.json",
+            "--checkpoint-at",
+            "3600",
+            "--progress",
+            "true",
+            "--load",
+            "/home/runner/work/Delsk/Delsk/work/world/checkpoints/1800-a1.save.json"
+          ],
+          "timeout_seconds": 600,
+          "started_at": "2026-11-01T22:55:21.600492+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 99.799,
+          "finished_at": "2026-11-01T22:57:01.400010+00:00"
+        },
+        "lastHeartbeat": {
+          "version": 1,
+          "status": "completed",
+          "tick": 3600,
+          "target": 3600,
+          "startTick": 1800,
+          "percent": 100,
+          "elapsedSeconds": 96.4451762,
+          "ticksPerSecond": 18.663452864322725,
+          "workingSetBytes": 1083461632,
+          "peakWorkingSetBytes": 1374760960,
+          "waitingForModel": false,
+          "waitingForBallots": false,
+          "heartbeatAt": "2026-11-01T22:57:01.1470821+00:00",
+          "scope": "Runner process memory; host/observer elapsed time, not a device benchmark"
+        },
+        "status": "audit_failure",
+        "audits": {
+          "verify_results.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_results.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 60,
+            "started_at": "2026-11-01T22:57:01.451693+00:00",
+            "exit_code": 0,
+            "elapsed_seconds": 0.866,
+            "finished_at": "2026-11-01T22:57:02.318044+00:00"
+          },
+          "verify_public_economy.py": {
+            "command": [
+              "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+              "/home/runner/work/Delsk/Delsk/scripts/verify_public_economy.py",
+              "/home/runner/work/Delsk/Delsk/work/world/runs/3600-a1"
+            ],
+            "timeout_seconds": 30,
+            "started_at": "2026-11-01T22:57:02.357608+00:00",
+            "exit_code": 1,
+            "elapsed_seconds": 0.365,
+            "finished_at": "2026-11-01T22:57:02.722694+00:00"
+          }
+        }
+      }
+    }
+  ],
+  "definition": "H3 Movement1, actual ordinary horizon1000000, no overrides. Separate maps; world/seed is the independent unit. Continuations remain one world. Missing and censored milestones never become zero-time milestones. Extended142/143 are distinct from ordinary42-51. No industrial Hard claim without mature exposure.",
+  "extended": []
+}

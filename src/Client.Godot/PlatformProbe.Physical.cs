@@ -19,7 +19,7 @@ public partial class PlatformProbe
             .Select(line=>line.Trim().Split(','))
             .ToDictionary(row=>long.Parse(row[0],CultureInfo.InvariantCulture),row=>row[1]);
         var session=new GameSession(new(definition));session.ConfigurePlayback(tape,hashes.Keys.Max(),"physical-automation");
-        string path=ProjectSettings.GlobalizePath($"user://platform-physical-{SimulationEngine.RulesVersion}.json");
+        string path=ProbeSavePath("platform-physical");
         bool partialLoad=false,partialReceipt=false,movingEquipment=false;
         while(session.Engine.Tick<hashes.Keys.Max())
         {

@@ -78,7 +78,8 @@ public partial class H2RoadProbe : Control
                 if(verify)Check(bounds.Size.Y<=.52f&&Mathf.Max(bounds.Size.X,bounds.Size.Z)<=.34f,"Person overwhelms cell: "+bounds);
                 measures.Add(new{set,personBounds=new{size=bounds.Size.ToString(),position=bounds.Position.ToString()}});
                 bool working=scenario.Layout is not null&&session.Engine.InspectRoads()!.Bypasses.Length>0;
-                var shots=working?new List<(string Name,Vector3 Focus,float Distance)>{("bypass",new(5,0,5),5),("overview",new(7,0,5),12)}:
+                var shots=map=="compact-valley"?(working?new List<(string Name,Vector3 Focus,float Distance)>{("bypass",new(14,0,5),5),("overview",new(12,0,5),12)}:
+                    new List<(string Name,Vector3 Focus,float Distance)>{("straight",new(22,0,10),4.2f),("turn",new(11,0,25),4.2f),("junction",new(11,0,10),4.2f),("overview",new(13,0,10),12)}):working?new List<(string Name,Vector3 Focus,float Distance)>{("bypass",new(5,0,5),5),("overview",new(7,0,5),12)}:
                     new List<(string Name,Vector3 Focus,float Distance)>{("straight",new(12,0,4),4.2f),("turn",new(5,0,5),4.2f),("junction",new(4,0,4),4.2f),("overview",new(7,0,5),12)};
                 foreach(var shot in shots)
                 {

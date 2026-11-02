@@ -1,0 +1,7 @@
+{
+  "run": 41408105541,
+  "scope": "Retain successful85cfbd1 Windows/Android bundles and hashes. Retry ONLY the failed Windows rendered natural-save capture after explicit UTF8 decoding fix; do not rebuild or rerun bundle exports.",
+  "readOnly": true,
+  "nativeSave": true,
+  "revision": 3
+}

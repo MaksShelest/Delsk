@@ -1,0 +1,81 @@
+name: H3 retained measurement collection
+on:
+  push:
+    branches: ['feat/vnext-h3-compact-acceptance']
+    paths: ['docs/research/h3/collect.json']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Extract original journals, successful segment metrics and both audits
+        uses: actions/github-script@v7
+        env:
+          H3_ARTIFACT_TOKEN: ${{ github.token }}
+        with:
+          script: |
+            const fs=require('fs'), cp=require('child_process');
+            const config=JSON.parse(fs.readFileSync('docs/research/h3/collect.json','utf8'));
+            const ids=config.runs||[config.run];
+            if(!Array.isArray(ids)||!ids.length||new Set(ids).size!==ids.length||ids.some(id=>!Number.isSafeInteger(id)||id<=0))throw Error('Invalid retained source runs');
+            const partial=config.allowPartial===true;
+            fs.appendFileSync(process.env.GITHUB_ENV,'H3_COLLECTION_KIND='+(partial?'economy-intermediate':'economy')+'\n');
+            fs.appendFileSync(process.env.GITHUB_ENV,'H3_ALLOW_PARTIAL='+String(partial)+'\n');
+            const sources=[],selected=new Map(),chains={};
+            for(const id of ids){
+              const run=await github.rest.actions.getWorkflowRun({...context.repo,run_id:id});
+              if(run.data.status!='completed'&&!partial)throw Error('A retained source run is still active; complete collection was requested');
+              const artifacts=await github.paginate(github.rest.actions.listWorkflowRunArtifacts,{...context.repo,run_id:id,per_page:100});
+              const cases=artifacts.filter(a=>/^h3-(ordinary|extended)-/.test(a.name)&&!a.expired);
+              if(new Set(cases.map(a=>a.name)).size!==cases.length)throw Error('Duplicate retained artifact names within one source run');
+              sources.push({run:run.data,artifacts});
+              for(const a of cases){selected.set(a.name,{...a,sourceRun:id});(chains[a.name]||=[]).push({run:id,artifact:a.id,digest:a.digest});}
+            }
+            const worlds=[...selected.values()];
+            fs.mkdirSync('work/analysis',{recursive:true});
+            fs.writeFileSync('work/analysis/source-artifacts.json',JSON.stringify({sources,chains,selected:worlds,scope:'Later explicit continuation replaces the selected endpoint of the SAME world; original artifacts remain retained, no additional replicate.'},null,2));
+            async function collect(a){
+              const endpoint=`https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/actions/artifacts/${a.id}/zip`;
+              const response=await fetch(endpoint,{headers:{Authorization:'Bearer '+process.env.H3_ARTIFACT_TOKEN,Accept:'application/vnd.github+json'},redirect:'manual'});
+              if(response.status!==302)throw Error('Artifact redirect status '+response.status);
+              const location=response.headers.get('location');await response.arrayBuffer();
+              await new Promise((resolve,reject)=>{
+                const child=cp.spawn('python',['scripts/collect_h3_artifact.py','--url-stdin','--output','work/evidence'],{stdio:['pipe','pipe','pipe']});
+                child.stdout.on('data',d=>process.stdout.write(d));child.stderr.on('data',d=>process.stderr.write(d));
+                child.on('error',reject);child.on('close',code=>code===0?resolve():reject(Error('Invalid/missing original world journal: '+a.name)));
+                child.stdin.end(JSON.stringify({url:location}));
+              });
+            }
+            for(let i=0;i<worlds.length;i+=4)await Promise.all(worlds.slice(i,i+4).map(collect));
+      - name: Verify original audits and retain missing cases before statistics
+        shell: bash
+        run: |
+          set -euo pipefail
+          extra=()
+          if [ "$H3_ALLOW_PARTIAL" != true ]; then extra+=(--require-complete-collection); fi
+          python scripts/analyze_h3.py --study work/evidence --output work/analysis "${extra[@]}"
+          python scripts/report_h3_outcomes.py --observations work/analysis/observations.json.gz --output work/analysis/RESULTS.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h3-audited-summary
+          path: |
+            work/analysis/
+            work/evidence/
+          retention-days: 90
+      - name: Preserve verified compact measurements in the authorized H3 branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name MaksShelest
+          git config user.email 195903640+MaksShelest@users.noreply.github.com
+          python scripts/publish_h3_measurements.py --analysis work/analysis --kind "$H3_COLLECTION_KIND"

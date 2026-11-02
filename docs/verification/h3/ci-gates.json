@@ -1,0 +1,45 @@
+{
+  "sourceCommit": "85cfbd1d6d78f000e139b0b5daa50b3f4a33de9e",
+  "run": 41408105487,
+  "gates": [
+    {
+      "job": 125154658457,
+      "name": "h3-compact-unit",
+      "status": "succeeded",
+      "ordinaryCases": 22,
+      "preparedGate": {
+        "status": "succeeded",
+        "maps": 3,
+        "processes": 41,
+        "exports": 21,
+        "exactExportComparisons": 18,
+        "filesPerComparison": 31
+      },
+      "url": "https://github.com/MaksShelest/Delsk/actions/runs/41408105487/job/125154658457"
+    },
+    {
+      "job": 125154658760,
+      "name": "h3-compact-developer",
+      "status": "succeeded",
+      "developerCases": 22,
+      "partitionDeadlineSeconds": 180,
+      "wholeGateDeadlineSeconds": 780,
+      "url": "https://github.com/MaksShelest/Delsk/actions/runs/41408105487/job/125154658760"
+    }
+  ],
+  "scope": "Actual completed jobs, verified through GitHub job status/logs and their mandatory gate assertions. This does not imply completion of the remaining Core workflow jobs or physical hardware acceptance.",
+  "h2RetainedWorldRegression": {
+    "run": 41408112964,
+    "status": "succeeded",
+    "worlds": 8,
+    "scope": "All8 retained H1/H2 worlds passed continuation/history/replay/audits on H3 source85cf. Not additional independent H3 economic replicates."
+  },
+  "completePullRequestRegression": {
+    "sourceCommit": "622a33abfdedc570c7363364e4cb4d9eada8392c",
+    "checks": 35,
+    "status": "succeeded",
+    "coreRun": 41413316545,
+    "platformRun": 41413316732,
+    "scope": "All35 current PR checks passed before the measurement-publication-only repair. New43Python checks additionally cover that repair."
+  }
+}

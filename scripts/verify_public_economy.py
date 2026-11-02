@@ -4,6 +4,34 @@ import json
 from pathlib import Path
 import sys
 
+def pending_construction_values(events, prices):
+    """Book paid unfinished C1/D2 work from original receipts, never a balancing delta."""
+    starts={};commands={};closed=set()
+    for event in events:
+        if event['type']=='StorageConstructionStarted':
+            identity=event['entityId'];command=event['commandId']
+            assert identity not in starts and command and command not in commands, 'Duplicate construction receipt'
+            assert event['actorId'] and event['amountMinor']>=0
+            starts[identity]=event;commands[command]=identity
+        elif event['type'] in ['StorageConstructionCompleted','StorageConstructionCancelled']:
+            identity=event['entityId']
+            assert identity in starts and identity not in closed, 'Unknown/duplicate construction closure'
+            assert event['actorId']==starts[identity]['actorId'] and event['tick']>=starts[identity]['tick']
+            closed.add(identity)
+    materials={identity:0 for identity in starts};seen=set()
+    for event in events:
+        if event['type']!='ConstructionMaterialConsumed' or event.get('commandId') not in commands:continue
+        identity=commands[event['commandId']];start=starts[identity];key=(identity,event['itemId'])
+        assert key not in seen and event['entityId']==identity and event['actorId']==start['actorId'] and event['tick']==start['tick'], 'Invalid construction material receipt'
+        assert event['quantity']>0;seen.add(key)
+        materials[identity]+=event['quantity']*prices[event['itemId']]
+    result={}
+    for identity,start in starts.items():
+        if identity in closed:continue
+        actor=start['actorId']['value']
+        result[actor]=result.get(actor,0)+start['amountMinor']+materials[identity]
+    return result
+
 def verify(folder):
     folder = Path(folder)
     from billing_audit import capital
@@ -13,6 +41,8 @@ def verify(folder):
     config = json.loads((folder/'scenario.json').read_text())
     physical = json.loads((folder/'physical-state.json').read_text())
     prices = {i['id']:i['basePriceMinor'] for i in config['items']}
+    journal=[json.loads(line) for line in (folder/'events.jsonl').read_text().splitlines()]
+    construction=pending_construction_values(journal,prices)
     accounts = {a['id']['value']:a['balanceMinor'] for a in state['accounts']}
     assert city['valuationVersion'] == 'capital-reference-v1'
     assert city['population'] == city['employed'] + city['unemployed'] == state['population']
@@ -42,6 +72,7 @@ def verify(folder):
                 order=orders[run['order']];cargo=run['loaded']-run['delivered']-run['returned'];value=cargo*prices[order['quote']['terms']['itemId']]
                 stock+=value*(int(order['customer']['value']==actor)-int(order['carrier']['value']==actor))
         wip = sum(sum(i['quantity']*prices[i['itemId']] for i in e['batchInputs']) for e in state['enterprises'] if e['ownerId']['value']==actor and e['batchId'])
+        wip+=construction.get(actor,0)
         land = sum(p['priceMinor'] for p in state['plots'] if p['ownerId'] and p['ownerId']['value']==actor)
         land += sum(r['purchasePriceMinor'] for r in physical['resources'] if r['owner'] and r['owner']['value']==actor)
         buildings = sum(l['priceMinor']+sum(m['quantity']*prices[m['itemId']] for m in l['materials']) for b in state['buildings'] if b['ownerId']['value']==actor for l in types[b['typeId']]['levels'] if l['level']<=b['level'])
@@ -72,7 +103,6 @@ def verify(folder):
         if (folder/'fleet.json').exists():
             fleet=json.loads((folder/'fleet.json').read_text());rules=config['economy']['fleet']
             models={m['id']:m for m in rules['models']}
-            journal=[json.loads(line) for line in (folder/'events.jsonl').read_text().splitlines()]
             for vehicle in fleet['vehicles']:
                 if vehicle['owner']['value']!=actor:continue
                 equipment+=models[vehicle['modelId']]['priceMinor']
@@ -90,7 +120,7 @@ def verify(folder):
                 r=stages[level];return r['priceMinor']+sum(m['quantity']*prices[m['itemId']] for m in r['materials'])
             buildings+=sum(road_cost(c['level']) for cell in roads['cells'] for c in cell['contributions'] if c['builder']['value']==actor)
             buildings+=sum(road_cost(w['batch']['level']) for w in roads['works'] if w['group']['ownerId']['value']==actor and w['batch'])
-        assert participant['capitalMinor']==cash+stock+wip+land+buildings+equipment+claims[actor]-debts[actor], (folder,actor,'capital')
+        assert participant['capitalMinor']==cash+stock+wip+land+buildings+equipment+claims[actor]-debts[actor], (folder,actor,'capital',{'reported':participant['capitalMinor'],'calculated':cash+stock+wip+land+buildings+equipment+claims[actor]-debts[actor],'unfinishedConstruction':construction.get(actor,0)})
         assert participant['employed']==sum(g['headcount'] for g in state['employmentGroups'] if g['ownerId']['value']==actor)
     latest = [json.loads(line) for line in (folder/'events.jsonl').read_text().splitlines() if json.loads(line)['type']=='CityStageUpdated']
     assert city['stage']==(latest[-1]['entityId'] if latest else 0)

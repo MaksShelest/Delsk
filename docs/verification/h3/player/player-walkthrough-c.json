@@ -1,0 +1,18 @@
+{
+  "status": "running",
+  "error": null,
+  "stage": "initial",
+  "map": "compact-valley",
+  "tick": 0,
+  "milestones": [
+    {
+      "name": "ordinary-start",
+      "tick": 0,
+      "cash": 20000
+    }
+  ],
+  "elapsedSeconds": 1.6614093,
+  "scope": "Scripted human through ordinary commands with three autonomous NPCs. No Developer. Natural earning/land/import/construction/production XP/warehouse/vehicle; later delivery/road chain is a separate acceptance gate.",
+  "stateHash": "364b60a3c4eea54ac812fc9a70b5fdbd5544e2752819bb72808cd8d16edacb5b",
+  "maxTicks": 1000000
+}

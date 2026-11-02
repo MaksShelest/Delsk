@@ -1,0 +1,15 @@
+{
+  "command": [
+    "dotnet",
+    "tools/H3Acceptance/bin/Release/net10.0/H3Acceptance.dll",
+    "work/h3/player-walkthrough-g",
+    "compact-valley",
+    "work/h3/player-walkthrough-e/last-safe.save.json"
+  ],
+  "timeout_seconds": 900,
+  "started_at": "2026-11-01T23:11:39.478322+00:00",
+  "timed_out": true,
+  "exit_code": 124,
+  "elapsed_seconds": 905.117,
+  "finished_at": "2026-11-01T23:26:44.595233+00:00"
+}

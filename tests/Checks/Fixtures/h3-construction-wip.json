@@ -1,0 +1,379 @@
+{
+  "origin": "Actual ordinary scripted player checkpoint,3NPC seed42, tick3707; no Developer",
+  "checkpointSha256": "91140f44cf66160371bab1227bad3bfa09f5a45dc2764c0b0cfb0477267d7099",
+  "prices": {
+    "wood": 500,
+    "grain": 300,
+    "stone": 300,
+    "iron_ore": 400,
+    "copper_ore": 500,
+    "sand": 200,
+    "beet": 300,
+    "milk": 400,
+    "coke": 400,
+    "soda": 300,
+    "limestone": 200,
+    "cement": 500,
+    "bitumen": 600,
+    "plank": 900,
+    "steel": 2500,
+    "copper": 3600,
+    "gravel": 800,
+    "flour": 900,
+    "sugar": 1500,
+    "bread": 2100,
+    "cheese": 5000,
+    "curd": 3300,
+    "cream": 2800,
+    "wire": 2900,
+    "beam": 7200,
+    "steel_sheet": 4100,
+    "glass": 3400,
+    "concrete": 3900,
+    "asphalt": 3900,
+    "furniture": 20700,
+    "window": 13200,
+    "pastry": 5000,
+    "motor": 23400,
+    "conveyor": 66500
+  },
+  "events": [
+    {
+      "sequence": 4812,
+      "tick": 2115,
+      "phase": 1,
+      "type": "StorageConstructionStarted",
+      "actorId": {
+        "value": 3
+      },
+      "entityId": 2265,
+      "itemId": "",
+      "quantity": 0,
+      "amountMinor": 17000,
+      "reasonCode": "2175",
+      "commandId": "s1:3:142",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 4813,
+      "tick": 2115,
+      "phase": 1,
+      "type": "ConstructionMaterialConsumed",
+      "actorId": {
+        "value": 3
+      },
+      "entityId": 2265,
+      "itemId": "steel",
+      "quantity": 3,
+      "amountMinor": 0,
+      "reasonCode": "",
+      "commandId": "s1:3:142",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 4814,
+      "tick": 2115,
+      "phase": 1,
+      "type": "ConstructionMaterialConsumed",
+      "actorId": {
+        "value": 3
+      },
+      "entityId": 2265,
+      "itemId": "wood",
+      "quantity": 30,
+      "amountMinor": 0,
+      "reasonCode": "",
+      "commandId": "s1:3:142",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 4940,
+      "tick": 2175,
+      "phase": 0,
+      "type": "StorageConstructionCompleted",
+      "actorId": {
+        "value": 3
+      },
+      "entityId": 2265,
+      "itemId": "",
+      "quantity": 0,
+      "amountMinor": 0,
+      "reasonCode": "",
+      "commandId": "s1:3:142",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 5495,
+      "tick": 2375,
+      "phase": 1,
+      "type": "StorageConstructionStarted",
+      "actorId": {
+        "value": 2
+      },
+      "entityId": 2380,
+      "itemId": "",
+      "quantity": 0,
+      "amountMinor": 17000,
+      "reasonCode": "2435",
+      "commandId": "s1:2:157",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 5496,
+      "tick": 2375,
+      "phase": 1,
+      "type": "ConstructionMaterialConsumed",
+      "actorId": {
+        "value": 2
+      },
+      "entityId": 2380,
+      "itemId": "steel",
+      "quantity": 3,
+      "amountMinor": 0,
+      "reasonCode": "",
+      "commandId": "s1:2:157",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 5497,
+      "tick": 2375,
+      "phase": 1,
+      "type": "ConstructionMaterialConsumed",
+      "actorId": {
+        "value": 2
+      },
+      "entityId": 2380,
+      "itemId": "wood",
+      "quantity": 30,
+      "amountMinor": 0,
+      "reasonCode": "",
+      "commandId": "s1:2:157",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 5797,
+      "tick": 2435,
+      "phase": 0,
+      "type": "StorageConstructionCompleted",
+      "actorId": {
+        "value": 2
+      },
+      "entityId": 2380,
+      "itemId": "",
+      "quantity": 0,
+      "amountMinor": 0,
+      "reasonCode": "",
+      "commandId": "s1:2:157",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 6244,
+      "tick": 2604,
+      "phase": 1,
+      "type": "StorageConstructionStarted",
+      "actorId": {
+        "value": 4
+      },
+      "entityId": 2505,
+      "itemId": "",
+      "quantity": 0,
+      "amountMinor": 19000,
+      "reasonCode": "2664",
+      "commandId": "s1:4:159",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 6245,
+      "tick": 2604,
+      "phase": 1,
+      "type": "ConstructionMaterialConsumed",
+      "actorId": {
+        "value": 4
+      },
+      "entityId": 2505,
+      "itemId": "steel",
+      "quantity": 4,
+      "amountMinor": 0,
+      "reasonCode": "",
+      "commandId": "s1:4:159",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 6246,
+      "tick": 2604,
+      "phase": 1,
+      "type": "ConstructionMaterialConsumed",
+      "actorId": {
+        "value": 4
+      },
+      "entityId": 2505,
+      "itemId": "wood",
+      "quantity": 25,
+      "amountMinor": 0,
+      "reasonCode": "",
+      "commandId": "s1:4:159",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 6374,
+      "tick": 2664,
+      "phase": 0,
+      "type": "StorageConstructionCompleted",
+      "actorId": {
+        "value": 4
+      },
+      "entityId": 2505,
+      "itemId": "",
+      "quantity": 0,
+      "amountMinor": 0,
+      "reasonCode": "",
+      "commandId": "s1:4:159",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 9754,
+      "tick": 3685,
+      "phase": 1,
+      "type": "ConstructionMaterialConsumed",
+      "actorId": {
+        "value": 4
+      },
+      "entityId": 2989,
+      "itemId": "wood",
+      "quantity": 10,
+      "amountMinor": 0,
+      "reasonCode": "",
+      "commandId": "s1:4:210",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 9834,
+      "tick": 3707,
+      "phase": 1,
+      "type": "StorageConstructionStarted",
+      "actorId": {
+        "value": 1
+      },
+      "entityId": 2997,
+      "itemId": "",
+      "quantity": 0,
+      "amountMinor": 17000,
+      "reasonCode": "3767",
+      "commandId": "s1:1:105",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 9835,
+      "tick": 3707,
+      "phase": 1,
+      "type": "ConstructionMaterialConsumed",
+      "actorId": {
+        "value": 1
+      },
+      "entityId": 2997,
+      "itemId": "steel",
+      "quantity": 3,
+      "amountMinor": 0,
+      "reasonCode": "",
+      "commandId": "s1:1:105",
+      "support": null,
+      "negotiation": null
+    },
+    {
+      "sequence": 9836,
+      "tick": 3707,
+      "phase": 1,
+      "type": "ConstructionMaterialConsumed",
+      "actorId": {
+        "value": 1
+      },
+      "entityId": 2997,
+      "itemId": "wood",
+      "quantity": 30,
+      "amountMinor": 0,
+      "reasonCode": "",
+      "commandId": "s1:1:105",
+      "support": null,
+      "negotiation": null
+    }
+  ],
+  "pending": [
+    {
+      "id": 2997,
+      "owner": 1,
+      "position": {
+        "x": 13,
+        "z": 18
+      },
+      "typeId": "woodworking",
+      "level": 1,
+      "inventoryId": 2787,
+      "buildingId": 0,
+      "startedTick": 3707,
+      "completesTick": 3767,
+      "materials": [
+        {
+          "itemId": "steel",
+          "quantity": 3
+        },
+        {
+          "itemId": "wood",
+          "quantity": 30
+        }
+      ],
+      "paidMinor": 17000,
+      "commandId": "s1:1:105",
+      "development": {
+        "contour": [
+          {
+            "x": 13,
+            "z": 18
+          },
+          {
+            "x": 14,
+            "z": 18
+          },
+          {
+            "x": 13,
+            "z": 19
+          },
+          {
+            "x": 14,
+            "z": 19
+          },
+          {
+            "x": 13,
+            "z": 20
+          },
+          {
+            "x": 14,
+            "z": 20
+          }
+        ],
+        "cells": [
+          {
+            "position": {
+              "x": 13,
+              "z": 18
+            },
+            "level": 1
+          }
+        ]
+      }
+    }
+  ]
+}

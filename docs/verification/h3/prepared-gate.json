@@ -1,0 +1,36 @@
+{
+  "status": "succeeded",
+  "processChecks": 41,
+  "exports": 21,
+  "exactComparisonPairs": 18,
+  "cases": [
+    {
+      "map": "compact_valley",
+      "finalTick": 446,
+      "cuts": {
+        "pending": 214,
+        "escrow": 218,
+        "loaded": 299
+      }
+    },
+    {
+      "map": "small_river",
+      "finalTick": 514,
+      "cuts": {
+        "pending": 232,
+        "escrow": 236,
+        "loaded": 367
+      }
+    },
+    {
+      "map": "large_districts",
+      "finalTick": 972,
+      "cuts": {
+        "pending": 386,
+        "escrow": 390,
+        "loaded": 645
+      }
+    }
+  ],
+  "scope": "Prepared five physical trips and real payments; pending/escrow/loaded saves resume every future command through final settlement. All31 exports, independent accounting and public privacy. No natural progression or device claim."
+}

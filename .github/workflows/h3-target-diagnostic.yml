@@ -1,0 +1,103 @@
+name: H3 retained Windows bundle diagnostics
+on:
+  push:
+    branches: ['feat/vnext-h3-compact-acceptance']
+    paths: ['docs/research/h3/target-diagnostic.json']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  retained-release:
+    runs-on: windows-2025
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - id: source
+        shell: python
+        run: |
+          import json,os,pathlib
+          d=json.loads(pathlib.Path('docs/research/h3/target-diagnostic.json').read_text())
+          assert isinstance(d['run'],int) and d['run']>0
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+            f.write('run='+str(d['run'])+'\n');f.write('native='+str(d.get('nativeSave',False)).lower()+'\n')
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ steps.source.outputs.run }}
+          github-token: ${{ github.token }}
+          name: h3-windows-installable-bundles
+          path: work/retained
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 41360866991
+          github-token: ${{ github.token }}
+          name: windows-platform-probe
+          path: work/runtime-availability
+      - uses: actions/download-artifact@v4
+        if: steps.source.outputs.native == 'true'
+        with:
+          run-id: ${{ steps.source.outputs.run }}
+          github-token: ${{ github.token }}
+          name: h3-android-test-apks
+          path: work/android-retained
+      - name: Diagnose the same retained Release EXE without rebuilding it
+        shell: python
+        run: |
+          import hashlib,json,pathlib,shutil,subprocess,sys
+          root=pathlib.Path.cwd();bundle=root/'work/retained/packages/release/DelskProbe.exe'
+          d=json.loads((root/'work/retained/packages/packages.json').read_text())
+          expected=next(p['sha256'] for p in d['packages'] if p['flavor']=='release')
+          assert hashlib.sha256(bundle.read_bytes()).hexdigest()==expected
+          out=root/'work/diagnostic';out.mkdir(parents=True)
+          for name,base in [('windows',root/'work/retained/packages'),('android',root/'work/android-retained/packages')]:
+            if not (base/'packages.json').is_file():continue
+            packages=json.loads((base/'packages.json').read_text(encoding='utf-8'))
+            assert packages['status']=='succeeded'
+            for package in packages['packages']:
+              assert hashlib.sha256((base/package['package']).read_bytes()).hexdigest()==package['sha256']
+            shutil.copyfile(base/'packages.json',out/(name+'-packages.json'))
+            print('VERIFIED_PACKAGES_'+name+'\n'+json.dumps(packages))
+          for relative in ['packages/release/platform.json','packages/checks/bundle-smoke-release.json','packages/checks/bundle-smoke-release.stdout.log','packages/checks/bundle-smoke-release.stderr.log','packages/packages.json']:
+            original=root/'work/retained'/relative
+            if original.is_file():print('ORIGINAL '+relative+'\n'+original.read_text(errors='replace')[-16000:])
+          for original in (root/'work/runtime-availability').rglob('h3-real-runtime.json'):print('WINDOWS_RUNTIME_AVAILABILITY\n'+original.read_text())
+          mode=json.loads((root/'docs/research/h3/target-diagnostic.json').read_text())
+          if mode.get('readOnly'):raise SystemExit(0)
+          result=subprocess.run([sys.executable,'scripts/run_check.py','--name','retained-release','--timeout','90','--log-directory',str(out),'--',str(bundle),'--headless','--','--smoke','--report',str(out/'platform.json')])
+          for p in sorted(out.glob('*')):
+            if p.suffix in ['.json','.log']:print(p.name+'\n'+p.read_text(errors='replace')[-16000:])
+          raise SystemExit(result.returncode)
+      - uses: actions/setup-dotnet@v4
+        if: steps.source.outputs.native == 'true'
+        with:
+          dotnet-version: '10.0.401'
+      - name: Install pinned editor for the failed native-save capture only
+        if: steps.source.outputs.native == 'true'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force .tools | Out-Null
+          python scripts/run_check.py --name editor-download --timeout 180 --log-directory work/native-setup -- curl.exe --fail --location --silent --show-error --max-time 170 https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_win64.zip --output .tools/godot.zip
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Expand-Archive .tools/godot.zip -DestinationPath .tools/godot
+          $engine = (Get-ChildItem .tools/godot -Recurse -Filter '*_console.exe' | Select-Object -First 1).FullName
+          if (!$engine) { throw 'Missing pinned .NET editor' }
+          "DELSK_GODOT=$engine" >> $env:GITHUB_ENV
+      - name: Retry only the actual ordinary saved world in the rendered Windows client
+        if: steps.source.outputs.native == 'true'
+        shell: pwsh
+        run: |
+          python scripts/check_world_proportions.py --godot "$env:DELSK_GODOT" --maps compact-valley --save docs/verification/h3/player/paid-warehouse.save.json --natural-save --output work/native-loaded
+          exit $LASTEXITCODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h3-retained-release-diagnostic
+          path: |
+            work/diagnostic/
+            work/native-setup/
+            work/native-loaded/checks/
+            work/native-loaded/compact-valley-saved/
+            work/native-loaded/source-inputs.json
+          retention-days: 90

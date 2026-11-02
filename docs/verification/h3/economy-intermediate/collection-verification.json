@@ -1,0 +1,10 @@
+{
+  "worlds": 153,
+  "expected": 192,
+  "missing": 39,
+  "successfulSegments": 410,
+  "accountingAudits": 410,
+  "publicAudits": 410,
+  "allOriginalSegmentAuditsVerified": true,
+  "scope": "Collection and statistical analysis; no new simulation replicates"
+}

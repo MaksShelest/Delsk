@@ -1,0 +1,31 @@
+{
+  "sourceCommit": "2feec8d83bd6f1317b598ecf0ad5734cfdb78358",
+  "run": 41412052805,
+  "status": "succeeded",
+  "windows": {
+    "job": 125171628358,
+    "developerBundleSmoke": "succeeded",
+    "releaseBundleSmoke": "succeeded",
+    "sameWindowsVm": true,
+    "nativeSavedScene": "succeeded, ordinary5604, both skins",
+    "artifact": {
+      "id": 13126088602,
+      "bytes": 162612097,
+      "digest": "sha256:90755eb6fbc1face2951e199eb51cf383bf663815e30f04a6b78aa942fe814ee",
+      "url": "https://github.com/MaksShelest/Delsk/actions/runs/41412052805/artifacts/13126088602"
+    }
+  },
+  "android": {
+    "job": 125171628256,
+    "developerAndRelease": "succeeded",
+    "signatures": "verified",
+    "manifests": "verified",
+    "artifact": {
+      "id": 13126367716,
+      "bytes": 95148951,
+      "digest": "sha256:9da9a44e4ccc89b460a7e80e0e3f6f37c6c9d16d52a29603c2e701b5bbe3be2d",
+      "url": "https://github.com/MaksShelest/Delsk/actions/runs/41412052805/artifacts/13126367716"
+    }
+  },
+  "scope": "Latest compiled game source. Subsequent commits change measurement tooling/docs only. Hosted Windows VM and cross-exported ARM64 APKs; physical hardware and real LLM remain separate."
+}

@@ -43,7 +43,7 @@ public partial class Playfield
             MakeRuntime(model,saved.Select(c=>c.Actor.Value));
         }
         var restored=new List<HybridController>();
-        _session.RestoreControllers(c=>{if(c.Kind!=HybridController.PolicyKind)return AlgorithmicController.Restore(c);var h=HybridController.Restore(c,_modelRuntime!);restored.Add(h);return h;});
+        _session.RestoreControllers(c=>{if(c.Kind==SelfBallotController.Kind)return SelfBallotController.Restore(c);if(c.Kind!=HybridController.PolicyKind)return AlgorithmicController.Restore(c);var h=HybridController.Restore(c,_modelRuntime!);restored.Add(h);return h;});
         _hybrids=restored.ToArray();
     }
     private bool ModelFrame()

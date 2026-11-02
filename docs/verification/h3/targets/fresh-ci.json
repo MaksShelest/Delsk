@@ -1,0 +1,43 @@
+{
+  "sourceCommit": "85cfbd1d6d78f000e139b0b5daa50b3f4a33de9e",
+  "run": 41408105541,
+  "windows": {
+    "job": 125154751074,
+    "exportAndComposition": "succeeded",
+    "developerBundleSmoke": "succeeded",
+    "releaseBundleSmoke": "succeeded",
+    "sameWindowsVm": true,
+    "nativeSavedScene": "succeeded in isolated Windows retry41409156706, no bundle re-export",
+    "artifact": {
+      "id": 13124995843,
+      "name": "h3-windows-installable-bundles",
+      "bytes": 161613576,
+      "digest": "sha256:8253c15683d96aa08d85654b9a76dee0f550e44aa85e5ddeca773d9b00847119",
+      "url": "https://github.com/MaksShelest/Delsk/actions/runs/41408105541/artifacts/13124995843"
+    },
+    "nativeSavedSceneOriginalFailure": "failed before scene launch: Python cp1252 read of UTF8 project.godot; isolated UTF8 repair/recapture pending",
+    "nativeRetry": {
+      "run": 41409156706,
+      "job": 125157966666,
+      "sourceCommit": "cc26052",
+      "checkpointTick": 5604,
+      "bothSkins": true,
+      "artifact": 13125556684,
+      "artifactSha256": "28e993edd759514408509ee3fe77335810783970e5d64ece9a286a3e06dd3f77"
+    }
+  },
+  "android": {
+    "job": 125154750997,
+    "status": "succeeded",
+    "freshTemplateAndGradleBootstrap": "succeeded",
+    "developerAndReleaseSignatures": "verified",
+    "artifact": {
+      "id": 13124263830,
+      "name": "h3-android-test-apks",
+      "bytes": 95147516,
+      "digest": "sha256:57904f94498762b11c3eb3931d9831846fed03b45fbbd2201ed019b78411ca71",
+      "url": "https://github.com/MaksShelest/Delsk/actions/runs/41408105541/artifacts/13124263830"
+    }
+  },
+  "scope": "Installable bundles are retained independently of the later native capture failure. Hosted Windows VM and cross-exported ARM64 Android APKs; no physical hardware or live LLM inference implied."
+}

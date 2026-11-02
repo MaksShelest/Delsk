@@ -1,0 +1,96 @@
+{
+  "sourceRun": 41362439343,
+  "sourceCommit": "dafa477aa722c8c2e07ab8ba8dae7dbb094a0d69",
+  "sourceArtifact": 13106117244,
+  "sourceArchiveSha256": "8470fe0771a2e7f3d5809d7491c2037c30803ca25bd837425117b74c4cc49f6c",
+  "diagnosticRun": 41363547781,
+  "scope": "Same retained self-contained Release EXE; verified EXE hash and Actions artifact SHA; fresh Windows hosted VM, no rebuild. Original launch failure remains separately recorded.",
+  "report": {
+    "Status": "passed",
+    "Failure": null,
+    "Tick": 62,
+    "StateHash": "07cbf7b8a764e78797cfcad8cd986371320041418825b4570fccd0aefd5ccc31",
+    "CheckedTicks": 62,
+    "LifecycleAdapterChecked": true,
+    "CheckpointRestoreChecked": true,
+    "RestoredTicks": [
+      12,
+      34,
+      55,
+      60
+    ],
+    "ElectionCheckedTicks": 40,
+    "ElectionStateHash": "5b45b11da900715ddf1dd8b766f9d957abf8214a088fdccc55939fd605af7ef2",
+    "ElectionRestoredTicks": [
+      9,
+      19,
+      20,
+      21
+    ],
+    "SupportCheckedTicks": 120,
+    "SupportStateHash": "dcd426adae3d1d6a11c2afd36e84b371b292e285b74a0125b81da043410feea4",
+    "SupportRestoredTicks": [
+      17,
+      18,
+      19,
+      27,
+      99,
+      100
+    ],
+    "StoppedVotingFinalHash": "4d4b0f48b443e3f64ebf7e16547b7d65844dd4d6fd32b66a15e92435e1a8e580",
+    "StoppedVotingRestoredTicks": [
+      3,
+      6
+    ],
+    "PhysicalCheckedTicks": 81,
+    "PhysicalStateHash": "33f1a44436c3643ba791a5ae7246d6f07e24e8d24590eb57519bb52e43e90e60",
+    "PhysicalRestoredTicks": [
+      14,
+      18,
+      25,
+      33,
+      42,
+      76
+    ],
+    "FoodCheckedTicks": 609,
+    "FoodStateHash": "8188bcb42bb1b3ea3cc975a744044566e9dc7a1bc2c1b7e832a3d7f62b6c962b",
+    "FoodRestoredTicks": [
+      340,
+      405,
+      414,
+      561,
+      562,
+      584
+    ],
+    "TradeCheckedTicks": 220,
+    "TradeStateHash": "66c511b6d656d910943cb3f28ef6f810040ae4cd8e62c24e4973cbda582f1411",
+    "TradeRestoredTicks": [
+      32,
+      33,
+      34,
+      35,
+      38,
+      51,
+      69
+    ],
+    "Runtime": "10.0.12",
+    "Platform": "Windows",
+    "GodotVersion": "4.7.2-stable (official)",
+    "Author": "Шелестов Максим Евгеньевич"
+  },
+  "process": {
+    "command": [
+      "D:\\a\\Delsk\\Delsk\\work\\retained\\packages\\release\\DelskProbe.exe",
+      "--headless",
+      "--",
+      "--smoke",
+      "--report",
+      "D:\\a\\Delsk\\Delsk\\work\\diagnostic\\platform.json"
+    ],
+    "timeout_seconds": 90,
+    "started_at": "2026-11-01T23:50:00.279346+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.453,
+    "finished_at": "2026-11-01T23:50:08.732245+00:00"
+  }
+}

@@ -21,27 +21,29 @@ try
     for (int i = 0; i < args.Length; i += 2)
     {
         if (i + 1 >= args.Length || args[i] is not ("--scenario" or "--output" or "--script" or "--mode" or "--seed" or
-            "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers" or "--model-mode" or "--model-config" or "--economy" or "--new-game" or "--validate-only" or "--profile" or "--human-ballot" or "--research" or "--research-setup" or "--model-wait" or "--progress"
+            "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers" or "--model-mode" or "--model-config" or "--economy" or "--new-game" or "--validate-only" or "--profile" or "--human-ballot" or "--research" or "--research-setup" or "--model-wait" or "--progress" or "--compress-controller-turns"
 #if DELSK_DEVELOPER
             or "--research-modifications"
 #endif
             ))
-            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--economy config/economy.json] [--new-game OPTIONS_JSON (new baseline/hybrid only)] [--validate-only true] [--profile true] [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|stopped-elections|physical-automation|participant-trade|food-chain|support|baseline|hybrid|model-safety] [--mode headless|paced] [--model-mode off|ollama --model-config PATH] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true]");
+            throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--economy config/economy.json] [--new-game OPTIONS_JSON (new baseline/hybrid only)] [--validate-only true] [--profile true] [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|stopped-elections|physical-automation|participant-trade|food-chain|support|baseline|hybrid|model-safety] [--mode headless|paced] [--model-mode off|ollama --model-config PATH] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true] [--compress-controller-turns true]");
         if (!options.TryAdd(args[i], args[i + 1])) throw new ArgumentException("Duplicate argument");
     }
-    foreach (string flag in new[] { "--profile", "--validate-only", "--research", "--model-wait", "--recover-backup", "--progress" })
+    foreach (string flag in new[] { "--profile", "--validate-only", "--research", "--model-wait", "--recover-backup", "--progress", "--compress-controller-turns" })
         if (options.TryGetValue(flag,out var value) && !bool.TryParse(value,out _)) throw new ArgumentException(flag + " requires true or false");
-    foreach(string flag in new[]{"--profile","--validate-only","--research","--model-wait","--recover-backup","--progress"})
+    foreach(string flag in new[]{"--profile","--validate-only","--research","--model-wait","--recover-backup","--progress","--compress-controller-turns"})
         if(options.ContainsKey(flag))options[flag]=bool.Parse(options[flag]).ToString().ToLowerInvariant();
     if ((options.ContainsKey("--load") || options.ContainsKey("--replay")) &&
         (options.GetValueOrDefault("--profile","false") == "true" || options.GetValueOrDefault("--validate-only","false") == "true"))
         throw new ArgumentException("Profile/validate-only require a new run");
     if(options.ContainsKey("--research-setup") && (options.ContainsKey("--load") || options.ContainsKey("--replay")))throw new ArgumentException("Research setup applies only to new runs");
+    bool compressControllerTurns=options.GetValueOrDefault("--compress-controller-turns")=="true";
     byte[]? economyBytes = options.TryGetValue("--economy", out var economyPath) ? VNextBalanceReader.ReadBounded(economyPath) : null;
     EconomyProfile? economics = economyBytes is null ? null : EconomyProfile.Read(System.Text.Encoding.UTF8.GetString(economyBytes));
     if (economics is not null && (options.ContainsKey("--load") || options.ContainsKey("--replay")))
         throw new ArgumentException("--economy only applies to a new run; load/replay use the saved resolved configuration");
     string directory = options.GetValueOrDefault("--output", "artifacts/cycle");
+    RunArtifacts.ValidateExportDestination(directory,compressControllerTurns);
     string script = options.GetValueOrDefault("--script", "cycle");
     string mode = options.GetValueOrDefault("--mode", "headless");
     if(options.ContainsKey("--new-game") && (options.ContainsKey("--load") || options.ContainsKey("--replay") || options.ContainsKey("--seed") || options.ContainsKey("--research-setup") ||
@@ -209,17 +211,17 @@ try
     catch (ResearchCancelledException)
     {
         watch.Stop();observer?.Capture();observer?.Progress("exporting");
-        RunArtifacts.Export(session,definition,directory,mode,script,watch.Elapsed.TotalMilliseconds,"cancelled","Researcher cancelled between steps",models.Metadata);
+        RunArtifacts.Export(session,definition,directory,mode,script,watch.Elapsed.TotalMilliseconds,"cancelled","Researcher cancelled between steps",models.Metadata,compressControllerTurns:compressControllerTurns);
         observer?.Progress("cancelled");return 2;
     }
     catch (Exception ex)
     {
         observer?.Progress("failed");progress?.Write(true,"failed");
-        watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, "failed", ex.Message, models.Metadata);
+        watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, "failed", ex.Message, models.Metadata,compressControllerTurns:compressControllerTurns);
         throw;
     }
     observer?.Progress("exporting");
-    watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, modelMetadata: models.Metadata, economyProvenance: economics?.VNext is { } provenance ? new { Metadata=provenance, ProfileFileSha256=VNextBalanceReader.Digest(economyBytes!), ResolvedConfigHash=session.Engine.ConfigHash } : null,startupMilliseconds:startupMilliseconds);
+    watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, modelMetadata: models.Metadata, economyProvenance: economics?.VNext is { } provenance ? new { Metadata=provenance, ProfileFileSha256=VNextBalanceReader.Digest(economyBytes!), ResolvedConfigHash=session.Engine.ConfigHash } : null,startupMilliseconds:startupMilliseconds,compressControllerTurns:compressControllerTurns);
     if (economics is not null)
         File.WriteAllText(Path.Combine(directory,"economy-profile.json"),JsonSerializer.Serialize(economics,new JsonSerializerOptions(SimulationJson.Options) {WriteIndented=true}));
     observer?.Progress("completed");progress?.Write(true,"completed");

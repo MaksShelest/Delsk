@@ -1,0 +1,33 @@
+{
+  "status": "succeeded_after_retained_failed_attempt",
+  "platform": "android-arm64",
+  "sourceSnapshotCommit": "c7e185071a022cf4f218720e597b47f4214411d1",
+  "gameSourceAlsoIdenticalTo": "dafa477aa722c8c2e07ab8ba8dae7dbb094a0d69",
+  "packages": [
+    {
+      "flavor": "developer",
+      "bytes": 102310949,
+      "sha256": "04e0b94e05fcecfd90c174121a2babea7438838e8d877206d86af97531686f39",
+      "package": "developer-b/DelskH3.apk",
+      "zipCrc": true,
+      "arm64Godot": true,
+      "developerAssembly": true
+    },
+    {
+      "flavor": "release",
+      "bytes": 95307498,
+      "sha256": "cbd11bceb9825b9f7507006680e59cfe68d31eb4b142bdaa3a3ae0a76eacb4b4",
+      "package": "release-b/DelskH3.apk",
+      "zipCrc": true,
+      "arm64Godot": true,
+      "developerAssembly": false
+    }
+  ],
+  "failedAttempt": "checks/export-developer.json",
+  "successfulAttempts": [
+    "checks/export-developer-b.json",
+    "checks/export-release-b.json"
+  ],
+  "signing": "isolated local test key; key not shipped",
+  "scope": "Cross export, ZIP CRC and managed composition; physical device execution not performed. Same owned stage and dependency cache reused after the retained cold-build240s timeout."
+}

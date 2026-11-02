@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "reason": "Public valuation audit omitted paid unfinished C1/D2 construction WIP; Core already includes it",
+  "originalAuditorSha256": "a7523db96eefa7c98c61fcf2f67699646c4bbc49c1af94f764a8b23e509d67f0",
+  "correctedAuditorSha256": "7262ac4bd4b4966249df38bfec02247692480825fc12ca729502020aa3cb1b58",
+  "scope": "Audit-only correction. Original simulator DLL, saved configuration, seed, rules, prices, XP and all input files must remain byte-identical. Original failure/journal preserved. Every new audit/continuation tool hash is recorded explicitly; no new independent world."
+}

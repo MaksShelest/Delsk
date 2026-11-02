@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "id": "h3-movement1-ordinary-20261102",
+  "author": "Шелестов Максим Евгеньевич",
+  "baseCommit": "b87bc90a84845f509cf256bb227dbcf2952a43ad",
+  "profile": "config/vnext/economy.g1-npc.json",
+  "maps": ["compact-valley", "small-river", "large-districts"],
+  "ordinary": {
+    "bots": [3, 6, 10],
+    "difficulties": ["Easy", "Medium", "Hard"],
+    "seedsByBots": {"3": [42,43,44,45,46], "6": [42,43,44,45,46,47,48,49,50,51], "10": [42,43,44,45,46]},
+    "targetTicks": 5000,
+    "boundaries": [1800,3600,5000],
+    "timeoutSeconds": 600
+  },
+  "extended": {
+    "bots": [6],
+    "difficulties": ["Medium", "Hard"],
+    "seedsByBots": {"6": [142,143]},
+    "targetTicks": 126000,
+    "segmentTicks": 1800,
+    "timeoutSeconds": 900
+  },
+  "horizon": "Actual OrdinaryNewGame.Resolve horizon1000000; no research override. Extended126000 is an observation target, never a modified game horizon.",
+  "primary": "Median NPC capital change per world at5000. Separate maps; paired Hard-Medium and Easy-Medium within map/count/seed; Holm across18 planned contrasts. n10 at6NPC; n5 exploratory otherwise.",
+  "secondary": "Physical enterprise I-V, production vs quest XP, actual supply/receipts/payroll/import/road/debt/overflow/utilization and attributable payback, using full_economy_metrics over real exports.",
+  "independence": "World/seed; NPC and continuation segments are dependent. Extended142/143 do not duplicate ordinary42-51. Different maps never pooled.",
+  "human": "Observer without economic commands; self ballot. Separate scripted human walkthrough is not an autonomous NPC result.",
+  "censoring": "Absent milestones are right-censored at last audited boundary. Preserve timeout, checkpoint_limit, interruption and audit_failure separately. Pending experiments remain pending, never counted as completed.",
+  "stop": "Original600/900s runner and64/512MiB checkpoint limits. Stop at first failure; retain last checkpoint, failed attempts, heartbeat, stdout/stderr. No price/XP changes to force desired timings.",
+  "storage": "Existing H1 atomic relative journals, OS locks, frozen runtime/input/helper SHA and lossless trace archive. New H3 cohort, never relabel historical H1/H2 continuations. Explicit retry only.",
+  "prepared": "Prepared fixtures prove exposed mechanics and exact continuation; they do not establish natural development or full ROI. Unallocated owner labour/capital costs remain an explicit limitation."
+}

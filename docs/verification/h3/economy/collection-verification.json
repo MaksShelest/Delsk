@@ -1,0 +1,12 @@
+{
+  "worlds": 192,
+  "expected": 192,
+  "missing": 0,
+  "successfulSegments": 635,
+  "accountingAudits": 635,
+  "publicAudits": 635,
+  "allRecordedSuccessfulSegmentAuditsVerified": true,
+  "retainedOriginalAuditFailures": 38,
+  "derivedReauditedSegments": 38,
+  "scope": "Collection and statistical analysis; original failures remain failures. Explicit erratum audits are identified separately. No new simulation replicates"
+}

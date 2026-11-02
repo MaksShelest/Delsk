@@ -1,0 +1,53 @@
+{
+  "status": "succeeded",
+  "ticks": 90,
+  "identicalExports": [
+    "ledger.jsonl",
+    "commands.jsonl",
+    "logistics.json",
+    "negotiations.json",
+    "research-modifications.json",
+    "events.jsonl",
+    "labor.csv",
+    "public-economy.json",
+    "market.json",
+    "controllers.json",
+    "capital-demand.json",
+    "development.json",
+    "workshops.json",
+    "demolition.json",
+    "support.json",
+    "public-events.jsonl",
+    "final-state.json",
+    "elections.json",
+    "agents.csv",
+    "physical-state.json",
+    "metrics.csv",
+    "delivery.json",
+    "scenario.json",
+    "model-decisions.jsonl"
+  ],
+  "fullPrivateHistoryRawBytes": 618921,
+  "sha256": "835a2954edbba0018bdd312f483ee24883fcf8db313554239d3d67277735736e",
+  "gzipBytes": 56019,
+  "scope": "Two deterministic short runner invocations, default raw versus explicit TRUE gzip flag; identical world/controller/history. Not study replicates.",
+  "invalidStorageOptionRejected": true,
+  "progressModeSupportsPreexistingCurrentRunProgress": true,
+  "existingArchiveDestinationRejectedBeforeSimulation": true,
+  "archiveDestinationRegression": {
+    "ordinary": {
+      "total": "1",
+      "passed": "1",
+      "failed": "0",
+      "skipped": "0",
+      "time": "2.422"
+    },
+    "developer": {
+      "total": "1",
+      "passed": "1",
+      "failed": "0",
+      "skipped": "0",
+      "time": "2.790"
+    }
+  }
+}
