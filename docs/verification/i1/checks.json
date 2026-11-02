@@ -1,0 +1,669 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "base": "b96c59ca6e3392bacdd94cbd1b8e6a332c0be5a4",
+  "runtimeCommit": "2adce10fea287cceabae7ce422a4d68cacfb3594",
+  "ordinary": {
+    "kind": "ordinary",
+    "passed": 1518,
+    "uniqueTestCount": 1518,
+    "suites": [
+      {
+        "suite": "previous",
+        "exitCode": 0,
+        "passed": 1230
+      },
+      {
+        "suite": "roads",
+        "exitCode": 0,
+        "passed": 27
+      },
+      {
+        "suite": "billing",
+        "exitCode": 0,
+        "passed": 22
+      },
+      {
+        "suite": "services",
+        "exitCode": 0,
+        "passed": 27
+      },
+      {
+        "suite": "runs",
+        "exitCode": 0,
+        "passed": 30
+      },
+      {
+        "suite": "npc",
+        "exitCode": 0,
+        "passed": 30
+      },
+      {
+        "suite": "ux",
+        "exitCode": 0,
+        "passed": 41
+      },
+      {
+        "suite": "h2",
+        "exitCode": 0,
+        "passed": 38
+      },
+      {
+        "suite": "h3",
+        "exitCode": 0,
+        "passed": 22
+      },
+      {
+        "suite": "i1",
+        "exitCode": 0,
+        "passed": 51
+      }
+    ]
+  },
+  "developer": {
+    "kind": "developer",
+    "passed": 1535,
+    "uniqueTestCount": 1535,
+    "suites": [
+      {
+        "suite": "previous",
+        "exitCode": 0,
+        "passed": 1247
+      },
+      {
+        "suite": "roads",
+        "exitCode": 0,
+        "passed": 27
+      },
+      {
+        "suite": "billing",
+        "exitCode": 0,
+        "passed": 22
+      },
+      {
+        "suite": "services",
+        "exitCode": 0,
+        "passed": 27
+      },
+      {
+        "suite": "runs",
+        "exitCode": 0,
+        "passed": 30
+      },
+      {
+        "suite": "npc",
+        "exitCode": 0,
+        "passed": 30
+      },
+      {
+        "suite": "ux",
+        "exitCode": 0,
+        "passed": 41
+      },
+      {
+        "suite": "h2",
+        "exitCode": 0,
+        "passed": 38
+      },
+      {
+        "suite": "h3",
+        "exitCode": 0,
+        "passed": 22
+      },
+      {
+        "suite": "i1",
+        "exitCode": 0,
+        "passed": 51
+      }
+    ]
+  },
+  "additionalDotnetTestPassed": 12,
+  "pythonChecksPassed": 45,
+  "researchLabPassed": 64,
+  "uniqueNewI1Cases": 51,
+  "runner": {
+    "author": "Шелестов Максим Евгеньевич",
+    "status": "succeeded",
+    "processChecks": 33,
+    "exports": 20,
+    "exactComparisonPairs": 11,
+    "rows": [
+      {
+        "model": "muravey70",
+        "tick": 135,
+        "hash": "a1695b2f86e113fedd7246a4b7d8f6295b3cf5a873ce07366e5a0b6168ad2d7c"
+      },
+      {
+        "model": "sputnik20",
+        "tick": 135,
+        "hash": "f7b8b549e0f7c257dfbc6b0ae4bd762ec57c4c310f881a80c1f2ea7672a5e9e6"
+      },
+      {
+        "model": "vector200",
+        "tick": 148,
+        "hash": "b988b1d9bc3ecaea4a333e1b1989318831bd87e34fb878d82a97d2c18c4dc253"
+      },
+      {
+        "model": "eger70",
+        "tick": 142,
+        "hash": "d1268ce71b65b60a7989e128408444fc866b33932c2fc34c51a71ab648336d73"
+      },
+      {
+        "model": "trakt_d1",
+        "tick": 174,
+        "hash": "14b95ee9443f919d00bf392aa0cb3c29051bcc2f5a803fcaa79e0ca4554c5c0f"
+      },
+      {
+        "map": "compact-valley",
+        "npcCount": 3,
+        "ticks": 80,
+        "hash": "9976ae840e1c13bab08de9ca9de3514ab050a2070acf57f82d8d114e2793bc1c"
+      },
+      {
+        "map": "small-river",
+        "npcCount": 6,
+        "ticks": 80,
+        "hash": "5589a3af43d1a3ac7eb120c1433f0ade585da403785fe404fabe5ad4f4c7ffc7"
+      },
+      {
+        "map": "large-districts",
+        "npcCount": 10,
+        "ticks": 80,
+        "hash": "67e1a0a0143a97843e2330cd9a577e61f04e055b8951cc0083b2427246665f4c"
+      }
+    ],
+    "scope": "Actual C# I1 runner, five loaded models restored mid-route, native midquantum save, new ordinary3/6/10NPC on three maps, full independent audits. Prepared cargo cases and80-tick ordinary exposure; not long economic balance/device acceptance."
+  },
+  "retainedRunner": {
+    "status": "succeeded",
+    "scenarios": [
+      "cycle",
+      "recovery",
+      "development",
+      "labor",
+      "equipment",
+      "autonomous",
+      "market",
+      "pickup",
+      "delivery",
+      "capital-delivery",
+      "logistics",
+      "logistics-upgrade",
+      "own-storage",
+      "inbound",
+      "own-production",
+      "logistics-queue",
+      "capital-demand",
+      "autonomous-demand",
+      "elections",
+      "support",
+      "stopped-elections",
+      "physical-automation",
+      "participant-trade",
+      "food-chain"
+    ],
+    "checkpoint_cases": {
+      "cycle": 55,
+      "equipment": 101,
+      "autonomous": 350,
+      "market": 44,
+      "pickup": 47,
+      "delivery": 37,
+      "capital-delivery": 3,
+      "logistics": 69,
+      "logistics-upgrade": 170,
+      "own-storage": 170,
+      "inbound": 78,
+      "own-production": 170,
+      "logistics-queue": 185,
+      "capital-demand": 85,
+      "autonomous-demand": 350,
+      "elections": 9,
+      "support": 18,
+      "stopped-elections": 3,
+      "physical-automation": 20,
+      "participant-trade": 33,
+      "food-chain": 300
+    },
+    "comparison": "every exported tick hash, state, ledger, event, command and labor row",
+    "controlled_fixture": {
+      "name": "late-return",
+      "origin": "test-only checkpoint fork at68; TTL180 to18; ordinary admission unchanged",
+      "checkpoint_tick": 72,
+      "final_tick": 80
+    },
+    "baseline_cases": {
+      "economy": {
+        "final_tick": 1200,
+        "checkpoint_tick": 350
+      },
+      "auction": {
+        "final_tick": 180,
+        "checkpoint_tick": 30
+      },
+      "politics": {
+        "final_tick": 160,
+        "checkpoint_tick": 19
+      },
+      "logistics": {
+        "final_tick": 360,
+        "checkpoint_tick": 80
+      },
+      "food": {
+        "final_tick": 900,
+        "checkpoint_tick": 85
+      }
+    },
+    "model_safety": {
+      "checkpoint_tick": 6,
+      "final_tick": 60,
+      "valid": 1,
+      "forged_actor": 1,
+      "late_reply": 1
+    },
+    "model_off": "exact world equality with baseline-economy and the same headless timing label",
+    "testsPassed": null,
+    "testPartitions": [],
+    "phase": "runs",
+    "unitArtifacts": "work/i1/ordinary/previous",
+    "exports": 102,
+    "replays": 14,
+    "comparison_pairs": 69,
+    "scope": "Package8 software and full previous economic/controller regression; laboratory/study/window/platform gates separate",
+    "author": "Шелестов Максим Евгеньевич"
+  },
+  "pythonChecks": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/Checks",
+      "-v"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-11-02T22:50:16.632819+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.121,
+    "finished_at": "2026-11-02T22:50:17.754003+00:00"
+  },
+  "researchLab": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/Research.Lab",
+      "-v"
+    ],
+    "timeout_seconds": 60,
+    "started_at": "2026-11-02T22:10:02.698186+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 4.241,
+    "finished_at": "2026-11-02T22:10:06.939378+00:00"
+  },
+  "expectedNegativeReleaseChecks": [
+    {
+      "path": "developer/billing/checks/forbidden-developer-release.json",
+      "exitCode": 1,
+      "elapsedSeconds": 1.014,
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "src/Simulation.Core/Simulation.Core.csproj",
+        "-c",
+        "Release",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ]
+    },
+    {
+      "path": "developer/h2/checks/forbidden-developer-release.json",
+      "exitCode": 1,
+      "elapsedSeconds": 0.866,
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "src/Simulation.Core/Simulation.Core.csproj",
+        "-c",
+        "Release",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ]
+    },
+    {
+      "path": "developer/h3/checks/forbidden-developer-release.json",
+      "exitCode": 1,
+      "elapsedSeconds": 0.867,
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "src/Simulation.Core/Simulation.Core.csproj",
+        "-c",
+        "Release",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ]
+    },
+    {
+      "path": "developer/i1/checks/forbidden-developer-release.json",
+      "exitCode": 1,
+      "elapsedSeconds": 0.966,
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "src/Simulation.Core/Simulation.Core.csproj",
+        "-c",
+        "Release",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ]
+    },
+    {
+      "path": "developer/npc/checks/forbidden-developer-release.json",
+      "exitCode": 1,
+      "elapsedSeconds": 0.819,
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "src/Simulation.Core/Simulation.Core.csproj",
+        "-c",
+        "Release",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ]
+    },
+    {
+      "path": "developer/previous/checks/forbidden-developer-release.json",
+      "exitCode": 1,
+      "elapsedSeconds": 0.919,
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "src/Simulation.Core/Simulation.Core.csproj",
+        "-c",
+        "Release",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ]
+    },
+    {
+      "path": "developer/roads/checks/forbidden-developer-release.json",
+      "exitCode": 1,
+      "elapsedSeconds": 0.767,
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "src/Simulation.Core/Simulation.Core.csproj",
+        "-c",
+        "Release",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ]
+    },
+    {
+      "path": "developer/runs/checks/forbidden-developer-release.json",
+      "exitCode": 1,
+      "elapsedSeconds": 0.767,
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "src/Simulation.Core/Simulation.Core.csproj",
+        "-c",
+        "Release",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ]
+    },
+    {
+      "path": "developer/services/checks/forbidden-developer-release.json",
+      "exitCode": 1,
+      "elapsedSeconds": 0.766,
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "src/Simulation.Core/Simulation.Core.csproj",
+        "-c",
+        "Release",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ]
+    },
+    {
+      "path": "developer/ux/checks/forbidden-developer-release.json",
+      "exitCode": 1,
+      "elapsedSeconds": 0.817,
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "src/Simulation.Core/Simulation.Core.csproj",
+        "-c",
+        "Release",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ]
+    }
+  ],
+  "retainedDevelopmentFailures": [
+    {
+      "path": "candidate/checks/tests-i1-5.json",
+      "exitCode": 124,
+      "elapsedSeconds": 120.067,
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.I1RoadVehicleTests",
+        "-result-trx",
+        "work/i1/candidate/tests-i1-5.trx"
+      ]
+    },
+    {
+      "path": "checks/i1-build-tests.json",
+      "exitCode": 1,
+      "elapsedSeconds": 28.74,
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_CLI_HOME=/workspace/.tools/dotnet-home",
+        "NUGET_PACKAGES=/workspace/.tools/nuget",
+        "/workspace/.tools/dotnet/dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ]
+    },
+    {
+      "path": "checks/i1-candidate-suite.json",
+      "exitCode": 124,
+      "elapsedSeconds": 205.976,
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_PROCESSOR_COUNT=2",
+        "python3",
+        "work/i1/run_i1.py",
+        "work/i1/candidate"
+      ]
+    },
+    {
+      "path": "checks/i1-mtp-help.json",
+      "exitCode": -6,
+      "elapsedSeconds": 0.667,
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_CLI_HOME=/workspace/.tools/dotnet-home",
+        "NUGET_PACKAGES=/workspace/.tools/nuget",
+        "/workspace/.tools/dotnet/dotnet",
+        "test",
+        "--project",
+        "tests/Simulation.Tests/Simulation.Tests.csproj",
+        "--no-build",
+        "--configuration",
+        "Release",
+        "--help"
+      ]
+    },
+    {
+      "path": "checks/i1-native.json",
+      "exitCode": 1,
+      "elapsedSeconds": 91.354,
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_CLI_HOME=/workspace/.tools/dotnet-home",
+        "NUGET_PACKAGES=/workspace/.tools/nuget",
+        "DOTNET_PROCESSOR_COUNT=2",
+        "PATH=/workspace/.tools/dotnet:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "python3",
+        "scripts/check_i1_native.py",
+        "--fixtures",
+        "work/i1/ordinary/i1/i1-fixtures",
+        "--output",
+        "work/i1/native",
+        "--godot",
+        "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64"
+      ]
+    },
+    {
+      "path": "checks/i1-numerical.json",
+      "exitCode": 124,
+      "elapsedSeconds": 268.002,
+      "command": [
+        "env",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "DOTNET_PROCESSOR_COUNT=2",
+        "python3",
+        "work/i1/run_i1.py",
+        "work/i1/numerical"
+      ]
+    },
+    {
+      "path": "checks/i1-vehicle-matrix.json",
+      "exitCode": 124,
+      "elapsedSeconds": 180.037,
+      "command": [
+        "env",
+        "DELSK_I1_EVIDENCE=/workspace/Delsk/work/i1/evidence",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "/workspace/.tools/dotnet/dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.I1VehicleMatrixTests",
+        "-result-trx",
+        "work/i1/matrix.trx"
+      ]
+    },
+    {
+      "path": "checks/i1-walking-fixed.json",
+      "exitCode": 1,
+      "elapsedSeconds": 19.044,
+      "command": [
+        "env",
+        "DELSK_I1_EVIDENCE=/workspace/Delsk/work/i1/evidence",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "/workspace/.tools/dotnet/dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.I1WalkingTests",
+        "-result-trx",
+        "work/i1/walking-fixed.trx"
+      ]
+    },
+    {
+      "path": "checks/i1-walking.json",
+      "exitCode": 1,
+      "elapsedSeconds": 17.572,
+      "command": [
+        "env",
+        "DELSK_I1_EVIDENCE=/workspace/Delsk/work/i1/evidence",
+        "DOTNET_ROOT=/workspace/.tools/dotnet",
+        "/workspace/.tools/dotnet/dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noLogo",
+        "-noColor",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.I1WalkingTests",
+        "-result-trx",
+        "work/i1/walking.trx"
+      ]
+    },
+    {
+      "path": "checks/i1-xvfb-download.json",
+      "exitCode": 100,
+      "elapsedSeconds": 0.065,
+      "command": [
+        "/usr/bin/apt-get",
+        "download",
+        "xvfb"
+      ]
+    },
+    {
+      "path": "numerical/checks/tests-i1-5.json",
+      "exitCode": 124,
+      "elapsedSeconds": 180.034,
+      "command": [
+        "/workspace/.tools/dotnet/dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.I1RoadVehicleTests",
+        "-result-trx",
+        "/workspace/Delsk/work/i1/numerical/tests-i1-5.trx"
+      ]
+    }
+  ],
+  "fixtureArchive": {
+    "fileCount": 18,
+    "uncompressedBytes": 1259330,
+    "uncompressedSha256": "0788f160cae7c0e11ee004b6178f032b87500a36aceb0f6fb2fc0320eadbce69"
+  },
+  "logArchive": {
+    "fileCount": 1522,
+    "uncompressedBytes": 5038117,
+    "uncompressedSha256": "b4224be16b6209c3f0ccc7ddfbc4b73b4805dacdc33259b683511bda8cb7151d"
+  }
+}

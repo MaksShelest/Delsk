@@ -1,0 +1,487 @@
+{
+  "status": "succeeded",
+  "assets": [
+    {
+      "path": "audio/ambience.wav",
+      "sha256": "504133e80266883a772cb543cfc7110a6fecc885ca9007910c794406836f3bad",
+      "resources": 2
+    },
+    {
+      "path": "audio/build.wav",
+      "sha256": "f51e560d3dc5fd3668c39072d84768a36be05adff53c194b60cb084ac90db28f",
+      "resources": 2
+    },
+    {
+      "path": "audio/click.wav",
+      "sha256": "48dbb15151203846eab77af85d04d60503051eb67b9357d40d56ee70ce8bcf26",
+      "resources": 2
+    },
+    {
+      "path": "audio/harvest.wav",
+      "sha256": "39afa8c794c8fe83384a03c38b79905e4e1f15089b645c30b98476886b44bae9",
+      "resources": 2
+    },
+    {
+      "path": "audio/important.wav",
+      "sha256": "5d0a5744d6eceb1fcdffa56d2d21eac3fb4963a2210c8f87d7f60d5c312b80cf",
+      "resources": 2
+    },
+    {
+      "path": "audio/music.wav",
+      "sha256": "330168484fdd51a07ff8e406c963ae2d0ce14866f9c6c1dbc4577c51e8b89cac",
+      "resources": 2
+    },
+    {
+      "path": "audio/trade.wav",
+      "sha256": "9c3589049981df08a42ebd7cadf5ad9e5dcae12ae4d1c6763321dbb5338946f1",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/bakery.svg",
+      "sha256": "bac7b0b7023e648a17d9b4aabf0e155d832c1f922af443a3b5c82cc4fe61c171",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/arrow.svg",
+      "sha256": "329cc0e1a085e90b32c7207e7b525175f68c7f5e0f327695e22348f0eeda41d6",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/boards.svg",
+      "sha256": "ece65240c83d6332273651d5d8f7c41b3f817587808858a6af6179461354ed7d",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/bread.svg",
+      "sha256": "cedc9c66d13f3bd46f9f1979a47e9054d42959fe281d4ba894ac33b7372e7fc7",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/check.svg",
+      "sha256": "0f78d33b4efca0dfff25a835cd2bb48f998e2e40e708dba4943230e9f0ed72c7",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/close.svg",
+      "sha256": "a6a46e3f83ee71d5ae7f05177384fd8bb768e677d40d3003ca4c03634ca06d51",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/coin.svg",
+      "sha256": "8f54ddd4628318980cffb121d0aa780d5aef756ddb60bd35c1277624ddfd3c4d",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/down.svg",
+      "sha256": "692e9d4a5bd5dad74afb96bd5237c6c9a6be57b09e10aeee933aa259f87aa713",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/gear.svg",
+      "sha256": "ab564d260b319d97fa8ff9ab1631d8445b00ab7b36f55cd02bdbf1ab0216d368",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/grain.svg",
+      "sha256": "18d0baeb0d806b8e1009bfdacf6247c0e63fdaf67f3fe155daf57c89fb07d271",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/help.svg",
+      "sha256": "f120b47a15d9df0433a0f93ead7c1b23df56ba4d3dbd102a678525cd43417ffb",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/in.svg",
+      "sha256": "c2d2826875635e274104e1faa3342c3fd5085d9111ca32af28022a056a12601f",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/logs.svg",
+      "sha256": "53f8d47d852829572f74a027b0b7874db89b173842b5f1f02f6ffef9d6ef50f2",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/out.svg",
+      "sha256": "f86c28a470206bec0a8ffd32dcca65db6f2d60ef17c0fa65479c395aec0eac29",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/pause.svg",
+      "sha256": "81f27f37076a94016630f63c72e774d8eb8bf5344c7a34c86d0ab3710e878eb1",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/people.svg",
+      "sha256": "34f6b3886c011ec138b12e19eadd904e8011b127db0490b34e46ad2a795bc786",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/pin.svg",
+      "sha256": "09bd02983afd6c4358be58c2f66bb6fcb8d643324b22fe92f01fbfe763f52ee2",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/play.svg",
+      "sha256": "54ac7977eae0d4aba427b9526ea5948dcbc75e046ffd61ad9ff17f31d7516a4a",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/toggle_off.svg",
+      "sha256": "79eccb7f21f19f7f352d6a5064a34f86e3546f522d5c94e4d1d7305524024e54",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/toggle_on.svg",
+      "sha256": "ec0ecd2e7f0beefdffe4c73b36411ac599cbc45a478e6c625b33cc1197764526",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/truck.svg",
+      "sha256": "51924fc716760b90103aafd6971ccd1d615c056c66197a899b81b04195df20c1",
+      "resources": 2
+    },
+    {
+      "path": "delsk_bakery_ui/assets/icons/upgrade.svg",
+      "sha256": "ccbd5693f9969f06a9e4dc202fa90945a94b6364d4ee5a7d0acd30a51b121ac8",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/fonts/Nunito-ExtraBold.ttf",
+      "sha256": "7ceb41e6cbd4013b39290c357bb07dfc36f730495efb1206584733fe04d31ccf",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/fonts/Nunito-Medium.ttf",
+      "sha256": "3647567f453d13959db713a69bee2bb395d34a9ba2838dd7c3fb429da7890886",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/fonts/Nunito.ttf",
+      "sha256": "bb55a5ca5c2042335b3991af27c4d0705d0ef41cac6164ac737fd8f2a1e85207",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/arrow.svg",
+      "sha256": "329cc0e1a085e90b32c7207e7b525175f68c7f5e0f327695e22348f0eeda41d6",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/boards.svg",
+      "sha256": "ece65240c83d6332273651d5d8f7c41b3f817587808858a6af6179461354ed7d",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/check.svg",
+      "sha256": "0f78d33b4efca0dfff25a835cd2bb48f998e2e40e708dba4943230e9f0ed72c7",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/close.svg",
+      "sha256": "a6a46e3f83ee71d5ae7f05177384fd8bb768e677d40d3003ca4c03634ca06d51",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/coin.svg",
+      "sha256": "8f54ddd4628318980cffb121d0aa780d5aef756ddb60bd35c1277624ddfd3c4d",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/down.svg",
+      "sha256": "692e9d4a5bd5dad74afb96bd5237c6c9a6be57b09e10aeee933aa259f87aa713",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/gear.svg",
+      "sha256": "ab564d260b319d97fa8ff9ab1631d8445b00ab7b36f55cd02bdbf1ab0216d368",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/help.svg",
+      "sha256": "f120b47a15d9df0433a0f93ead7c1b23df56ba4d3dbd102a678525cd43417ffb",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/in.svg",
+      "sha256": "c2d2826875635e274104e1faa3342c3fd5085d9111ca32af28022a056a12601f",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/logs.svg",
+      "sha256": "53f8d47d852829572f74a027b0b7874db89b173842b5f1f02f6ffef9d6ef50f2",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/out.svg",
+      "sha256": "f86c28a470206bec0a8ffd32dcca65db6f2d60ef17c0fa65479c395aec0eac29",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/pause.svg",
+      "sha256": "81f27f37076a94016630f63c72e774d8eb8bf5344c7a34c86d0ab3710e878eb1",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/people.svg",
+      "sha256": "34f6b3886c011ec138b12e19eadd904e8011b127db0490b34e46ad2a795bc786",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/pin.svg",
+      "sha256": "09bd02983afd6c4358be58c2f66bb6fcb8d643324b22fe92f01fbfe763f52ee2",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/play.svg",
+      "sha256": "54ac7977eae0d4aba427b9526ea5948dcbc75e046ffd61ad9ff17f31d7516a4a",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/toggle_off.svg",
+      "sha256": "79eccb7f21f19f7f352d6a5064a34f86e3546f522d5c94e4d1d7305524024e54",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/toggle_on.svg",
+      "sha256": "ec0ecd2e7f0beefdffe4c73b36411ac599cbc45a478e6c625b33cc1197764526",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/truck.svg",
+      "sha256": "51924fc716760b90103aafd6971ccd1d615c056c66197a899b81b04195df20c1",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/icons/upgrade.svg",
+      "sha256": "ccbd5693f9969f06a9e4dc202fa90945a94b6364d4ee5a7d0acd30a51b121ac8",
+      "resources": 2
+    },
+    {
+      "path": "delsk_sawmill_ui/assets/sawmill.svg",
+      "sha256": "d6b4c817330e4bb280df52714bd2f513bca2b9797355fe16f9a4af2f35670260",
+      "resources": 2
+    },
+    {
+      "path": "icon.svg",
+      "sha256": "ea0b372f51f8a1d0c5c8eb6a96567c13268f174d08b5cfb753295452a29b5c90",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/bakery.svg",
+      "sha256": "bac7b0b7023e648a17d9b4aabf0e155d832c1f922af443a3b5c82cc4fe61c171",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/confectionery.svg",
+      "sha256": "f8a1f60098d5cccb096cf02a51c00a422193b98454d0baff8b852ae69c620800",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/dairy.svg",
+      "sha256": "acca39a8b802b8b0b4199533d8d7d17455a590fa5a5623d09ce2073a2ca6d192",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/arrow.svg",
+      "sha256": "329cc0e1a085e90b32c7207e7b525175f68c7f5e0f327695e22348f0eeda41d6",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/bag.svg",
+      "sha256": "4303d15c4dda71660f9fea6498582b02c485dc742b46175f8124492f598eb18f",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/beet.svg",
+      "sha256": "2b7e0658319710d69eaa507e756af3da3143048ba11dfbe8b252772c0022f8ed",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/boards.svg",
+      "sha256": "ece65240c83d6332273651d5d8f7c41b3f817587808858a6af6179461354ed7d",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/bolt.svg",
+      "sha256": "6ea6bb702e8215bddb2f433823e1d92d61bf88f84726151f13a8ce2e84ee2a3c",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/book.svg",
+      "sha256": "7377de2781685ffe5c81927dab625db3272d011ede3536641311e2497052b43c",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/bread.svg",
+      "sha256": "cedc9c66d13f3bd46f9f1979a47e9054d42959fe281d4ba894ac33b7372e7fc7",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/chat.svg",
+      "sha256": "978e0d62eabb6bb0fa92e74f76e0811253aa6510693247a36b6508b4578e376b",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/check.svg",
+      "sha256": "0f78d33b4efca0dfff25a835cd2bb48f998e2e40e708dba4943230e9f0ed72c7",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/cheese.svg",
+      "sha256": "50a4bec1318a4392d3fcf9ab63b200140f5724a983f40343e0a3a9406db3b50f",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/city.svg",
+      "sha256": "6cfae61f8ab5a1d5869b3318d224eb65bfba5ac503603cc72dd8d0198a0ef521",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/clock.svg",
+      "sha256": "0258131a4f533c77f9be09e5fa50f548b33818fa1cc4e9b410db3c0286d18d59",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/close.svg",
+      "sha256": "a6a46e3f83ee71d5ae7f05177384fd8bb768e677d40d3003ca4c03634ca06d51",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/coin.svg",
+      "sha256": "8f54ddd4628318980cffb121d0aa780d5aef756ddb60bd35c1277624ddfd3c4d",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/down.svg",
+      "sha256": "692e9d4a5bd5dad74afb96bd5237c6c9a6be57b09e10aeee933aa259f87aa713",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/gear.svg",
+      "sha256": "ab564d260b319d97fa8ff9ab1631d8445b00ab7b36f55cd02bdbf1ab0216d368",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/grain.svg",
+      "sha256": "18d0baeb0d806b8e1009bfdacf6247c0e63fdaf67f3fe155daf57c89fb07d271",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/help.svg",
+      "sha256": "f120b47a15d9df0433a0f93ead7c1b23df56ba4d3dbd102a678525cd43417ffb",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/home.svg",
+      "sha256": "71d66212864194ec5cfb7bed3b8b59cbc3666aefd423c32c80dc509ad69d85dc",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/in.svg",
+      "sha256": "c2d2826875635e274104e1faa3342c3fd5085d9111ca32af28022a056a12601f",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/lock.svg",
+      "sha256": "263a832857a8a27d5e894e3878e858defd13f2f3c3906219308a5c73b598d67f",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/logs.svg",
+      "sha256": "53f8d47d852829572f74a027b0b7874db89b173842b5f1f02f6ffef9d6ef50f2",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/market.svg",
+      "sha256": "affe9aa4838800d2e0a9a25c24b8524d9101839675ab9119ec463b8fbd7597c7",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/milk.svg",
+      "sha256": "afdd6395f70cd01144b71ab52b0a5eaa4fd0a1daeeb3f778cea8760e20d821f3",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/out.svg",
+      "sha256": "f86c28a470206bec0a8ffd32dcca65db6f2d60ef17c0fa65479c395aec0eac29",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/pastry.svg",
+      "sha256": "7e3cdd70e5e6006cf045f4a6373d088fd333d3f5363fbbd0c7530556a34ef6a7",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/pause.svg",
+      "sha256": "81f27f37076a94016630f63c72e774d8eb8bf5344c7a34c86d0ab3710e878eb1",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/people.svg",
+      "sha256": "34f6b3886c011ec138b12e19eadd904e8011b127db0490b34e46ad2a795bc786",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/pin.svg",
+      "sha256": "09bd02983afd6c4358be58c2f66bb6fcb8d643324b22fe92f01fbfe763f52ee2",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/play.svg",
+      "sha256": "54ac7977eae0d4aba427b9526ea5948dcbc75e046ffd61ad9ff17f31d7516a4a",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/star.svg",
+      "sha256": "704f60ccfdde5d14f758f21f37eee40d96fb6e2a91167586708567e3625811fd",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/stepper.svg",
+      "sha256": "32a569e25c8fcbb09365579b396c28fff1b362a754b8df3dd3f65da87818c9e3",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/sugar.svg",
+      "sha256": "c0c2a68b3f62e2c33515c70ac265a93dbcd289581689a63babf907714f63a853",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/toggle_off.svg",
+      "sha256": "79eccb7f21f19f7f352d6a5064a34f86e3546f522d5c94e4d1d7305524024e54",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/toggle_on.svg",
+      "sha256": "ec0ecd2e7f0beefdffe4c73b36411ac599cbc45a478e6c625b33cc1197764526",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/truck.svg",
+      "sha256": "51924fc716760b90103aafd6971ccd1d615c056c66197a899b81b04195df20c1",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/upgrade.svg",
+      "sha256": "ccbd5693f9969f06a9e4dc202fa90945a94b6364d4ee5a7d0acd30a51b121ac8",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/vote.svg",
+      "sha256": "67d0943ff7f6b691b5fbb3c275c9cf88cbfc478ef32bbbd5e8e9de698f200e64",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/icons/warehouse.svg",
+      "sha256": "547b4635fe8299990165a5e487deaac54ad5074391b94f8b66e902e51817e4e3",
+      "resources": 2
+    },
+    {
+      "path": "tablets_v1/assets/sugar_factory.svg",
+      "sha256": "e8d9ac896d489b05f2cbbccd0d40a767bb663b4d889ff62dfb1a158f2c663e98",
+      "resources": 2
+    }
+  ],
+  "scope": "All importable assets require metadata, cached resources and matching source digests; no editor state or managed assemblies copied. Native controls remain mandatory.",
+  "verifyOnly": true
+}
