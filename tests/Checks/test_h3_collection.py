@@ -41,6 +41,15 @@ class H3CollectionTests(unittest.TestCase):
         self.assertNotEqual(self.collect().returncode,0)
         self.assertFalse((self.root/'escape/h1-metrics.json').exists())
 
+    def test_duplicate_selected_entry_cannot_replace_an_original_metric(self):
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore',UserWarning)
+            target=self.make(('world/runs/5000-a1/h1-metrics.json','{"actual":0}'))
+        result=self.collect();self.assertNotEqual(result.returncode,0)
+        self.assertIn('Duplicate selected archive entry',result.stderr)
+        self.assertEqual(json.loads((target/'runs/5000-a1/h1-metrics.json').read_text()),dict(actual=5000))
+
     def test_selected_crc_corruption_is_never_a_successful_measurement(self):
         self.make()
         with zipfile.ZipFile(self.archive) as z:

@@ -1,0 +1,15 @@
+{
+  "source": "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_export_templates.tpz",
+  "archiveSha256": "92f8681e349ef1f90891b792da95e3b2b0bd1ed610b78018c58feb2d87e15a9d",
+  "bytes": 1202598411,
+  "extractedTemplates": {
+    "android_debug.apk": "0775f021356d68be0b3f477e0b80ab691930a4d0a0d66b87056ecc0ef3298f5a",
+    "windows_debug_x86_64_console.exe": "f78703ba3a05dd51a3464f8c90d4c72f54f95d5a8669993e7a5c3ce522b30c52",
+    "windows_debug_x86_64.exe": "4526aac3ac47c65de66f99f715f56b35a2e2e4446fcb23e6d280a830cd97fdea",
+    "windows_release_x86_64.exe": "16e0ec3cfd398b938f514de95ff2474b532b5061ada78f92226dba3f7584d55d",
+    "windows_release_x86_64_console.exe": "7895a7873947deaff6c8c859c1f77be051023413035048e2db74ceba07a65017",
+    "android_source.zip": "d52a3743d912857b26092e8b051d91ada4707eacaa748f521437d4e506a5190e",
+    "android_release.apk": "2dd46d9ff13780fabf64193ee4c6135a97b5a6c92d1e2c628a04aa0f53bf28fa",
+    "version.txt": "66796c18ef62c6e4a56a5c7412735b1a1bf805b010585d54b5569642e24373e2"
+  }
+}

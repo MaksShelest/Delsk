@@ -1,1 +1,6 @@
-{"run":41362439343,"scope":"Execute the retained failed Release bundle and print the actual error; do not repeat exports or simulations"}
+{
+  "run": 41362439343,
+  "scope": "Read original failure and actual Windows runtime availability only; successful retained Release execution is already recorded in41363547781. No new export or simulation.",
+  "readOnly": true,
+  "revision": 2
+}

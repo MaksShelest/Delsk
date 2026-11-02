@@ -1,0 +1,609 @@
+{
+  "unit-split": [
+    {
+      "name": "build",
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:52:53.444768+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 46.86,
+      "finished_at": "2026-11-01T23:53:40.305325+00:00"
+    },
+    {
+      "name": "restore",
+      "command": [
+        "dotnet",
+        "restore",
+        "Delsk.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:52:51.932203+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.472,
+      "finished_at": "2026-11-01T23:52:53.404484+00:00"
+    }
+  ],
+  "unit-split-b": [
+    {
+      "name": "build",
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:54:41.561364+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 17.635,
+      "finished_at": "2026-11-01T23:54:59.196443+00:00"
+    },
+    {
+      "name": "restore",
+      "command": [
+        "dotnet",
+        "restore",
+        "Delsk.sln",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:54:40.249509+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.271,
+      "finished_at": "2026-11-01T23:54:41.520552+00:00"
+    },
+    {
+      "name": "tests-h3-0",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.CompactH3Tests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/unit-split-b/tests-h3-0.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T23:54:59.245508+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.932,
+      "finished_at": "2026-11-01T23:55:03.177948+00:00"
+    },
+    {
+      "name": "tests-h3-1",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.HorizonH3Tests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/unit-split-b/tests-h3-1.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T23:55:03.221499+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 32.353,
+      "finished_at": "2026-11-01T23:55:35.574256+00:00"
+    },
+    {
+      "name": "tests-h3-2",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3CompactServiceTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/unit-split-b/tests-h3-2.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T23:55:35.618809+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 8.905,
+      "finished_at": "2026-11-01T23:55:44.523830+00:00"
+    },
+    {
+      "name": "tests-h3-3",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3RiverServiceTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/unit-split-b/tests-h3-3.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T23:55:44.564591+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 12.701,
+      "finished_at": "2026-11-01T23:55:57.265457+00:00"
+    },
+    {
+      "name": "tests-h3-4",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3DistrictServiceTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/unit-split-b/tests-h3-4.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T23:55:57.307682+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 32.444,
+      "finished_at": "2026-11-01T23:56:29.751535+00:00"
+    },
+    {
+      "name": "tests-h3-5",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3DistrictSettlementTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/unit-split-b/tests-h3-5.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T23:56:29.800192+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 12.003,
+      "finished_at": "2026-11-01T23:56:41.803076+00:00"
+    },
+    {
+      "name": "tests-h3-6",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3DistrictReplayTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/unit-split-b/tests-h3-6.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T23:56:41.852877+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 35.033,
+      "finished_at": "2026-11-01T23:57:16.885883+00:00"
+    },
+    {
+      "name": "tests-h3-7",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3RoadSceneTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/unit-split-b/tests-h3-7.trx"
+      ],
+      "timeout_seconds": 120,
+      "started_at": "2026-11-01T23:57:16.935221+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 8.999,
+      "finished_at": "2026-11-01T23:57:25.934699+00:00"
+    }
+  ],
+  "developer-h3": [
+    {
+      "name": "developer-restore",
+      "command": [
+        "dotnet",
+        "restore",
+        "Delsk.sln",
+        "-p:DelskDeveloper=true",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:41:42.655706+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 7.155,
+      "finished_at": "2026-11-01T23:41:49.810969+00:00"
+    }
+  ],
+  "developer-h3-b": [
+    {
+      "name": "developer-build",
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Debug",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:43:01.783139+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 53.355,
+      "finished_at": "2026-11-01T23:43:55.138710+00:00"
+    },
+    {
+      "name": "developer-restore",
+      "command": [
+        "dotnet",
+        "restore",
+        "Delsk.sln",
+        "-p:DelskDeveloper=true",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:42:56.742984+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.991,
+      "finished_at": "2026-11-01T23:43:01.733751+00:00"
+    },
+    {
+      "name": "developer-tests-h3-0",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.CompactH3Tests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/developer-h3-b/tests-h3-0.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:43:55.191926+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 3.981,
+      "finished_at": "2026-11-01T23:43:59.172646+00:00"
+    },
+    {
+      "name": "developer-tests-h3-1",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.HorizonH3Tests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/developer-h3-b/tests-h3-1.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:43:59.211283+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 86.805,
+      "finished_at": "2026-11-01T23:45:26.016117+00:00"
+    },
+    {
+      "name": "developer-tests-h3-2",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3CompactServiceTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/developer-h3-b/tests-h3-2.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:45:26.072449+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 10.57,
+      "finished_at": "2026-11-01T23:45:36.642295+00:00"
+    },
+    {
+      "name": "developer-tests-h3-3",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3RiverServiceTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/developer-h3-b/tests-h3-3.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:45:36.680151+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 20.886,
+      "finished_at": "2026-11-01T23:45:57.566557+00:00"
+    },
+    {
+      "name": "developer-tests-h3-4",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3DistrictServiceTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/developer-h3-b/tests-h3-4.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:45:57.605026+00:00",
+      "timed_out": true,
+      "exit_code": 124,
+      "elapsed_seconds": 180.036,
+      "finished_at": "2026-11-01T23:48:57.641419+00:00"
+    }
+  ],
+  "developer-h3-c": [
+    {
+      "name": "developer-build",
+      "command": [
+        "dotnet",
+        "build",
+        "Delsk.sln",
+        "-c",
+        "Debug",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:57:27.488874+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 47.35,
+      "finished_at": "2026-11-01T23:58:14.838593+00:00"
+    },
+    {
+      "name": "developer-restore",
+      "command": [
+        "dotnet",
+        "restore",
+        "Delsk.sln",
+        "-p:DelskDeveloper=true",
+        "--locked-mode",
+        "--disable-parallel",
+        "-m:1"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:57:26.026020+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.422,
+      "finished_at": "2026-11-01T23:57:27.447571+00:00"
+    },
+    {
+      "name": "developer-tests-h3-0",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.CompactH3Tests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/developer-h3-c/tests-h3-0.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:58:14.888102+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 4.08,
+      "finished_at": "2026-11-01T23:58:18.968556+00:00"
+    },
+    {
+      "name": "developer-tests-h3-1",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.HorizonH3Tests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/developer-h3-c/tests-h3-1.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:58:19.007604+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 84.481,
+      "finished_at": "2026-11-01T23:59:43.489141+00:00"
+    },
+    {
+      "name": "developer-tests-h3-2",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3CompactServiceTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/developer-h3-c/tests-h3-2.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:59:43.542323+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 10.061,
+      "finished_at": "2026-11-01T23:59:53.603174+00:00"
+    },
+    {
+      "name": "developer-tests-h3-3",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3RiverServiceTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/developer-h3-c/tests-h3-3.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-01T23:59:53.644125+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 23.926,
+      "finished_at": "2026-11-02T00:00:17.570179+00:00"
+    },
+    {
+      "name": "developer-tests-h3-4",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3DistrictServiceTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/developer-h3-c/tests-h3-4.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-02T00:00:17.611332+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 106.526,
+      "finished_at": "2026-11-02T00:02:04.138303+00:00"
+    },
+    {
+      "name": "developer-tests-h3-5",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3DistrictSettlementTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/developer-h3-c/tests-h3-5.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-02T00:02:04.203396+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 25.118,
+      "finished_at": "2026-11-02T00:02:29.321204+00:00"
+    },
+    {
+      "name": "developer-tests-h3-6",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3DistrictReplayTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/developer-h3-c/tests-h3-6.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-02T00:02:29.368669+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 96.62,
+      "finished_at": "2026-11-02T00:04:05.989176+00:00"
+    },
+    {
+      "name": "developer-tests-h3-7",
+      "command": [
+        "dotnet",
+        "tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll",
+        "-noColor",
+        "-noLogo",
+        "-parallelMode",
+        "none",
+        "-class",
+        "Simulation.Tests.H3RoadSceneTests",
+        "-result-trx",
+        "/workspace/Delsk/work/h3/developer-h3-c/tests-h3-7.trx"
+      ],
+      "timeout_seconds": 180,
+      "started_at": "2026-11-02T00:04:06.037528+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 8.397,
+      "finished_at": "2026-11-02T00:04:14.435034+00:00"
+    },
+    {
+      "name": "forbidden-developer-release",
+      "command": [
+        "dotnet",
+        "build",
+        "src/Simulation.Core/Simulation.Core.csproj",
+        "-c",
+        "Release",
+        "-p:DelskDeveloper=true",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1"
+      ],
+      "timeout_seconds": 60,
+      "started_at": "2026-11-02T00:04:14.476891+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 0.92,
+      "finished_at": "2026-11-02T00:04:15.397439+00:00"
+    }
+  ]
+}

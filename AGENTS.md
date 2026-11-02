@@ -8,13 +8,16 @@
   354защищённых corridor cells. G2 layout2, оба скина, полный G1 профиль.
   Старые карты/config/BALANCE побайтно сохранены. Только новый ordinary
   Resolve получает maxTicks1000000; saved horizon/движение/условия прежние.
-- Прогресс и отказы: docs/WORKLOG_H3.md.19ordinary H3 tests иprepared gate:
+- Прогресс и отказы: docs/WORKLOG_H3.md.21ordinary/21Developer H3 tests иprepared gate:
   41процесс/21экспорт/18точных сравнений31файла на всех трёх картах.
   Не ослаблять старые suites/deadlines; H3 suite отдельная disjoint partition.
 - SelfBallotController из runner теперь читается Godot composition root,
   с сохранением controller memory. Natural save t5604 реально загружен в
   Playfield;3следующих тика совпали по world/controller hashes. Новые обычные
   партии клиента по-прежнему используют ручное голосование человека.
+- Large H3 service partitions сверяются с исходными loaded645/settled972
+  fixtures, полным replay0→972 и всеми world/tape полями. Старые120/180s
+  не менять; epoch после restore намеренно отличается.
 - H3 study41355595793:180ordinary5000 +12extended142/143, независимая
   Movement1 когорта, actual horizon1000000 без override. Не перезапускать
   тяжёлое исследование из-за документов/новых probes. Extended batch не

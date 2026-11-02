@@ -1,0 +1,194 @@
+[
+  {
+    "name": "compact_valley-h3-escrow.commands.jsonl",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-escrow.json",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-escrow.save.json",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-escrow.tick",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-five-trips.commands.jsonl",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-five-trips.json",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-five-trips.save.json",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-five-trips.tick",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-loaded.commands.jsonl",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-loaded.json",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-loaded.save.json",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-loaded.tick",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-pending.commands.jsonl",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-pending.json",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-pending.save.json",
+    "equal": true
+  },
+  {
+    "name": "compact_valley-h3-pending.tick",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-escrow.commands.jsonl",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-escrow.json",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-escrow.save.json",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-escrow.tick",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-five-trips.commands.jsonl",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-five-trips.json",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-five-trips.save.json",
+    "equal": false
+  },
+  {
+    "name": "large_districts-h3-five-trips.tick",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-loaded.commands.jsonl",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-loaded.json",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-loaded.save.json",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-loaded.tick",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-pending.commands.jsonl",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-pending.json",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-pending.save.json",
+    "equal": true
+  },
+  {
+    "name": "large_districts-h3-pending.tick",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-escrow.commands.jsonl",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-escrow.json",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-escrow.save.json",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-escrow.tick",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-five-trips.commands.jsonl",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-five-trips.json",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-five-trips.save.json",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-five-trips.tick",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-loaded.commands.jsonl",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-loaded.json",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-loaded.save.json",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-loaded.tick",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-pending.commands.jsonl",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-pending.json",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-pending.save.json",
+    "equal": true
+  },
+  {
+    "name": "small_river-h3-pending.tick",
+    "equal": true
+  }
+]

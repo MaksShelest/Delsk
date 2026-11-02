@@ -28,6 +28,12 @@ jobs:
           github-token: ${{ github.token }}
           name: h3-windows-installable-bundles
           path: work/retained
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 41360866991
+          github-token: ${{ github.token }}
+          name: windows-platform-probe
+          path: work/runtime-availability
       - name: Diagnose the same retained Release EXE without rebuilding it
         shell: python
         run: |
@@ -37,6 +43,12 @@ jobs:
           expected=next(p['sha256'] for p in d['packages'] if p['flavor']=='release')
           assert hashlib.sha256(bundle.read_bytes()).hexdigest()==expected
           out=root/'work/diagnostic';out.mkdir(parents=True)
+          for relative in ['packages/release/platform.json','packages/checks/bundle-smoke-release.json','packages/checks/bundle-smoke-release.stdout.log','packages/checks/bundle-smoke-release.stderr.log','packages/packages.json']:
+            original=root/'work/retained'/relative
+            if original.is_file():print('ORIGINAL '+relative+'\n'+original.read_text(errors='replace')[-16000:])
+          for original in (root/'work/runtime-availability').rglob('h3-real-runtime.json'):print('WINDOWS_RUNTIME_AVAILABILITY\n'+original.read_text())
+          mode=json.loads((root/'docs/research/h3/target-diagnostic.json').read_text())
+          if mode.get('readOnly'):raise SystemExit(0)
           result=subprocess.run([sys.executable,'scripts/run_check.py','--name','retained-release','--timeout','90','--log-directory',str(out),'--',str(bundle),'--headless','--','--smoke','--report',str(out/'platform.json')])
           for p in sorted(out.glob('*')):
             if p.suffix in ['.json','.log']:print(p.name+'\n'+p.read_text(errors='replace')[-16000:])

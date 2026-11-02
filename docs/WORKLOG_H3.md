@@ -155,3 +155,27 @@ SDK global.json 10.0.401; Godot .NET/SDK/templates 4.7.2; TFM net10.0.
 - Developer H3 первый restore отказал NU1900 из-за отсутствия network grant в
   этой exec cell. Ошибка сохранена в developer-h3; новый developer-h3-b использует
   обычный разрешённый сетевой доступ, не отключает vulnerability audit.
+- Developer large service original180s отказ сохранён. Новые независимые partitions:
+  текущая подготовка до loaded645, расчёт оставшихся рейсов до972, полный replay
+  исходного tape0→972. Использованы **исходные** saved cuts ordinary19, gzip/digests
+  сохранены; текущая генерация/settlement обязаны совпадать по миру и tape.
+  Никаких новых бесплатных данных внутри действий: начальное финансирование
+  по-прежнему явно prepared. Старые H2/F2 callers и180/120s не менялись.
+- После исправления compile-only VehicleView→OwnedVehicle (set-e не дал запустить
+  stale binary), ordinary21/21 и Developer21/21 прошли. Developer полный replay
+  Large96,62s/180, подготовка106,526s/180; forbidden Developer Release ожидаемо1.
+  Новый H3 Developer job включён в обязательный Core verify, старые suites сохранены.
+- Сравнены48fixture файлов: всё byte-equal, кроме финального Large checkpoint.
+  Независимое декодирование показало единственное отличие /epoch после restore;
+  world/tape и все остальные Session4 поля совпали. Epoch намеренно меняется для
+  инвалидирования старых callbacks; файл не объявляется побайтно равным.
+- Тот же Windows Release bundle13106117244, полный Actions ZIP digest8470fe0771…,
+  EXE digest проверен: fresh Windows VM diagnostic41363547781 прошёл1132hashes,
+  все35file restores, process8,453s/90. Пересборки не было. Первый exit1 остаётся
+  сохранён; следующая read-only диагностика читает исходную ошибку и фактический
+  runtime availability report, не повторяет экспорт/симуляции.
+- Collector дополнен bounded4-way чтением независимых ZIP metadata, duplicate
+  entry protection и37Python checks. Явный allowPartial пишет отдельный
+  economy-intermediate с missing cases; окончательный economy по-прежнему требует
+  completed source run и192journal. Trigger только по push marker, чтобы PR diff
+  не перезапускал collection на каждом обновлении документов.

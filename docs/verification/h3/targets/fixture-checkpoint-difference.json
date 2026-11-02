@@ -1,0 +1,6 @@
+{
+  "differences": [
+    "/epoch"
+  ],
+  "scope": "Physical checkpoint bytes differ; inspect logical contents separately. World and command tape equality are mandatory assertions in the new split tests."
+}

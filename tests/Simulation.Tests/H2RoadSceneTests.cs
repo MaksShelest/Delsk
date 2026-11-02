@@ -9,7 +9,7 @@ public class H2RoadSceneTests
     [Theory][InlineData("small_river")][InlineData("large_districts")]
     public void BuildRealCornerAndRetainTheActiveBypassOnBothDesignedMaps(string key)
         =>Capture(key,new(5,5));
-    internal static void Capture(string key,Cell target)
+    internal static void Capture(string key,Cell target,Action<GameSession>? duringWork=null)
     {
         var d=OrdinaryNewGame.Resolve(MapDesignTests.Template(key),NpcEconomyG1Tests.Profile(),new(3),vnextBalance:MapDesignTests.Balance()).Scenario;
         var factory=d.Layout!.IndustrialLots.First().Cells[0];
@@ -26,7 +26,7 @@ public class H2RoadSceneTests
         StorageC1Tests.Move(s,plant.Position);RoadE2Tests.Step(s,new(ActionKind.Transfer,Source:plant.OutputId.Value,Destination:StorageC1Tests.Carrier(s),ItemId:"gravel",Quantity:2));StorageC1Tests.Idle(s);
         StorageC1Tests.Put(s,paver.CargoInventory,"gravel",2);FleetE1Tests.Board(s,paver);StorageC1Tests.Move(s,target);
         RoadE2Tests.Step(s,RoadE2Tests.Work(paver,1,target:target));Assert.NotEmpty(s.Engine.InspectRoads()!.Bypasses);
-        Evidence(s,key+"-work");int guard=50;while(!s.Engine.InspectRoads()!.Cells.Any(c=>c.Cell==target)&&guard-->0)s.Step();Assert.True(guard>0);s.Step();
+        Evidence(s,key+"-work");duringWork?.Invoke(s);int guard=50;while(!s.Engine.InspectRoads()!.Cells.Any(c=>c.Cell==target)&&guard-->0)s.Step();Assert.True(guard>0);s.Step();
         StorageC1Tests.Move(s,new(target.X+1,target.Z));RoadE2Tests.Step(s,new(ActionKind.LeaveVehicle));Evidence(s,key+"-corner");
     }
     internal static void Evidence(GameSession s,string name)

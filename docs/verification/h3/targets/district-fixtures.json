@@ -1,0 +1,21 @@
+{
+  "scope": "Original actual funded H3 large-map service cuts from the passing ordinary19 suite. Current preparation/settlement must reproduce their full state and command tape; independent full replay retains the complete prefix. Not natural development.",
+  "fixtures": [
+    {
+      "phase": "loaded",
+      "source": "work/h3/unit-final/f2-fixtures/large_districts-h3-loaded.save.json",
+      "sourceSha256": "046cc1b290b857d805f75f9d8fd54d0dee405adf2c11eb3b23e7183710ab6281",
+      "fixture": "tests/Simulation.Tests/Fixtures/h3-district-loaded.json.gz",
+      "fixtureSha256": "8eab7e05e826a4730a6bce5a675b587cecf020b30d8726ad3a4ff8a4673d34cf",
+      "bytes": 182142
+    },
+    {
+      "phase": "settled",
+      "source": "work/h3/unit-final/f2-fixtures/large_districts-h3-five-trips.save.json",
+      "sourceSha256": "471da9cdde0539ac5675c1edd1de8659a9bfc2330beeda32f21289906c55fcaa",
+      "fixture": "tests/Simulation.Tests/Fixtures/h3-district-settled.json.gz",
+      "fixtureSha256": "89f4e84e283f69db994a863fc5a8103e8174db9c83ac7ec0221861931e31f018",
+      "bytes": 222911
+    }
+  ]
+}

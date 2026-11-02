@@ -7,7 +7,8 @@
 База `b87bc90a84845f509cf256bb227dbcf2952a43ad` содержит H2/PR76;
 ветка `feat/vnext-h3-compact-acceptance`, [PR77](https://github.com/MaksShelest/Delsk/pull/77)
 draft, без auto merge. Первичная реализация `ec0886b`, функциональный этап
-`4175455`. [Ход работы и все неудачи](WORKLOG_H3.md),
+`4175455`; ordinary21/21 и Developer21/21 после разделения большой prepared
+траектории на независимые bounded phases. [Ход работы и все неудачи](WORKLOG_H3.md),
 [воспроизведение](research/h3/README.md).
 
 ## Реализованный результат
@@ -57,8 +58,8 @@ SelfBallotController.Restore, сохраняя память. Natural save t5604�
 | Три карты, оба оформления, входы и пропорции |36PNG/3карты/11участников, source-inputs; natural-loaded | Настоящий Linux Godot/Xorg/llvmpipe; изображения просмотрены |
 | Грунтовка и движение |12roadPNG,180viewport frames/60quanta/6активных секунд | Прямые/повороты/перекрёстки/объезд; запись144,863s/150, не FPS benchmark |
 | RU/EN, карта города, масштаб и ввод | city-gate.json:3/6/10NPC,640RU/800EN/360EN | Native synthetic keyboard/mouse/touch, pause/help/filters/save; не physical mobile |
-| Developer/Release и режим бога | Применимые native/metadata/negative gates | Текущий результат дополняется после целевых сборок |
-| Windows/Android и реальная Windows LLM | Platform CI/целевые bundles и инструкция | Физическое устройство и установленная модель отсутствуют; соответствующие gates открыты |
+| Developer/Release и режим бога | ordinary21/Developer21, native Windows HUD, negative Release, published APK/Windows metadata | Пройдено;180/120s не повышены, исходный Developer timeout сохранён |
+| Windows/Android и реальная Windows LLM | Windows1132hashes в каждом flavor, реальные ARM64 APK/подписи/CRC, [инструкция](research/h3/TARGET_ACCEPTANCE.md) | Windows VM и cross APK пройдены. Первый Release launch exit1 уточняется; physical device/живая модель открыты |
 | Новые измерения после H2 | study-plan, отдельный frozen run41355595793 |180ordinary+12extended в работе, результаты не смешиваются с H1 |
 
 ## Открытые требования и ограничения
@@ -77,4 +78,35 @@ SelfBallotController.Restore, сохраняя память. Natural save t5604�
    входы разные, проезд доступен. Изменять замороженную географию исследования
    без реального дефекта оснований нет.
 
-Финальные суммы CI, экспорты и статистика будут внесены после проверки.
+## Целевые сборки и дополнительные gates
+
+[Windows bundles, source dafa477](https://github.com/MaksShelest/Delsk/actions/runs/41362439343/artifacts/13106117244)
+экспортированы стандартными ExportDebug/ExportRelease, self-contained .NET10.
+Developer EXE выполнил1132контрольных хеша/35file restores. Тот же Release EXE,
+без пересборки, прошёл1132/35в fresh Windows VM: [diagnostic41363547781](https://github.com/MaksShelest/Delsk/actions/runs/41363547781),
+8,453s/90; Actions archive SHA и EXE SHA проверены. Исходный быстрый exit1
+на первой VM сохранён, причина ещё читается из оригинальных logs.
+Это не физическая Windows приёмка.
+
+Android ARM64 test APK: Developer102310949bytes,
+SHA256`04e0b94e05fcecfd90c174121a2babea7438838e8d877206d86af97531686f39`;
+Release95307498bytes,
+SHA256`cbd11bceb9825b9f7507006680e59cfe68d31eb4b142bdaa3a3ae0a76eacb4b4`.
+Оба имеют действительную test подпись, API24/target36, всеZIP CRC, managed client
+и ARM64 engine; Release не debuggable и без Developer/Debug UI. Первый cold
+Gradle export240s сохранён как timeout; реальные повторные кандидаты прошли
+те же240s. Временные source/build caches удалены после проверки для освобождения
+диска, APK/ключ/логи/исходные manifests сохранены. [Evidence](verification/h3/targets/android/packages.json).
+[CI APK workflow](https://github.com/MaksShelest/Delsk/actions/workflows/h3-targets.yml)
+добавляет воспроизводимую доставку; итог его ещё ожидается.
+
+[21ordinary](verification/h3/unit-gate.json) и [21Developer](verification/h3/developer-gate.json)
+прошли без skips. Большой service case разделён: current preparation→loaded645,
+settlement→972и полный replay0→972, с обязательным совпадением исходных world/tape.
+48fixture files совпали, кроме одного checkpoint: независимое декодирование
+показало только epoch после restore; прочие поля Session4 равны. Пределы120/180s,
+64/512MiB неизменны. Все37Python protocol checks пройдены.
+
+[Короткое движение](verification/h3/native/compact-motion.mp4),
+[обзор малой карты](verification/h3/native/compact-start/cozy-overview.png).
+Финальные суммы CI и новая статистика будут внесены после проверки.

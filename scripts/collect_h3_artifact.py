@@ -62,6 +62,7 @@ with zipfile.ZipFile(RemoteZip(json.load(sys.stdin)['url']) if args.url_stdin el
     journals = [n for n in archive.namelist() if n.endswith('/trajectory.json') or n == 'trajectory.json']
     if len(journals) != 1:
         raise ValueError('Expected exactly one original world journal')
+    if archive.getinfo(journals[0]).file_size>2*1024*1024:raise ValueError('Oversized original world journal')
     journal = json.loads(archive.read(journals[0]))
     case = journal['case']['id']
     if not re.fullmatch(r'(ordinary|extended)-(compact-valley|small-river|large-districts)-(3|6|10)-(Easy|Medium|Hard)-\d+', case):
@@ -82,6 +83,7 @@ with zipfile.ZipFile(RemoteZip(json.load(sys.stdin)['url']) if args.url_stdin el
         target = folder/relative
         if not target.resolve().is_relative_to(folder):
             raise ValueError('Archive path escape')
+        if target.exists():raise ValueError('Duplicate selected archive entry; do not overwrite original evidence')
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(archive.read(member))
 print(json.dumps(dict(case=case, status=journal['status'], lastSavedTick=journal['lastSavedTick'])))

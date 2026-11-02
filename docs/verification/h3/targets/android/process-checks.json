@@ -1,0 +1,304 @@
+[
+  {
+    "name": "apk-manifest-developer",
+    "command": [
+      "work/h3/android-sdk/build-tools/36.1.0/aapt",
+      "dump",
+      "badging",
+      "work/h3/android-target-a/developer-b/DelskH3.apk"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-11-01T23:39:34.314958+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.009,
+    "finished_at": "2026-11-01T23:39:34.324003+00:00"
+  },
+  {
+    "name": "apk-manifest-release",
+    "command": [
+      "work/h3/android-sdk/build-tools/36.1.0/aapt",
+      "dump",
+      "badging",
+      "work/h3/android-target-a/release-b/DelskH3.apk"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-11-01T23:39:34.817870+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.004,
+    "finished_at": "2026-11-01T23:39:34.822203+00:00"
+  },
+  {
+    "name": "apk-release-metadata",
+    "command": [
+      "dotnet",
+      "run",
+      "--project",
+      "tools/AssemblyAudit",
+      "-c",
+      "Release",
+      "--",
+      "work/h3/android-published-release",
+      "--no-debug-ui"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-11-01T23:39:34.858389+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 3.733,
+    "finished_at": "2026-11-01T23:39:38.591188+00:00"
+  },
+  {
+    "name": "apk-signature-developer",
+    "command": [
+      "work/h3/android-sdk/build-tools/36.1.0/apksigner",
+      "verify",
+      "--verbose",
+      "--print-certs",
+      "work/h3/android-target-a/developer-b/DelskH3.apk"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-11-01T23:39:33.808227+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.466,
+    "finished_at": "2026-11-01T23:39:34.274721+00:00"
+  },
+  {
+    "name": "apk-signature-release",
+    "command": [
+      "work/h3/android-sdk/build-tools/36.1.0/apksigner",
+      "verify",
+      "--verbose",
+      "--print-certs",
+      "work/h3/android-target-a/release-b/DelskH3.apk"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-11-01T23:39:34.361146+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.415,
+    "finished_at": "2026-11-01T23:39:34.776643+00:00"
+  },
+  {
+    "name": "assets-reuse",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/reuse_godot_imports.py",
+      "--source",
+      "work/h3/native-proportions/assets",
+      "--target",
+      "/workspace/Delsk/work/h3/android-target-a/source/src/Client.Godot",
+      "--report",
+      "/workspace/Delsk/work/h3/android-target-a/assets-reuse.json"
+    ],
+    "timeout_seconds": 60,
+    "started_at": "2026-11-01T23:27:14.577854+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.165,
+    "finished_at": "2026-11-01T23:27:14.742607+00:00"
+  },
+  {
+    "name": "assets-verify",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/Delsk/scripts/reuse_godot_imports.py",
+      "--source",
+      "/workspace/Delsk/work/h3/android-target-a/source/src/Client.Godot",
+      "--verify-only",
+      "--report",
+      "/workspace/Delsk/work/h3/android-target-a/assets-verify.json"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-11-01T23:27:14.779447+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.115,
+    "finished_at": "2026-11-01T23:27:14.894368+00:00"
+  },
+  {
+    "name": "audit-Debug",
+    "command": [
+      "dotnet",
+      "run",
+      "--project",
+      "/workspace/Delsk/tools/AssemblyAudit",
+      "-c",
+      "Release",
+      "--",
+      "/workspace/Delsk/work/h3/android-target-a/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-11-01T23:27:55.288205+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 3.733,
+    "finished_at": "2026-11-01T23:27:59.021181+00:00"
+  },
+  {
+    "name": "audit-ExportRelease",
+    "command": [
+      "dotnet",
+      "run",
+      "--project",
+      "/workspace/Delsk/tools/AssemblyAudit",
+      "-c",
+      "Release",
+      "--",
+      "/workspace/Delsk/work/h3/android-target-a/source/src/Client.Godot/.godot/mono/temp/bin/ExportRelease",
+      "--no-debug-ui"
+    ],
+    "timeout_seconds": 120,
+    "started_at": "2026-11-01T23:28:36.483074+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.669,
+    "finished_at": "2026-11-01T23:28:38.151816+00:00"
+  },
+  {
+    "name": "build-Debug",
+    "command": [
+      "dotnet",
+      "build",
+      "/workspace/Delsk/work/h3/android-target-a/source/src/Client.Godot/Delsk.Client.csproj",
+      "-c",
+      "Debug",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-11-01T23:27:20.563594+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 34.688,
+    "finished_at": "2026-11-01T23:27:55.251609+00:00"
+  },
+  {
+    "name": "build-ExportRelease",
+    "command": [
+      "dotnet",
+      "build",
+      "/workspace/Delsk/work/h3/android-target-a/source/src/Client.Godot/Delsk.Client.csproj",
+      "-c",
+      "ExportRelease",
+      "--no-restore",
+      "--disable-build-servers",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-11-01T23:28:00.723041+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 35.722,
+    "finished_at": "2026-11-01T23:28:36.444723+00:00"
+  },
+  {
+    "name": "export-developer-b",
+    "command": [
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--headless",
+      "--quit",
+      "--path",
+      "/workspace/Delsk/work/h3/android-target-a/source/src/Client.Godot",
+      "--export-debug",
+      "Android Probe",
+      "/workspace/Delsk/work/h3/android-target-a/developer-b/DelskH3.apk"
+    ],
+    "timeout_seconds": 240,
+    "started_at": "2026-11-01T23:33:45.303153+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 110.186,
+    "finished_at": "2026-11-01T23:35:35.489160+00:00"
+  },
+  {
+    "name": "export-developer",
+    "command": [
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--headless",
+      "--path",
+      "/workspace/Delsk/work/h3/android-target-a/source/src/Client.Godot",
+      "--install-android-build-template",
+      "--export-debug",
+      "Android Probe",
+      "/workspace/Delsk/work/h3/android-target-a/developer/DelskH3.apk"
+    ],
+    "timeout_seconds": 240,
+    "started_at": "2026-11-01T23:28:39.022293+00:00",
+    "timed_out": true,
+    "exit_code": 124,
+    "elapsed_seconds": 240.094,
+    "finished_at": "2026-11-01T23:32:39.116117+00:00"
+  },
+  {
+    "name": "export-release-b",
+    "command": [
+      "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+      "--headless",
+      "--quit",
+      "--path",
+      "/workspace/Delsk/work/h3/android-target-a/source/src/Client.Godot",
+      "--export-release",
+      "Android Probe",
+      "/workspace/Delsk/work/h3/android-target-a/release-b/DelskH3.apk"
+    ],
+    "timeout_seconds": 240,
+    "started_at": "2026-11-01T23:36:10.036105+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 136.415,
+    "finished_at": "2026-11-01T23:38:26.450992+00:00"
+  },
+  {
+    "name": "restore-Debug",
+    "command": [
+      "dotnet",
+      "restore",
+      "/workspace/Delsk/work/h3/android-target-a/source/src/Client.Godot/Delsk.Client.csproj",
+      "-p:Configuration=Debug",
+      "--locked-mode",
+      "--disable-parallel",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-11-01T23:27:14.930875+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 5.596,
+    "finished_at": "2026-11-01T23:27:20.527323+00:00"
+  },
+  {
+    "name": "restore-ExportRelease",
+    "command": [
+      "dotnet",
+      "restore",
+      "/workspace/Delsk/work/h3/android-target-a/source/src/Client.Godot/Delsk.Client.csproj",
+      "-p:Configuration=ExportRelease",
+      "--locked-mode",
+      "--disable-parallel",
+      "-m:1"
+    ],
+    "timeout_seconds": 180,
+    "started_at": "2026-11-01T23:27:59.058279+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.627,
+    "finished_at": "2026-11-01T23:28:00.685348+00:00"
+  },
+  {
+    "name": "test-signing-key",
+    "command": [
+      "/workspace/Delsk/work/h3/jdk-root/usr/lib/jvm/java-21-openjdk-amd64/bin/keytool",
+      "-genkeypair",
+      "-keystore",
+      "/workspace/Delsk/work/h3/android-target-a/test.keystore",
+      "-alias",
+      "androiddebugkey",
+      "-storepass",
+      "android",
+      "-keypass",
+      "android",
+      "-dname",
+      "CN=Delsk H3 test, O=Local test, C=US",
+      "-keyalg",
+      "RSA",
+      "-keysize",
+      "2048",
+      "-validity",
+      "3650"
+    ],
+    "timeout_seconds": 30,
+    "started_at": "2026-11-01T23:28:38.189514+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.794,
+    "finished_at": "2026-11-01T23:28:38.983963+00:00"
+  }
+]

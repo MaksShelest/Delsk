@@ -36,6 +36,19 @@ try
     if(!resumed)Require(session.Engine.Observe(new(1)).OwnBuildings.Length==0,"Ordinary player already owns a building");
     if(!resumed)Require(Stock(Pack(),"wood")==0,"Ordinary backpack not empty");
     Milestone(resumed?"resumed-ordinary-start":"ordinary-start");
+    if(resumed)
+    {
+        stage="resume-continuation";
+        var second=CheckpointStore.Decode(CheckpointStore.Encode(session));
+        second.RestoreControllers(c=>c.Kind==SelfBallotController.Kind?SelfBallotController.Restore(c):AlgorithmicController.Restore(c));
+        for(int tick=0;tick<3;tick++)
+        {
+            Tick();second.Step();if(second.Engine.WaitingForBallots)Require(second.PumpVoting(),"Unresolved restored ballot");
+            Require(session.Engine.ComputeStateHash()==second.Engine.ComputeStateHash(),"Resumed world continuation differs");
+            Require(session.ComputeControllerStateHash()==second.ComputeControllerStateHash(),"Resumed controller continuation differs");
+        }
+        Milestone("exact-three-tick-continuation");
+    }
     if(!session.Engine.Observe(new(1)).OwnBuildings.Any(b=>b.Kind==BuildingKind.Production))
     {
     stage="earn-and-supply";Earn(session.Engine.Observe(new(1)).Plots.Any(p=>p.OwnerId==new ParticipantId(1))?50000:60000);

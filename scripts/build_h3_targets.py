@@ -13,6 +13,7 @@ a=p.parse_args();out=a.output.resolve();stage=out/'source';project=stage/'src/Cl
 if out.exists() and any(out.iterdir()):p.error('Use a new output; retain failed attempts')
 if a.platform=='android' and (not a.android_sdk or not a.java_sdk):p.error('Android requires explicit SDK and JDK paths')
 out.mkdir(parents=True,exist_ok=True)
+source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
 files=subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard','-z'],cwd=ROOT,text=True).split('\0')
 inputs={}
 for name in sorted(set(files)):
@@ -61,10 +62,18 @@ if a.platform=='android':
  check('test-signing-key',30,[keytool,'-genkeypair','-keystore',key,'-alias','androiddebugkey','-storepass','android','-keypass','android','-dname','CN=Delsk H3 test, O=Local test, C=US','-keyalg','RSA','-keysize','2048','-validity','3650'])
  (settings/'editor_settings-4.7.tres').write_text('[gd_resource type="EditorSettings" format=3]\n[resource]\n'+''.join(f'export/android/{k}={json.dumps(str(v))}\n' for k,v in {'android_sdk_path':sdk,'java_sdk_path':jdk,'debug_keystore':key,'debug_keystore_user':'androiddebugkey','debug_keystore_pass':'android'}.items()))
  presets=presets.replace('package/signed=true','package/signed=true\nkeystore/release='+json.dumps(str(key))+'\nkeystore/release_user="androiddebugkey"\nkeystore/release_password="android"')
+if a.platform=='android':
+ # Resolve the official template's build-tool dependencies before timed exports.
+ # This is a separate bounded setup phase; failed exports remain failed.
+ check('android-template',120,[a.godot,'--headless','--quit','--editor','--path',project,'--install-android-build-template'])
+ logs('android-template')
+ build=project/'android/build';wrapper=build/('gradlew.bat' if os.name=='nt' else 'gradlew')
+ if os.name!='nt':wrapper.chmod(wrapper.stat().st_mode|0o100)
+ check('gradle-build-tool-dependencies',180,[wrapper,'--no-daemon','--console=plain','--project-dir',build,'help'])
 results=[]
 for flavor,mode in [('developer','debug'),('release','release')]:
  folder=out/flavor;folder.mkdir();target=folder/('DelskProbe.exe' if a.platform=='windows' else 'DelskH3.apk')
- current=presets.replace('com.maksshelest.delsk.probe','com.maksshelest.delsk.h3.'+flavor).replace('Delsk Platform Probe','Delsk H3 '+flavor)
+ current=presets.replace('version/name="0.1-p06"','version/name="h3-'+source_commit[:12]+'"').replace('com.maksshelest.delsk.probe','com.maksshelest.delsk.h3.'+flavor).replace('Delsk Platform Probe','Delsk H3 '+flavor)
  (project/'export_presets.cfg').write_text(current)
  command=[a.godot,'--headless','--quit','--path',project,*(['--install-android-build-template'] if a.platform=='android' else []),'--export-'+mode,'Windows Probe' if a.platform=='windows' else 'Android Probe',target]
  check('export-'+flavor,240,command);logs('export-'+flavor)
@@ -82,5 +91,5 @@ for flavor,mode in [('developer','debug'),('release','release')]:
    if not any(n.endswith('Delsk.Client.dll') for n in names):raise ValueError('Missing managed client')
    if any(n.endswith('Simulation.Developer.dll') for n in names)!=(flavor=='developer'):raise ValueError('APK Developer composition mismatch')
  results.append(dict(flavor=flavor,package=target.relative_to(out).as_posix(),sha256=hashlib.sha256(target.read_bytes()).hexdigest(),bytes=target.stat().st_size))
-(out/'packages.json').write_text(json.dumps(dict(status='succeeded',platform=a.platform,packages=results,sourceCommit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),tools={'dotnet':'10.0.401','godot':'4.7.2.stable.mono'},scope='Test-signed cross-platform packages; no hardware execution or real model inference implied. Code is an isolated copy; no test probes.'),indent=2)+'\n')
+(out/'packages.json').write_text(json.dumps(dict(status='succeeded',platform=a.platform,packages=results,sourceCommit=source_commit,tools={'dotnet':'10.0.401','godot':'4.7.2.stable.mono'},scope='Test-signed cross-platform packages; no hardware execution or real model inference implied. Code is an isolated copy; no test probes.'),indent=2)+'\n')
 print('H3 target packages passed:',a.platform)

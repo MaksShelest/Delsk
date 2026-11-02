@@ -101,3 +101,13 @@ python scripts/analyze_h3.py --observations docs/verification/h3/economy/observa
 артефакты; не подменяет отсутствующий мир новой партией. Поздние продолжения
 сохранять отдельным run и явно связывать с прежним journal. РазвитиеII–V,
 окупаемость, задания и преимуществоHard заявлять лишь по фактической экспозиции.
+
+
+Явный interim срез: marker `{"run":41355595793,"allowPartial":true}` сохраняет
+`economy-intermediate`, включая все missing случаи и статус исходного run.
+Это сбор **существующих** journals, без новых запусков. Окончательный marker
+без allowPartial требует completed run и192journal. Коллекция запускается по
+изменению marker в push, без повторов из-за cumulative PR diff.
+Large prepared service split использует исходные cuts645/972: текущие действия
+обязаны воспроизвести их мир/tape, полный prefix replay выполняется отдельно.
+Ordinary21 и Developer21, прежние120/180s; не подменять это увеличением deadline.
