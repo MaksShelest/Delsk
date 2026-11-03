@@ -14,14 +14,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - flavour: ordinary
-            artifact: '13253972051'
-            bytes: '197620'
-            sha256: 667303d8bea62375fb93cec0a58dba8bca25b52949479cb60b5b1d96b7ebd650
-          - flavour: developer
-            artifact: '13254637598'
-            bytes: '107984'
-            sha256: c64ad4d85049e5bfac3fb849ce78d0284325ab91fa036903088c8aacc5abd70a
+          - flavour: i1-developer-regression
+            artifact: '13274980136'
+            bytes: '419122'
+            sha256: 084ef7592f32115602af6568d53f075c12092ed7f6e7919697663e4834b6e1c6
     steps:
       - name: Read the original archive with bounded transfer and exact SHA
         env:
