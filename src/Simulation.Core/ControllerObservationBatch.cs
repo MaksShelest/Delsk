@@ -11,7 +11,7 @@ public sealed partial class SimulationEngine
         var civic=layout.CivicObjects.SelectMany(s=>s.Footprint).ToHashSet();
         var available=layout.RoadCorridorCells.Where(c=>_map.Walkable(c)&&!plots.Contains(c)&&!civic.Contains(c)).ToArray();
         var legal=available.ToHashSet();var turns=layout.TurnCells.ToHashSet();var paved=_roads.Keys.ToHashSet();
-        return new([..layout.RoadCorridorCells],[..available],[..layout.RoadCenterCells.Where(c=>legal.Contains(c)&&!turns.Contains(c)&&RoadNeighbors(c).Count(paved.Contains)<3)]);
+        return new([..layout.RoadCorridorCells],[..available],[..layout.RoadCenterCells.Where(c=>!UsesFreeVehicleControl&&legal.Contains(c)&&!turns.Contains(c)&&RoadNeighbors(c).Count(paved.Contains)<3)]);
     }
     private WorldView? _controllerBatchView;
     private CityEconomy? _controllerBatchEconomy;

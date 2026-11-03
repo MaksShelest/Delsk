@@ -70,6 +70,8 @@ internal sealed class PersonalJob(long id, string kind, long startTick, long com
     public Cell[] Path { get; } = path;
     public int PathIndex { get; set; }
     public int SegmentTicks { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
+    public long TrafficWaitTime {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public long[]? TimedEdges {get;set;}
     public string Item { get; } = item;

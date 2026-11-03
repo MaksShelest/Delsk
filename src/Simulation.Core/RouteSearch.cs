@@ -21,7 +21,7 @@ public static class RouteSearch
         return [];
     }
     private readonly record struct Oriented(Cell Cell,Cell Heading);
-    public static Cell[] FindOriented(Cell source,Cell target,Func<Cell,bool> allow,Func<Cell,Cell,long> cost,Func<Cell,bool> mayReverse,Cell heading)
+    public static Cell[] FindOriented(Cell source,Cell target,Func<Cell,bool> allow,Func<Cell,Cell,long> cost,Func<Cell,bool> mayReverse,Cell heading,Func<Cell,Cell,Cell,long>? turnCost=null)
     {
         var start=new Oriented(source,heading);var queue=new PriorityQueue<Oriented,(long,int)>();
         var distances=new Dictionary<Oriented,long>{{start,0}};var previous=new Dictionary<Oriented,Oriented>();int ordinal=0;queue.Enqueue(start,(0,ordinal++));
@@ -33,7 +33,7 @@ public static class RouteSearch
             {
                 if(direction.X==-state.Heading.X&&direction.Z==-state.Heading.Z&&!mayReverse(state.Cell))continue;
                 var next=new Oriented(new(state.Cell.X+direction.X,state.Cell.Z+direction.Z),direction);if(!allow(next.Cell))continue;
-                long distance=checked(priority.Item1+cost(state.Cell,next.Cell));if(distances.TryGetValue(next,out var old)&&old<=distance)continue;
+                long distance=checked(priority.Item1+cost(state.Cell,next.Cell)+(turnCost?.Invoke(state.Cell,state.Heading,direction)??0));if(distances.TryGetValue(next,out var old)&&old<=distance)continue;
                 distances[next]=distance;previous[next]=state;queue.Enqueue(next,(distance,ordinal++));
             }
         }

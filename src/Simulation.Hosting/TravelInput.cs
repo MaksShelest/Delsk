@@ -19,3 +19,16 @@ public readonly record struct TravelHeading(int X, int Z)
 
     private static int Quantize(int milli) => milli >= 500 ? 1 : milli <= -500 ? -1 : 0;
 }
+
+/// <summary>Per-device hysteresis prevents analogue noise from changing held intent.</summary>
+public sealed class TravelStick
+{
+    public TravelHeading Heading {get;private set;}
+    public TravelHeading Sample(int xMilli,int zMilli)
+    {
+        if(xMilli is < -1000 or >1000||zMilli is < -1000 or >1000)throw new ArgumentOutOfRangeException(nameof(xMilli));
+        int Axis(int value,int previous)=>value>=550?1:value<=-550?-1:Math.Abs(value)<350?0:previous;
+        Heading=new(Axis(xMilli,Heading.X),Axis(zMilli,Heading.Z));return Heading;
+    }
+    public void Clear()=>Heading=default;
+}

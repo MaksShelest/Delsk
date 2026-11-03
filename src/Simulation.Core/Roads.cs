@@ -76,7 +76,7 @@ public sealed partial class SimulationEngine
                     {
                         if(TrafficTravel(v,target))w.Reason="Arrived";else w.Reason=Traffic(v.Id).Reason;
                         var after=Traffic(v.Id);
-                        if(beforeTravel.Progress!=after.Progress||beforeTravel.ProgressFraction!=after.ProgressFraction||beforePosition!=cargo.Position)
+                        if(beforeTravel.Progress!=after.Progress||beforeTravel.ProgressFraction!=after.ProgressFraction||beforeTravel.Steering!=after.Steering||beforePosition!=cargo.Position)
                         {
                             if(travelWage>0){var travelTx=_economy.Begin(Tick);travelTx.Pay(actor.Account,_wages,travelWage,"RoadWages");travelTx.Commit();}
                             Emit("RoadWorkTravelled",actor.Id,v.Id,quantity:staff,money:travelWage);

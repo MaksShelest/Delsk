@@ -123,7 +123,7 @@ public sealed partial class SimulationEngine
             var before=Traffic(v.Id);var at=VehicleCargo(v).Position;
             try
             {
-                bool arrived=ServiceTrafficTravel(v,target);bool worked=before.Progress!=Traffic(v.Id).Progress||before.ProgressFraction!=Traffic(v.Id).ProgressFraction||at!=VehicleCargo(v).Position;
+                bool arrived=ServiceTrafficTravel(v,target);bool worked=before.Progress!=Traffic(v.Id).Progress||before.ProgressFraction!=Traffic(v.Id).ProgressFraction||before.Steering!=Traffic(v.Id).Steering||at!=VehicleCargo(v).Position;
                 _serviceRuns[o.Id]=r with{LastWorkedTick=worked?Tick:r.LastWorkedTick,Reason=arrived?"Arrived":Traffic(v.Id).Reason};
             }
             catch(RuleViolation ex){_serviceRuns[o.Id]=r with{Reason=ex.ReasonCode};}

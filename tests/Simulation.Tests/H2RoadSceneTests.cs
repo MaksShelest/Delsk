@@ -13,7 +13,7 @@ public class H2RoadSceneTests
     {
         var d=OrdinaryNewGame.Resolve(MapDesignTests.Template(key),NpcEconomyG1Tests.Profile(),new(3),vnextBalance:MapDesignTests.Balance()).Scenario;
         // Historical H2/H3 scenes retain their saved movement profile.
-        d=d with{Economy=d.Economy! with{Movement=MovementRules.H2}};
+        d=d with{Economy=d.Economy! with{Movement=MovementRules.H2,VehicleControl=null}};
         var factory=d.Layout!.IndustrialLots.First().Cells[0];
         d=d with{Participants=[..d.Participants.Select(p=>p with{CashMinor=10_000_000})],
             Plots=[..d.Plots!.Select(p=>p.Position==factory?p with{OwnerId=1}:p)],Buildings=[new(8,1,factory,"materials",Staff:5)],

@@ -16,7 +16,7 @@ public sealed partial class SimulationEngine
             {
                 RequireIdle(actor);
                 if(ServiceHandlingVehicle(vehicle.Id)||RoadVehicleWorking(vehicle.Id)||VehicleTransferring(vehicle.CargoInventory.Value)||vehicle.Installation is not null)throw new RuleViolation("VehicleBusy");
-                if(_traffic.TryGetValue(vehicle.Id,out var current)&&HasRoadProgress(current))throw new RuleViolation("VehicleMoving");
+                if(_traffic.TryGetValue(vehicle.Id,out var current)&&(HasRoadProgress(current)||IsSteering(current)))throw new RuleViolation("VehicleMoving");
                 return new(target,[..VehiclePath(Body(vehicle),target,preview:true)],"Ready");
             }
             if(actor.Job is not null&&!IsHarvest(actor.Job)||HasSale(actor.Id))RequireIdle(actor);

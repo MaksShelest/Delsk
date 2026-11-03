@@ -95,6 +95,7 @@ public sealed partial class SimulationEngine
         foreach (var actor in _actors.Values)
         {
             if (actor.Job is not { } j) continue;
+            if(j.TrafficWaitTime!=0&&(!UsesFreeVehicleControl||j.TrafficWaitTime<0||j.TimedEdges is null))throw new CheckpointException("InvalidTrafficWait");
             if(j.TimedEdges is not null&&(!UsesAcceleratedMovement||j.Kind!="Move"||Roads is not null&&DrivenVehicle(actor.Id) is not null))throw new CheckpointException("InvalidTimedMove");
             if (j.Id < 1000 || j.StartTick < 1 || j.StartTick > Tick || j.CompletionTick <= Tick ||
                 !_seenCommands.ContainsKey(j.CommandId)) throw new CheckpointException("InvalidPersonalJob");

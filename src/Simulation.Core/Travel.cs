@@ -28,6 +28,7 @@ public sealed partial class SimulationEngine
         {
             state.HeadingX=x;state.HeadingZ=z;
             if(x==0&&z==0&&_traffic.TryGetValue(roadVehicle.Id,out var traffic))_traffic[roadVehicle.Id]=traffic with{ExitX=0,ExitZ=0,ExitQuanta=0};
+            else if(UsesFreeVehicleControl&&_traffic.TryGetValue(roadVehicle.Id,out var intent)&&(intent.ExitX!=x||intent.ExitZ!=z))_traffic[roadVehicle.Id]=intent with{ExitX=0,ExitZ=0,ExitQuanta=0};
             return;
         }
         state.HeadingX = x;
@@ -116,14 +117,14 @@ public sealed partial class SimulationEngine
         while (offset >= TravelUnitsPerCell)
         {
             int next = cell + 1;
-            if (!_map.Walkable(alongX ? new Cell(next, other) : new Cell(other, next))) { offset = TravelUnitsPerCell - 1; break; }
+            if (!_map.Walkable(alongX ? new Cell(next, other) : new Cell(other, next))||PedestrianTrafficBlocked(alongX ? new Cell(next, other) : new Cell(other, next),actor.Id)) { offset = TravelUnitsPerCell - 1; break; }
             offset -= TravelUnitsPerCell;
             cell = next;
         }
         while (offset < 0)
         {
             int next = cell - 1;
-            if (!_map.Walkable(alongX ? new Cell(next, other) : new Cell(other, next))) { offset = 0; break; }
+            if (!_map.Walkable(alongX ? new Cell(next, other) : new Cell(other, next))||PedestrianTrafficBlocked(alongX ? new Cell(next, other) : new Cell(other, next),actor.Id)) { offset = 0; break; }
             offset += TravelUnitsPerCell;
             cell = next;
         }

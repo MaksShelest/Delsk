@@ -17,7 +17,7 @@ internal static class I1Fixture
     {
         var d=H2MovementTests.LongRoad(false);var road=Enumerable.Range(0,128).Select(x=>new Cell(x,1)).ToArray();
         return d with{Id="i1-diagnostic",MapWidth=128,MaxTicks=1000000,
-            Economy=d.Economy! with{Movement=Rules(profile),Roads=d.Economy.Roads! with{Stages=[..d.Economy.Roads.Stages.Select(r=>r with{Ticks=1,Materials=[new("gravel",1)]})]}},
+            Economy=d.Economy! with{Movement=Rules(profile),VehicleControl=profile==3?VehicleControlRules.I2:null,Roads=d.Economy.Roads! with{Stages=[..d.Economy.Roads.Stages.Select(r=>r with{Ticks=1,Materials=[new("gravel",1)]})]}},
             Layout=d.Layout! with{RoadCenterCells=road,InitialCityDirtCells=offroad?[new(0,1)]:road,TurnCells=road,
                 RoadCorridorCells=[..d.Layout.RoadCorridorCells.Concat(road).Concat(Enumerable.Range(0,128).Select(x=>new Cell(x,2))).Distinct()]}};
     }
@@ -116,6 +116,8 @@ public class I1WalkingTests
     public void OnlyNewOrdinaryWorldsGetMovement2AndNpcObservationCarriesSavedRules(string map)
     {
         var d=OrdinaryNewGame.Resolve(MapDesignTests.Template(map),NpcEconomyG1Tests.Profile(),new(3),vnextBalance:MapDesignTests.Balance()).Scenario;
+        // Freeze the I1 cohort; the new I2 default is tested independently.
+        d=d with{Economy=d.Economy! with{VehicleControl=null}};
         var s=new GameSession(new(d));Assert.Equal(MovementRules.I1,s.Engine.Configuration().Economy!.Movement);
         Assert.Equal(MovementRules.I1,s.Engine.ObserveController(new(2),true).Map.Movement);
         Assert.Equal(29,s.Engine.ActiveCheckpointSchemaVersion);Assert.Null(H2StorageTests.Frozen().Engine.Configuration().Economy!.Movement);

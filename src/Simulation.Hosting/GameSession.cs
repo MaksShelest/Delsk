@@ -97,7 +97,13 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
     {
         var mark=Measurements?.Start()??default;string hash=Engine.ComputeStateHash();Measurements?.End("state-hash",mark);return hash;
     }
-    public void SetPaused(bool paused) => Paused = paused;
+    public void SetPaused(bool paused)
+    {
+        if(paused&&!Paused&&Engine.UsesFreeVehicleControl)
+            foreach(var p in Engine.Inspect().Participants)
+            {var travel=Engine.TravelOf(p.Id);if(travel.HeadingX!=0||travel.HeadingZ!=0)SetTravelHeading(p.Id,0,0);}
+        Paused=paused;
+    }
     public void SetTravelHeading(ParticipantId actor, int x, int z)
     {
         if (x is < -1 or > 1 || z is < -1 or > 1) throw new ArgumentOutOfRangeException(nameof(x));

@@ -16,6 +16,15 @@ public sealed partial class SimulationEngine
     // The only new journal writes allowed between ticks are physical traffic witnesses.
     private bool IsBillingTravelEvent(SimulationEvent e)
     {
+        if(UsesFreeVehicleControl&&e.Type=="TrafficLaneState")
+        {
+            if(e.Tick!=Tick||e.Phase!=9||e.ActorId is not {} laneOwner||FindBody(e.EntityId) is not {} laneBody||
+                laneBody.Owner!=laneOwner||!LaneBody(laneBody)||e.Quantity is <0 or >4||e.AmountMinor!=0||e.CommandId is not null||
+                !string.IsNullOrEmpty(e.ItemId)||e.ReasonCode is null||e.ReasonCode.Length>32)return false;
+            var coordinates=e.ReasonCode.Split(',');
+            return coordinates.Length==2&&int.TryParse(coordinates[0],out int lx)&&int.TryParse(coordinates[1],out int lz)&&
+                _map.Walkable(new(lx,lz))&&(e.Quantity==0||RoadLevel(new(lx,lz))>0);
+        }
         bool newUnbilledTraffic=UsesAcceleratedMovement&&Roads is not null&&e.Type=="TrafficCellEntered";
         if(Billing is null&&!newUnbilledTraffic||e.Tick!=Tick||e.Phase!=9||e.ActorId is not {} owner||
             FindBody(e.EntityId) is not {} body||body.Owner!=owner||e.Quantity<=0||e.AmountMinor!=0||e.CommandId is not null||

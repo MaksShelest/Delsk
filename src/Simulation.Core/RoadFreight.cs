@@ -37,7 +37,7 @@ public sealed partial class SimulationEngine
         var vehicle=_vehicles[l.VehicleId];var before=Traffic(vehicle.Id);var beforePosition=VehicleCargo(vehicle).Position;bool arrived;
         try{arrived=TrafficTravel(vehicle,t.Path[^1]);}
         catch(RuleViolation ex){l.Reason=ex.ReasonCode;return;}
-        var after=Traffic(vehicle.Id);bool worked=before.Progress!=after.Progress||before.ProgressFraction!=after.ProgressFraction||beforePosition!=VehicleCargo(vehicle).Position;
+        var after=Traffic(vehicle.Id);bool worked=before.Progress!=after.Progress||before.ProgressFraction!=after.ProgressFraction||before.Steering!=after.Steering||beforePosition!=VehicleCargo(vehicle).Position;
         string state=arrived?t.State switch{"FetchingEmpty"=>"Loading","Outbound" or "ReturningInput"=>"Unloading","ReturningCargo"=>"UnloadingReturn",_=>"Finishing"}:t.State;
         l.Trip=t with{Position=VehicleCargo(vehicle).Position,PathIndex=arrived?t.Path.Length-1:0,SegmentTicks=0,State=state,
             Freight=f with{LastWorkedTick=worked?Tick:f.LastWorkedTick,StageStartedTick=state==t.State?f.StageStartedTick:Tick}};

@@ -51,6 +51,8 @@ public static class MovementTiming
             int speed=model is null?rules.RunningSpeed(a>0&&b>0):Math.Min(model.Speed,a>0&&b>0?o.Roads!.Rules.Stages.Single(s=>s.Level==Math.Min(a,b)).Speed:rules.OffroadVehicleSpeed());
             units=checked(units+rules.EdgeTime(speed));
         }
+        if(model is not null&&o.Map.VehicleControl is not null)
+            units=checked(units+ControlTurnTime(o,path,model,new(driven!.Vehicle.FacingX,driven.Vehicle.FacingZ)));
         return rules.WholeTicks(units);
     }
     public static Cell[] VehiclePath(ControllerObservation o,Cell source,Cell target,VehicleModel model,long vehicle=0,Cell? facing=null)
@@ -62,15 +64,26 @@ public static class MovementTiming
         var publicCells=o.Map.MovementPublicRoad.IsDefault?corridor:o.Map.MovementPublicRoad.ToHashSet();
         var bypass=o.Roads.Bypasses;bool publicCell(Cell c)=>publicCells.Contains(c);
         bool corridorOnly=corridor.Contains(source)&&corridor.Contains(target);
-        bool Allow(Cell c)=>grid.Walkable(c)&&!bypass.Any(b=>b.VehicleId!=vehicle&&b.WorkCell==c)&&(!corridorOnly||publicCell(c))&&
+        bool ControlAllow(Cell c)=>o.Map.VehicleControl is null||
+            ((!o.Plots.Any(p=>p.Position==c&&p.OwnerId is {} owner&&owner!=o.Participant.Id)||
+            o.Services?.OwnOrders.Any(order=>order.State=="Accepted"&&order.Quote.Terms.VehicleId==vehicle&&(order.Quote.SourcePosition==c||order.Quote.DestinationPosition==c||order.Quote.ReturnPosition==c))==true)&&
+            !o.Resources.Any(r=>r.Position==c&&!r.Public&&r.Owner!=o.Participant.Id&&!(r.Tenant==o.Participant.Id&&o.Tick<r.LeaseUntil)));
+        bool Allow(Cell c)=>grid.Walkable(c)&&ControlAllow(c)&&!bypass.Any(b=>b.VehicleId!=vehicle&&b.WorkCell==c)&&(!corridorOnly||publicCell(c))&&
             (publicCell(c)||c==source||c==target||!bypass.Any(b=>Math.Abs(c.X-b.WorkCell.X)+Math.Abs(c.Z-b.WorkCell.Z)<=2))&&
             !bypass.Any(b=>b.Closing&&!b.Users.Contains(vehicle)&&b.Path.Skip(1).SkipLast(1).Contains(c)&&c!=source);
         int Speed(Cell a,Cell b)=>Math.Min(model.Speed,levels.GetValueOrDefault(a)>0&&levels.GetValueOrDefault(b)>0?o.Roads.Rules.Stages.Single(s=>s.Level==Math.Min(levels[a],levels[b])).Speed:rules.OffroadVehicleSpeed());
         var body=o.Fleet?.Vehicles.FirstOrDefault(v=>v.Vehicle.Id==vehicle)?.Vehicle;
         var heading=facing??(body is null?new Cell(0,0):new Cell(body.FacingX,body.FacingZ));
         var restricted=o.Map.MovementRestrictedTurns.IsDefault?new HashSet<Cell>():o.Map.MovementRestrictedTurns.ToHashSet();
-        var path=RouteSearch.FindOriented(source,target,Allow,(a,b)=>rules.EdgeTime(Speed(a,b)),c=>!restricted.Contains(c),heading);
+        var path=RouteSearch.FindOriented(source,target,Allow,(a,b)=>rules.EdgeTime(Speed(a,b)),c=>!restricted.Contains(c),heading,o.Map.VehicleControl is null?null:(c,old,direction)=>
+            old==new Cell(0,0)||old==direction?0:VehicleControlRules.TurnQuanta(Math.Min(model.Speed,levels.GetValueOrDefault(c)>0?o.Roads.Rules.Stages.Single(s=>s.Level==levels[c]).Speed:rules.OffroadVehicleSpeed()),levels.GetValueOrDefault(c)>0,direction.X==-old.X&&direction.Z==-old.Z)*rules.TimeScale/10);
         if(path.Length==0)throw new RuleViolation("NoSafeVehiclePath");return path;
+    }
+    private static long ControlTurnTime(ControllerObservation o,Cell[] path,VehicleModel model,Cell? facing)
+    {
+        var rules=o.Map.Movement!;var levels=o.Roads!.Cells.ToDictionary(c=>c.Cell,c=>c.Level);
+        int Speed(Cell c)=>Math.Min(model.Speed,levels.GetValueOrDefault(c)>0?o.Roads.Rules.Stages.Single(s=>s.Level==levels[c]).Speed:rules.OffroadVehicleSpeed());
+        return VehicleControlRules.PathTurnQuanta(path,c=>levels.GetValueOrDefault(c)>0,Speed,facing)*rules.TimeScale/10;
     }
     public static long FreightTicks(ControllerObservation o,Cell source,Cell target,VehicleModel? model=null,long vehicle=0)
     {
@@ -90,6 +103,7 @@ public static class MovementTiming
             }
             total=checked(total+edge);
         }
+        if(model is not null&&o.Map.VehicleControl is not null)total=checked(total+ControlTurnTime(o,path,model,null));
         return rules.WholeTicks(total);
     }
 
@@ -130,6 +144,8 @@ public sealed partial class SimulationEngine
         {
             var at=job.Path[job.PathIndex];var next=job.Path[job.PathIndex+1];
             if(!_map.Walkable(next)){job.CompletionTick=checked(Tick+1);return;}
+            if(UsesFreeVehicleControl&&PedestrianTrafficBlocked(next,actor.Id))
+            {job.TrafficWaitTime=checked(job.TrafficWaitTime+budget);job.CompletionTick=TimedMoveForecast(actor,job);return;}
             long required=job.TimedEdges is {} timing?(timing[job.PathIndex]==0?timing[job.PathIndex]=PersonalEdgeTimeUnits(actor,at,next):timing[job.PathIndex]):PersonalEdgeTimeUnits(actor,at,next),spent=Math.Min(budget,required-job.SegmentTicks);budget-=spent;job.SegmentTicks=checked(job.SegmentTicks+(int)spent);
             if(job.SegmentTicks<required)break;
             job.SegmentTicks=0;++job.PathIndex;actor.Position=next;actor.OffsetX=actor.OffsetZ=TravelCenter;_economy.Inventories[actor.Inventory].Position=next;SyncDrivenVehicle(actor);

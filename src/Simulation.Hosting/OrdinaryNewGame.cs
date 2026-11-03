@@ -80,7 +80,7 @@ public static class OrdinaryNewGame
             CapitalDemand=baseScenario.CapitalDemand is {} demand?demand with {BootstrapBaseBudgetMinor=Scale(demand.BootstrapBaseBudgetMinor,count)}:null,
             NewGame=new("ordinary-setup-1",options.HumanActorId,options.Difficulty,map.Id,VNextBalanceReader.Digest(VNextSupportedProfile.Serialize(economy)),legacy?"legacy-default":"startup-rotation-1",
                 vnext?checked(globals!.StartPopulationPerParticipant*4):baseScenario.Population,vnext?checked(globals!.MaxPopulationPerParticipant*4):baseScenario.Labor?.MaximumPopulation,vnext?globals!.StartTreasuryMinorPer4Participants:baseScenario.StartingTreasuryMinor,baseScenario.CapitalDemand?.BootstrapBaseBudgetMinor)};
-        scenario=scenario with{Economy=(scenario.Economy??new()) with{Movement=MovementRules.I1}};
+        scenario=scenario with{Economy=(scenario.Economy??new()) with{Movement=MovementRules.I1,VehicleControl=VehicleControlRules.I2}};
         ScenarioValidation.Validate(scenario);
         return new(scenario,options.HumanActorId,[..actors.Where(p=>p.Id!=options.HumanActorId).Select(p=>new ControllerAssignment(p.Id,p.PublicPreferenceItem,options.Difficulty))]);
     }
