@@ -22,6 +22,7 @@ public partial class Playfield : Control
     private bool _left;
     private bool _waitRelease = true;
     private TravelHeading _sent;
+    private VirtualJoystick? _stick;
     private long _selectedEnterprise;
     private long _publicCursor;
     private GameAction? _pending;
@@ -324,6 +325,7 @@ public partial class Playfield : Control
     {
         if (_session is null) return;
         bool paused = _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots || ModelBarrier);
+        if(paused&&!_session.Paused){StopHeading();_waitRelease=true;}
         if (_session.Paused != paused) _scheduler.SetPaused(paused);
         FeedbackPause();
     }
@@ -967,6 +969,13 @@ public partial class Playfield : Control
 
     private string Describe(PlayerView view)
     {
+        if(_session.Engine.UsesFreeVehicleControl&&_session.Engine.TravelOf(_human) is {HeadingX:var hx,HeadingZ:var hz}&&(hx!=0||hz!=0))
+        {
+            var fleet=_session.Engine.FleetOf(_human);long vehicle=fleet?.Vehicles.FirstOrDefault(v=>v.Vehicle.Driver==_human.Value)?.Vehicle.Id??0;
+            var traffic=_session.Engine.RoadsOf(_human)?.OwnTraffic.FirstOrDefault(t=>t.VehicleId==vehicle);
+            var reason=traffic is {ExitQuanta:>0}&&traffic.Steering is not {TurnQuanta:>0}?"RoadExitPending":traffic?.Reason;
+            if(reason is "RoadExitPending" or "VehicleTurning" or "TurnSpaceOccupied" or "TrafficWaiting" or "ObstacleBraking")return reason=="RoadExitPending"?L("Съезд с дороги… удерживайте направление 0,5 с.","Leaving the road… hold the direction for 0.5 s."):PlayerText.Reason(_language,reason);
+        }
         if (_pending is not null) return T("command.selected");
         if (_trackedId is null) return _gain.Length == 0 ? _feedback : _gain;
         var result = _session.Engine.Result(_trackedId);
@@ -998,10 +1007,12 @@ public partial class Playfield : Control
     private void SampleHeading()
     {
         if (_surface != Surface.Play || _waitRelease || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots) return;
-        if(_tabletState.Kind is TabletKind.CityMap or TabletKind.Notices or TabletKind.Tutorial||GetViewport().GuiGetFocusOwner() is LineEdit or TextEdit)return;
+        if(_tabletState.Kind is TabletKind.CityMap or TabletKind.Notices or TabletKind.Tutorial||GetViewport().GuiGetFocusOwner() is LineEdit or TextEdit)
+        {StopHeading();_waitRelease=true;return;}
         var heading = TravelHeading.FromKeys(
             Input.IsPhysicalKeyPressed(Key.D), Input.IsPhysicalKeyPressed(Key.A),
             Input.IsPhysicalKeyPressed(Key.S), Input.IsPhysicalKeyPressed(Key.W));
+        if(heading==default&&_stick is not null)heading=_stick.Heading;
         bool canMove = _session.Engine.CanTravel(_human,heading.X,heading.Z);
         if (_tabletState.BlocksTime && !canMove) heading = default;
         if (_tabletState.ResumeForMovement(canMove)) { ApplyPause(); Refresh(); }
@@ -1012,6 +1023,7 @@ public partial class Playfield : Control
 
     private void StopHeading()
     {
+        _stick?.Clear();
         _sent = default;
         if (_session is null) return;
         var travel = _session.Engine.TravelOf(_human);
@@ -1019,7 +1031,7 @@ public partial class Playfield : Control
         _session.SetTravelHeading(_human, 0, 0);
     }
 
-    private static bool MovementHeld() =>
+    private bool MovementHeld() =>_stick?.Held==true||
         Input.IsPhysicalKeyPressed(Key.W) || Input.IsPhysicalKeyPressed(Key.A) || Input.IsPhysicalKeyPressed(Key.S) || Input.IsPhysicalKeyPressed(Key.D);
 
     private void Button(Container parent, string key, Action action, string suffix = "")

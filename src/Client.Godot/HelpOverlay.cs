@@ -8,6 +8,7 @@ public partial class HelpOverlay : ColorRect
     public event System.Action? Closed;
     private readonly string _language;
     private readonly MovementRules? _movement;
+    private readonly bool _freeControl;
     private readonly RichTextLabel _body;
     private readonly OptionButton _topics;
     private readonly VBoxContainer _brief=new();
@@ -16,9 +17,9 @@ public partial class HelpOverlay : ColorRect
     private readonly Button _rules;
     private bool _full;
     private static readonly string[] Keys = ["basics", "harvest", "land", "exchange", "market", "production", "workers", "logistics", "politics", "holdings", "city", "dealership", "map", "services", "account", "overflow", "journey"];
-    public HelpOverlay(string language, string topic,MovementRules? movement=null)
+    public HelpOverlay(string language, string topic,MovementRules? movement=null,bool freeControl=false)
     {
-        Name="HelpTablet";_language=language;_movement=movement;Theme=TabletDesign.Theme;
+        Name="HelpTablet";_language=language;_movement=movement;_freeControl=freeControl;Theme=TabletDesign.Theme;
         Color=new Color(.12f,.25f,.20f,.94f);MouseFilter=MouseFilterEnum.Stop;SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         var panel=new PanelContainer();panel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);panel.OffsetTop=66;panel.OffsetBottom=-18;panel.OffsetLeft=32;panel.OffsetRight=-32;
         panel.AddThemeStyleboxOverride("panel",TabletDesign.Box("f7f3e8",28,22));AddChild(panel);UiSafeArea.Panel(panel);Ready+=()=>UiSafeArea.Keyboard(this);
@@ -94,9 +95,9 @@ public partial class HelpOverlay : ColorRect
         "politics" => L("Выборы и поддержка", "Elections and support"),
         _ => L("Управление и время", "Controls and time")
     };
-    private string MovementHelp()=>_movement?.Version==2
+    private string MovementHelp()=>(_freeControl?L("WASD и джойстик задают направление по карте. Противоположное направление — безопасный локальный разворот. На дороге машина плавно держит правую колею. Для съезда удерживайте направление 0,5 с; короткое нажатие отменяется отпусканием. Поворот на дорожное ответвление не требует удержания. Занятый проезд останавливает машину.\n\n","WASD and the joystick select a map direction. Opposite input requests a safe local U-turn. Cars gently keep the right lane. Hold an exit direction for 0.5 s; releasing a brief input cancels it. Road branches need no exit hold. Occupied space stops the car.\n\n"):"")+(_movement?.Version==2
         ?L("Все персонажи бегут: 10 км/ч по любой дороге, 8 км/ч вне дороги. Машины: до 10/20/40/60 км/ч вне дороги/на грунтовке/дороге I/магистрали II, с учётом максимума модели. Персонаж движется в 3 раза быстрее исходной игры и в 1,2 раза быстрее H2. Один тик остаётся секундой; производство, погрузка и сроки прежние. Старые сохранения сохраняют свой профиль.\n\n", "All characters run: 10 km/h on every road, 8 km/h off road. Vehicles: up to 10/20/40/60 km/h off road/on dirt/road I/highway II, capped by the model. Characters move 3 times faster than the original game and 1.2 times faster than H2. One tick remains one second; production, handling and deadlines keep their timers. Old saves retain their profile.\n\n")
-        :L(_movement is null?"В этой партии исходный профиль движения: пешком 20/16 км/ч на дороге/вне дороги, машины до 8 км/ч вне дороги.\n\n":"В этой партии сохранён профиль H2: движение ×2,5 при пеших номиналах 20/16 км/ч и автомобильном лимите 8 км/ч вне дороги.\n\n", _movement is null?"This game uses the original movement profile: walking 20/16 km/h on/off road, vehicles up to 8 km/h off road.\n\n":"This game retains H2 movement: ×2.5 with walking nominal speeds 20/16 km/h and an off-road vehicle cap of 8 km/h.\n\n");
+        :L(_movement is null?"В этой партии исходный профиль движения: пешком 20/16 км/ч на дороге/вне дороги, машины до 8 км/ч вне дороги.\n\n":"В этой партии сохранён профиль H2: движение ×2,5 при пеших номиналах 20/16 км/ч и автомобильном лимите 8 км/ч вне дороги.\n\n", _movement is null?"This game uses the original movement profile: walking 20/16 km/h on/off road, vehicles up to 8 km/h off road.\n\n":"This game retains H2 movement: ×2.5 with walking nominal speeds 20/16 km/h and an off-road vehicle cap of 8 km/h.\n\n"));
     private string Text(string key) => key switch
     {
         "map" or "services" or "account" or "overflow" or "journey"=>string.Join("\n\n",Steps(key)),
