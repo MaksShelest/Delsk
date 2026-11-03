@@ -130,6 +130,24 @@ public class I2SteeringTests
 
 public class I2SafetyTests
 {
+    [Fact]public void PedestrianPlansAroundAParkedCarAndRestoresTheSameSafeRoute()
+    {
+        var(s,car)=I2Fixture.Car();var occupied=new Cell(12,1);var target=new Cell(12,0);
+        Assert.Equal(occupied,s.Engine.Observe(new(1)).Participant.Position);
+        I2Fixture.Move(s,new(2,1),2);
+        Assert.Equal(new Cell(2,1),s.Engine.Observe(new(2)).Participant.Position);
+        var guide=s.Engine.PreviewMovement(new(2),target);Assert.True(guide.Allowed);
+        Assert.DoesNotContain(occupied,guide.Path);
+        Assert.Equal(12,guide.Path.Length); // Eleven adjacent steps, with a corner before the car.
+        I2Fixture.Step(s,new(ActionKind.MoveTo,Target:target),2);long started=s.Engine.Tick;
+        for(int n=0;n<8;n++){s.Step();Assert.NotEqual(occupied,s.Engine.Observe(new(2)).Participant.Position);}
+        var restored=CheckpointStore.Decode(CheckpointStore.Encode(s));
+        for(int n=0;n<8;n++)
+        {s.Step();restored.Step();Assert.NotEqual(occupied,s.Engine.Observe(new(2)).Participant.Position);Assert.Equal(s.Engine.ComputeStateHash(),restored.Engine.ComputeStateHash());}
+        Assert.Equal(16,s.Engine.Tick-started);Assert.Equal(target,s.Engine.Observe(new(2)).Participant.Position);
+        Assert.False(s.Engine.Observe(new(2)).Participant.Busy);Assert.Equal(occupied,s.Engine.FleetOf(new(1))!.Vehicles.Single(v=>v.Vehicle.Id==car.Id).Position);
+        RoadE2Tests.Exact(s,"i2-pedestrian-around-car");
+    }
     [Fact]public void OccupiedTurnSpaceStopsAndResumesAfterThePedestrianLeaves()
     {
         var(s,car)=I2Fixture.Car();var at=s.Engine.Observe(new(1)).Participant.Position;

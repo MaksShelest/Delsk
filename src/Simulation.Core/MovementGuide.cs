@@ -5,6 +5,8 @@ public sealed record MovementGuide(Cell Target,ImmutableArray<Cell> Path,string 
 {public bool Allowed=>Reason=="Ready";}
 public sealed partial class SimulationEngine
 {
+    private Cell[] PersonalMovementPath(ActorState actor,Cell target)
+        =>_map.FindPath(actor.Position,target,UsesFreeVehicleControl?cell=>!PedestrianTrafficBlocked(cell,actor.Id):null);
     /// <summary>Read-only route preview using the same map/vehicle path finder as MoveTo.
     /// Traffic dictionaries, reservations, random state and time are never changed.</summary>
     public MovementGuide PreviewMovement(ParticipantId participant,Cell target)
@@ -20,7 +22,7 @@ public sealed partial class SimulationEngine
                 return new(target,[..VehiclePath(Body(vehicle),target,preview:true)],"Ready");
             }
             if(actor.Job is not null&&!IsHarvest(actor.Job)||HasSale(actor.Id))RequireIdle(actor);
-            return new(target,[.._map.FindPath(actor.Position,target)],"Ready");
+            return new(target,[..PersonalMovementPath(actor,target)],"Ready");
         }
         catch(RuleViolation e){return new(target,[],e.ReasonCode);}
     }
