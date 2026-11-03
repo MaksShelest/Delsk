@@ -15,3 +15,6 @@ config/vnext/economy.d1-workshops.json text eol=lf
 config/vnext/economy.d2-development.json text eol=lf
 
 config/vnext/economy.d3-production.json text eol=lf
+
+# I2 evidence manifests cover exact bytes, including decoded CI logs.
+/docs/verification/i2/** -text

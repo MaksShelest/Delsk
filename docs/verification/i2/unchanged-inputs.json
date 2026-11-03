@@ -1,0 +1,343 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "base": "180fc11249255df4935eeec56a0a3185adb73a14",
+  "unchangedInputCount": 84,
+  "inputs": [
+    {
+      "path": "config/economy.json",
+      "sha256": "b3da26be46960e876327a0dcca960c48575b6a98c9080eacb283a4a3f2c7317c"
+    },
+    {
+      "path": "config/vnext/balance.b1.json",
+      "sha256": "5352b6e48b39f4548ddb0fea404603ed200528798b6a40130d521648dc65765d"
+    },
+    {
+      "path": "config/vnext/catalog.b1.json",
+      "sha256": "e727187a4fe438cdd50a062374c6c62d62b9b9d7eba01fe9842df769560eea02"
+    },
+    {
+      "path": "config/vnext/economy.b1-supported.json",
+      "sha256": "1faf99371054e866c425f2dfe043dead3d52721cd6ea46c6a603b2ca45bae992"
+    },
+    {
+      "path": "config/vnext/economy.c1-storage.json",
+      "sha256": "692821793c690f97499e86429142d48a7897b769b0901ed2823cafc901b7b3c5"
+    },
+    {
+      "path": "config/vnext/economy.d1-workshops.json",
+      "sha256": "aa7b08fa140e3f4ebe565f944d243e72f6a8268667b523421e998f694eb1a469"
+    },
+    {
+      "path": "config/vnext/economy.d2-development.json",
+      "sha256": "6b62449fe827415a68df611405e6ef1304041879371acb6050796f4f697222f2"
+    },
+    {
+      "path": "config/vnext/economy.d3-production.json",
+      "sha256": "72f38c37224fc04b51efe18a20b256c014129902725a8ded1d8f6bc2667099c9"
+    },
+    {
+      "path": "config/vnext/economy.e1-fleet.json",
+      "sha256": "b16cc54c7e807f932ea529adffe4c4f7054e0fc92f410978567d78ea692d8c50"
+    },
+    {
+      "path": "config/vnext/economy.e2-roads.json",
+      "sha256": "493f154861344529950b90e7555d268fe1374d42dcbea26265bc31955f0ff2c0"
+    },
+    {
+      "path": "config/vnext/economy.e3-accounts.json",
+      "sha256": "8133b55485c4a7f561aa350ed5bbde74874511ea86af40e4cba65d6f3440ec20"
+    },
+    {
+      "path": "config/vnext/economy.f1-services.json",
+      "sha256": "a7815ec8f4bd37741d9b25b2eea98c332927a52a5bcbbe3f5dc5cdcd5ff2f7d1"
+    },
+    {
+      "path": "config/vnext/economy.f2-services.json",
+      "sha256": "fe1c02de0ba7764bec58191032486ff6ec70c368cd4ca534099f717e790ced5b"
+    },
+    {
+      "path": "config/vnext/economy.g1-npc.json",
+      "sha256": "ab85047286d6289214ae2505987faa58aee934e781e758efd4c9e41522f3e865"
+    },
+    {
+      "path": "docs/vnext/data/BALANCE_VNEXT.json",
+      "sha256": "060e3c07343ba2b682692a19c0e3de3622155343844998eb7a9c4a15f6ece550"
+    },
+    {
+      "path": "scenarios/autonomous-controllers.json",
+      "sha256": "28f4167cfb76b2fe06f7f55db70b48d3cd521fed5c6cab2a41a7c92b9a6dd53d"
+    },
+    {
+      "path": "scenarios/autonomous-demand.json",
+      "sha256": "d3c4b292f1536ca8c1dd274281a5f0e82bd7481a8d209eccc630a56fa54e7362"
+    },
+    {
+      "path": "scenarios/autonomous-economy.json",
+      "sha256": "eb32706b9a8a23f0d56c4ff0b85a6ed04e5dd95a326e11b53beb334623f5e092"
+    },
+    {
+      "path": "scenarios/baseline-auction-controllers.json",
+      "sha256": "b10b396acec6eecd26ccd3e9584e91567817ff20a5f38ca6bf400f743285d731"
+    },
+    {
+      "path": "scenarios/baseline-auction.json",
+      "sha256": "eac664125c4d6b9971d9a78beb04146d711f39033f8a4d442180e854cb1cf270"
+    },
+    {
+      "path": "scenarios/baseline-controllers.json",
+      "sha256": "239f3d0fa2ec898a99f11a4da39e63f2b18e69534a43cd147905bb012f02dec8"
+    },
+    {
+      "path": "scenarios/baseline-economy.json",
+      "sha256": "d468b0223b612ffe7d91a416e878eb89c1dbd7d79c8953ed3c79c671b6c6d71c"
+    },
+    {
+      "path": "scenarios/baseline-food-controllers.json",
+      "sha256": "b7628c555f539d75e52871842de789e44f90d9aafd5ae8b03f22035c30f691fc"
+    },
+    {
+      "path": "scenarios/baseline-food.json",
+      "sha256": "58262e810c97cab7cef0b391cf57ce97b1aa78289c1d47540380a8d4ea76fcf8"
+    },
+    {
+      "path": "scenarios/baseline-logistics-controllers.json",
+      "sha256": "d73a3ef6fb24c6ad15c38e83ddbd9eb4a7efb897b4ab4f1b86b535d257961f45"
+    },
+    {
+      "path": "scenarios/baseline-logistics.json",
+      "sha256": "624a8da5dc49a604c7b85a57b5dcebc773056d36f03d9d06dd9359df8ffd8019"
+    },
+    {
+      "path": "scenarios/baseline-politics-controllers.json",
+      "sha256": "6f3ede8f914e9f92d2dc6ee1fec4d89bfd72a28d5b4d8462d4b5a8c34a29d63a"
+    },
+    {
+      "path": "scenarios/baseline-politics.json",
+      "sha256": "57fb5ad444df897f2cf13c4f263ff9ffdc384dfc87704ea00f0a8512163b13ad"
+    },
+    {
+      "path": "scenarios/capital-delivery.json",
+      "sha256": "4e90dfc60c158496de0ed33413652ea8b2ca15c63980bf6fe40d4d26213d15a8"
+    },
+    {
+      "path": "scenarios/capital-demand-cycle.json",
+      "sha256": "044c76e6d458f528c260d052fde411c39609510a0f7a77a508b3c6227383f691"
+    },
+    {
+      "path": "scenarios/city-corridor-v1.json",
+      "sha256": "b629bd3ab7d044e220a5363396ab17dfa97543239aae56c7a761744def2bc6e1"
+    },
+    {
+      "path": "scenarios/delivery-lifecycle.json",
+      "sha256": "7403c415e7bbf077d57fad4370481b390c470e08a79ecb7f0cf198d697b5ba75"
+    },
+    {
+      "path": "scenarios/economic-cycle.json",
+      "sha256": "f829cda66d1b1584e27a981cdfcf5445e764994c575010a11bb62a59e861ce11"
+    },
+    {
+      "path": "scenarios/elections.json",
+      "sha256": "10a7b00b8e5767f21525aab20459c87ebfdc37cb858cd3f8ef991bb043eb4a13"
+    },
+    {
+      "path": "scenarios/equipment-cycle.json",
+      "sha256": "0cde5df90a0482ebaa7465887749c8b6dc58f3f2c1479409aed8a8c57ae080d6"
+    },
+    {
+      "path": "scenarios/food-chain.json",
+      "sha256": "bf9d6053be253061e196b255ca5195c674a54f82a15923144e79590099757cd1"
+    },
+    {
+      "path": "scenarios/four-corners-v1.json",
+      "sha256": "291f83680ae7089aaebd14f73b59ebee4c0d8baab1d1a4f3b8cb50d0d19db1da"
+    },
+    {
+      "path": "scenarios/inbound-cycle.json",
+      "sha256": "5e841417b4578390d49fabdc550463d001013a5b59ec983156cb143452349770"
+    },
+    {
+      "path": "scenarios/labor-dynamics.json",
+      "sha256": "0ac433c8e9a9877113f0330498fbd77649660ab48d681bfefef8bd0029ab233f"
+    },
+    {
+      "path": "scenarios/land-and-content.json",
+      "sha256": "4a9ef5c3774b96bea6556e7d16cec28ae1d868a7cec1679bbbda55080c850db3"
+    },
+    {
+      "path": "scenarios/local-model.example.json",
+      "sha256": "a6dff9bd4ec01dc2933566ca785af866b160f43135d530844705eabd6bde0d8d"
+    },
+    {
+      "path": "scenarios/logistics-cycle.json",
+      "sha256": "02921bfac207f9829ef85686ca1f8581ca072ba6ed04312c6b991becb79ae019"
+    },
+    {
+      "path": "scenarios/logistics-queue.json",
+      "sha256": "aace3b9501309fccc89d4096ccc2b87fad9469ee01078c7f7b048a71148b189c"
+    },
+    {
+      "path": "scenarios/logistics-upgrade.json",
+      "sha256": "e177dc6e2972bcf36ff4f50f0b7f6bdcbe61085793cee3e2c27b14b8f8bbc685"
+    },
+    {
+      "path": "scenarios/market-window.json",
+      "sha256": "0e0ad377212c2619712b7edd5db82a725624784963ac5522762298ab164f1827"
+    },
+    {
+      "path": "scenarios/model-safety.json",
+      "sha256": "cfe572719121915ace488163905b6b851959cda5cd52f5f761d5fc6ebf97016e"
+    },
+    {
+      "path": "scenarios/own-production-cycle.json",
+      "sha256": "bd3677e4eba6cc6e5585d0ca53858bce073bc0abd024f583c5e350e878cc913d"
+    },
+    {
+      "path": "scenarios/own-storage-cycle.json",
+      "sha256": "c1cb5eb80063d89e607125d5a40a4b8a8aa349e8c09ea3d276e1ca276856761b"
+    },
+    {
+      "path": "scenarios/participant-trade.json",
+      "sha256": "767abbe3dfec5dd090e6e037cbdf5dae48ee69e113f96558924a3d16dcda7261"
+    },
+    {
+      "path": "scenarios/physical-automation.json",
+      "sha256": "a82a0bd1df2fb2f455ca1117dc8f2ba85fae94b91d26229b9b19a982c841c72a"
+    },
+    {
+      "path": "scenarios/pickup-lifecycle.json",
+      "sha256": "d2e35b0b00e9d57cae22b00d82a431edfec48b481ee7d7e7996a5fdd64b4f312"
+    },
+    {
+      "path": "scenarios/platform-cycle.checkpoints.csv",
+      "sha256": "09bbdf9e1c3e14494080ab883471086bc195a07cc43edc340f1819c4d0e58a2e"
+    },
+    {
+      "path": "scenarios/platform-cycle.commands.jsonl",
+      "sha256": "34ec03bee81b286d2119779100557bf4bcbbbd6766212dbe382fdec826656e07"
+    },
+    {
+      "path": "scenarios/platform-elections.checkpoints.csv",
+      "sha256": "2698865e7d6a560362c30fc84798da3b38d9f89a7a8bf5c1e6cd5581ec3d6736"
+    },
+    {
+      "path": "scenarios/platform-elections.commands.jsonl",
+      "sha256": "3659fa99dd380aa2704a27a9f84d7667a66e3e12f94734bc2cdfdcf0c66a7aab"
+    },
+    {
+      "path": "scenarios/platform-food.checkpoints.csv",
+      "sha256": "9e5d4adef222dba99be41fe78898eb99ff5990ecca87728366c5eb2f4cf397a1"
+    },
+    {
+      "path": "scenarios/platform-food.commands.jsonl",
+      "sha256": "38dfb8b66f1f78246079ea43d773d7c081a5910ddc5e1514dc0565b23ddfac89"
+    },
+    {
+      "path": "scenarios/platform-physical.checkpoints.csv",
+      "sha256": "85d389fe05277880fd4d2cb3b24c0d6ece19d26b67b56793a64aff3fcd2b6f71"
+    },
+    {
+      "path": "scenarios/platform-physical.commands.jsonl",
+      "sha256": "cb6f480da3ae394ddcfc253ec03b9c492b4fce7ea3889cd3e22fc5e17d1b1afe"
+    },
+    {
+      "path": "scenarios/platform-stopped.commands.jsonl",
+      "sha256": "743145ba3a60cf01c706a57c354cf75c14b96805f5b82601f752b555a214fff5"
+    },
+    {
+      "path": "scenarios/platform-stopped.final.sha256",
+      "sha256": "1ce6dc6da3c469db32f9f36d342e1a36d18a9ee42f7d6f164f92c91e17e7d723"
+    },
+    {
+      "path": "scenarios/platform-support.checkpoints.csv",
+      "sha256": "bb1621490c2377d46a7f9a2408cfbac791472839f1ba6a33a60b42b7c226a8c9"
+    },
+    {
+      "path": "scenarios/platform-support.commands.jsonl",
+      "sha256": "80d688aa1e1550e0068a669f2df3915063ce87ab316638e2e33c6468739bc5a5"
+    },
+    {
+      "path": "scenarios/platform-trade.checkpoints.csv",
+      "sha256": "626492102b1ba4cbab7f5b486a7b35cd0a3c31bf18c7174effa3fd669aff9d76"
+    },
+    {
+      "path": "scenarios/platform-trade.commands.jsonl",
+      "sha256": "83d919c89eee108daa4c2b777a48cdfd4d9121bdcc8e5b51c9fb4b90e43fcd5c"
+    },
+    {
+      "path": "scenarios/presentation-map-one-v2.json",
+      "sha256": "0408570b1b943bf75c8fe43946938f408f8e14bd8236780c40b27224b7203dc1"
+    },
+    {
+      "path": "scenarios/presentation-map-one-v3.json",
+      "sha256": "6940794691c2fcab6e7ef8bf399c3d6ef0bd21e2b3010889a6d5f72d00b731ee"
+    },
+    {
+      "path": "scenarios/presentation-map-three-v2.json",
+      "sha256": "1d00c86f8d1d85239bcdc989503d72a2843bac80286f8eb4d9fef4d047884d91"
+    },
+    {
+      "path": "scenarios/presentation-map-three.json",
+      "sha256": "1f6f2f3f037028c5cacb13e10bd5cf2385b372509deb4888be77197c48dec84e"
+    },
+    {
+      "path": "scenarios/presentation-map-two-v2.json",
+      "sha256": "e667705a3d993c4f259d40cabd6485ab5fb6591db03cd7283bf0463bf0e4c713"
+    },
+    {
+      "path": "scenarios/presentation-map-two-v3.json",
+      "sha256": "83127bddab3bcdb3721b60a87b30b30019d22c99f4d645c3b019727a85ecfd23"
+    },
+    {
+      "path": "scenarios/presentation-map-two.json",
+      "sha256": "0c6bec8c9003ee11ab02ef1f7196903bce249a8448e900234bebf826a5c027db"
+    },
+    {
+      "path": "scenarios/research-series-p25.json",
+      "sha256": "8f5bc0b59bb5054f268f0ec3da37eec9d33345db46f469fac27e83cb6dcaac60"
+    },
+    {
+      "path": "scenarios/research-series.json",
+      "sha256": "0553a3629c69fa0dc15017b31fcf1628763bd4acbbe5174d4e9c4bb5c9ca5880"
+    },
+    {
+      "path": "scenarios/stopped-elections.json",
+      "sha256": "728bf57b685b233dc6bba0795dea41d9a33f43bcf1ad0356048cdd152cf9d7b0"
+    },
+    {
+      "path": "scenarios/support-cycle.json",
+      "sha256": "12dae6522bf6e3e66473265ef2238b62c931880d64530e62eebfec94ea4c8b3f"
+    },
+    {
+      "path": "scenarios/vnext/compact-valley.json",
+      "sha256": "99cf17ed6f7d53ece64cf70ae94b239b99281b53ea04e45d629be9117e13dac4"
+    },
+    {
+      "path": "scenarios/vnext/demolition-c2-fixture.json",
+      "sha256": "0c39f88038eee046e43003262a9756819f6c7f43a274064a0c50471a8544cb21"
+    },
+    {
+      "path": "scenarios/vnext/large-districts.json",
+      "sha256": "0c7c755d3a68868efde8286eae3cd290c1ab6364064026a949729e91f32c4dec"
+    },
+    {
+      "path": "scenarios/vnext/small-river.json",
+      "sha256": "e5125a5b6031453293518b59708affb7a33a176e31592ff4c5793c7398e7be82"
+    },
+    {
+      "path": "scenarios/vnext/storage-c1-fixture.json",
+      "sha256": "3b133c91d6305b9598a6f4f776c50d9d0d8c4b21f1fb02d87858ee93d77c55db"
+    },
+    {
+      "path": "scenarios/vnext/supported-production-fixture.json",
+      "sha256": "4dc889cedf178ff594c497a7e7787cdf913c743e67f3dbd6c3180c0baf736893"
+    },
+    {
+      "path": "scenarios/vnext/workshops-d1-fixture.json",
+      "sha256": "7b4be2e9239967e997814af252239f8aff1ca5a6a2fa8311e6fea98e54e8425d"
+    },
+    {
+      "path": "scenarios/zero-cash-recovery.json",
+      "sha256": "78571958ea7869910dad73eb3a817c73990caece01ae08071d745df69d2597cb"
+    }
+  ]
+}

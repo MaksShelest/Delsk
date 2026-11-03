@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/workspace/Delsk/scripts/reuse_godot_imports.py",
+    "--source",
+    "/workspace/Delsk/work/i2/native/source/src/Client.Godot",
+    "--verify-only",
+    "--report",
+    "/workspace/Delsk/work/i2/native/asset-completeness.json"
+  ],
+  "timeout_seconds": 30,
+  "started_at": "2026-11-03T21:47:41.812380+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.114,
+  "finished_at": "2026-11-03T21:47:41.926768+00:00"
+}

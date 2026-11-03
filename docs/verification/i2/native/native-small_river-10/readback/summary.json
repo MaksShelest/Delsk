@@ -1,0 +1,2389 @@
+{
+  "status": "succeeded",
+  "failure": null,
+  "tick": 80,
+  "stateHash": "2b546a2b63e71418aab4fc9c3e1c820c1bf0578cb659358351c694e9c6e33c7b",
+  "controllerStateHash": "f9bc2b676023deddd2c97f70f6d00bb8008fe77db40f732fa6ffd7473fa70456",
+  "controllerDecisionTurns": 60,
+  "controllerRejections": 0,
+  "startupMilliseconds": 2690.0598,
+  "elapsedMilliseconds": 2706.2212,
+  "averageMillisecondsPerTick": 33.827765,
+  "initialMoneyMinor": 3575000,
+  "externalMoneyInMinor": 105679,
+  "externalMoneyOutMinor": 0,
+  "accounts": [
+    {
+      "id": {
+        "value": 1000
+      },
+      "kind": "Treasury",
+      "balanceMinor": 1555000,
+      "reservedMinor": 0,
+      "availableMinor": 1555000
+    },
+    {
+      "id": {
+        "value": 1001
+      },
+      "kind": "WagesSink",
+      "balanceMinor": 0,
+      "reservedMinor": 0,
+      "availableMinor": 0
+    },
+    {
+      "id": {
+        "value": 1002
+      },
+      "kind": "CapitalBudget",
+      "balanceMinor": 105679,
+      "reservedMinor": 105679,
+      "availableMinor": 0
+    },
+    {
+      "id": {
+        "value": 1003
+      },
+      "kind": "Participant",
+      "balanceMinor": 1820000,
+      "reservedMinor": 0,
+      "availableMinor": 1820000
+    },
+    {
+      "id": {
+        "value": 1005
+      },
+      "kind": "Participant",
+      "balanceMinor": 20000,
+      "reservedMinor": 0,
+      "availableMinor": 20000
+    },
+    {
+      "id": {
+        "value": 1007
+      },
+      "kind": "Participant",
+      "balanceMinor": 20000,
+      "reservedMinor": 0,
+      "availableMinor": 20000
+    },
+    {
+      "id": {
+        "value": 1009
+      },
+      "kind": "Participant",
+      "balanceMinor": 20000,
+      "reservedMinor": 0,
+      "availableMinor": 20000
+    },
+    {
+      "id": {
+        "value": 1011
+      },
+      "kind": "Participant",
+      "balanceMinor": 20000,
+      "reservedMinor": 0,
+      "availableMinor": 20000
+    },
+    {
+      "id": {
+        "value": 1013
+      },
+      "kind": "Participant",
+      "balanceMinor": 20000,
+      "reservedMinor": 0,
+      "availableMinor": 20000
+    },
+    {
+      "id": {
+        "value": 1015
+      },
+      "kind": "Participant",
+      "balanceMinor": 20000,
+      "reservedMinor": 0,
+      "availableMinor": 20000
+    },
+    {
+      "id": {
+        "value": 1017
+      },
+      "kind": "Participant",
+      "balanceMinor": 20000,
+      "reservedMinor": 0,
+      "availableMinor": 20000
+    },
+    {
+      "id": {
+        "value": 1019
+      },
+      "kind": "Participant",
+      "balanceMinor": 20000,
+      "reservedMinor": 0,
+      "availableMinor": 20000
+    },
+    {
+      "id": {
+        "value": 1021
+      },
+      "kind": "Participant",
+      "balanceMinor": 20000,
+      "reservedMinor": 0,
+      "availableMinor": 20000
+    },
+    {
+      "id": {
+        "value": 1023
+      },
+      "kind": "Participant",
+      "balanceMinor": 20000,
+      "reservedMinor": 0,
+      "availableMinor": 20000
+    },
+    {
+      "id": {
+        "value": 1065
+      },
+      "kind": "RoadClearing",
+      "balanceMinor": 0,
+      "reservedMinor": 0,
+      "availableMinor": 0
+    }
+  ],
+  "flows": [
+    {
+      "itemId": "asphalt",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "beam",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "beet",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "bitumen",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "bread",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "cement",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "cheese",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "coke",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "concrete",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "conveyor",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "copper",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "copper_ore",
+      "initial": 0,
+      "harvested": 48,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "cream",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "curd",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "flour",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "furniture",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "glass",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "grain",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "gravel",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "iron_ore",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "limestone",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "milk",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "motor",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "pastry",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "plank",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "sand",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "soda",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "steel",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "steel_sheet",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "stone",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "sugar",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "window",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "wire",
+      "initial": 0,
+      "harvested": 0,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    },
+    {
+      "itemId": "wood",
+      "initial": 0,
+      "harvested": 12,
+      "recipeInput": 0,
+      "produced": 0,
+      "exported": 0,
+      "constructionInput": 0
+    }
+  ],
+  "settlements": [],
+  "marketOffers": [],
+  "marketBids": [],
+  "marketAllocations": [],
+  "buyOffers": [],
+  "supplyRequests": [],
+  "deliveryContracts": [],
+  "logistics": [],
+  "capitalDemand": {
+    "randomState": 12371428059226641478,
+    "commonPhase": 73,
+    "cycles": [
+      {
+        "itemId": "asphalt",
+        "pricePhase": 30,
+        "demandPhase": 192
+      },
+      {
+        "itemId": "beam",
+        "pricePhase": 196,
+        "demandPhase": 227
+      },
+      {
+        "itemId": "beet",
+        "pricePhase": 136,
+        "demandPhase": 141
+      },
+      {
+        "itemId": "bitumen",
+        "pricePhase": 56,
+        "demandPhase": 181
+      },
+      {
+        "itemId": "bread",
+        "pricePhase": 80,
+        "demandPhase": 237
+      },
+      {
+        "itemId": "cement",
+        "pricePhase": 189,
+        "demandPhase": 109
+      },
+      {
+        "itemId": "cheese",
+        "pricePhase": 151,
+        "demandPhase": 75
+      },
+      {
+        "itemId": "coke",
+        "pricePhase": 190,
+        "demandPhase": 15
+      },
+      {
+        "itemId": "concrete",
+        "pricePhase": 24,
+        "demandPhase": 132
+      },
+      {
+        "itemId": "conveyor",
+        "pricePhase": 81,
+        "demandPhase": 4
+      },
+      {
+        "itemId": "copper",
+        "pricePhase": 84,
+        "demandPhase": 60
+      },
+      {
+        "itemId": "copper_ore",
+        "pricePhase": 224,
+        "demandPhase": 110
+      },
+      {
+        "itemId": "cream",
+        "pricePhase": 69,
+        "demandPhase": 28
+      },
+      {
+        "itemId": "curd",
+        "pricePhase": 31,
+        "demandPhase": 232
+      },
+      {
+        "itemId": "flour",
+        "pricePhase": 157,
+        "demandPhase": 6
+      },
+      {
+        "itemId": "furniture",
+        "pricePhase": 229,
+        "demandPhase": 86
+      },
+      {
+        "itemId": "glass",
+        "pricePhase": 165,
+        "demandPhase": 14
+      },
+      {
+        "itemId": "grain",
+        "pricePhase": 72,
+        "demandPhase": 141
+      },
+      {
+        "itemId": "gravel",
+        "pricePhase": 18,
+        "demandPhase": 15
+      },
+      {
+        "itemId": "iron_ore",
+        "pricePhase": 199,
+        "demandPhase": 151
+      },
+      {
+        "itemId": "limestone",
+        "pricePhase": 62,
+        "demandPhase": 99
+      },
+      {
+        "itemId": "milk",
+        "pricePhase": 131,
+        "demandPhase": 178
+      },
+      {
+        "itemId": "motor",
+        "pricePhase": 158,
+        "demandPhase": 97
+      },
+      {
+        "itemId": "pastry",
+        "pricePhase": 83,
+        "demandPhase": 17
+      },
+      {
+        "itemId": "plank",
+        "pricePhase": 64,
+        "demandPhase": 15
+      },
+      {
+        "itemId": "sand",
+        "pricePhase": 40,
+        "demandPhase": 234
+      },
+      {
+        "itemId": "soda",
+        "pricePhase": 197,
+        "demandPhase": 1
+      },
+      {
+        "itemId": "steel",
+        "pricePhase": 100,
+        "demandPhase": 107
+      },
+      {
+        "itemId": "steel_sheet",
+        "pricePhase": 115,
+        "demandPhase": 0
+      },
+      {
+        "itemId": "stone",
+        "pricePhase": 175,
+        "demandPhase": 117
+      },
+      {
+        "itemId": "sugar",
+        "pricePhase": 169,
+        "demandPhase": 5
+      },
+      {
+        "itemId": "window",
+        "pricePhase": 42,
+        "demandPhase": 103
+      },
+      {
+        "itemId": "wire",
+        "pricePhase": 115,
+        "demandPhase": 203
+      },
+      {
+        "itemId": "wood",
+        "pricePhase": 160,
+        "demandPhase": 134
+      }
+    ],
+    "baseline": [
+      {
+        "itemId": "asphalt",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "beam",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "beet",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "bitumen",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "bread",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "cement",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "cheese",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "coke",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "concrete",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "conveyor",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "copper",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "copper_ore",
+        "initial": 0,
+        "harvested": 48,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "cream",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "curd",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "flour",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "furniture",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "glass",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "grain",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "gravel",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "iron_ore",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "limestone",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "milk",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "motor",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "pastry",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "plank",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "sand",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "soda",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "steel",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "steel_sheet",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "stone",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "sugar",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "window",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "wire",
+        "initial": 0,
+        "harvested": 0,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      },
+      {
+        "itemId": "wood",
+        "initial": 0,
+        "harvested": 12,
+        "recipeInput": 0,
+        "produced": 0,
+        "exported": 0,
+        "constructionInput": 0
+      }
+    ],
+    "periods": [
+      {
+        "period": 0,
+        "tick": 0,
+        "grossOutputBaseMinor": 0,
+        "internalConsumptionBaseMinor": 0,
+        "stockChangeBaseMinor": 0,
+        "smoothedOutputBaseMinor": 0,
+        "smoothingRemainder": 0,
+        "targetBaseMinor": 55000,
+        "orderedBaseMinor": 54900,
+        "monetaryBudgetMinor": 52457,
+        "externalFundingMinor": 52457,
+        "goods": [
+          {
+            "itemId": "asphalt",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 3303
+          },
+          {
+            "itemId": "beam",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 6522
+          },
+          {
+            "itemId": "beet",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 8,
+            "unitPriceMinor": 327
+          },
+          {
+            "itemId": "bitumen",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 2,
+            "unitPriceMinor": 567
+          },
+          {
+            "itemId": "bread",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 2164
+          },
+          {
+            "itemId": "cement",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 4,
+            "unitPriceMinor": 460
+          },
+          {
+            "itemId": "cheese",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 5296
+          },
+          {
+            "itemId": "coke",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 3,
+            "unitPriceMinor": 370
+          },
+          {
+            "itemId": "concrete",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 3307
+          },
+          {
+            "itemId": "conveyor",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 66147
+          },
+          {
+            "itemId": "copper",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 3672
+          },
+          {
+            "itemId": "copper_ore",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 6,
+            "unitPriceMinor": 412
+          },
+          {
+            "itemId": "cream",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 2727
+          },
+          {
+            "itemId": "curd",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 2879
+          },
+          {
+            "itemId": "flour",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 926
+          },
+          {
+            "itemId": "furniture",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 16238
+          },
+          {
+            "itemId": "glass",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 3327
+          },
+          {
+            "itemId": "grain",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 8,
+            "unitPriceMinor": 300
+          },
+          {
+            "itemId": "gravel",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 2,
+            "unitPriceMinor": 657
+          },
+          {
+            "itemId": "iron_ore",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 6,
+            "unitPriceMinor": 359
+          },
+          {
+            "itemId": "limestone",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 10,
+            "unitPriceMinor": 187
+          },
+          {
+            "itemId": "milk",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 6,
+            "unitPriceMinor": 442
+          },
+          {
+            "itemId": "motor",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 23390
+          },
+          {
+            "itemId": "pastry",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 5081
+          },
+          {
+            "itemId": "plank",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 874
+          },
+          {
+            "itemId": "sand",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 6,
+            "unitPriceMinor": 179
+          },
+          {
+            "itemId": "soda",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 3,
+            "unitPriceMinor": 269
+          },
+          {
+            "itemId": "steel",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 2702
+          },
+          {
+            "itemId": "steel_sheet",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 4691
+          },
+          {
+            "itemId": "stone",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 8,
+            "unitPriceMinor": 290
+          },
+          {
+            "itemId": "sugar",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 1459
+          },
+          {
+            "itemId": "window",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 11935
+          },
+          {
+            "itemId": "wire",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 3241
+          },
+          {
+            "itemId": "wood",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 6,
+            "unitPriceMinor": 498
+          }
+        ]
+      },
+      {
+        "period": 1,
+        "tick": 60,
+        "grossOutputBaseMinor": 30000,
+        "internalConsumptionBaseMinor": 0,
+        "stockChangeBaseMinor": 30000,
+        "smoothedOutputBaseMinor": 15000,
+        "smoothingRemainder": 0,
+        "targetBaseMinor": 55000,
+        "orderedBaseMinor": 54900,
+        "monetaryBudgetMinor": 53222,
+        "externalFundingMinor": 53222,
+        "goods": [
+          {
+            "itemId": "asphalt",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 4307
+          },
+          {
+            "itemId": "beam",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 6158
+          },
+          {
+            "itemId": "beet",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 5,
+            "unitPriceMinor": 276
+          },
+          {
+            "itemId": "bitumen",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 2,
+            "unitPriceMinor": 716
+          },
+          {
+            "itemId": "bread",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 2388
+          },
+          {
+            "itemId": "cement",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 3,
+            "unitPriceMinor": 406
+          },
+          {
+            "itemId": "cheese",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 4423
+          },
+          {
+            "itemId": "coke",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 4,
+            "unitPriceMinor": 328
+          },
+          {
+            "itemId": "concrete",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 4199
+          },
+          {
+            "itemId": "conveyor",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 73018
+          },
+          {
+            "itemId": "copper",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 3906
+          },
+          {
+            "itemId": "copper_ore",
+            "harvested": 48,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 48,
+            "demandQuantity": 5,
+            "unitPriceMinor": 461
+          },
+          {
+            "itemId": "cream",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 3272
+          },
+          {
+            "itemId": "curd",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 3661
+          },
+          {
+            "itemId": "flour",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 2,
+            "unitPriceMinor": 766
+          },
+          {
+            "itemId": "furniture",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 20093
+          },
+          {
+            "itemId": "glass",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 2824
+          },
+          {
+            "itemId": "grain",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 5,
+            "unitPriceMinor": 343
+          },
+          {
+            "itemId": "gravel",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 2,
+            "unitPriceMinor": 840
+          },
+          {
+            "itemId": "iron_ore",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 3,
+            "unitPriceMinor": 345
+          },
+          {
+            "itemId": "limestone",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 8,
+            "unitPriceMinor": 234
+          },
+          {
+            "itemId": "milk",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 3,
+            "unitPriceMinor": 384
+          },
+          {
+            "itemId": "motor",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 20519
+          },
+          {
+            "itemId": "pastry",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 5453
+          },
+          {
+            "itemId": "plank",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 1066
+          },
+          {
+            "itemId": "sand",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 9,
+            "unitPriceMinor": 219
+          },
+          {
+            "itemId": "soda",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 6,
+            "unitPriceMinor": 253
+          },
+          {
+            "itemId": "steel",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 2624
+          },
+          {
+            "itemId": "steel_sheet",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 4186
+          },
+          {
+            "itemId": "stone",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 7,
+            "unitPriceMinor": 247
+          },
+          {
+            "itemId": "sugar",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 1,
+            "unitPriceMinor": 1215
+          },
+          {
+            "itemId": "window",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 15010
+          },
+          {
+            "itemId": "wire",
+            "harvested": 0,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 0,
+            "demandQuantity": 0,
+            "unitPriceMinor": 2872
+          },
+          {
+            "itemId": "wood",
+            "harvested": 12,
+            "produced": 0,
+            "consumed": 0,
+            "exported": 0,
+            "stockChange": 12,
+            "demandQuantity": 4,
+            "unitPriceMinor": 433
+          }
+        ]
+      }
+    ],
+    "orders": [
+      {
+        "definition": {
+          "id": 1025,
+          "itemId": "asphalt",
+          "quantity": 1,
+          "unitPriceMinor": 3303,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1026,
+          "itemId": "beet",
+          "quantity": 8,
+          "unitPriceMinor": 327,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1027,
+          "itemId": "bitumen",
+          "quantity": 2,
+          "unitPriceMinor": 567,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1028,
+          "itemId": "cement",
+          "quantity": 4,
+          "unitPriceMinor": 460,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1029,
+          "itemId": "coke",
+          "quantity": 3,
+          "unitPriceMinor": 370,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1030,
+          "itemId": "concrete",
+          "quantity": 1,
+          "unitPriceMinor": 3307,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1031,
+          "itemId": "copper",
+          "quantity": 1,
+          "unitPriceMinor": 3672,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1032,
+          "itemId": "copper_ore",
+          "quantity": 6,
+          "unitPriceMinor": 412,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1033,
+          "itemId": "cream",
+          "quantity": 1,
+          "unitPriceMinor": 2727,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1034,
+          "itemId": "curd",
+          "quantity": 1,
+          "unitPriceMinor": 2879,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1035,
+          "itemId": "flour",
+          "quantity": 1,
+          "unitPriceMinor": 926,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1036,
+          "itemId": "glass",
+          "quantity": 1,
+          "unitPriceMinor": 3327,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1037,
+          "itemId": "grain",
+          "quantity": 8,
+          "unitPriceMinor": 300,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1038,
+          "itemId": "gravel",
+          "quantity": 2,
+          "unitPriceMinor": 657,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1039,
+          "itemId": "iron_ore",
+          "quantity": 6,
+          "unitPriceMinor": 359,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1040,
+          "itemId": "limestone",
+          "quantity": 10,
+          "unitPriceMinor": 187,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1041,
+          "itemId": "milk",
+          "quantity": 6,
+          "unitPriceMinor": 442,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1042,
+          "itemId": "plank",
+          "quantity": 1,
+          "unitPriceMinor": 874,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1043,
+          "itemId": "sand",
+          "quantity": 6,
+          "unitPriceMinor": 179,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1044,
+          "itemId": "soda",
+          "quantity": 3,
+          "unitPriceMinor": 269,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1045,
+          "itemId": "steel_sheet",
+          "quantity": 1,
+          "unitPriceMinor": 4691,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1046,
+          "itemId": "stone",
+          "quantity": 8,
+          "unitPriceMinor": 290,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1047,
+          "itemId": "wood",
+          "quantity": 6,
+          "unitPriceMinor": 498,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 0,
+        "expiresAtTick": 180,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1103,
+          "itemId": "asphalt",
+          "quantity": 1,
+          "unitPriceMinor": 4307,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1104,
+          "itemId": "beam",
+          "quantity": 1,
+          "unitPriceMinor": 6158,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1105,
+          "itemId": "beet",
+          "quantity": 5,
+          "unitPriceMinor": 276,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1106,
+          "itemId": "bitumen",
+          "quantity": 2,
+          "unitPriceMinor": 716,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1107,
+          "itemId": "bread",
+          "quantity": 1,
+          "unitPriceMinor": 2388,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1108,
+          "itemId": "cement",
+          "quantity": 3,
+          "unitPriceMinor": 406,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1109,
+          "itemId": "cheese",
+          "quantity": 1,
+          "unitPriceMinor": 4423,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1110,
+          "itemId": "coke",
+          "quantity": 4,
+          "unitPriceMinor": 328,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1111,
+          "itemId": "copper_ore",
+          "quantity": 5,
+          "unitPriceMinor": 461,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1112,
+          "itemId": "cream",
+          "quantity": 1,
+          "unitPriceMinor": 3272,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1113,
+          "itemId": "flour",
+          "quantity": 2,
+          "unitPriceMinor": 766,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1114,
+          "itemId": "grain",
+          "quantity": 5,
+          "unitPriceMinor": 343,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1115,
+          "itemId": "gravel",
+          "quantity": 2,
+          "unitPriceMinor": 840,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1116,
+          "itemId": "iron_ore",
+          "quantity": 3,
+          "unitPriceMinor": 345,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1117,
+          "itemId": "limestone",
+          "quantity": 8,
+          "unitPriceMinor": 234,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1118,
+          "itemId": "milk",
+          "quantity": 3,
+          "unitPriceMinor": 384,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1119,
+          "itemId": "plank",
+          "quantity": 1,
+          "unitPriceMinor": 1066,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1120,
+          "itemId": "sand",
+          "quantity": 9,
+          "unitPriceMinor": 219,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1121,
+          "itemId": "soda",
+          "quantity": 6,
+          "unitPriceMinor": 253,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1122,
+          "itemId": "steel",
+          "quantity": 1,
+          "unitPriceMinor": 2624,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1123,
+          "itemId": "steel_sheet",
+          "quantity": 1,
+          "unitPriceMinor": 4186,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1124,
+          "itemId": "stone",
+          "quantity": 7,
+          "unitPriceMinor": 247,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1125,
+          "itemId": "sugar",
+          "quantity": 1,
+          "unitPriceMinor": 1215,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      },
+      {
+        "definition": {
+          "id": 1126,
+          "itemId": "wood",
+          "quantity": 4,
+          "unitPriceMinor": 433,
+          "position": {
+            "x": 33,
+            "z": 40
+          }
+        },
+        "createdTick": 60,
+        "expiresAtTick": 240,
+        "releasedQuantity": 0
+      }
+    ]
+  },
+  "elections": {
+    "nextElectionId": {
+      "value": 1
+    },
+    "nextVotingTick": 600,
+    "mode": "Competitive",
+    "firstVictory": null,
+    "sandboxStartedAtTick": null,
+    "choices": [],
+    "results": [],
+    "voting": null
+  },
+  "population": 220,
+  "unemployed": 220,
+  "employmentGroups": [],
+  "populationGrowth": 0,
+  "ramBytes": null,
+  "ramMeasurementReason": "not measured"
+}

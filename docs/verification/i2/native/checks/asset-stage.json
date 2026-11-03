@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/workspace/Delsk/scripts/prepare_godot_asset_import.py",
+    "--source",
+    "/workspace/Delsk/work/i2/native/source/src/Client.Godot",
+    "--output",
+    "/workspace/Delsk/work/i2/native/assets",
+    "--report",
+    "/workspace/Delsk/work/i2/native/asset-stage.json"
+  ],
+  "timeout_seconds": 30,
+  "started_at": "2026-11-03T21:47:35.291602+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.114,
+  "finished_at": "2026-11-03T21:47:35.405913+00:00"
+}

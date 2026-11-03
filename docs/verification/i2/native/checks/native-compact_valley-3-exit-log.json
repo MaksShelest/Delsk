@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/workspace/Delsk/scripts/verify_platform_probe.py",
+    "--log-prefix",
+    "/workspace/Delsk/work/i2/native/checks/native-compact_valley-3-exit"
+  ],
+  "timeout_seconds": 15,
+  "started_at": "2026-11-03T21:50:14.055878+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.064,
+  "finished_at": "2026-11-03T21:50:14.120114+00:00"
+}

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/workspace/Delsk/scripts/verify_platform_probe.py",
+    "--log-prefix",
+    "/workspace/Delsk/work/i2/native/checks/native-large_districts-3-exit"
+  ],
+  "timeout_seconds": 15,
+  "started_at": "2026-11-03T21:54:49.910764+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.064,
+  "finished_at": "2026-11-03T21:54:49.975309+00:00"
+}

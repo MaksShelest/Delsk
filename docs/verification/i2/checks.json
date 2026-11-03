@@ -1,0 +1,31 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "codeCommit": "f157106a82df8050e8f998c9ec7ee8404e51b9b8",
+  "ordinaryPassed": 44,
+  "developerPassed": 44,
+  "pythonChecks": 47,
+  "researchLabChecks": 64,
+  "runnerProcessChecks": 35,
+  "runnerExports": 21,
+  "runnerExactPairs": 12,
+  "nativeCases": 9,
+  "additionalTrackedCases": 1,
+  "nativePhases": 30,
+  "nativePngs": 70,
+  "uniqueCountsDoNotIncludeRepeatedSubsets": true,
+  "logArchive": {
+    "fileCount": 547,
+    "uncompressedBytes": 457639,
+    "uncompressedSha256": "f70cacc2047fe0f79bc46497ea0d366ba845b58cdedb8e04fd061e893d63e714"
+  },
+  "fixtureArchive": {
+    "fileCount": 143,
+    "uncompressedBytes": 14507431,
+    "uncompressedSha256": "203165cac3523859d0f43e9f1c30a52ee3f8e5ef0c1a20ea9e7f1da56bcf1595"
+  },
+  "codeCiLogArchive": {
+    "fileCount": 39,
+    "uncompressedBytes": 1019939,
+    "uncompressedSha256": "3ca1955e9f8b0083a5a280fd5d959819e9d357a49db1523f5cb823c82cbfd2ac"
+  }
+}

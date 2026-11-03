@@ -1,0 +1,17 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--load",
+    "/workspace/Delsk/work/i2/native/native-compact_valley-10/exit/final.save.json",
+    "--ticks",
+    "99",
+    "--output",
+    "/workspace/Delsk/work/i2/native/native-compact_valley-10/readback"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-03T21:49:08.298097+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 2.173,
+  "finished_at": "2026-11-03T21:49:10.470805+00:00"
+}

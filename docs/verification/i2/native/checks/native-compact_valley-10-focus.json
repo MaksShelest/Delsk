@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+    "--path",
+    "/workspace/Delsk/work/i2/native/source/src/Client.Godot",
+    "--rendering-method",
+    "gl_compatibility",
+    "--audio-driver",
+    "Dummy",
+    "--windowed",
+    "--resolution",
+    "1000x760",
+    "res://I2ControlProbe.tscn",
+    "--",
+    "--touch-controls",
+    "--phase",
+    "focus",
+    "--fixture",
+    "/workspace/Delsk/work/i2/native/native-compact_valley-10/road/after-road",
+    "--output",
+    "/workspace/Delsk/work/i2/native/native-compact_valley-10/focus"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-03T21:48:24.269338+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 18.009,
+  "finished_at": "2026-11-03T21:48:42.277960+00:00"
+}

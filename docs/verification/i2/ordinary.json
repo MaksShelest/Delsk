@@ -1,0 +1,36 @@
+{
+  "suite": "i2",
+  "status": "succeeded",
+  "testsPassed": 44,
+  "testPartitions": [
+    {
+      "file": "tests-i2-0.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-i2-1.trx",
+      "passed": 9
+    },
+    {
+      "file": "tests-i2-2.trx",
+      "passed": 5
+    },
+    {
+      "file": "tests-i2-3.trx",
+      "passed": 16
+    },
+    {
+      "file": "tests-i2-4.trx",
+      "passed": 9
+    },
+    {
+      "file": "tests-i2-5.trx",
+      "passed": 2
+    },
+    {
+      "file": "tests-i2-6.trx",
+      "passed": 2
+    }
+  ],
+  "scope": "Exhaustive ordinary unit phase; runner checks are a separate required gate"
+}
