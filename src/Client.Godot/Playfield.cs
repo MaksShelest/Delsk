@@ -325,6 +325,7 @@ public partial class Playfield : Control
     {
         if (_session is null) return;
         bool paused = _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots || ModelBarrier);
+        if(_stick is not null)_stick.Visible=!paused;
         if(paused&&!_session.Paused){StopHeading();_waitRelease=true;}
         if (_session.Paused != paused) _scheduler.SetPaused(paused);
         FeedbackPause();

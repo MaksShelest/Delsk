@@ -14,7 +14,7 @@ public partial class I2ControlProbe : Control
     private static T Field<T>(object o,string key)=>(T)o.GetType().GetField(key,Flags)!.GetValue(o)!;
     private static void Call(object o,string method,params object[] args)=>o.GetType().GetMethod(method,Flags)!.Invoke(o,args);
     private static void Set(object o,string field,object value)=>o.GetType().GetField(field,Flags)!.SetValue(o,value);
-    private void Progress(string name)=>System.IO.File.AppendAllText(_output+"/progress.jsonl",JsonSerializer.Serialize(new{phase=name})+"\n");
+    private void Progress(string name)=>System.IO.File.AppendAllText(_output+"/progress.jsonl",JsonSerializer.Serialize(new{phase=name,utc=DateTime.UtcNow})+"\n");
     private void Check(bool value,string name)
     {if(!value)throw new InvalidOperationException(name);_checks.Add(name);System.IO.File.AppendAllText(_output+"/progress.jsonl",JsonSerializer.Serialize(new{name,tick=_session?.Engine.Tick})+"\n");}
     private async Task Frames(int count=2){for(int n=0;n<count;n++)await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);}
@@ -68,9 +68,10 @@ public partial class I2ControlProbe : Control
             Cell Read(string key){var p=plan.GetProperty(key);return new(p.GetProperty("x").GetInt32(),p.GetProperty("z").GetInt32());}
             var at=Read("cell");var direction=Read("direction");string map=plan.GetProperty("map").GetString()!;
             _app=GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();AddChild(_app);await Frames();_app.SetProcess(false);Progress("client-ready");
-            Call(_app,"DismissMaps");Set(_app,"_mapKey",PlayMaps.KeyForScenario(map));Call(_app,"Start","economy",false);await Frames();_app.SetProcess(false);Progress("map-ready");
+            Call(_app,"DismissMaps");Set(_app,"_mapKey",PlayMaps.KeyForScenario(map));
             string save=typeof(Playfield).GetProperty("SavePath",Flags)!.GetValue(_app)!.ToString()!;
-            System.IO.File.Copy(fixture+".save.json",save,true);Call(_app,"Load");await Frames();Call(_app,"ContinueGame");await Frames();_app.SetProcess(false);
+            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(save)!);System.IO.File.Copy(fixture+".save.json",save,true);Progress("save-copied");
+            Call(_app,"Load");Progress("session-loaded");await Frames();Call(_app,"ContinueGame");await Frames();_app.SetProcess(false);
             _app.Notification((int)NotificationApplicationFocusIn);_app._Process(0);_app._Process(0);
             _session=Field<GameSession>(_app,"_session");_session.SetPaused(false);Progress("loaded");
             Check(_session.Engine.UsesFreeVehicleControl,"I2 saved profile");Check(_session.Engine.Configuration().Participants.Length==plan.GetProperty("count").GetInt32()+1,"NPC roster");
@@ -125,6 +126,7 @@ public partial class I2ControlProbe : Control
             foreach(string language in new[]{"ru","en"})
             {
                 Set(_app,"_language",language);Call(_app,"OpenHelp","basics");await Frames(2);
+                Check(!stick.IsVisibleInTree(),"joystick hidden in help "+language);
                 var help=Field<HelpOverlay>(_app,"_helpOverlay");var text=(string)help.GetType().GetMethod("MovementHelp",Flags)!.Invoke(help,[])!;
                 Check(text.Contains(language=="ru"?"0,5 с":"0.5 s"),"I2 help "+language);
                 await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);GetViewport().GetTexture().GetImage().SavePng(_output+"/help-"+language+".png");Call(_app,"CloseHelp");
