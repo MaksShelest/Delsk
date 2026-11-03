@@ -13,7 +13,10 @@ public partial class VirtualJoystick : Control
     public VirtualJoystick()
     {
         Name="TravelJoystick";CustomMinimumSize=new(144,144);MouseFilter=MouseFilterEnum.Stop;
-        SetAnchorsAndOffsetsPreset(LayoutPreset.BottomLeft);OffsetLeft=20;OffsetTop=-170;OffsetRight=164;OffsetBottom=-26;ZIndex=20;
+        SetAnchorsAndOffsetsPreset(LayoutPreset.BottomLeft);OffsetLeft=20;OffsetTop=-300;OffsetRight=164;OffsetBottom=-156;ZIndex=20;
+        UiSafeArea.Track(this,()=>{var safe=UiSafeArea.Read(this);
+            OffsetLeft=20+(float)safe.Left;OffsetRight=164+(float)safe.Left;
+            OffsetTop=-300-(float)safe.Bottom;OffsetBottom=-156-(float)safe.Bottom;});
     }
     public void Clear(){_finger=-1;_point=Vector2.Zero;_stick.Clear();QueueRedraw();}
     private void Sample(Vector2 at)

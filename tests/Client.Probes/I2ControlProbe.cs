@@ -40,15 +40,22 @@ public partial class I2ControlProbe : Control
         {
             _session.AdvanceTravelQuantum();copy?.AdvanceTravelQuantum();
             if(copy is not null)Check(copy.Engine.ComputeStateHash()==_session.Engine.ComputeStateHash(),"mid-turn exact continuation");
-            Call(_app,"Refresh");await Frames(1);
         }
+        // Normalize every Core quantum; render once per sampled input interval.
+        // Scene() independently waits for interpolation and compares physical coordinates.
+        Call(_app,"Refresh");await Frames(1);
     }
     private async Task Scene(string name)
     {
-        Call(_app,"Refresh");await Frames(10);var stage=Field<PresentationStage>(_app,"_stage");
+        Call(_app,"Refresh");var stage=Field<PresentationStage>(_app,"_stage");
         var frame=Presentation.Read(_session.Engine.Configuration(),_session.Engine,1);var v=frame.Vehicles.Single(v=>v.Id==_vehicle);
         var expected=new Vector3(v.X+(v.OffsetX-500)/1000f,.07f,v.Z+(v.OffsetZ-500)/1000f);
-        Check(stage.GetNode<Node3D>("Vehicle_"+_vehicle).Position.DistanceTo(expected)<.003f,"Core/scene position "+name);
+        var node=stage.GetNode<Node3D>("Vehicle_"+_vehicle);
+        float angle=Mathf.Atan2(-v.FacingX,-v.FacingZ);
+        bool Aligned()=>node.Position.DistanceTo(expected)<.003f&&Math.Abs(Mathf.AngleDifference(node.Rotation.Y,angle))<.003f;
+        for(int n=0;n<20&&!Aligned();n++)await Frames(1);
+        await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
+        Check(Aligned(),"Core/scene position and bearing "+name);
         GetViewport().GetTexture().GetImage().SavePng(_output+"/"+name+".png");
     }
     public override async void _Ready()
@@ -112,7 +119,17 @@ public partial class I2ControlProbe : Control
             Check(_session.Engine.TravelOf(new(1)).HeadingX==1,"native touch joystick sampled");
             Input.ParseInputEvent(new InputEventScreenTouch{WindowId=GetWindow().GetWindowId(),Index=0,Position=centre+new Vector2(220,0),Pressed=false});await Frames(2);_app._Process(0);
             Check(_session.Engine.TravelOf(new(1)).HeadingX==0&&_session.Engine.TravelOf(new(1)).HeadingZ==0,"touch release outside control stops");
-            await Quanta(15);Step(new(ActionKind.LeaveVehicle));Check(_session.Engine.InspectFleet()!.Vehicles.Single().Driver==0,"stop and leave");
+            await Quanta(15);
+            IEnumerable<Node> Descendants(Node n)=>n.GetChildren().SelectMany(child=>new[]{child}.Concat(Descendants(child)));
+            Check(Descendants(_app).OfType<Button>().Where(b=>b.IsVisibleInTree()).All(b=>!b.GetGlobalRect().Intersects(stick.GetGlobalRect())),"joystick leaves action buttons accessible");
+            foreach(string language in new[]{"ru","en"})
+            {
+                Set(_app,"_language",language);Call(_app,"OpenHelp","basics");await Frames(2);
+                var help=Field<HelpOverlay>(_app,"_helpOverlay");var text=(string)help.GetType().GetMethod("MovementHelp",Flags)!.Invoke(help,[])!;
+                Check(text.Contains(language=="ru"?"0,5 с":"0.5 s"),"I2 help "+language);
+                await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);GetViewport().GetTexture().GetImage().SavePng(_output+"/help-"+language+".png");Call(_app,"CloseHelp");
+            }
+            Step(new(ActionKind.LeaveVehicle));Check(_session.Engine.InspectFleet()!.Vehicles.Single().Driver==0,"stop and leave");
             CheckpointStore.Save(_session,_output+"/final.save.json");Check(CheckpointStore.Load(_output+"/final.save.json").Session!.Engine.ComputeStateHash()==_session.Engine.ComputeStateHash(),"native save/readback");
             System.IO.File.WriteAllText(_output+"/native.json",JsonSerializer.Serialize(new{status="succeeded",map,npcCount=plan.GetProperty("count").GetInt32(),checks=_checks,preparedFunding=true,scope="Linux Mono, software GL, synthetic native keyboard/touch. Ordinary purchase/board commands; prepared funds, no earning or physical device claim."}));GetTree().Quit();
         }
