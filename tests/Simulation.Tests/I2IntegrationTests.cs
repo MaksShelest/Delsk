@@ -42,10 +42,12 @@ public class I2IntegrationTests
         I2Fixture.ExactQuanta(s,23);Assert.True(s.Engine.Observe(new(1)).Participant.Position.X>8);
         s.SetTravelHeading(new(1),0,0);s.CompleteTravelTick();RoadE2Tests.Exact(s,"i2-intersection-"+topology);
     }
+    [Fact]public void RealWideExtractionKeepsItsBodyInsideTheRoadAndRestoresThroughABypass()
+        =>RoadFreightE2Tests.CheckExtraction(false,MovementRules.I1,freeControl:true);
     [Fact]public void TractD1UsesTheSameManualInputAndRetainsItsTenKmhCap()
     {
         var(s,car)=I2Fixture.Car(model:"trakt_d1");s.SetTravelHeading(new(1),1,0);I2Fixture.Quanta(s,30);
-        var start=s.Engine.Observe(new(1)).Participant.Position;var first=s.Engine.VehicleTravelOf(car.Id);
+        var start=s.Engine.Observe(new(1)).Participant.Position;var first=s.Engine.VehicleTravelOf(car.Id);Assert.Equal(100,Math.Abs(first.OffsetZ-500));
         I2Fixture.Quanta(s,20);var end=s.Engine.Observe(new(1)).Participant.Position;var last=s.Engine.VehicleTravelOf(car.Id);
         Assert.Equal(1500,(end.X-start.X)*1000+last.OffsetX-first.OffsetX);I2Fixture.ExactQuanta(s,7);
     }

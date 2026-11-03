@@ -26,9 +26,9 @@ public class RoadFreightE2Tests
         Assert.Contains(s.Engine.Ledger(),l=>l.Reason=="RoadWages");Assert.Contains(s.Engine.Ledger(),l=>l.Reason=="RoadOrderReward");RoadE2Tests.Exact(s);
     }
     [Fact]public void ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad()=>CheckExtraction(false);
-    internal static void CheckExtraction(bool fast,MovementRules? movement=null)
+    internal static void CheckExtraction(bool fast,MovementRules? movement=null,bool freeControl=false)
     {
-        var d=RoadE2Tests.Prepared();if(movement is not null)d=d with{Economy=d.Economy! with{Movement=movement}};if(fast)d=d with{Economy=d.Economy! with{Movement=new()}};var source=d.ResourceNodes.Single(r=>r.ItemId=="wood") with{Position=new(0,3),Rules=new(Public:false,InitialOwner:2,Capacity:2,RegenerationQuantity:0)};var target=new Cell(20,3);
+        var d=RoadE2Tests.Prepared();if(freeControl)d=d with{Economy=d.Economy! with{VehicleControl=VehicleControlRules.I2}};if(movement is not null)d=d with{Economy=d.Economy! with{Movement=movement}};if(fast)d=d with{Economy=d.Economy! with{Movement=new()}};var source=d.ResourceNodes.Single(r=>r.ItemId=="wood") with{Position=new(0,3),Rules=new(Public:false,InitialOwner:2,Capacity:2,RegenerationQuantity:0)};var target=new Cell(20,3);
         d=d with{ResourceNodes=[..d.ResourceNodes.Select(r=>r.ItemId=="wood"?source:r),source with{Position=target,Rules=new(Public:false,InitialOwner:2)},source with{Position=new(21,3),Rules=new(Public:true)}],
             Layout=d.Layout! with{ResourceDistricts=[..d.Layout!.ResourceDistricts.Select(r=>r.Item=="wood"?r with{Cells=[source.Position,target,new(21,3)],PublicCells=[new(21,3)]}:r)]}};
         var s=new GameSession(new(d));var paver=RoadE2Tests.Paver(s);RoadE2Tests.Step(s,new(ActionKind.LeaveVehicle));
@@ -38,19 +38,25 @@ public class RoadFreightE2Tests
         var machine=s.Engine.Observe(new(2)).OwnEquipment.Single();
         RoadE2Tests.Step(s,new(ActionKind.SetExtractionRoute,Equipment:machine.Id,Stops:[target],Enabled:true),2);
         RoadE2Tests.Step(s,new(ActionKind.SetEquipmentMode,Equipment:machine.Id,Mode:EquipmentMode.Automatic),2);
-        bool bypass=false,restored=false;int bound=700;
+        bool bypass=false,restored=false,checkedWidth=false;int bound=700;
         while(s.Engine.Observe(new(2)).OwnEquipment.Single().Position!=target&&bound-->0)
         {
             var e=s.Engine.Observe(new(2)).OwnEquipment.Single();Assert.NotEqual(new Cell(10,1),e.Position);
+            if(freeControl&&s.Engine.InspectRoads()!.Cells.Any(c=>c.Cell==e.Position&&c.Level>0)&&
+                s.Engine.InspectRoads()!.Traffic.FirstOrDefault(t=>t.VehicleId==e.Id.Value)?.Steering is not {TurnQuanta:>0})
+            {
+                var pose=s.Engine.VehicleTravelOf(e.Id.Value);int across=pose.FacingX!=0?Math.Abs(pose.OffsetZ-500):Math.Abs(pose.OffsetX-500);
+                Assert.True(across+360<=500,"The .72-cell extraction body must fit its straight road cell");checkedWidth=true;
+            }
             Assert.Equal(e.Position,StorageC1Tests.Inventory(s,e.StorageId).Position);bypass|=e.Position.Z==2&&e.Position.X is >=9 and <=11;
             if(!restored&&e.Position==new Cell(10,2)){s=CheckpointStore.Decode(CheckpointStore.Encode(s));restored=true;}
             s.Step();
         }
         if(bound<=0&&Environment.GetEnvironmentVariable("DELSK_E2_DEBUG") is {} debug)
         {Directory.CreateDirectory(debug);File.WriteAllText(Path.Combine(debug,"extraction-stopped.json"),s.Engine.CreateCheckpointJson());}
-        Assert.True(bound>0,"Extraction movement did not arrive");Assert.True(bypass,"Extraction did not physically use the bypass");Assert.True(restored,"Expected a restore inside the bypass");s.AdvanceTo(s.Engine.Tick+20);
+        if(freeControl)Assert.True(checkedWidth,"Expected a straight road width check");Assert.True(bound>0,"Extraction movement did not arrive");Assert.True(bypass,"Extraction did not physically use the bypass");Assert.True(restored,"Expected a restore inside the bypass");s.AdvanceTo(s.Engine.Tick+20);
         Assert.True(FleetE1Tests.Stock(s,machine.StorageId,"wood")>0);Assert.Single(s.Engine.Inspect().Equipment);Assert.Single(s.Engine.InspectFleet()!.Vehicles);
-        Assert.Contains(s.Engine.Ledger(),l=>l.Reason=="EquipmentTravelWages");RoadE2Tests.Exact(s,fast?"h2-extraction":nameof(ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad));
+        Assert.Contains(s.Engine.Ledger(),l=>l.Reason=="EquipmentTravelWages");RoadE2Tests.Exact(s,freeControl?"i2-extraction":fast?"h2-extraction":nameof(ExistingExtractionMachineUsesSameBypassAndContinuesMiningAfterLoad));
     }
     internal static ScenarioDefinition Definition()
     {

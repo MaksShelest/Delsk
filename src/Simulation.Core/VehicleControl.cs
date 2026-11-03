@@ -60,29 +60,45 @@ public sealed partial class SimulationEngine
         !_resources.Values.Any(r=>r.Definition.Position==cell&&!r.Rules.Public&&r.Owner!=body.Owner.Value&&!(r.Tenant==body.Owner.Value&&Tick<r.LeaseUntil));
     private bool PedestrianAt(Cell cell,long driver)=>_actors.Values.Any(a=>a.Id!=driver&&DrivenVehicle(a.Id) is null&&
         (a.Position==cell||a.Job is {Kind:"Move",SegmentTicks:>0} job&&job.PathIndex<job.Path.Length-1&&job.Path[job.PathIndex+1]==cell));
+    private IEnumerable<(int X,int Z,int Ex,int Ez,int Radius)> SteeringBounds(RoadBody body,VehicleSteering s)
+    {
+        var at=VehicleCargo(body).Position;bool wide=WideBody(body);
+        int halfLength=wide?430:400,halfWidth=wide?380:190;
+        int radius=SteeringRadius(body,at);var from=BearingVector(s.TurnFrom);
+        int sx=-from.Z*radius/1000,sz=from.X*radius/1000;
+        //32 fixed samples plus4/1000 margin bound the piecewise-linear bearing
+        // and quadratic clearance between samples. Other bodies use these same boxes.
+        for(int n=0;n<=32;n++)
+        {
+            var f=BearingVector(s.TurnFrom+s.TurnDelta*n/32);
+            int x=500-f.Z*radius/1000+(s.StartLaneX-sx)*(32-n)/32+s.ClearanceX*4*n*(32-n)/1024;
+            int z=500+f.X*radius/1000+(s.StartLaneZ-sz)*(32-n)/32+s.ClearanceZ*4*n*(32-n)/1024;
+            int norm=Math.Max(1,IntegerDistance(f.X,f.Z));
+            int ex=(Math.Abs(f.X)*halfLength+Math.Abs(f.Z)*halfWidth+norm-1)/norm+4;
+            int ez=(Math.Abs(f.Z)*halfLength+Math.Abs(f.X)*halfWidth+norm-1)/norm+4;
+            yield return(at.X*1000+x,at.Z*1000+z,ex,ez,IntegerDistance(halfLength,halfWidth)+5);
+        }
+    }
     private ImmutableArray<Cell> SteeringFootprint(RoadBody body,VehicleSteering s)
     {
-        var at=VehicleCargo(body).Position;var cells=new HashSet<Cell>();
-        bool tracked=_vehicles.TryGetValue(body.Id,out var v)&&v.ModelId=="trakt_d1";
-        int halfLength=tracked?430:400,halfWidth=tracked?380:190;
-        int radius=RoadLevel(at)>0?Control.LaneOffset:0;var from=BearingVector(s.TurnFrom);
-        int sx=-from.Z*radius/1000,sz=from.X*radius/1000;
-        int Floor(int value)=>value>=0?value/1000:(value-999)/1000;
-        // Conservative boxes bound the actual oriented body along the compact arc.
-        for(int n=0;n<=16;n++)
-        {
-            var f=BearingVector(s.TurnFrom+s.TurnDelta*n/16);
-            int x=500-f.Z*radius/1000+(s.StartLaneX-sx)*(16-n)/16+s.ClearanceX*4*n*(16-n)/256;
-            int z=500+f.X*radius/1000+(s.StartLaneZ-sz)*(16-n)/16+s.ClearanceZ*4*n*(16-n)/256;
-            int ex=(Math.Abs(f.X)*halfLength+Math.Abs(f.Z)*halfWidth+999)/1000;
-            int ez=(Math.Abs(f.Z)*halfLength+Math.Abs(f.X)*halfWidth+999)/1000;
-            for(int cz=Floor(z-ez);cz<=Floor(z+ez);cz++)for(int cx=Floor(x-ex);cx<=Floor(x+ex);cx++)cells.Add(new(at.X+cx,at.Z+cz));
-        }
+        var cells=new HashSet<Cell>();int Floor(int value)=>value>=0?value/1000:(value-999)/1000;
+        foreach(var b in SteeringBounds(body,s))
+            for(int z=Floor(b.Z-b.Ez);z<=Floor(b.Z+b.Ez);z++)
+                for(int x=Floor(b.X-b.Ex);x<=Floor(b.X+b.Ex);x++)
+                {
+                    int dx=Math.Max(0,Math.Max(x*1000-b.X,b.X-(x+1)*1000));
+                    int dz=Math.Max(0,Math.Max(z*1000-b.Z,b.Z-(z+1)*1000));
+                    if((long)dx*dx+(long)dz*dz<=(long)b.Radius*b.Radius)cells.Add(new(x,z));
+                }
         return [..cells.OrderBy(c=>c.Z).ThenBy(c=>c.X)];
     }
     private bool TurnReservedByOther(long vehicle,Cell cell)=>UsesFreeVehicleControl&&_traffic.Values.Any(t=>t.VehicleId!=vehicle&&IsSteering(t)&&
         t.Steering is {ReservedCells.IsDefaultOrEmpty:false} s&&s.ReservedCells.Contains(cell));
-    private bool LaneBody(RoadBody body)=>_vehicles.TryGetValue(body.Id,out var vehicle)&&vehicle.ModelId!="trakt_d1";
+    private bool WideBody(RoadBody body)=>!_vehicles.TryGetValue(body.Id,out var vehicle)||vehicle.ModelId=="trakt_d1";
+    private bool LaneBody(RoadBody body)=>!WideBody(body);
+    // A .76-cell body must fit inside a single cell while travelling straight.
+    // Wide bodies keep exclusive reservations and a smaller right offset.
+    private int SteeringRadius(RoadBody body,Cell cell)=>RoadLevel(cell)>0?Math.Min(Control.LaneOffset,WideBody(body)?100:Control.LaneOffset):0;
     private bool OpposingLaneBodies(long vehicle,long other,Cell cell)
     {
         if(!UsesFreeVehicleControl||FindBody(vehicle) is not {} a||FindBody(other) is not {} b||!LaneBody(a)||!LaneBody(b)||
@@ -107,26 +123,26 @@ public sealed partial class SimulationEngine
         if(before!=after)
         {var at=VehicleCargo(body).Position;Emit("TrafficLaneState",body.Owner.Value,body.Id,quantity:after,reason:at.X+","+at.Z);}
     }
-    private bool CanSteer(RoadBody body,IEnumerable<Cell> footprint,VehicleSteering? maneuver=null)
+    private bool CanSteer(RoadBody body,IEnumerable<Cell> footprint,VehicleSteering maneuver)
     {
         var cells=footprint.ToHashSet();var at=VehicleCargo(body).Position;
         if(cells.Any(c=>!ControlCellAllowed(body,c)||WorkBlocks(body.Id,c)||TurnReservedByOther(body.Id,c))||
             _traffic.Values.Any(t=>t.VehicleId!=body.Id&&HasRoadProgress(t)&&t.Index<t.Path.Length-1&&cells.Contains(t.Path[t.Index+1])))return false;
-        bool tracked=_vehicles.TryGetValue(body.Id,out var own)&&own.ModelId=="trakt_d1";
-        int radius=RoadLevel(at)>0?Control.LaneOffset:0;
-        int extent=IntegerDistance(tracked?430:400,(tracked?380:190)+radius)+2;
-        maneuver??=_traffic.GetValueOrDefault(body.Id)?.Steering;
-        if(maneuver is not null)extent+=Math.Max(Math.Abs(maneuver.ClearanceX),Math.Abs(maneuver.ClearanceZ));
-        if(radius==0&&_traffic.GetValueOrDefault(body.Id)?.Steering is {} s)extent+=IsSteering(Traffic(body.Id))?Math.Max(Math.Abs(s.StartLaneX),Math.Abs(s.StartLaneZ)):Math.Max(Math.Abs(s.LaneX),Math.Abs(s.LaneZ));
-        int cx=at.X*1000+500,cz=at.Z*1000+500;
-        bool Overlap(int x,int z,int ex,int ez)=>Math.Abs(x-cx)<extent+ex&&Math.Abs(z-cz)<extent+ez;
+        var bounds=SteeringBounds(body,maneuver).ToArray();
+        bool Overlap(int x,int z,int ex,int ez)=>bounds.Any(b=>
+        {
+            int dx=Math.Abs(x-b.X),dz=Math.Abs(z-b.Z);
+            if(dx>=b.Ex+ex||dz>=b.Ez+ez)return false;
+            int nearX=Math.Max(0,dx-ex),nearZ=Math.Max(0,dz-ez);
+            return (long)nearX*nearX+(long)nearZ*nearZ<(long)b.Radius*b.Radius;
+        });
         foreach(var other in RoadBodies().Where(b=>b.Id!=body.Id))
         {
             var t=VehicleTravelOf(other.Id);var cell=VehicleCargo(other).Position;
-            bool wide=!_vehicles.TryGetValue(other.Id,out var v)||v.ModelId=="trakt_d1";
+            bool wide=WideBody(other);
             int fx=Math.Abs(t.FacingX),fz=Math.Abs(t.FacingZ);if(fx<=1&&fz<=1){fx*=1000;fz*=1000;}
-            int length=wide?430:400,width=wide?380:190;
-            if(Overlap(cell.X*1000+t.OffsetX,cell.Z*1000+t.OffsetZ,(fx*length+fz*width+999)/1000,(fz*length+fx*width+999)/1000))return false;
+            int length=wide?430:400,width=wide?380:190,norm=Math.Max(1,IntegerDistance(fx,fz));
+            if(Overlap(cell.X*1000+t.OffsetX,cell.Z*1000+t.OffsetZ,(fx*length+fz*width+norm-1)/norm+1,(fz*length+fx*width+norm-1)/norm+1))return false;
         }
         foreach(var stock in _dealerStock.Where(v=>v.Position!=at))
             if(Overlap(stock.Position.X*1000+500,stock.Position.Z*1000+500,stock.ModelId=="trakt_d1"?380:190,stock.ModelId=="trakt_d1"?430:400))return false;
@@ -192,7 +208,7 @@ public sealed partial class SimulationEngine
         int q=steering.TurnQuantum+1,total=steering.TurnQuanta;
         int bearing=NormalizeBearing(steering.TurnFrom+steering.TurnDelta*q/total);
         var from=BearingVector(steering.TurnFrom);var facing=BearingVector(bearing);
-        int radius=RoadLevel(VehicleCargo(body).Position)>0?Control.LaneOffset:0;
+        int radius=SteeringRadius(body,VehicleCargo(body).Position);
         int sx=-from.Z*radius/1000,sz=from.X*radius/1000;
         var changed=steering with{Bearing=bearing,TurnQuantum=q,
             LaneX=-facing.Z*radius/1000+(steering.StartLaneX-sx)*(total-q)/total+steering.ClearanceX*4*q*(total-q)/(total*total),
@@ -210,14 +226,14 @@ public sealed partial class SimulationEngine
     private long AlignLane(RoadBody body,long timeLeft)
     {
         var t=Traffic(body.Id);var steering=Steering(body,t);var at=VehicleCargo(body).Position;
-        int radius=RoadLevel(at)>0?Control.LaneOffset:0;
+        int radius=SteeringRadius(body,at);
         int tx=-body.FacingZ*radius,tz=body.FacingX*radius;
         int Approach(int value,int target)=>value+Math.Clamp(target-value,-40,40);
         var changed=steering with{LaneX=Approach(steering.LaneX,tx),LaneZ=Approach(steering.LaneZ,tz),Bearing=Bearing(body.FacingX,body.FacingZ)};
         int distance=IntegerDistance(changed.LaneX-steering.LaneX,changed.LaneZ-steering.LaneZ);
         if(distance==0){if(t.Steering is null)WriteSteering(body,t with{Steering=steering});return timeLeft;}
         var sweep=steering with{TurnFrom=steering.Bearing,TurnDelta=0,StartLaneX=steering.LaneX,StartLaneZ=steering.LaneZ};
-        if(!CanSteer(body,SteeringFootprint(body,sweep)))return timeLeft;
+        if(!CanSteer(body,SteeringFootprint(body,sweep),sweep))return timeLeft;
         long rate=RoadMotionRate(RoadBodySpeed(at,at,body));
         long needed=(distance*800L*MotionTimeScale+rate*1000-1)/(rate*1000);
         if(needed>timeLeft)return timeLeft;
