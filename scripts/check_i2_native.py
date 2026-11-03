@@ -36,6 +36,7 @@ if previous:
 else:
  check('restore',180,['dotnet','restore',project/'Delsk.Client.csproj','--locked-mode','--disable-parallel','-m:1'])
  check('ordinary-build',180,['dotnet','build',project/'Delsk.Client.csproj','--no-restore','--disable-build-servers','-m:1'])
+check('runner-build',180,['dotnet','build',ROOT/'src/Research.Runner/Research.Runner.csproj','-c','Release','--no-restore','--disable-build-servers','-m:1'])
 check('ordinary-audit',120,['dotnet','run','--project',ROOT/'tools/AssemblyAudit','-c','Release','--',project/'.godot/mono/temp/bin/Debug'])
 shutil.copytree(ordinary,out/'ordinary-bin')
 (out/'ordinary-cache.json').write_text(json.dumps(dict(sources=runtime_inputs,binaries={str(f.relative_to(ordinary)):hashlib.sha256(f.read_bytes()).hexdigest() for f in ordinary.rglob('*') if f.is_file()}),indent=2)+'\n')
@@ -49,7 +50,16 @@ check('platform-smoke',30,[a.godot,'--headless','--path',project,'--audio-driver
 check('platform-log',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks/platform-smoke'])
 shutil.copyfile(ROOT/'tests/Client.Probes/I2ControlProbe.cs',project/'I2ControlProbe.cs')
 (project/'I2ControlProbe.tscn').write_text('[gd_scene load_steps=2 format=3]\n[ext_resource type="Script" path="res://I2ControlProbe.cs" id="1"]\n[node name="I2ControlProbe" type="Control"]\nlayout_mode=3\nanchors_preset=15\nanchor_right=1.0\nanchor_bottom=1.0\nscript=ExtResource("1")\n')
-check('isolated-probe-build',180,['dotnet','build',project/'Delsk.Client.csproj','--no-restore','--disable-build-servers','-m:1'])
+# Ordinary sources/binaries were built or verified above; only add the isolated probe.
+references={name:digest for name,digest in json.loads((out/'ordinary-cache.json').read_text())['binaries'].items() if name.endswith('.dll') and name!='Delsk.Client.dll'}
+# A prior isolated build can have re-emitted identical sources under a different
+# source path. Restore its copy-local outputs to the verified ordinary references.
+for folder in (stage/'src').glob('*/bin/Debug/net10.0'):
+ for name in ['Simulation.Core.dll','Simulation.Hosting.dll','Agents.Algorithmic.dll','Agents.Llm.dll']:
+  if (folder/name).is_file():shutil.copyfile(ordinary/name,folder/name)
+check('isolated-probe-build',180,['dotnet','build',project/'Delsk.Client.csproj','--no-restore','--disable-build-servers','-m:1','-p:BuildProjectReferences=false'])
+for name,digest in references.items():assert hashlib.sha256((ordinary/name).read_bytes()).hexdigest()==digest,'Probe changed a frozen runtime reference: '+name
+assert all(hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest for name,digest in inputs.items()),'Native inputs changed before window launch'
 with (out/'xvfb.log').open('w') as log:
  server=subprocess.Popen([a.xvfb,':'+str(a.display),'-screen','0','1024x800x24','-nolisten','unix','-listen','tcp','-ac'],stdout=log,stderr=log)
  try:
@@ -60,17 +70,24 @@ with (out/'xvfb.log').open('w') as log:
     with socket.create_connection(('127.0.0.1',6000+a.display),timeout=.1):ready=True;break
    except OSError:time.sleep(.1)
   if not ready:raise RuntimeError('Owned Xvfb did not become ready')
-  env|={'DISPLAY':'127.0.0.1:'+str(a.display)+'.0','LIBGL_ALWAYS_SOFTWARE':'1'}
+  env|={'DISPLAY':'127.0.0.1:'+str(a.display)+'.0','LIBGL_ALWAYS_SOFTWARE':'1','LP_NUM_THREADS':'2'}
   cases=sorted(a.fixtures.resolve().glob('native-*-plan.json'))
   if a.case:cases=[f for f in cases if f.name==a.case+'-plan.json']
   assert cases,'No native fixtures'
   for plan in cases:
    name=plan.name.removesuffix('-plan.json');fixture=a.fixtures.resolve()/name
-   # I2's new complete purchase/drive/exit/reentry sequence is a bounded UI scenario.
-   # The retained platform smoke above remains30s; the original I2 timeout is retained.
-   check(name,120,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','--windowed','--resolution','1000x760','res://I2ControlProbe.tscn','--','--touch-controls','--fixture',fixture,'--output',out/name],env)
-   check(name+'-log',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks'/name])
-   assert json.loads((out/name/'native.json').read_text())['status']=='succeeded'
+   # Preserve the complete chain across an exact saved boundary;120s per phase.
+   # The retained ordinary platform smoke remains30s.
+   for phase in ['road','focus','exit']:
+    source_fixture=fixture if phase=='road' else out/name/('road/after-road' if phase=='focus' else 'focus/after-focus')
+    target=out/name/phase
+    check(name+'-'+phase,120,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','--windowed','--resolution','1000x760','res://I2ControlProbe.tscn','--','--touch-controls','--phase',phase,'--fixture',source_fixture,'--output',target],env)
+    check(name+'-'+phase+'-log',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks'/(name+'-'+phase)])
+    assert json.loads((target/'native.json').read_text())['status']=='succeeded'
+   native=json.loads((out/name/'exit/native.json').read_text());readback=out/name/'readback'
+   check(name+'-readback',120,['dotnet',ROOT/'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll','--load',out/name/'exit/final.save.json','--ticks',native['tick'],'--output',readback])
+   assert json.loads((readback/'summary.json').read_text())['stateHash']==native['stateHash'],'Native/runner save readback differs'
+
 
  finally:
   server.terminate()
