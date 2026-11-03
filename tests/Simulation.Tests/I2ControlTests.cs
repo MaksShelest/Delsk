@@ -54,6 +54,26 @@ internal static class I2Fixture
 
 public class I2SteeringTests
 {
+    [Fact]public void OffroadUsesTenKmhWithoutAnyLaneAttraction()
+    {
+        var(s,car)=I2Fixture.Car(offroad:true);s.SetTravelHeading(new(1),1,0);I2Fixture.Quanta(s,20);
+        var at=s.Engine.Observe(new(1)).Participant.Position;var start=s.Engine.VehicleTravelOf(car.Id);I2Fixture.Quanta(s,10);
+        var finish=s.Engine.VehicleTravelOf(car.Id);
+        Assert.Equal(750,(s.Engine.Observe(new(1)).Participant.Position.X-at.X)*1000+finish.OffsetX-start.OffsetX);
+        Assert.Equal(500,finish.OffsetZ);I2Fixture.Evidence("offroad",new{distance=750,quanta=10,nominal=10});
+    }
+    [Fact]public void RemainingEtaRetainsTheTimeForAFutureCorner()
+    {
+        var d=I2Fixture.Definition();Cell[] branch=[new(8,2),new(8,3),new(8,4),new(9,4)];
+        d=d with{Layout=d.Layout! with{InitialCityDirtCells=[..d.Layout.InitialCityDirtCells.Concat(branch)],RoadCenterCells=[..d.Layout.RoadCenterCells.Concat(branch)],RoadCorridorCells=[..d.Layout.RoadCorridorCells.Concat(branch).Distinct()]}};
+        var(s,car)=I2Fixture.Car(definition:d);I2Fixture.Move(s,new(8,1));var target=new Cell(9,4);
+        Assert.Equal(4,MovementTiming.PersonalTicks(s.Engine.ObserveController(new(1),true),new(8,1),target));
+        I2Fixture.Step(s,new(ActionKind.MoveTo,Target:target));long tick=s.Engine.Tick;
+        Assert.Equal(tick+4,s.Engine.Observe(new(1)).Participant.ArrivalTick);s.Step();
+        Assert.Equal(tick+4,s.Engine.Observe(new(1)).Participant.ArrivalTick);
+        while(s.Engine.Observe(new(1)).Participant.Busy)s.Step();Assert.Equal(4,s.Engine.Tick-tick);
+        I2Fixture.Evidence("corner-eta",new{edges=4,turns=2,eta=4,actual=s.Engine.Tick-tick});
+    }
     [Fact]public void RightLaneConvergesWithoutOscillationAndKeepsI1StraightSpeed()
     {
         var(s,car)=I2Fixture.Car();s.SetTravelHeading(new(1),1,0);I2Fixture.Quanta(s,10);

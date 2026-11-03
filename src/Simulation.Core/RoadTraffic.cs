@@ -20,7 +20,7 @@ public sealed partial class SimulationEngine
         bool arrived=false;
         try{arrived=ExecutingService(vehicle.Id) is not null?ServiceTrafficTravel(vehicle,job.Path[^1]):TrafficTravel(vehicle,job.Path[^1]);}catch(RuleViolation ex){var t=Traffic(vehicle.Id);_traffic[vehicle.Id]=t with{Reason=ex.ReasonCode};}
         // The job is an intention; the persisted traffic trajectory is its actual physical progress.
-        job.CompletionTick=checked(Tick+(UsesAcceleratedMovement?Math.Max(1,RoadRemainingTicks(Traffic(vehicle.Id),Body(vehicle))):1));
+        job.CompletionTick=checked(Tick+(UsesAcceleratedMovement?Math.Max(1,RoadRemainingTicks(Traffic(vehicle.Id),FindBody(vehicle.Id)!)):1));
         if(!arrived)return;
         _completedPersonalJobs.Add(job.Id);actor.Job=null;
         Emit("MovementArrived",actor.Id,job.Id,command:job.CommandId);
@@ -28,6 +28,13 @@ public sealed partial class SimulationEngine
     private long RoadRemainingTicks(TrafficVehicle t,RoadBody v)
     {
         long time=0;
+        if(UsesFreeVehicleControl&&t.Path.Length>t.Index)
+        {
+            var heading=new Cell(v.FacingX,v.FacingZ);
+            if(t.Steering is {TurnQuanta:>0} s)
+            {var end=BearingVector(s.TurnFrom+s.TurnDelta);heading=new(Math.Sign(end.X),Math.Sign(end.Z));time=checked((s.TurnQuanta-s.TurnQuantum)*(long)MotionTimeScale/10);}
+            time=checked(time+VehicleControlRules.PathTurnQuanta(t.Path.Skip(t.Index).ToArray(),c=>RoadLevel(c)>0,c=>RoadBodySpeed(c,c,v),heading)*MotionTimeScale/10);
+        }
         for(int n=t.Index;n<t.Path.Length-1;n++)
         {
             long remaining=n==t.Index?(800L-t.Progress)*MotionTimeScale-t.ProgressFraction:(800L*MotionTimeScale);
