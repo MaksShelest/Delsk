@@ -197,7 +197,6 @@ public class I1RoadVehicleTests
 
 public class I1HighwayVehicleTests
 {
-    [Fact]public void RunningIsStillTenOnBuiltRoad()=>I1Fixture.RunningOnBuiltRoad(3);
     [Theory]
     [InlineData("sputnik20",168,65,27)]
     [InlineData("muravey70",288,113,48)]
@@ -269,4 +268,8 @@ public class I1HighSpeedSafetyTests
 public class I1RoadTractorTests
 {[Fact]public void TractRetainsItsModelLimit()=>I1VehicleMatrixTests.Verify(2,"trakt_d1",960,384,160);}
 public class I1HighwayTractorTests
-{[Fact]public void TractRetainsItsModelLimit()=>I1VehicleMatrixTests.Verify(3,"trakt_d1",960,384,160);}
+{
+    // Share paid highway fixtures and keep the existing 300s partitions bounded.
+    [Fact]public void RunningIsStillTenOnBuiltRoad()=>I1Fixture.RunningOnBuiltRoad(3);
+    [Fact]public void TractRetainsItsModelLimit()=>I1VehicleMatrixTests.Verify(3,"trakt_d1",960,384,160);
+}
