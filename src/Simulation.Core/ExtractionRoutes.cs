@@ -79,7 +79,7 @@ public sealed partial class SimulationEngine
                 var tx = _economy.Begin(Tick); if (wage > 0) tx.Pay(_actors[e.Owner].Account, _wages, wage, "EquipmentTravelWages"); tx.Commit();
                 if (wage > 0) Emit("EquipmentTravelWagesPaid", e.Owner, e.Id, money: wage);
                 int segment = motion.SegmentTicks + 1, index = motion.Index;
-                if(UsesAcceleratedMovement)(index,segment)=AdvanceTimedPath(motion.Path,motion.Index,motion.SegmentTicks,(_,_)=>checked((long)_config.MoveTicksPerCell*MovementTiming.TimeUnitsPerTick*2/5));
+                if(UsesAcceleratedMovement)(index,segment)=AdvanceTimedPath(motion.Path,motion.Index,motion.SegmentTicks,EquipmentEdgeTime);
                 else if (segment == _config.MoveTicksPerCell) { ++index; segment = 0; }
                 e.Position = motion.Path[index]; _economy.Inventories[e.Storage].Position = e.Position;
                 e.MovedAtTick = Tick;
@@ -99,7 +99,7 @@ public sealed partial class SimulationEngine
                 throw new InvalidOperationException("Invalid extraction route");
             if (e.Motion is { } m && (e.Batch is not null || e.PersonalJobId != 0 || m.Path.IsDefaultOrEmpty ||
                 m.Index < 0 || m.Index >= m.Path.Length - 1 || (Roads is null && m.Path[m.Index] != e.Position) || m.Path.Any(c => !_map.Walkable(c)) ||
-                m.SegmentTicks < 0 || m.SegmentTicks >= (UsesAcceleratedMovement?(long)_config.MoveTicksPerCell*MovementTiming.TimeUnitsPerTick*2/5:_config.MoveTicksPerCell) || m.StartedTick < 1 || m.StartedTick > Tick ||
+                m.SegmentTicks < 0 || m.SegmentTicks >= (UsesAcceleratedMovement?EquipmentEdgeTime(m.Path[m.Index],m.Path[m.Index+1]):_config.MoveTicksPerCell) || m.StartedTick < 1 || m.StartedTick > Tick ||
                 m.Path.Zip(m.Path.Skip(1)).Any(p => Math.Abs(p.First.X-p.Second.X)+Math.Abs(p.First.Z-p.Second.Z)!=1) ||
                 !_resources.TryGetValue((m.Path[^1],e.Type.ItemId), out var target) || target.Owner != e.Owner || target.Definition.ItemId != e.Type.ItemId))
                 throw new InvalidOperationException("Invalid equipment movement");

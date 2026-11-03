@@ -1,0 +1,125 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 4186,
+      "sha256": "c97c293d22225fa2c8b66d15c94196ad18197c2d7eb1a2dd00cf3b080ae672e5"
+    },
+    {
+      "path": "checks.json",
+      "bytes": 17176,
+      "sha256": "757d42bd15151667096d398f43f1e2447e1a1d0d41f79b843d6ae5e335dba04b"
+    },
+    {
+      "path": "developer.json",
+      "bytes": 854,
+      "sha256": "6385adfffc5bc0c87756bca8ba25812ab0b6334332a7fcf6fa0ea91159ae5a3f"
+    },
+    {
+      "path": "fixtures.json.gz",
+      "bytes": 542631,
+      "sha256": "530b1d9f2988ff0518ba6ad36a2e0a2e24418d7a5eec5e646bcb83c9a07c2c55"
+    },
+    {
+      "path": "headless.json",
+      "bytes": 2334,
+      "sha256": "ab47f1959f341eb781a60bf44198c56ca350ac066896c96a0a12c7de12139fe0"
+    },
+    {
+      "path": "high-speed.json",
+      "bytes": 2063,
+      "sha256": "3bce1a0dbbc52296e37df8b2a8f980e99ab1abea06070f57d29e84594155ca98"
+    },
+    {
+      "path": "logs.json.gz",
+      "bytes": 565181,
+      "sha256": "362ebebc9b6395ded4e0713fbecf6c680a87294ee51f9a02abc65dca80834cab"
+    },
+    {
+      "path": "measurements.jsonl",
+      "bytes": 7633,
+      "sha256": "3fc38cc81cee4114196b602d6dc8ec515e8f77327b74ee74b68560b050acf043"
+    },
+    {
+      "path": "native/asset-completeness.json",
+      "bytes": 16579,
+      "sha256": "fb776b6c55a3a78664eab3adffbc11bdaceea88f2240463d7981773d17f769d5"
+    },
+    {
+      "path": "native/asset-reuse.json",
+      "bytes": 16580,
+      "sha256": "3b40982e0b932cca022123e120e4e752e2d0b10e6cdae66bfb42a7772ec420b9"
+    },
+    {
+      "path": "native/asset-stage.json",
+      "bytes": 14477,
+      "sha256": "5ed88fa69dc0d57241fb62f3b8fcb103a62312d86dca10388836fbbb902f1d2c"
+    },
+    {
+      "path": "native/check.json",
+      "bytes": 405,
+      "sha256": "9eb27c70fcde93ac9999be4f2ea246ebcd59c396da00f5d78b3ce38120516ae1"
+    },
+    {
+      "path": "native/gate.json",
+      "bytes": 286,
+      "sha256": "b04b1a34cc69d186fa81da1389acf831271000fdb4155ccb38c72ceddd9c1db5"
+    },
+    {
+      "path": "native/i1-help-en.png",
+      "bytes": 137448,
+      "sha256": "ccbfd203b9a6451a76609e68db8b477862110d9317ae6945c8b4aa627c7093f0"
+    },
+    {
+      "path": "native/i1-help-ru.png",
+      "bytes": 157019,
+      "sha256": "7e34473d898dae756f5264e8423c7a25538236f6bb9e1bfc115b2c42897c6c7b"
+    },
+    {
+      "path": "native/i1-highway.png",
+      "bytes": 15666,
+      "sha256": "ba9cc63579c5f181ab9e9c50c81629bad5b1954cdd4fbcb617e78a91c2b75c90"
+    },
+    {
+      "path": "native/i1-loaded.png",
+      "bytes": 25459,
+      "sha256": "14d72fdff778a8292402ef3275c4effc49c480eef9668af5dc4dd8cb0195cd42"
+    },
+    {
+      "path": "native/inputs.json",
+      "bytes": 80969,
+      "sha256": "701d1ba8c092568a552f0c33ed1dd3367d836f716a8b138ac709c35663ae8bf6"
+    },
+    {
+      "path": "native/platform.json",
+      "bytes": 1679,
+      "sha256": "ea8db85ad1a447861c5a0dd39393a912060c7a6b0f1bfbf6aef51f73c40eb16d"
+    },
+    {
+      "path": "ordinary.json",
+      "bytes": 853,
+      "sha256": "bffd16de2ca193c93eaecd5b0e5f3937bf9a8ef0a4e5903a9acb5a74dc963ee9"
+    },
+    {
+      "path": "runner.json",
+      "bytes": 1631,
+      "sha256": "37e05c3e3235f1db5af549979fcf159210a6a6b7596dd74b475675dad6a8c03e"
+    },
+    {
+      "path": "speed-table.md",
+      "bytes": 2339,
+      "sha256": "69b227c704f4c667c3a71f707552d188d40da3c1fcd1ad55782242bf74e8e92f"
+    },
+    {
+      "path": "speeds.json",
+      "bytes": 6126,
+      "sha256": "eb0ac3508252ed3433737edbfaea0265e8a3257391afb1db38fb07315e2c5760"
+    },
+    {
+      "path": "unchanged-inputs.json",
+      "bytes": 12687,
+      "sha256": "3e19608b692286ee2131ea817159b7c5dde92c5fa6c70c592fb915b7ff57508c"
+    }
+  ]
+}

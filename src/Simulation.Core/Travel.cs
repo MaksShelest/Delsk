@@ -65,7 +65,7 @@ public sealed partial class SimulationEngine
 
     private int QuantumDistance()
     {
-        int total = UsesAcceleratedMovement?TravelUnitsPerCell*5/(2*_config.MoveTicksPerCell):TravelUnitsPerCell / _config.MoveTicksPerCell;
+        int total = UsesAcceleratedMovement?Movement.Version==2?Movement.RunningSpeed(false)*Movement.Multiplier*TravelUnitsPerCell/Movement.SpeedDivisor:TravelUnitsPerCell*5/(2*_config.MoveTicksPerCell):TravelUnitsPerCell / _config.MoveTicksPerCell;
         int share = total / TravelQuantaPerTick;
         int extra = total % TravelQuantaPerTick;
         return share + (_travelQuantum < extra ? 1 : 0);
@@ -77,7 +77,7 @@ public sealed partial class SimulationEngine
         {if(DrivenVehicle(actor.Id) is {} serviceVehicle&&ServiceHandlingVehicle(serviceVehicle.Id))return;if(actor.Job is null&&!HasSale(actor.Id))ManualRoadTravel(actor);return;}
         if (actor.HeadingX == 0 && actor.HeadingZ == 0) return;
         if (DrivenVehicle(actor.Id) is {} vehicle && (vehicle.Installation is not null || VehicleTransferring(vehicle.CargoInventory.Value))) return;
-        if (Fleet is not null) { var next = new Cell(actor.Position.X+actor.HeadingX,actor.Position.Z+actor.HeadingZ); int speed=FleetSpeed(actor.Position,next,DrivenVehicle(actor.Id) is {} v?Model(v.ModelId):null); distance=((_travelQuantum+1)*speed*TravelUnitsPerCell/((UsesAcceleratedMovement?32:80)*TravelQuantaPerTick))-(_travelQuantum*speed*TravelUnitsPerCell/((UsesAcceleratedMovement?32:80)*TravelQuantaPerTick)); }
+        if (Fleet is not null||Movement.Version==2) { var next = new Cell(actor.Position.X+actor.HeadingX,actor.Position.Z+actor.HeadingZ); int speed=FleetSpeed(actor.Position,next,DrivenVehicle(actor.Id) is {} v?Model(v.ModelId):null); int multiplier=UsesAcceleratedMovement?Movement.Multiplier:1,divisor=UsesAcceleratedMovement?Movement.SpeedDivisor:80; distance=((_travelQuantum+1)*speed*multiplier*TravelUnitsPerCell/(divisor*TravelQuantaPerTick))-(_travelQuantum*speed*multiplier*TravelUnitsPerCell/(divisor*TravelQuantaPerTick)); }
         if ((actor.Job is not null && !IsHarvest(actor.Job)) || HasSale(actor.Id)) return;
         int step = actor.HeadingX != 0 && actor.HeadingZ != 0 ? checked(distance * 707 / 1000) : distance;
         var before = actor.Position;

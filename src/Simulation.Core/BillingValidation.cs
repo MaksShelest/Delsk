@@ -26,7 +26,7 @@ public sealed partial class SimulationEngine
         if(parts.Length!=2||!int.TryParse(parts[0],out int x)||!int.TryParse(parts[1],out int z))return false;
         int level=RoadLevel(new(x,z));if(level is <1 or >3)return false;
         int speed=Math.Min(body.Speed,Roads!.Stages[level-1].Speed);
-        return e.Quantity<=(speed*5+1)/2;
+        return e.Quantity<=(Movement.Version==2?speed*6:(speed*5+1)/2);
     }
     private void ValidateBilling()
     {

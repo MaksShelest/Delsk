@@ -19,7 +19,7 @@ public partial class Playfield
     {
         DismissHelp();
         StopHeading(); _waitRelease = true;
-        _helpOverlay = new HelpOverlay(_language, topic);
+        _helpOverlay = new HelpOverlay(_language, topic,_session.Engine.Configuration().Economy?.Movement);
         _helpOverlay.Closed += CloseHelp;
         AddChild(_helpOverlay);
         ApplyPause(); Refresh();

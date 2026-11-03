@@ -152,20 +152,24 @@ public sealed partial class SimulationEngine
         VehicleCargo(v).Position = actor.Position;
         _vehicles[v.Id] = v with { OffsetX = actor.OffsetX, OffsetZ = actor.OffsetZ, FacingX = actor.FacingX, FacingZ = actor.FacingZ };
     }
-    private int FleetSpeed(Cell from, Cell to, VehicleModel? model = null)
+    private bool RoadSurface(Cell from,Cell to)=>Roads is not null?RoadLevel(from)>0&&RoadLevel(to)>0:
+        _config.Layout is {} layout&&layout.InitialCityDirtCells.Contains(from)&&layout.InitialCityDirtCells.Contains(to);
+    private int VehicleSurfaceSpeed(Cell from,Cell to,int maximum)
     {
+        int limit;
         if(Roads is not null)
         {
-            int a=RoadLevel(from),b=RoadLevel(to);
-            int limit=a>0&&b>0?Roads.Stages.Single(s=>s.Level==Math.Min(a,b)).Speed:8;
-            return model is null?a>0&&b>0?20:16:Math.Min(model.Speed,limit);
+            int level=Math.Min(RoadLevel(from),RoadLevel(to));
+            limit=level>0?Roads.Stages[level-1].Speed:Movement.OffroadVehicleSpeed();
         }
-        bool road = _config.Layout!.InitialCityDirtCells.Contains(from) && _config.Layout.InitialCityDirtCells.Contains(to);
-        return model is null ? road ? 20 : 16 : Math.Min(model.Speed, road ? 20 : 8);
+        else limit=RoadSurface(from,to)?20:Movement.OffroadVehicleSpeed();
+        return Math.Min(maximum,limit);
     }
+    private int FleetSpeed(Cell from, Cell to, VehicleModel? model = null)
+        =>model is null?Movement.RunningSpeed(RoadSurface(from,to)):VehicleSurfaceSpeed(from,to,model.Speed);
     private int PersonalMoveTicks(ActorState actor, Cell from, Cell to) => Fleet is null ? _config.MoveTicksPerCell : 80 / FleetSpeed(from, to, DrivenVehicle(actor.Id) is { } v ? Model(v.ModelId) : null);
     private int FreightMoveTicks(LogisticsState l, Cell from, Cell to) => l.Vehicle is null ? Logistics.MoveTicksPerCell : Roads is null?80/FleetSpeed(from,to,l.Vehicle):(80+FleetSpeed(from,to,l.Vehicle)-1)/FleetSpeed(from,to,l.Vehicle);
-    private long FreightTravelTicks(LogisticsState l, IEnumerable<Cell> path) { var cells = path.ToArray(); if(UsesAcceleratedMovement&&Roads is not null&&l.VehicleId!=0&&cells.Length>1)cells=ServicePath(cells[0],cells[^1],l.VehicleId); return UsesAcceleratedMovement?MovementTiming.WholeTicks(cells.Zip(cells.Skip(1)).Sum(p=>FreightEdgeUnits(l,p.First,p.Second))):cells.Zip(cells.Skip(1)).Sum(p => (long)FreightMoveTicks(l, p.First, p.Second)); }
+    private long FreightTravelTicks(LogisticsState l, IEnumerable<Cell> path) { var cells = path.ToArray(); if(UsesAcceleratedMovement&&Roads is not null&&l.VehicleId!=0&&cells.Length>1)cells=ServicePath(cells[0],cells[^1],l.VehicleId); return UsesAcceleratedMovement?Movement.WholeTicks(cells.Zip(cells.Skip(1)).Sum(p=>FreightEdgeUnits(l,p.First,p.Second))):cells.Zip(cells.Skip(1)).Sum(p => (long)FreightMoveTicks(l, p.First, p.Second)); }
     public FleetState? InspectFleet() => Fleet is null ? null : new(_fleetRandom!.State, _nextVehicleSupply,
         [.. _dealerStock.OrderBy(v => v.Id)], [.. _vehicles.Values.OrderBy(v => v.Id)], [.. _vehicleRequests.OrderBy(r => r.VehicleId).ThenBy(r => r.Actor.Value)],
         [.. _vehiclePurchases], [.. _platforms.Values.OrderBy(p => p.Id).Select(p => p.View())]);

@@ -30,10 +30,10 @@ public sealed partial class SimulationEngine
         long time=0;
         for(int n=t.Index;n<t.Path.Length-1;n++)
         {
-            long remaining=n==t.Index?(800L-t.Progress)*1_000_000-t.ProgressFraction:800_000_000L;
-            long rate=RoadBodySpeed(t.Path[n],t.Path[n+1],v)*25L;time=checked(time+(remaining+rate-1)/rate);
+            long remaining=n==t.Index?(800L-t.Progress)*MotionTimeScale-t.ProgressFraction:(800L*MotionTimeScale);
+            long rate=RoadMotionRate(RoadBodySpeed(t.Path[n],t.Path[n+1],v));time=checked(time+(remaining+rate-1)/rate);
         }
-        return MovementTiming.WholeTicks(time);
+        return Movement.WholeTicks(time);
     }
     private static bool HasRoadProgress(TrafficVehicle t)=>t.Progress!=0||t.ProgressFraction!=0;
     private TrafficVehicle Traffic(long vehicle)
@@ -82,7 +82,7 @@ public sealed partial class SimulationEngine
             (PublicRoadCell(c)||c==source||c==target||!_roadWorks.Values.Any(w=>w.Batch is {} batch&&Manhattan(c,batch.Cell)<=2))&&
             !_bypasses.Any(b=>b.Closing&&b.Path.Skip(1).SkipLast(1).Contains(c)&&c!=source&&!b.Users.Contains(v.Id));
         int Cost(Cell c)=>RoadLevel(c)>0?80/Roads!.Stages.Single(s=>s.Level==RoadLevel(c)).Speed+1:12;
-        var path=UsesAcceleratedMovement?RouteSearch.FindOriented(source,target,Allow,(a,b)=>MovementTiming.EdgeTimeUnits(RoadBodySpeed(a,b,v),32),c=>MayTurn(v,c),new(v.FacingX,v.FacingZ)):FindRoadPath(source,target,Allow,Cost);
+        var path=UsesAcceleratedMovement?RouteSearch.FindOriented(source,target,Allow,(a,b)=>Movement.EdgeTime(RoadBodySpeed(a,b,v)),c=>MayTurn(v,c),new(v.FacingX,v.FacingZ)):FindRoadPath(source,target,Allow,Cost);
         if(path.Length==0)throw new RuleViolation("NoSafeVehiclePath");
         return path;
     }
@@ -109,7 +109,7 @@ public sealed partial class SimulationEngine
         }
         for(int q=0;q<quanta;q++)
         {
-            long timeLeft=100_000;bool chargeQuota=true;int transitions=0;
+            long timeLeft=MotionTimeScale/TravelQuantaPerTick;bool chargeQuota=true;int transitions=0;
             do
             {
             t=Traffic(vehicle.Id);at=VehicleCargo(vehicle).Position;
@@ -154,10 +154,10 @@ public sealed partial class SimulationEngine
             int speed=RoadBodySpeed(at,next,vehicle);int progress=checked(t.Progress+speed),fraction=0;
             if(UsesAcceleratedMovement)
             {
-                long need=checked((800L-t.Progress)*1_000_000-t.ProgressFraction),rate=speed*25L;
+                long need=checked((800L-t.Progress)*MotionTimeScale-t.ProgressFraction),rate=RoadMotionRate(speed);
                 long spent=Math.Min(timeLeft,(need+rate-1)/rate);timeLeft-=spent;
-                long total=Math.Min(800_000_000L,checked(t.Progress*1_000_000L+t.ProgressFraction+spent*rate));
-                progress=(int)(total/1_000_000);fraction=(int)(total%1_000_000);
+                long total=Math.Min((800L*MotionTimeScale),checked(t.Progress*(long)MotionTimeScale+t.ProgressFraction+spent*rate));
+                progress=(int)(total/MotionTimeScale);fraction=(int)(total%MotionTimeScale);
             }
             AccrueRoadTravel(vehicle,at,Math.Min(progress,800)-t.Progress);
             for(int i=0;i<_bypasses.Count;i++)
@@ -182,8 +182,7 @@ public sealed partial class SimulationEngine
                     foreach(var transfer in _transfers.Values.Where(t=>t.Owner.Value==actor.Id).ToArray())CancelTransfer(transfer,"LeftTransferLocation");
                 }
                 t=t with{Index=t.Index+1,Progress=0,ProgressFraction=0,WaitingSince=0,StoppedSince=0,Reason="Moving"};
-                // Carry fractional distance only along the same reserved straight edge on the next quantum.
-                // Discarding the sub-quantum remainder is conservative and never exceeds a speed cap.
+                // The remaining time is carried to the next individually checked edge.
                 if(t.Index==t.Path.Length-1)t=t with{Reason=t.Resume is null?"Arrived":"YieldingInBay",StoppedSince=Tick};
             }
             else t=t with{Progress=progress,ProgressFraction=fraction,WaitingSince=0,StoppedSince=0,Reason="Moving"};
@@ -318,8 +317,8 @@ public sealed partial class SimulationEngine
         if(_vehicles.TryGetValue(vehicle,out var owned)){x=owned.OffsetX;z=owned.OffsetZ;}
         if(Roads is not null&&_traffic.TryGetValue(vehicle,out var t)&&HasRoadProgress(t)&&t.Index<t.Path.Length-1)
         {
-            var at=t.Path[t.Index];var next=t.Path[t.Index+1];x=TravelCenter+(next.X-at.X)*(int)((t.Progress*1_000_000L+t.ProgressFraction)*TravelUnitsPerCell/800_000_000L);
-            z=TravelCenter+(next.Z-at.Z)*(int)((t.Progress*1_000_000L+t.ProgressFraction)*TravelUnitsPerCell/800_000_000L);
+            var at=t.Path[t.Index];var next=t.Path[t.Index+1];x=TravelCenter+(next.X-at.X)*(int)((t.Progress*(long)MotionTimeScale+t.ProgressFraction)*TravelUnitsPerCell/(800L*MotionTimeScale));
+            z=TravelCenter+(next.Z-at.Z)*(int)((t.Progress*(long)MotionTimeScale+t.ProgressFraction)*TravelUnitsPerCell/(800L*MotionTimeScale));
         }
         return new(x,z,0,0,v.FacingX,v.FacingZ);
     }

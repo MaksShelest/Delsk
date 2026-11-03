@@ -14,7 +14,7 @@ public sealed partial class SimulationEngine
     private IEnumerable<RoadBody> RoadBodies()=>_vehicles.Values.Select(Body).Concat(_equipment.Values.Select(Body));
     private Inventory VehicleCargo(RoadBody body)=>_economy.Inventories[body.CargoInventory.Value];
     private int RoadBodySpeed(Cell from,Cell to,RoadBody body)
-    {int a=RoadLevel(from),b=RoadLevel(to);return Math.Min(body.Speed,a>0&&b>0?Roads!.Stages[Math.Min(a,b)-1].Speed:8);}
+    =>VehicleSurfaceSpeed(from,to,body.Speed);
     private void AdvanceRoadEquipment(EquipmentState e,EquipmentMotion motion)
     {
         long wage=checked(e.Group.Headcount*e.Group.Wage);

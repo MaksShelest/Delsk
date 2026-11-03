@@ -1,0 +1,45 @@
+{
+  "status": "succeeded",
+  "passed": 3,
+  "results": [
+    {
+      "executionId": "0d66e932-c9c2-4dad-a5ba-61fd839b0f26",
+      "testId": "04ad2f23-12ec-8970-ba44-d4891354d4f6",
+      "testName": "Simulation.Tests.I1HighSpeedSafetyTests.HighSpeedRouteAcrossOffroadAndHighwayHasExactEtaAndDistanceCharge",
+      "computerName": "60887aea12ef",
+      "duration": "00:00:13.7650000",
+      "startTime": "2026-11-02T22:56:29.4393048+00:00",
+      "endTime": "2026-11-02T22:56:43.2249334+00:00",
+      "testType": "13CDC9D9-DDB5-4fa4-A97D-D965CCFC6D4B",
+      "outcome": "Passed",
+      "testListId": "8C84FA94-04C1-424b-9868-57A2D4851A1D",
+      "relativeResultsDirectory": "0d66e932-c9c2-4dad-a5ba-61fd839b0f26"
+    },
+    {
+      "executionId": "db020b09-a0ff-476c-bf02-00986ce22e25",
+      "testId": "c9756b2e-6405-aa16-27c7-d677ba1f3c05",
+      "testName": "Simulation.Tests.I1HighSpeedSafetyTests.ExactNominalHighwaySpeedSurvivesManualCentreCrossingsAndMidQuantumSave",
+      "computerName": "60887aea12ef",
+      "duration": "00:00:14.6470000",
+      "startTime": "2026-11-02T22:56:43.2383490+00:00",
+      "endTime": "2026-11-02T22:56:57.8861356+00:00",
+      "testType": "13CDC9D9-DDB5-4fa4-A97D-D965CCFC6D4B",
+      "outcome": "Passed",
+      "testListId": "8C84FA94-04C1-424b-9868-57A2D4851A1D",
+      "relativeResultsDirectory": "db020b09-a0ff-476c-bf02-00986ce22e25"
+    },
+    {
+      "executionId": "5aad5294-5b37-4334-80a5-7381d60df788",
+      "testId": "9d328db6-fb53-70ba-c767-f6d0ac9009d7",
+      "testName": "Simulation.Tests.I1HighSpeedSafetyTests.FourPointFiveCellsPerSecondCarryTimeReserveEachCellAndStopBeforeAnOccupiedCell",
+      "computerName": "60887aea12ef",
+      "duration": "00:00:17.2700000",
+      "startTime": "2026-11-02T22:56:57.8876865+00:00",
+      "endTime": "2026-11-02T22:57:15.1585572+00:00",
+      "testType": "13CDC9D9-DDB5-4fa4-A97D-D965CCFC6D4B",
+      "outcome": "Passed",
+      "testListId": "8C84FA94-04C1-424b-9868-57A2D4851A1D",
+      "relativeResultsDirectory": "5aad5294-5b37-4334-80a5-7381d60df788"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "status": "succeeded",
+  "processChecks": 33,
+  "exports": 20,
+  "exactComparisonPairs": 11,
+  "rows": [
+    {
+      "model": "muravey70",
+      "tick": 135,
+      "hash": "a1695b2f86e113fedd7246a4b7d8f6295b3cf5a873ce07366e5a0b6168ad2d7c"
+    },
+    {
+      "model": "sputnik20",
+      "tick": 135,
+      "hash": "f7b8b549e0f7c257dfbc6b0ae4bd762ec57c4c310f881a80c1f2ea7672a5e9e6"
+    },
+    {
+      "model": "vector200",
+      "tick": 148,
+      "hash": "b988b1d9bc3ecaea4a333e1b1989318831bd87e34fb878d82a97d2c18c4dc253"
+    },
+    {
+      "model": "eger70",
+      "tick": 142,
+      "hash": "d1268ce71b65b60a7989e128408444fc866b33932c2fc34c51a71ab648336d73"
+    },
+    {
+      "model": "trakt_d1",
+      "tick": 174,
+      "hash": "14b95ee9443f919d00bf392aa0cb3c29051bcc2f5a803fcaa79e0ca4554c5c0f"
+    },
+    {
+      "map": "compact-valley",
+      "npcCount": 3,
+      "ticks": 80,
+      "hash": "9976ae840e1c13bab08de9ca9de3514ab050a2070acf57f82d8d114e2793bc1c"
+    },
+    {
+      "map": "small-river",
+      "npcCount": 6,
+      "ticks": 80,
+      "hash": "5589a3af43d1a3ac7eb120c1433f0ade585da403785fe404fabe5ad4f4c7ffc7"
+    },
+    {
+      "map": "large-districts",
+      "npcCount": 10,
+      "ticks": 80,
+      "hash": "67e1a0a0143a97843e2330cd9a577e61f04e055b8951cc0083b2427246665f4c"
+    }
+  ],
+  "scope": "Actual C# I1 runner, five loaded models restored mid-route, native midquantum save, new ordinary3/6/10NPC on three maps, full independent audits. Prepared cargo cases and80-tick ordinary exposure; not long economic balance/device acceptance."
+}

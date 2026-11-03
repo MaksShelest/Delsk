@@ -1,0 +1,57 @@
+{
+  "kind": "developer",
+  "passed": 1535,
+  "uniqueTestCount": 1535,
+  "suites": [
+    {
+      "suite": "previous",
+      "exitCode": 0,
+      "passed": 1247
+    },
+    {
+      "suite": "roads",
+      "exitCode": 0,
+      "passed": 27
+    },
+    {
+      "suite": "billing",
+      "exitCode": 0,
+      "passed": 22
+    },
+    {
+      "suite": "services",
+      "exitCode": 0,
+      "passed": 27
+    },
+    {
+      "suite": "runs",
+      "exitCode": 0,
+      "passed": 30
+    },
+    {
+      "suite": "npc",
+      "exitCode": 0,
+      "passed": 30
+    },
+    {
+      "suite": "ux",
+      "exitCode": 0,
+      "passed": 41
+    },
+    {
+      "suite": "h2",
+      "exitCode": 0,
+      "passed": 38
+    },
+    {
+      "suite": "h3",
+      "exitCode": 0,
+      "passed": 22
+    },
+    {
+      "suite": "i1",
+      "exitCode": 0,
+      "passed": 51
+    }
+  ]
+}
