@@ -119,6 +119,7 @@ public partial class Playfield
     private void LayoutCityHud(Control bar)
     {
         float top=bar.Position.Y+bar.Size.Y;var safe=UiSafeArea.Read(bar);bool narrow=GetViewportRect().Size.X<800;
+        _roadCardTop=top+12;LayoutRoadWork();
         if(_playNotice is not null){_playNotice.OffsetTop=top+8;_playNotice.OffsetBottom=top+42;_playNotice.OffsetLeft=16+(float)safe.Left;_playNotice.OffsetRight=-16-(float)safe.Right;}
         if(_storageWarning is not null){_storageWarning.OffsetTop=top+44;_storageWarning.OffsetBottom=top+100;_storageWarning.OffsetRight=-(narrow?16:260)-(float)safe.Right;}
         if(_tooltip is not null)_tooltip.Position=new(16+(float)safe.Left,top+96);

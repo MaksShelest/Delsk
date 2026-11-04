@@ -6,6 +6,7 @@ using Simulation.Hosting;
 public partial class PlayerTablet : VBoxContainer
 {
     public event System.Action? HelpRequested;
+    public event Action<long>? RoadWorkRequested;
     public event System.Action? MapRequested;
     public event System.Action? TutorialRequested;
     public event System.Action? NoticesRequested;
@@ -62,7 +63,7 @@ public partial class PlayerTablet : VBoxContainer
         var holdingPages=TabletDesign.Flow();_previousHoldings.Text=L("‹ Назад","‹ Previous");_nextHoldings.Text=L("Далее ›","Next ›");holdingPages.AddChild(_previousHoldings);holdingPages.AddChild(_holdingPage);holdingPages.AddChild(_nextHoldings);_overview.AddChild(holdingPages);_overview.AddChild(_holdings);
         void HoldingsPage(int delta){_holdingOffset=Math.Max(0,_holdingOffset+delta);_signature="";if(_view is not null)ShowData(_view,_pending,_paused);}
         _previousHoldings.Pressed+=()=>HoldingsPage(-20);_nextHoldings.Pressed+=()=>HoldingsPage(20);
-        if(scenario.Economy?.Fleet is not null){_fleet=new(language,submit,access);_overview.AddChild(Fold(L("Автопарк и автосалон ›","Fleet and dealer ›"),_fleet,true));}
+        if(scenario.Economy?.Fleet is not null){_fleet=new(language,submit,access);_fleet.RoadWorkRequested+=id=>RoadWorkRequested?.Invoke(id);_overview.AddChild(Fold(L("Автопарк и автосалон ›","Fleet and dealer ›"),_fleet,true));}
         if(scenario.Economy?.Roads is not null){_roads=new(language,submit,access);_overview.AddChild(Fold(L("Дороги и движение ›","Roads and traffic ›"),_roads,true));}
         _development=new(scenario,language,0,submit,access);_overview.AddChild(Fold(L("Опыт и задания ›","Experience and quests ›"),_development));
         _purchases=new(scenario,language,submit,access);_overview.AddChild(Fold(L("Купить технику ›","Buy equipment ›"),_purchases));

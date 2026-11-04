@@ -110,6 +110,9 @@ public partial class Playfield : Control
             if (key.Pressed && !key.Echo && key.Keycode == Key.Escape) CloseHelp();
             GetViewport().SetInputAsHandled(); return;
         }
+        if(_roadWorkCard is not null&&key.Pressed&&!key.Echo&&key.Keycode==Key.Escape)
+        {CloseRoadWork();GetViewport().SetInputAsHandled();return;}
+        if(_roadWorkCard is not null&&key.Keycode is Key.Left or Key.Right or Key.Up or Key.Down or Key.Enter or Key.KpEnter or Key.Space)return;
         bool developerHandled = false;
         DeveloperInput(key, ref developerHandled);
         if (developerHandled) { GetViewport().SetInputAsHandled(); return; }
@@ -316,7 +319,7 @@ public partial class Playfield : Control
     private void RebuildChrome()
     {
         if (_left || _session is null) return;
-        DismissHelp();
+        CloseRoadWork();DismissHelp();
         BuildChrome();
         Refresh();
     }
@@ -325,7 +328,7 @@ public partial class Playfield : Control
     {
         if (_session is null) return;
         bool paused = _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots || ModelBarrier);
-        if(_stick is not null)_stick.Visible=!paused;
+        if(_stick is not null)_stick.Visible=!paused&&_roadWorkCard is null;
         if(paused&&!_session.Paused){StopHeading();_waitRelease=true;}
         if (_session.Paused != paused) _scheduler.SetPaused(paused);
         FeedbackPause();
@@ -371,6 +374,7 @@ public partial class Playfield : Control
         if (valid is null) { Refresh(); return; }
         choice = valid;
         if (!choice.Enabled) { _feedback = choice.Details; _gain = ""; _trackedId = null; Refresh(); return; }
+        if(choice.Key.StartsWith("road-work:",StringComparison.Ordinal)){OpenRoadWork(long.Parse(choice.Key[10..],CultureInfo.InvariantCulture));return;}
         if (choice.Key.StartsWith("object:", StringComparison.Ordinal))
         {
             var parts = choice.Key.Split(':'); OpenObjectTablet(parts[1],long.Parse(parts[2],CultureInfo.InvariantCulture)); return;
@@ -484,6 +488,7 @@ public partial class Playfield : Control
         var frame = Presentation.Read(_scenario, _session.Engine, _human.Value);
         if (_surface == Surface.Play || paused) _stage?.Show(frame, paused, _selectedEnterprise, T("you"), _surface == Surface.Play, _language);
         _stage?.ShowBuildingStates(view,_language);
+        _stage?.ShowRoadWorkEffects(view);
         if (_surface == Surface.Debug) _board?.Show(frame, _cellX, _cellZ);
         _miniMap?.Show(frame,null,null);
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
@@ -512,6 +517,7 @@ public partial class Playfield : Control
             _tooltip.Text = PlayContext.Hover(frame, view, hx, hz, _language);
             _tooltip.Visible = _hoverX.HasValue && _hoverZ.HasValue && !_tabletState.IsOpen && _helpOverlay is null && frame.Markers.Any(m => m.X == hx && m.Z == hz);
         }
+        RefreshRoadWork(view);
         PollHarvest(view);
         _feedback = Describe(view);
         _status.Text = $"{T(paused ? "paused" : "running")}  {T("tick")}: {_session.Engine.Tick}\n" +
@@ -1007,7 +1013,7 @@ public partial class Playfield : Control
 
     private void SampleHeading()
     {
-        if (_surface != Surface.Play || _waitRelease || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots) return;
+        if (_surface != Surface.Play || _roadWorkCard is not null || _waitRelease || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots) return;
         if(_tabletState.Kind is TabletKind.CityMap or TabletKind.Notices or TabletKind.Tutorial||GetViewport().GuiGetFocusOwner() is LineEdit or TextEdit)
         {StopHeading();_waitRelease=true;return;}
         var heading = TravelHeading.FromKeys(

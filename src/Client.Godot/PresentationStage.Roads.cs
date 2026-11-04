@@ -4,6 +4,32 @@ using Simulation.Hosting;
 
 public partial class PresentationStage
 {
+    private MeshInstance3D? _roadSelection;
+    private readonly Dictionary<long,MeshInstance3D> _workSignals=[];
+    public void ShowRoadWorkEffects(PlayerView view)
+    {
+        var works=view.Roads?.OwnWorks.Where(w=>w.Batch is not null).ToArray()??[];
+        foreach(var w in works)
+        {
+            var batch=w.Batch!;
+            if(!_workSignals.TryGetValue(w.VehicleId,out var signal))
+            {
+                signal=new(){Name="RoadWorkSignal_"+w.VehicleId,Mesh=new CylinderMesh{TopRadius=.04f,BottomRadius=.14f,Height=.35f},MaterialOverride=new StandardMaterial3D{AlbedoColor=new("eea52a")}};
+                AddChild(signal);_workSignals.Add(w.VehicleId,signal);
+            }
+            // Animation advances only with actual accumulated Core work; pauses freeze it.
+            signal.Position=new(batch.Cell.X+.34f,.22f+(batch.Work%3)*.035f,batch.Cell.Z+.34f);
+            signal.Rotation=new(0,(float)(batch.Work%16)*Mathf.Pi/8,0);
+        }
+        foreach(var id in _workSignals.Keys.Where(id=>!works.Any(w=>w.VehicleId==id)).ToArray())
+        {_workSignals[id].QueueFree();_workSignals.Remove(id);}
+    }
+    public void ShowRoadSelection(Cell? cell)
+    {
+        if(cell is null){if(_roadSelection is not null){_roadSelection.QueueFree();_roadSelection=null;}return;}
+        if(_roadSelection is null){_roadSelection=RoadTile(cell.Value,new(.30f,.88f,.55f,.65f),.96f,.09f);_roadSelection.Name="SelectedRoadWorkCell";}
+        _roadSelection.Position=new(cell.Value.X,.09f,cell.Value.Z);
+    }
     private readonly Dictionary<Cell,(int Signature,MeshInstance3D Mesh)> _roadSurfaces=[];
     private readonly Dictionary<string,(int Signature,MeshInstance3D Mesh)> _roadDetours=[];
     private static readonly Cell[] RoadDirections=[new(1,0),new(0,1),new(-1,0),new(0,-1)];

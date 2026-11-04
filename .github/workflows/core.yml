@@ -901,6 +901,8 @@ jobs:
           if [ "$FLAVOUR" = ordinary ]; then
             python scripts/run_check.py --name i3-ordinary --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --phase tests --suite i3 --output artifacts/i3-ordinary
             python scripts/run_check.py --name i3-runner --timeout 600 --log-directory artifacts/gate-checks -- python scripts/check_i3_runner.py --fixtures artifacts/i3-ordinary/i3-fixtures --output artifacts/i3-runner
+            python scripts/run_check.py --name i3-acceptance-restore --timeout 180 --log-directory artifacts/gate-checks -- dotnet restore tools/I3Acceptance/I3Acceptance.csproj --locked-mode --disable-parallel -m:1
+            python scripts/run_check.py --name i3-acceptance-build --timeout 180 --log-directory artifacts/gate-checks -- dotnet build tools/I3Acceptance/I3Acceptance.csproj -c Release --no-restore --disable-build-servers -m:1
           else
             python scripts/run_check.py --name i3-developer --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --suite i3 --output artifacts/i3-developer
           fi
