@@ -37,7 +37,7 @@ public partial class HouseholdObjectCard : VBoxContainer
     private bool _pending;
     private bool _paused;
     private string? _activeTransferKey;
-    private readonly Dictionary<string, VBoxContainer> _actionGroups = [];
+    private readonly Dictionary<string, Container> _actionGroups = [];
 
     public HouseholdObjectCard(ScenarioDefinition scenario, string language, string kind, long id,
         System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access,System.Func<long,bool,DemolitionQuote?>? demolitionQuote=null)
@@ -52,6 +52,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         amount.AddChild(new Label { Text = L("Количество для переноса", "Transfer quantity") }); amount.AddChild(_quantity);
         _details.AddChild(_actions);
         var routeToggle=new Button{Text=L("Маршруты ▸","Routes ▸"),FocusMode=FocusModeEnum.None};_details.AddChild(routeToggle);
+        routeToggle.Visible=!(kind=="equipment"&&scenario.Economy?.Fleet?.EquipmentDealerVersion==1);
         _routes=new(scenario,language,kind,id,submit){Visible=false};_details.AddChild(_routes);routeToggle.Pressed+=()=>_routes.Visible=!_routes.Visible;
         TabletDesign.CompactInputs(this);Resized+=LayoutCard;
         _quantity.ValueChanged += _ => { if (_lastView is not null) ShowData(_lastView,_pending,_paused); };
@@ -81,8 +82,15 @@ public partial class HouseholdObjectCard : VBoxContainer
             foreach (var mode in Enum.GetValues<EquipmentMode>())
                 Add("mode:" + mode, mode switch { EquipmentMode.Off => L("Остановить", "Stop"), EquipmentMode.Personal => L("Личный режим", "Personal mode"), _ => L("Автоматическая добыча", "Automatic extraction") },
                     new(ActionKind.SetEquipmentMode, Equipment: machine.Id, Mode: mode), mode != machine.Mode);
-            Add("harvest", L("Добыть лично ×", "Harvest personally ×") + quantity, new(ActionKind.Harvest, ItemId: type.ItemId, Quantity: quantity, Equipment: machine.Id), machine.Mode == EquipmentMode.Personal);
-            if (type.Levels.FirstOrDefault(l => l.Level == machine.Level + 1) is { } next)
+            if(machine.Deployed is null)Add("harvest", L("Добыть лично ×", "Harvest personally ×") + quantity, new(ActionKind.Harvest, ItemId: type.ItemId, Quantity: quantity, Equipment: machine.Id), machine.Mode == EquipmentMode.Personal);
+            if(machine.Deployed is not null)
+            {
+                _heading.Text+=$" · ({machine.Position.X},{machine.Position.Z})";
+                Add("place",L("Разместить технику","Place equipment"),new(ActionKind.PlaceEquipment,Equipment:machine.Id));
+                Add("start",L("Начать добычу","Start mining"),new(ActionKind.StartHarvesting,Equipment:machine.Id,ItemId:type.ItemId,Quantity:level.CycleQuantity));
+                Add("pack",L("Забрать технику","Pick up equipment"),new(ActionKind.PackEquipment,Equipment:machine.Id));
+            }
+            if (machine.Deployed is null && type.Levels.FirstOrDefault(l => l.Level == machine.Level + 1) is { } next)
                 Add("upgrade", L("Улучшить технику — ", "Upgrade equipment — ") + PlayerText.Money(next.PriceMinor), new(ActionKind.UpgradeEquipment, Equipment: machine.Id), machine.Mode == EquipmentMode.Off && machine.CycleId == 0);
         }
         else
@@ -254,6 +262,8 @@ public partial class HouseholdObjectCard : VBoxContainer
             if (!_buttons.TryGetValue(row.Key, out var old))
             {
                 Button button = row.Action.Kind==ActionKind.Transfer ? new ContextActionButton(row.Text) : new Button { FocusMode = FocusModeEnum.None, Alignment = HorizontalAlignment.Left, AutowrapMode = TextServer.AutowrapMode.WordSmart };
+                if(_kind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion==1)
+                {button.SizeFlagsHorizontal=SizeFlags.ShrinkBegin;button.Name="I4Object_"+row.Key.Replace(':','_')+"_"+_id;}
                 string key = row.Key; button.Pressed += () => {var action=_buttons[key].Action;if(action.Kind==ActionKind.Transfer)_activeTransferKey=key;_submit(action);};
                 string section = row.Action.Kind switch
                 {
@@ -265,7 +275,7 @@ public partial class HouseholdObjectCard : VBoxContainer
                 if (!_actionGroups.TryGetValue(section,out var group))
                 {
                     var toggle = new Button {Text = section + " ▸",FocusMode=FocusModeEnum.None,Alignment=HorizontalAlignment.Left};
-                    _actions.AddChild(toggle); group = new VBoxContainer {Visible = section == L("Работа и улучшения", "Work and upgrades")}; _actions.AddChild(group);
+                    _actions.AddChild(toggle); group = _kind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion==1?TabletDesign.Flow():new VBoxContainer();group.Visible=section==L("Работа и улучшения", "Work and upgrades"); _actions.AddChild(group);
                     var target=group;toggle.Pressed += () => target.Visible=!target.Visible;_actionGroups.Add(section,group);
                 }
                 group.AddChild(button); old = (button, row.Action);
