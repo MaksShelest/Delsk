@@ -74,7 +74,7 @@ if a.fixtures:
     check('service-runs',180,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','res://ServiceRunProbe.tscn','--','--output',folder,'--fixtures',fixtures,'--windowed'],env|{'XDG_DATA_HOME':str(out/('user-'+prefix+'-service-runs'))})
     check('service-runs-logs',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks'/(prefix+'-service-runs')])
     cases.append(dict(status='succeeded',prepared=True,scope='Existing F2 native delivery execution/partial payment/cancellation/restore probe on the same final client source, RU/EN'))
-if a.case in ('city','compact','forms'):assert len(cases)==3,'Incomplete disjoint native group'
+if a.case in ('city','compact','forms'):assert len(cases)==3+(3 if a.fixtures and a.case!='forms' else 0),'Incomplete native group'
 assert all(hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest for name,digest in inputs.items()),'Sources changed during the native gate'
 (out/(prefix+'-inputs.json')).write_text(json.dumps(dict(inputs=inputs,stageOnlyChanges=['verified identical asset import in an isolated project without Mono editor initialization','isolated forbidden probe','isolated per-case user data directory'],scope='Exact source digests; asset cache verified separately'),indent=2)+'\n',encoding='utf-8')
 (out/(prefix+'-gate.json')).write_text(json.dumps(dict(status='succeeded',requestedCases=a.case,cases=cases,matchedInputs=len(inputs),scope='Ordinary native window with synthetic keyboard/mouse/touch input; no physical Android/device assertion'),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
