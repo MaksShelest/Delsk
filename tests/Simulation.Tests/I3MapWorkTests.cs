@@ -1,5 +1,7 @@
 using Simulation.Core;
 using Simulation.Hosting;
+using System.IO.Compression;
+using System.Text.Json;
 using Xunit;
 
 namespace Simulation.Tests;
@@ -49,9 +51,32 @@ internal static class I3MapWork
             long before=Receivable();StorageC1Tests.Move(session,neighbor,2);Assert.True(Receivable()>before,"The real new dirt cell must accrue the builder's road income");
         }
         I3Fixture.Save(session,"map-"+key);
+        if(key=="large_districts")
+        {
+            // Compare the entire independently regenerated trajectory before running
+            // its full replay in a separate bounded process, as in the H3 gate.
+            var frozen=FrozenDistrict();Assert.Equal(frozen.Engine.Tick,session.Engine.Tick);
+            Assert.Equal(frozen.Engine.ComputeStateHash(),session.Engine.ComputeStateHash());
+            Assert.Equal(JsonSerializer.Serialize(frozen.CommandTape,SimulationJson.Options),JsonSerializer.Serialize(session.CommandTape,SimulationJson.Options));
+            return;
+        }
         var replay=GameSession.Replay(d,session.CommandTape,session.Engine.Tick);Assert.Equal(session.Engine.ComputeStateHash(),replay.Engine.ComputeStateHash());
+    }
+    internal static GameSession FrozenDistrict()
+    {
+        using var data=typeof(I3MapWork).Assembly.GetManifestResourceStream("Fixture.i3-district-completed.json.gz")!;
+        using var zip=new GZipStream(data,CompressionMode.Decompress);using var reader=new StreamReader(zip);
+        return CheckpointStore.Decode(reader.ReadToEnd());
     }
 }
 public class I3CompactMapTests{[Fact]public void RealProductionTransferAndPavingWithI2()=>I3MapWork.Check("compact_valley",new(14,5));}
 public class I3RiverMapTests{[Fact]public void RealProductionTransferAndPavingWithI2()=>I3MapWork.Check("small_river",new(5,5));}
 public class I3DistrictMapTests{[Fact]public void RealProductionTransferAndPavingWithI2()=>I3MapWork.Check("large_districts",new(5,5));}
+public class I3DistrictReplayTests
+{
+    [Fact]public void EntirePaidLargeMapTrajectoryReplaysFromItsOriginalStart()
+    {
+        var s=I3MapWork.FrozenDistrict();var replay=GameSession.Replay(s.Engine.Configuration(),s.CommandTape,s.Engine.Tick);
+        Assert.Equal(s.Engine.ComputeStateHash(),replay.Engine.ComputeStateHash());
+    }
+}
