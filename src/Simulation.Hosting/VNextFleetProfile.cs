@@ -6,10 +6,13 @@ namespace Simulation.Hosting;
 public static class VNextFleetProfile
 {
     public const string ProfileId = "vnext-e1-fleet-1";
+    // New profiles only: 30% vehicle discount, rounded to the nearest 100 coins (10_000 minor units).
+    // Resolved worlds preserve their previously saved FleetRules and purchase holds.
+    internal static long VehiclePriceMinor(long originalMinor) => checked(((checked(originalMinor * 7) / 10 + 5_000) / 10_000) * 10_000);
     public static EconomyProfile Create(EconomyProfile basis, VNextBalance balance)
     {
         var d3=VNextProductionProfile.Create(basis,balance);var source=d3.VNext!;
-        var fleet=new FleetRules([..balance.Vehicles.Select(v=>new VehicleModel(v.Id,v.Name,checked((int)v.Speed),v.CapacityVolume,v.PriceMinor,v.HandlingMax,v.Id=="trakt_d1"))],
+        var fleet=new FleetRules([..balance.Vehicles.Select(v=>new VehicleModel(v.Id,v.Name,checked((int)v.Speed),v.CapacityVolume,VehiclePriceMinor(v.PriceMinor),v.HandlingMax,v.Id=="trakt_d1"))],
             [..balance.VehicleHandlingKits.Select(k=>new HandlingUpgrade(k.Id=="light"?1:2,k.Throughput,k.PriceMinor,[..k.Materials.Select(m=>new MaterialCost(m.Key,m.Value))],60,checked((int)k.RequiresStaff)))],
             [..balance.LoadingPlatforms.Select(p=>new HandlingUpgrade(checked((int)p.Level),p.Throughput,p.PriceMinor,[..p.Materials.Select(m=>new MaterialCost(m.Key,m.Value))],p.Ticks,checked((int)p.RequiresStaff),p.ServiceMinorPerActiveTick))],
             checked((int)balance.Rules.ShopUpdateTicks),checked((int)balance.Rules.ShopMinDisplayTicks),WageMinor:balance.Rules.WageMinor);
