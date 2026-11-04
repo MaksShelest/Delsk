@@ -1,0 +1,13 @@
+{
+  "command": [
+    "dotnet",
+    "tools/I3Acceptance/bin/Release/net10.0/I3Acceptance.dll",
+    "work/i3/natural-compact",
+    "compact-valley"
+  ],
+  "timeout_seconds": 900,
+  "started_at": "2026-11-04T05:46:34.202191+00:00",
+  "exit_code": -15,
+  "elapsed_seconds": 370.196,
+  "finished_at": "2026-11-04T05:52:44.398662+00:00"
+}

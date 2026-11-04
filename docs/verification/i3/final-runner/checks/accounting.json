@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/Delsk/scripts/verify_results.py",
+    "/workspace/Delsk/work/i3/final-runner/prepared-replay",
+    "/workspace/Delsk/work/i3/final-runner/prepared-load",
+    "/workspace/Delsk/work/i3/final-runner/positioning-replay",
+    "/workspace/Delsk/work/i3/final-runner/positioning-load",
+    "/workspace/Delsk/work/i3/final-runner/working-replay",
+    "/workspace/Delsk/work/i3/final-runner/working-load",
+    "/workspace/Delsk/work/i3/final-runner/completed-replay",
+    "/workspace/Delsk/work/i3/final-runner/completed-load",
+    "/workspace/Delsk/work/i3/final-runner/map-compact_valley-replay",
+    "/workspace/Delsk/work/i3/final-runner/map-compact_valley-load",
+    "/workspace/Delsk/work/i3/final-runner/map-small_river-replay",
+    "/workspace/Delsk/work/i3/final-runner/map-small_river-load",
+    "/workspace/Delsk/work/i3/final-runner/map-large_districts-replay",
+    "/workspace/Delsk/work/i3/final-runner/map-large_districts-load"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-04T07:00:11.738179+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 1.524,
+  "finished_at": "2026-11-04T07:00:13.262590+00:00"
+}

@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+    "-noColor",
+    "-noLogo",
+    "-parallelMode",
+    "none",
+    "-class",
+    "Simulation.Tests.I3CompactMapTests",
+    "-result-trx",
+    "/workspace/Delsk/work/i3/complete-unit/tests-i3-3.trx"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-04T06:29:29.154365+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 12.159,
+  "finished_at": "2026-11-04T06:29:41.313619+00:00"
+}

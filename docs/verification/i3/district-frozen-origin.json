@@ -1,0 +1,24 @@
+{
+  "source": "work/i3/split-unit/i3-fixtures/map-large_districts.save.json",
+  "sourceSha256": "8af4323bde21f8bee366af7b5f0b358bfba08839b3323809bafdd855d9545385",
+  "frozen": "tests/Simulation.Tests/Fixtures/i3-district-completed.json.gz",
+  "frozenSha256": "056650aaae5aee1e4ea9d3b4dbf14b8526e43325bf32f1dfc17fff827d970d8d",
+  "boundary": {
+    "tick": 767,
+    "quantum": 0,
+    "hash": "206f074dc4be27f90142d7866d53d4a397aa433c0eed51ca03e1e3628fbb3b8b"
+  },
+  "previousRejectedCandidate": {
+    "source": "work/i3/complete-developer-2/i3-fixtures/map-large_districts.save.json",
+    "sourceSha256": "a3df643389e17523c95b62cfad2cbd550c1c3db2a233dc31598d64bf614a6b96",
+    "frozen": "tests/Simulation.Tests/Fixtures/i3-district-completed.json.gz",
+    "frozenSha256": "6ed97fd861cb71c9bb5d8e91cc568735107e7f264f2f268a4d30a16aac4d2b6a",
+    "boundary": {
+      "tick": 767,
+      "quantum": 0,
+      "hash": "206f074dc4be27f90142d7866d53d4a397aa433c0eed51ca03e1e3628fbb3b8b"
+    },
+    "scope": "Actual original trajectory before replay timeout. Preparation now regenerates and compares exact world and tape; independent partition replays all original commands. No deadline increased."
+  },
+  "scope": "Independently regenerated ordinary checkpoint, same t767 world hash and tape as the original Developer endpoint. Developer checkpoint correctly rejected by ordinary loader. No flags altered. Preparation compares exact world and tape; separate partition replays all commands."
+}

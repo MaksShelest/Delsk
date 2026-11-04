@@ -1,0 +1,17 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--load",
+    "/workspace/Delsk/work/i3/final-runner-fixtures/prepared.save.json",
+    "--ticks",
+    "184",
+    "--output",
+    "/workspace/Delsk/work/i3/final-runner/prepared-load"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-04T06:58:35.929416+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 2.683,
+  "finished_at": "2026-11-04T06:58:38.612067+00:00"
+}

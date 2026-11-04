@@ -1,0 +1,17 @@
+{
+  "status": "interrupted",
+  "error": "System.OperationCanceledException: Bounded segment stopped at a committed boundary; resume last-safe.save.json\n   at Program.\u003C\u003Ec__DisplayClass0_0.\u003C\u003CMain\u003E$\u003Eg__Tick|6() in /workspace/Delsk/tools/I3Acceptance/Program.cs:line 76\n   at Program.\u003C\u003Ec__DisplayClass0_0.\u003C\u003CMain\u003E$\u003Eg__SellPack|17() in /workspace/Delsk/tools/I3Acceptance/Program.cs:line 140\n   at Program.\u003C\u003Ec__DisplayClass0_0.\u003C\u003CMain\u003E$\u003Eg__EarnWithGravel|18(Int64 target) in /workspace/Delsk/tools/I3Acceptance/Program.cs:line 157\n   at Program.\u003CMain\u003E$(String[] args) in /workspace/Delsk/tools/I3Acceptance/Program.cs:line 33",
+  "stage": "natural-earning",
+  "map": "compact-valley",
+  "tick": 10881,
+  "cash": 30344,
+  "milestones": [
+    {
+      "name": "naturally-funded-materials-enterprise",
+      "tick": 4504,
+      "cash": 27616
+    }
+  ],
+  "elapsedSeconds": 682.3739875,
+  "scope": "Scripted ordinary Hosting commands, unchanged starting 200 coins, actual three NPCs. No Developer or free materials."
+}

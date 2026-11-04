@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+    "--world-only",
+    "/workspace/Delsk/work/i3/final-runner/map-large_districts-replay",
+    "/workspace/Delsk/work/i3/final-runner/map-large_districts-load"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-04T07:00:11.622871+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.065,
+  "finished_at": "2026-11-04T07:00:11.687657+00:00"
+}

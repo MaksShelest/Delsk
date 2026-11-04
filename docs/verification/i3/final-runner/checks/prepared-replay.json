@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--scenario",
+    "/workspace/Delsk/work/i3/final-runner-fixtures/prepared.scenario.json",
+    "--replay",
+    "/workspace/Delsk/work/i3/final-runner-fixtures/prepared.commands.jsonl",
+    "--ticks",
+    "184",
+    "--output",
+    "/workspace/Delsk/work/i3/final-runner/prepared-replay"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-04T06:58:31.169494+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 4.693,
+  "finished_at": "2026-11-04T06:58:35.862191+00:00"
+}

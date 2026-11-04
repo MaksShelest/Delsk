@@ -1,0 +1,189 @@
+test_b1_import_is_paid_at_terminal_and_uncollected_stock_is_separate (test_full_metrics.FullMetricsTests.test_b1_import_is_paid_at_terminal_and_uncollected_stock_is_separate) ... ok
+test_handling_investment_is_cash_capex_not_repeated_operating_cost (test_full_metrics.FullMetricsTests.test_handling_investment_is_cash_capex_not_repeated_operating_cost) ... ok
+test_missing_cash_flow_is_rejected_instead_of_fabricating_profit (test_full_metrics.FullMetricsTests.test_missing_cash_flow_is_rejected_instead_of_fabricating_profit) ... ok
+test_named_service_driver_wages_are_not_free (test_full_metrics.FullMetricsTests.test_named_service_driver_wages_are_not_free) ... ok
+test_overflow_uses_real_cargo_volume (test_full_metrics.FullMetricsTests.test_overflow_uses_real_cargo_volume) ... ok
+test_road_paid_principal_and_penalty_are_costs_unpaid_debt_is_not_cash (test_full_metrics.FullMetricsTests.test_road_paid_principal_and_penalty_are_costs_unpaid_debt_is_not_cash) ... ok
+test_service_payment_is_not_escrow_funding_or_goods_payment (test_full_metrics.FullMetricsTests.test_service_payment_is_not_escrow_funding_or_goods_payment) ... ok
+test_unbilled_road_accrual_is_not_forgotten_or_counted_twice (test_full_metrics.FullMetricsTests.test_unbilled_road_accrual_is_not_forgotten_or_counted_twice) ... ok
+test_unclassified_cash_is_reported_and_does_not_enter_profit_comparison (test_full_metrics.FullMetricsTests.test_unclassified_cash_is_reported_and_does_not_enter_profit_comparison) ... ok
+test_missing_pairs_do_not_become_zero_performance (test_h1_statistics.H1StatisticsTests.test_missing_pairs_do_not_become_zero_performance) ... ok
+test_planned_family_keeps_empty_comparisons_and_failed_attempts (test_h1_statistics.H1StatisticsTests.test_planned_family_keeps_empty_comparisons_and_failed_attempts) ... ok
+test_symmetric_pair_result_and_bootstrap_are_reproducible (test_h1_statistics.H1StatisticsTests.test_symmetric_pair_result_and_bootstrap_are_reproducible) ... ok
+test_ten_unanimous_worlds_have_exact_sign_probability (test_h1_statistics.H1StatisticsTests.test_ten_unanimous_worlds_have_exact_sign_probability) ... ok
+test_ties_are_not_counted_as_positive_pairs (test_h1_statistics.H1StatisticsTests.test_ties_are_not_counted_as_positive_pairs) ... ok
+test_command_matches_existing_runner_options (test_lab.LabTests.test_command_matches_existing_runner_options) ... ok
+test_comparison_excludes_failed_cells_and_reports_sample_spread (test_lab.LabTests.test_comparison_excludes_failed_cells_and_reports_sample_spread) ... ok
+test_explicit_retry_gets_new_attempt_and_does_not_reissue_completed_cells (test_lab.LabTests.test_explicit_retry_gets_new_attempt_and_does_not_reissue_completed_cells) ... ok
+test_factor_changes_only_negotiation_not_trade_or_politics (test_lab.LabTests.test_factor_changes_only_negotiation_not_trade_or_politics) ... ok
+test_inclusive_range_and_conflicting_or_wrong_values (test_lab.LabTests.test_inclusive_range_and_conflicting_or_wrong_values) ... ok
+test_invalid_plan_and_composition_fail_before_any_execution (test_lab.LabTests.test_invalid_plan_and_composition_fail_before_any_execution) ... ok
+test_pause_boundary_retry_and_restart_do_not_duplicate_success (test_lab.LabTests.test_pause_boundary_retry_and_restart_do_not_duplicate_success) ... ok
+test_rejection_of_later_arm_publishes_no_partial_series (test_lab.LabTests.test_rejection_of_later_arm_publishes_no_partial_series) ... ok
+test_validated_input_copies_are_independent_and_tampering_fails (test_lab.LabTests.test_validated_input_copies_are_independent_and_tampering_fails) ... ok
+test_archive_download_preserves_files_and_requires_token (test_launch.HttpTests.test_archive_download_preserves_files_and_requires_token) ... ERROR
+test_archive_rejects_unknown_series_and_active_job (test_launch.HttpTests.test_archive_rejects_unknown_series_and_active_job) ... ERROR
+test_failed_runner_logs_remain_downloadable_for_diagnosis (test_launch.HttpTests.test_failed_runner_logs_remain_downloadable_for_diagnosis) ... ERROR
+test_presets_expand_on_actual_catalog_and_keep_source_default_unchanged (test_launch.HttpTests.test_presets_expand_on_actual_catalog_and_keep_source_default_unchanged) ... ERROR
+test_reopen_verifies_live_instance (test_launch.HttpTests.test_reopen_verifies_live_instance) ... ERROR
+test_shutdown_requires_token_and_foreign_origin_is_rejected (test_launch.HttpTests.test_shutdown_requires_token_and_foreign_origin_is_rejected) ... ERROR
+test_stopping_host_does_not_admit_another_start_or_queue_request (test_launch.HttpTests.test_stopping_host_does_not_admit_another_start_or_queue_request) ... ERROR
+test_missing_or_wrong_sdk_has_actionable_message (test_launch.StartupTests.test_missing_or_wrong_sdk_has_actionable_message) ... ok
+test_preparation_uses_locked_restore_and_stops_on_failure (test_launch.StartupTests.test_preparation_uses_locked_restore_and_stops_on_failure) ... ok
+test_reopen_never_visits_arbitrary_or_stale_urls (test_launch.StartupTests.test_reopen_never_visits_arbitrary_or_stale_urls) ... ok
+test_startup_failure_releases_queue_lock_for_next_attempt (test_launch.StartupTests.test_startup_failure_releases_queue_lock_for_next_attempt) ... Не удалось запустить лабораторию: restore failed
+ok
+test_cash_profit_excludes_escrow_and_refunds_but_includes_actual_costs (test_metrics.MetricsTests.test_cash_profit_excludes_escrow_and_refunds_but_includes_actual_costs) ... ok
+test_developer_or_modified_exports_are_rejected (test_metrics.MetricsTests.test_developer_or_modified_exports_are_rejected) ... ok
+test_zero_revenue_has_no_margin_or_invented_model_latency (test_metrics.MetricsTests.test_zero_revenue_has_no_margin_or_invented_model_latency) ... ok
+test_cli_uses_new_game_without_legacy_seed_or_controllers (test_ordinary.OrdinaryTests.test_cli_uses_new_game_without_legacy_seed_or_controllers) ... ok
+test_large_persistent_queue_reopens_without_relaxing_plan_input_limit (test_ordinary.OrdinaryTests.test_large_persistent_queue_reopens_without_relaxing_plan_input_limit) ... ok
+test_mixed_overrides_and_ignored_factors_are_rejected (test_ordinary.OrdinaryTests.test_mixed_overrides_and_ignored_factors_are_rejected) ... ok
+test_modern_policy_source_is_the_frozen_profile (test_ordinary.OrdinaryTests.test_modern_policy_source_is_the_frozen_profile) ... ok
+test_no_mutation_of_caller_plan (test_ordinary.OrdinaryTests.test_no_mutation_of_caller_plan) ... ok
+test_pairing_keeps_roster_and_declared_difficulty_distinct (test_ordinary.OrdinaryTests.test_pairing_keeps_roster_and_declared_difficulty_distinct) ... ok
+test_checkpoint_path_escape_is_rejected (test_postg2_h1.PostG2StudyTests.test_checkpoint_path_escape_is_rejected) ... ok
+test_duplicate_seed_or_mixed_binary_is_not_an_extra_replicate (test_postg2_h1.PostG2StudyTests.test_duplicate_seed_or_mixed_binary_is_not_an_extra_replicate) ... ok
+test_failures_and_missing_pairs_are_retained_without_zero_imputation (test_postg2_h1.PostG2StudyTests.test_failures_and_missing_pairs_are_retained_without_zero_imputation) ... ok
+test_owned_compressed_export_restores_shared_fingerprint_and_rejects_other_plan (test_postg2_h1.PostG2StudyTests.test_owned_compressed_export_restores_shared_fingerprint_and_rejects_other_plan) ... ok
+test_preregistered_independent_worlds_and_horizons (test_postg2_h1.PostG2StudyTests.test_preregistered_independent_worlds_and_horizons) ... ok
+test_relocated_checkpoint_is_verified_and_tampering_rejected (test_postg2_h1.PostG2StudyTests.test_relocated_checkpoint_is_verified_and_tampering_rejected) ... ok
+test_runtime_failure_classes_do_not_become_success_or_equivalence (test_postg2_h1.PostG2StudyTests.test_runtime_failure_classes_do_not_become_success_or_equivalence) ... ok
+test_archived_queue_is_not_executed_and_restore_is_explicit (test_workspace.WorkspaceTests.test_archived_queue_is_not_executed_and_restore_is_explicit) ... ok
+test_binary_replacement_fails_before_runner_execution (test_workspace.WorkspaceTests.test_binary_replacement_fails_before_runner_execution) ... ok
+test_cancel_writes_control_and_pauses_the_queue (test_workspace.WorkspaceTests.test_cancel_writes_control_and_pauses_the_queue) ... ok
+test_chart_downsampling_keeps_every_actor_and_final_sample (test_workspace.WorkspaceTests.test_chart_downsampling_keeps_every_actor_and_final_sample) ... ok
+test_delete_removes_only_the_known_series (test_workspace.WorkspaceTests.test_delete_removes_only_the_known_series) ... ok
+test_different_undeclared_economy_or_composition_is_not_paired (test_workspace.WorkspaceTests.test_different_undeclared_economy_or_composition_is_not_paired) ... ok
+test_economy_copy_never_changes_source (test_workspace.WorkspaceTests.test_economy_copy_never_changes_source) ... ok
+test_incomplete_or_wrong_final_frame_cannot_enter_statistics (test_workspace.WorkspaceTests.test_incomplete_or_wrong_final_frame_cannot_enter_statistics) ... ok
+test_invalid_start_count_cash_and_duplicate_positions_fail (test_workspace.WorkspaceTests.test_invalid_start_count_cash_and_duplicate_positions_fail) ... ok
+test_model_contrast_is_declared_and_different_timing_is_not_paired (test_workspace.WorkspaceTests.test_model_contrast_is_declared_and_different_timing_is_not_paired) ... ok
+test_model_discovery_does_not_visit_remote_urls (test_workspace.WorkspaceTests.test_model_discovery_does_not_visit_remote_urls) ... ok
+test_participant_settings_copy_without_changing_source_or_economy (test_workspace.WorkspaceTests.test_participant_settings_copy_without_changing_source_or_economy) ... ok
+test_preview_rejects_traversal_links_and_pages_large_utf8 (test_workspace.WorkspaceTests.test_preview_rejects_traversal_links_and_pages_large_utf8) ... ok
+test_running_series_cannot_be_deleted_or_archived (test_workspace.WorkspaceTests.test_running_series_cannot_be_deleted_or_archived) ... ok
+
+======================================================================
+ERROR: test_archive_download_preserves_files_and_requires_token (test_launch.HttpTests.test_archive_download_preserves_files_and_requires_token)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/Delsk/tests/Research.Lab/test_launch.py", line 80, in setUp
+    self.server = make_server(self.lab, 0)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Delsk/scripts/research_lab_server.py", line 170, in make_server
+    server = ThreadingHTTPServer(('127.0.0.1', port), Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socketserver.py", line 453, in __init__
+    self.socket = socket.socket(self.address_family,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py", line 233, in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_archive_rejects_unknown_series_and_active_job (test_launch.HttpTests.test_archive_rejects_unknown_series_and_active_job)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/Delsk/tests/Research.Lab/test_launch.py", line 80, in setUp
+    self.server = make_server(self.lab, 0)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Delsk/scripts/research_lab_server.py", line 170, in make_server
+    server = ThreadingHTTPServer(('127.0.0.1', port), Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socketserver.py", line 453, in __init__
+    self.socket = socket.socket(self.address_family,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py", line 233, in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_failed_runner_logs_remain_downloadable_for_diagnosis (test_launch.HttpTests.test_failed_runner_logs_remain_downloadable_for_diagnosis)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/Delsk/tests/Research.Lab/test_launch.py", line 80, in setUp
+    self.server = make_server(self.lab, 0)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Delsk/scripts/research_lab_server.py", line 170, in make_server
+    server = ThreadingHTTPServer(('127.0.0.1', port), Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socketserver.py", line 453, in __init__
+    self.socket = socket.socket(self.address_family,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py", line 233, in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_presets_expand_on_actual_catalog_and_keep_source_default_unchanged (test_launch.HttpTests.test_presets_expand_on_actual_catalog_and_keep_source_default_unchanged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/Delsk/tests/Research.Lab/test_launch.py", line 80, in setUp
+    self.server = make_server(self.lab, 0)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Delsk/scripts/research_lab_server.py", line 170, in make_server
+    server = ThreadingHTTPServer(('127.0.0.1', port), Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socketserver.py", line 453, in __init__
+    self.socket = socket.socket(self.address_family,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py", line 233, in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_reopen_verifies_live_instance (test_launch.HttpTests.test_reopen_verifies_live_instance)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/Delsk/tests/Research.Lab/test_launch.py", line 80, in setUp
+    self.server = make_server(self.lab, 0)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Delsk/scripts/research_lab_server.py", line 170, in make_server
+    server = ThreadingHTTPServer(('127.0.0.1', port), Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socketserver.py", line 453, in __init__
+    self.socket = socket.socket(self.address_family,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py", line 233, in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_shutdown_requires_token_and_foreign_origin_is_rejected (test_launch.HttpTests.test_shutdown_requires_token_and_foreign_origin_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/Delsk/tests/Research.Lab/test_launch.py", line 80, in setUp
+    self.server = make_server(self.lab, 0)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Delsk/scripts/research_lab_server.py", line 170, in make_server
+    server = ThreadingHTTPServer(('127.0.0.1', port), Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socketserver.py", line 453, in __init__
+    self.socket = socket.socket(self.address_family,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py", line 233, in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_stopping_host_does_not_admit_another_start_or_queue_request (test_launch.HttpTests.test_stopping_host_does_not_admit_another_start_or_queue_request)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/Delsk/tests/Research.Lab/test_launch.py", line 80, in setUp
+    self.server = make_server(self.lab, 0)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Delsk/scripts/research_lab_server.py", line 170, in make_server
+    server = ThreadingHTTPServer(('127.0.0.1', port), Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socketserver.py", line 453, in __init__
+    self.socket = socket.socket(self.address_family,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py", line 233, in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+PermissionError: [Errno 1] Operation not permitted
+
+----------------------------------------------------------------------
+Ran 64 tests in 1.302s
+
+FAILED (errors=7)

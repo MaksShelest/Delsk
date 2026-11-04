@@ -1,0 +1,32 @@
+{
+  "suite": "i3",
+  "status": "succeeded",
+  "testsPassed": 20,
+  "testPartitions": [
+    {
+      "file": "tests-i3-0.trx",
+      "passed": 5
+    },
+    {
+      "file": "tests-i3-1.trx",
+      "passed": 8
+    },
+    {
+      "file": "tests-i3-2.trx",
+      "passed": 4
+    },
+    {
+      "file": "tests-i3-3.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-i3-4.trx",
+      "passed": 1
+    },
+    {
+      "file": "tests-i3-5.trx",
+      "passed": 1
+    }
+  ],
+  "scope": "Exhaustive ordinary unit phase; runner checks are a separate required gate"
+}

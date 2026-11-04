@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+    "--world-only",
+    "/workspace/Delsk/work/i3/final-runner/map-compact_valley-replay",
+    "/workspace/Delsk/work/i3/final-runner/map-compact_valley-load"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-04T06:59:13.761430+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.066,
+  "finished_at": "2026-11-04T06:59:13.827301+00:00"
+}

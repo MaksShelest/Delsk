@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--scenario",
+    "/workspace/Delsk/work/i3/final-runner-fixtures/positioning.scenario.json",
+    "--replay",
+    "/workspace/Delsk/work/i3/final-runner-fixtures/positioning.commands.jsonl",
+    "--ticks",
+    "185",
+    "--output",
+    "/workspace/Delsk/work/i3/final-runner/positioning-replay"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-04T06:58:38.801095+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 5.066,
+  "finished_at": "2026-11-04T06:58:43.866911+00:00"
+}

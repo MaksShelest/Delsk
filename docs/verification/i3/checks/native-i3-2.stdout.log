@@ -1,0 +1,10 @@
+restore: exit=0; logs=/workspace/Delsk/work/i3/native-2/checks
+ordinary-build: exit=0; logs=/workspace/Delsk/work/i3/native-2/checks
+ordinary-audit: exit=0; logs=/workspace/Delsk/work/i3/native-2/checks
+assets: exit=0; logs=/workspace/Delsk/work/i3/native-2/checks
+import: exit=0; logs=/workspace/Delsk/work/i3/native-2/checks
+imports-reuse: exit=0; logs=/workspace/Delsk/work/i3/native-2/checks
+platform-smoke: exit=0; logs=/workspace/Delsk/work/i3/native-2/checks
+platform-log: exit=0; logs=/workspace/Delsk/work/i3/native-2/checks
+probe-build: exit=0; logs=/workspace/Delsk/work/i3/native-2/checks
+ru-800: exit=1; logs=/workspace/Delsk/work/i3/native-2/checks

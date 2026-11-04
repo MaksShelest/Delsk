@@ -1,0 +1,26 @@
+{
+  "base": "a9d7a07830caebb9d199da0b5a27bbf17404788e",
+  "failedRun": 41788603827,
+  "head": "483d664d45f47d16f90068b5b254fba229f08bf8",
+  "files": [
+    {
+      "file": "scripts/study_h3.py",
+      "baseSha256": "4da04d41037ff9c0e01d5103d784bf3be43b5a0ebd232b1704d5def34f36a92f",
+      "currentSha256": "4da04d41037ff9c0e01d5103d784bf3be43b5a0ebd232b1704d5def34f36a92f",
+      "unchanged": true
+    },
+    {
+      "file": ".github/workflows/h3.yml",
+      "baseSha256": "800337d41f7946f95a16f14e7c3611d4757def62c8cc8c1b163d550b08b9b883",
+      "currentSha256": "800337d41f7946f95a16f14e7c3611d4757def62c8cc8c1b163d550b08b9b883",
+      "unchanged": true
+    },
+    {
+      "file": "src/Simulation.Hosting/OrdinaryNewGame.cs",
+      "baseSha256": "2494cd844dfec6b0249ac6eb7e8399a0b5da1ebe0e1355042796152b71dcf7cc",
+      "currentSha256": "2494cd844dfec6b0249ac6eb7e8399a0b5da1ebe0e1355042796152b71dcf7cc",
+      "unchanged": true
+    }
+  ],
+  "reason": "Historical fresh_state requires Movement1(version1/divisor32), while ordinary already selects Movement2/I1 on the PR80 base. Criteria were not changed; retained H3 cohort was not replaced. Cancelling this automatically opened run was denied by service permissions."
+}

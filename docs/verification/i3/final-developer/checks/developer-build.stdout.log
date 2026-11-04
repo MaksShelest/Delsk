@@ -1,0 +1,13 @@
+  Simulation.Core -> /workspace/Delsk/src/Simulation.Core/bin/developer/Debug/net10.0/Simulation.Core.dll
+  Simulation.Hosting -> /workspace/Delsk/src/Simulation.Hosting/bin/developer/Debug/net10.0/Simulation.Hosting.dll
+  Agents.Algorithmic -> /workspace/Delsk/src/Agents.Algorithmic/bin/developer/Debug/net10.0/Agents.Algorithmic.dll
+  Agents.Llm -> /workspace/Delsk/src/Agents.Llm/bin/developer/Debug/net10.0/Agents.Llm.dll
+  Research.Runner -> /workspace/Delsk/src/Research.Runner/bin/developer/Debug/net10.0/Research.Runner.dll
+  Simulation.Developer -> /workspace/Delsk/src/Simulation.Developer/bin/developer/Debug/net10.0/Simulation.Developer.dll
+  Simulation.Tests -> /workspace/Delsk/tests/Simulation.Tests/bin/developer/Debug/net10.0/Simulation.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:01:54.21

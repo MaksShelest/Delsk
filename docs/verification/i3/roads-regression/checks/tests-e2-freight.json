@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+    "-noColor",
+    "-noLogo",
+    "-parallelMode",
+    "none",
+    "-class",
+    "Simulation.Tests.RoadFreightE2Tests",
+    "-result-trx",
+    "/workspace/Delsk/work/i3/roads-regression/tests-e2-freight.trx"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-04T06:00:23.520985+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 53.166,
+  "finished_at": "2026-11-04T06:01:16.687521+00:00"
+}

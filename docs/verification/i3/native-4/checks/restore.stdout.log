@@ -1,0 +1,6 @@
+  Determining projects to restore...
+  Restored /workspace/Delsk/work/i3/native-4/source/src/Simulation.Core/Simulation.Core.csproj (in 275 ms).
+  Restored /workspace/Delsk/work/i3/native-4/source/src/Client.Godot/Delsk.Client.csproj (in 331 ms).
+  Restored /workspace/Delsk/work/i3/native-4/source/src/Simulation.Hosting/Simulation.Hosting.csproj (in 2 ms).
+  Restored /workspace/Delsk/work/i3/native-4/source/src/Agents.Llm/Agents.Llm.csproj (in 3 ms).
+  Restored /workspace/Delsk/work/i3/native-4/source/src/Agents.Algorithmic/Agents.Algorithmic.csproj (in 3 ms).

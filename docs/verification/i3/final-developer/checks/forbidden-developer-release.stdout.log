@@ -1,0 +1,9 @@
+/workspace/Delsk/Directory.Build.props(24,5): error : Developer interventions are forbidden in Release/ExportRelease. Use a debug export (ExportDebug) or the isolated Debug Developer package. [/workspace/Delsk/src/Simulation.Core/Simulation.Core.csproj]
+
+Build FAILED.
+
+/workspace/Delsk/Directory.Build.props(24,5): error : Developer interventions are forbidden in Release/ExportRelease. Use a debug export (ExportDebug) or the isolated Debug Developer package. [/workspace/Delsk/src/Simulation.Core/Simulation.Core.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:00.86

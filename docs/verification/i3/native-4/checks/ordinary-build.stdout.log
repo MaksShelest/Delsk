@@ -1,0 +1,11 @@
+  Simulation.Core -> /workspace/Delsk/work/i3/native-4/source/src/Simulation.Core/bin/Debug/net10.0/Simulation.Core.dll
+  Simulation.Hosting -> /workspace/Delsk/work/i3/native-4/source/src/Simulation.Hosting/bin/Debug/net10.0/Simulation.Hosting.dll
+  Agents.Algorithmic -> /workspace/Delsk/work/i3/native-4/source/src/Agents.Algorithmic/bin/Debug/net10.0/Agents.Algorithmic.dll
+  Agents.Llm -> /workspace/Delsk/work/i3/native-4/source/src/Agents.Llm/bin/Debug/net10.0/Agents.Llm.dll
+  Delsk.Client -> /workspace/Delsk/work/i3/native-4/source/src/Client.Godot/.godot/mono/temp/bin/Debug/Delsk.Client.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:01:19.60

@@ -1,0 +1,27 @@
+[
+  {
+    "path": "work/i3/compact-speed-fixtures/map-compact_valley.save.json",
+    "bytes": 127796,
+    "sha256": "8300f7aba05de8834d4af07b6d77e7479f3aca61a664bc97e5320a5cb813969e"
+  },
+  {
+    "path": "work/i3/natural-compact/progress.save.json",
+    "bytes": 1892094,
+    "sha256": "423ef69d437c3220fe733037f49252b3a43f5dfe8986ed1047c2ed4b6c5969ad"
+  },
+  {
+    "path": "work/i3/natural-compact-production/last-safe.save.json",
+    "bytes": 5184905,
+    "sha256": "610487a4c5de594b4d2d694a4fb231ba8be8b8e78b3ef839d9f42b157b8e8468"
+  },
+  {
+    "path": "work/i3/natural-compact-production/naturally-funded-materials-enterprise.save.json",
+    "bytes": 2167022,
+    "sha256": "cadb316646135b2ecad51c6afd76d64d2a0db0e0837d987083d8c3b166c5cca9"
+  },
+  {
+    "path": "work/i3/natural-compact-production/progress.save.json",
+    "bytes": 4786852,
+    "sha256": "1aec043bc47397a1b898411b073dff87c1e0d3499a4d98f59b816cea985c1b57"
+  }
+]
