@@ -156,7 +156,7 @@ public sealed partial class SimulationEngine
     }
     private bool PedestrianTrafficBlocked(Cell cell,long actor=0)=>UsesFreeVehicleControl&&
         (RoadBodies().Any(b=>VehicleCargo(b).Position==cell&&
-            !(b.Owner.Value==actor&&b.Driver==0&&(!_traffic.TryGetValue(b.Id,out var parked)||!HasRoadProgress(parked)&&!IsSteering(parked))))||_traffic.Values.Any(t=>
+            !(b.Owner.Value==actor&&b.Driver==0&&!RoadVehicleWorking(b.Id)&&(!_traffic.TryGetValue(b.Id,out var parked)||!HasRoadProgress(parked)&&!IsSteering(parked))))||_traffic.Values.Any(t=>
             HasRoadProgress(t)&&t.Index<t.Path.Length-1&&t.Path[t.Index+1]==cell)||TurnReservedByOther(0,cell));
 
     private static int IntegerDistance(int dx,int dz)

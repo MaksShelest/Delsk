@@ -11,7 +11,7 @@ if out.exists() and any(out.iterdir()):p.error('Use an empty output; retain prev
 out.mkdir(parents=True);folders=[];checks=[];runner=['dotnet',ROOT/'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll']
 def check(name,command,timeout=120):
     subprocess.run([sys.executable,ROOT/'scripts/run_check.py','--name',name,'--timeout',str(timeout),'--log-directory',out/'checks','--',*map(str,command)],cwd=ROOT,check=True);checks.append(name)
-for name in ['prepared','positioning','working','completed']:
+for name in ['prepared','positioning','working','completed','map-compact_valley','map-small_river','map-large_districts']:
     boundary=json.loads((fixtures/(name+'-boundary.json')).read_text());tick=boundary['tick']+3
     replay=out/(name+'-replay');loaded=out/(name+'-load')
     check(name+'-replay',[*runner,'--scenario',fixtures/(name+'.scenario.json'),'--replay',fixtures/(name+'.commands.jsonl'),'--ticks',tick,'--output',replay])
@@ -19,4 +19,4 @@ for name in ['prepared','positioning','working','completed']:
     check(name+'-equal',[sys.executable,ROOT/'scripts/verify_checkpoint_exports.py','--world-only',replay,loaded]);folders.extend([replay,loaded])
 check('accounting',[sys.executable,ROOT/'scripts/verify_results.py',*folders])
 check('capital-privacy',[sys.executable,ROOT/'scripts/verify_public_economy.py',*folders])
-(out/'gate.json').write_text(json.dumps(dict(status='succeeded',processChecks=len(checks),exports=len(folders),exactPairs=4,scope='I3 exact runner continuation and replay, independent road/fleet/billing/accounting/privacy audits. Prepared fixtures; ordinary earning and native UI are separate gates.'),indent=2)+'\n')
+(out/'gate.json').write_text(json.dumps(dict(status='succeeded',processChecks=len(checks),exports=len(folders),exactPairs=7,scope='I3 exact runner continuation and replay, independent road/fleet/billing/accounting/privacy audits. Prepared fixtures; ordinary earning and native UI are separate gates.'),indent=2)+'\n')

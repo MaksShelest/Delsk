@@ -98,7 +98,7 @@ public sealed partial class SimulationEngine
         if (enterprise is not null) return [enterprise.Definition.Position];
         if (_equipment.TryGetValue(group, out var machine) && machine.Owner == actor) return [machine.Position];
         if (_logistics.TryGetValue(group, out var logistics) && logistics.Owner == actor) return [_enterprises[logistics.Enterprise].Definition.Position];
-        if (_roadWorks.TryGetValue(group,out var road) && road.Group.Owner==actor) return [VehicleCargo(_vehicles[group]).Position];
+        if (_roadWorks.TryGetValue(group,out var road) && road.Group.Owner==actor) return UsesFreeVehicleControl?[VehicleCargo(_vehicles[group]).Position,..RoadNeighbors(VehicleCargo(_vehicles[group]).Position).Where(_map.Walkable)]:[VehicleCargo(_vehicles[group]).Position];
         if (_platforms.TryGetValue(group,out var p) && p.Group.Owner==actor) return [_buildings[p.Building].Position];
         if(_serviceCrews.Values.FirstOrDefault(c=>c.Group.Id==group&&c.Group.Owner==actor) is {} serviceCrew)return [VehicleCargo(_vehicles[serviceCrew.Vehicle]).Position];
         return null;

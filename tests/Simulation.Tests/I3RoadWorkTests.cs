@@ -86,6 +86,8 @@ public class I3WorkTests
         while(I3Fixture.Work(s).Batch is null&&bound-->0)s.Step();Assert.True(bound>0);var work=I3Fixture.Work(s);
         Assert.Equal(3*staff*20,s.Engine.EventsSince(0).Where(e=>e.Type=="RoadWorkTravelled").Sum(e=>e.AmountMinor));
         Assert.Equal(staff,work.Group.Headcount);Assert.Equal(24/staff,I3Fixture.Quote(s,v,mode:EquipmentMode.Automatic).ExpectedTicks);
+        Assert.False(s.Engine.PreviewMovement(new(1),new(10,1)).Allowed);
+        Assert.True(s.Engine.AccessFor(new(1),new(ActionKind.SetWage,Group:work.Group.Id,WageMinor:work.Group.WageMinor)).Allowed);
         I2Fixture.Step(s,new(ActionKind.SetRoadCellEnabled,VehicleId:v.Id,Enabled:false));
         long paused=I3Fixture.Work(s).Batch!.Work;s.AdvanceTo(s.Engine.Tick+2);Assert.Equal(paused,I3Fixture.Work(s).Batch!.Work);
         I2Fixture.Step(s,new(ActionKind.SetRoadCellEnabled,VehicleId:v.Id,Enabled:true));
