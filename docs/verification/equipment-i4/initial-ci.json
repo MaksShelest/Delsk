@@ -1,0 +1,46 @@
+{
+  "originalHead": "ae7e9e565a9b46e5c6831de5cf86ff7aac6ce1a0",
+  "coreRun": 41832305006,
+  "windowsRun": 41832305116,
+  "h3Run": 41832305034,
+  "artifacts": [
+    {
+      "name": "h1-original.zip",
+      "bytes": 6681834,
+      "sha256": "7e2b676fa4817341d03db0a3a64d42ddc0becaf16fff3bd6203417beb09fe1ea",
+      "crc": "all entries verified"
+    },
+    {
+      "name": "h3-original.zip",
+      "bytes": 1388682,
+      "sha256": "d2b6fb1913f4994bd74cbcb308b3ed34bdfae778eb367df956ae9277cc014a89",
+      "crc": "all entries verified"
+    },
+    {
+      "name": "i3-original.zip",
+      "bytes": 138001,
+      "sha256": "bb5d74bcec972924c5f6fa42d9ad4b5e28f7ce68eeb4f735f5f257f1fcb20b64",
+      "crc": "all entries verified"
+    },
+    {
+      "name": "road-original.zip",
+      "bytes": 1379226,
+      "sha256": "dc7ebdc5b61ffbf3a3ea3f00bc4143acc2548d5b8d20a1a93c0b0f74a038b570",
+      "crc": "all entries verified"
+    },
+    {
+      "name": "windows-original.zip",
+      "bytes": 817,
+      "sha256": "b5c321f5a814525c580b68d50b1ccee705e32fd35d57262373364587ca428eff",
+      "crc": "all entries verified"
+    }
+  ],
+  "classification": {
+    "road_and_i3": "Historical Fleet price transformation leaves cash in deliberately poor fixtures; expected NoMoney becomes Working/Allowed.",
+    "h3_unit": "Historical rebuilt G1 profile no longer matches retained loaded world; restore the original profile, never replace the golden checkpoint.",
+    "h1": "Historical prepared F2 capex must remain 250000.",
+    "h3_research": "Fresh ordinary resolution defaults to Movement2; this preregistered cohort explicitly needs Movement1.",
+    "windows": "curl exit28 at the pinned editor download; application was not executed.",
+    "duplicates": "Cancelled or dependent checks are not separate application failures."
+  }
+}
