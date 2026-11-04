@@ -11,7 +11,7 @@ public partial class RoadPanel : VBoxContainer
     private readonly Func<GameAction,ActionAccess> _access;
     private readonly OptionButton _paver=new(){Name="RoadPaver"},_level=new(){Name="RoadLevel"},_mode=new(){Name="RoadMode"};
     private readonly LineEdit _route=new(){Name="RoadRoute",PlaceholderText="10,1; 11,1",SizeFlagsHorizontal=SizeFlags.ExpandFill};
-    private readonly Label _state=Wrap(),_cost=Wrap(),_contributions=Wrap(),_error=Wrap();
+    private readonly Label _state=Wrap(),_cost=Wrap(),_contributions=Wrap(),_error=Wrap(),_exit=Wrap();
     private readonly Button _start=new(){Name="RoadStart"},_stop=new(){Name="RoadStop"},_turn=new(){Name="RoadTurn"};
     private readonly SpinBox _wage=new(){Name="RoadWage",MinValue=0,MaxValue=1000,Step=.05,Value=.20};
     private readonly Button _pay=new(){Name="RoadSetWage"};
@@ -31,7 +31,7 @@ public partial class RoadPanel : VBoxContainer
         var wages=TabletDesign.Flow();_pay.Text=L("Зарплата группы · монет/тик","Crew wage · coins/tick");wages.AddChild(_wage);wages.AddChild(_pay);AddChild(wages);
         _pay.Pressed+=()=>{if(Selected>0)_submit(new(ActionKind.SetWage,Group:new(Selected),WageMinor:(long)Math.Round(_wage.Value*100)));};
         _start.Pressed+=()=>Send(true);_stop.Pressed+=()=>Send(false);_turn.Pressed+=()=>{if(Selected>0)_submit(new(ActionKind.TurnVehicle,VehicleId:Selected));};
-        AddChild(Wrap(L("Съезд: удерживайте направление 1 тик, отпускание отменяет. Разворот — только в свободном месте. После 30 тиков в проезде появится предупреждение, после 60 помощник ищет законный путь в карман.","Exit: hold a direction for 1 tick; releasing cancels. Turn only with free space. A passage warning appears after 30 ticks; after 60 the assistant seeks a legal path to a bay.")));
+        AddChild(_exit);
         AddChild(_orders);
     }
     private string L(string ru,string en)=>PlayerText.Local(_language,ru,en);
@@ -58,6 +58,8 @@ public partial class RoadPanel : VBoxContainer
     public void ShowData(PlayerView view,bool pending,bool paused)
     {
         _view=view;if(view.Roads is not {} roads||view.Fleet is not {} fleet){Visible=false;return;}
+        string hold=view.Economy?.VehicleControl is {} control?(control.ExitHoldQuanta/10m).ToString("0.#",System.Globalization.CultureInfo.InvariantCulture)+L(" секунды"," seconds"):roads.Rules.ExitHoldTicks+L(" тик"," tick");
+        _exit.Text=L("Съезд: удерживайте направление ","Exit: hold a direction for ")+hold+L("; отпускание отменяет. Разворот требует свободного места. Предупреждение через ","; releasing cancels. Turning needs free space. Warning after ")+roads.Rules.WarningTicks+L(" тиков; помощник через "," ticks; assistance after ")+roads.Rules.ReleaseTicks+L(" тиков."," ticks.");
         var vehicles=fleet.Vehicles.Where(v=>v.Model.MaterialsOnly).ToArray();string key=string.Join(',',vehicles.Select(v=>v.Vehicle.Id));
         if(key!=_key){long previous=Selected;_key=key;_paver.Clear();_ids=vehicles.Select(v=>v.Vehicle.Id).ToArray();foreach(var v in vehicles)_paver.AddItem("Тракт-Д1 #"+v.Vehicle.Id);int selected=Array.IndexOf(_ids,previous);if(selected>=0)_paver.Select(selected);}
         var selectedVehicle=vehicles.FirstOrDefault(v=>v.Vehicle.Id==Selected);var work=roads.OwnWorks.FirstOrDefault(w=>w.VehicleId==Selected);
@@ -72,7 +74,7 @@ public partial class RoadPanel : VBoxContainer
         _cost.Text=L("На клетку: ","Per cell: ")+rule.PriceMinor/100m+L(" монет · "," coins · ")+string.Join(", ",rule.Materials.Select(m=>m.Quantity+" "+PlayerText.Item(_language,m.ItemId)))+" · "+rule.Ticks+L(" тиков при 2 рабочих; ×2 лично/при одном."," ticks with 2 workers; ×2 personal/with one.");
         var traffic=roads.OwnTraffic.FirstOrDefault(t=>t.VehicleId==Selected);
         _state.Text=selectedVehicle is null?L("Сначала приобретите Тракт в автосалоне.","Purchase a Trakt at the dealer first."):
-            L("Место ","Position ")+selectedVehicle.Position.X+","+selectedVehicle.Position.Z+" · "+PlayerText.Reason(_language,work?.Reason??traffic?.Reason??"Parked")+
+            L("Место ","Position ")+selectedVehicle.Position.X+","+selectedVehicle.Position.Z+" · "+(work?.Reason=="NoStaff"?TabletText.Reason(_language,"NoStaff"):PlayerText.Reason(_language,work?.Reason??traffic?.Reason??"Parked"))+
             (work is null?"":$" · {work.Cursor}/{work.Route.Length} · "+L("работники ","workers ")+work.Group.Headcount+"/2"+(work.Batch is {} batch?$" · {batch.Work}/{2*roads.Rules.Stages[batch.Level-1].Ticks}":""));
         try{var cell=Route()[0];var road=roads.Cells.FirstOrDefault(c=>c.Cell==cell);_contributions.Text=L("Ступени / будущие права: ","Stages / future rights: ")+(road is null?L("нет покрытия","no surface"):string.Join(" → ",road.Contributions.Select(c=>c.Level+": "+(c.Builder.Value==0?L("город","city"):"#"+c.Builder.Value))));}catch(FormatException){_contributions.Text="";}
         _start.Disabled=_stop.Disabled=pending||Selected==0;

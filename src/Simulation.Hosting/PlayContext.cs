@@ -103,6 +103,11 @@ public static class PlayContext
         if (tablets)
             foreach (var machine in (view.Equipment ?? []).Where(e => e.Position == cell))
                 choices.Add(new("object:equipment:" + machine.Id.Value,L(language,"Открыть карточку техники","Open equipment card"),null));
+        if(tablets&&view.Roads is {} roads&&view.Fleet?.Vehicles.FirstOrDefault(v=>v.Vehicle.Driver==view.Participant.Id.Value&&v.Model.MaterialsOnly) is {} paver)
+        {
+            int level=roads.Cells.FirstOrDefault(r=>r.Cell==paver.Position)?.Level??0;
+            choices.Insert(0,new("road-work:"+paver.Vehicle.Id,level==0?L(language,"Строить дорогу","Build road"):L(language,"Улучшить дорогу","Upgrade road"),null));
+        }
         if(view.Fleet is {} fleet)
             foreach(var v in fleet.Vehicles.Where(v=>v.Position==cell))
                 choices.Add(new("vehicle:"+v.Vehicle.Id,v.Model.Name+" · "+(v.Vehicle.Driver==0?L(language,"сесть","board"):L(language,"выйти","leave")),new(v.Vehicle.Driver==0?ActionKind.BoardVehicle:ActionKind.LeaveVehicle,VehicleId:v.Vehicle.Id),!view.Participant.Busy));

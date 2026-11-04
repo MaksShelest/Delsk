@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--scenario",
+    "/workspace/Delsk/work/i3/final-runner-fixtures/map-compact_valley.scenario.json",
+    "--replay",
+    "/workspace/Delsk/work/i3/final-runner-fixtures/map-compact_valley.commands.jsonl",
+    "--ticks",
+    "363",
+    "--output",
+    "/workspace/Delsk/work/i3/final-runner/map-compact_valley-replay"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-04T06:59:01.539351+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 9.666,
+  "finished_at": "2026-11-04T06:59:11.205702+00:00"
+}

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspace/Delsk/scripts/check_i3_native.py", line 29, in <module>
+    check('platform-smoke',30,[a.godot,'--headless','--path',project,'--audio-driver','Dummy','--','--smoke','--report',out/'platform.json'],env)
+  File "/workspace/Delsk/scripts/check_i3_native.py", line 18, in check
+    subprocess.run([sys.executable,ROOT/'scripts/run_check.py','--name',name,'--timeout',str(timeout),'--log-directory',out/'checks','--',*map(str,command)],cwd=ROOT,env=env,check=True)
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3', PosixPath('/workspace/Delsk/scripts/run_check.py'), '--name', 'platform-smoke', '--timeout', '30', '--log-directory', PosixPath('/workspace/Delsk/work/i3/native-1/checks'), '--', '/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64', '--headless', '--path', '/workspace/Delsk/work/i3/native-1/source/src/Client.Godot', '--audio-driver', 'Dummy', '--', '--smoke', '--report', '/workspace/Delsk/work/i3/native-1/platform.json']' returned non-zero exit status 124.

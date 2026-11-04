@@ -1,0 +1,5 @@
+Unhandled exception. System.OperationCanceledException: Bounded segment stopped at a committed boundary; resume last-safe.save.json
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__Tick|6() in /workspace/Delsk/tools/I3Acceptance/Program.cs:line 76
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__SellPack|17() in /workspace/Delsk/tools/I3Acceptance/Program.cs:line 140
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__EarnWithGravel|18(Int64 target) in /workspace/Delsk/tools/I3Acceptance/Program.cs:line 157
+   at Program.<Main>$(String[] args) in /workspace/Delsk/tools/I3Acceptance/Program.cs:line 33

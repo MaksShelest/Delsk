@@ -14,7 +14,7 @@ public static class ActionPolicy
     public static bool IsServiceDecision(ActionKind kind)=>kind is ActionKind.ForceCloseDeliveryService or ActionKind.AcceptDeliveryService or ActionKind.RejectDeliveryService or ActionKind.ConfirmDeliveryService or ActionKind.CancelDeliveryService or ActionKind.ViewDeliveryService;
     public static ActionReach Reach(ActionKind kind) => kind switch
     {
-        ActionKind.PickupDeliveryService or ActionKind.UnloadDeliveryService or ActionKind.SetRoadWork or ActionKind.TurnVehicle or ActionKind.BuyVehicle or ActionKind.BoardVehicle or ActionKind.AssignVehicle or ActionKind.InstallVehicleKit or ActionKind.BuildLoadingPlatform or ActionKind.BuyImport or ActionKind.ModernizeWorkshop or ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.TakeOverflow or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
+        ActionKind.PickupDeliveryService or ActionKind.UnloadDeliveryService or ActionKind.SetRoadCellEnabled or ActionKind.StartRoadCell or ActionKind.SetRoadWork or ActionKind.TurnVehicle or ActionKind.BuyVehicle or ActionKind.BoardVehicle or ActionKind.AssignVehicle or ActionKind.InstallVehicleKit or ActionKind.BuildLoadingPlatform or ActionKind.BuyImport or ActionKind.ModernizeWorkshop or ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.TakeOverflow or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.Build or ActionKind.UpgradeBuilding or
         ActionKind.SetWage or ActionKind.BuyEquipment or ActionKind.UpgradeEquipment or ActionKind.CollectPurchase or
         ActionKind.DeliverContract or ActionKind.BuyLogistics or ActionKind.UpgradeLogistics or ActionKind.SignSupport => ActionReach.AtLocation,
@@ -52,6 +52,10 @@ public sealed partial class SimulationEngine
         {
             ActionKind.PickupDeliveryService or ActionKind.UnloadDeliveryService=>ServiceExecution is not null&&_serviceOrders.TryGetValue(action.ServiceId,out var service)&&service.Carrier.Value==actor.Id&&service.State=="Accepted"?[action.Kind==ActionKind.PickupDeliveryService?service.Quote.SourcePosition:ServiceTarget(service,_serviceRuns[service.Id])]:null,
             ActionKind.BuyVehicle=>Fleet is null?null:[Dealer.Entry],
+            ActionKind.StartRoadCell=>_vehicles.TryGetValue(action.VehicleId,out var paver)&&paver.Owner.Value==actor.Id?
+                action.Mode==EquipmentMode.Automatic?[VehicleCargo(paver).Position,..RoadNeighbors(VehicleCargo(paver).Position).Where(_map.Walkable)]:[VehicleCargo(paver).Position]:null,
+            ActionKind.SetRoadCellEnabled=>_vehicles.TryGetValue(action.VehicleId,out var controlled)&&controlled.Owner.Value==actor.Id&&_roadWorks.TryGetValue(controlled.Id,out var roadWork)?
+                roadWork.Mode==EquipmentMode.Automatic?[VehicleCargo(controlled).Position,..RoadNeighbors(VehicleCargo(controlled).Position).Where(_map.Walkable)]:[VehicleCargo(controlled).Position]:null,
             ActionKind.SetRoadWork or ActionKind.TurnVehicle or ActionKind.BoardVehicle or ActionKind.InstallVehicleKit=>_vehicles.TryGetValue(action.VehicleId,out var vehicle)&&vehicle.Owner.Value==actor.Id?[VehicleCargo(vehicle).Position]:null,
             ActionKind.AssignVehicle=>_enterprises.TryGetValue(action.Enterprise.Value,out var assigning)&&assigning.Definition.OwnerId==actor.Id?[assigning.Definition.Position]:null,
             ActionKind.BuildLoadingPlatform=>_buildings.TryGetValue(action.Building.Value,out var platformBuilding)&&platformBuilding.Owner==actor.Id&&!Demolished(platformBuilding.Id)?[platformBuilding.Position]:null,
@@ -94,7 +98,7 @@ public sealed partial class SimulationEngine
         if (enterprise is not null) return [enterprise.Definition.Position];
         if (_equipment.TryGetValue(group, out var machine) && machine.Owner == actor) return [machine.Position];
         if (_logistics.TryGetValue(group, out var logistics) && logistics.Owner == actor) return [_enterprises[logistics.Enterprise].Definition.Position];
-        if (_roadWorks.TryGetValue(group,out var road) && road.Group.Owner==actor) return [VehicleCargo(_vehicles[group]).Position];
+        if (_roadWorks.TryGetValue(group,out var road) && road.Group.Owner==actor) return UsesFreeVehicleControl?[VehicleCargo(_vehicles[group]).Position,..RoadNeighbors(VehicleCargo(_vehicles[group]).Position).Where(_map.Walkable)]:[VehicleCargo(_vehicles[group]).Position];
         if (_platforms.TryGetValue(group,out var p) && p.Group.Owner==actor) return [_buildings[p.Building].Position];
         if(_serviceCrews.Values.FirstOrDefault(c=>c.Group.Id==group&&c.Group.Owner==actor) is {} serviceCrew)return [VehicleCargo(_vehicles[serviceCrew.Vehicle]).Position];
         return null;

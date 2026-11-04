@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+    "--world-only",
+    "/workspace/Delsk/work/i3/final-runner/map-small_river-replay",
+    "/workspace/Delsk/work/i3/final-runner/map-small_river-load"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-04T06:59:30.575902+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.065,
+  "finished_at": "2026-11-04T06:59:30.640643+00:00"
+}

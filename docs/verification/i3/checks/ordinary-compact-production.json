@@ -1,0 +1,14 @@
+{
+  "command": [
+    "dotnet",
+    "tools/I3Acceptance/bin/Release/net10.0/I3Acceptance.dll",
+    "work/i3/natural-compact-production",
+    "compact-valley",
+    "work/i3/natural-compact/progress.save.json"
+  ],
+  "timeout_seconds": 900,
+  "started_at": "2026-11-04T05:55:45.828197+00:00",
+  "exit_code": -6,
+  "elapsed_seconds": 682.581,
+  "finished_at": "2026-11-04T06:07:08.409459+00:00"
+}

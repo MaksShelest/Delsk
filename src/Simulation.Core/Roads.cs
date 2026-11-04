@@ -36,9 +36,10 @@ public sealed partial class SimulationEngine
         if(c.Action.Mode==EquipmentMode.Personal&&v.Driver!=actor.Id||c.Action.Mode==EquipmentMode.Automatic&&v.Driver!=0)throw new RuleViolation("PaverOperatorRequired");
         bool created=false;if(!_roadWorks.TryGetValue(v.Id,out var w)){w=new(v.Id,actor.Id,Roads.WageMinor);created=true;}
         if(w.Batch is not null&&(w.Mode!=c.Action.Mode||!w.Route.SequenceEqual(route)||w.Level!=level))throw new RuleViolation("RoadBatchInProgress");
+        bool positioning=PaverPositioning(w)&&w.Route.SequenceEqual(route)&&w.Mode==c.Action.Mode;
         if(w.Batch is null){CancelTrafficRoute(v.Id);w.Route=route;w.Cursor=0;w.Level=level;}
         w.Mode=c.Action.Mode;w.Enabled=c.Action.Enabled&&w.Mode!=EquipmentMode.Off;_roadWorks[v.Id]=w;
-        w.Reason=w.Enabled?"Ready":"UserPaused";
+        w.Reason=positioning?(w.Enabled?"PaverPositioning":"PaverPositioningPaused"):w.Enabled?"Ready":"UserPaused";
         if(created)Emit("RoadCrewCreated",actor.Id,v.Id,command:c.CommandId);
         Emit("RoadWorkConfigured",actor.Id,v.Id,quantity:level,reason:w.Mode.ToString(),command:c.CommandId);
     }
@@ -55,9 +56,10 @@ public sealed partial class SimulationEngine
         PublishRoadOrders();
         foreach(var w in _roadWorks.Values.OrderBy(w=>w.Vehicle))
         {
-            if(!w.Enabled){w.Reason=w.Route.Length>0&&w.Cursor>=w.Route.Length?"RouteCompleted":"UserPaused";continue;}
+            if(!w.Enabled){if(PaverPositioning(w))continue;w.Reason=w.Route.Length>0&&w.Cursor>=w.Route.Length?"RouteCompleted":"UserPaused";continue;}
             if(w.Cursor>=w.Route.Length){w.Enabled=false;w.Reason="RouteCompleted";continue;}
             var v=_vehicles[w.Vehicle];var cargo=VehicleCargo(v);var actor=_actors[v.Owner.Value];
+            if(PaverPositioning(w)&&!AdvancePaverPositioning(w,v))continue;
             int staff=w.Mode==EquipmentMode.Personal?(v.Driver==actor.Id?1:0):w.Group.Headcount;
             if(staff==0){w.Reason=w.Mode==EquipmentMode.Personal?"PaverOperatorRequired":"NoStaff";continue;}
             if(w.Batch is null)

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/Delsk/scripts/verify_checkpoint_exports.py",
+    "--world-only",
+    "/workspace/Delsk/work/i3/final-runner/working-replay",
+    "/workspace/Delsk/work/i3/final-runner/working-load"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-04T06:58:53.442663+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.065,
+  "finished_at": "2026-11-04T06:58:53.507444+00:00"
+}

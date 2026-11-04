@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--scenario",
+    "/workspace/Delsk/work/i3/final-runner-fixtures/map-large_districts.scenario.json",
+    "--replay",
+    "/workspace/Delsk/work/i3/final-runner-fixtures/map-large_districts.commands.jsonl",
+    "--ticks",
+    "766",
+    "--output",
+    "/workspace/Delsk/work/i3/final-runner/map-large_districts-replay"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-04T06:59:30.706447+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 36.397,
+  "finished_at": "2026-11-04T07:00:07.103448+00:00"
+}

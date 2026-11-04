@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "/workspace/Delsk/src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--scenario",
+    "/workspace/Delsk/work/i3/final-runner-fixtures/map-small_river.scenario.json",
+    "--replay",
+    "/workspace/Delsk/work/i3/final-runner-fixtures/map-small_river.commands.jsonl",
+    "--ticks",
+    "443",
+    "--output",
+    "/workspace/Delsk/work/i3/final-runner/map-small_river-replay"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-04T06:59:13.874938+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 13.319,
+  "finished_at": "2026-11-04T06:59:27.194427+00:00"
+}

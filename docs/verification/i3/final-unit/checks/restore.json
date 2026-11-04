@@ -1,0 +1,15 @@
+{
+  "command": [
+    "dotnet",
+    "restore",
+    "Delsk.sln",
+    "--locked-mode",
+    "--disable-parallel",
+    "-m:1"
+  ],
+  "timeout_seconds": 180,
+  "started_at": "2026-11-04T07:05:10.557822+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 2.027,
+  "finished_at": "2026-11-04T07:05:12.584422+00:00"
+}

@@ -5,6 +5,7 @@ using Simulation.Hosting;
 /// <summary>Own fleet and public dealer listings. All mutations use the ordinary command inbox.</summary>
 public partial class FleetPanel : VBoxContainer
 {
+    public event Action<long>? RoadWorkRequested;
     private readonly string _language;
     private readonly Action<GameAction> _submit;
     private readonly Func<GameAction,ActionAccess> _access;
@@ -57,6 +58,8 @@ public partial class FleetPanel : VBoxContainer
                 // Resolve current position at click time, so the button never follows an old captured coordinate.
                 var walk=new Button{Name="FleetFind_"+v.Id,Text=L("К машине","Go to vehicle"),FocusMode=FocusModeEnum.None};walk.Pressed+=()=>{var current=_view!.Fleet!.Vehicles.Single(x=>x.Vehicle.Id==v.Id).Position;_submit(new(ActionKind.MoveTo,Target:current));};buttons.AddChild(walk);
                 ActionButton(buttons,"FleetBoard_"+v.Id,v.Driver==0?L("Сесть","Board"):L("Выйти","Leave"),new(v.Driver==0?ActionKind.BoardVehicle:ActionKind.LeaveVehicle,VehicleId:v.Id));
+                if(item.Model.MaterialsOnly&&view.Roads is not null)
+                {var road=new Button{Name="FleetRoadWork_"+v.Id,Text=L("Строить / улучшить дорогу","Build / upgrade road")};road.Pressed+=()=>RoadWorkRequested?.Invoke(v.Id);buttons.AddChild(road);}
                 if(view.Roads is not null)ActionButton(buttons,"FleetTurn_"+v.Id,L("Развернуться в свободном месте","Turn in a free place"),new(ActionKind.TurnVehicle,VehicleId:v.Id));
                 foreach(var kit in f.Kits.Where(k=>k.Level>v.HandlingLevel&&(k.Level==2?v.ModelId=="vector200":v.ModelId is "muravey70" or "eger70" or "trakt_d1")))ActionButton(buttons,"FleetKit_"+v.Id+"_"+kit.Level,L("Комплект ","Handling kit ")+kit.Throughput+" · "+PlayerText.Money(kit.PriceMinor)+" + "+string.Join(", ",kit.Materials.Select(m=>PlayerText.Item(_language,m.ItemId)+" ×"+m.Quantity))+L(" · 60 тиков"," · 60 ticks"),new(ActionKind.InstallVehicleKit,VehicleId:v.Id,EquipmentLevel:kit.Level,Source:v.CargoInventory));
                 if(!item.Model.MaterialsOnly)foreach(var enterprise in view.Enterprises)ActionButton(buttons,"FleetAssign_"+v.Id+"_"+enterprise.Id.Value,L("Назначить предприятию #","Assign to enterprise #")+enterprise.Id.Value,new(ActionKind.AssignVehicle,VehicleId:v.Id,Enterprise:enterprise.Id));

@@ -1,0 +1,18 @@
+  Discovering: Simulation.Tests
+  Discovered:  Simulation.Tests
+  Starting:    Simulation.Tests
+    Simulation.Tests.I3DistrictMapTests.RealProductionTransferAndPavingWithI2 [FAIL]
+      Simulation.Core.CheckpointException : DeveloperSessionUnsupported
+      Stack Trace:
+        src/Simulation.Core/Checkpoint.cs(162,0): at Simulation.Core.SimulationEngine.RestoreWorld(WorldCheckpoint s)
+        src/Simulation.Core/Checkpoint.cs(147,0): at Simulation.Core.SimulationEngine.FromCheckpointJson(String json)
+        src/Simulation.Hosting/SessionCheckpoint.cs(104,0): at Simulation.Hosting.GameSession.FromSessionJson(String json, Action beforeStep)
+        src/Simulation.Hosting/CheckpointStore.cs(55,0): at Simulation.Hosting.CheckpointStore.Decode(String json, Action beforeStep)
+        tests/Simulation.Tests/I3MapWorkTests.cs(69,0): at Simulation.Tests.I3MapWork.FrozenDistrict()
+        tests/Simulation.Tests/I3MapWorkTests.cs(58,0): at Simulation.Tests.I3MapWork.Check(String key, Cell target)
+        tests/Simulation.Tests/I3MapWorkTests.cs(74,0): at Simulation.Tests.I3DistrictMapTests.RealProductionTransferAndPavingWithI2()
+           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Finished:    Simulation.Tests (ID = 'b00ba06d382565ef33cd4232e1a7f682a055199d54044b1e7c966bb403320b88')
+=== TEST EXECUTION SUMMARY ===
+   Simulation.Tests  Total: 1, Errors: 0, Failed: 1, Skipped: 0, Not Run: 0, Time: 60.885s

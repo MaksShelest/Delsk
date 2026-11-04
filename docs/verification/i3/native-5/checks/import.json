@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+    "--headless",
+    "--path",
+    "/workspace/Delsk/work/i3/native-5/assets",
+    "--editor",
+    "--import",
+    "--quit"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-04T06:39:34.025682+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 14.286,
+  "finished_at": "2026-11-04T06:39:48.311912+00:00"
+}

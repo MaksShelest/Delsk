@@ -1,0 +1,64 @@
+test_identical_assets_and_settings_without_managed_code_or_editor_cache (test_asset_import_stage.AssetImportStageTests.test_identical_assets_and_settings_without_managed_code_or_editor_cache) ... ok
+test_refuses_source_parent_and_nonempty_output (test_asset_import_stage.AssetImportStageTests.test_refuses_source_parent_and_nonempty_output) ... ok
+test_actual_split_signed_residue_partial_principal_and_zero_fractional_penalty (test_billing_audit.BillingAuditTests.test_actual_split_signed_residue_partial_principal_and_zero_fractional_penalty) ... ok
+test_distance_rights_interest_replay_payout_and_privacy_corruption_is_rejected (test_billing_audit.BillingAuditTests.test_distance_rights_interest_replay_payout_and_privacy_corruption_is_rejected) ... ok
+test_i1_quantum_distance_bound_preserves_total_charge_and_rejects_h2_or_overspeed (test_billing_audit.BillingAuditTests.test_i1_quantum_distance_bound_preserves_total_charge_and_rejects_h2_or_overspeed) ... ok
+test_changed_source_refuses_cache_before_copying_anything (test_ci_tools.ImportCacheTests.test_changed_source_refuses_cache_before_copying_anything) ... ok
+test_identical_assets_reuse_only_resources_and_leave_developer_assemblies_intact (test_ci_tools.ImportCacheTests.test_identical_assets_reuse_only_resources_and_leave_developer_assemblies_intact) ... ok
+test_missing_cached_binary_is_fatal (test_ci_tools.ImportCacheTests.test_missing_cached_binary_is_fatal) ... ok
+test_source_changed_after_import_is_rejected_even_if_stage_matches (test_ci_tools.ImportCacheTests.test_source_changed_after_import_is_rejected_even_if_stage_matches) ... ok
+test_verification_is_read_only_and_rejects_unimported_assets (test_ci_tools.ImportCacheTests.test_verification_is_read_only_and_rejects_unimported_assets) ... ok
+test_wrong_source_metadata_and_empty_cache_are_fatal (test_ci_tools.ImportCacheTests.test_wrong_source_metadata_and_empty_cache_are_fatal) ... ok
+test_all_actual_theory_rows_count_and_bad_result_is_rejected (test_ci_tools.PartitionsTests.test_all_actual_theory_rows_count_and_bad_result_is_rejected) ... ok
+test_disjoint_jobs_preserve_every_partition_and_deadlines (test_ci_tools.PartitionsTests.test_disjoint_jobs_preserve_every_partition_and_deadlines) ... FAIL
+test_every_class_including_future_and_developer_has_exactly_one_partition (test_ci_tools.PartitionsTests.test_every_class_including_future_and_developer_has_exactly_one_partition) ... ok
+test_actual_unfinished_ordinary_factory_has39500_not_zero_capital (test_construction_capital_audit.ConstructionCapitalAuditTests.test_actual_unfinished_ordinary_factory_has39500_not_zero_capital) ... ok
+test_completion_or_paid_cancellation_removes_only_that_pending_investment (test_construction_capital_audit.ConstructionCapitalAuditTests.test_completion_or_paid_cancellation_removes_only_that_pending_investment) ... ok
+test_duplicate_and_wrong_owner_receipts_cannot_create_capital (test_construction_capital_audit.ConstructionCapitalAuditTests.test_duplicate_and_wrong_owner_receipts_cannot_create_capital) ... ok
+test_corrupt_stock_money_cargo_driver_and_privacy_are_rejected (test_fleet_audit.FleetAuditTests.test_corrupt_stock_money_cargo_driver_and_privacy_are_rejected) ... ok
+test_real_shapes_and_balanced_acquisition_are_accepted (test_fleet_audit.FleetAuditTests.test_real_shapes_and_balanced_acquisition_are_accepted) ... ok
+test_foreign_inventory_unpurchased_land_and_false_ground_are_rejected (test_h2_history_audit.HistoricalInventoryAuditTests.test_foreign_inventory_unpurchased_land_and_false_ground_are_rejected) ... ok
+test_removed_ground_is_authenticated_by_historical_purchase (test_h2_history_audit.HistoricalInventoryAuditTests.test_removed_ground_is_authenticated_by_historical_purchase) ... ok
+test_exact_suffix_is_accepted_without_dropping_full_history (test_h2_trace_tail.TraceTailAuditTests.test_exact_suffix_is_accepted_without_dropping_full_history) ... ok
+test_wrong_observation_or_missing_turn_is_rejected (test_h2_trace_tail.TraceTailAuditTests.test_wrong_observation_or_missing_turn_is_rejected) ... ok
+test_archive_path_escape_rejected_without_external_write (test_h3_collection.H3CollectionTests.test_archive_path_escape_rejected_without_external_write) ... ok
+test_duplicate_selected_entry_cannot_replace_an_original_metric (test_h3_collection.H3CollectionTests.test_duplicate_selected_entry_cannot_replace_an_original_metric) ... ok
+test_missing_worlds_remain_missing_and_complete_collection_cannot_pass (test_h3_collection.H3CollectionTests.test_missing_worlds_remain_missing_and_complete_collection_cannot_pass) ... ok
+test_selected_crc_corruption_is_never_a_successful_measurement (test_h3_collection.H3CollectionTests.test_selected_crc_corruption_is_never_a_successful_measurement) ... ok
+test_selected_original_metadata_and_duplicate_world_protection (test_h3_collection.H3CollectionTests.test_selected_original_metadata_and_duplicate_world_protection) ... ok
+test_dirty_tracked_work_is_not_rebased_or_published (test_h3_publication.H3PublicationTests.test_dirty_tracked_work_is_not_rebased_or_published) ... ok
+test_newer_measurements_are_preserved_without_local_or_remote_overwrite (test_h3_publication.H3PublicationTests.test_newer_measurements_are_preserved_without_local_or_remote_overwrite) ... ok
+test_publish_from_old_checkout_keeps_unrelated_new_commit (test_h3_publication.H3PublicationTests.test_publish_from_old_checkout_keeps_unrelated_new_commit) ... ok
+test_asphalt_cutoff_uses_completed_plant_not_future_knowledge (test_import_audit.ImportAuditTests.test_asphalt_cutoff_uses_completed_plant_not_future_knowledge) ... ok
+test_bad_exports_are_rejected (test_import_audit.ImportAuditTests.test_bad_exports_are_rejected) ... ok
+test_capped_zero_refill_still_requires_its_scheduled_event (test_import_audit.ImportAuditTests.test_capped_zero_refill_still_requires_its_scheduled_event) ... ok
+test_legacy_profile_cannot_hide_an_import_flow (test_import_audit.ImportAuditTests.test_legacy_profile_cannot_hide_an_import_flow) ... ok
+test_paid_stock_refill_and_partial_physical_pickup (test_import_audit.ImportAuditTests.test_paid_stock_refill_and_partial_physical_pickup) ... ok
+test_corrupt_contribution_speed_position_money_private_and_e3_rejected (test_road_audit.RoadAuditTests.test_corrupt_contribution_speed_position_money_private_and_e3_rejected) ... ok
+test_i1_offroad_nominal_ten_is_valid_but_old_profile_and_eleven_are_rejected (test_road_audit.RoadAuditTests.test_i1_offroad_nominal_ten_is_valid_but_old_profile_and_eleven_are_rejected) ... ok
+test_i2_lane_forgery_missing_witness_wrong_side_and_old_profile_are_rejected (test_road_audit.RoadAuditTests.test_i2_lane_forgery_missing_witness_wrong_side_and_old_profile_are_rejected) ... ok
+test_i2_opposite_lanes_allow_real_cell_and_edge_sharing_only_with_witnesses (test_road_audit.RoadAuditTests.test_i2_opposite_lanes_allow_real_cell_and_edge_sharing_only_with_witnesses) ... ok
+test_valid_independent_physical_history (test_road_audit.RoadAuditTests.test_valid_independent_physical_history) ... ok
+test_five_trip_frozen_quote_and_escrow (test_service_audit.ServiceAuditTests.test_five_trip_frozen_quote_and_escrow) ... ok
+test_price_capacity_duplicate_accept_lease_and_payout_corruption (test_service_audit.ServiceAuditTests.test_price_capacity_duplicate_accept_lease_and_payout_corruption) ... ok
+test_five_trip_frozen_quote_and_escrow (test_service_audit.ServiceExecutionAuditTests.test_five_trip_frozen_quote_and_escrow) ... ok
+test_physical_partial_receipt_and_payment (test_service_audit.ServiceExecutionAuditTests.test_physical_partial_receipt_and_payment) ... ok
+test_price_capacity_duplicate_accept_lease_and_payout_corruption (test_service_audit.ServiceExecutionAuditTests.test_price_capacity_duplicate_accept_lease_and_payout_corruption) ... ok
+test_receipt_cargo_recipient_and_duplicate_payment_corruption (test_service_audit.ServiceExecutionAuditTests.test_receipt_cargo_recipient_and_duplicate_payment_corruption) ... ok
+
+======================================================================
+FAIL: test_disjoint_jobs_preserve_every_partition_and_deadlines (test_ci_tools.PartitionsTests.test_disjoint_jobs_preserve_every_partition_and_deadlines)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/Delsk/tests/Checks/test_ci_tools.py", line 33, in test_disjoint_jobs_preserve_every_partition_and_deadlines
+    self.assertFalse(old&new);self.assertEqual(old|new|h2|h3|i1|i2,set(PARTITIONS))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Items in the second set but not the first:
+Partition(name='-i3-0', include=('Simulation.Tests.I3PositioningTests',), exclude=())
+Partition(name='-i3-1', include=('Simulation.Tests.I3WorkTests',), exclude=())
+Partition(name='-i3-2', include=('Simulation.Tests.I3AccessTests',), exclude=())
+
+----------------------------------------------------------------------
+Ran 47 tests in 3.705s
+
+FAILED (failures=1)

@@ -60,7 +60,7 @@ public sealed partial class SimulationEngine
         !_resources.Values.Any(r=>r.Definition.Position==cell&&!r.Rules.Public&&r.Owner!=body.Owner.Value&&!(r.Tenant==body.Owner.Value&&Tick<r.LeaseUntil));
     private bool PedestrianAt(Cell cell,long driver)=>_actors.Values.Any(a=>a.Id!=driver&&DrivenVehicle(a.Id) is null&&
         (a.Position==cell||a.Job is {Kind:"Move",SegmentTicks:>0} job&&job.PathIndex<job.Path.Length-1&&job.Path[job.PathIndex+1]==cell));
-    private IEnumerable<(int X,int Z,int Ex,int Ez,int Radius)> SteeringBounds(RoadBody body,VehicleSteering s)
+    private IEnumerable<(int X,int Z,int Ex,int Ez,int Radius)> SteeringBounds(RoadBody body,VehicleSteering s,bool center=false)
     {
         var at=VehicleCargo(body).Position;bool wide=WideBody(body);
         int halfLength=wide?430:400,halfWidth=wide?380:190;
@@ -73,16 +73,17 @@ public sealed partial class SimulationEngine
             var f=BearingVector(s.TurnFrom+s.TurnDelta*n/32);
             int x=500-f.Z*radius/1000+(s.StartLaneX-sx)*(32-n)/32+s.ClearanceX*4*n*(32-n)/1024;
             int z=500+f.X*radius/1000+(s.StartLaneZ-sz)*(32-n)/32+s.ClearanceZ*4*n*(32-n)/1024;
+            if(center){x=500+s.StartLaneX*(32-n)/32;z=500+s.StartLaneZ*(32-n)/32;}
             int norm=Math.Max(1,IntegerDistance(f.X,f.Z));
             int ex=(Math.Abs(f.X)*halfLength+Math.Abs(f.Z)*halfWidth+norm-1)/norm+4;
             int ez=(Math.Abs(f.Z)*halfLength+Math.Abs(f.X)*halfWidth+norm-1)/norm+4;
             yield return(at.X*1000+x,at.Z*1000+z,ex,ez,IntegerDistance(halfLength,halfWidth)+5);
         }
     }
-    private ImmutableArray<Cell> SteeringFootprint(RoadBody body,VehicleSteering s)
+    private ImmutableArray<Cell> SteeringFootprint(RoadBody body,VehicleSteering s,bool center=false)
     {
         var cells=new HashSet<Cell>();int Floor(int value)=>value>=0?value/1000:(value-999)/1000;
-        foreach(var b in SteeringBounds(body,s))
+        foreach(var b in SteeringBounds(body,s,center))
             for(int z=Floor(b.Z-b.Ez);z<=Floor(b.Z+b.Ez);z++)
                 for(int x=Floor(b.X-b.Ex);x<=Floor(b.X+b.Ex);x++)
                 {
@@ -123,12 +124,12 @@ public sealed partial class SimulationEngine
         if(before!=after)
         {var at=VehicleCargo(body).Position;Emit("TrafficLaneState",body.Owner.Value,body.Id,quantity:after,reason:at.X+","+at.Z);}
     }
-    private bool CanSteer(RoadBody body,IEnumerable<Cell> footprint,VehicleSteering maneuver)
+    private bool CanSteer(RoadBody body,IEnumerable<Cell> footprint,VehicleSteering maneuver,bool center=false)
     {
         var cells=footprint.ToHashSet();var at=VehicleCargo(body).Position;
         if(cells.Any(c=>!ControlCellAllowed(body,c)||WorkBlocks(body.Id,c)||TurnReservedByOther(body.Id,c))||
             _traffic.Values.Any(t=>t.VehicleId!=body.Id&&HasRoadProgress(t)&&t.Index<t.Path.Length-1&&cells.Contains(t.Path[t.Index+1])))return false;
-        var bounds=SteeringBounds(body,maneuver).ToArray();
+        var bounds=SteeringBounds(body,maneuver,center).ToArray();
         bool Overlap(int x,int z,int ex,int ez)=>bounds.Any(b=>
         {
             int dx=Math.Abs(x-b.X),dz=Math.Abs(z-b.Z);
@@ -155,7 +156,7 @@ public sealed partial class SimulationEngine
     }
     private bool PedestrianTrafficBlocked(Cell cell,long actor=0)=>UsesFreeVehicleControl&&
         (RoadBodies().Any(b=>VehicleCargo(b).Position==cell&&
-            !(b.Owner.Value==actor&&b.Driver==0&&(!_traffic.TryGetValue(b.Id,out var parked)||!HasRoadProgress(parked)&&!IsSteering(parked))))||_traffic.Values.Any(t=>
+            !(b.Owner.Value==actor&&b.Driver==0&&!RoadVehicleWorking(b.Id)&&(!_traffic.TryGetValue(b.Id,out var parked)||!HasRoadProgress(parked)&&!IsSteering(parked))))||_traffic.Values.Any(t=>
             HasRoadProgress(t)&&t.Index<t.Path.Length-1&&t.Path[t.Index+1]==cell)||TurnReservedByOther(0,cell));
 
     private static int IntegerDistance(int dx,int dz)
