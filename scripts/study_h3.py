@@ -26,7 +26,7 @@ def fresh_state(out, case, plan, frozen):
                            (ROOT/plan['profile'], 'economy.json'),
                            (ROOT/'config/vnext/balance.b1.json', 'balance.b1.json')]:
         (inputs/target).write_bytes(source.read_bytes())
-    protocol.write(inputs/'ordinary.json', dict(npcCount=case['bots'], difficulty=case['difficulty'], seed=case['seed']))
+    protocol.write(inputs/'ordinary.json', dict(npcCount=case['bots'], difficulty=case['difficulty'], seed=case['seed'], movementVersion=1))
     command = ['dotnet', out/'runtime/Research.Runner.dll', '--scenario', inputs/'scenario.json',
                '--economy', inputs/'economy.json', '--new-game', inputs/'ordinary.json',
                '--script', 'baseline', '--human-ballot', 'self', '--ticks', 1, '--output', out/'resolution']

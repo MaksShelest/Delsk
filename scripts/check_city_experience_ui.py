@@ -58,7 +58,8 @@ for map_key,count,language,width in [('small-river',6,'ru',640),('large-district
     name=map_key+'-'+str(count)+'-'+language+'-'+str(width);folder=case_root/name;folder.mkdir()
     identity=hashlib.sha256(str(folder).encode()).hexdigest()[:16]
     (project/'project.godot').write_text(base_project.replace('[application]','[application]\nconfig/use_custom_user_dir=true\nconfig/custom_user_dir_name="Delsk-G2-'+identity+'"',1),encoding='utf-8')
-    check(name,180,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','res://CityExperienceProbe.tscn','--','--output',folder,'--map',map_key,'--count',count,'--language',language,'--width',width,'--windowed'],env|{'XDG_DATA_HOME':str(out/('user-'+prefix+'-'+name))})
+    # Historical G2 new-game checks explicitly keep G1; I4 has a separate ordinary native gate.
+    check(name,180,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','res://CityExperienceProbe.tscn','--','--economy',stage/'config/vnext/economy.g1-npc.json','--output',folder,'--map',map_key,'--count',count,'--language',language,'--width',width,'--windowed'],env|{'XDG_DATA_HOME':str(out/('user-'+prefix+'-'+name))})
     check(name+'-logs',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks'/(prefix+'-'+name)])
     result=json.loads((folder/'native-check.json').read_text(encoding='utf-8'));assert result['status']=='succeeded';cases.append(result)
 if a.fixtures:
