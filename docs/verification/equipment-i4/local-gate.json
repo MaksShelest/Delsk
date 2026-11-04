@@ -483,5 +483,164 @@
   "screenshots": {
     "en-360-mining.png": "50fbfef9214f216f3f8ea5359e162469f4d14ebc9ccc9495cba8eb3de13e3e35",
     "ru-800-packed.png": "7ffa31392f686f42d0e21a7a1e4489a1a00ea19299680ba182abd8a175142f3e"
+  },
+  "followUpChecks": [
+    {
+      "path": "work/i4/checks/i4-developer-local.json",
+      "sha256": "8d0421f6826dd0ccc143d87f50e9e31836040cae318ed7211515e6faa99893e9",
+      "result": {
+        "command": [
+          "python",
+          "scripts/check_developer.py",
+          "--suite",
+          "i4",
+          "--output",
+          "work/i4/developer-final"
+        ],
+        "timeout_seconds": 780,
+        "started_at": "2026-11-04T15:56:09.260283+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 258.715,
+        "finished_at": "2026-11-04T16:00:27.975639+00:00"
+      }
+    },
+    {
+      "path": "work/i4/developer-final/developer-check.json",
+      "sha256": "617600126a58d46b5f7b29e397758f30fd82c8614212e7988093eb5c6e48e852",
+      "result": {
+        "suite": "i4",
+        "status": "succeeded",
+        "testsPassed": 40,
+        "testPartitions": [
+          {
+            "file": "tests-i4-0.trx",
+            "passed": 26
+          },
+          {
+            "file": "tests-i4-1.trx",
+            "passed": 7
+          },
+          {
+            "file": "tests-i4-2.trx",
+            "passed": 3
+          },
+          {
+            "file": "tests-i4-3.trx",
+            "passed": 1
+          },
+          {
+            "file": "tests-i4-4.trx",
+            "passed": 1
+          },
+          {
+            "file": "tests-i4-5.trx",
+            "passed": 1
+          },
+          {
+            "file": "tests-i4-6.trx",
+            "passed": 1
+          }
+        ],
+        "release_negative_build": "expected rejection",
+        "scope": "Developer variant; ordinary release/client metadata checked separately"
+      }
+    },
+    {
+      "path": "work/i4/checks/g2-forms-i4fix.json",
+      "sha256": "cb52040adfbc102927ae44c12052a76b50385caca618312384e9a576d675208d",
+      "result": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "scripts/check_city_experience_ui.py",
+          "--godot",
+          "/workspace/work/toolchain/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+          "--case",
+          "forms",
+          "--fixtures",
+          "work/i4/windows-ui-artifact/city-ux-fixtures/g2-fixtures",
+          "--output",
+          "work/i4/g2-forms-fixed",
+          "--asset-cache",
+          "work/i4/native-layout/assets",
+          "--display",
+          "127.0.0.1:95.0"
+        ],
+        "timeout_seconds": 780,
+        "started_at": "2026-11-04T19:49:36.019509+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 184.287,
+        "finished_at": "2026-11-04T19:52:40.306603+00:00"
+      }
+    },
+    {
+      "path": "work/i4/g2-forms-fixed/a1-gate.json",
+      "sha256": "c71668c811a4b7764d2af1fbf08ab66c920cc288911efc7f41ea02f093bc2ad7",
+      "result": {
+        "status": "succeeded",
+        "requestedCases": "forms",
+        "cases": [
+          {
+            "status": "succeeded",
+            "prepared": true,
+            "map": "prepared",
+            "npcCount": 2,
+            "language": "ru",
+            "width": 800,
+            "checks": [
+              "invoice deep link, queued viewed flag, retained draft, actual partial payment and pending-command restore",
+              "actual incoming request, view plus acceptance in one paused preparation, service quantity draft",
+              "older own service history is paged, draft quantity is retained",
+              "overflow warning to its own storage card, local acknowledgement, physical partial rescue, unchanged expiry",
+              "real completed construction to its card, read state without repeated economic effect",
+              "self-funded road completion notice, full-map deep link, retained city/private contributions and no repeated reward"
+            ],
+            "scope": "Ordinary native Godot GUI with injected keyboard/mouse/touch events, software renderer; not a physical mobile device."
+          },
+          {
+            "status": "succeeded",
+            "prepared": true,
+            "map": "prepared",
+            "npcCount": 2,
+            "language": "en",
+            "width": 800,
+            "checks": [
+              "invoice deep link, queued viewed flag, retained draft, actual partial payment and pending-command restore",
+              "actual incoming request, view plus acceptance in one paused preparation, service quantity draft",
+              "older own service history is paged, draft quantity is retained",
+              "overflow warning to its own storage card, local acknowledgement, physical partial rescue, unchanged expiry",
+              "real completed construction to its card, read state without repeated economic effect",
+              "self-funded road completion notice, full-map deep link, retained city/private contributions and no repeated reward"
+            ],
+            "scope": "Ordinary native Godot GUI with injected keyboard/mouse/touch events, software renderer; not a physical mobile device."
+          },
+          {
+            "status": "succeeded",
+            "prepared": true,
+            "scope": "Existing F2 native delivery execution/partial payment/cancellation/restore probe on the same final client source, RU/EN"
+          }
+        ],
+        "matchedInputs": 705,
+        "scope": "Ordinary native window with synthetic keyboard/mouse/touch input; no physical Android/device assertion"
+      }
+    }
+  ],
+  "intermediateGitHubCI": {
+    "head": "c8f48dad13a8168d55088a76829fecfa28b43ab2",
+    "core": {
+      "run": 41861682117,
+      "conclusion": "success"
+    },
+    "platform": {
+      "run": 41861682099,
+      "windows-core-replay": "success",
+      "city-ux-ui": "failure: historical forms launcher omitted explicit G1 profile; fixed and locally passed three prepared native cases"
+    },
+    "failedArtifact": {
+      "id": 13339883813,
+      "bytes": 14682926,
+      "sha256": "889ef97afefe34233c1ebc02adfb4c877ae993ccb887b160631fd20357a665e6",
+      "crc": "all entries verified"
+    },
+    "scope": "Intermediate HEAD. Authoritative final-HEAD CI links and result are recorded in PR #82 after completion."
   }
 }

@@ -98,12 +98,14 @@ hashes. Полный command replay совпал. Экспорт прошёл н
 | Локальная проверка итоговой реализации | Результат |
 |---|---|
 | Release I4, семь непересекающихся разделов | 40 passed |
+| Developer I4 и запрет Developer в Release | 40 passed, ожидаемый отказ сборки Release |
 | D3/E1 связанные регрессии | 58 passed |
 | I1/I2/I3 движение, управление, работа, положение | 29 passed |
 | Три исходные road/I3/H3 регрессии | 3 passed без изменения эталонов |
 | Python Checks / Research.Lab | 47 / 64 passed |
 | Ordinary-прохождение, replay, независимые аудиты | succeeded |
 | Godot Mono RU 800 / EN 1000 / EN 360 | 3 native cases succeeded |
+| Исторические G2 forms RU/EN и F2 delivery после исправления launcher | 3 native cases succeeded |
 
 I4-тесты покрывают пять автомобильных цен и hold/save/load, исходные 200 монет,
 все 16 комбинаций покупки/размещения/повторного размещения, три карты и 48 выездов,
@@ -135,6 +137,24 @@ AssemblyAudit запрещает I4EquipmentProbe в обычной постав
 Локальные результаты выше не заменяют GitHub CI. PR переводится в Ready только
 после успешных обязательных checks финального HEAD; конкретные run-ссылки и SHA
 записываются в описание PR после их завершения, без отдельного изменения кода.
+
+Полный [Core run 41861682117](https://github.com/MaksShelest/Delsk/actions/runs/41861682117)
+на `c8f48da` завершился успешно, включая обязательный `verify`, I4 ordinary/developer,
+реальное ordinary-прохождение и все прежние suites. В
+[Godot run 41861682099](https://github.com/MaksShelest/Delsk/actions/runs/41861682099)
+Windows core/replay прошёл; city-ux-ui прошёл шесть map cases, затем остановился
+на `G1 profile replaced by UX` при подготовке forms-ru. Этот подготовленный
+исторический probe сначала создаёт обычную G1-партию, после чего загружает
+сохранённые формы. Явный `--economy economy.g1-npc.json` был передан map cases,
+но пропущен в forms launcher. Исправлен только выбор профиля этого launcher:
+проверка G1 и все проверки форм/доставки сохранены. Исходный Windows ZIP
+`13339883813`, 14682926 bytes, SHA-256
+`889ef97afefe34233c1ebc02adfb4c877ae993ccb887b160631fd20357a665e6`,
+CRC всех записей проверен. После исправления необходим полный обязательный CI
+нового HEAD; старый успешный Core не объявляется результатом нового коммита.
+Локальный запуск `check_city_experience_ui.py --case forms` на неизменённых
+фикстурах из этого Windows artifact прошёл обе формы и прежний F2 delivery probe
+на Linux software GL. Выбор профиля формы больше не зависит от нового default I4.
 
 ## Совместимость и границы
 
