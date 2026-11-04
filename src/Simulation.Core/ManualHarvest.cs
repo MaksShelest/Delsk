@@ -9,14 +9,15 @@ public sealed partial class SimulationEngine
     {
         if (!_actors.TryGetValue(actor.Value, out var state)) throw new ArgumentException("Participant not available");
         return state.Job is { } job && IsHarvest(job)
-            ? new(job.Id, job.Item, job.Quantity, job.Kind == "HarvestLoop", job.StartTick, job.CompletionTick) : null;
+            ? new(job.Id, job.Item, job.Quantity, job.Kind is "HarvestLoop" or "EquipmentHarvestLoop", job.StartTick, job.CompletionTick) : null;
     }
 
-    private static bool IsHarvest(PersonalJob? job) => job?.Kind is "Harvest" or "HarvestLoop" or "EquipmentHarvest";
+    private static bool IsHarvest(PersonalJob? job) => job?.Kind is "Harvest" or "HarvestLoop" or "EquipmentHarvest" or "EquipmentHarvestLoop";
 
     private void StartHarvesting(ActorState actor, CommandEnvelope command)
     {
         RequireIdle(actor);
+        if(UsesMobileEquipment && command.Action.Equipment.Value!=0){StartEquipmentHarvest(actor,command);return;}
         if (command.Action.Quantity != 1 || command.Action.Equipment.Value != 0)
             throw new RuleViolation("InvalidQuantity");
         RequireActionLocation(actor, command.Action, "NoResourceNode");
@@ -48,7 +49,7 @@ public sealed partial class SimulationEngine
     {
         var job = actor.Job!;
         var tx = _economy.Begin(Tick);
-        tx.ReleaseCapacity(actor.Inventory, job.CapacityHold); tx.Commit();
+        tx.ReleaseCapacity(PersonalHarvestInventory(actor,job), job.CapacityHold); tx.Commit();
         if (job.EquipmentId != 0) _equipment[job.EquipmentId].PersonalJobId = 0;
         _resourceClaims.Remove(job.Id);
         actor.Job = null;

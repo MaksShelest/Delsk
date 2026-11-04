@@ -5,7 +5,7 @@ using Simulation.Core;
 
 namespace Simulation.Hosting;
 
-public sealed record OrdinaryGameOptions(int NpcCount=3,string Difficulty="Medium",ulong? Seed=null,long HumanActorId=1)
+public sealed record OrdinaryGameOptions(int NpcCount=3,string Difficulty="Medium",ulong? Seed=null,long HumanActorId=1,int MovementVersion=2)
 {
     public static OrdinaryGameOptions Read(string json)
     {
@@ -18,7 +18,7 @@ public sealed record OrdinaryGameOptions(int NpcCount=3,string Difficulty="Mediu
         result.Validate();return result;
     }
     public void Validate()
-    {if(NpcCount is <3 or >10 || Difficulty is not ("Easy" or "Medium" or "Hard") || HumanActorId<=0)throw new ArgumentException("Ordinary game requires 3..10 NPCs, Easy/Medium/Hard, and a known human actor");}
+    {if(NpcCount is <3 or >10 || Difficulty is not ("Easy" or "Medium" or "Hard") || HumanActorId<=0 || MovementVersion is not (1 or 2))throw new ArgumentException("Ordinary game requires 3..10 NPCs, Easy/Medium/Hard, and a known human actor");}
 }
 public sealed record OrdinaryGameResolution(ScenarioDefinition Scenario,long HumanActorId,ImmutableArray<ControllerAssignment> Controllers);
 
@@ -80,8 +80,8 @@ public static class OrdinaryNewGame
             CapitalDemand=baseScenario.CapitalDemand is {} demand?demand with {BootstrapBaseBudgetMinor=Scale(demand.BootstrapBaseBudgetMinor,count)}:null,
             NewGame=new("ordinary-setup-1",options.HumanActorId,options.Difficulty,map.Id,VNextBalanceReader.Digest(VNextSupportedProfile.Serialize(economy)),legacy?"legacy-default":"startup-rotation-1",
                 vnext?checked(globals!.StartPopulationPerParticipant*4):baseScenario.Population,vnext?checked(globals!.MaxPopulationPerParticipant*4):baseScenario.Labor?.MaximumPopulation,vnext?globals!.StartTreasuryMinorPer4Participants:baseScenario.StartingTreasuryMinor,baseScenario.CapitalDemand?.BootstrapBaseBudgetMinor)};
-        scenario=scenario with{Economy=(scenario.Economy??new()) with{Movement=MovementRules.I1,
-            VehicleControl=scenario.Economy is {Roads:not null,Fleet:not null}?VehicleControlRules.I2:null}};
+        scenario=scenario with{Economy=(scenario.Economy??new()) with{Movement=options.MovementVersion==1?MovementRules.H2:MovementRules.I1,
+            VehicleControl=options.MovementVersion==2 && scenario.Economy is {Roads:not null,Fleet:not null}?VehicleControlRules.I2:null}};
         ScenarioValidation.Validate(scenario);
         return new(scenario,options.HumanActorId,[..actors.Where(p=>p.Id!=options.HumanActorId).Select(p=>new ControllerAssignment(p.Id,p.PublicPreferenceItem,options.Difficulty))]);
     }

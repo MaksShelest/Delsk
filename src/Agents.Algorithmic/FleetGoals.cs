@@ -10,7 +10,7 @@ public sealed partial class AlgorithmicController
     private Candidate? AcquireFleetLogistics(ControllerObservation o,EnterpriseView enterprise,Cell home)
     {
         var f=o.Fleet!;
-        var free=f.Vehicles.Where(v=>v.State!="ServiceReserved"&&!v.Model.MaterialsOnly&&v.Vehicle.Driver==0&&v.Vehicle.Installation is null&&v.Logistics.Value==0&&Inventory(o,v.Vehicle.CargoInventory).OccupiedVolume==0)
+        var free=f.Vehicles.Where(v=>v.State!="ServiceReserved"&&!v.Model.MaterialsOnly&&v.Model.EquipmentTypeId is null&&v.Vehicle.Driver==0&&v.Vehicle.Installation is null&&v.Logistics.Value==0&&Inventory(o,v.Vehicle.CargoInventory).OccupiedVolume==0)
             .OrderBy(v=>Distance(o.Map,o.Participant.Position,v.Position)).ThenBy(v=>v.Vehicle.Id).FirstOrDefault();
         if(free is not null)
         {
@@ -20,7 +20,7 @@ public sealed partial class AlgorithmicController
             return new("BuyLogistics","AssignPurchasedVehicle",240000*_state.Settings.ExpansionWeight/100,steps.ToArray());
         }
         if(f.OwnRequests.Length>0)return null;
-        var listing=f.Stock.Where(v=>!f.Models.Single(m=>m.Id==v.ModelId).MaterialsOnly && f.Models.Single(m=>m.Id==v.ModelId).PriceMinor+_state.Settings.CashReserveMinor<=o.Account.AvailableMinor)
+        var listing=f.Stock.Where(v=>!f.Models.Single(m=>m.Id==v.ModelId).MaterialsOnly && f.Models.Single(m=>m.Id==v.ModelId).EquipmentTypeId is null && f.Models.Single(m=>m.Id==v.ModelId).PriceMinor+_state.Settings.CashReserveMinor<=o.Account.AvailableMinor)
             .OrderBy(v=>f.Models.Single(m=>m.Id==v.ModelId).PriceMinor).ThenBy(v=>v.Id).FirstOrDefault();
         if(listing is null)return null;
         var buy=new List<PlanStep>();Move(buy,o.Participant.Position,f.Dealer);buy.Add(new(new(ActionKind.BuyVehicle,VehicleId:listing.Id)));

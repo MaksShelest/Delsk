@@ -21,11 +21,15 @@ public record PresentationFrame(long Tick, int MapWidth, int MapHeight, Presenta
     PresentationMarker[] Markers, PresentationTrip[] Trips)
 {public MapLayout? Layout {get;init;} public System.Collections.Immutable.ImmutableArray<PresentationEquipment> EquipmentTraffic {get;init;}=[]; public System.Collections.Immutable.ImmutableArray<RoadCell> RoadCells {get;init;}=[]; public System.Collections.Immutable.ImmutableArray<RoadBypass> Bypasses {get;init;}=[]; public System.Collections.Immutable.ImmutableArray<PresentationVehicle> Vehicles {get;init;}=[];};
 public sealed record PresentationEquipment(long Id,long Owner,string ItemId,int Level,int X,int Z,int OffsetX,int OffsetZ,int FacingX,int FacingZ);
-public sealed record PresentationVehicle(long Id,long Owner,string ModelId,int X,int Z,int OffsetX,int OffsetZ,int FacingX,int FacingZ,bool ForSale);
+public sealed record PresentationVehicle(long Id,long Owner,string ModelId,int X,int Z,int OffsetX,int OffsetZ,int FacingX,int FacingZ,bool ForSale,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? EquipmentItem=null,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] int EquipmentLevel=0);
 
 /// <summary>Публичная картинка сцены. Чужие договоры поддержки сюда не входят.</summary>
 public static class Presentation
 {
+    private static string? EquipmentItem(ScenarioDefinition s,string model)=>s.Economy?.Fleet?.Models.Single(m=>m.Id==model).EquipmentTypeId is {} id?s.EquipmentTypes!.Single(t=>t.Id==id).ItemId:null;
+    private static int EquipmentLevel(ScenarioDefinition s,string model)=>s.Economy?.Fleet?.Models.Single(m=>m.Id==model).EquipmentLevel??0;
     public static PresentationPoint Between(int fromX, int fromZ, int toX, int toZ, float fraction)
     {
         if (fraction < 0) fraction = 0;
@@ -104,7 +108,7 @@ public static class Presentation
         }
         var trips = world.Logistics.Where(l => l.Trip is not null && l.VehicleId==0).OrderBy(l => l.Id.Value).Select(l =>
             new PresentationTrip(l.Id.Value, l.OwnerId.Value, l.Trip!.ItemId, l.Trip.State, l.Trip.Position.X, l.Trip.Position.Z, world.Inventories.Single(i=>i.Id==l.CargoInventory).Stock.Any(s=>s.Quantity>0))).ToArray();
-        return new(world.Tick, scenario.MapWidth, scenario.MapHeight, actors, markers.ToArray(), trips){Layout=scenario.Layout,EquipmentTraffic=!engine.UsesRoadTraffic?[]:[..world.Equipment.Select(e=>{var travel=engine.VehicleTravelOf(e.Id.Value);return new PresentationEquipment(e.Id.Value,e.OwnerId.Value,scenario.EquipmentTypes!.Single(t=>t.Id==e.TypeId).ItemId,e.Level,e.Position.X,e.Position.Z,travel.OffsetX,travel.OffsetZ,travel.FacingX,travel.FacingZ);})],RoadCells=engine.InspectRoads()?.Cells??[],Bypasses=engine.InspectRoads()?.Bypasses??[],Vehicles=fleet is null?[]:[..fleet.Stock.Select(v=>new PresentationVehicle(v.Id,0,v.ModelId,v.Position.X,v.Position.Z,500,500,0,-1,true)).Concat(fleet.Vehicles.Select(v=>{var position=world.Inventories.Single(i=>i.Id==v.CargoInventory).Position;var travel=engine.VehicleTravelOf(v.Id);return new PresentationVehicle(v.Id,v.Owner.Value,v.ModelId,position.X,position.Z,travel.OffsetX,travel.OffsetZ,travel.FacingX,travel.FacingZ,false);}))]};
+        return new(world.Tick, scenario.MapWidth, scenario.MapHeight, actors, markers.ToArray(), trips){Layout=scenario.Layout,EquipmentTraffic=!engine.UsesRoadTraffic?[]:[..world.Equipment.Where(e=>fleet?.Vehicles.All(v=>v.Id!=e.Id.Value)??true).Select(e=>{var travel=engine.VehicleTravelOf(e.Id.Value);return new PresentationEquipment(e.Id.Value,e.OwnerId.Value,scenario.EquipmentTypes!.Single(t=>t.Id==e.TypeId).ItemId,e.Level,e.Position.X,e.Position.Z,travel.OffsetX,travel.OffsetZ,travel.FacingX,travel.FacingZ);})],RoadCells=engine.InspectRoads()?.Cells??[],Bypasses=engine.InspectRoads()?.Bypasses??[],Vehicles=fleet is null?[]:[..fleet.Stock.Select(v=>new PresentationVehicle(v.Id,0,v.ModelId,v.Position.X,v.Position.Z,500,500,0,-1,true,EquipmentItem(scenario,v.ModelId),EquipmentLevel(scenario,v.ModelId))).Concat(fleet.Vehicles.Select(v=>{var position=world.Inventories.Single(i=>i.Id==v.CargoInventory).Position;var travel=engine.VehicleTravelOf(v.Id);return new PresentationVehicle(v.Id,v.Owner.Value,v.ModelId,position.X,position.Z,travel.OffsetX,travel.OffsetZ,travel.FacingX,travel.FacingZ,false,EquipmentItem(scenario,v.ModelId),EquipmentLevel(scenario,v.ModelId));}))]};
     }
 }
 

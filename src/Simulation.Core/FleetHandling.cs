@@ -82,7 +82,7 @@ public sealed partial class SimulationEngine
         long driver = v is not null ? VehicleHandlingPower(v) : 10;
         return checked(driver + PlatformPower(t.Source) + PlatformPower(t.Destination));
     }
-    private bool MaterialAllowed(OwnedVehicle v, string item) => !Model(v.ModelId).MaterialsOnly || item is "gravel" or "asphalt" or "concrete";
+    private bool MaterialAllowed(OwnedVehicle v, string item) => (Model(v.ModelId).EquipmentTypeId is null || _config.EquipmentTypes!.Single(t=>t.Id==Model(v.ModelId).EquipmentTypeId).ItemId==item) && (!Model(v.ModelId).MaterialsOnly || item is "gravel" or "asphalt" or "concrete");
     private bool CanTransferVehicle(ActorState actor, long inventory, string item)
     {
         if (_vehicles.Values.SingleOrDefault(v => v.CargoInventory.Value == inventory) is not { } v) return true;

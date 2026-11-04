@@ -4,12 +4,15 @@ using System.Text.Json.Serialization;
 namespace Simulation.Core;
 
 public sealed record VehicleModel(string Id, string Name, int Speed, long CapacityVolume, long PriceMinor,
-    long HandlingMax, bool MaterialsOnly = false);
+    long HandlingMax, bool MaterialsOnly = false,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] string? EquipmentTypeId=null,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] int EquipmentLevel=0);
 public sealed record HandlingUpgrade(int Level, long Throughput, long PriceMinor, ImmutableArray<MaterialCost> Materials,
     long Ticks, int Staff = 1, long ServiceMinor = 0);
 public sealed record FleetRules(ImmutableArray<VehicleModel> Models, ImmutableArray<HandlingUpgrade> Kits,
     ImmutableArray<HandlingUpgrade> Platforms, int SupplyTicks = 500, int MinimumStockTicks = 2500,
-    int PurchaseWindowTicks = 5, long WageMinor = 20);
+    int PurchaseWindowTicks = 5, long WageMinor = 20,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] int EquipmentDealerVersion=0);
 public sealed record DealerVehicle(long Id, string ModelId, Cell Position, long DeliveredTick);
 public sealed record VehiclePurchase(long VehicleId, ParticipantId Owner, string ModelId, long Tick, long PriceMinor, string CommandId);
 public sealed record VehiclePurchaseRequest(long VehicleId, ParticipantId Actor, long CutoffTick, string CommandId)
@@ -29,7 +32,8 @@ public sealed record FleetState(ulong RandomState, long NextSupplyTick, Immutabl
     ImmutableArray<VehiclePurchase> Purchases, ImmutableArray<LoadingPlatform> Platforms);
 public sealed record FleetObservation(Cell Dealer, ImmutableArray<VehicleModel> Models, ImmutableArray<DealerVehicle> Stock,
     ImmutableArray<VehicleView> Vehicles, ImmutableArray<VehiclePurchaseRequest> OwnRequests,
-    ImmutableArray<LoadingPlatform> Platforms, ImmutableArray<HandlingUpgrade> Kits, ImmutableArray<HandlingUpgrade> PlatformUpgrades);
+    ImmutableArray<LoadingPlatform> Platforms, ImmutableArray<HandlingUpgrade> Kits, ImmutableArray<HandlingUpgrade> PlatformUpgrades,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] ImmutableArray<EquipmentTypeDefinition> EquipmentTypes=default);
 internal sealed class PlatformState(long id, long building, long owner, long wage)
 {
     public long Id { get; } = id;

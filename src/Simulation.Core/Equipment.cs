@@ -6,6 +6,7 @@ internal sealed class EquipmentState(long id, long owner, Cell position, long st
     public long Id { get; } = id;
     public long Owner { get; } = owner;
     public Cell Position { get; set; } = position;
+    public bool? Deployed { get; set; }
     public EquipmentMotion? Motion { get; set; }
     public ExtractionRoute? Route { get; set; }
     public long MovedAtTick { get; set; }
@@ -34,6 +35,7 @@ public sealed partial class SimulationEngine
     }
     private void BuyEquipment(ActorState actor, CommandEnvelope c)
     {
+        if(UsesMobileEquipment)throw new RuleViolation("BuyEquipmentAtDealer");
         RequireIdle(actor);
         var type = (_config.EquipmentTypes ?? []).SingleOrDefault(t => t.Id == c.Action.EquipmentTypeId)
             ?? throw new RuleViolation("NotAvailable");
@@ -53,6 +55,7 @@ public sealed partial class SimulationEngine
     }
     private void UpgradeEquipment(ActorState actor, CommandEnvelope c)
     {
+        if(UsesMobileEquipment)throw new RuleViolation("BuyEquipmentAtDealer");
         var e = OwnEquipment(actor, c.Action.Equipment); RequireIdle(actor);
         RequireActionLocation(actor, c.Action);
         if (e.Mode != EquipmentMode.Off || e.Batch is not null || e.PersonalJobId != 0 || e.Motion is not null)
@@ -70,6 +73,11 @@ public sealed partial class SimulationEngine
     private void SetEquipmentMode(ActorState actor, CommandEnvelope c)
     {
         var e = OwnEquipment(actor, c.Action.Equipment);
+        if(UsesMobileEquipment)
+        {
+            if(e.Deployed!=true && c.Action.Mode!=EquipmentMode.Off)throw new RuleViolation("EquipmentNotPlaced");
+            if(c.Action.Mode==EquipmentMode.Off && e.PersonalJobId!=0)CancelHarvest(actor,"UserStopped");
+        }
         if (!Enum.IsDefined(c.Action.Mode)) throw new RuleViolation("InvalidEquipmentMode");
         if (e.PersonalJobId != 0 || ((e.Batch is not null || e.Motion is not null) && c.Action.Mode == EquipmentMode.Personal))
             throw new RuleViolation("EquipmentBusy");
@@ -80,25 +88,31 @@ public sealed partial class SimulationEngine
     private void StartEquipmentHarvest(ActorState actor, CommandEnvelope c)
     {
         var e = OwnEquipment(actor, c.Action.Equipment);
-        if (e.Mode != EquipmentMode.Personal || e.Batch is not null || e.PersonalJobId != 0 || e.Motion is not null)
+        if ((e.Mode != EquipmentMode.Personal && !(UsesMobileEquipment && c.Action.Kind==ActionKind.StartHarvesting && e.Mode==EquipmentMode.Off)) || e.Batch is not null || e.PersonalJobId != 0 || e.Motion is not null)
             throw new RuleViolation("EquipmentBusy");
         RequireActionLocation(actor, c.Action);
         if (c.Action.ItemId != e.Type.ItemId) throw new RuleViolation("WrongItem");
+        if(UsesMobileEquipment && e.Deployed!=true)throw new RuleViolation("EquipmentNotPlaced");
         var level = e.Characteristics;
+        bool loop=UsesMobileEquipment && c.Action.Kind==ActionKind.StartHarvesting;
+        if(loop && c.Action.Quantity!=level.CycleQuantity)throw new RuleViolation("InvalidQuantity");
         long cycles = checked((c.Action.Quantity - 1) / level.CycleQuantity + 1);
         long end = checked(Tick + checked(cycles * level.CycleTicks));
         RequireResource(actor.Id, e.Position, e.Type.ItemId, c.Action.Quantity, true);
         long id = _nextId, nextId = checked(_nextId + 1);
         string hold = $"equipment-personal:{id}";
         var tx = _economy.Begin(Tick);
-        tx.ReserveCapacity(actor.Inventory, hold, c.Action.ItemId, c.Action.Quantity); tx.Commit();
+        tx.ReserveCapacity(UsesMobileEquipment?e.Storage:actor.Inventory, hold, c.Action.ItemId, c.Action.Quantity); tx.Commit();
         _nextId = nextId; e.PersonalJobId = id;
+        if(loop){e.Mode=EquipmentMode.Personal;e.Reason="Working";}
         ClaimResource(id, e.Position, c.Action.Quantity);
-        actor.Job = new(id, "EquipmentHarvest", Tick, end, [], c.Action.ItemId, c.Action.Quantity, hold, c.CommandId, e.Id);
+        actor.Job = new(id, loop?"EquipmentHarvestLoop":"EquipmentHarvest", Tick, end, [], c.Action.ItemId, c.Action.Quantity, hold, c.CommandId, e.Id);
         Emit("PersonalEquipmentHarvestStarted", actor.Id, e.Id, c.Action.ItemId, c.Action.Quantity, command: c.CommandId);
     }
     private void AdvanceEquipment(EquipmentState e)
     {
+        if(e.Deployed==false){e.Reason="EquipmentPacked";return;}
+        if(e.Deployed is not null && e.Mode==EquipmentMode.Personal){e.Reason=e.PersonalJobId!=0?"Working":EquipmentFull(e)?"NoOutputSpace":"PersonalMode";return;}
         if (e.Mode != EquipmentMode.Automatic)
         { e.Reason = e.Mode == EquipmentMode.Off ? "UserPaused" : "PersonalMode"; return; }
         if (e.Motion is not null || e.MovedAtTick == Tick) return;
@@ -175,6 +189,7 @@ public sealed partial class SimulationEngine
     private long NextEquipmentCost(EquipmentState e, int staff) => checked(staff * (e.Group.PendingWage ?? e.Group.Wage));
     private string EquipmentVacancyReason(EquipmentState e)
     {
+        if(e.Deployed==false)return "EquipmentNotPlaced";
         if (e.Mode != EquipmentMode.Automatic) return e.Mode == EquipmentMode.Off ? "UserPaused" : "PersonalMode";
         if ((e.Group.PendingWage ?? e.Group.Wage) <= 0 || e.Group.AttractionWage <= 0) return "NoPaidOffer";
         if (e.Motion is not null || e.Route is { Enabled: true } route && !EquipmentFull(e) && route.Stops.Any(c=>
@@ -188,14 +203,16 @@ public sealed partial class SimulationEngine
     }
     private EquipmentView[] EquipmentViews() => _equipment.Values.OrderBy(e => e.Id).Select(e => new EquipmentView(
         new(e.Id), new(e.Owner), e.Type.Id, e.Level, e.Position, new(e.Storage), new(e.Group.Id), e.Mode,
-        e.Reason, e.Batch?.Id ?? 0, e.Batch?.WorkDone ?? 0, e.Batch?.WorkRequired ?? 0, e.Completed, e.PersonalJobId) { Motion = e.Motion, Route = e.Route }).ToArray();
+        e.Reason, e.Deployed==true&&e.PersonalJobId!=0?e.PersonalJobId:e.Batch?.Id ?? 0, e.Deployed==true&&e.PersonalJobId!=0?Tick-_actors[e.Owner].Job!.StartTick:e.Batch?.WorkDone ?? 0, e.Deployed==true&&e.PersonalJobId!=0?_actors[e.Owner].Job!.CompletionTick-_actors[e.Owner].Job!.StartTick:e.Batch?.WorkRequired ?? 0, e.Completed, e.PersonalJobId) { Motion = e.Motion, Route = e.Route, Deployed=e.Deployed }).ToArray();
     private EquipmentTypeDefinition[] CopyEquipmentCatalog() => (_config.EquipmentTypes ?? [])
         .OrderBy(t => t.Id, StringComparer.Ordinal).Select(t => t with { Levels = t.Levels.ToArray() }).ToArray();
     private void ValidateEquipmentInvariants()
     {
         foreach (var e in _equipment.Values)
         {
-            if ((e.Motion is null && !_config.ResourceNodes.Any(n => n.Position == e.Position && n.ItemId == e.Type.ItemId)) ||
+            if(UsesMobileEquipment && (!_vehicles.TryGetValue(e.Id,out var vehicle) || e.Deployed is null || e.Deployed==false&&(e.Batch is not null||e.PersonalJobId!=0||e.Motion is not null||e.Mode!=EquipmentMode.Off) || e.Deployed==true&&(!_resources.TryGetValue((e.Position,e.Type.ItemId),out var site)||site.Owner!=e.Owner||site.Rules.Public||vehicle.Driver!=0)))throw new InvalidOperationException("Invalid mobile equipment link");
+            if(!UsesMobileEquipment && e.Deployed is not null)throw new InvalidOperationException("Unexpected mobile equipment state");
+            if ((e.Motion is null && e.Deployed!=false && !_config.ResourceNodes.Any(n => n.Position == e.Position && n.ItemId == e.Type.ItemId)) ||
                 _economy.Inventories[e.Storage].Position != e.Position || _economy.Inventories[e.Storage].Owner != e.Owner ||
                 _economy.Inventories[e.Storage].Capacity != e.Characteristics.StorageCapacity ||
                 e.Group.Capacity != e.Characteristics.CrewCapacity || e.Group.Role != EmploymentRole.Extraction ||
@@ -206,11 +223,11 @@ public sealed partial class SimulationEngine
                 volume != checked(e.Characteristics.CycleQuantity * _items[e.Type.ItemId].UnitVolume)))
                 throw new InvalidOperationException("Invalid extraction work in progress");
             if (e.PersonalJobId != 0 && (e.Mode != EquipmentMode.Personal ||
-                _actors[e.Owner].Job is not { Kind: "EquipmentHarvest" } job || job.Id != e.PersonalJobId || job.EquipmentId != e.Id))
+                _actors[e.Owner].Job is not { Kind: "EquipmentHarvest" or "EquipmentHarvestLoop" } job || job.Id != e.PersonalJobId || job.EquipmentId != e.Id))
                 throw new InvalidOperationException("Personal machine operation lost its owner");
         }
         foreach (var actor in _actors.Values)
-            if (actor.Job is { Kind: "EquipmentHarvest" } job &&
+            if (actor.Job is { Kind: "EquipmentHarvest" or "EquipmentHarvestLoop" } job &&
                 (!_equipment.TryGetValue(job.EquipmentId, out var e) || e.PersonalJobId != job.Id))
                 throw new InvalidOperationException("Personal job lost its machine");
     }

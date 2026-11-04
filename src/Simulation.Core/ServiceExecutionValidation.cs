@@ -48,6 +48,6 @@ public sealed partial class SimulationEngine
     {
         if(ServiceExecution is null)return;
         if(_serviceDriverFunding.Count!=0||_serviceRuns.Values.Any(r=>!_serviceOrders.ContainsKey(r.Order))||_serviceOrders.Values.Any(o=>o.State=="Accepted"&&!_serviceRuns.ContainsKey(o.Id)))throw new InvalidOperationException("Invalid service execution references");
-        foreach(var c in _serviceCrews.Values)if(!_vehicles.TryGetValue(c.Vehicle,out var v)||v.Owner.Value!=c.Group.Owner||Model(v.ModelId).MaterialsOnly||c.Group.Capacity!=1||c.Group.Role!=EmploymentRole.DeliveryService)throw new InvalidOperationException("Invalid service crew");
+        foreach(var c in _serviceCrews.Values)if(!_vehicles.TryGetValue(c.Vehicle,out var v)||v.Owner.Value!=c.Group.Owner||(Model(v.ModelId).MaterialsOnly||Model(v.ModelId).EquipmentTypeId is not null)||c.Group.Capacity!=1||c.Group.Role!=EmploymentRole.DeliveryService)throw new InvalidOperationException("Invalid service crew");
     }
 }

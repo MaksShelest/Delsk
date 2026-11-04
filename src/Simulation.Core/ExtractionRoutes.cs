@@ -14,6 +14,7 @@ public sealed partial class SimulationEngine
         _logistics.Values.Any(l=>l.Trip?.Freight?.GoodsSource.Value==e.Storage);
     private void SetExtractionRoute(ActorState actor, CommandEnvelope c)
     {
+        if(UsesMobileEquipment)throw new RuleViolation("DriveEquipmentToSite");
         var e = OwnEquipment(actor, c.Action.Equipment);
         var stops = c.Action.Stops ?? [];
         if (stops.IsDefault || stops.Length > 32 || c.Action.Enabled && stops.Length == 0) throw new RuleViolation("InvalidRoute");
@@ -26,6 +27,7 @@ public sealed partial class SimulationEngine
     }
     private void MoveEquipment(ActorState actor, CommandEnvelope c)
     {
+        if(UsesMobileEquipment)throw new RuleViolation("DriveEquipmentToSite");
         var e = OwnEquipment(actor, c.Action.Equipment);
         if (e.Mode != EquipmentMode.Automatic || e.Motion is not null || e.Batch is not null || e.PersonalJobId != 0 || EquipmentTransferBusy(e))
             throw new RuleViolation("EquipmentBusy");

@@ -55,7 +55,8 @@ public sealed partial class SimulationEngine
     private bool AuthorizedVehicleStop(RoadBody body,Cell cell)=>ExecutingService(body.Id) is {} service&&
         (service.Quote.SourcePosition==cell||service.Quote.DestinationPosition==cell||service.Quote.ReturnPosition==cell)||
         VehicleLogistics(body.Id)?.Trip is {} trip&&(trip.Path[0]==cell||trip.Path[^1]==cell);
-    private bool ControlCellAllowed(RoadBody body,Cell cell)=>_map.Walkable(cell)&&
+    private bool EquipmentStockAt(Cell cell)=>UsesMobileEquipment&&_dealerStock.Any(s=>s.Position==cell&&Model(s.ModelId).EquipmentTypeId is not null);
+    private bool ControlCellAllowed(RoadBody body,Cell cell)=>_map.Walkable(cell)&&!EquipmentStockAt(cell)&&
         (!_plots.Values.Any(p=>p.Definition.Position==cell&&p.Owner is {} owner&&owner!=body.Owner.Value)||AuthorizedVehicleStop(body,cell))&&
         !_resources.Values.Any(r=>r.Definition.Position==cell&&!r.Rules.Public&&r.Owner!=body.Owner.Value&&!(r.Tenant==body.Owner.Value&&Tick<r.LeaseUntil));
     private bool PedestrianAt(Cell cell,long driver)=>_actors.Values.Any(a=>a.Id!=driver&&DrivenVehicle(a.Id) is null&&
@@ -95,7 +96,7 @@ public sealed partial class SimulationEngine
     }
     private bool TurnReservedByOther(long vehicle,Cell cell)=>UsesFreeVehicleControl&&_traffic.Values.Any(t=>t.VehicleId!=vehicle&&IsSteering(t)&&
         t.Steering is {ReservedCells.IsDefaultOrEmpty:false} s&&s.ReservedCells.Contains(cell));
-    private bool WideBody(RoadBody body)=>!_vehicles.TryGetValue(body.Id,out var vehicle)||vehicle.ModelId=="trakt_d1";
+    private bool WideBody(RoadBody body)=>!_vehicles.TryGetValue(body.Id,out var vehicle)||vehicle.ModelId=="trakt_d1"||Model(vehicle.ModelId).EquipmentTypeId is not null;
     private bool LaneBody(RoadBody body)=>!WideBody(body);
     // A .76-cell body must fit inside a single cell while travelling straight.
     // Wide bodies keep exclusive reservations and a smaller right offset.
@@ -146,7 +147,7 @@ public sealed partial class SimulationEngine
             if(Overlap(cell.X*1000+t.OffsetX,cell.Z*1000+t.OffsetZ,(fx*length+fz*width+norm-1)/norm+1,(fz*length+fx*width+norm-1)/norm+1))return false;
         }
         foreach(var stock in _dealerStock.Where(v=>v.Position!=at))
-            if(Overlap(stock.Position.X*1000+500,stock.Position.Z*1000+500,stock.ModelId=="trakt_d1"?380:190,stock.ModelId=="trakt_d1"?430:400))return false;
+            if(Overlap(stock.Position.X*1000+500,stock.Position.Z*1000+500,stock.ModelId=="trakt_d1"||Model(stock.ModelId).EquipmentTypeId is not null?380:190,stock.ModelId=="trakt_d1"||Model(stock.ModelId).EquipmentTypeId is not null?430:400))return false;
         foreach(var actor in _actors.Values.Where(a=>a.Id!=body.Driver&&DrivenVehicle(a.Id) is null))
         {
             if(Overlap(actor.Position.X*1000+actor.OffsetX,actor.Position.Z*1000+actor.OffsetZ,150,150))return false;
@@ -154,7 +155,7 @@ public sealed partial class SimulationEngine
         }
         return true;
     }
-    private bool PedestrianTrafficBlocked(Cell cell,long actor=0)=>UsesFreeVehicleControl&&
+    private bool PedestrianTrafficBlocked(Cell cell,long actor=0)=>EquipmentStockAt(cell)||UsesFreeVehicleControl&&
         (RoadBodies().Any(b=>VehicleCargo(b).Position==cell&&
             !(b.Owner.Value==actor&&b.Driver==0&&!RoadVehicleWorking(b.Id)&&(!_traffic.TryGetValue(b.Id,out var parked)||!HasRoadProgress(parked)&&!IsSteering(parked))))||_traffic.Values.Any(t=>
             HasRoadProgress(t)&&t.Index<t.Path.Length-1&&t.Path[t.Index+1]==cell)||TurnReservedByOther(0,cell));

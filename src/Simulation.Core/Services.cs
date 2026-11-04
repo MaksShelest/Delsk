@@ -27,7 +27,7 @@ public sealed partial class SimulationEngine
         if(action.Kind==ActionKind.SetDeliveryService)
         {
             var vehicle=OwnVehicle(actor,action.VehicleId);
-            if(action.Enabled){if(Model(vehicle.ModelId).MaterialsOnly||!ServiceFree(vehicle)||ServiceVehicleBusy(vehicle.Id))throw new RuleViolation("ServiceVehicleUnavailable");_serviceListings.Add(vehicle.Id);}
+            if(action.Enabled){if((Model(vehicle.ModelId).MaterialsOnly||Model(vehicle.ModelId).EquipmentTypeId is not null)||!ServiceFree(vehicle)||ServiceVehicleBusy(vehicle.Id))throw new RuleViolation("ServiceVehicleUnavailable");_serviceListings.Add(vehicle.Id);}
             else _serviceListings.Remove(vehicle.Id);
             Emit("ServiceListingChanged",actor.Id,vehicle.Id,quantity:action.Enabled?1:0,command:command.CommandId);return;
         }
@@ -140,12 +140,12 @@ public sealed partial class SimulationEngine
     {
         if(Services is null)return;
         void Require(bool yes){if(!yes)throw new InvalidOperationException("Invalid delivery service state");}
-        Require(_serviceListings.All(id=>_vehicles.TryGetValue(id,out var v)&&!Model(v.ModelId).MaterialsOnly));
+        Require(_serviceListings.All(id=>_vehicles.TryGetValue(id,out var v)&&!Model(v.ModelId).MaterialsOnly&&Model(v.ModelId).EquipmentTypeId is null));
         Require(_serviceOrders.Values.Where(o=>o.Active).Select(o=>o.Quote.Terms.VehicleId).Distinct().Count()==_serviceOrders.Values.Count(o=>o.Active));
         foreach(var o in _serviceOrders.Values)
         {
             Require(o.Id>=1000&&o.Id<_nextId&&_actors.ContainsKey(o.Customer.Value)&&_actors.ContainsKey(o.Carrier.Value)&&o.Customer!=o.Carrier&&
-                _vehicles.TryGetValue(o.Quote.Terms.VehicleId,out var v)&&v.Owner==o.Carrier&&!Model(v.ModelId).MaterialsOnly&&
+                _vehicles.TryGetValue(o.Quote.Terms.VehicleId,out var v)&&v.Owner==o.Carrier&&!Model(v.ModelId).MaterialsOnly&&Model(v.ModelId).EquipmentTypeId is null&&
                 o.CreatedTick>0&&o.CreatedTick<=Tick&&o.Quote.Terms.Quantity>0&&o.Quote.FeeMinor>0&&o.Quote.EtaTicks>0&&
                 o.Quote.QuantityPerTrip>0&&o.Quote.QuantityPerTrip==Model(_vehicles[o.Quote.Terms.VehicleId].ModelId).CapacityVolume/_items[o.Quote.Terms.ItemId].UnitVolume&&o.Quote.Trips==(o.Quote.Terms.Quantity-1)/o.Quote.QuantityPerTrip+1&&o.Quote.Volume==checked(o.Quote.Terms.Quantity*_items[o.Quote.Terms.ItemId].UnitVolume)&&
                 o.Quote.Token==ScenarioValidation.Hash(o.Quote with{Token=""}));
