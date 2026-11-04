@@ -19,7 +19,7 @@ public partial class Playfield
     {
         DismissHelp();
         StopHeading(); _waitRelease = true;
-        _helpOverlay = new HelpOverlay(_language, topic,_session.Engine.Configuration().Economy?.Movement);
+        _helpOverlay = new HelpOverlay(_language, topic,_session.Engine.Configuration().Economy?.Movement,_session.Engine.UsesFreeVehicleControl);
         _helpOverlay.Closed += CloseHelp;
         AddChild(_helpOverlay);
         ApplyPause(); Refresh();
@@ -60,6 +60,9 @@ public partial class Playfield
     }
     private void BuildPlayHud()
     {
+        _stick=null;
+        if(OS.HasFeature("mobile")||OS.GetCmdlineUserArgs().Contains("--touch-controls"))
+        {_stick=new VirtualJoystick();_playChrome!.AddChild(_stick);}
         var bar = new PanelContainer { MouseFilter = MouseFilterEnum.Stop };
         bar.SetAnchorsAndOffsetsPreset(LayoutPreset.TopWide); bar.OffsetBottom = 54;
         bar.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color("243a3e"),

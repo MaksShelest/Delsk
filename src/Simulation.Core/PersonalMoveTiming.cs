@@ -3,7 +3,7 @@ public sealed partial class SimulationEngine
 {
     private long TimedMoveForecast(ActorState actor,PersonalJob job)
     {
-        long total=0;for(int n=0;n<job.Path.Length-1;n++)total=checked(total+(job.TimedEdges![n]>0?job.TimedEdges[n]:PersonalEdgeTimeUnits(actor,job.Path[n],job.Path[n+1])));
+        long total=job.TrafficWaitTime;for(int n=0;n<job.Path.Length-1;n++)total=checked(total+(job.TimedEdges![n]>0?job.TimedEdges[n]:PersonalEdgeTimeUnits(actor,job.Path[n],job.Path[n+1])));
         return checked(job.StartTick+Movement.WholeTicks(total));
     }
     private void RefreshTimedMoveEstimates()
@@ -25,6 +25,7 @@ public sealed partial class SimulationEngine
                 job.CompletionTick==checked(job.StartTick+PersonalPathTicks(actor,job.Path))&&
                 (UsesAcceleratedMovement?checked((Tick-job.StartTick)*MotionTimeScale):Tick-job.StartTick)==
                 checked(job.Path.Take(job.PathIndex+1).Zip(job.Path.Skip(1).Take(job.PathIndex)).Sum(p=>UsesAcceleratedMovement?PersonalEdgeTimeUnits(actor,p.First,p.Second):(long)PersonalMoveTicks(actor,p.First,p.Second))+job.SegmentTicks);
+        if(job.TrafficWaitTime<0||!UsesFreeVehicleControl&&job.TrafficWaitTime!=0||job.TrafficWaitTime>checked((Tick-job.StartTick)*MotionTimeScale))return false;
         if(!UsesAcceleratedMovement||times.Length!=job.Path.Length-1||times.Any(t=>t<0))return false;
         long completed=0;
         for(int n=0;n<times.Length;n++)
@@ -34,6 +35,6 @@ public sealed partial class SimulationEngine
             if(n<job.PathIndex)completed=checked(completed+times[n]);
         }
         if(times[job.PathIndex]==0?job.SegmentTicks!=0:job.SegmentTicks>=times[job.PathIndex])return false;
-        return checked((Tick-job.StartTick)*MotionTimeScale)==checked(completed+job.SegmentTicks)&&job.CompletionTick==TimedMoveForecast(actor,job);
+        return checked((Tick-job.StartTick)*MotionTimeScale)==checked(completed+job.SegmentTicks+job.TrafficWaitTime)&&job.CompletionTick==TimedMoveForecast(actor,job);
     }
 }

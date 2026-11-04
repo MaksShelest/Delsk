@@ -1,0 +1,11 @@
+{
+  "status": "succeeded",
+  "cases": [
+    "native-compact_valley-6"
+  ],
+  "model": "trakt_d1",
+  "prepared": "/workspace/Delsk/work/i2/native",
+  "sources": 692,
+  "binaries": 14,
+  "scope": "Verified native gameplay sources and references; explicit isolated model instrumentation, fresh user data for every fixture. Synthetic Linux input; no physical device or natural earning claim."
+}

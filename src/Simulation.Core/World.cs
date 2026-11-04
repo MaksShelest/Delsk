@@ -23,9 +23,9 @@ internal sealed class GridMap
         return distances;
     }
     private static Cell[] Neighbors(Cell cell)=>[new(cell.X+1,cell.Z),new(cell.X,cell.Z+1),new(cell.X-1,cell.Z),new(cell.X,cell.Z-1)];
-    public Cell[] FindPath(Cell source, Cell destination)
+    public Cell[] FindPath(Cell source, Cell destination,Func<Cell,bool>? allow=null)
     {
-        if (!Walkable(source) || !Walkable(destination)) throw new RuleViolation("NoPath");
+        if (!Walkable(source) || !Walkable(destination) || source!=destination&&allow is not null&&!allow(destination)) throw new RuleViolation("NoPath");
         var previous = new Dictionary<Cell, Cell>();
         var queue = new Queue<Cell>();
         var seen = new HashSet<Cell> { source };
@@ -41,7 +41,7 @@ internal sealed class GridMap
             // Canonical neighbor order is part of rules-v1.
             Cell[] neighbors = Neighbors(cell);
             foreach (var next in neighbors)
-                if (Walkable(next) && seen.Add(next)) { previous[next] = cell; queue.Enqueue(next); }
+                if (Walkable(next) && (allow is null||allow(next)) && seen.Add(next)) { previous[next] = cell; queue.Enqueue(next); }
         }
         throw new RuleViolation("NoPath");
     }
@@ -70,6 +70,8 @@ internal sealed class PersonalJob(long id, string kind, long startTick, long com
     public Cell[] Path { get; } = path;
     public int PathIndex { get; set; }
     public int SegmentTicks { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
+    public long TrafficWaitTime {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public long[]? TimedEdges {get;set;}
     public string Item { get; } = item;

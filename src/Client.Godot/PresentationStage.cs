@@ -28,6 +28,7 @@ public partial class PresentationStage : Node3D
         public float Duration = 0.1f;
         public bool Human;
         public bool Loaded;
+        public float AngleFrom,AngleTo,AngleElapsed=1;
     }
     private readonly System.Collections.Generic.Dictionary<long, Mover> _actors = new();
     private readonly Dictionary<long,Label3D> _speechLabels=[];
@@ -63,6 +64,8 @@ public partial class PresentationStage : Node3D
         {
             mover.Elapsed = Mathf.Min(mover.Duration, mover.Elapsed + (float)delta);
             mover.Node.Position = mover.From.Lerp(mover.To, Mathf.Clamp(mover.Elapsed / mover.Duration, 0, 1));
+            mover.AngleElapsed=Mathf.Min(.1f,mover.AngleElapsed+(float)delta);
+            mover.Node.Rotation=new(0,Mathf.LerpAngle(mover.AngleFrom,mover.AngleTo,mover.AngleElapsed/.1f),0);
         }
         FollowHuman();
     }
@@ -113,7 +116,7 @@ public partial class PresentationStage : Node3D
                 caption.Text=(actor.Human?you+" · ":"")+WorldSkins.ActorName(actor.Id,language);
             }
             if (actor.FacingX != 0 || actor.FacingZ != 0)
-                mover.Node.Rotation = new Vector3(0, Mathf.Atan2(-actor.FacingX, -actor.FacingZ), 0);
+                TargetRotation(mover,actor.FacingX,actor.FacingZ,snap);
         }
         foreach (long id in _actors.Keys.Where(id => !liveActors.Contains(id)).ToArray())
         { _actors[id].Node.QueueFree(); _actors.Remove(id);_speechLabels.Remove(id); }
@@ -139,7 +142,7 @@ public partial class PresentationStage : Node3D
                 mover.Loaded = trip.Loaded;
             }
             var heading = at - mover.To;
-            if (heading.LengthSquared() > 0.001f) mover.Node.Rotation = new Vector3(0, Mathf.Atan2(-heading.X, -heading.Z), 0);
+            if (heading.LengthSquared() > 0.001f) TargetRotation(mover,heading.X,heading.Z,snap);
             Target(mover, at, 1, snap, true);
         }
         foreach (long id in _trips.Keys.Where(id => !live.Contains(id)).ToArray())
@@ -203,6 +206,14 @@ public partial class PresentationStage : Node3D
         mover.To = at;
         mover.Elapsed = 0;
         mover.Duration = duration;
+    }
+
+    private static void TargetRotation(Mover mover,float x,float z,bool snap)
+    {
+        float angle=Mathf.Atan2(-x,-z);
+        if(snap){mover.AngleFrom=mover.AngleTo=angle;mover.AngleElapsed=1;mover.Node.Rotation=new(0,angle,0);return;}
+        if(Mathf.IsEqualApprox(mover.AngleTo,angle))return;
+        mover.AngleFrom=mover.Node.Rotation.Y;mover.AngleTo=angle;mover.AngleElapsed=0;
     }
 
     public void ResetMotion()

@@ -296,7 +296,7 @@ public sealed partial class SimulationEngine
         if(Roads is not null&&DrivenVehicle(actor.Id) is {} roadVehicle)
         {StartRoadMove(actor,roadVehicle,c);return;}
         if (actor.Job is not null && !IsHarvest(actor.Job) || HasSale(actor.Id)) RequireIdle(actor);
-        Cell[] path = _map.FindPath(actor.Position, c.Action.Target);
+        Cell[] path = PersonalMovementPath(actor,c.Action.Target);
         long arrival = checked(Tick + PersonalPathTicks(actor,path));
         if (path.Length > 1) foreach (var t in _transfers.Values.Where(t=>t.Owner.Value==actor.Id).ToArray()) CancelTransfer(t,"MovementStarted");
         if (path.Length > 1 && IsHarvest(actor.Job)) CancelHarvest(actor, "MovementStarted");

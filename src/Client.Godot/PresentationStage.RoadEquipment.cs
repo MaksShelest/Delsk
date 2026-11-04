@@ -20,7 +20,7 @@ public partial class PresentationStage
             }
             var at=new Vector3(e.X+(e.OffsetX-500)/1000f,.08f,e.Z+(e.OffsetZ-500)/1000f);
             Target(view.Mover,at,.1f,snap||view.Mover.From==Vector3.Zero);
-            view.Mover.Node.Rotation=new(0,Mathf.Atan2(-e.FacingX,-e.FacingZ),0);
+            TargetRotation(view.Mover,e.FacingX,e.FacingZ,snap);
         }
         foreach(long id in _roadEquipment.Keys.Where(id=>!frame.EquipmentTraffic.Any(e=>e.Id==id)).ToArray())
         {_roadEquipment[id].Mover.Node.QueueFree();_roadEquipment.Remove(id);}

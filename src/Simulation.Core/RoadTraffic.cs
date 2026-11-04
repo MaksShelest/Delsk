@@ -8,11 +8,11 @@ public sealed partial class SimulationEngine
     {
         RequireIdle(actor);
         if(ServiceHandlingVehicle(vehicle.Id)||RoadVehicleWorking(vehicle.Id)||VehicleTransferring(vehicle.CargoInventory.Value)||vehicle.Installation is not null)throw new RuleViolation("VehicleBusy");
-        var state=Traffic(vehicle.Id);if(HasRoadProgress(state))throw new RuleViolation("VehicleMoving");
+        var state=Traffic(vehicle.Id);if(HasRoadProgress(state)||IsSteering(state))throw new RuleViolation("VehicleMoving");
         var path=VehiclePath(vehicle,c.Action.Target);CancelTrafficRoute(vehicle.Id);
         actor.HeadingX=actor.HeadingZ=0;
         if(path.Length==1)return;
-        actor.Job=new(_nextId++,"Move",Tick,checked(Tick+(UsesAcceleratedMovement?PathTicks(path,Model(vehicle.ModelId)):path.Length*10L)),path,"",0,"",c.CommandId);
+        actor.Job=new(_nextId++,"Move",Tick,checked(Tick+(UsesAcceleratedMovement?PathTicks(path,Model(vehicle.ModelId),new(vehicle.FacingX,vehicle.FacingZ)):path.Length*10L)),path,"",0,"",c.CommandId);
         Emit("MovementStarted",actor.Id,actor.Job.Id,command:c.CommandId);
     }
     private void AdvanceRoadMove(ActorState actor,OwnedVehicle vehicle,PersonalJob job)
@@ -20,7 +20,7 @@ public sealed partial class SimulationEngine
         bool arrived=false;
         try{arrived=ExecutingService(vehicle.Id) is not null?ServiceTrafficTravel(vehicle,job.Path[^1]):TrafficTravel(vehicle,job.Path[^1]);}catch(RuleViolation ex){var t=Traffic(vehicle.Id);_traffic[vehicle.Id]=t with{Reason=ex.ReasonCode};}
         // The job is an intention; the persisted traffic trajectory is its actual physical progress.
-        job.CompletionTick=checked(Tick+(UsesAcceleratedMovement?Math.Max(1,RoadRemainingTicks(Traffic(vehicle.Id),Body(vehicle))):1));
+        job.CompletionTick=checked(Tick+(UsesAcceleratedMovement?Math.Max(1,RoadRemainingTicks(Traffic(vehicle.Id),FindBody(vehicle.Id)!)):1));
         if(!arrived)return;
         _completedPersonalJobs.Add(job.Id);actor.Job=null;
         Emit("MovementArrived",actor.Id,job.Id,command:job.CommandId);
@@ -28,6 +28,13 @@ public sealed partial class SimulationEngine
     private long RoadRemainingTicks(TrafficVehicle t,RoadBody v)
     {
         long time=0;
+        if(UsesFreeVehicleControl&&t.Path.Length>t.Index)
+        {
+            var heading=new Cell(v.FacingX,v.FacingZ);
+            if(t.Steering is {TurnQuanta:>0} s)
+            {var end=BearingVector(s.TurnFrom+s.TurnDelta);heading=new(Math.Sign(end.X),Math.Sign(end.Z));time=checked((s.TurnQuanta-s.TurnQuantum)*(long)MotionTimeScale/10);}
+            time=checked(time+VehicleControlRules.PathTurnQuanta(t.Path.Skip(t.Index).ToArray(),c=>RoadLevel(c)>0,c=>RoadBodySpeed(c,c,v),heading)*MotionTimeScale/10);
+        }
         for(int n=t.Index;n<t.Path.Length-1;n++)
         {
             long remaining=n==t.Index?(800L-t.Progress)*MotionTimeScale-t.ProgressFraction:(800L*MotionTimeScale);
@@ -47,7 +54,7 @@ public sealed partial class SimulationEngine
     }
     private void CancelTrafficRoute(long vehicle)
     {
-        var t=Traffic(vehicle);if(HasRoadProgress(t))throw new RuleViolation("VehicleMoving");
+        var t=Traffic(vehicle);if(HasRoadProgress(t)||IsSteering(t))throw new RuleViolation("VehicleMoving");
         _traffic[vehicle]=t with{Path=[],Index=0,Progress=0,Resume=null,YieldTo=0,Reason="Parked"};
     }
     private Cell[] PublicCorridorPath(Cell source,Cell target,Func<Cell,bool> allow)
@@ -70,28 +77,33 @@ public sealed partial class SimulationEngine
         return [];
     }
     private bool WorkBlocks(long vehicle,Cell cell)=>_roadWorks.Values.Any(w=>w.Vehicle!=vehicle&&w.Batch?.Cell==cell);
-    private bool ReservedByOther(long vehicle,Cell cell)=>RoadBodies().Any(v=>v.Id!=vehicle&&VehicleCargo(v).Position==cell)||
-        _dealerStock.Any(v=>v.Position==cell)||_traffic.Values.Any(t=>t.VehicleId!=vehicle&&HasRoadProgress(t)&&t.Index<t.Path.Length-1&&t.Path[t.Index+1]==cell);
+    private bool ReservedByOther(long vehicle,Cell cell)=>TurnReservedByOther(vehicle,cell)||UsesFreeVehicleControl&&PedestrianAt(cell,FindBody(vehicle)?.Driver??0)||RoadBodies().Any(v=>v.Id!=vehicle&&VehicleCargo(v).Position==cell&&!ShareRoadCell(vehicle,v.Id,cell))||
+        _dealerStock.Any(v=>v.Position==cell)||_traffic.Values.Any(t=>t.VehicleId!=vehicle&&HasRoadProgress(t)&&t.Index<t.Path.Length-1&&t.Path[t.Index+1]==cell&&!ShareRoadCell(vehicle,t.VehicleId,cell));
     private Cell[] VehiclePath(OwnedVehicle v,Cell target,bool avoidVehicles=false)=>VehiclePath(Body(v),target,avoidVehicles);
     private Cell[] VehiclePath(RoadBody v,Cell target,bool avoidVehicles=false,bool preview=false)
     {
         var source=VehicleCargo(v).Position;if(!preview)Traffic(v.Id);
         bool corridorOnly=_config.Layout!.RoadCorridorCells.Contains(source)&&_config.Layout.RoadCorridorCells.Contains(target);
-        bool Allow(Cell c)=>_map.Walkable(c)&&!WorkBlocks(v.Id,c)&&(!avoidVehicles||!ReservedByOther(v.Id,c))&&
+        bool Allow(Cell c)=>_map.Walkable(c)&&(!UsesFreeVehicleControl||ControlCellAllowed(v,c))&&!WorkBlocks(v.Id,c)&&(!avoidVehicles||!ReservedByOther(v.Id,c))&&
             (!corridorOnly||PublicRoadCell(c))&&
             (PublicRoadCell(c)||c==source||c==target||!_roadWorks.Values.Any(w=>w.Batch is {} batch&&Manhattan(c,batch.Cell)<=2))&&
             !_bypasses.Any(b=>b.Closing&&b.Path.Skip(1).SkipLast(1).Contains(c)&&c!=source&&!b.Users.Contains(v.Id));
         int Cost(Cell c)=>RoadLevel(c)>0?80/Roads!.Stages.Single(s=>s.Level==RoadLevel(c)).Speed+1:12;
-        var path=UsesAcceleratedMovement?RouteSearch.FindOriented(source,target,Allow,(a,b)=>Movement.EdgeTime(RoadBodySpeed(a,b,v)),c=>MayTurn(v,c),new(v.FacingX,v.FacingZ)):FindRoadPath(source,target,Allow,Cost);
+        var path=UsesAcceleratedMovement?RouteSearch.FindOriented(source,target,Allow,(a,b)=>Movement.EdgeTime(RoadBodySpeed(a,b,v)),c=>MayTurn(v,c),new(v.FacingX,v.FacingZ),UsesFreeVehicleControl?(c,old,direction)=>old!=new Cell(0,0)&&old!=direction?VehicleControlRules.TurnQuanta(RoadBodySpeed(c,c,v),RoadLevel(c)>0,direction.X==-old.X&&direction.Z==-old.Z)*MotionTimeScale/10:0:null):FindRoadPath(source,target,Allow,Cost);
         if(path.Length==0)throw new RuleViolation("NoSafeVehiclePath");
         return path;
     }
     private bool MayTurn(OwnedVehicle v,Cell cell)=>MayTurn(Body(v),cell);
-    private bool MayTurn(RoadBody v,Cell cell)=>!PublicRoadCell(cell)||_config.Layout!.TurnCells.Contains(cell)||
+    private bool MayTurn(RoadBody v,Cell cell)=>UsesFreeVehicleControl||!PublicRoadCell(cell)||_config.Layout!.TurnCells.Contains(cell)||
         !_config.Layout.RoadCenterCells.Contains(cell)||RoadNeighbors(cell).Count(c=>RoadLevel(c)>0)>=3;
     private void TurnVehicle(ActorState actor,CommandEnvelope c)
     {
         RequireIdle(actor);var v=OwnVehicle(actor,c.Action.VehicleId);RequireActionLocation(actor,c.Action);
+        if(UsesFreeVehicleControl)
+        {
+            if(v.Driver!=actor.Id||HasRoadProgress(Traffic(v.Id))||IsSteering(Traffic(v.Id)))throw new RuleViolation("VehicleMoving");
+            actor.HeadingX=-v.FacingX;actor.HeadingZ=-v.FacingZ;return;
+        }
         if(Roads is null||v.Driver!=actor.Id||!MayTurn(v,actor.Position)||HasRoadProgress(Traffic(v.Id))||
             RoadNeighbors(actor.Position).All(c=>!_map.Walkable(c)||ReservedByOther(v.Id,c)))throw new RuleViolation("NoFreeTurn");
         actor.FacingX=-v.FacingX;actor.FacingZ=-v.FacingZ;actor.HeadingX=actor.HeadingZ=0;
@@ -133,12 +145,28 @@ public sealed partial class SimulationEngine
                 return at==target;
             }
             var next=t.Path[t.Index+1];int dx=next.X-at.X,dz=next.Z-at.Z;
+            if(UsesFreeVehicleControl&&!HasRoadProgress(t))
+            {
+                if(!ControlCellAllowed(vehicle,next)){_traffic[vehicle.Id]=t with{Reason="ObstacleBraking"};return false;}
+                if((IsSteering(t)||dx!=vehicle.FacingX||dz!=vehicle.FacingZ))
+                {
+                    if(timeLeft<MotionTimeScale/TravelQuantaPerTick)break;
+                    AdvanceSteering(vehicle,dx,dz);vehicle=FindBody(vehicle.Id)!;break;
+                }
+            }
+            if(UsesFreeVehicleControl&&timeLeft==MotionTimeScale/TravelQuantaPerTick)
+            {timeLeft=AlignLane(vehicle,timeLeft);t=Traffic(vehicle.Id);if(timeLeft==0)break;}
             if(!HasRoadProgress(t)&&_bypasses.Any(b=>b.Closing&&b.Path.Skip(1).SkipLast(1).Contains(next)&&!b.Users.Contains(vehicle.Id)))
             {TryReplan(vehicle,target);return false;}
             if(!HasRoadProgress(t)&&(WorkBlocks(vehicle.Id,next)||ReservedByOther(vehicle.Id,next)||NarrowEntryBlocked(vehicle.Id,at,next)))
             {
                 long since=t.WaitingSince==0?Tick:t.WaitingSince;
                 _traffic[vehicle.Id]=t with{WaitingSince=since,Reason=WorkBlocks(vehicle.Id,next)?"PaverBypass":"TrafficWaiting"};
+                if(UsesFreeVehicleControl&&RoadBodies().Any(other=>other.Id!=vehicle.Id&&
+                    (VehicleCargo(other).Position==next||_traffic.TryGetValue(other.Id,out var pending)&&HasRoadProgress(pending)&&pending.Index<pending.Path.Length-1&&pending.Path[pending.Index+1]==next)&&
+                    OpposingLaneBodies(vehicle.Id,other.Id,next)&&(LaneReservation(other.Id)!=0||other.Driver!=0||
+                    _traffic.TryGetValue(other.Id,out var aligning)&&(HasRoadProgress(aligning)||aligning.Index<aligning.Path.Length-1))))break;
+                if(UsesFreeVehicleControl&&manual)return false;
                 if(WorkBlocks(vehicle.Id,next))TryReplan(vehicle,target);
                 else if(_dealerStock.Any(s=>s.Position==next)||RoadBodies().Any(v=>v.Id!=vehicle.Id&&VehicleCargo(v).Position==next&&
                     (!_traffic.TryGetValue(v.Id,out var moving)||moving.Index>=moving.Path.Length-1&&moving.Resume is null)))
@@ -280,12 +308,12 @@ public sealed partial class SimulationEngine
     }
     private void ManualRoadTravel(ActorState actor)
     {
-        var v=DrivenVehicle(actor.Id)!;var t=Traffic(v.Id);
+        var v=DrivenVehicle(actor.Id)!;if(UsesFreeVehicleControl){FreeManualRoadTravel(actor,v);return;}var t=Traffic(v.Id);
         if(RoadVehicleWorking(v.Id)||VehicleTransferring(v.CargoInventory.Value)||v.Installation is not null)return;
         long stamp=_stepping?Tick:Tick+1;
         if(t.AdvancedTick==stamp&&t.AdvancedQuanta>=TravelQuantaPerTick)return;
         t=t with{AdvancedTick=stamp,AdvancedQuanta=t.AdvancedTick==stamp?t.AdvancedQuanta+1:1};_traffic[v.Id]=t;
-        if(HasRoadProgress(t)||t.Resume is not null||t.Index<t.Path.Length-1)
+        if(HasRoadProgress(t)||IsSteering(t)||t.Resume is not null||t.Index<t.Path.Length-1)
         {TrafficTravel(v,t.Resume??t.Path[^1],1,true,true);return;}
         int x=actor.HeadingX,z=actor.HeadingZ;
         if(x==0&&z==0)return;
@@ -304,6 +332,7 @@ public sealed partial class SimulationEngine
     }
     private bool NextManualRoadCell(ActorState actor,RoadBody v,TrafficVehicle t,out Cell next)
     {
+        if(UsesFreeVehicleControl)return FreeManualTarget(actor,v,t,out next);
         int x=actor.HeadingX,z=actor.HeadingZ;if(x!=0&&z!=0){if(v.FacingX!=0)z=0;else x=0;}
         var at=VehicleCargo(v).Position;next=new(at.X+x,at.Z+z);
         return (x!=0||z!=0)&&_map.Walkable(next)&&!(x==-v.FacingX&&z==-v.FacingZ)&&
@@ -320,11 +349,13 @@ public sealed partial class SimulationEngine
             var at=t.Path[t.Index];var next=t.Path[t.Index+1];x=TravelCenter+(next.X-at.X)*(int)((t.Progress*(long)MotionTimeScale+t.ProgressFraction)*TravelUnitsPerCell/(800L*MotionTimeScale));
             z=TravelCenter+(next.Z-at.Z)*(int)((t.Progress*(long)MotionTimeScale+t.ProgressFraction)*TravelUnitsPerCell/(800L*MotionTimeScale));
         }
+        if(UsesFreeVehicleControl&&_traffic.TryGetValue(vehicle,out var control)&&control.Steering is {} steering)
+        {var heading=BearingVector(steering.Bearing);return new(x+steering.LaneX,z+steering.LaneZ,0,0,heading.X,heading.Z);}
         return new(x,z,0,0,v.FacingX,v.FacingZ);
     }
     private bool RoadVehicleBusy(long vehicle)=>ServiceVehicleBusy(vehicle)||RoadVehicleBusyBase(vehicle);
     private bool RoadVehicleBusyBase(long vehicle)=>Roads is not null&&(RoadVehicleWorking(vehicle)||_roadWorks.TryGetValue(vehicle,out var w)&&w.Enabled||
-        _traffic.TryGetValue(vehicle,out var t)&&(HasRoadProgress(t)||t.Resume is not null||t.Index<t.Path.Length-1));
+        _traffic.TryGetValue(vehicle,out var t)&&(HasRoadProgress(t)||IsSteering(t)||t.Resume is not null||t.Index<t.Path.Length-1));
     private void AdvanceTrafficAssistance()
     {
         if(Roads is null)return;

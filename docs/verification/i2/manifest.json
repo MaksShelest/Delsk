@@ -1,0 +1,1215 @@
+{
+  "author": "Шелестов Максим Евгеньевич",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 7506,
+      "sha256": "ec714eb5f852e3486124839be7793c6052b1484396ad76fdea543611b19fd68f"
+    },
+    {
+      "path": "checks.json",
+      "bytes": 974,
+      "sha256": "a4c76350b9f8ea4f860bc4c129d9a9cf506ba8e68b61745df19ed2fcaf6e310a"
+    },
+    {
+      "path": "ci/original/i1-developer-regression.zip",
+      "bytes": 419122,
+      "sha256": "084ef7592f32115602af6568d53f075c12092ed7f6e7919697663e4834b6e1c6"
+    },
+    {
+      "path": "ci/original/i2-developer.zip",
+      "bytes": 107984,
+      "sha256": "c64ad4d85049e5bfac3fb849ce78d0284325ab91fa036903088c8aacc5abd70a"
+    },
+    {
+      "path": "ci/original/i2-ordinary.zip",
+      "bytes": 197620,
+      "sha256": "667303d8bea62375fb93cec0a58dba8bca25b52949479cb60b5b1d96b7ebd650"
+    },
+    {
+      "path": "ci/raw/artifacts-initial.json",
+      "bytes": 35585,
+      "sha256": "71e4acbe7816e4345d6f7ae4b52fc4fba5009031a80d4729900a31f729349a0d"
+    },
+    {
+      "path": "ci/raw/code-41730119170-artifacts.json",
+      "bytes": 30867,
+      "sha256": "39bda8b3f841c350c43102555566359fcd534da2e68864980a22f86d8e059747"
+    },
+    {
+      "path": "ci/raw/code-41730119170-jobs.json",
+      "bytes": 107145,
+      "sha256": "fbfc7e084bd061fa23bfa7f555c41d9372690d385fcc47bf0aaeec2fe53685ba"
+    },
+    {
+      "path": "ci/raw/code-41730119170-run.json",
+      "bytes": 12645,
+      "sha256": "8e05e16ab71ef373ae8473de6b2a340e9cc9c44336ac40281066fd35e0e9b9f3"
+    },
+    {
+      "path": "ci/raw/code-41730119178-artifacts.json",
+      "bytes": 1462,
+      "sha256": "2251a59c2951cb061cee4b5e3c3df9c2a97ddb40a92a718c7ca76bf00384829e"
+    },
+    {
+      "path": "ci/raw/code-41730119178-jobs.json",
+      "bytes": 7397,
+      "sha256": "88fc7784b471a2e593ef137e355bcdead6418065fdbc2d61e21cbcd45ab9c4be"
+    },
+    {
+      "path": "ci/raw/code-41730119178-run.json",
+      "bytes": 12646,
+      "sha256": "638fc9b808d2ea7a7425e5055f7c9050bdabfdc16af8f2a042f8572e37c36b53"
+    },
+    {
+      "path": "ci/raw/code-job-126245751304.log",
+      "bytes": 19935,
+      "sha256": "d89f023766326ebd2509eca164841b9e9851739d30c188ad536443b02f219589"
+    },
+    {
+      "path": "ci/raw/code-job-126245751637.log",
+      "bytes": 20193,
+      "sha256": "cd1a92e1ce5b6713e36622acc006bd39f96b4193ffa0dbceac8c6e46daa04649"
+    },
+    {
+      "path": "ci/raw/code-job-126245751957.log",
+      "bytes": 19809,
+      "sha256": "3e31ca1f967be459fad173188bdb17d5b4a3f05789851afae1bd62836cfddbc0"
+    },
+    {
+      "path": "ci/raw/code-job-126245752147.log",
+      "bytes": 19968,
+      "sha256": "415f9e9c1e55ed459dfb9d5e62e7f1504a28adf78ad7d1efbc4bb2498e51d3d2"
+    },
+    {
+      "path": "ci/raw/code-platform-jobs.json",
+      "bytes": 7397,
+      "sha256": "88fc7784b471a2e593ef137e355bcdead6418065fdbc2d61e21cbcd45ab9c4be"
+    },
+    {
+      "path": "ci/raw/code-runs.json",
+      "bytes": 37903,
+      "sha256": "365b71d6a2fa429769d6413eddca4769fb59a9492ab759e20b28e04f4672b25c"
+    },
+    {
+      "path": "ci/raw/h2-retained.json",
+      "bytes": 28395,
+      "sha256": "de49988c73cc5b2656da936b9eaf4ee78c7424836cf0d413417647c07f3df878"
+    },
+    {
+      "path": "ci/raw/job-126084078935.log",
+      "bytes": 19276,
+      "sha256": "d913f9a8271a92ddeefc131d26268474b0990dd262c3218326e8c23eff5c9f75"
+    },
+    {
+      "path": "ci/raw/job-126084079077.log",
+      "bytes": 19273,
+      "sha256": "4e1635fd524a7dbbc32cc27e967ef031966abb9797dd279e4b17dfa7cc4f6372"
+    },
+    {
+      "path": "ci/raw/jobs-all-initial.json",
+      "bytes": 153616,
+      "sha256": "e0e053f2b22f8cfd080bc5c73ff3908b26340658787c2a35da599c097e3693cb"
+    },
+    {
+      "path": "ci/raw/jobs-initial.json",
+      "bytes": 62930,
+      "sha256": "e0f2ad418bd8bbe80cfa049ddc02cf210abe2d530203156d1bb2b742a1bedbad"
+    },
+    {
+      "path": "ci/raw/new-job-126222353797.log",
+      "bytes": 19436,
+      "sha256": "feecc75af66a9963de0ed9fcf6a379f090542842898bc37bdd2167deceee22d6"
+    },
+    {
+      "path": "ci/raw/pr-initial.json",
+      "bytes": 19382,
+      "sha256": "c25ce9c695cc273fe84b1ca78419857f52e47bb2d6f228c83fc92b6e4b2df15a"
+    },
+    {
+      "path": "ci/raw/prior-godot.json",
+      "bytes": 7397,
+      "sha256": "78c16fbc3386e57b27020f1bd344f34b793d82d7e61a283b3c02a09e6b82f8d3"
+    },
+    {
+      "path": "ci/raw/prior-jobs.json",
+      "bytes": 107145,
+      "sha256": "55b1849d44c5c2d2ddd1cbc8651f555f5575d22cf3daa3a12d92a2cc770a53db"
+    },
+    {
+      "path": "ci/raw/repeated-i1-timeout-job.log",
+      "bytes": 19436,
+      "sha256": "3ac1f9513560235b5f507c081851bde575147bd1fa58e00c08c51c845e4f0df9"
+    },
+    {
+      "path": "ci/raw/runs-initial.json",
+      "bytes": 807,
+      "sha256": "b5b4041bdedf5867fe6f30e79a4bb2c10075db0c6fed93e519017d89b2751b22"
+    },
+    {
+      "path": "code-ci-logs.json.gz",
+      "bytes": 145578,
+      "sha256": "20bf5d98701389114050914e09c0eac61148a43c4549814e51b1c72105914ff8"
+    },
+    {
+      "path": "developer.json",
+      "bytes": 669,
+      "sha256": "01f0514606ae3332b1bbcda3bfdcb4f1fcc030982b96d1113e4439a03bd49511"
+    },
+    {
+      "path": "diagnosis/failure.json",
+      "bytes": 708,
+      "sha256": "a5747d6e7abde6ea6c83f5308085f1daef37cfcf7d70ef4e7efabbba874c9780"
+    },
+    {
+      "path": "diagnosis/summary.json",
+      "bytes": 56376,
+      "sha256": "a5d2d11d05cae3a91248ec0e925a8daa2fee3f028de9ceb4a4191bdc2dd8d393"
+    },
+    {
+      "path": "fixtures.json.gz",
+      "bytes": 6796882,
+      "sha256": "943f310a4f540f15bd7cd2ebc37e1afb798b36144fa8342da4c2df84e4d60d7d"
+    },
+    {
+      "path": "logs.json.gz",
+      "bytes": 45392,
+      "sha256": "d9dc1775f65829054624a29adbdb580e78863efd25c7a8ad346a22868bff3c48"
+    },
+    {
+      "path": "native/asset-completeness.json",
+      "bytes": 16579,
+      "sha256": "fb776b6c55a3a78664eab3adffbc11bdaceea88f2240463d7981773d17f769d5"
+    },
+    {
+      "path": "native/asset-reuse.json",
+      "bytes": 16580,
+      "sha256": "3b40982e0b932cca022123e120e4e752e2d0b10e6cdae66bfb42a7772ec420b9"
+    },
+    {
+      "path": "native/checks/asset-stage.json",
+      "bytes": 496,
+      "sha256": "c34e2380d55ad4e2d9a8b911bc89352037805025133be1bf2604f33349a1f054"
+    },
+    {
+      "path": "native/checks/import-completeness.json",
+      "bytes": 455,
+      "sha256": "69ddbfc015f233ea80421273f25112dff6ca06c8d5a717e4d32ae2057a4b3d46"
+    },
+    {
+      "path": "native/checks/isolated-probe-build.json",
+      "bytes": 410,
+      "sha256": "38892e537c5e3692d3bff4b881cdcef59309b265c2fdca17a940c8c2cdc6df01"
+    },
+    {
+      "path": "native/checks/native-compact_valley-10-exit-log.json",
+      "bytes": 374,
+      "sha256": "13c7fb4ceaaa86cad74af48ab27987955294a1bd22ce204b5c6ce30ef34fad56"
+    },
+    {
+      "path": "native/checks/native-compact_valley-10-exit.json",
+      "bytes": 800,
+      "sha256": "93f65849bebb15d57622392d3758723035e7a8dfc5b9d2cd84d60cf9b735cbfd"
+    },
+    {
+      "path": "native/checks/native-compact_valley-10-focus-log.json",
+      "bytes": 375,
+      "sha256": "1f3be163ff5d4255fd266c9597a47d48956664215641e4f3528ebfba7569d704"
+    },
+    {
+      "path": "native/checks/native-compact_valley-10-focus.json",
+      "bytes": 800,
+      "sha256": "278acaf068232f0f781be0cd3a8f1fc67960fb501e2cc06877c0df402440b52b"
+    },
+    {
+      "path": "native/checks/native-compact_valley-10-readback.json",
+      "bytes": 509,
+      "sha256": "ae54cae73a099dec1c0ddd891276cbd4f4b9b7c22246c942ee99466f207869ba"
+    },
+    {
+      "path": "native/checks/native-compact_valley-10-road-log.json",
+      "bytes": 374,
+      "sha256": "06878893a4ad8997627588406947435e5948ca8a1efdb45b3e33e7b45283192e"
+    },
+    {
+      "path": "native/checks/native-compact_valley-10-road.json",
+      "bytes": 796,
+      "sha256": "b30f486e2fd2322dc73da872fd7fcce70286587f47bac5886f8ed100b08e3d23"
+    },
+    {
+      "path": "native/checks/native-compact_valley-3-exit-log.json",
+      "bytes": 373,
+      "sha256": "7147fcc9d7c37cf20a1a09f6fee6a14697311ecc7430f229460d263eab2b2a7e"
+    },
+    {
+      "path": "native/checks/native-compact_valley-3-exit.json",
+      "bytes": 798,
+      "sha256": "815f8fad45d2ac9a563e37d9aebb85d59cbfaa0fd89b3ad4dc0c59d2de93b2d5"
+    },
+    {
+      "path": "native/checks/native-compact_valley-3-focus-log.json",
+      "bytes": 374,
+      "sha256": "76a3a05b57265b067e77243e337be836806d15e2a0a5a2ede1d0ecccbe1cc7f9"
+    },
+    {
+      "path": "native/checks/native-compact_valley-3-focus.json",
+      "bytes": 798,
+      "sha256": "7d005cdc10e38b2f013058285d293e0a5af4afb283b95ef87706f08e376a56e0"
+    },
+    {
+      "path": "native/checks/native-compact_valley-3-readback.json",
+      "bytes": 507,
+      "sha256": "2fe1b0464edf6208af680567a8e6b4b3600927e6dafacb1cd7ee120730e6c54d"
+    },
+    {
+      "path": "native/checks/native-compact_valley-3-road-log.json",
+      "bytes": 373,
+      "sha256": "6aa67dd76ffdb35fe0d223fa0660578ab519dec954d992f947e47bb393e1ecf5"
+    },
+    {
+      "path": "native/checks/native-compact_valley-3-road.json",
+      "bytes": 794,
+      "sha256": "c146e76d4ee9cf549df9052c5f2ebecb21ee350599d5033d54aa7194fea9560f"
+    },
+    {
+      "path": "native/checks/native-compact_valley-6-exit-log.json",
+      "bytes": 373,
+      "sha256": "db19be60810d7b2ce25d562fd62f529b1fc1d01a47105686f0cc14984588b2e3"
+    },
+    {
+      "path": "native/checks/native-compact_valley-6-exit.json",
+      "bytes": 798,
+      "sha256": "9ffa7778db9a56db5fe822a8fbaa1bfebc9845fa7a1552b4942c9e2c177ce174"
+    },
+    {
+      "path": "native/checks/native-compact_valley-6-focus-log.json",
+      "bytes": 374,
+      "sha256": "9b375885ad99e79fb65214c4c15d7079c4e527a896881eee82a1e00524306b38"
+    },
+    {
+      "path": "native/checks/native-compact_valley-6-focus.json",
+      "bytes": 798,
+      "sha256": "3ce51e26892779b2519184c6a430c1ee151167c7ec9a83c5a933162f4698dea6"
+    },
+    {
+      "path": "native/checks/native-compact_valley-6-readback.json",
+      "bytes": 507,
+      "sha256": "508828479e20c3af50f25b4f3997f17b842261066f6e847312363f35fbf8437b"
+    },
+    {
+      "path": "native/checks/native-compact_valley-6-road-log.json",
+      "bytes": 373,
+      "sha256": "4faec9ce5974a38069a16ee3c3ce727d67e7afe43d98ed33960403e797b5d832"
+    },
+    {
+      "path": "native/checks/native-compact_valley-6-road.json",
+      "bytes": 794,
+      "sha256": "651b60cc54d3a2b5344567ff863df89bab96b8404f9243442b91434485c5b931"
+    },
+    {
+      "path": "native/checks/native-import.json",
+      "bytes": 428,
+      "sha256": "db1d9821ce7a15607e1f001e04b770a7f5e4ac1902c452a8710de5572b47941a"
+    },
+    {
+      "path": "native/checks/native-large_districts-10-exit-log.json",
+      "bytes": 375,
+      "sha256": "083a1c6e45e34dcaecc553cc88fe47bace78cd535e1e4aa1d8835bf8db2d8d5d"
+    },
+    {
+      "path": "native/checks/native-large_districts-10-exit.json",
+      "bytes": 802,
+      "sha256": "b605f696b2f747678720c256117ceadd58041dc435660befd3bca57b2198be4e"
+    },
+    {
+      "path": "native/checks/native-large_districts-10-focus-log.json",
+      "bytes": 376,
+      "sha256": "14cc84964be8028a291e3bb1e6738c9a43b391eceac54c531f0a31c38a6a2987"
+    },
+    {
+      "path": "native/checks/native-large_districts-10-focus.json",
+      "bytes": 801,
+      "sha256": "def0ccad84268abe6412990bb8c69c5a08b3a1fea8ac33d4e31c18dfa2cf85d8"
+    },
+    {
+      "path": "native/checks/native-large_districts-10-readback.json",
+      "bytes": 511,
+      "sha256": "58a8cf2ca185c9d1d967d84fd8fe06f547bddc2bf63340b04fb8fd0c4bb4605c"
+    },
+    {
+      "path": "native/checks/native-large_districts-10-road-log.json",
+      "bytes": 375,
+      "sha256": "4ecdd5c2ff8c4561d6ff042e767a613f61eefd497555628cf55f49e0e435b480"
+    },
+    {
+      "path": "native/checks/native-large_districts-10-road.json",
+      "bytes": 798,
+      "sha256": "2a3ba6cb7c3b8d7f47cb96c9fbd190f07383e98b8c136eec6950154ab0b04dff"
+    },
+    {
+      "path": "native/checks/native-large_districts-3-exit-log.json",
+      "bytes": 374,
+      "sha256": "717ad49ea19a95568d2e40effd75a3bc7eadc448c9ffa01c50c1eaffd1ce7274"
+    },
+    {
+      "path": "native/checks/native-large_districts-3-exit.json",
+      "bytes": 800,
+      "sha256": "4d56445fafefc67468c31a305444b3a383df4a0a8fe55477856075abc28fa97e"
+    },
+    {
+      "path": "native/checks/native-large_districts-3-focus-log.json",
+      "bytes": 375,
+      "sha256": "e791fb70693640949a6a2b66a6b86ebad5122091ffc2eb5a5bd7cf3911149027"
+    },
+    {
+      "path": "native/checks/native-large_districts-3-focus.json",
+      "bytes": 800,
+      "sha256": "b1f601c63c955ed3d6be4501ef02c492e90cc8f45f5b14fdb4ccf643832ee7e2"
+    },
+    {
+      "path": "native/checks/native-large_districts-3-readback.json",
+      "bytes": 509,
+      "sha256": "b1bff39caa552ef683eb0be15d66abf4b49752539e7740bd7aed600cc297ccc1"
+    },
+    {
+      "path": "native/checks/native-large_districts-3-road-log.json",
+      "bytes": 374,
+      "sha256": "a7bb75fec2ce44c7a820e102dcee46af8aea21a30753d445787a2fb3d76f4117"
+    },
+    {
+      "path": "native/checks/native-large_districts-3-road.json",
+      "bytes": 796,
+      "sha256": "5ccb72a56ed8467af5aeeba0568f876945cd9aed300e8f93d40218c546acc4bd"
+    },
+    {
+      "path": "native/checks/native-large_districts-6-exit-log.json",
+      "bytes": 374,
+      "sha256": "cbfd87915831b0bd5f31f898b916d1270be11450a461f6563dc62f6bed2999fc"
+    },
+    {
+      "path": "native/checks/native-large_districts-6-exit.json",
+      "bytes": 800,
+      "sha256": "fd4c7ff84648067deac948480220844baebb5dcc7d16993782893633f091aeac"
+    },
+    {
+      "path": "native/checks/native-large_districts-6-focus-log.json",
+      "bytes": 375,
+      "sha256": "285778bf2221238762f7ae72802eadba7665e1c19a7e2cca16d5a2695433bdfc"
+    },
+    {
+      "path": "native/checks/native-large_districts-6-focus.json",
+      "bytes": 800,
+      "sha256": "d8d1fa9861c06e6fc917682972bce51376a1169778b696eb35930f89e42cf88f"
+    },
+    {
+      "path": "native/checks/native-large_districts-6-readback.json",
+      "bytes": 509,
+      "sha256": "95676c3bbd810ab33beb9f5f1765109a0ac043980b3f5a009dbafb2e5b220ed8"
+    },
+    {
+      "path": "native/checks/native-large_districts-6-road-log.json",
+      "bytes": 374,
+      "sha256": "42b22d06a8b8e22267016459aac66d545b5968f4f814af91f9fffb568cec67a4"
+    },
+    {
+      "path": "native/checks/native-large_districts-6-road.json",
+      "bytes": 796,
+      "sha256": "cb75d31df01b8223a18b6bc7aba5084792ae8771741ad3f2fd49659bd7e00aee"
+    },
+    {
+      "path": "native/checks/native-small_river-10-exit-log.json",
+      "bytes": 371,
+      "sha256": "b10bfa700e968d4bd0d04a1dea09187699485d59193a6bd26fff8242fc52406a"
+    },
+    {
+      "path": "native/checks/native-small_river-10-exit.json",
+      "bytes": 793,
+      "sha256": "ffe6fab1abb28937fa0fbb2ed201f0276c351c45ca6e3f9649033b93d02a3eaa"
+    },
+    {
+      "path": "native/checks/native-small_river-10-focus-log.json",
+      "bytes": 372,
+      "sha256": "aa24785edd1404cc56172f9b28b9c4c45db3439a7204e71633613c6c145572cb"
+    },
+    {
+      "path": "native/checks/native-small_river-10-focus.json",
+      "bytes": 794,
+      "sha256": "b2feeb4daa8b60f3b81ea31edd470a55c46d45494a6bdede9a19c5adb326f53e"
+    },
+    {
+      "path": "native/checks/native-small_river-10-readback.json",
+      "bytes": 503,
+      "sha256": "8ced0da72961393f84ac62376c985bba3ece66d0f206e345d6834285584eb27b"
+    },
+    {
+      "path": "native/checks/native-small_river-10-road-log.json",
+      "bytes": 371,
+      "sha256": "80d671809d32cf8c14954f524838f49bfa8e12c3ee642b4d7e6828d0c148a41c"
+    },
+    {
+      "path": "native/checks/native-small_river-10-road.json",
+      "bytes": 789,
+      "sha256": "37c60801d3e4c504a5dfac1555f8c389819ebc8c0a6b88e8cd2391931e3ba069"
+    },
+    {
+      "path": "native/checks/native-small_river-3-exit-log.json",
+      "bytes": 370,
+      "sha256": "67ad56e06505c0dfdfeeae8ae4c0e6c4cf3150ecd80608cfa0c764954e5789e6"
+    },
+    {
+      "path": "native/checks/native-small_river-3-exit.json",
+      "bytes": 792,
+      "sha256": "d7aeeff5b03e0d199a94c558eb257e95d40db28e9d5425236ee3614cd7af6a22"
+    },
+    {
+      "path": "native/checks/native-small_river-3-focus-log.json",
+      "bytes": 371,
+      "sha256": "ae74e9d0c211d85ac57faf47e47646f15f2aef1d188f2642a9029796fd7f024e"
+    },
+    {
+      "path": "native/checks/native-small_river-3-focus.json",
+      "bytes": 792,
+      "sha256": "96465e2a6f1e00cd896277ebabd229b2f13ca65f8511a5c4059945b1b4e197cf"
+    },
+    {
+      "path": "native/checks/native-small_river-3-readback.json",
+      "bytes": 501,
+      "sha256": "5be3ca6af82ea6b75d690c68d64beb53bb5778ac8e2855bb0ab9482acbdf63a2"
+    },
+    {
+      "path": "native/checks/native-small_river-3-road-log.json",
+      "bytes": 370,
+      "sha256": "8700af89d81d97d9c293cf92059df1b8cf38b392b2066f6c917f36793fe627ab"
+    },
+    {
+      "path": "native/checks/native-small_river-3-road.json",
+      "bytes": 788,
+      "sha256": "d0c8a8b96c63f9241338cb662a1a912a40b5e8a6e02b4a88d6750382ee42713a"
+    },
+    {
+      "path": "native/checks/native-small_river-6-exit-log.json",
+      "bytes": 370,
+      "sha256": "c97000f91e801aa223984a5d0b5115f08587df56f82085deb55aac97b0996b11"
+    },
+    {
+      "path": "native/checks/native-small_river-6-exit.json",
+      "bytes": 792,
+      "sha256": "d9d2c7327a93e5c8e12ca278f817a033f842e211d16f8093af1e7fbcc545bcf6"
+    },
+    {
+      "path": "native/checks/native-small_river-6-focus-log.json",
+      "bytes": 371,
+      "sha256": "4f5befc1cd9225c2deacd882b4487332f754a875bd990b9aea3286fafadc1cd6"
+    },
+    {
+      "path": "native/checks/native-small_river-6-focus.json",
+      "bytes": 792,
+      "sha256": "97694a6375112550a53dd9de30ceb46bf129fb3bc9139f0fffde0119b2400098"
+    },
+    {
+      "path": "native/checks/native-small_river-6-readback.json",
+      "bytes": 501,
+      "sha256": "85abe9402cc156e4302e8d0bd236a936e6510f52ef08211b2a9eaf804920497c"
+    },
+    {
+      "path": "native/checks/native-small_river-6-road-log.json",
+      "bytes": 370,
+      "sha256": "e87c5a8d94f3cc5650c9a76c3c592fd36d822de599e21bf313835e51c98728b8"
+    },
+    {
+      "path": "native/checks/native-small_river-6-road.json",
+      "bytes": 788,
+      "sha256": "a79f6a8fc3c09ad505fdd90403d4aacd62b17184e70137835f8c4a8d57b18e7f"
+    },
+    {
+      "path": "native/checks/ordinary-audit.json",
+      "bytes": 409,
+      "sha256": "f7e7142c659bd23a2501e208bcb57c9fe089ef87aea985055c9673422be79a7c"
+    },
+    {
+      "path": "native/checks/ordinary-build.json",
+      "bytes": 372,
+      "sha256": "cdb618798ae9ba84b0bf281c18476147aa629cc778a228bb00e2caa7a34281f8"
+    },
+    {
+      "path": "native/checks/platform-log.json",
+      "bytes": 359,
+      "sha256": "106e45f6b7a2537c7d2b4284fb5777678b9262e460101799a4ceabee74b9d90d"
+    },
+    {
+      "path": "native/checks/platform-smoke.json",
+      "bytes": 528,
+      "sha256": "029e850f7f6affb8808e9361fcfef246b59f58e31212ac1380b58316c1570f40"
+    },
+    {
+      "path": "native/checks/restore.json",
+      "bytes": 369,
+      "sha256": "1b189429aeb9528b49952b60e7b862f339252aec9d60858e6211ccd059ce1958"
+    },
+    {
+      "path": "native/checks/runner-build.json",
+      "bytes": 379,
+      "sha256": "64c3c413e004cf86e39e66f2a8cfc0f08c9c223f45816f4d53a1e7b20916ff66"
+    },
+    {
+      "path": "native/checks/verified-import-reuse.json",
+      "bytes": 489,
+      "sha256": "acf31c7e2d56c630f42ae7298f1ea02fdbf149c83589ed2e7834d3f6c95b5758"
+    },
+    {
+      "path": "native/gate.json",
+      "bytes": 337,
+      "sha256": "52039a2db59fea0261f76d37e65d31073287d7675847ffb0f91b989619491628"
+    },
+    {
+      "path": "native/inputs.json",
+      "bytes": 81188,
+      "sha256": "8f06f2ff40686309ca28e282b7d61b1900aa5f1aae9155c4cc1451d882565509"
+    },
+    {
+      "path": "native/native-compact_valley-10/exit/help-en.png",
+      "bytes": 190343,
+      "sha256": "6732e7e79d53ff0bd63a5b168a27bdc58dd08bb2eb110bff59ecb0ccf33177af"
+    },
+    {
+      "path": "native/native-compact_valley-10/exit/help-ru.png",
+      "bytes": 231226,
+      "sha256": "0a1319477f1f2dac46323a956ecf396df073c96489cdce14aa319aa5ef2466c1"
+    },
+    {
+      "path": "native/native-compact_valley-10/exit/native.json",
+      "bytes": 1004,
+      "sha256": "e47f79667b8304e54b30ab201f968f22cbd06601c770afd8a0fbe2093f52066e"
+    },
+    {
+      "path": "native/native-compact_valley-10/exit/offroad.png",
+      "bytes": 78439,
+      "sha256": "1989512a7980544ca8ca506b2ccb12ab1649c6e30990a7dc91068e235a6a3c26"
+    },
+    {
+      "path": "native/native-compact_valley-10/exit/returned.png",
+      "bytes": 79874,
+      "sha256": "eb118702c9c128a0494ff4f35d89f725f133963b42546dde8df5c87839608fb4"
+    },
+    {
+      "path": "native/native-compact_valley-10/focus/native.json",
+      "bytes": 562,
+      "sha256": "bb4204a97e5cc47931525e05f782085f6db713fa9eedea2f3a2bebc52cf6eea0"
+    },
+    {
+      "path": "native/native-compact_valley-10/readback/summary.json",
+      "bytes": 60977,
+      "sha256": "f6f71a68b3dacc16838f3920175bbe7c82b55a20dcbc384633f8c4f4f67443c8"
+    },
+    {
+      "path": "native/native-compact_valley-10/road/intersection.png",
+      "bytes": 56753,
+      "sha256": "e0e9689841faccb0809e261a01165343044d723ac545e7e5f0f55b17fecdcc3f"
+    },
+    {
+      "path": "native/native-compact_valley-10/road/native.json",
+      "bytes": 1011,
+      "sha256": "6d666c9521e4fe894ba3bedf03b014c59e0ca2a65af07727fad1291eabdb4ac7"
+    },
+    {
+      "path": "native/native-compact_valley-10/road/right-lane.png",
+      "bytes": 55892,
+      "sha256": "65561ab433477af66f18457f62301aaf08a22436beef067cbde8023a53f39099"
+    },
+    {
+      "path": "native/native-compact_valley-10/road/uturn.png",
+      "bytes": 58088,
+      "sha256": "da183ac364d8da0d391edcbacc3aa2d08eaa661678f1dad7800491440b3ff837"
+    },
+    {
+      "path": "native/native-compact_valley-3/exit/help-en.png",
+      "bytes": 190343,
+      "sha256": "6732e7e79d53ff0bd63a5b168a27bdc58dd08bb2eb110bff59ecb0ccf33177af"
+    },
+    {
+      "path": "native/native-compact_valley-3/exit/help-ru.png",
+      "bytes": 231226,
+      "sha256": "0a1319477f1f2dac46323a956ecf396df073c96489cdce14aa319aa5ef2466c1"
+    },
+    {
+      "path": "native/native-compact_valley-3/exit/native.json",
+      "bytes": 1003,
+      "sha256": "ad0e923b8c1193cf2e55a3923368944210748b91f328d415069a5130ddb04b52"
+    },
+    {
+      "path": "native/native-compact_valley-3/exit/offroad.png",
+      "bytes": 77928,
+      "sha256": "42e484d503c68d1cacebd5b53f17601d8b58c703290c256a8830a34c9dcd5ae1"
+    },
+    {
+      "path": "native/native-compact_valley-3/exit/returned.png",
+      "bytes": 79338,
+      "sha256": "95cc389db3d6ca5d6a9d69c319a6c5c66af0a8c0bb864ddd718b2fcdbf4d104f"
+    },
+    {
+      "path": "native/native-compact_valley-3/focus/native.json",
+      "bytes": 561,
+      "sha256": "16d4a3a89a68fefc22e96093b9a309214fff9f78b828de9aac6bd1f9c9f0ea1f"
+    },
+    {
+      "path": "native/native-compact_valley-3/readback/summary.json",
+      "bytes": 49653,
+      "sha256": "f5a4fcff4e4d2c12024001b5d8410b94cab8a83b6cd7bb177ebc278435f96da2"
+    },
+    {
+      "path": "native/native-compact_valley-3/road/intersection.png",
+      "bytes": 56182,
+      "sha256": "6b11d3b2c39bcc658471fc2d745b348a404a058372e61b1dc9e62e71335f0a2d"
+    },
+    {
+      "path": "native/native-compact_valley-3/road/native.json",
+      "bytes": 1010,
+      "sha256": "73e0cb642ebac339289d2871b84cbd0cb1a4880c83cda1a344a80f9736d7da03"
+    },
+    {
+      "path": "native/native-compact_valley-3/road/right-lane.png",
+      "bytes": 55155,
+      "sha256": "36c91306572c57bfae01c2c7ac903f1bf5b182e306e517cbef4b3074aa5b1f0d"
+    },
+    {
+      "path": "native/native-compact_valley-3/road/uturn.png",
+      "bytes": 57383,
+      "sha256": "86de31c99db1a604e55698973091675b1340cbaa43d74d64326371eac448301f"
+    },
+    {
+      "path": "native/native-compact_valley-6/exit/help-en.png",
+      "bytes": 190343,
+      "sha256": "6732e7e79d53ff0bd63a5b168a27bdc58dd08bb2eb110bff59ecb0ccf33177af"
+    },
+    {
+      "path": "native/native-compact_valley-6/exit/help-ru.png",
+      "bytes": 231226,
+      "sha256": "0a1319477f1f2dac46323a956ecf396df073c96489cdce14aa319aa5ef2466c1"
+    },
+    {
+      "path": "native/native-compact_valley-6/exit/native.json",
+      "bytes": 1003,
+      "sha256": "44866e9ab4305a98fd65fdc0f0b9a2d4b6517145ea4773008e33a7ea12d91728"
+    },
+    {
+      "path": "native/native-compact_valley-6/exit/offroad.png",
+      "bytes": 78189,
+      "sha256": "524c5f6184705ccd3280fe900798a85ff1f0e756445cc1e1ce07b5ac5d58a103"
+    },
+    {
+      "path": "native/native-compact_valley-6/exit/returned.png",
+      "bytes": 79629,
+      "sha256": "51a737e0d2a87fcf2091213cf0dda1b2c978710a4411566b90a1b4ca65afcd7d"
+    },
+    {
+      "path": "native/native-compact_valley-6/focus/native.json",
+      "bytes": 561,
+      "sha256": "e4f14ad7b3c7c73efe6bd6a88fafdb6032afeb3f0edd5d3e4c9d628fcf93057e"
+    },
+    {
+      "path": "native/native-compact_valley-6/readback/summary.json",
+      "bytes": 56376,
+      "sha256": "890bec2a91a3fd736191b70f4e7f663df7bf1c8928a9d359de13e9ada5dd11c5"
+    },
+    {
+      "path": "native/native-compact_valley-6/road/intersection.png",
+      "bytes": 56439,
+      "sha256": "a6b4ad6f42588245a162a0bac141576d4a5040d98968e0f25224c1d1f6147c86"
+    },
+    {
+      "path": "native/native-compact_valley-6/road/native.json",
+      "bytes": 1010,
+      "sha256": "9e487a09d0f521b642e536849eb567067ae6ff65e6fdab150bd74c8909c22b37"
+    },
+    {
+      "path": "native/native-compact_valley-6/road/right-lane.png",
+      "bytes": 55249,
+      "sha256": "48496ba2ed31e68847c63c82e76792825f222b050af77fd263a772aca5f28fe0"
+    },
+    {
+      "path": "native/native-compact_valley-6/road/uturn.png",
+      "bytes": 57638,
+      "sha256": "6d3c609f8b50934998e7025ecdfb35dac9827c98e0bcf97990fad1a7f3be67fa"
+    },
+    {
+      "path": "native/native-large_districts-10/exit/help-en.png",
+      "bytes": 189280,
+      "sha256": "0ea2ed2a46d628d2ec9da08722a6dcd31ec3bb8f02fa094792dbd5426d6fb58e"
+    },
+    {
+      "path": "native/native-large_districts-10/exit/help-ru.png",
+      "bytes": 230077,
+      "sha256": "9ea95d8100c1ef41ff10509b23b4d73f6587dbd0c8712fca95a5ae8614b7acff"
+    },
+    {
+      "path": "native/native-large_districts-10/exit/native.json",
+      "bytes": 1006,
+      "sha256": "b6c57d6dee9a6bb159066583e57e6c7672eccc6a2707a477503a0addba16415c"
+    },
+    {
+      "path": "native/native-large_districts-10/exit/offroad.png",
+      "bytes": 53076,
+      "sha256": "60b31a93dabf8952319d88d21442d25a030a5a3b3adee67f70cfa60915c3d68a"
+    },
+    {
+      "path": "native/native-large_districts-10/exit/returned.png",
+      "bytes": 45766,
+      "sha256": "d97c2bf4bb0db02c10cee1217acf28b0ed1bdf590abf89110c0410f57d4bdbbc"
+    },
+    {
+      "path": "native/native-large_districts-10/focus/native.json",
+      "bytes": 563,
+      "sha256": "5f1dfc5cbe63c9223db1ccc202d6f5fd9d0e1f394163317ca29d917a277c44cc"
+    },
+    {
+      "path": "native/native-large_districts-10/readback/summary.json",
+      "bytes": 53837,
+      "sha256": "67b82a6a10031bdbd6f2fd08fb6f99abf04212e40a646ed5280cde4833b4b0ae"
+    },
+    {
+      "path": "native/native-large_districts-10/road/intersection.png",
+      "bytes": 70034,
+      "sha256": "51571bc9fffcafc64956b8e27d0bea3292a77fba1f3d7b55d807b6c6b07a7e55"
+    },
+    {
+      "path": "native/native-large_districts-10/road/native.json",
+      "bytes": 1015,
+      "sha256": "31c9fb36a5cd51c4f233b543d786ddef6be4ec5c532d09c70c1df084dd697c60"
+    },
+    {
+      "path": "native/native-large_districts-10/road/right-lane.png",
+      "bytes": 47810,
+      "sha256": "e3431d1e8c4db1450a56286214cfc69beaddf19d5fb03b18d518f01381c7ec54"
+    },
+    {
+      "path": "native/native-large_districts-10/road/uturn.png",
+      "bytes": 46605,
+      "sha256": "3be7da13b599716ca0425f4704d343a578d7a45f7143277941b92201d9889cea"
+    },
+    {
+      "path": "native/native-large_districts-3/exit/help-en.png",
+      "bytes": 189280,
+      "sha256": "0ea2ed2a46d628d2ec9da08722a6dcd31ec3bb8f02fa094792dbd5426d6fb58e"
+    },
+    {
+      "path": "native/native-large_districts-3/exit/help-ru.png",
+      "bytes": 230077,
+      "sha256": "9ea95d8100c1ef41ff10509b23b4d73f6587dbd0c8712fca95a5ae8614b7acff"
+    },
+    {
+      "path": "native/native-large_districts-3/exit/native.json",
+      "bytes": 1005,
+      "sha256": "5217d2601c2fb67d0241b912acb7cab30379accbc60fc8abff463f56a2506769"
+    },
+    {
+      "path": "native/native-large_districts-3/exit/offroad.png",
+      "bytes": 52731,
+      "sha256": "fb08105c32244260de27428de70fe02e2df48cf2e0da7307e92f808cb4aeec97"
+    },
+    {
+      "path": "native/native-large_districts-3/exit/returned.png",
+      "bytes": 45522,
+      "sha256": "abbe3e848ab9798e4279bdda4a9c8f8d210a4449dad46954e50fa0b9902f372c"
+    },
+    {
+      "path": "native/native-large_districts-3/focus/native.json",
+      "bytes": 562,
+      "sha256": "abbe9508a70da2c3a1a5a3ba776afe641c6e0047499314e42783b035c983223a"
+    },
+    {
+      "path": "native/native-large_districts-3/readback/summary.json",
+      "bytes": 47420,
+      "sha256": "bdfc37ce20caccb40a8f35e705d81eca08a2641500971b764d875e1c861a0260"
+    },
+    {
+      "path": "native/native-large_districts-3/road/intersection.png",
+      "bytes": 69876,
+      "sha256": "c0524b41b0e81286da9ee79206acc706f07cb50dc4599c38fe268e60fe2db4d7"
+    },
+    {
+      "path": "native/native-large_districts-3/road/native.json",
+      "bytes": 1014,
+      "sha256": "7911bc9cafd6a372a37df7956ff5b6da56c5e067755e566eacbb0b0984d3a939"
+    },
+    {
+      "path": "native/native-large_districts-3/road/right-lane.png",
+      "bytes": 47286,
+      "sha256": "8b0b12ff46b966d14c1aa20ad59bc8e5beb2a97fb11018e0b067db9602f1e2a8"
+    },
+    {
+      "path": "native/native-large_districts-3/road/uturn.png",
+      "bytes": 46078,
+      "sha256": "34a822a007100dcc1143744d26d7b3b52da6ce29729b8ba0b1101293ae0a27b4"
+    },
+    {
+      "path": "native/native-large_districts-6/exit/help-en.png",
+      "bytes": 189280,
+      "sha256": "0ea2ed2a46d628d2ec9da08722a6dcd31ec3bb8f02fa094792dbd5426d6fb58e"
+    },
+    {
+      "path": "native/native-large_districts-6/exit/help-ru.png",
+      "bytes": 230077,
+      "sha256": "9ea95d8100c1ef41ff10509b23b4d73f6587dbd0c8712fca95a5ae8614b7acff"
+    },
+    {
+      "path": "native/native-large_districts-6/exit/native.json",
+      "bytes": 1005,
+      "sha256": "904b41526e78bdb2d795830bc503ea3da6f5328b2fa0387bde242364811b70e8"
+    },
+    {
+      "path": "native/native-large_districts-6/exit/offroad.png",
+      "bytes": 52873,
+      "sha256": "4b4598f870b223ed3e6791a32d9a113ec56bfe2cc301dc3e64ba1c7d61537f02"
+    },
+    {
+      "path": "native/native-large_districts-6/exit/returned.png",
+      "bytes": 45615,
+      "sha256": "113bc1b7b37b942383c8697dcbaead3b04adbec3cc9af7d22f3d6599314ea9f6"
+    },
+    {
+      "path": "native/native-large_districts-6/focus/native.json",
+      "bytes": 562,
+      "sha256": "1ef1cdb947c9eee6d55b155f99a2736fba60798e086ee4a9be2855e86c48b25a"
+    },
+    {
+      "path": "native/native-large_districts-6/readback/summary.json",
+      "bytes": 51514,
+      "sha256": "a6712d65f410d12d4e55e5e2257f92c1247b40f98a46cc15b42d8c830835f243"
+    },
+    {
+      "path": "native/native-large_districts-6/road/intersection.png",
+      "bytes": 69726,
+      "sha256": "436bee163f3d4959f9da1c0365ad0a11875519c9e33e50c24723b118d310c4e8"
+    },
+    {
+      "path": "native/native-large_districts-6/road/native.json",
+      "bytes": 1014,
+      "sha256": "ae0f2ebf89efa7746374a0aafae57b7f858e404419d90ab3550d2c324c037307"
+    },
+    {
+      "path": "native/native-large_districts-6/road/right-lane.png",
+      "bytes": 47367,
+      "sha256": "7e5868c476f27c6c11858656f10574a8f2be95412d9b452c2c17dcbfe4c36cf3"
+    },
+    {
+      "path": "native/native-large_districts-6/road/uturn.png",
+      "bytes": 46169,
+      "sha256": "1396ab3c4dac16c06f0e380ee4eb284c641d32dc7477b30eea1ba87b49ba6ab5"
+    },
+    {
+      "path": "native/native-small_river-10/exit/help-en.png",
+      "bytes": 189201,
+      "sha256": "3a181bb088f13666685327b861cb64ae7f4736ca377a83cf2fa4a213a7894210"
+    },
+    {
+      "path": "native/native-small_river-10/exit/help-ru.png",
+      "bytes": 230007,
+      "sha256": "f8d1b71211556e7c8da2dab5c50f0c208d291f3d7783e5c2c1b095123bed222c"
+    },
+    {
+      "path": "native/native-small_river-10/exit/native.json",
+      "bytes": 1002,
+      "sha256": "f5103fd80dbd3e45832d20cfb8df6e8a1988f66ee6036046b256968c18d2e765"
+    },
+    {
+      "path": "native/native-small_river-10/exit/offroad.png",
+      "bytes": 53196,
+      "sha256": "aefaac50c5dc0914abc280f3014a27adc672c46d42d53a4b021afd7442bb7926"
+    },
+    {
+      "path": "native/native-small_river-10/exit/returned.png",
+      "bytes": 45671,
+      "sha256": "e8feeca326562c437cfc2d958aef71ce3b7ee1f0665fa9d873591c12cd7e287e"
+    },
+    {
+      "path": "native/native-small_river-10/focus/native.json",
+      "bytes": 559,
+      "sha256": "aee557d63e6ed7d32627ae9cd5ad159c7cb915378d0e713916bcb667d98935f2"
+    },
+    {
+      "path": "native/native-small_river-10/readback/summary.json",
+      "bytes": 53847,
+      "sha256": "2e9aef43f32831a0737378d15f08393c1c8c77e34215a4981bcdd24335fd5401"
+    },
+    {
+      "path": "native/native-small_river-10/road/intersection.png",
+      "bytes": 70523,
+      "sha256": "60d3c1eb55604fc9310a950232c44e3a18a7c960ffd65720015ec793364636b0"
+    },
+    {
+      "path": "native/native-small_river-10/road/native.json",
+      "bytes": 1011,
+      "sha256": "1931f443a5ef2f06e9bf29cd66ba5cd691aee29ba782970098d2bddbdc45ea6e"
+    },
+    {
+      "path": "native/native-small_river-10/road/right-lane.png",
+      "bytes": 47514,
+      "sha256": "f8a2af6333724e3a6069b1bb812342c06dcc7799f9b107d1a7daa64d38565a4d"
+    },
+    {
+      "path": "native/native-small_river-10/road/uturn.png",
+      "bytes": 46371,
+      "sha256": "6da82124c437b1941a4330bf280715ba0cf7a30cfd3f5b38b9ada94844bdd1ed"
+    },
+    {
+      "path": "native/native-small_river-3/exit/help-en.png",
+      "bytes": 189201,
+      "sha256": "3a181bb088f13666685327b861cb64ae7f4736ca377a83cf2fa4a213a7894210"
+    },
+    {
+      "path": "native/native-small_river-3/exit/help-ru.png",
+      "bytes": 230007,
+      "sha256": "f8d1b71211556e7c8da2dab5c50f0c208d291f3d7783e5c2c1b095123bed222c"
+    },
+    {
+      "path": "native/native-small_river-3/exit/native.json",
+      "bytes": 1001,
+      "sha256": "4ffd342ce57db4e192eab6477edc4b1ed771665a1b8481d7b4e9b125879d519d"
+    },
+    {
+      "path": "native/native-small_river-3/exit/offroad.png",
+      "bytes": 52720,
+      "sha256": "90bd4423ec93cbe8e68ea26ebc5090f0fbce568103105122ed9d919dffb7a0b6"
+    },
+    {
+      "path": "native/native-small_river-3/exit/returned.png",
+      "bytes": 45114,
+      "sha256": "358bc8451d32d8a685989603ce59e073c40dbf228ce7748068c33f832f9bda35"
+    },
+    {
+      "path": "native/native-small_river-3/focus/native.json",
+      "bytes": 558,
+      "sha256": "463dddbf8ef5ead4dfa9510efa4da4d7ea368972299202d81fac800a002e6c29"
+    },
+    {
+      "path": "native/native-small_river-3/readback/summary.json",
+      "bytes": 47414,
+      "sha256": "179a528c1a7ac5fc19d966582e1534cdf76efe3c060b94f1d562abc6792f93a0"
+    },
+    {
+      "path": "native/native-small_river-3/road/intersection.png",
+      "bytes": 70068,
+      "sha256": "cd2357f6e9c29c4e671fdfa1c00c09658de50b55a46806fe1424362ce1d569e3"
+    },
+    {
+      "path": "native/native-small_river-3/road/native.json",
+      "bytes": 1010,
+      "sha256": "f0dc1988bd8eb9521a521938a6d26615add87b851211226622bb76b98bdd4ec2"
+    },
+    {
+      "path": "native/native-small_river-3/road/right-lane.png",
+      "bytes": 47270,
+      "sha256": "eb01e49c0e2e6d77cceac28f7c08623e20a692161105079cfd16bfb0393032a5"
+    },
+    {
+      "path": "native/native-small_river-3/road/uturn.png",
+      "bytes": 46114,
+      "sha256": "2bb014302bdda0e6963e15dd346e794b6be4f69e0fdc4812e4877cb64ecd484a"
+    },
+    {
+      "path": "native/native-small_river-6/exit/help-en.png",
+      "bytes": 189201,
+      "sha256": "3a181bb088f13666685327b861cb64ae7f4736ca377a83cf2fa4a213a7894210"
+    },
+    {
+      "path": "native/native-small_river-6/exit/help-ru.png",
+      "bytes": 230007,
+      "sha256": "f8d1b71211556e7c8da2dab5c50f0c208d291f3d7783e5c2c1b095123bed222c"
+    },
+    {
+      "path": "native/native-small_river-6/exit/native.json",
+      "bytes": 1001,
+      "sha256": "c022ca0ad9e276187a1a72c6b18d8705f4bb3ce8f086d742bd848dd0113ad934"
+    },
+    {
+      "path": "native/native-small_river-6/exit/offroad.png",
+      "bytes": 53006,
+      "sha256": "727e382426d2fcdfcc6dd18cde64dd52bd6361bbc3882f752e840ed09ae8aec3"
+    },
+    {
+      "path": "native/native-small_river-6/exit/returned.png",
+      "bytes": 45384,
+      "sha256": "bf8d0aaec4ffe386b6bf5b638d3894639ddb7ada0b67c34ab149d900fdbf3350"
+    },
+    {
+      "path": "native/native-small_river-6/focus/native.json",
+      "bytes": 558,
+      "sha256": "766e762d97a81c119d6d72da134943ed45e85cecdc8ac7595a5cb8b9150c3196"
+    },
+    {
+      "path": "native/native-small_river-6/readback/summary.json",
+      "bytes": 51512,
+      "sha256": "304d3c966b7580b5b03aec00faf047c541403d1ec7fb4f09550b6eeacb17b60a"
+    },
+    {
+      "path": "native/native-small_river-6/road/intersection.png",
+      "bytes": 70269,
+      "sha256": "6414dde1de29d76c5324a9718e18f9d5c9273a335fb7e02bd7aaa91305fb22b6"
+    },
+    {
+      "path": "native/native-small_river-6/road/native.json",
+      "bytes": 1010,
+      "sha256": "65a31b705683c313c793810f279f148414db65039aaacb1de27052e940751d9d"
+    },
+    {
+      "path": "native/native-small_river-6/road/right-lane.png",
+      "bytes": 47427,
+      "sha256": "65934ca1712b8a32fd07fb6ce286283ae332923f6e3689ad8448de1403d3b78c"
+    },
+    {
+      "path": "native/native-small_river-6/road/uturn.png",
+      "bytes": 46326,
+      "sha256": "b9952bbe698d6c1f1ee390c94cdd72b13b0a4aba4ec251b067f772acb513b4f9"
+    },
+    {
+      "path": "native/ordinary-cache.json",
+      "bytes": 83627,
+      "sha256": "04781ded50ef5c17bbae3a4f80d843b3f564c39cf46a019dd531cf3d7d2e18d0"
+    },
+    {
+      "path": "native/platform.json",
+      "bytes": 1679,
+      "sha256": "ea8db85ad1a447861c5a0dd39393a912060c7a6b0f1bfbf6aef51f73c40eb16d"
+    },
+    {
+      "path": "ordinary.json",
+      "bytes": 623,
+      "sha256": "81275af2be37636178501948264ad4cf7a8aa4e5e3f3db3119fb17d29e2b912d"
+    },
+    {
+      "path": "retained-check.json",
+      "bytes": 166,
+      "sha256": "d5283b931a7cee76f0ed9082ea01bbc2f6afa59d6704c57115dc60a2ca577d53"
+    },
+    {
+      "path": "retained-i1-measurements.jsonl",
+      "bytes": 1910,
+      "sha256": "85b8dc7d226f28b56966a7c11fd456e1f3953f4f695019ac2ad183b5c6bb12d6"
+    },
+    {
+      "path": "retained-i1-phases.jsonl",
+      "bytes": 11320,
+      "sha256": "6c3e8db4de07cc0562e9cc72ad9debc9a7ae67f49f6ebd9b40f84c5ba8c98700"
+    },
+    {
+      "path": "runner.json",
+      "bytes": 262,
+      "sha256": "07e594e1f50924824790da5e320485f706dd08e9d335e06e1951d4d5fe3cb957"
+    },
+    {
+      "path": "tracked-native-fixed/checks/native-compact_valley-6-exit-log.json",
+      "bytes": 387,
+      "sha256": "f820717b9cee1cff829dfbe8c2e5a5775b09cf06f1a442a4631df2d411103a72"
+    },
+    {
+      "path": "tracked-native-fixed/checks/native-compact_valley-6-exit.json",
+      "bytes": 840,
+      "sha256": "1d60c26d5c60b76d326db3c080e049e77880585ada883ae1359c85a94796da83"
+    },
+    {
+      "path": "tracked-native-fixed/checks/native-compact_valley-6-focus-log.json",
+      "bytes": 388,
+      "sha256": "43194391828009a6375e182b762e0fae6da047bfc8387391a49f6de9490eec98"
+    },
+    {
+      "path": "tracked-native-fixed/checks/native-compact_valley-6-focus.json",
+      "bytes": 840,
+      "sha256": "ff96afbea9f0991ac6bb50c4276875e617f5a79f2c0091ba62f3910a96927fe2"
+    },
+    {
+      "path": "tracked-native-fixed/checks/native-compact_valley-6-readback.json",
+      "bytes": 535,
+      "sha256": "c74e846f2a8d48f186ab52524ddc3798d441fe798cee8e4c3183aa546d37f0ee"
+    },
+    {
+      "path": "tracked-native-fixed/checks/native-compact_valley-6-road-log.json",
+      "bytes": 387,
+      "sha256": "c7df6a3467a5b55ea3dd404200b298fcc71f4f90e4a42a3edca979542d810bc1"
+    },
+    {
+      "path": "tracked-native-fixed/checks/native-compact_valley-6-road.json",
+      "bytes": 822,
+      "sha256": "f5d099358602c6e3de11e2f4280541249dafe3e8c7a7eabc3e8a1bfadb0283bb"
+    },
+    {
+      "path": "tracked-native-fixed/checks/tracked-probe-build.json",
+      "bytes": 424,
+      "sha256": "5ee2ed0eb9ba5ab5479fbcc58def93c3b5f8c208e3eb9274976863997217a017"
+    },
+    {
+      "path": "tracked-native-fixed/frozen.json",
+      "bytes": 85562,
+      "sha256": "986ae2dcd19c6d0e251e26cd5eed6062ee5724476020941d95308848b8a97bc8"
+    },
+    {
+      "path": "tracked-native-fixed/gate.json",
+      "bytes": 391,
+      "sha256": "6e1daff7c0145020aae86319a83e4a6b44e85522fdc7eedda8b6eab77eddb44d"
+    },
+    {
+      "path": "tracked-native-fixed/native-compact_valley-6/exit/help-en.png",
+      "bytes": 190908,
+      "sha256": "6735c69b0810d60edbdeabfd9d44a766992074283871228734ca44510e6f64c0"
+    },
+    {
+      "path": "tracked-native-fixed/native-compact_valley-6/exit/help-layout.jsonl",
+      "bytes": 482,
+      "sha256": "3635232bd30cc537c24bd455527e4a570c193289672f5af7d535988bc8f6b3fa"
+    },
+    {
+      "path": "tracked-native-fixed/native-compact_valley-6/exit/help-ru.png",
+      "bytes": 231632,
+      "sha256": "e0571c4483e92dc47d47b09c24e922a6e8ba2d05eb9455925bd550ee10a93cfb"
+    },
+    {
+      "path": "tracked-native-fixed/native-compact_valley-6/exit/native.json",
+      "bytes": 1092,
+      "sha256": "68083d2498557659279fa9d73667eddd5f319e883ebfa7552b4ec38679e43336"
+    },
+    {
+      "path": "tracked-native-fixed/native-compact_valley-6/exit/offroad.png",
+      "bytes": 81325,
+      "sha256": "73d58dc1ea28ab9bff33f7d7cb5a1658e3e58d2a30c499aa627936f521710c5c"
+    },
+    {
+      "path": "tracked-native-fixed/native-compact_valley-6/exit/returned.png",
+      "bytes": 81704,
+      "sha256": "922095d993817de62c9d3cdb86d855b7025b930ccb57d99fabc530fe314e067e"
+    },
+    {
+      "path": "tracked-native-fixed/native-compact_valley-6/focus/native.json",
+      "bytes": 562,
+      "sha256": "0e06ef5e569de584bdd22185ceb119daa491a98d236901c9599f70206578d8af"
+    },
+    {
+      "path": "tracked-native-fixed/native-compact_valley-6/readback/summary.json",
+      "bytes": 74407,
+      "sha256": "b6639ad23b2cbe04c09121d730a73ac126baa244213c5c51f7bbffa5802d03ae"
+    },
+    {
+      "path": "tracked-native-fixed/native-compact_valley-6/road/intersection.png",
+      "bytes": 63546,
+      "sha256": "4c80b83cc4dfe74fb7cdf7230235a1e2ca47f08e57d5fa9c544154ddad4e4024"
+    },
+    {
+      "path": "tracked-native-fixed/native-compact_valley-6/road/native.json",
+      "bytes": 1130,
+      "sha256": "840ef429a62b1d91f1c590dd58c82fadb057c0a489a496f46125844bedb55a5d"
+    },
+    {
+      "path": "tracked-native-fixed/native-compact_valley-6/road/right-lane.png",
+      "bytes": 52224,
+      "sha256": "f5e3ed58c5acb679344ae6a1dd1baedb9d88008f1e1b4ad28261ed31e4501a25"
+    },
+    {
+      "path": "tracked-native-fixed/native-compact_valley-6/road/uturn.png",
+      "bytes": 53574,
+      "sha256": "91520e55bd183ceda56dcadccff113f461f6ebc76dc03f9b6eaec01db086c1a8"
+    },
+    {
+      "path": "unchanged-inputs.json",
+      "bytes": 12687,
+      "sha256": "e34c7220c085bd5ce99b5025fe225a39fb5b851d189f5dcc95dee57e9afe2f17"
+    }
+  ]
+}

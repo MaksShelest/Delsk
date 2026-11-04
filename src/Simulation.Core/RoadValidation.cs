@@ -46,13 +46,28 @@ public sealed partial class SimulationEngine
         }
         foreach(var b in _bypasses)Require(_vehicles.ContainsKey(b.VehicleId)&&!b.Users.IsDefault&&b.Users.Distinct().Count()==b.Users.Length&&b.Users.All(id=>FindBody(id) is not null)&&b.Path.Length>2&&b.Path.All(PublicRoadCell)&&!b.Path.Contains(b.WorkCell)&&b.Path.Zip(b.Path.Skip(1)).All(p=>Manhattan(p.First,p.Second)==1)&&
             (b.Closing||_roadWorks.GetValueOrDefault(b.VehicleId)?.Batch?.Cell==b.WorkCell));
-        var reserved=new HashSet<Cell>();
+        var reserved=new HashSet<(Cell Cell,int Lane)>();
         foreach(var t in _traffic.Values)
         {
+            if(t.Steering is {} steering)
+            {
+                Require(UsesFreeVehicleControl&&steering.LaneX is >=-400 and <=400&&steering.LaneZ is >=-400 and <=400&&
+                    steering.Bearing is >=0 and <16000&&steering.DistanceRemainder is >=0 and <1000&&
+                    steering.TurnQuanta is >=0 and <=100&&steering.TurnQuantum>=0&&steering.TurnQuantum<Math.Max(1,steering.TurnQuanta)&&
+                    steering.TurnFrom is >=0 and <16000&&steering.TurnDelta is >=-8000 and <=8000&&
+                    steering.StartLaneX is >=-400 and <=400&&steering.StartLaneZ is >=-400 and <=400&&steering.ClearanceX is >=-160 and <=160&&steering.ClearanceZ is >=-160 and <=160);
+                if(IsSteering(t))Require(!HasRoadProgress(t)&&!steering.ReservedCells.IsDefaultOrEmpty&&
+                    steering.ReservedCells.SequenceEqual(SteeringFootprint(FindBody(t.VehicleId)!,steering)));
+            }
             Require(FindBody(t.VehicleId) is not null&&t.Progress is >=0 and <800&&t.ProgressFraction>=0&&t.ProgressFraction<MotionTimeScale&&(UsesAcceleratedMovement||t.ProgressFraction==0)&&t.Index>=0&&(t.Path.Length==0?t.Index==0&&!HasRoadProgress(t):t.Index<t.Path.Length)&&t.WaitingSince>=0&&t.WaitingSince<=Tick&&t.StoppedSince>=0&&t.StoppedSince<=Tick&&
                 t.ExitQuanta>=0&&t.Priority>=0&&t.AdvancedTick>=0&&t.AdvancedTick<=Tick+1&&t.AdvancedQuanta is >=0 and <=10&&t.Path.Skip(t.Index).All(_map.Walkable)&&t.Path.Zip(t.Path.Skip(1)).All(p=>Manhattan(p.First,p.Second)==1));
             if(t.Path.Length>0)Require(VehicleCargo(FindBody(t.VehicleId)!).Position==t.Path[t.Index]);
-            if(HasRoadProgress(t))Require(t.Index<t.Path.Length-1&&reserved.Add(t.Path[t.Index+1])&&!ReservedByOther(t.VehicleId,t.Path[t.Index+1]));
+            if(HasRoadProgress(t))
+            {
+                int lane=LaneReservation(t.VehicleId);
+                Require(t.Index<t.Path.Length-1&&reserved.All(r=>r.Cell!=t.Path[t.Index+1]||OppositeReservations(r.Lane,lane))&&
+                    reserved.Add((t.Path[t.Index+1],lane))&&!ReservedByOther(t.VehicleId,t.Path[t.Index+1]));
+            }
             if(t.Resume is {} r)Require(_map.Walkable(r)&&t.YieldTo>=0);
         }
         Require(_roadOrders.Select(o=>o.Id).Distinct().Count()==_roadOrders.Count&&_roadOrders.Select(o=>(o.Cell,o.Level)).Distinct().Count()==_roadOrders.Count);

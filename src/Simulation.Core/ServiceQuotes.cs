@@ -44,7 +44,7 @@ public sealed partial class SimulationEngine
     private Cell[] ServicePath(Cell source,Cell target,long vehicle,Cell? heading=null)
     {
         bool corridor=_config.Layout!.RoadCorridorCells.Contains(source)&&_config.Layout.RoadCorridorCells.Contains(target);
-        bool Allow(Cell c)=>_map.Walkable(c)&&!WorkBlocks(vehicle,c)&&(!corridor||PublicRoadCell(c))&&
+        bool Allow(Cell c)=>_map.Walkable(c)&&(!UsesFreeVehicleControl||c==source||c==target||ControlCellAllowed(Body(_vehicles[vehicle]),c))&&!WorkBlocks(vehicle,c)&&(!corridor||PublicRoadCell(c))&&
             (PublicRoadCell(c)||c==source||c==target||!_roadWorks.Values.Any(w=>w.Batch is {} batch&&Manhattan(c,batch.Cell)<=2))&&
             !_bypasses.Any(b=>b.Closing&&!b.Users.Contains(vehicle)&&b.Path.Skip(1).SkipLast(1).Contains(c));
         var path=UsesAcceleratedMovement?RouteSearch.FindOriented(source,target,Allow,(a,b)=>Movement.EdgeTime(RoadBodySpeed(a,b,Body(_vehicles[vehicle]))),c=>MayTurn(_vehicles[vehicle],c),ServiceStartHeading(source,vehicle,heading)):
@@ -60,9 +60,13 @@ public sealed partial class SimulationEngine
         if(p.Group.Headcount<rule.Staff||_economy.Accounts[_actors[p.Group.Owner].Account].Available<(rule.Staff==0?rule.ServiceMinor:checked(p.Group.Headcount*p.Group.Wage)))return(0,0);
         return(rule.Throughput,rule.Staff==0?0:p.Group.Headcount);
     }
-    private long PathTicks(Cell[] path,VehicleModel model)
+    private long PathTicks(Cell[] path,VehicleModel model,Cell? initial=null)
     {
-        if(UsesAcceleratedMovement)return Movement.WholeTicks(path.Zip(path.Skip(1)).Sum(p=>Movement.EdgeTime(FleetSpeed(p.First,p.Second,model))));
+        if(UsesAcceleratedMovement)
+        {
+            long turns=UsesFreeVehicleControl?VehicleControlRules.PathTurnQuanta(path,c=>RoadLevel(c)>0,c=>VehicleSurfaceSpeed(c,c,model.Speed),initial)*MotionTimeScale/10:0;
+            return Movement.WholeTicks(checked(turns+path.Zip(path.Skip(1)).Sum(p=>Movement.EdgeTime(FleetSpeed(p.First,p.Second,model)))));
+        }
         long quanta=0;for(int n=0;n<path.Length-1;n++){int a=RoadLevel(path[n]),b=RoadLevel(path[n+1]);int speed=Math.Min(model.Speed,a>0&&b>0?Roads!.Stages[Math.Min(a,b)-1].Speed:8);quanta=checked(quanta+(800+speed-1)/speed);}
         return checked((quanta+9)/10);
     }

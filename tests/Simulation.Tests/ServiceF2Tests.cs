@@ -9,15 +9,16 @@ public class ServiceF2Tests
     internal static ScenarioDefinition Definition()=>ServiceF1Tests.Definition() with{Economy=Profile().World.Rules,Market=Profile().World.Market,Delivery=Profile().World.Delivery};
     internal static void Step(GameSession s,GameAction a,long actor=2,bool accepted=true)=>ServiceF1Tests.Step(s,a,actor,accepted);
     internal static ServiceRun Run(GameSession s)=>s.Engine.InspectServices()!.Execution!.Runs.Single();
-    internal static (GameSession Session,OwnedVehicle Vehicle,ServiceOrder Order) Prepare(long quantity=30,int? population=null,bool fast=false,MovementRules? movement=null)
+    internal static (GameSession Session,OwnedVehicle Vehicle,ServiceOrder Order) Prepare(long quantity=30,int? population=null,bool fast=false,MovementRules? movement=null,bool freeControl=false)
     {
         var d=Definition();if(movement is not null)d=d with{Economy=d.Economy! with{Movement=movement}};if(fast)d=d with{Economy=d.Economy! with{Movement=new()}};if(population is {} people)d=d with{Population=people};if(quantity>100)d=d with{Buildings=[..d.Buildings!.Select(b=>b.Id==9?b with{Level=2}:b)]};
+        if(freeControl)d=d with{Economy=d.Economy! with{Movement=MovementRules.I1,VehicleControl=VehicleControlRules.I2}};
         var s=new GameSession(new(d));StorageC1Tests.Harvest(s,"wood",quantity);var source=s.Engine.Observe(new(1)).OwnBuildings.Single(b=>b.Id.Value==9).InputId;var dest=s.Engine.Observe(new(1)).OwnBuildings.Single(b=>b.Id.Value==10).InputId;StorageC1Tests.Put(s,source,"wood",quantity);
         var v=FleetE1Tests.Buy(s,"muravey70",2);Step(s,new(ActionKind.SetDeliveryService,VehicleId:v.Id,Enabled:true));var order=ServiceF1Tests.Request(s,new(v.Id,source,dest,"wood",quantity));Step(s,new(ActionKind.AcceptDeliveryService,ServiceId:order.Id));
         return(s,v,s.Engine.InspectServices()!.Orders.Single());
     }
     internal static void Until(GameSession s,Func<bool> condition,int limit=2000)
-    {int n=0;while(!condition()&&n++<limit)s.Step();Assert.True(condition(),"Delivery stalled: "+Run(s));}
+    {int n=0;while(!condition()&&n++<limit)s.Step();Assert.True(condition(),"Delivery stalled: "+Run(s)+" traffic="+JsonSerializer.Serialize(s.Engine.InspectRoads()!.Traffic));}
     internal static void Board(GameSession s,OwnedVehicle v)
     {StorageC1Tests.Move(s,s.Engine.FleetOf(new(2))!.Vehicles.Single().Position,2);Step(s,new(ActionKind.BoardVehicle,VehicleId:v.Id));}
     internal static void Navigate(GameSession s,long id)

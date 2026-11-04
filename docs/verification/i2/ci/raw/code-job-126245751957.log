@@ -1,0 +1,240 @@
+﻿2026-11-03T22:26:01.2617363Z Current runner version: '2.338.2'
+2026-11-03T22:26:01.2642935Z ##[group]Runner Image Provisioner
+2026-11-03T22:26:01.2643794Z Hosted Compute Agent
+2026-11-03T22:26:01.2644497Z Version: 20261021.618
+2026-11-03T22:26:01.2645140Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-03T22:26:01.2645939Z Build Date: 2026-10-21T00:45:21Z
+2026-11-03T22:26:01.2646678Z Worker ID: {f2ac62c1-1fdc-4b00-a6a0-214b5a0a393a}
+2026-11-03T22:26:01.2647405Z Region: westus
+2026-11-03T22:26:01.2648050Z Cloud: Azure
+2026-11-03T22:26:01.2648595Z ##[endgroup]
+2026-11-03T22:26:01.2650223Z ##[group]Operating System
+2026-11-03T22:26:01.2651069Z Ubuntu
+2026-11-03T22:26:01.2651918Z 24.04.5
+2026-11-03T22:26:01.2652625Z LTS
+2026-11-03T22:26:01.2653261Z ##[endgroup]
+2026-11-03T22:26:01.2653848Z ##[group]Runner Image
+2026-11-03T22:26:01.2654529Z Image: ubuntu-24.04
+2026-11-03T22:26:01.2655109Z Version: 20261025.353.1
+2026-11-03T22:26:01.2656452Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-03T22:26:01.2658030Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-11-03T22:26:01.2659084Z ##[endgroup]
+2026-11-03T22:26:01.2660195Z ##[group]GITHUB_TOKEN Permissions
+2026-11-03T22:26:01.2662395Z Contents: read
+2026-11-03T22:26:01.2663066Z Metadata: read
+2026-11-03T22:26:01.2663787Z ##[endgroup]
+2026-11-03T22:26:01.2665861Z Secret source: Actions
+2026-11-03T22:26:01.2666873Z Cache mode: write
+2026-11-03T22:26:01.2667644Z Prepare workflow directory
+2026-11-03T22:26:01.3071957Z Prepare all required actions
+2026-11-03T22:26:01.3120462Z Getting action download info
+2026-11-03T22:26:01.6657407Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-03T22:26:01.7838336Z Download action repository 'actions/setup-dotnet@v4' (SHA:67a3573c9a986a3f9c594539f4ab511d57bb3ce9)
+2026-11-03T22:26:02.2005683Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-03T22:26:02.6452021Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-03T22:26:02.8721180Z Complete job name: i2-control (developer)
+2026-11-03T22:26:02.9749519Z ##[group]Run actions/checkout@v4
+2026-11-03T22:26:02.9750864Z with:
+2026-11-03T22:26:02.9751916Z   repository: MaksShelest/Delsk
+2026-11-03T22:26:02.9761481Z   token: ***
+2026-11-03T22:26:02.9762614Z   ssh-strict: true
+2026-11-03T22:26:02.9763452Z   ssh-user: git
+2026-11-03T22:26:02.9764302Z   persist-credentials: true
+2026-11-03T22:26:02.9765244Z   clean: true
+2026-11-03T22:26:02.9766096Z   sparse-checkout-cone-mode: true
+2026-11-03T22:26:02.9767110Z   fetch-depth: 1
+2026-11-03T22:26:02.9767948Z   fetch-tags: false
+2026-11-03T22:26:02.9768803Z   show-progress: true
+2026-11-03T22:26:02.9769656Z   lfs: false
+2026-11-03T22:26:02.9770444Z   submodules: false
+2026-11-03T22:26:02.9771305Z   set-safe-directory: true
+2026-11-03T22:26:02.9772569Z   allow-unsafe-pr-checkout: false
+2026-11-03T22:26:02.9773985Z env:
+2026-11-03T22:26:02.9774787Z   DOTNET_PROCESSOR_COUNT: 2
+2026-11-03T22:26:02.9775709Z ##[endgroup]
+2026-11-03T22:26:03.2778212Z Syncing repository: MaksShelest/Delsk
+2026-11-03T22:26:03.2781502Z ##[group]Getting Git version info
+2026-11-03T22:26:03.2783285Z Working directory is '/home/runner/work/Delsk/Delsk'
+2026-11-03T22:26:03.2785548Z [command]/usr/bin/git version
+2026-11-03T22:26:03.2853021Z git version 2.56.0
+2026-11-03T22:26:03.2879075Z ##[endgroup]
+2026-11-03T22:26:03.2895850Z Temporarily overriding HOME='/home/runner/work/_temp/24c43e25-be59-47e6-9358-39b02d3a6400' before making global git config changes
+2026-11-03T22:26:03.2899495Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T22:26:03.2902657Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Delsk/Delsk
+2026-11-03T22:26:03.2968429Z Deleting the contents of '/home/runner/work/Delsk/Delsk'
+2026-11-03T22:26:03.2973970Z ##[group]Initializing the repository
+2026-11-03T22:26:03.2985472Z [command]/usr/bin/git init /home/runner/work/Delsk/Delsk
+2026-11-03T22:26:03.3117943Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-03T22:26:03.3121531Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-03T22:26:03.3125174Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-03T22:26:03.3127799Z hint: call:
+2026-11-03T22:26:03.3129181Z hint:
+2026-11-03T22:26:03.3130894Z hint: 	git config --global init.defaultBranch <name>
+2026-11-03T22:26:03.3133330Z hint:
+2026-11-03T22:26:03.3135399Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-03T22:26:03.3138860Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-03T22:26:03.3141582Z hint:
+2026-11-03T22:26:03.3143641Z hint: 	git branch -m <name>
+2026-11-03T22:26:03.3145283Z hint:
+2026-11-03T22:26:03.3147384Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-03T22:26:03.3151166Z Initialized empty Git repository in /home/runner/work/Delsk/Delsk/.git/
+2026-11-03T22:26:03.3157696Z [command]/usr/bin/git remote add origin https://github.com/MaksShelest/Delsk
+2026-11-03T22:26:03.3216528Z ##[endgroup]
+2026-11-03T22:26:03.3219294Z ##[group]Disabling automatic garbage collection
+2026-11-03T22:26:03.3221987Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-03T22:26:03.3268665Z ##[endgroup]
+2026-11-03T22:26:03.3271282Z ##[group]Setting up auth
+2026-11-03T22:26:03.3280260Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T22:26:03.3354210Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T22:26:03.3851582Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T22:26:03.3896753Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T22:26:03.4141250Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-03T22:26:03.4185371Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-03T22:26:03.4430519Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-03T22:26:03.4518947Z ##[endgroup]
+2026-11-03T22:26:03.4520651Z ##[group]Fetching the repository
+2026-11-03T22:26:03.4525093Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +822cbdedb57827f01ef8fdd5a120cd5cec522b54:refs/remotes/pull/80/merge
+2026-11-03T22:26:05.3814608Z From https://github.com/MaksShelest/Delsk
+2026-11-03T22:26:05.3816163Z  * [new ref]         822cbdedb57827f01ef8fdd5a120cd5cec522b54 -> pull/80/merge
+2026-11-03T22:26:05.3819091Z ##[endgroup]
+2026-11-03T22:26:05.3820382Z ##[group]Determining the checkout info
+2026-11-03T22:26:05.3823131Z ##[endgroup]
+2026-11-03T22:26:05.3828955Z [command]/usr/bin/git sparse-checkout disable
+2026-11-03T22:26:05.3891954Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-03T22:26:05.3930001Z ##[group]Checking out the ref
+2026-11-03T22:26:05.3934042Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/80/merge
+2026-11-03T22:26:05.7567476Z Note: switching to 'refs/remotes/pull/80/merge'.
+2026-11-03T22:26:05.7568232Z 
+2026-11-03T22:26:05.7568781Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-03T22:26:05.7570034Z changes and commit them, and you can discard any commits you make in this
+2026-11-03T22:26:05.7571166Z state without impacting any branches by switching back to a branch.
+2026-11-03T22:26:05.7573046Z 
+2026-11-03T22:26:05.7574036Z If you want to create a new branch to retain commits you create, you may
+2026-11-03T22:26:05.7575334Z do so (now or later) by using -c with the switch command. Example:
+2026-11-03T22:26:05.7576007Z 
+2026-11-03T22:26:05.7576301Z   git switch -c <new-branch-name>
+2026-11-03T22:26:05.7576758Z 
+2026-11-03T22:26:05.7577042Z Or undo this operation with:
+2026-11-03T22:26:05.7577461Z 
+2026-11-03T22:26:05.7577705Z   git switch -
+2026-11-03T22:26:05.7578063Z 
+2026-11-03T22:26:05.7578606Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-03T22:26:05.7579419Z 
+2026-11-03T22:26:05.7580145Z HEAD is now at 822cbde Merge f157106a82df8050e8f998c9ec7ee8404e51b9b8 into 180fc11249255df4935eeec56a0a3185adb73a14
+2026-11-03T22:26:05.7611955Z ##[endgroup]
+2026-11-03T22:26:05.7666495Z [command]/usr/bin/git log -1 --format=%H
+2026-11-03T22:26:05.7702243Z 822cbdedb57827f01ef8fdd5a120cd5cec522b54
+2026-11-03T22:26:05.7963162Z ##[group]Run actions/setup-dotnet@v4
+2026-11-03T22:26:05.7963553Z with:
+2026-11-03T22:26:05.7963812Z   dotnet-version: 10.0.401
+2026-11-03T22:26:05.7964110Z   cache: false
+2026-11-03T22:26:05.7964349Z env:
+2026-11-03T22:26:05.7964589Z   DOTNET_PROCESSOR_COUNT: 2
+2026-11-03T22:26:05.7964871Z ##[endgroup]
+2026-11-03T22:26:05.9449607Z (node:2346) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-03T22:26:05.9450564Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-03T22:26:05.9475745Z [command]/home/runner/work/_actions/actions/setup-dotnet/v4/externals/install-dotnet.sh --skip-non-versioned-files --runtime dotnet --channel LTS
+2026-11-03T22:26:06.3852410Z dotnet-install: .NET Core Runtime with version '10.0.14' is already installed.
+2026-11-03T22:26:06.3881141Z [command]/home/runner/work/_actions/actions/setup-dotnet/v4/externals/install-dotnet.sh --skip-non-versioned-files --version 10.0.401
+2026-11-03T22:26:06.7432758Z dotnet-install: Attempting to download using primary link https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.401/dotnet-sdk-10.0.401-linux-x64.tar.gz
+2026-11-03T22:26:07.4844471Z dotnet-install: Remote file https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.401/dotnet-sdk-10.0.401-linux-x64.tar.gz size is 240059572 bytes.
+2026-11-03T22:26:07.4851540Z dotnet-install: Extracting archive from https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.401/dotnet-sdk-10.0.401-linux-x64.tar.gz
+2026-11-03T22:26:12.0995998Z dotnet-install: Downloaded file size is 240059572 bytes.
+2026-11-03T22:26:12.0997007Z dotnet-install: The remote and local file sizes are equal.
+2026-11-03T22:26:12.3516262Z dotnet-install: Installed version is 10.0.401
+2026-11-03T22:26:12.3582896Z dotnet-install: Adding to current process PATH: `/usr/share/dotnet`. Note: This change will be visible only when sourcing script.
+2026-11-03T22:26:12.3584550Z dotnet-install: Note that the script does not resolve dependencies during installation.
+2026-11-03T22:26:12.3586287Z dotnet-install: To check the list of dependencies, go to https://learn.microsoft.com/dotnet/core/install, select your operating system and check the "Dependencies" section.
+2026-11-03T22:26:12.3587369Z dotnet-install: Installation finished successfully.
+2026-11-03T22:26:12.3834487Z ##[group]Run actions/setup-python@v5
+2026-11-03T22:26:12.3834777Z with:
+2026-11-03T22:26:12.3834971Z   python-version: 3.12
+2026-11-03T22:26:12.3835194Z   check-latest: false
+2026-11-03T22:26:12.3837554Z   token: ***
+2026-11-03T22:26:12.3837759Z   update-environment: true
+2026-11-03T22:26:12.3838001Z   allow-prereleases: false
+2026-11-03T22:26:12.3838230Z   freethreaded: false
+2026-11-03T22:26:12.3838427Z env:
+2026-11-03T22:26:12.3838614Z   DOTNET_PROCESSOR_COUNT: 2
+2026-11-03T22:26:12.3838847Z   DOTNET_ROOT: /usr/share/dotnet
+2026-11-03T22:26:12.3839082Z ##[endgroup]
+2026-11-03T22:26:12.5230410Z ##[group]Installed versions
+2026-11-03T22:26:12.5673805Z (node:2763) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-03T22:26:12.5697099Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-03T22:26:12.5697922Z Successfully set up CPython (3.12.15)
+2026-11-03T22:26:12.5698777Z ##[endgroup]
+2026-11-03T22:26:12.5877340Z ##[group]Run if [ "$FLAVOUR" = ordinary ]; then
+2026-11-03T22:26:12.5877785Z [36;1mif [ "$FLAVOUR" = ordinary ]; then[0m
+2026-11-03T22:26:12.5878855Z [36;1m  python scripts/run_check.py --name i2-ordinary --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --phase tests --suite i2 --output artifacts/i2-ordinary[0m
+2026-11-03T22:26:12.5880412Z [36;1m  python scripts/run_check.py --name i2-runner --timeout 600 --log-directory artifacts/gate-checks -- python scripts/check_i2_runner.py --fixtures artifacts/i2-ordinary/i2-fixtures --output artifacts/i2-runner[0m
+2026-11-03T22:26:12.5881449Z [36;1melse[0m
+2026-11-03T22:26:12.5882471Z [36;1m  python scripts/run_check.py --name i2-developer --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --suite i2 --output artifacts/i2-developer[0m
+2026-11-03T22:26:12.5883441Z [36;1mfi[0m
+2026-11-03T22:26:12.6024924Z shell: /usr/bin/bash -e {0}
+2026-11-03T22:26:12.6025369Z env:
+2026-11-03T22:26:12.6025629Z   DOTNET_PROCESSOR_COUNT: 2
+2026-11-03T22:26:12.6025965Z   DOTNET_ROOT: /usr/share/dotnet
+2026-11-03T22:26:12.6026411Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-03T22:26:12.6026989Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-03T22:26:12.6027581Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-03T22:26:12.6028068Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-03T22:26:12.6028585Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-03T22:26:12.6029085Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-03T22:26:12.6029541Z   FLAVOUR: developer
+2026-11-03T22:26:12.6029838Z ##[endgroup]
+2026-11-03T22:30:12.4311406Z i2-developer: exit=0; logs=artifacts/gate-checks
+2026-11-03T22:30:12.4449663Z ##[group]Run actions/upload-artifact@v4
+2026-11-03T22:30:12.4449964Z with:
+2026-11-03T22:30:12.4450153Z   name: i2-developer
+2026-11-03T22:30:12.4450362Z   path: artifacts/
+2026-11-03T22:30:12.4450566Z   if-no-files-found: warn
+2026-11-03T22:30:12.4450792Z   compression-level: 6
+2026-11-03T22:30:12.4450998Z   overwrite: false
+2026-11-03T22:30:12.4451202Z   include-hidden-files: false
+2026-11-03T22:30:12.4451427Z env:
+2026-11-03T22:30:12.4451864Z   DOTNET_PROCESSOR_COUNT: 2
+2026-11-03T22:30:12.4452127Z   DOTNET_ROOT: /usr/share/dotnet
+2026-11-03T22:30:12.4452436Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-03T22:30:12.4452855Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-03T22:30:12.4453266Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-03T22:30:12.4453637Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-03T22:30:12.4454007Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-03T22:30:12.4454431Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-03T22:30:12.4454747Z ##[endgroup]
+2026-11-03T22:30:12.6142304Z (node:3147) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-03T22:30:12.6143273Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-03T22:30:12.6540448Z With the provided path, there will be 139 files uploaded
+2026-11-03T22:30:12.6542076Z Artifact name is valid!
+2026-11-03T22:30:12.6542711Z Root directory input is valid!
+2026-11-03T22:30:13.0794243Z Beginning upload of artifact content to blob storage
+2026-11-03T22:30:13.4208831Z (node:3147) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-03T22:30:14.1283804Z Uploaded bytes 2392141
+2026-11-03T22:30:14.2011296Z Finished uploading artifact content to blob storage!
+2026-11-03T22:30:14.2012490Z SHA256 digest of uploaded artifact zip is d7631b621bdbd60b1ab2ecd03f98bcdf20ce9033789c12f6fd715887aa58c086
+2026-11-03T22:30:14.2014732Z Finalizing artifact upload
+2026-11-03T22:30:14.6600077Z Artifact i2-developer.zip successfully finalized. Artifact ID 13276535977
+2026-11-03T22:30:14.6601420Z Artifact i2-developer has been successfully uploaded! Final size is 2392141 bytes. Artifact ID is 13276535977
+2026-11-03T22:30:14.6608167Z Artifact download URL: https://github.com/MaksShelest/Delsk/actions/runs/41730119170/artifacts/13276535977
+2026-11-03T22:30:14.6839345Z Post job cleanup.
+2026-11-03T22:30:14.8088662Z (node:3170) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-03T22:30:14.8089758Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-03T22:30:14.8275525Z Post job cleanup.
+2026-11-03T22:30:14.9592547Z (node:3178) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-03T22:30:14.9593917Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-03T22:30:14.9834045Z Post job cleanup.
+2026-11-03T22:30:15.1098440Z [command]/usr/bin/git version
+2026-11-03T22:30:15.1151318Z git version 2.56.0
+2026-11-03T22:30:15.1224852Z Temporarily overriding HOME='/home/runner/work/_temp/848e02ab-962a-42c3-a6cb-3908d941efbe' before making global git config changes
+2026-11-03T22:30:15.1236515Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T22:30:15.1238230Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Delsk/Delsk
+2026-11-03T22:30:15.1293675Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T22:30:15.1334194Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T22:30:15.1654326Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T22:30:15.1696248Z http.https://github.com/.extraheader
+2026-11-03T22:30:15.1714542Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-03T22:30:15.1785399Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T22:30:15.2065541Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-03T22:30:15.2111287Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-03T22:30:15.2519836Z Cleaning up orphan processes
+2026-11-03T22:30:15.2882524Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-dotnet@v4, actions/setup-python@v5, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

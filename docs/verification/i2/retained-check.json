@@ -1,0 +1,7 @@
+{
+  "status": "succeeded",
+  "sameDistanceCells": 120,
+  "sameI1Cases": 51,
+  "unchangedHighwayPartitionSeconds": 300,
+  "unchangedDeveloperAggregateSeconds": 1000
+}

@@ -1,0 +1,821 @@
+{
+  "artifacts": [
+    {
+      "id": 13255451108,
+      "name": "i1-ordinary",
+      "size_in_bytes": 13913427,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255451108",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255451108/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:33:57Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:33:57Z",
+      "digest": "sha256:ce78d96a7b3313fb83396b74cc3376261f7ee7e139719fb9c46471afeabff088",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13255430333,
+      "name": "h2-engineering-unit",
+      "size_in_bytes": 3390712,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255430333",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255430333/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:28:12Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:28:12Z",
+      "digest": "sha256:aa1469bfe6405398826495eff81d4128500000ae19222800406d45b96122e3ac",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13255421114,
+      "name": "services-command-fixtures",
+      "size_in_bytes": 267552,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255421114",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255421114/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:32:40Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:32:40Z",
+      "digest": "sha256:ef369a94c8c1631fea29e0f9637fecc084e3c272b4f435427fc569a282744ca4",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13255368450,
+      "name": "services-checks-and-runs",
+      "size_in_bytes": 4741098,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255368450",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255368450/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:45:51Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:45:51Z",
+      "digest": "sha256:34ae7f4536dd8d03d3b222238653bfb88a03c7357c6ec04904dcf268cb912cf1",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13255331452,
+      "name": "services-unit-checks-and-fixtures",
+      "size_in_bytes": 2051067,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255331452",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255331452/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:32:38Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:32:38Z",
+      "digest": "sha256:b0c66df9e3c1641f1a88c8370726c59f3f58acce7b57512123333a550ffbdca6",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13255322799,
+      "name": "fleet-command-fixtures",
+      "size_in_bytes": 107638,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255322799",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255322799/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:42:16Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:42:16Z",
+      "digest": "sha256:c3f4d09167c116964b312edddf0b5dde7bd62abd7e7850046e6e4c1318ef7595",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13255320328,
+      "name": "billing-developer-checks",
+      "size_in_bytes": 23770,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255320328",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255320328/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:26:13Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:26:13Z",
+      "digest": "sha256:5741f19213715dcbad4fa08d36dc9ec949064ea68a4ad83dc3a76a037b21d675",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13255315789,
+      "name": "service-runs-command-fixtures",
+      "size_in_bytes": 307125,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255315789",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255315789/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:27:51Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:27:51Z",
+      "digest": "sha256:e8f0e8f82a3e0b841574fdc16df92a57f9fc59e83bef80a56632c2e525efc492",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13255263185,
+      "name": "production-command-fixtures",
+      "size_in_bytes": 230899,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255263185",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255263185/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:42:14Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:42:14Z",
+      "digest": "sha256:ce82b3f20ee5a1833829067b947a368b0ef4078071fe603d31b2c663112f1b9d",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13255238175,
+      "name": "core-checks-and-runs",
+      "size_in_bytes": 48604647,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255238175",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255238175/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:42:12Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:42:12Z",
+      "digest": "sha256:2ff694bd52fc1a56f5629b49869d7c270c2b66f479318cbddb8d1be84497877e",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13255159760,
+      "name": "service-runs-checks-and-runs",
+      "size_in_bytes": 11142574,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255159760",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255159760/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:51:22Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:51:22Z",
+      "digest": "sha256:2891167ec9cab90c749f350b3fd4b8d11c7391c6a41d793ec00fb439e53009d6",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13255009024,
+      "name": "fleet-checks-and-runs",
+      "size_in_bytes": 3356124,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255009024",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13255009024/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:45:28Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:45:28Z",
+      "digest": "sha256:0308c928f1e9069bd8ffdfb5756320f4c6e13bea8546c4b5e81eb80c20f3d4b4",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13254937729,
+      "name": "h3-unit",
+      "size_in_bytes": 5804751,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254937729",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254937729/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:34:32Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:34:32Z",
+      "digest": "sha256:0cda151ab31a59e153027f1bb26e292cf2c6db2f1c9043a4521e00cde8d35bb6",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13254797636,
+      "name": "city-ux-developer-checks",
+      "size_in_bytes": 674638,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254797636",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254797636/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:30:57Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:30:57Z",
+      "digest": "sha256:d97394ccbd94be52ed652b3ce7f92470f0f846fd3b69111e6400f03d7e3d53e2",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13254721854,
+      "name": "service-runs-unit-checks-and-fixtures",
+      "size_in_bytes": 3900497,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254721854",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254721854/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:27:49Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:27:49Z",
+      "digest": "sha256:2b14f6705e20c9370dbfa5a2ebaf8577d567613e21dfa6c37d58b50fa5af8401",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13254658205,
+      "name": "npc-natural-small-river-6",
+      "size_in_bytes": 90107922,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254658205",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254658205/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:33:48Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:33:48Z",
+      "digest": "sha256:20cadb0a84fc80ca1870b16e3e5970319e929fad5b65ed4c1704cc2795b7f763",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13254657519,
+      "name": "billing-unit-checks-and-fixtures",
+      "size_in_bytes": 2858711,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254657519",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254657519/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:29:36Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:29:36Z",
+      "digest": "sha256:2c680bc1b82ededf7bafc083237bfba2ba930f1ade463ba453f164058542ea08",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13254637598,
+      "name": "i2-developer",
+      "size_in_bytes": 107984,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254637598",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254637598/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:30:24Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:30:24Z",
+      "digest": "sha256:c64ad4d85049e5bfac3fb849ce78d0284325ab91fa036903088c8aacc5abd70a",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13254634770,
+      "name": "roads-checks-and-runs",
+      "size_in_bytes": 5071877,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254634770",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254634770/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:45:46Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:45:46Z",
+      "digest": "sha256:cb15733f57a2f1209805e4eb9576a1762666f08db594a1d2a4635ea27ba30a8f",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13254629717,
+      "name": "billing-checks-and-runs",
+      "size_in_bytes": 5611610,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254629717",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254629717/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:45:39Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:45:39Z",
+      "digest": "sha256:1e3aeb525c9584dd4711a5d8ca16f8546e9ffbd27b6fe5d406e6cfbce7cab604",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13254327722,
+      "name": "npc-natural-large-districts-10",
+      "size_in_bytes": 335679711,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254327722",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254327722/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:32:46Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:32:46Z",
+      "digest": "sha256:efed2e1ab240652f6b9b9d61d3aeb351920e9c347e1c1b41024968e8dc6d6dfa",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13254301884,
+      "name": "road-unit-checks-and-fixtures",
+      "size_in_bytes": 3447883,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254301884",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254301884/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:26:30Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:26:30Z",
+      "digest": "sha256:5074809ae0ce11ee552893adcec4047c104b9efb139c705d63e9feda342fdbe1",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13254234893,
+      "name": "production-checks-and-runs",
+      "size_in_bytes": 6064315,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254234893",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254234893/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:46:54Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:46:54Z",
+      "digest": "sha256:ab7a6efcdb31d9150b696d0f9db1eb2d87eba089a0bb38086a571127ac24bf03",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13254037976,
+      "name": "service-runs-developer-checks",
+      "size_in_bytes": 3909777,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254037976",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254037976/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:31:47Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:31:47Z",
+      "digest": "sha256:77e68cfd945b9ddb3cd8e26198f1c08413fd8a00d5e2ad51787f269ec86921ee",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13254028694,
+      "name": "npc-actions-checks",
+      "size_in_bytes": 4801081,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254028694",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254028694/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:36:23Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:36:23Z",
+      "digest": "sha256:90ee9ade112baa3447a0ca6b84bf18712e72fd2ce8392ca8abe9ba17652de5ce",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13254022593,
+      "name": "unit-checks-and-fixtures",
+      "size_in_bytes": 3888312,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254022593",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13254022593/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:28:02Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:28:02Z",
+      "digest": "sha256:451a3622d5bdd87973553c2b71e38852b1fde5d530c315673264cb0ac39698c6",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253972051,
+      "name": "i2-ordinary",
+      "size_in_bytes": 197620,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253972051",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253972051/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:24:43Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:24:43Z",
+      "digest": "sha256:667303d8bea62375fb93cec0a58dba8bca25b52949479cb60b5b1d96b7ebd650",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253928364,
+      "name": "city-ux-unit-checks",
+      "size_in_bytes": 672527,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253928364",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253928364/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:32:32Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:32:32Z",
+      "digest": "sha256:0c214dd5d52d16e85e6792c3b5db852765c2853b9ae16d7b713ffb7d55e47ebd",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253868445,
+      "name": "road-developer-checks",
+      "size_in_bytes": 15656,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253868445",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253868445/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:33:19Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:33:19Z",
+      "digest": "sha256:109872e8a6936e4b5eddb3a98818e89106e0a9ab7203cb287f50db0c6225aa63",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253813026,
+      "name": "npc-natural-large-districts-3",
+      "size_in_bytes": 58173969,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253813026",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253813026/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:30:46Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:30:46Z",
+      "digest": "sha256:2ff0a67abb265fc1319fb91b51105653fdb3e04421b6e0b25ebef64d7ac96edc",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253802900,
+      "name": "npc-natural-small-river-10",
+      "size_in_bytes": 146780157,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253802900",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253802900/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:29:23Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:29:23Z",
+      "digest": "sha256:f99382a09ef8d1ba49971db7d231d94bf87d79c60498632a47fb8e0aee770865",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253772382,
+      "name": "road-command-fixtures",
+      "size_in_bytes": 240093,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253772382",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253772382/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:26:31Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:26:31Z",
+      "digest": "sha256:720a57e6ce3eb45a8644e4a331d1d9c9e7d1ae3882b82da03c358b6c21daacc5",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253697915,
+      "name": "billing-command-fixtures",
+      "size_in_bytes": 196434,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253697915",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253697915/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:29:37Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:29:37Z",
+      "digest": "sha256:9d6fc814b1d9781159919202dbea72747a877b34eaceef73766283c98d13e435",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253688384,
+      "name": "research-h1-checks-and-runs",
+      "size_in_bytes": 6761520,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253688384",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253688384/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:33:50Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:33:50Z",
+      "digest": "sha256:8b171094cb61601009055aa9a2f42117a11dc339c3d1a8a5a150b5a2ad28bc1e",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253677966,
+      "name": "h3-developer",
+      "size_in_bytes": 1665218,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253677966",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253677966/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:28:41Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:28:41Z",
+      "digest": "sha256:8ada2ca5662f87f957ab6e9b05fbe2d33a83b53765ce901a6d4236c704949c0c",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253658077,
+      "name": "npc-natural-large-districts-6",
+      "size_in_bytes": 183459444,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253658077",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253658077/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:30:09Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:30:09Z",
+      "digest": "sha256:4366e47e1393f6fdd1d3a21e033c26143b0dbbdeff6b0b72566d9270764d2090",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253629569,
+      "name": "i1-developer",
+      "size_in_bytes": 682815,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253629569",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253629569/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:40:30Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:40:30Z",
+      "digest": "sha256:9198661dd2b273eb172553c9ce30f3e56dbd68bc3719f84ce39f8dda7742b509",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253608814,
+      "name": "npc-natural-small-river-3",
+      "size_in_bytes": 24219386,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253608814",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253608814/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:34:18Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:34:18Z",
+      "digest": "sha256:eb277100a253834e44c593e51d9cd290bc0dddccbe7cef7515aee88b18872c1a",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253528070,
+      "name": "npc-command-fixtures",
+      "size_in_bytes": 139256,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253528070",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253528070/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:29:53Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:29:53Z",
+      "digest": "sha256:fd4f64070a8506d253a80a33d43d7fa71da94e0fe115a8642818b894abd9a0fa",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253208491,
+      "name": "services-developer-checks",
+      "size_in_bytes": 2058656,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253208491",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253208491/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:32:04Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:32:04Z",
+      "digest": "sha256:17324efaa086479bf4e82ce32d4acaa245de407e90c900ed5e184c94b852358d",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253188839,
+      "name": "npc-developer-checks",
+      "size_in_bytes": 2069373,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253188839",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253188839/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:33:37Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:33:37Z",
+      "digest": "sha256:917401ab8bb0de79641eacb34e0c543017ceb7309ed5b9e993103cfecddfdb45",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253173324,
+      "name": "npc-unit-checks-and-fixtures",
+      "size_in_bytes": 2066348,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253173324",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253173324/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:29:51Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:29:51Z",
+      "digest": "sha256:16cc09139d170ca9fe94af6cf0335df19e0cabd25962a63cbceb9556fe8c2519",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    },
+    {
+      "id": 13253143979,
+      "name": "developer-checks-and-runs",
+      "size_in_bytes": 216150,
+      "url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253143979",
+      "archive_download_url": "https://api.github.com/repos/MaksShelest/Delsk/actions/artifacts/13253143979/zip",
+      "expired": false,
+      "created_at": "2026-11-03T17:33:46Z",
+      "expires_at": "2027-02-01T17:21:47Z",
+      "updated_at": "2026-11-03T17:33:46Z",
+      "digest": "sha256:3d7be6d1fb1554aa3c47a4a60d8a47ff3ceb5016b2f9bd2878aa767607bd3dad",
+      "workflow_run": {
+        "id": 41683505389,
+        "repository_id": 1417528269,
+        "head_repository_id": 1417528269,
+        "head_branch": "feat/vnext-i2-free-vehicle-control",
+        "head_sha": "c893da1b47812f3d842e6b089618281be0ea00f7"
+      }
+    }
+  ]
+}

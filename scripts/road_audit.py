@@ -14,6 +14,8 @@ def verify_roads(folder):
         return
     movement=config['economy'].get('movement') or {}
     i1=movement.get('version')==2
+    i2=config['economy'].get('vehicleControl')
+    if i2:assert i1 and i2==dict(version=1,exitHoldQuanta=5,laneOffset=200)
     if i1:assert movement['speedDivisor']==40 and movement['speedMultiplier']==3 and movement['nominalSpeeds']==dict(runningRoad=10,runningOffroad=8,vehicleOffroad=10)
     elif movement:assert movement['version']==1 and movement['speedDivisor']==32 and movement.get('speedMultiplier',0)==0 and movement.get('nominalSpeeds') is None
     state=json.loads((folder/'final-state.json').read_text());roads=json.loads(path.read_text());fleet=json.loads((folder/'fleet.json').read_text())
@@ -29,7 +31,12 @@ def verify_roads(folder):
     stages={s['level']:s for s in rules['stages']}
     assert list(stages)==[1,2,3] and [s['speed'] for s in stages.values()]==[20,40,60]
     initial={cell(c) for c in config['layout']['initialCityDirtCells']};built={c:[(1,0,0,0)] for c in initial}
-    vehicles={v['id']:v for v in fleet['vehicles']};models={m['id']:m for m in config['economy']['fleet']['models']}
+    vehicles={v['id']:v for v in fleet['vehicles']};owned=set(vehicles);models={m['id']:m for m in config['economy']['fleet']['models']}
+    lanes={v:0 for v in vehicles}
+    def opposite(a,b):return a and b and (a-b)%4==2
+    def share(a,b,at):
+        bypass_cells={cell(c) for bypass in roads['bypasses'] for c in bypass['path']}
+        return i2 and a in owned and b in owned and vehicles[a]['modelId']!='trakt_d1' and vehicles[b]['modelId']!='trakt_d1' and opposite(lanes[a],lanes[b]) and at in built and positions[a] in built and positions[b] in built and not {at,positions[a],positions[b]}&bypass_cells
     prices={i['id']:i['basePriceMinor'] for i in config['items']}
     inventory={i['id']['value']:i for i in state['inventories']};positions={};listings={};work={};mode={};starts=[];paid={}
     equipment_initial={e['entityId']:point(e['reasonCode']) for e in events if e['type']=='EquipmentTrafficRegistered'}
@@ -42,6 +49,12 @@ def verify_roads(folder):
         kind=e['type'];identity=e['entityId'];tick=e['tick']
         if kind in ('DealerInitialStock','DealerSupply'):listings[identity]=point(e['reasonCode'])
         elif kind=='VehiclePurchased':positions[identity]=listings.pop(identity)
+        elif kind=='TrafficLaneState':
+            assert i2 and identity in owned and vehicles[identity]['modelId']!='trakt_d1'
+            assert owner(e)==vehicles[identity]['owner']['value'] and not e.get('amountMinor') and not e.get('commandId') and not e.get('itemId')
+            key=e['quantity'];assert 0<=key<=4 and lanes[identity]!=key
+            assert positions[identity]==point(e['reasonCode']) and (not key or positions[identity] in built)
+            lanes[identity]=key
         elif kind=='RoadWorkConfigured':mode[identity]=e['reasonCode']
         elif kind=='RoadWorkStarted':
             assert identity in vehicles and models[vehicles[identity]['modelId']]['materialsOnly']
@@ -67,7 +80,8 @@ def verify_roads(folder):
             before,after=map(point,e['reasonCode'].split('>'))
             assert positions[identity]==before and sum(abs(a-b) for a,b in zip(before,after))==1
             assert not any(w['cell']==after for v,w in work.items() if v!=identity),'Vehicle crossed working paver'
-            if after in corridor:assert not any(p==after for v,p in positions.items() if v!=identity),'Overlapping physical vehicles'
+            if after in corridor:assert all(p!=after or share(identity,v,after) for v,p in positions.items() if v!=identity),'Overlapping physical vehicles'
+            if i2 and lanes.get(identity):assert {1:(0,-1),2:(1,0),3:(0,1),4:(-1,0)}[lanes[identity]]==(after[0]-before[0],after[1]-before[1])
             positions[identity]=after
             a=len(built.get(before,[]));b=len(built.get(after,[]))
             cap=stages[min(a,b)]['speed'] if a and b else 10 if i1 else 8
@@ -90,14 +104,22 @@ def verify_roads(folder):
         assert all(sum(abs(a-b) for a,b in zip(x,y))==1 for x,y in zip(p,p[1:]))
         assert len(b['users'])==len(set(b['users'])) and all(v in vehicles for v in b['users'])
         if b['closing']:assert b['users']
-    reserved=set()
+    reserved={}
     for t in roads['traffic']:
         p=list(map(cell,t['path']));i=t['index'];assert 0<=t['progress']<800 and 0<=t['advancedQuanta']<=10
         if p:assert positions[t['vehicleId']]==p[i]
         fraction=t.get('progressFraction',0);assert 0<=fraction<(596700 if i1 else 1_000_000) and (config['economy'].get('movement') or fraction==0)
+        if i2:
+            identity=t['vehicleId'];s=t.get('steering');key=0
+            if identity in owned and vehicles[identity]['modelId']!='trakt_d1' and s and not s['turnQuanta']:
+                facing=(vehicles[identity]['facingX'],vehicles[identity]['facingZ']);bearing={(0,-1):0,(1,0):4000,(0,1):8000,(-1,0):12000}[facing]
+                if s['bearing']==bearing and (s['laneX'],s['laneZ'])==(-facing[1]*200,facing[0]*200):key=bearing//4000+1
+            assert lanes.get(identity,0)==key,'Lane witness does not match saved physical state'
         if t['progress'] or fraction:
-            assert i<len(p)-1 and p[i+1] not in reserved
-            reserved.add(p[i+1]);assert not any(at==p[i+1] for v,at in positions.items() if v!=t['vehicleId'])
+            assert i<len(p)-1
+            identity=t['vehicleId'];assert all(share(identity,other,p[i+1]) for other in reserved.get(p[i+1],[]))
+            reserved.setdefault(p[i+1],[]).append(identity)
+            assert all(at!=p[i+1] or share(identity,v,p[i+1]) for v,at in positions.items() if v!=identity)
     assert all(positions[v]==cell(inventory[vehicles[v]['cargoInventory']['value']]['position']) for v in vehicles)
     pairs=set()
     for o in roads['orders']:

@@ -24,7 +24,7 @@ public partial class PresentationStage
             float side=onDisplay&&v.ModelId!="trakt_d1"?(slot%2==0?-.23f:.23f):0;
             var at=new Vector3(v.X+(v.OffsetX-500)/1000f+side,.07f,v.Z+(v.OffsetZ-500)/1000f);
             Target(mover,at,.1f,snap||mover.From==Vector3.Zero);
-            if(v.FacingX!=0||v.FacingZ!=0)mover.Node.Rotation=new(0,Mathf.Atan2(-v.FacingX,-v.FacingZ),0);
+            if(v.FacingX!=0||v.FacingZ!=0)TargetRotation(mover,v.FacingX,v.FacingZ,snap);
         }
         foreach(long id in _fleet.Keys.Where(id=>!frame.Vehicles.Any(v=>v.Id==id)).ToArray()){_fleet[id].Node.QueueFree();_fleet.Remove(id);}
     }
