@@ -81,13 +81,15 @@ public class I3WorkTests
     {
         var(s,v)=I3Fixture.Create(population:staff);I2Fixture.Step(s,new(ActionKind.LeaveVehicle));I2Fixture.Move(s,new(9,1));
         Assert.True(I3Fixture.Quote(s,v,mode:EquipmentMode.Automatic).CanStart);
-        I2Fixture.Step(s,I3Fixture.Start(v,mode:EquipmentMode.Automatic));int bound=12;
+        var before=s.Engine.VehicleTravelOf(v.Id);
+        I2Fixture.Step(s,I3Fixture.Start(v,mode:EquipmentMode.Automatic));Assert.Equal("PaverPositioningNoStaff",I3Fixture.Work(s).Reason);Assert.Equal(before,s.Engine.VehicleTravelOf(v.Id));int bound=12;
         while(I3Fixture.Work(s).Batch is null&&bound-->0)s.Step();Assert.True(bound>0);var work=I3Fixture.Work(s);
+        Assert.Equal(3*staff*20,s.Engine.EventsSince(0).Where(e=>e.Type=="RoadWorkTravelled").Sum(e=>e.AmountMinor));
         Assert.Equal(staff,work.Group.Headcount);Assert.Equal(24/staff,I3Fixture.Quote(s,v,mode:EquipmentMode.Automatic).ExpectedTicks);
         I2Fixture.Step(s,new(ActionKind.SetRoadCellEnabled,VehicleId:v.Id,Enabled:false));
         long paused=I3Fixture.Work(s).Batch!.Work;s.AdvanceTo(s.Engine.Tick+2);Assert.Equal(paused,I3Fixture.Work(s).Batch!.Work);
         I2Fixture.Step(s,new(ActionKind.SetRoadCellEnabled,VehicleId:v.Id,Enabled:true));
-        long started=work.Batch!.StartedTick,cash=s.Engine.Observe(new(1)).Account.BalanceMinor;
+        long cash=s.Engine.Observe(new(1)).Account.BalanceMinor;
         long remaining=24/staff-I3Fixture.Work(s).Batch!.Work/staff;
         s.AdvanceTo(s.Engine.Tick+remaining);Assert.Null(I3Fixture.Work(s).Batch);Assert.Equal(cash-remaining*staff*work.Group.WageMinor,s.Engine.Observe(new(1)).Account.BalanceMinor);
         Assert.Equal(2,s.Engine.InspectRoads()!.Cells.Single(r=>r.Cell==new Cell(10,1)).Level);I3Fixture.Exact(s);

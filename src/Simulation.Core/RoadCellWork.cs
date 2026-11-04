@@ -63,7 +63,7 @@ public sealed partial class SimulationEngine
         SetRoadWork(actor,command with{Action=command.Action with{Mode=cancel?EquipmentMode.Off:work.Mode,
             EquipmentLevel=work.Level,Stops=cancel?[]:work.Route}});
     }
-    private static bool PaverPositioning(RoadWorkState work)=>work.Reason is "PaverPositioning" or "WorkSpaceOccupied" or "PaverPositioningPaused";
+    private static bool PaverPositioning(RoadWorkState work)=>work.Reason is "PaverPositioning" or "WorkSpaceOccupied" or "PaverPositioningPaused" or "PaverPositioningNoStaff" or "PaverPositioningNoMoney";
     private bool CanCenterPaver(OwnedVehicle vehicle)
     {
         var body=Body(vehicle);var t=_traffic.GetValueOrDefault(vehicle.Id)??new(vehicle.Id,[]);
@@ -73,13 +73,22 @@ public sealed partial class SimulationEngine
     }
     private bool AdvancePaverPositioning(RoadWorkState work,OwnedVehicle vehicle)
     {
+        if(work.Mode==EquipmentMode.Automatic&&work.Group.Headcount==0){work.Reason="PaverPositioningNoStaff";return false;}
         if(!CanCenterPaver(vehicle)){work.Reason="WorkSpaceOccupied";return false;}
         var body=Body(vehicle);var t=Traffic(vehicle.Id);var s=Steering(body,t);
         if(s.LaneX==0&&s.LaneZ==0){work.Reason="Ready";return true;}
+        long wage=work.Mode==EquipmentMode.Automatic?checked(work.Group.Headcount*work.Group.Wage):0;
+        var actor=_actors[work.Group.Owner];
+        if(_economy.Accounts[actor.Account].Available<wage){work.Reason="PaverPositioningNoMoney";return false;}
         // Bounded lateral motion inside the already occupied cell, billed as actual movement.
         int Approach(int value)=>value-Math.Clamp(value,-40,40);
         var changed=ChargeSteering(body,s,s with{LaneX=Approach(s.LaneX),LaneZ=Approach(s.LaneZ)});
         WriteSteering(body,t with{Steering=changed,Reason="PaverPositioning"});
+        if(work.Mode==EquipmentMode.Automatic)
+        {
+            if(wage>0){var tx=_economy.Begin(Tick);tx.Pay(actor.Account,_wages,wage,"RoadWages");tx.Commit();}
+            Emit("RoadWorkTravelled",actor.Id,vehicle.Id,quantity:work.Group.Headcount,money:wage);
+        }
         work.Reason="PaverPositioning";return false;
     }
 }
