@@ -339,7 +339,7 @@ public sealed partial class SimulationEngine
             !(RoadLevel(at)>0&&RoadLevel(next)==0&&t.ExitQuanta<=Roads!.ExitHoldTicks*TravelQuantaPerTick)&&
             t.Resume is null&&!t.Assistance&&actor.Job is null;
     }
-    private bool RoadVehicleWorking(long vehicle)=>_roadWorks.TryGetValue(vehicle,out var w)&&w.Batch is not null;
+    private bool RoadVehicleWorking(long vehicle)=>_roadWorks.TryGetValue(vehicle,out var w)&&(w.Batch is not null||PaverPositioning(w));
     public TravelState VehicleTravelOf(long vehicle)
     {
         var v=FindBody(vehicle)??throw new ArgumentException("Unknown moving body");int x=TravelCenter,z=TravelCenter;

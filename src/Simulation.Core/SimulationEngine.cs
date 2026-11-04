@@ -206,6 +206,8 @@ public sealed partial class SimulationEngine
                 case ActionKind.SetDeliveryService: case ActionKind.RequestDeliveryService: case ActionKind.AcceptDeliveryService: case ActionKind.RejectDeliveryService: case ActionKind.ConfirmDeliveryService: case ActionKind.CancelDeliveryService: case ActionKind.ViewDeliveryService: ServiceCommand(actor,c); break;
                 case ActionKind.PayInvoice: case ActionKind.ViewInvoice: case ActionKind.SetAutoPay: BillingCommand(actor,c); break;
                 case ActionKind.BuyVehicle: BuyVehicle(actor,c); break;
+                case ActionKind.StartRoadCell: StartRoadCell(actor,c); break;
+                case ActionKind.SetRoadCellEnabled: SetRoadCellEnabled(actor,c); break;
                 case ActionKind.SetRoadWork: SetRoadWork(actor,c); break;
                 case ActionKind.AcceptRoadOrder: AcceptRoadOrder(actor,c); break;
                 case ActionKind.TurnVehicle: TurnVehicle(actor,c); break;

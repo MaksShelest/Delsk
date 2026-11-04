@@ -41,6 +41,8 @@ public sealed partial class SimulationEngine
         {
             Require(_vehicles.TryGetValue(w.Vehicle,out var v)&&v.ModelId=="trakt_d1"&&v.Owner.Value==w.Group.Owner&&w.Group.Id==w.Vehicle&&w.Group.Role==EmploymentRole.RoadWorks&&w.Group.Capacity==2&&
                 w.Cursor>=0&&w.Cursor<=w.Route.Length&&w.Level is >=1 and <=3&&w.Route.Length<=64&&w.Route.All(PublicRoadCell));
+            if(PaverPositioning(w))Require(UsesFreeVehicleControl&&w.Batch is null&&w.Route.Length==1&&w.Cursor==0&&VehicleCargo(v!).Position==w.Route[0]&&
+                _traffic.TryGetValue(w.Vehicle,out var position)&&!HasRoadProgress(position)&&!IsSteering(position));
             if(w.Batch is {} batch)Require(w.Cursor<w.Route.Length&&batch.Cell==w.Route[w.Cursor]&&batch.Level==w.Level&&RoadLevel(batch.Cell)==batch.Level-1&&batch.StartedTick>=1&&batch.StartedTick<=Tick&&batch.Work>=0&&batch.Work<2L*Roads.Stages[batch.Level-1].Ticks&&
                 VehicleCargo(v!).Position==batch.Cell&&batch.Bypass.Length>2&&batch.Bypass.All(PublicRoadCell)&&!batch.Bypass.Contains(batch.Cell)&&_bypasses.Count(b=>b.VehicleId==v!.Id&&!b.Closing&&b.WorkCell==batch.Cell&&b.Path.SequenceEqual(batch.Bypass))==1);
         }
