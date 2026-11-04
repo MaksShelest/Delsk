@@ -67,10 +67,10 @@ public class FleetE1Tests
     {
         var s=new GameSession(new(Prepared()));var listing=s.Engine.FleetOf(new(1))!.Stock.Single(v=>v.ModelId=="vector200");
         long before=s.Engine.Observe(new(1)).Account.BalanceMinor;Step(s,new(ActionKind.BuyVehicle,VehicleId:listing.Id));
-        Assert.Empty(s.Engine.InspectFleet()!.Vehicles);Assert.Equal(before-630000,s.Engine.Observe(new(1)).Account.AvailableMinor);
+        Assert.Empty(s.Engine.InspectFleet()!.Vehicles);Assert.Equal(before-900000,s.Engine.Observe(new(1)).Account.AvailableMinor);
         var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));s.AdvanceTo(6);copy.AdvanceTo(6);
         Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());var v=Assert.Single(s.Engine.InspectFleet()!.Vehicles);
-        Assert.Equal(before-630000,s.Engine.Observe(new(1)).Account.BalanceMinor);Assert.Equal(listing.Position,StorageC1Tests.Inventory(s,v.CargoInventory).Position);
+        Assert.Equal(before-900000,s.Engine.Observe(new(1)).Account.BalanceMinor);Assert.Equal(listing.Position,StorageC1Tests.Inventory(s,v.CargoInventory).Position);
         Assert.Equal(200,StorageC1Tests.Inventory(s,v.CargoInventory).Capacity);Step(s,new(ActionKind.BuyVehicle,VehicleId:listing.Id),false);RestoreAndReplay(s);
     }
     [Fact] public void LastListingCompetitionUsesCommonInclusiveWindowAndBothActorsCanWin()
@@ -81,7 +81,7 @@ public class FleetE1Tests
             var s=new GameSession(new(Prepared(seed)));var listing=s.Engine.InspectFleet()!.Stock.Single(v=>v.ModelId=="sputnik20");
             Step(s,new(ActionKind.BuyVehicle,VehicleId:listing.Id));s.AdvanceTo(5);Step(s,new(ActionKind.BuyVehicle,VehicleId:listing.Id),actor:2);
             var v=Assert.Single(s.Engine.InspectFleet()!.Vehicles);winners.Add(v.Owner.Value);
-            Assert.Equal(130000,s.Engine.Ledger().Where(l=>l.Reason=="VehiclePurchase").Sum(l=>l.AmountMinor));
+            Assert.Equal(180000,s.Engine.Ledger().Where(l=>l.Reason=="VehiclePurchase").Sum(l=>l.AmountMinor));
             Assert.All(s.Engine.Inspect().Participants,a=>Assert.Equal(0,s.Engine.Observe(a.Id).Account.ReservedMinor));
             RestoreAndReplay(s);
         }
@@ -210,11 +210,11 @@ public class FleetE1Tests
         if(Environment.GetEnvironmentVariable("DELSK_E1_EVIDENCE") is {} folder){Directory.CreateDirectory(folder);CheckpointStore.Save(s,Path.Combine(folder,"native-fleet.save.json"));}
     }
     [Theory]
-    [InlineData("sputnik20",130000,20,8)]
-    [InlineData("muravey70",180000,70,8)]
-    [InlineData("eger70",320000,70,8)]
-    [InlineData("vector200",630000,200,8)]
-    [InlineData("trakt_d1",840000,70,16)]
+    [InlineData("sputnik20",180000,20,8)]
+    [InlineData("muravey70",250000,70,8)]
+    [InlineData("eger70",450000,70,8)]
+    [InlineData("vector200",900000,200,8)]
+    [InlineData("trakt_d1",1200000,70,16)]
     public void EveryModelCanBePurchasedDrivenAndParkedWithItsRealCapacity(string model,long price,long capacity,long roadTicks)
     {
         var s=new GameSession(new(Prepared()));long money=s.Engine.Observe(new(1)).Account.BalanceMinor;var v=Buy(s,model);
