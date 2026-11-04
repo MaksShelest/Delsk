@@ -36,7 +36,7 @@ public partial class FleetPanel : VBoxContainer
     {if(_vehicles.TryGetValue(id,out var row)){row.Label.AddThemeColorOverride("font_color",new Color("956019"));UiNavigation.Reveal(row.Label);}}
     private static Label TextLabel(string text="")=>new(){Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart};
     private void ActionButton(Container host,string name,string text,GameAction action)
-    {var button=new Button{Name=name,Text=text,FocusMode=FocusModeEnum.None,AutowrapMode=TextServer.AutowrapMode.WordSmart};button.SizeFlagsHorizontal=SizeFlags.ShrinkBegin;button.Pressed+=()=>_submit(action);host.AddChild(button);_actions.Add((button,action));}
+    {var button=new Button{Name=name,Text=text,FocusMode=FocusModeEnum.None,AutowrapMode=TextServer.AutowrapMode.WordSmart};button.SizeFlagsHorizontal=text.Length<=24?SizeFlags.ShrinkBegin:SizeFlags.Fill;button.AutowrapMode=text.Length<=24?TextServer.AutowrapMode.Off:TextServer.AutowrapMode.WordSmart;button.Pressed+=()=>_submit(action);host.AddChild(button);_actions.Add((button,action));}
     private static void Clear(Container host){foreach(Node n in host.GetChildren()){host.RemoveChild(n);n.QueueFree();}}
     public void ShowData(PlayerView view,bool pending)
     {
@@ -95,7 +95,7 @@ public partial class FleetPanel : VBoxContainer
         foreach(var item in f.Vehicles)
         {
             var inv=view.Inventories.Single(i=>i.Id==item.Vehicle.CargoInventory);var v=item.Vehicle;
-            _vehicles[v.Id].Label.Text=ModelName(item.Model)+" #"+v.Id+" · "+L("Объём ","Volume ")+$"{inv.OccupiedVolume}+{inv.ReservedCapacity}/{inv.Capacity}"+" · "+$"({item.Position.X},{item.Position.Z})"+" · "+State(item.State)+(v.Installation is {} job?L(" до тика "," until tick ")+job.CompletionTick:"")+"\n"+string.Join(" · ",inv.Stock.Select(s=>PlayerText.Item(_language,s.ItemId)+" ×"+s.Quantity));
+            _vehicles[v.Id].Label.Text=ModelName(item.Model)+" #"+v.Id+" · "+L("Объём ","Volume ")+$"{inv.OccupiedVolume}+{inv.ReservedCapacity}/{inv.Capacity}"+" · "+$"({item.Position.X},{item.Position.Z})"+" · "+State(item.Model.EquipmentTypeId is null?item.State:v.Driver!=0?"Personal":view.Equipment!.Single(e=>e.Id.Value==v.Id).Deployed==true?view.Equipment!.Single(e=>e.Id.Value==v.Id).ReasonCode:"EquipmentPacked")+(v.Installation is {} job?L(" до тика "," until tick ")+job.CompletionTick:"")+"\n"+string.Join(" · ",inv.Stock.Select(s=>PlayerText.Item(_language,s.ItemId)+" ×"+s.Quantity));
         }
         foreach(var item in f.Vehicles.Where(v=>v.Model.EquipmentTypeId is not null))
         {

@@ -23,6 +23,7 @@ public partial class I4EquipmentProbe : Control
     {
         var button=Named<Button>(name);UiNavigation.Reveal(button);await Frames();
         Check(button.IsVisibleInTree()&&!button.Disabled,"available "+name);
+        if(name.StartsWith("I4Object_"))Check(button.Size.X>=Math.Min(90,button.Text.Length*8)&&button.Size.Y<90,"readable compact action "+name);
         var point=button.GetGlobalRect().GetCenter();Check(GetViewportRect().HasPoint(point),"inside viewport "+name);
         int window=GetWindow().GetWindowId();
         if(touch)
@@ -65,7 +66,7 @@ public partial class I4EquipmentProbe : Control
             await Click("I4Object_place_"+id,touch);Check(_session.Engine.Observe(new(1)).OwnEquipment.Single().Deployed==false,"paused click only queues placement");await Click("TabletTime",touch);Check(!_session.Paused,"ordinary time control resumes world");Step();Check(_session.Engine.Observe(new(1)).OwnEquipment.Single().Deployed==true,"ordinary place command");
             await Click("I4Object_start_"+id,touch);Step();Step(3);
             Check(_session.Engine.Observe(new(1)).OwnInventories.Single(i=>i.Id==equipment.StorageId).OccupiedVolume>0,"real equipment output");
-            Check(_session.Engine.Observe(new(1)).Account.BalanceMinor==cash,"manual mining does not charge purchase twice");await Shot(language+"-"+width+"-mining");
+            Check(_session.Engine.Observe(new(1)).Account.BalanceMinor==cash,"manual mining does not charge purchase twice");Check(!Field<VirtualJoystick>(_app,"_stick").Visible,"joystick does not overlap equipment controls");await Shot(language+"-"+width+"-mining");
             var copy=CheckpointStore.Decode(CheckpointStore.Encode(_session));
             copy.RestoreControllers(c=>c.Kind==SelfBallotController.Kind?SelfBallotController.Restore(c):AlgorithmicController.Restore(c));
             for(int n=0;n<2;n++){_session.Step();copy.Step();Check(_session.Engine.ComputeStateHash()==copy.Engine.ComputeStateHash(),"native work checkpoint exact");}
