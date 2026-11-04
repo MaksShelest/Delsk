@@ -36,19 +36,26 @@ def verify_roads(folder):
     def opposite(a,b):return a and b and (a-b)%4==2
     def share(a,b,at):
         bypass_cells={cell(c) for bypass in roads['bypasses'] for c in bypass['path']}
-        return i2 and a in owned and b in owned and vehicles[a]['modelId']!='trakt_d1' and vehicles[b]['modelId']!='trakt_d1' and opposite(lanes[a],lanes[b]) and at in built and positions[a] in built and positions[b] in built and not {at,positions[a],positions[b]}&bypass_cells
+        return i2 and a in owned and b in owned and vehicles[a]['modelId']!='trakt_d1' and vehicles[b]['modelId']!='trakt_d1' and not models[vehicles[a]['modelId']].get('equipmentTypeId') and not models[vehicles[b]['modelId']].get('equipmentTypeId') and opposite(lanes[a],lanes[b]) and at in built and positions[a] in built and positions[b] in built and not {at,positions[a],positions[b]}&bypass_cells
     prices={i['id']:i['basePriceMinor'] for i in config['items']}
-    inventory={i['id']['value']:i for i in state['inventories']};positions={};listings={};work={};mode={};starts=[];paid={}
+    inventory={i['id']['value']:i for i in state['inventories']};positions={};listings={};equipment_stock={};work={};mode={};starts=[];paid={}
     equipment_initial={e['entityId']:point(e['reasonCode']) for e in events if e['type']=='EquipmentTrafficRegistered'}
     for machine in state['equipment']:
-        identity=machine['id']['value'];model='extractor:'+machine['typeId']
+        identity=machine['id']['value']
+        if identity in owned:continue # I4 shares the purchased Fleet body and cargo, not a second traffic body.
+        model='extractor:'+machine['typeId']
         models[model]=dict(speed=max(1,80//config['moveTicksPerCell']),materialsOnly=False)
         vehicles[identity]=dict(id=identity,owner=machine['ownerId'],modelId=model,cargoInventory=machine['storageId'])
         positions[identity]=equipment_initial.get(identity,cell(machine['position']))
     for e in events:
         kind=e['type'];identity=e['entityId'];tick=e['tick']
-        if kind in ('DealerInitialStock','DealerSupply'):listings[identity]=point(e['reasonCode'])
-        elif kind=='VehiclePurchased':positions[identity]=listings.pop(identity)
+        if kind in ('DealerInitialStock','DealerSupply'):
+            listings[identity]=point(e['reasonCode'])
+            if config['economy']['fleet'].get('equipmentDealerVersion')==1 and models[e['itemId']].get('equipmentTypeId'):equipment_stock[identity]=listings[identity]
+        elif kind=='DealerReplaced':
+            listings.pop(identity,None);equipment_stock.pop(identity,None)
+        elif kind=='VehiclePurchased':
+            positions[identity]=listings.pop(identity);equipment_stock.pop(identity,None)
         elif kind=='TrafficLaneState':
             assert i2 and identity in owned and vehicles[identity]['modelId']!='trakt_d1'
             assert owner(e)==vehicles[identity]['owner']['value'] and not e.get('amountMinor') and not e.get('commandId') and not e.get('itemId')
@@ -79,6 +86,7 @@ def verify_roads(folder):
         elif kind=='TrafficCellEntered':
             before,after=map(point,e['reasonCode'].split('>'))
             assert positions[identity]==before and sum(abs(a-b) for a,b in zip(before,after))==1
+            assert after not in equipment_stock.values(), "Crossed unsold extraction equipment"
             assert not any(w['cell']==after for v,w in work.items() if v!=identity),'Vehicle crossed working paver'
             if after in corridor:assert all(p!=after or share(identity,v,after) for v,p in positions.items() if v!=identity),'Overlapping physical vehicles'
             if i2 and lanes.get(identity):assert {1:(0,-1),2:(1,0),3:(0,1),4:(-1,0)}[lanes[identity]]==(after[0]-before[0],after[1]-before[1])

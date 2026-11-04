@@ -93,7 +93,7 @@ def verify(folder):
             for installation in workshops['installations']:
                 if installation['enterprise']['value'] in owned:
                     wip+=installation['priceMinor']+sum(m['quantity']*prices[m['itemId']] for m in installation['materials'])
-        equipment = sum(l['priceMinor'] for e in state['equipment'] if e['ownerId']['value']==actor for l in machines[e['typeId']]['levels'] if l['level']<=e['level'])
+        equipment = sum(l['priceMinor'] for e in state['equipment'] if e['ownerId']['value']==actor and e.get('deployed') is None for l in machines[e['typeId']]['levels'] if l['level']<=e['level'])
         for system in state['logistics']:
             if system['ownerId']['value']!=actor or system.get('vehicleId',0): continue
             settings=config.get('logistics') or {'purchasePriceMinor':20000,'upgrade':None}

@@ -701,12 +701,13 @@ jobs:
   # Preserve the required check and require every suite, including D3's independent audit.
   verify:
     if: ${{ always() }}
-    needs: [i3-road-work, i2-control, i1-movement, h3-compact-developer, h3-compact-unit, h2-engineering-unit, research-h1, city-ux-unit, city-ux-developer, unit, core, developer, production, fleet, road-unit, road-developer, roads, billing-unit, billing-developer, billing, services-unit, services-developer, services, service-runs-unit, service-runs-developer, service-runs, npc-unit, npc-developer, npc-actions, npc-natural]
+    needs: [i4-equipment, i3-road-work, i2-control, i1-movement, h3-compact-developer, h3-compact-unit, h2-engineering-unit, research-h1, city-ux-unit, city-ux-developer, unit, core, developer, production, fleet, road-unit, road-developer, roads, billing-unit, billing-developer, billing, services-unit, services-developer, services, service-runs-unit, service-runs-developer, service-runs, npc-unit, npc-developer, npc-actions, npc-natural]
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
       - name: Require all complete suites
         env:
+          I4_RESULT: ${{ needs.i4-equipment.result }}
           I3_RESULT: ${{ needs.i3-road-work.result }}
           I2_RESULT: ${{ needs.i2-control.result }}
           I1_RESULT: ${{ needs.i1-movement.result }}
@@ -737,7 +738,7 @@ jobs:
           RUNS_RESULT: ${{ needs.service-runs.result }}
           SERVICES_RESULT: ${{ needs.services.result }}
           FLEET_RESULT: ${{ needs.fleet.result }}
-        run: test "$I3_RESULT" = success && test "$I2_RESULT" = success && test "$I1_RESULT" = success && test "$H3_DEVELOPER_RESULT" = success && test "$H3_UNIT_RESULT" = success && test "$H2_UNIT_RESULT" = success && test "$RESEARCH_H1_RESULT" = success && test "$CITY_UX_UNIT_RESULT" = success && test "$CITY_UX_DEVELOPER_RESULT" = success && test "$NPC_UNIT_RESULT" = success && test "$NPC_DEVELOPER_RESULT" = success && test "$NPC_ACTIONS_RESULT" = success && test "$NPC_NATURAL_RESULT" = success && test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success && test "$ROADS_RESULT" = success && test "$ROAD_UNIT_RESULT" = success && test "$ROAD_DEVELOPER_RESULT" = success && test "$BILLING_UNIT_RESULT" = success && test "$BILLING_DEVELOPER_RESULT" = success && test "$BILLING_RESULT" = success && test "$SERVICES_UNIT_RESULT" = success && test "$SERVICES_DEVELOPER_RESULT" = success && test "$SERVICES_RESULT" = success && test "$RUNS_UNIT_RESULT" = success && test "$RUNS_DEVELOPER_RESULT" = success && test "$RUNS_RESULT" = success
+        run: test "$I4_RESULT" = success && test "$I3_RESULT" = success && test "$I2_RESULT" = success && test "$I1_RESULT" = success && test "$H3_DEVELOPER_RESULT" = success && test "$H3_UNIT_RESULT" = success && test "$H2_UNIT_RESULT" = success && test "$RESEARCH_H1_RESULT" = success && test "$CITY_UX_UNIT_RESULT" = success && test "$CITY_UX_DEVELOPER_RESULT" = success && test "$NPC_UNIT_RESULT" = success && test "$NPC_DEVELOPER_RESULT" = success && test "$NPC_ACTIONS_RESULT" = success && test "$NPC_NATURAL_RESULT" = success && test "$UNIT_RESULT" = success && test "$CORE_RESULT" = success && test "$DEVELOPER_RESULT" = success && test "$PRODUCTION_RESULT" = success && test "$FLEET_RESULT" = success && test "$ROADS_RESULT" = success && test "$ROAD_UNIT_RESULT" = success && test "$ROAD_DEVELOPER_RESULT" = success && test "$BILLING_UNIT_RESULT" = success && test "$BILLING_DEVELOPER_RESULT" = success && test "$BILLING_RESULT" = success && test "$SERVICES_UNIT_RESULT" = success && test "$SERVICES_DEVELOPER_RESULT" = success && test "$SERVICES_RESULT" = success && test "$RUNS_UNIT_RESULT" = success && test "$RUNS_DEVELOPER_RESULT" = success && test "$RUNS_RESULT" = success
   h2-engineering-unit:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -910,4 +911,42 @@ jobs:
         if: always()
         with:
           name: i3-${{ matrix.flavour }}
+          path: artifacts/
+
+  i4-equipment:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        flavour: [ordinary, developer]
+    env:
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: I4 city purchases, real movement, work, competition and saved rules
+        env:
+          FLAVOUR: ${{ matrix.flavour }}
+        run: |
+          if [ "$FLAVOUR" = ordinary ]; then
+            python scripts/run_check.py --name i4-ordinary --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --phase tests --suite i4 --output artifacts/i4-ordinary
+            python scripts/run_check.py --name i4-acceptance-restore --timeout 180 --log-directory artifacts/gate-checks -- dotnet restore tools/I4Acceptance/I4Acceptance.csproj --locked-mode --disable-parallel -m:1
+            python scripts/run_check.py --name i4-acceptance-build --timeout 180 --log-directory artifacts/gate-checks -- dotnet build tools/I4Acceptance/I4Acceptance.csproj -c Release --no-restore --disable-build-servers -m:1
+            python scripts/run_check.py --name i4-actual-ordinary --timeout 600 --log-directory artifacts/gate-checks -- dotnet tools/I4Acceptance/bin/Release/net10.0/I4Acceptance.dll artifacts/i4-walkthrough
+            python scripts/run_check.py --name i4-independent-audits --timeout 60 --log-directory artifacts/gate-checks -- python scripts/verify_results.py artifacts/i4-walkthrough/export
+            python scripts/run_check.py --name i4-profile-generation --timeout 60 --log-directory artifacts/gate-checks -- dotnet src/Research.Runner/bin/Release/net10.0/Research.Runner.dll --export-mobile-equipment-profile config/vnext/economy.b1-supported.json --balance config/vnext/balance.b1.json --output artifacts/i4-regenerated
+            cmp config/vnext/economy.i4-mobile-equipment.json artifacts/i4-regenerated/economy.i4-mobile-equipment.json
+          else
+            python scripts/run_check.py --name i4-developer --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --suite i4 --output artifacts/i4-developer
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: i4-${{ matrix.flavour }}
           path: artifacts/
