@@ -13,6 +13,16 @@ public sealed partial class AlgorithmicController
                 long land=site.Owner==Actor?0:site.PurchasePriceMinor;long cost=checked(land+level.PriceMinor+level.MinimumCrew*level.WageMinor*_state.Settings.WageReviewTicks+_state.Settings.CashReserveMinor);
                 if(o.Account.AvailableMinor<cost||!Reachable(o,site.Position))continue;
                 var demand=BestOffer(o,type.ItemId,level.CycleQuantity,site.Position);if(demand is null||level.CycleQuantity*demand.UnitPriceMinor<=level.CrewCapacity*level.WageMinor*level.CycleTicks)continue;
+                if(MobileFleet(o))
+                {
+                    if(o.Fleet!.OwnRequests.Length>0)continue;
+                    var model=o.Fleet.Models.Single(m=>m.EquipmentTypeId==type.Id&&m.EquipmentLevel==level.Level);
+                    var listing=o.Fleet.Stock.FirstOrDefault(v=>v.ModelId==model.Id);
+                    if(listing is null)continue;
+                    var buy=new List<PlanStep>();Move(buy,o.Participant.Position,o.Fleet.Dealer);
+                    buy.Add(new(new(ActionKind.BuyVehicle,VehicleId:listing.Id)));
+                    yield return new("BuyExtraction","FiniteCityDealer:"+type.Id,71000,buy.ToArray());break;
+                }
                 var steps=new List<PlanStep>();Move(steps,o.Participant.Position,site.Position);
                 steps.Add(new(new(site.Owner==Actor?ActionKind.BuyEquipment:ActionKind.BuyResource,Target:site.Position,EquipmentTypeId:site.Owner==Actor?type.Id:"",EquipmentLevel:level.Level)));
                 yield return new("BuyExtraction","PaidOwnedSite:"+site.Position,71000,steps.ToArray());break;

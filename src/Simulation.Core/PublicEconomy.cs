@@ -85,7 +85,7 @@ public sealed partial class SimulationEngine
         long buildings = _buildings.Values.Where(b => b.Owner == actor.Value&&!Demolished(b.Id)).Sum(b => b.Type.Levels.Where(l => l.Level <= b.Level)
             .Sum(l => checked(l.PriceMinor + l.Materials.Sum(m => checked(m.Quantity * _items[m.ItemId].BasePriceMinor)))));
         buildings=checked(buildings+_additionalWorkshops.Values.Where(e=>e.Definition.OwnerId==actor.Value&&!Demolished(ProductionParent(e.Definition.Id))).Sum(e=>{var o=_buildings[ProductionParent(e.Definition.Id)].Type.WorkshopOutfit!;return checked(o.PriceMinor+o.Materials.Sum(m=>checked(m.Quantity*_items[m.ItemId].BasePriceMinor)));}));
-        long equipment = _equipment.Values.Where(e => e.Owner == actor.Value)
+        long equipment = _equipment.Values.Where(e => e.Owner == actor.Value && !MobileMachine(e.Id))
             .Sum(e => e.Type.Levels.Where(l => l.Level <= e.Level).Sum(l => l.PriceMinor));
         foreach (var logistics in _logistics.Values.Where(l => l.Owner == actor.Value && l.VehicleId==0))
             equipment = checked(equipment + Logistics.PurchasePriceMinor + (logistics.Level > 1 && Logistics.Upgrade is { } upgrade

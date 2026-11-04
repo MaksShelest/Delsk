@@ -88,7 +88,7 @@ public sealed partial class SimulationEngine
     {
         CheckServicePoints(customer,terms,except);
         if(!_vehicles.TryGetValue(terms.VehicleId,out var vehicle)||except==0&&!_serviceListings.Contains(vehicle.Id)||vehicle.Owner.Value==customer||
-            Model(vehicle.ModelId).MaterialsOnly||!ServiceFree(vehicle)||_serviceOrders.Values.Any(o=>o.Active&&o.Id!=except&&o.Quote.Terms.VehicleId==vehicle.Id))throw new RuleViolation("ServiceVehicleUnavailable");
+            (Model(vehicle.ModelId).MaterialsOnly||Model(vehicle.ModelId).EquipmentTypeId is not null)||!ServiceFree(vehicle)||_serviceOrders.Values.Any(o=>o.Active&&o.Id!=except&&o.Quote.Terms.VehicleId==vehicle.Id))throw new RuleViolation("ServiceVehicleUnavailable");
         var model=Model(vehicle.ModelId);long unit=_items[terms.ItemId].UnitVolume,per=model.CapacityVolume/unit;if(per==0)throw new RuleViolation("NoCapacity");
         long trips=checked((terms.Quantity-1)/per+1),volume=checked(unit*terms.Quantity);
         var at=VehicleCargo(vehicle).Position;var source=ServiceExecution is null?_economy.Inventories[terms.Source.Value].Position:ServiceAccessPoint(terms.Source.Value,vehicle.Id);var dest=terms.Destination.Value==0?ServiceCapitalTerminal:ServiceExecution is null?_economy.Inventories[terms.Destination.Value].Position:ServiceAccessPoint(terms.Destination.Value,vehicle.Id);

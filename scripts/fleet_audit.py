@@ -21,7 +21,10 @@ def verify_fleet(folder):
     models={m['id']:m for m in rules['models']}
     inventory={i['id']['value']:i for i in state['inventories']}
     actors={a['id']['value']:a for a in state['participants']}
-    assert len(models)==5
+    mobile=rules.get('equipmentDealerVersion',0)==1
+    assert len(models)==(21 if mobile else 5)
+    expected_initial=Counter(sputnik20=1,muravey70=2,eger70=1,vector200=1,trakt_d1=1)
+    if mobile:expected_initial.update({m['id']:1 for m in models.values() if m.get('equipmentTypeId')})
     stock={};purchased={};initial=Counter()
     for event in events:
         kind=event['type'];identity=event['entityId'];tick=event['tick']
@@ -33,7 +36,7 @@ def verify_fleet(folder):
             else:
                 assert tick>0 and tick%rules['supplyTicks']==0
             stock[identity]=(model,tick)
-            assert len(stock)<=6
+            assert len(stock)<=(22 if mobile else 6)
         elif kind=='DealerReplaced':
             assert identity in stock and identity not in purchased
             assert tick-stock[identity][1]>=rules['minimumStockTicks']
@@ -42,7 +45,7 @@ def verify_fleet(folder):
             assert identity in stock and identity not in purchased
             assert event['amountMinor']==models[stock[identity][0]]['priceMinor']
             purchased[identity]=(event['actorId']['value'],stock.pop(identity)[0],tick,event['amountMinor'])
-    assert initial==Counter(sputnik20=1,muravey70=2,eger70=1,vector200=1,trakt_d1=1)
+    assert initial==expected_initial
     assert stock=={s['id']:(s['modelId'],s['deliveredTick']) for s in fleet['stock']}
     assert len(purchased)==len(fleet['vehicles'])==len(fleet['purchases'])
     assert sum(p[3] for p in purchased.values())==sum(l['amountMinor'] for l in ledger if l['reason']=='VehiclePurchase')
@@ -55,6 +58,12 @@ def verify_fleet(folder):
         assert cargo['ownerId']['value']==owner and cargo['capacity']==model['capacityVolume']
         assert cargo['occupiedVolume']+cargo['reservedCapacity']<=model['capacityVolume']
         if model['materialsOnly']:assert all(s['itemId'] in ('gravel','asphalt','concrete') for s in cargo['stock'])
+        if model.get('equipmentTypeId'):
+            machine=next(e for e in state['equipment'] if e['id']['value']==identity)
+            assert machine['typeId']==model['equipmentTypeId'] and machine['level']==model['equipmentLevel']
+            assert machine['storageId']==vehicle['cargoInventory'] and machine['position']==cargo['position']
+            assert machine['ownerId']==vehicle['owner'] and isinstance(machine['deployed'],bool)
+            assert all(s['itemId']==next(t['itemId'] for t in config['equipmentTypes'] if t['id']==model['equipmentTypeId']) for s in cargo['stock'])
         driver=vehicle['driver']
         if driver:
             assert driver==owner and driver not in drivers;drivers.add(driver)

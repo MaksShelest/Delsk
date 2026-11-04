@@ -1,0 +1,202 @@
+{
+  "head": "1623ea7cb99d08e56f6a9fbdbac982b50c82a137",
+  "core": {
+    "run": 41901347958,
+    "conclusion": "success"
+  },
+  "platform": {
+    "run": 41901348193,
+    "attempts": [
+      {
+        "job": 126824294760,
+        "exitCode": 124,
+        "timeoutSeconds": 600,
+        "scope": "Six maps and two forms passed; aggregate deadline interrupted last service probe.",
+        "artifact": {
+          "id": 13359511679,
+          "bytes": 15550273,
+          "sha256": "3e03654ef51ae038256f22d8b74de164eea6cf214f62cfcb854199952c113783",
+          "crc": "all entries verified"
+        }
+      },
+      {
+        "job": 126833077403,
+        "exitCode": 124,
+        "timeoutSeconds": 600,
+        "scope": "All nine native cases and their log audits completed with exit0; aggregate deadline prevented final gate completion.",
+        "timings": [
+          {
+            "name": "a1-asset-cache",
+            "exit_code": 0,
+            "elapsed_seconds": 0.328,
+            "timeout_seconds": 60
+          },
+          {
+            "name": "a1-asset-completeness",
+            "exit_code": 0,
+            "elapsed_seconds": 0.234,
+            "timeout_seconds": 30
+          },
+          {
+            "name": "a1-asset-stage",
+            "exit_code": 0,
+            "elapsed_seconds": 0.218,
+            "timeout_seconds": 30
+          },
+          {
+            "name": "a1-compact-valley-10-en-360-logs",
+            "exit_code": 0,
+            "elapsed_seconds": 0.063,
+            "timeout_seconds": 15
+          },
+          {
+            "name": "a1-compact-valley-10-en-360",
+            "exit_code": 0,
+            "elapsed_seconds": 50.454,
+            "timeout_seconds": 180
+          },
+          {
+            "name": "a1-compact-valley-3-ru-640-logs",
+            "exit_code": 0,
+            "elapsed_seconds": 0.063,
+            "timeout_seconds": 15
+          },
+          {
+            "name": "a1-compact-valley-3-ru-640",
+            "exit_code": 0,
+            "elapsed_seconds": 62.844,
+            "timeout_seconds": 180
+          },
+          {
+            "name": "a1-compact-valley-6-en-800-logs",
+            "exit_code": 0,
+            "elapsed_seconds": 0.063,
+            "timeout_seconds": 15
+          },
+          {
+            "name": "a1-compact-valley-6-en-800",
+            "exit_code": 0,
+            "elapsed_seconds": 64.922,
+            "timeout_seconds": 180
+          },
+          {
+            "name": "a1-forms-en-logs",
+            "exit_code": 0,
+            "elapsed_seconds": 0.063,
+            "timeout_seconds": 15
+          },
+          {
+            "name": "a1-forms-en",
+            "exit_code": 0,
+            "elapsed_seconds": 43.407,
+            "timeout_seconds": 180
+          },
+          {
+            "name": "a1-forms-ru-logs",
+            "exit_code": 0,
+            "elapsed_seconds": 0.063,
+            "timeout_seconds": 15
+          },
+          {
+            "name": "a1-forms-ru",
+            "exit_code": 0,
+            "elapsed_seconds": 43.719,
+            "timeout_seconds": 180
+          },
+          {
+            "name": "a1-import",
+            "exit_code": 0,
+            "elapsed_seconds": 9.156,
+            "timeout_seconds": 120
+          },
+          {
+            "name": "a1-large-districts-10-en-1100-logs",
+            "exit_code": 0,
+            "elapsed_seconds": 0.047,
+            "timeout_seconds": 15
+          },
+          {
+            "name": "a1-large-districts-10-en-1100",
+            "exit_code": 0,
+            "elapsed_seconds": 112.39,
+            "timeout_seconds": 180
+          },
+          {
+            "name": "a1-large-districts-10-ru-360-logs",
+            "exit_code": 0,
+            "elapsed_seconds": 0.078,
+            "timeout_seconds": 15
+          },
+          {
+            "name": "a1-large-districts-10-ru-360",
+            "exit_code": 0,
+            "elapsed_seconds": 83.359,
+            "timeout_seconds": 180
+          },
+          {
+            "name": "a1-ordinary-audit",
+            "exit_code": 0,
+            "elapsed_seconds": 5.766,
+            "timeout_seconds": 120
+          },
+          {
+            "name": "a1-ordinary-build",
+            "exit_code": 0,
+            "elapsed_seconds": 35.312,
+            "timeout_seconds": 180
+          },
+          {
+            "name": "a1-probe-build",
+            "exit_code": 0,
+            "elapsed_seconds": 10.734,
+            "timeout_seconds": 180
+          },
+          {
+            "name": "a1-restore",
+            "exit_code": 0,
+            "elapsed_seconds": 3.187,
+            "timeout_seconds": 180
+          },
+          {
+            "name": "a1-service-runs-logs",
+            "exit_code": 0,
+            "elapsed_seconds": 0.063,
+            "timeout_seconds": 15
+          },
+          {
+            "name": "a1-service-runs",
+            "exit_code": 0,
+            "elapsed_seconds": 10.016,
+            "timeout_seconds": 180
+          },
+          {
+            "name": "a1-small-river-6-ru-640-logs",
+            "exit_code": 0,
+            "elapsed_seconds": 0.078,
+            "timeout_seconds": 15
+          },
+          {
+            "name": "a1-small-river-6-ru-640",
+            "exit_code": 0,
+            "elapsed_seconds": 60.906,
+            "timeout_seconds": 180
+          }
+        ]
+      }
+    ]
+  },
+  "remedy": {
+    "groups": {
+      "city": "Three non-compact map cases",
+      "compact": "Three compact-valley map cases",
+      "forms": "RU/EN forms and the existing F2 delivery probe"
+    },
+    "coverage": "Same nine cases, disjoint and exhaustive. --case all remains available.",
+    "limits": {
+      "perCaseSeconds": 180,
+      "perGroupSeconds": 600,
+      "jobMinutes": 15
+    },
+    "requiredCheck": "city-ux-ui remains an always-run aggregator requiring all three groups to succeed. No failed output is accepted as a pass."
+  }
+}

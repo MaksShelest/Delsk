@@ -11,7 +11,7 @@ public sealed partial class SimulationEngine
         return new(e.Id,new(e.Owner),new(e.Storage),0,Math.Max(1,80/_config.MoveTicksPerCell),t?.FacingX??0,t?.FacingZ??-1);
     }
     private RoadBody? FindBody(long id)=>_vehicles.TryGetValue(id,out var v)?Body(v):_equipment.TryGetValue(id,out var e)?Body(e):null;
-    private IEnumerable<RoadBody> RoadBodies()=>_vehicles.Values.Select(Body).Concat(_equipment.Values.Select(Body));
+    private IEnumerable<RoadBody> RoadBodies()=>_vehicles.Values.Select(Body).Concat(_equipment.Values.Where(e=>!_vehicles.ContainsKey(e.Id)).Select(Body));
     private Inventory VehicleCargo(RoadBody body)=>_economy.Inventories[body.CargoInventory.Value];
     private int RoadBodySpeed(Cell from,Cell to,RoadBody body)
     =>VehicleSurfaceSpeed(from,to,body.Speed);

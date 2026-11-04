@@ -14,7 +14,7 @@ public static class ActionPolicy
     public static bool IsServiceDecision(ActionKind kind)=>kind is ActionKind.ForceCloseDeliveryService or ActionKind.AcceptDeliveryService or ActionKind.RejectDeliveryService or ActionKind.ConfirmDeliveryService or ActionKind.CancelDeliveryService or ActionKind.ViewDeliveryService;
     public static ActionReach Reach(ActionKind kind) => kind switch
     {
-        ActionKind.PickupDeliveryService or ActionKind.UnloadDeliveryService or ActionKind.SetRoadCellEnabled or ActionKind.StartRoadCell or ActionKind.SetRoadWork or ActionKind.TurnVehicle or ActionKind.BuyVehicle or ActionKind.BoardVehicle or ActionKind.AssignVehicle or ActionKind.InstallVehicleKit or ActionKind.BuildLoadingPlatform or ActionKind.BuyImport or ActionKind.ModernizeWorkshop or ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.TakeOverflow or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
+        ActionKind.PlaceEquipment or ActionKind.PackEquipment or ActionKind.PickupDeliveryService or ActionKind.UnloadDeliveryService or ActionKind.SetRoadCellEnabled or ActionKind.StartRoadCell or ActionKind.SetRoadWork or ActionKind.TurnVehicle or ActionKind.BuyVehicle or ActionKind.BoardVehicle or ActionKind.AssignVehicle or ActionKind.InstallVehicleKit or ActionKind.BuildLoadingPlatform or ActionKind.BuyImport or ActionKind.ModernizeWorkshop or ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.TakeOverflow or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.Build or ActionKind.UpgradeBuilding or
         ActionKind.SetWage or ActionKind.BuyEquipment or ActionKind.UpgradeEquipment or ActionKind.CollectPurchase or
         ActionKind.DeliverContract or ActionKind.BuyLogistics or ActionKind.UpgradeLogistics or ActionKind.SignSupport => ActionReach.AtLocation,
@@ -34,6 +34,7 @@ public sealed partial class SimulationEngine
     private void RequireActionLocation(ActorState actor, GameAction action, string reason = "NotAtLocation")
     {
         var access = AccessFor(new(actor.Id), action);
+        if (!access.Allowed && UsesMobileEquipment && (action.Equipment.Value!=0 || action.Kind==ActionKind.BoardVehicle&&MobileMachine(action.VehicleId)))throw new RuleViolation(access.ReasonCode);
         if (!access.Allowed) throw new RuleViolation(access.ReasonCode is "NotAvailable" or "ConstructionInProgress" ? access.ReasonCode : reason);
     }
     /// <summary>Participant-safe read query, also called immediately before execution. No hidden-ID oracle.</summary>
@@ -41,6 +42,8 @@ public sealed partial class SimulationEngine
     {
         var reach = ActionPolicy.Reach(action.Kind);
         if (!_actors.TryGetValue(participant.Value, out var actor)) return new(reach, [], "NotAvailable");
+        string equipmentReason=MobileEquipmentAccess(actor,action);
+        if(equipmentReason!="Allowed")return new(reach,[],equipmentReason);
         if (WaitingForBallots && action.Kind != ActionKind.SetVoteChoice) return new(reach, [], "ElectionInProgress");
         if (action.Kind == ActionKind.SetVoteChoice && Elections.PauseForBallots && RequiredCandidate(actor.Id) is { } required && required != action.Candidate)
             return new(reach, [], "CommittedVote");
@@ -72,7 +75,8 @@ public sealed partial class SimulationEngine
             ActionKind.OutfitWorkshop => _enterprises.TryGetValue(action.Enterprise.Value, out var outfitting) && outfitting.Definition.OwnerId == actor.Id && !Demolished(outfitting.Definition.Id) ? [outfitting.Definition.Position] : null,
             ActionKind.BuyLogistics => _enterprises.TryGetValue(action.Enterprise.Value, out var enterprise) && enterprise.Definition.OwnerId == actor.Id ? [enterprise.Definition.Position] : null,
             ActionKind.UpgradeLogistics => _logistics.TryGetValue(action.Logistics.Value, out var logistics) && logistics.Owner == actor.Id ? [_enterprises[logistics.Enterprise].Definition.Position] : null,
-            ActionKind.BuyEquipment => [action.Target],
+            ActionKind.PlaceEquipment or ActionKind.PackEquipment=>UsesMobileEquipment&&_equipment.TryGetValue(action.Equipment.Value,out var placing)&&placing.Owner==actor.Id?[placing.Position,..RoadNeighbors(placing.Position).Where(_map.Walkable)]:null,
+            ActionKind.BuyEquipment => UsesMobileEquipment?[Dealer.Entry]:[action.Target],
             ActionKind.UpgradeEquipment => _equipment.TryGetValue(action.Equipment.Value, out var machine) && machine.Owner == actor.Id ? [machine.Position] : null,
             ActionKind.Harvest or ActionKind.StartHarvesting => action.Equipment.Value != 0
                 ? (_equipment.TryGetValue(action.Equipment.Value, out var equipment) && equipment.Owner == actor.Id ? [equipment.Position] : null)

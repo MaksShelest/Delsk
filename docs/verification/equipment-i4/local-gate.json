@@ -1,0 +1,646 @@
+{
+  "status": "succeeded",
+  "scope": "Local evidence. Final GitHub Actions result is authoritative in PR #82 checks. No claim of physical device acceptance.",
+  "checks": [
+    {
+      "path": "work/i4/checks/i4-release-final.json",
+      "sha256": "3aeb16bcf467211d01498fa03011c0d3d2fbbacd8e2a9e1897095160df5d34d6",
+      "result": {
+        "command": [
+          "python",
+          "scripts/check_headless.py",
+          "--phase",
+          "tests",
+          "--suite",
+          "i4",
+          "--output",
+          "work/i4/release-final"
+        ],
+        "timeout_seconds": 780,
+        "started_at": "2026-11-04T15:21:56.569128+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 159.975,
+        "finished_at": "2026-11-04T15:24:36.543950+00:00"
+      }
+    },
+    {
+      "path": "work/i4/checks/related-d3-e1.json",
+      "sha256": "ee860787c64fabfa10464f0a5b3ee3a99856b3d9d610a71f9f1b1e9cf25c2383",
+      "result": {
+        "command": [
+          "dotnet",
+          "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+          "-noLogo",
+          "-noColor",
+          "-parallelMode",
+          "none",
+          "-class",
+          "Simulation.Tests.ProductionD3Tests",
+          "-class",
+          "Simulation.Tests.FleetE1Tests"
+        ],
+        "timeout_seconds": 180,
+        "started_at": "2026-11-04T15:26:07.905838+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 79.271,
+        "finished_at": "2026-11-04T15:27:27.179040+00:00"
+      }
+    },
+    {
+      "path": "work/i4/checks/related-i1-i2-i3.json",
+      "sha256": "d0d4bf6217265292f3e2e5ed7c3dde712b10d67d90d75f9cdeab0ae8893212ca",
+      "result": {
+        "command": [
+          "dotnet",
+          "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+          "-noLogo",
+          "-noColor",
+          "-parallelMode",
+          "none",
+          "-class",
+          "Simulation.Tests.I1WalkingTests",
+          "-class",
+          "Simulation.Tests.I2SteeringTests",
+          "-class",
+          "Simulation.Tests.I3WorkTests",
+          "-class",
+          "Simulation.Tests.I3PositioningTests"
+        ],
+        "timeout_seconds": 180,
+        "started_at": "2026-11-04T15:29:07.739841+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 34.043,
+        "finished_at": "2026-11-04T15:29:41.782622+00:00"
+      }
+    },
+    {
+      "path": "work/i4/checks/historical-three.json",
+      "sha256": "f9dec7745daf0ba91e429501f89bdcf1d7382d604d8c19e732ad5e01e6a9a94c",
+      "result": {
+        "command": [
+          "dotnet",
+          "tests/Simulation.Tests/bin/Debug/net10.0/Simulation.Tests.dll",
+          "-noLogo",
+          "-noColor",
+          "-parallelMode",
+          "none",
+          "-method",
+          "*NoMoneyDoesNotConsumeRoadMaterialsOrStartFreeWork",
+          "-method",
+          "*MoneyIsCheckedBeforeAlignmentOrMaterialReservation",
+          "-method",
+          "*PreparationAndFirstCargoMatchTheActualSavedWorld"
+        ],
+        "timeout_seconds": 180,
+        "started_at": "2026-11-04T14:14:10.759763+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 99.918,
+        "finished_at": "2026-11-04T14:15:50.678136+00:00"
+      }
+    },
+    {
+      "path": "work/i4/checks/python-checks-annex-2.json",
+      "sha256": "23f33b728e2e921bb472f744f21e4c221c8f243833067e02a3cdded6d7f408b9",
+      "result": {
+        "command": [
+          "python",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests/Checks",
+          "-v"
+        ],
+        "timeout_seconds": 30,
+        "started_at": "2026-11-04T15:15:53.745598+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 1.053,
+        "finished_at": "2026-11-04T15:15:54.798832+00:00"
+      }
+    },
+    {
+      "path": "work/i4/checks/python-lab-2.json",
+      "sha256": "ecfedfc7755cf6ce05d2cb09bf61f8fb7a1256726adcf5f3b0858ec3b076de6b",
+      "result": {
+        "command": [
+          "python",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests/Research.Lab",
+          "-v"
+        ],
+        "timeout_seconds": 60,
+        "started_at": "2026-11-04T14:45:42.587471+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 4.709,
+        "finished_at": "2026-11-04T14:45:47.296687+00:00"
+      }
+    },
+    {
+      "path": "work/i4/checks/ordinary-annex.json",
+      "sha256": "e7a453f8bc8ab72197791f643e6799ced57539f83cfbeb629caceb2f8b4ed0e8",
+      "result": {
+        "command": [
+          "dotnet",
+          "tools/I4Acceptance/bin/Release/net10.0/I4Acceptance.dll",
+          "work/i4/ordinary-annex"
+        ],
+        "timeout_seconds": 600,
+        "started_at": "2026-11-04T15:32:41.363819+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 92.474,
+        "finished_at": "2026-11-04T15:34:13.837881+00:00"
+      }
+    },
+    {
+      "path": "work/i4/checks/ordinary-annex-audit.json",
+      "sha256": "a75f6a29e6d3116eafd295428190bf29cedcd0265ac57dfbde612caa528f3e39",
+      "result": {
+        "command": [
+          "python",
+          "scripts/verify_results.py",
+          "work/i4/ordinary-annex/export"
+        ],
+        "timeout_seconds": 60,
+        "started_at": "2026-11-04T15:34:58.633391+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 0.516,
+        "finished_at": "2026-11-04T15:34:59.149938+00:00"
+      }
+    },
+    {
+      "path": "work/i4/checks/i4-native-layout.json",
+      "sha256": "9de7ef3d241812a5a0e726dda3ad7ed79a2ccac283f27c6d9d6f86c9d3868645",
+      "result": {
+        "command": [
+          "python",
+          "scripts/check_i4_native.py",
+          "--godot",
+          "/workspace/work/toolchain/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+          "--fixtures",
+          "work/i4/ordinary-annex",
+          "--prepared",
+          "work/i4/native-final",
+          "--output",
+          "work/i4/native-layout"
+        ],
+        "timeout_seconds": 1200,
+        "started_at": "2026-11-04T15:40:44.906913+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 127.301,
+        "finished_at": "2026-11-04T15:42:52.207751+00:00"
+      }
+    }
+  ],
+  "i4Unit": {
+    "path": "work/i4/release-final/unit-check.json",
+    "sha256": "12703f79a9037bf04fc5ce271443bdb694be255036c9dc64fe12cb490a517945",
+    "result": {
+      "suite": "i4",
+      "status": "succeeded",
+      "testsPassed": 40,
+      "testPartitions": [
+        {
+          "file": "tests-i4-0.trx",
+          "passed": 26
+        },
+        {
+          "file": "tests-i4-1.trx",
+          "passed": 7
+        },
+        {
+          "file": "tests-i4-2.trx",
+          "passed": 3
+        },
+        {
+          "file": "tests-i4-3.trx",
+          "passed": 1
+        },
+        {
+          "file": "tests-i4-4.trx",
+          "passed": 1
+        },
+        {
+          "file": "tests-i4-5.trx",
+          "passed": 1
+        },
+        {
+          "file": "tests-i4-6.trx",
+          "passed": 1
+        }
+      ],
+      "scope": "Exhaustive ordinary unit phase; runner checks are a separate required gate"
+    }
+  },
+  "ordinary": {
+    "path": "work/i4/ordinary-annex/walkthrough.json",
+    "sha256": "071e0b4bc8868a231629b1e8d31fbc9728047ad441f0f8dd3148106de8be0fc5",
+    "result": {
+      "status": "succeeded",
+      "error": null,
+      "stage": "complete",
+      "tick": 2519,
+      "cash": 7584,
+      "milestones": [
+        {
+          "name": "bought-with-starting-money",
+          "tick": 33,
+          "cash": 5000
+        },
+        {
+          "name": "legally-bought-first-site",
+          "tick": 1604,
+          "cash": 9577
+        },
+        {
+          "name": "physically-arrived",
+          "tick": 1723,
+          "cash": 9577
+        },
+        {
+          "name": "mined-and-unloaded",
+          "tick": 1737,
+          "cash": 9577
+        },
+        {
+          "name": "same-instance-mines-second-site",
+          "tick": 2519,
+          "cash": 7584
+        }
+      ],
+      "elapsedSeconds": 92.3907422,
+      "scope": "Real ordinary compact-valley game; original 200 coins, three actual NPCs, ordinary commands, no Developer resources."
+    }
+  },
+  "native": {
+    "path": "work/i4/native-layout/gate.json",
+    "sha256": "1f194d9c2f2747d59ea28adf45fd529b8474a407d2980eef85b558f584bbcfb6",
+    "result": {
+      "status": "succeeded",
+      "cases": 3,
+      "scope": "Linux Godot Mono, software GL, actual ordinary checkpoint, compact equipment controls, mouse/touch, deployed work/stop/pickup and exact save/load. No physical device claim."
+    }
+  },
+  "nativeCases": [
+    {
+      "path": "work/i4/native-layout/ru-800/native.json",
+      "sha256": "3f6d7e4e8e0265491ce609b1d81745999d33dcc12cba99f431f1b6338616b93b",
+      "result": {
+        "status": "succeeded",
+        "checks": [
+          "actual I4 profile loaded",
+          "one authoritative visual body",
+          "available I4Object_place_1052",
+          "readable compact action I4Object_place_1052",
+          "inside viewport I4Object_place_1052",
+          "paused click only queues placement",
+          "available TabletTime",
+          "inside viewport TabletTime",
+          "ordinary time control resumes world",
+          "ordinary place command",
+          "available I4Object_start_1052",
+          "readable compact action I4Object_start_1052",
+          "inside viewport I4Object_start_1052",
+          "real equipment output",
+          "manual mining does not charge purchase twice",
+          "joystick does not overlap equipment controls",
+          "native work checkpoint exact",
+          "native work checkpoint exact",
+          "available I4Object_mode_Off_1052",
+          "readable compact action I4Object_mode_Off_1052",
+          "inside viewport I4Object_mode_Off_1052",
+          "available I4Object_pack_1052",
+          "readable compact action I4Object_pack_1052",
+          "inside viewport I4Object_pack_1052",
+          "pick up preserves identity",
+          "pick up preserves cargo"
+        ],
+        "language": "ru",
+        "width": 800,
+        "touch": false,
+        "scope": "Actual ordinary checkpoint, native ordinary Fleet controls, synthetic mouse/touch, Linux software GL."
+      }
+    },
+    {
+      "path": "work/i4/native-layout/en-1000/native.json",
+      "sha256": "82f51df856b30b4165ae6ad9a3b9c6e1f3bf8d223893d79b423e6adab07b4b4b",
+      "result": {
+        "status": "succeeded",
+        "checks": [
+          "actual I4 profile loaded",
+          "one authoritative visual body",
+          "available I4Object_place_1052",
+          "readable compact action I4Object_place_1052",
+          "inside viewport I4Object_place_1052",
+          "paused click only queues placement",
+          "available TabletTime",
+          "inside viewport TabletTime",
+          "ordinary time control resumes world",
+          "ordinary place command",
+          "available I4Object_start_1052",
+          "readable compact action I4Object_start_1052",
+          "inside viewport I4Object_start_1052",
+          "real equipment output",
+          "manual mining does not charge purchase twice",
+          "joystick does not overlap equipment controls",
+          "native work checkpoint exact",
+          "native work checkpoint exact",
+          "available I4Object_mode_Off_1052",
+          "readable compact action I4Object_mode_Off_1052",
+          "inside viewport I4Object_mode_Off_1052",
+          "available I4Object_pack_1052",
+          "readable compact action I4Object_pack_1052",
+          "inside viewport I4Object_pack_1052",
+          "pick up preserves identity",
+          "pick up preserves cargo"
+        ],
+        "language": "en",
+        "width": 1000,
+        "touch": false,
+        "scope": "Actual ordinary checkpoint, native ordinary Fleet controls, synthetic mouse/touch, Linux software GL."
+      }
+    },
+    {
+      "path": "work/i4/native-layout/en-360/native.json",
+      "sha256": "15a4496d5e597380afe9fe4629da64bc8dfea08b3c9ec43c4a071d39657e1c12",
+      "result": {
+        "status": "succeeded",
+        "checks": [
+          "actual I4 profile loaded",
+          "one authoritative visual body",
+          "available I4Object_place_1052",
+          "readable compact action I4Object_place_1052",
+          "inside viewport I4Object_place_1052",
+          "paused click only queues placement",
+          "available TabletTime",
+          "inside viewport TabletTime",
+          "ordinary time control resumes world",
+          "ordinary place command",
+          "available I4Object_start_1052",
+          "readable compact action I4Object_start_1052",
+          "inside viewport I4Object_start_1052",
+          "real equipment output",
+          "manual mining does not charge purchase twice",
+          "joystick does not overlap equipment controls",
+          "native work checkpoint exact",
+          "native work checkpoint exact",
+          "available I4Object_mode_Off_1052",
+          "readable compact action I4Object_mode_Off_1052",
+          "inside viewport I4Object_mode_Off_1052",
+          "available I4Object_pack_1052",
+          "readable compact action I4Object_pack_1052",
+          "inside viewport I4Object_pack_1052",
+          "pick up preserves identity",
+          "pick up preserves cargo"
+        ],
+        "language": "en",
+        "width": 360,
+        "touch": true,
+        "scope": "Actual ordinary checkpoint, native ordinary Fleet controls, synthetic mouse/touch, Linux software GL."
+      }
+    }
+  ],
+  "nativeInputFingerprint": "6b5558444a1aa02e9c2aef81aaddfa7f5a9f66cc04818d0b31fef7b41eeca8bc",
+  "nativeRuntime": {
+    "path": "work/i4/native-layout/platform.json",
+    "sha256": "ea8db85ad1a447861c5a0dd39393a912060c7a6b0f1bfbf6aef51f73c40eb16d",
+    "result": {
+      "Status": "passed",
+      "Failure": null,
+      "Tick": 62,
+      "StateHash": "07cbf7b8a764e78797cfcad8cd986371320041418825b4570fccd0aefd5ccc31",
+      "CheckedTicks": 62,
+      "LifecycleAdapterChecked": true,
+      "CheckpointRestoreChecked": true,
+      "RestoredTicks": [
+        12,
+        34,
+        55,
+        60
+      ],
+      "ElectionCheckedTicks": 40,
+      "ElectionStateHash": "5b45b11da900715ddf1dd8b766f9d957abf8214a088fdccc55939fd605af7ef2",
+      "ElectionRestoredTicks": [
+        9,
+        19,
+        20,
+        21
+      ],
+      "SupportCheckedTicks": 120,
+      "SupportStateHash": "dcd426adae3d1d6a11c2afd36e84b371b292e285b74a0125b81da043410feea4",
+      "SupportRestoredTicks": [
+        17,
+        18,
+        19,
+        27,
+        99,
+        100
+      ],
+      "StoppedVotingFinalHash": "4d4b0f48b443e3f64ebf7e16547b7d65844dd4d6fd32b66a15e92435e1a8e580",
+      "StoppedVotingRestoredTicks": [
+        3,
+        6
+      ],
+      "PhysicalCheckedTicks": 81,
+      "PhysicalStateHash": "33f1a44436c3643ba791a5ae7246d6f07e24e8d24590eb57519bb52e43e90e60",
+      "PhysicalRestoredTicks": [
+        14,
+        18,
+        25,
+        33,
+        42,
+        76
+      ],
+      "FoodCheckedTicks": 609,
+      "FoodStateHash": "8188bcb42bb1b3ea3cc975a744044566e9dc7a1bc2c1b7e832a3d7f62b6c962b",
+      "FoodRestoredTicks": [
+        340,
+        405,
+        414,
+        561,
+        562,
+        584
+      ],
+      "TradeCheckedTicks": 220,
+      "TradeStateHash": "66c511b6d656d910943cb3f28ef6f810040ae4cd8e62c24e4973cbda582f1411",
+      "TradeRestoredTicks": [
+        32,
+        33,
+        34,
+        35,
+        38,
+        51,
+        69
+      ],
+      "Runtime": "10.0.12",
+      "Platform": "Linux",
+      "GodotVersion": "4.7.2-stable (official)",
+      "Author": "Шелестов Максим Евгеньевич"
+    }
+  },
+  "screenshots": {
+    "en-360-mining.png": "50fbfef9214f216f3f8ea5359e162469f4d14ebc9ccc9495cba8eb3de13e3e35",
+    "ru-800-packed.png": "7ffa31392f686f42d0e21a7a1e4489a1a00ea19299680ba182abd8a175142f3e"
+  },
+  "followUpChecks": [
+    {
+      "path": "work/i4/checks/i4-developer-local.json",
+      "sha256": "8d0421f6826dd0ccc143d87f50e9e31836040cae318ed7211515e6faa99893e9",
+      "result": {
+        "command": [
+          "python",
+          "scripts/check_developer.py",
+          "--suite",
+          "i4",
+          "--output",
+          "work/i4/developer-final"
+        ],
+        "timeout_seconds": 780,
+        "started_at": "2026-11-04T15:56:09.260283+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 258.715,
+        "finished_at": "2026-11-04T16:00:27.975639+00:00"
+      }
+    },
+    {
+      "path": "work/i4/developer-final/developer-check.json",
+      "sha256": "617600126a58d46b5f7b29e397758f30fd82c8614212e7988093eb5c6e48e852",
+      "result": {
+        "suite": "i4",
+        "status": "succeeded",
+        "testsPassed": 40,
+        "testPartitions": [
+          {
+            "file": "tests-i4-0.trx",
+            "passed": 26
+          },
+          {
+            "file": "tests-i4-1.trx",
+            "passed": 7
+          },
+          {
+            "file": "tests-i4-2.trx",
+            "passed": 3
+          },
+          {
+            "file": "tests-i4-3.trx",
+            "passed": 1
+          },
+          {
+            "file": "tests-i4-4.trx",
+            "passed": 1
+          },
+          {
+            "file": "tests-i4-5.trx",
+            "passed": 1
+          },
+          {
+            "file": "tests-i4-6.trx",
+            "passed": 1
+          }
+        ],
+        "release_negative_build": "expected rejection",
+        "scope": "Developer variant; ordinary release/client metadata checked separately"
+      }
+    },
+    {
+      "path": "work/i4/checks/g2-forms-i4fix.json",
+      "sha256": "cb52040adfbc102927ae44c12052a76b50385caca618312384e9a576d675208d",
+      "result": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "scripts/check_city_experience_ui.py",
+          "--godot",
+          "/workspace/work/toolchain/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
+          "--case",
+          "forms",
+          "--fixtures",
+          "work/i4/windows-ui-artifact/city-ux-fixtures/g2-fixtures",
+          "--output",
+          "work/i4/g2-forms-fixed",
+          "--asset-cache",
+          "work/i4/native-layout/assets",
+          "--display",
+          "127.0.0.1:95.0"
+        ],
+        "timeout_seconds": 780,
+        "started_at": "2026-11-04T19:49:36.019509+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 184.287,
+        "finished_at": "2026-11-04T19:52:40.306603+00:00"
+      }
+    },
+    {
+      "path": "work/i4/g2-forms-fixed/a1-gate.json",
+      "sha256": "c71668c811a4b7764d2af1fbf08ab66c920cc288911efc7f41ea02f093bc2ad7",
+      "result": {
+        "status": "succeeded",
+        "requestedCases": "forms",
+        "cases": [
+          {
+            "status": "succeeded",
+            "prepared": true,
+            "map": "prepared",
+            "npcCount": 2,
+            "language": "ru",
+            "width": 800,
+            "checks": [
+              "invoice deep link, queued viewed flag, retained draft, actual partial payment and pending-command restore",
+              "actual incoming request, view plus acceptance in one paused preparation, service quantity draft",
+              "older own service history is paged, draft quantity is retained",
+              "overflow warning to its own storage card, local acknowledgement, physical partial rescue, unchanged expiry",
+              "real completed construction to its card, read state without repeated economic effect",
+              "self-funded road completion notice, full-map deep link, retained city/private contributions and no repeated reward"
+            ],
+            "scope": "Ordinary native Godot GUI with injected keyboard/mouse/touch events, software renderer; not a physical mobile device."
+          },
+          {
+            "status": "succeeded",
+            "prepared": true,
+            "map": "prepared",
+            "npcCount": 2,
+            "language": "en",
+            "width": 800,
+            "checks": [
+              "invoice deep link, queued viewed flag, retained draft, actual partial payment and pending-command restore",
+              "actual incoming request, view plus acceptance in one paused preparation, service quantity draft",
+              "older own service history is paged, draft quantity is retained",
+              "overflow warning to its own storage card, local acknowledgement, physical partial rescue, unchanged expiry",
+              "real completed construction to its card, read state without repeated economic effect",
+              "self-funded road completion notice, full-map deep link, retained city/private contributions and no repeated reward"
+            ],
+            "scope": "Ordinary native Godot GUI with injected keyboard/mouse/touch events, software renderer; not a physical mobile device."
+          },
+          {
+            "status": "succeeded",
+            "prepared": true,
+            "scope": "Existing F2 native delivery execution/partial payment/cancellation/restore probe on the same final client source, RU/EN"
+          }
+        ],
+        "matchedInputs": 705,
+        "scope": "Ordinary native window with synthetic keyboard/mouse/touch input; no physical Android/device assertion"
+      }
+    }
+  ],
+  "intermediateGitHubCI": {
+    "head": "c8f48dad13a8168d55088a76829fecfa28b43ab2",
+    "core": {
+      "run": 41861682117,
+      "conclusion": "success"
+    },
+    "platform": {
+      "run": 41861682099,
+      "windows-core-replay": "success",
+      "city-ux-ui": "failure: historical forms launcher omitted explicit G1 profile; fixed and locally passed three prepared native cases"
+    },
+    "failedArtifact": {
+      "id": 13339883813,
+      "bytes": 14682926,
+      "sha256": "889ef97afefe34233c1ebc02adfb4c877ae993ccb887b160631fd20357a665e6",
+      "crc": "all entries verified"
+    },
+    "scope": "Intermediate HEAD. Authoritative final-HEAD CI links and result are recorded in PR #82 after completion."
+  }
+}

@@ -121,7 +121,7 @@ public sealed partial class SimulationEngine
             {
                 if (j.Quantity <= 0 || j.Path.Length != 0 || !_config.ResourceNodes.Any(n => n.ItemId == j.Item && n.Position == actor.Position))
                     throw new CheckpointException("InvalidHarvestJob");
-                long duration = j.Kind != "EquipmentHarvest" ? checked(j.Quantity * _config.HarvestTicksPerUnit) :
+                long duration = j.Kind is not ("EquipmentHarvest" or "EquipmentHarvestLoop") ? checked(j.Quantity * _config.HarvestTicksPerUnit) :
                     checked(((j.Quantity - 1) / _equipment[j.EquipmentId].Characteristics.CycleQuantity + 1) *
                         _equipment[j.EquipmentId].Characteristics.CycleTicks);
                 if (j.CompletionTick != checked(j.StartTick + duration)) throw new CheckpointException("InvalidHarvestTime");
@@ -132,7 +132,7 @@ public sealed partial class SimulationEngine
                     _seenCommands[j.CommandId].Action.ItemId != j.Item ||
                     !_results.TryGetValue(j.CommandId, out var start) || start.Status != ResultStatus.Accepted))
                     throw new CheckpointException("InvalidHarvestLoop");
-                expectedCapacity.Add((actor.Inventory, j.CapacityHold), checked(j.Quantity * _items[j.Item].UnitVolume));
+                expectedCapacity.Add((PersonalHarvestInventory(actor,j), j.CapacityHold), checked(j.Quantity * _items[j.Item].UnitVolume));
             }
             else throw new CheckpointException("UnknownPersonalJob");
         }

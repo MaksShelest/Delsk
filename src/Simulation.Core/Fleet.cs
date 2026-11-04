@@ -13,6 +13,7 @@ public sealed partial class SimulationEngine
     private DeterministicRandom? _fleetRandom;
     private long _nextVehicleSupply;
     private CivicSite Dealer => _config.Layout!.CivicObjects.Single(c => c.Kind == "dealership");
+    private int DealerStockLimit => UsesMobileEquipment ? Fleet!.Models.Length + 1 : 6;
     private VehicleModel Model(string id) => Fleet!.Models.Single(m => m.Id == id);
     private Inventory VehicleCargo(OwnedVehicle v) => _economy.Inventories[v.CargoInventory.Value];
     private LogisticsState? VehicleLogistics(long id) => _logistics.Values.SingleOrDefault(l => l.VehicleId == id);
@@ -30,9 +31,14 @@ public sealed partial class SimulationEngine
             AddDealerVehicle(id);var listing=_dealerStock[^1];
             Emit("DealerInitialStock",entity:listing.Id,item:id,reason:$"{listing.Position.X},{listing.Position.Z}");
         }
+        if (UsesMobileEquipment)
+            foreach (var model in Fleet.Models.Where(m=>m.EquipmentTypeId is not null))
+            { AddDealerVehicle(model.Id);var listing=_dealerStock[^1];Emit("DealerInitialStock",entity:listing.Id,item:model.Id,reason:$"{listing.Position.X},{listing.Position.Z}"); }
     }
     private Cell? DealerPlace(string model)
     {
+        if (Model(model).EquipmentTypeId is not null)
+            return Dealer.EquipmentParking!.Where(cell=>!_dealerStock.Any(v=>v.Position==cell)&&!RoadBodies().Any(b=>VehicleCargo(b).Position==cell)).Cast<Cell?>().FirstOrDefault();
         var parking = Dealer.Parking!;
         bool tracked = Model(model).MaterialsOnly;
         foreach (var cell in tracked ? parking.TakeLast(1) : parking.Take(3))
@@ -71,7 +77,7 @@ public sealed partial class SimulationEngine
             .ThenByDescending(m => sales.Count(p => p.ModelId == m.Id)).ThenBy(m => ranks[m.Id]).ToArray();
         foreach (var model in candidates)
         {
-            if (_dealerStock.Count < 6 && AddDealerVehicle(model.Id))
+            if (_dealerStock.Count < DealerStockLimit && AddDealerVehicle(model.Id))
             { Emit("DealerSupply", entity: _dealerStock[^1].Id, item: model.Id, reason:$"{_dealerStock[^1].Position.X},{_dealerStock[^1].Position.Z}"); return; }
         }
         // Pending competitive windows protect an old listing until their inclusive close.
@@ -103,6 +109,14 @@ public sealed partial class SimulationEngine
         {
             var listing = _dealerStock.Single(v => v.Id == window.Key); var model = Model(listing.ModelId);
             var requests = window.OrderBy(r => r.Actor.Value).ToArray(); _fleetRandom!.Shuffle(requests);
+            if (model.EquipmentTypeId is not null && (RoadBodies().Any(b=>VehicleCargo(b).Position==listing.Position)||PedestrianAt(listing.Position,0)))
+            {
+                var release=_economy.Begin(Tick);
+                foreach(var r in requests)release.ReleaseMoney(_actors[r.Actor.Value].Account,r.MoneyHold);
+                release.Commit();
+                foreach(var r in requests){_vehicleRequests.Remove(r);Emit("VehicleNotAllocated",r.Actor.Value,listing.Id,model.Id,reason:"EquipmentSpaceBlocked",command:r.CommandId);}
+                continue;
+            }
             var winner = requests[0]; long cargo = _nextId, next = checked(cargo + 1);
             var tx = _economy.Begin(Tick);
             foreach (var request in requests)
@@ -110,6 +124,12 @@ public sealed partial class SimulationEngine
                 else tx.ReleaseMoney(_actors[request.Actor.Value].Account, request.MoneyHold);
             tx.CreateInventory(cargo, winner.Actor.Value, listing.Position, model.CapacityVolume); tx.Commit();
             _nextId = next; _vehicles.Add(listing.Id, new(listing.Id, winner.Actor, model.Id, new(cargo)));
+            if(model.EquipmentTypeId is {} equipmentType)
+            {
+                var type=_config.EquipmentTypes!.Single(t=>t.Id==equipmentType);
+                _equipment.Add(listing.Id,new(listing.Id,winner.Actor.Value,listing.Position,cargo,type,model.EquipmentLevel){Deployed=false,Mode=EquipmentMode.Off,Reason="EquipmentPacked"});
+                Emit("EquipmentPurchased",winner.Actor.Value,listing.Id,money:model.PriceMinor,reason:type.Id,command:winner.CommandId);
+            }
             _vehiclePurchases.Add(new(listing.Id, winner.Actor, model.Id, Tick, model.PriceMinor, winner.CommandId));
             _dealerStock.Remove(listing);
             foreach (var r in requests)
@@ -120,7 +140,7 @@ public sealed partial class SimulationEngine
     private void BoardVehicle(ActorState actor, CommandEnvelope c)
     {
         RequireIdle(actor); RequireActionLocation(actor, c.Action); var v = OwnVehicle(actor, c.Action.VehicleId);
-        if (RoadVehicleBusy(v.Id)&&!ServiceBoardAllowed(actor.Id,v.Id) || HasTransfer(actor.Id) || DrivenVehicle(actor.Id) is not null || v.Driver != 0 || v.Installation is not null || VehicleTransferring(v.CargoInventory.Value) ||
+        if (MobileMachineWorking(v.Id) || RoadVehicleBusy(v.Id)&&!ServiceBoardAllowed(actor.Id,v.Id) || HasTransfer(actor.Id) || DrivenVehicle(actor.Id) is not null || v.Driver != 0 || v.Installation is not null || VehicleTransferring(v.CargoInventory.Value) ||
             VehicleLogistics(v.Id) is { } l && (l.Trip is not null || l.Enabled || l.InboundEnabled)) throw new RuleViolation("VehicleBusy");
         _vehicles[v.Id] = v with { Driver = actor.Id };
         actor.OffsetX = v.OffsetX; actor.OffsetZ = v.OffsetZ; actor.FacingX = v.FacingX; actor.FacingZ = v.FacingZ; actor.HeadingX = actor.HeadingZ = 0;
@@ -138,6 +158,7 @@ public sealed partial class SimulationEngine
         RequireIdle(actor); var v = OwnVehicle(actor, c.Action.VehicleId); RequireActionLocation(actor, c.Action);
         if (!_enterprises.TryGetValue(c.Action.Enterprise.Value, out var e) || e.Definition.OwnerId != actor.Id || Demolished(e.Definition.Id) || PreparingDemolition(e.Definition.Id)) throw new RuleViolation("NotAvailable");
         var cargo = VehicleCargo(v);
+        if (Model(v.ModelId).EquipmentTypeId is not null) throw new RuleViolation("ExtractionVehicleOnly");
         if (Model(v.ModelId).MaterialsOnly) throw new RuleViolation("RoadVehicleOnly");
         if (RoadVehicleBusy(v.Id) || v.Driver != 0 || v.Installation is not null || VehicleLogistics(v.Id) is not null || cargo.Position != e.Definition.Position || cargo.Stock.Count != 0 || VehicleTransferring(cargo.Id)) throw new RuleViolation("VehicleBusy");
         var l = _logistics.Values.SingleOrDefault(l => l.Enterprise == e.Definition.Id);
@@ -150,6 +171,7 @@ public sealed partial class SimulationEngine
     {
         if (DrivenVehicle(actor.Id) is not { } v) return;
         VehicleCargo(v).Position = actor.Position;
+        if(_equipment.TryGetValue(v.Id,out var equipment))equipment.Position=actor.Position;
         _vehicles[v.Id] = v with { OffsetX = actor.OffsetX, OffsetZ = actor.OffsetZ, FacingX = actor.FacingX, FacingZ = actor.FacingZ };
     }
     private bool RoadSurface(Cell from,Cell to)=>Roads is not null?RoadLevel(from)>0&&RoadLevel(to)>0:
@@ -176,7 +198,7 @@ public sealed partial class SimulationEngine
     public FleetObservation? FleetOf(ParticipantId actor) => Fleet is null ? null : new(Dealer.Entry, Fleet.Models,
         [.. _dealerStock.OrderBy(v => v.Id)], [.. _vehicles.Values.Where(v => v.Owner == actor).OrderBy(v => v.Id).Select(v => new VehicleView(v, Model(v.ModelId), VehicleCargo(v).Position,
             ServiceVehicleBusy(v.Id) ? "ServiceReserved" : v.Installation is not null ? "Installing" : v.Driver != 0 ? "Personal" : VehicleLogistics(v.Id)?.Trip?.State ?? "Parked", new(VehicleLogistics(v.Id)?.Id ?? 0)))],
-        [.. _vehicleRequests.Where(r => r.Actor == actor)], [.. _platforms.Values.Where(p => p.Group.Owner == actor.Value).OrderBy(p => p.Id).Select(p => p.View())], Fleet.Kits, Fleet.Platforms);
+        [.. _vehicleRequests.Where(r => r.Actor == actor)], [.. _platforms.Values.Where(p => p.Group.Owner == actor.Value).OrderBy(p => p.Id).Select(p => p.View())], Fleet.Kits, Fleet.Platforms,UsesMobileEquipment?[..CopyEquipmentCatalog()]:default);
     private void RestoreFleet(FleetState? state)
     {
         _vehicles.Clear(); _dealerStock.Clear(); _vehicleRequests.Clear(); _vehiclePurchases.Clear(); _platforms.Clear();

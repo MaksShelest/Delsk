@@ -66,7 +66,7 @@ public partial class PlayerTablet : VBoxContainer
         if(scenario.Economy?.Fleet is not null){_fleet=new(language,submit,access);_fleet.RoadWorkRequested+=id=>RoadWorkRequested?.Invoke(id);_overview.AddChild(Fold(L("Автопарк и автосалон ›","Fleet and dealer ›"),_fleet,true));}
         if(scenario.Economy?.Roads is not null){_roads=new(language,submit,access);_overview.AddChild(Fold(L("Дороги и движение ›","Roads and traffic ›"),_roads,true));}
         _development=new(scenario,language,0,submit,access);_overview.AddChild(Fold(L("Опыт и задания ›","Experience and quests ›"),_development));
-        _purchases=new(scenario,language,submit,access);_overview.AddChild(Fold(L("Купить технику ›","Buy equipment ›"),_purchases));
+        _purchases=new(scenario,language,submit,access);_purchases.DealerRequested+=()=>OpenSection("fleet");_overview.AddChild(Fold(L("Купить технику ›","Buy equipment ›"),_purchases));
         _back.Text=L("‹ Моё хозяйство","‹ My holdings");_back.FocusMode=FocusModeEnum.None;_back.Visible=false;_back.Pressed+=Back;farm.AddChild(_back);farm.AddChild(_cardHost);
         Tab(L("Участники","Participants")).AddChild(TabletDesign.Wrap(_participants));
         var talks=Tab(L("Переговоры","Negotiations"));
@@ -163,6 +163,8 @@ public partial class PlayerTablet : VBoxContainer
 
 public partial class EquipmentPurchasePanel : VBoxContainer
 {
+    public event Action? DealerRequested;
+    private readonly bool _cityDealer;
     private readonly List<(Button Button, GameAction Action, long Price)> _buys = [];
     private PlayerView? _lastView;
     private bool _pending;
@@ -171,6 +173,8 @@ public partial class EquipmentPurchasePanel : VBoxContainer
     public EquipmentPurchasePanel(ScenarioDefinition scenario, string language, System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access)
     {
         _access = access; _language = language;
+        if(scenario.Economy?.Fleet?.EquipmentDealerVersion==1)
+        { _cityDealer=true;AddChild(new Label{Text=PlayerText.Local(language,"Мобильная техника продаётся в городском автосалоне.","Mobile equipment is sold at the city dealer."),AutowrapMode=TextServer.AutowrapMode.WordSmart});var button=new Button{Name="EquipmentOpenDealer",Text=PlayerText.Local(language,"Открыть автосалон","Open dealer"),SizeFlagsHorizontal=SizeFlags.ShrinkBegin};button.Pressed+=()=>DealerRequested?.Invoke();AddChild(button);return; }
         AddChild(new Label { Text = PlayerText.Local(language, "Купить технику у ресурсной точки", "Buy equipment at a resource node") });
         foreach (var type in scenario.EquipmentTypes ?? [])
             foreach (var level in type.Levels)
@@ -192,6 +196,7 @@ public partial class EquipmentPurchasePanel : VBoxContainer
     public void ShowData(PlayerView view, bool pending)
     {
         _lastView = view; _pending = pending;
+        if(_cityDealer)return;
         foreach (var row in _buys)
         {
             var access = _access(row.Action); row.Button.Disabled = pending || view.Participant.Busy || view.AvailableCashMinor < row.Price || !access.Allowed;

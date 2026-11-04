@@ -251,6 +251,8 @@ public sealed partial class SimulationEngine
                 case ActionKind.OutfitWorkshop: OutfitWorkshop(actor, c); break;
                 case ActionKind.AssignWorkshopWorkers: AssignWorkshopWorkers(actor, c); break;
                 case ActionKind.SetWage: SetWage(actor, c); break;
+                case ActionKind.PlaceEquipment: PlaceEquipment(actor,c); break;
+                case ActionKind.PackEquipment: PackEquipment(actor,c); break;
                 case ActionKind.BuyEquipment: BuyEquipment(actor, c); break;
                 case ActionKind.UpgradeEquipment: UpgradeEquipment(actor, c); break;
                 case ActionKind.SetEquipmentMode: SetEquipmentMode(actor, c); break;
@@ -383,7 +385,7 @@ public sealed partial class SimulationEngine
             if (actor.Job is not { } job || !IsHarvest(job) || Tick < job.CompletionTick) continue;
             long total = checked(_flows[job.Item].Harvested + job.Quantity);
             var tx = _economy.Begin(Tick);
-            tx.ReleaseCapacity(actor.Inventory, job.CapacityHold); tx.AddStock(actor.Inventory, job.Item, job.Quantity); tx.Commit();
+            tx.ReleaseCapacity(PersonalHarvestInventory(actor,job), job.CapacityHold); tx.AddStock(PersonalHarvestInventory(actor,job), job.Item, job.Quantity); tx.Commit();
             ConsumeResource(job.Id);
             if (job.EquipmentId != 0)
             {
@@ -393,6 +395,13 @@ public sealed partial class SimulationEngine
             _flows[job.Item].Harvested = total;
             _completedPersonalJobs.Add(job.Id); actor.Job = null;
             Emit("HarvestCompleted", actor.Id, job.Id, job.Item, job.Quantity, command: job.CommandId);
+            if(job.Kind=="EquipmentHarvestLoop")
+            {
+                var machine=_equipment[job.EquipmentId];machine.Completed=checked(machine.Completed+1);
+                try{StartEquipmentHarvest(actor,_seenCommands[job.CommandId]);}
+                catch(RuleViolation ex) when(ex.ReasonCode is "NoCapacity" or "NoOutputSpace" or "ResourceDepleted" or "NoResourceRights")
+                {machine.Reason=ex.ReasonCode=="NoCapacity"?"NoOutputSpace":ex.ReasonCode;Emit("HarvestLoopStopped",actor.Id,job.Id,job.Item,reason:ex.ReasonCode,command:job.CommandId);}
+            }
             if (job.Kind == "HarvestLoop")
             {
                 try { BeginHarvestCycle(actor, job.Item, job.CommandId); }

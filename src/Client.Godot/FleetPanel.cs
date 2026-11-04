@@ -29,12 +29,14 @@ public partial class FleetPanel : VBoxContainer
         _transfer.Text=L("Перенести","Transfer");_transfer.Pressed+=()=>{if(_view is null||_source.Selected<0||_destination.Selected<0||_item.Selected<0)return;_submit(new(ActionKind.Transfer,Source:new(_inventoryIds[_source.Selected]),Destination:new(_inventoryIds[_destination.Selected]),ItemId:_item.GetItemMetadata(_item.Selected).AsString(),Quantity:(long)_quantity.Value));};
         AddChild(_platforms);
     }
+    private string ResourceItem(VehicleModel model)=>_view!.Fleet!.EquipmentTypes.Single(t=>t.Id==model.EquipmentTypeId).ItemId;
+    private string ModelName(VehicleModel model)=>model.EquipmentTypeId is null?model.Name:PlayerText.Item(_language,ResourceItem(model))+" · "+(model.EquipmentLevel==1?L("малая","small"):L("большая","large"));
     private string L(string ru,string en)=>PlayerText.Local(_language,ru,en);
     public void FocusVehicle(long id)
     {if(_vehicles.TryGetValue(id,out var row)){row.Label.AddThemeColorOverride("font_color",new Color("956019"));UiNavigation.Reveal(row.Label);}}
     private static Label TextLabel(string text="")=>new(){Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart};
     private void ActionButton(Container host,string name,string text,GameAction action)
-    {var button=new Button{Name=name,Text=text,FocusMode=FocusModeEnum.None,AutowrapMode=TextServer.AutowrapMode.WordSmart};button.Pressed+=()=>_submit(action);host.AddChild(button);_actions.Add((button,action));}
+    {var button=new Button{Name=name,Text=text,FocusMode=FocusModeEnum.None,AutowrapMode=TextServer.AutowrapMode.WordSmart};button.SizeFlagsHorizontal=text.Length<=24?SizeFlags.ShrinkBegin:SizeFlags.Fill;button.AutowrapMode=text.Length<=24?TextServer.AutowrapMode.Off:TextServer.AutowrapMode.WordSmart;button.Pressed+=()=>_submit(action);host.AddChild(button);_actions.Add((button,action));}
     private static void Clear(Container host){foreach(Node n in host.GetChildren()){host.RemoveChild(n);n.QueueFree();}}
     public void ShowData(PlayerView view,bool pending)
     {
@@ -44,11 +46,17 @@ public partial class FleetPanel : VBoxContainer
         foreach(var listing in f.Stock)
         {
             var model=f.Models.Single(m=>m.Id==listing.ModelId);long id=listing.Id;
-            if(!_listings.TryGetValue(id,out var row)){var box=new VBoxContainer();row=(TextLabel(),new Button{Name="FleetBuy_"+id,FocusMode=FocusModeEnum.None,Text=L("Заявка на покупку","Request purchase")});row.Buy.Pressed+=()=>_submit(new(ActionKind.BuyVehicle,VehicleId:id));box.AddChild(row.Label);box.AddChild(row.Buy);_stock.AddChild(TabletDesign.Wrap(box));_listings.Add(id,row);}
+            if(!_listings.TryGetValue(id,out var row)){var box=new VBoxContainer();row=(TextLabel(),new Button{Name="FleetBuy_"+id,FocusMode=FocusModeEnum.None,Text=L("Заявка на покупку","Request purchase")});row.Buy.Pressed+=()=>_submit(new(ActionKind.BuyVehicle,VehicleId:id));row.Buy.SizeFlagsHorizontal=SizeFlags.ShrinkBegin;box.AddChild(row.Label);box.AddChild(row.Buy);_stock.AddChild(TabletDesign.Wrap(box));_listings.Add(id,row);}
             row.Label.Text=model.Name+" #"+id+" · "+PlayerText.Money(model.PriceMinor)+L(" · объём "," · volume ")+model.CapacityVolume+L(" · скорость до "," · top speed ")+model.Speed+L(" км/ч · возраст "," km/h · stock age ")+(view.Tick-listing.DeliveredTick)+L(" тиков · "," ticks · ")+(model.MaterialsOnly?L("дорожные материалы","road materials"):model.Id=="sputnik20"?L("легковой","passenger car"):L("грузовой","cargo"));
+            if(model.EquipmentTypeId is {} typeId)
+            {
+                var characteristics=f.EquipmentTypes.Single(t=>t.Id==typeId).Levels.Single(l=>l.Level==model.EquipmentLevel);
+                row.Label.Text=PlayerText.Item(_language,ResourceItem(model))+" · "+(model.EquipmentLevel==1?L("малая","small"):L("большая","large"))+" #"+id+" · "+PlayerText.Money(model.PriceMinor)+L(" · выпуск "," · output ")+characteristics.CycleQuantity+L(" за "," per ")+characteristics.CycleTicks+L(" тика · запас "," ticks · storage ")+model.CapacityVolume+L(" · штат "," · crew ")+characteristics.CrewCapacity+L(" · в наличии ("," · available (")+listing.Position.X+","+listing.Position.Z+")";
+            }
+            row.Buy.TooltipText=view.AvailableCashMinor<model.PriceMinor?PlayerText.Reason(_language,"NoMoney"):PlayerText.Reason(_language,_access(new(ActionKind.BuyVehicle,VehicleId:id)).ReasonCode);
             row.Buy.Disabled=pending||view.Participant.Busy||f.OwnRequests.Length>0||view.AvailableCashMinor<model.PriceMinor||!_access(new(ActionKind.BuyVehicle,VehicleId:id)).Allowed;
         }
-        string key=string.Join(',',f.Vehicles.Select(v=>$"{v.Vehicle.Id}:{v.Vehicle.Driver}:{v.Vehicle.HandlingLevel}:{v.Vehicle.Installation?.Level}:{v.Logistics.Value}"))+"|"+string.Join(',',view.Enterprises.Select(e=>e.Id.Value))+"|"+string.Join(',',view.Buildings.Select(b=>b.Id.Value))+"|"+string.Join(',',f.Platforms.Select(p=>$"{p.Id}:{p.Level}:{p.Installation?.Level}:{p.Group.Headcount}:{p.Group.WageMinor}:{p.Group.PendingWageMinor}"));
+        string key=string.Join(',',(view.Equipment??[]).Select(e=>$"{e.Id.Value}:{e.Deployed}:{e.Mode}:{e.PersonalJobId!=0}"))+"|"+string.Join(',',f.Vehicles.Select(v=>$"{v.Vehicle.Id}:{v.Vehicle.Driver}:{v.Vehicle.HandlingLevel}:{v.Vehicle.Installation?.Level}:{v.Logistics.Value}"))+"|"+string.Join(',',view.Enterprises.Select(e=>e.Id.Value))+"|"+string.Join(',',view.Buildings.Select(b=>b.Id.Value))+"|"+string.Join(',',f.Platforms.Select(p=>$"{p.Id}:{p.Level}:{p.Installation?.Level}:{p.Group.Headcount}:{p.Group.WageMinor}:{p.Group.PendingWageMinor}"));
         if(key!=_controlsKey)
         {
             _controlsKey=key;Clear(_owned);Clear(_platforms);_vehicles.Clear();_actions.Clear();
@@ -56,13 +64,24 @@ public partial class FleetPanel : VBoxContainer
             {
                 var v=item.Vehicle;var box=new VBoxContainer();var label=TextLabel();box.AddChild(label);var buttons=new VBoxContainer();box.AddChild(buttons);_owned.AddChild(TabletDesign.Wrap(box));_vehicles.Add(v.Id,(label,buttons));
                 // Resolve current position at click time, so the button never follows an old captured coordinate.
-                var walk=new Button{Name="FleetFind_"+v.Id,Text=L("К машине","Go to vehicle"),FocusMode=FocusModeEnum.None};walk.Pressed+=()=>{var current=_view!.Fleet!.Vehicles.Single(x=>x.Vehicle.Id==v.Id).Position;_submit(new(ActionKind.MoveTo,Target:current));};buttons.AddChild(walk);
+                var walk=new Button{Name="FleetFind_"+v.Id,Text=L("К машине","Go to vehicle"),SizeFlagsHorizontal=SizeFlags.ShrinkBegin,FocusMode=FocusModeEnum.None};walk.Pressed+=()=>{var current=_view!.Fleet!.Vehicles.Single(x=>x.Vehicle.Id==v.Id).Position;_submit(new(ActionKind.MoveTo,Target:current));};buttons.AddChild(walk);
                 ActionButton(buttons,"FleetBoard_"+v.Id,v.Driver==0?L("Сесть","Board"):L("Выйти","Leave"),new(v.Driver==0?ActionKind.BoardVehicle:ActionKind.LeaveVehicle,VehicleId:v.Id));
                 if(item.Model.MaterialsOnly&&view.Roads is not null)
                 {var road=new Button{Name="FleetRoadWork_"+v.Id,Text=L("Строить / улучшить дорогу","Build / upgrade road")};road.Pressed+=()=>RoadWorkRequested?.Invoke(v.Id);buttons.AddChild(road);}
                 if(view.Roads is not null)ActionButton(buttons,"FleetTurn_"+v.Id,L("Развернуться в свободном месте","Turn in a free place"),new(ActionKind.TurnVehicle,VehicleId:v.Id));
                 foreach(var kit in f.Kits.Where(k=>k.Level>v.HandlingLevel&&(k.Level==2?v.ModelId=="vector200":v.ModelId is "muravey70" or "eger70" or "trakt_d1")))ActionButton(buttons,"FleetKit_"+v.Id+"_"+kit.Level,L("Комплект ","Handling kit ")+kit.Throughput+" · "+PlayerText.Money(kit.PriceMinor)+" + "+string.Join(", ",kit.Materials.Select(m=>PlayerText.Item(_language,m.ItemId)+" ×"+m.Quantity))+L(" · 60 тиков"," · 60 ticks"),new(ActionKind.InstallVehicleKit,VehicleId:v.Id,EquipmentLevel:kit.Level,Source:v.CargoInventory));
-                if(!item.Model.MaterialsOnly)foreach(var enterprise in view.Enterprises)ActionButton(buttons,"FleetAssign_"+v.Id+"_"+enterprise.Id.Value,L("Назначить предприятию #","Assign to enterprise #")+enterprise.Id.Value,new(ActionKind.AssignVehicle,VehicleId:v.Id,Enterprise:enterprise.Id));
+                if(item.Model.EquipmentTypeId is not null)
+                {
+                    var equipment=view.Equipment!.Single(e=>e.Id.Value==v.Id);var eid=equipment.Id;
+                    var flow=TabletDesign.Flow();buttons.AddChild(flow);
+                    ActionButton(flow,"I4Place_"+v.Id,L("Разместить технику","Place equipment"),new(ActionKind.PlaceEquipment,Equipment:eid));
+                    ActionButton(flow,"I4Start_"+v.Id,L("Начать добычу","Start mining"),new(ActionKind.StartHarvesting,Equipment:eid,ItemId:ResourceItem(item.Model),Quantity:f.EquipmentTypes.Single(t=>t.Id==item.Model.EquipmentTypeId).Levels.Single(l=>l.Level==item.Model.EquipmentLevel).CycleQuantity));
+                    ActionButton(flow,"I4Auto_"+v.Id,L("Авто / наём","Auto / hire"),new(ActionKind.SetEquipmentMode,Equipment:eid,Mode:EquipmentMode.Automatic));
+                    ActionButton(flow,"I4Stop_"+v.Id,L("Остановить","Stop"),new(ActionKind.SetEquipmentMode,Equipment:eid,Mode:EquipmentMode.Off));
+                    ActionButton(flow,"I4Pack_"+v.Id,L("Забрать технику","Pick up equipment"),new(ActionKind.PackEquipment,Equipment:eid));
+                    if(equipment.Mode!=EquipmentMode.Personal)ActionButton(flow,"I4Personal_"+v.Id,L("Лично","Personal"),new(ActionKind.SetEquipmentMode,Equipment:eid,Mode:EquipmentMode.Personal));
+                }
+                if(item.Model.EquipmentTypeId is null&&!item.Model.MaterialsOnly)foreach(var enterprise in view.Enterprises)ActionButton(buttons,"FleetAssign_"+v.Id+"_"+enterprise.Id.Value,L("Назначить предприятию #","Assign to enterprise #")+enterprise.Id.Value,new(ActionKind.AssignVehicle,VehicleId:v.Id,Enterprise:enterprise.Id));
             }
             foreach(var b in view.Buildings)
             {
@@ -76,11 +95,21 @@ public partial class FleetPanel : VBoxContainer
         foreach(var item in f.Vehicles)
         {
             var inv=view.Inventories.Single(i=>i.Id==item.Vehicle.CargoInventory);var v=item.Vehicle;
-            _vehicles[v.Id].Label.Text=item.Model.Name+" #"+v.Id+" · "+L("Объём ","Volume ")+$"{inv.OccupiedVolume}+{inv.ReservedCapacity}/{inv.Capacity}"+" · "+$"({item.Position.X},{item.Position.Z})"+" · "+State(item.State)+(v.Installation is {} job?L(" до тика "," until tick ")+job.CompletionTick:"")+"\n"+string.Join(" · ",inv.Stock.Select(s=>PlayerText.Item(_language,s.ItemId)+" ×"+s.Quantity));
+            _vehicles[v.Id].Label.Text=ModelName(item.Model)+" #"+v.Id+" · "+L("Объём ","Volume ")+$"{inv.OccupiedVolume}+{inv.ReservedCapacity}/{inv.Capacity}"+" · "+$"({item.Position.X},{item.Position.Z})"+" · "+State(item.Model.EquipmentTypeId is null?item.State:v.Driver!=0?"Personal":view.Equipment!.Single(e=>e.Id.Value==v.Id).Deployed==true?view.Equipment!.Single(e=>e.Id.Value==v.Id).ReasonCode:"EquipmentPacked")+(v.Installation is {} job?L(" до тика "," until tick ")+job.CompletionTick:"")+"\n"+string.Join(" · ",inv.Stock.Select(s=>PlayerText.Item(_language,s.ItemId)+" ×"+s.Quantity));
         }
-        foreach(var a in _actions)a.Button.Disabled=pending||!_access(a.Action).Allowed||view.Participant.Busy;
+        foreach(var item in f.Vehicles.Where(v=>v.Model.EquipmentTypeId is not null))
+        {
+            var e=view.Equipment!.Single(e=>e.Id.Value==item.Vehicle.Id);var group=view.Employment.Single(g=>g.Id==e.GroupId);
+            _vehicles[e.Id.Value].Label.Text+="\n"+(e.Deployed==true?L("Размещена · рабочий участок ","Deployed · work site ")+$"({e.Position.X},{e.Position.Z})":L("Транспортное положение","Packed for transport"))+" · "+PlayerText.Reason(_language,e.ReasonCode)+L(" · прогресс "," · progress ")+e.WorkDone+"/"+e.WorkRequired+L(" · штат "," · crew ")+group.Headcount+"/"+group.Capacity;
+        }
+        foreach(var a in _actions)
+        {
+            var access=_access(a.Action);bool stop=a.Action.Kind==ActionKind.SetEquipmentMode&&a.Action.Mode==EquipmentMode.Off;
+            a.Button.Disabled=pending||!access.Allowed||view.Participant.Busy&&!stop;
+            a.Button.TooltipText=!access.Allowed?PlayerText.Reason(_language,access.ReasonCode):view.Participant.Busy&&!stop?PlayerText.Reason(_language,"ParticipantBusy"):"";
+        }
         var nearby=view.Inventories.Where(i=>i.Position==view.Participant.Position).OrderBy(i=>i.Id.Value).ToArray();
-        string tk=string.Join(',',nearby.Select(i=>i.Id.Value));if(tk!=_transferKey){_transferKey=tk;_source.Clear();_destination.Clear();_inventoryIds=nearby.Select(i=>i.Id.Value).ToArray();foreach(var i in nearby){string label=i.Id==view.Participant.InventoryId?L("Рюкзак","Backpack"):f.Vehicles.FirstOrDefault(v=>v.Vehicle.CargoInventory==i.Id)?.Model.Name??L("Хранилище","Storage");_source.AddItem(label+" #"+i.Id.Value);_destination.AddItem(label+" #"+i.Id.Value);}if(nearby.Length>1)_destination.Select(1);}
+        string tk=string.Join(',',nearby.Select(i=>i.Id.Value));if(tk!=_transferKey){_transferKey=tk;_source.Clear();_destination.Clear();_inventoryIds=nearby.Select(i=>i.Id.Value).ToArray();foreach(var i in nearby){string label=i.Id==view.Participant.InventoryId?L("Рюкзак","Backpack"):f.Vehicles.FirstOrDefault(v=>v.Vehicle.CargoInventory==i.Id) is {} vehicle?ModelName(vehicle.Model):L("Хранилище","Storage");_source.AddItem(label+" #"+i.Id.Value);_destination.AddItem(label+" #"+i.Id.Value);}if(nearby.Length>1)_destination.Select(1);}
         // Newly acquired items join the list without resetting the current choice.
         foreach(var id in view.Inventories.SelectMany(i=>i.Stock).Select(s=>s.ItemId).Distinct().Order(StringComparer.Ordinal))if(!Enumerable.Range(0,_item.ItemCount).Any(n=>_item.GetItemMetadata(n).AsString()==id)){_item.AddItem(PlayerText.Item(_language,id));_item.SetItemMetadata(_item.ItemCount-1,id);}
         _transfer.Disabled=pending||view.Participant.Busy||nearby.Length<2||_item.ItemCount==0;

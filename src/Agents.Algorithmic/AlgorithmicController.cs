@@ -62,7 +62,7 @@ public sealed partial class AlgorithmicController
         return Choose(o, DecisionCandidates(o));
     }
     private Candidate[] DecisionCandidates(ControllerObservation o) => StrategicCandidates(o,Candidates(o).Concat(WageCandidates(o)).Concat(ContractCandidates(o)).Concat(MarketCandidates(o))
-            .Concat(EconomicCandidates(o)).Concat(EconomicExtraction(o)).Concat(RoadCandidates(o)).Concat(ProductionContentCandidates(o)).Concat(DevelopmentCandidates(o)).Concat(LogisticsCandidates(o)).Concat(WorkshopCandidates(o)).Concat(RecipeCandidates(o)).Concat(PoliticalCandidates(o)).Concat(NegotiationCandidates(o)).Concat(NegotiationResponses(o))
+            .Concat(EconomicCandidates(o)).Concat(EconomicExtraction(o)).Concat(MobileEquipmentTransport(o)).Concat(RoadCandidates(o)).Concat(ProductionContentCandidates(o)).Concat(DevelopmentCandidates(o)).Concat(LogisticsCandidates(o)).Concat(WorkshopCandidates(o)).Concat(RecipeCandidates(o)).Concat(PoliticalCandidates(o)).Concat(NegotiationCandidates(o)).Concat(NegotiationResponses(o))
             .Where(c => (!SimplePolicy || SimpleGoal(c) || HasObligations(o) || UsesEconomicPlanning&&c.Goal=="SelectRecipe") && Feasible(c,o) && (!HasObligations(o) || !ExpansionGoal(c.Goal)) &&
                 (o.OwnSupplyRequests.Length==0 || c.Goal is not ("SellCarried" or "SellOutput" or "HarvestForSale")))
             .Select(c => HasObligations(o) && c.Goal is "SupplyProduction" or "ResumeProduction" or "AdjustWage"
@@ -209,7 +209,7 @@ public sealed partial class AlgorithmicController
                     60000 * settings.ExpansionWeight / 100 + margin - Math.Max(0, travel), steps.ToArray());
             }
         }
-        if (!UsesEconomicPlanning && !recovery && o.Enterprises.Length > 0 && o.Equipment.Length == 0)
+        if (!MobileFleet(o) && !UsesEconomicPlanning && !recovery && o.Enterprises.Length > 0 && o.Equipment.Length == 0)
         {
             var type = o.EquipmentTypes.FirstOrDefault(t => t.ItemId == settings.PreferredInput);
             var level = type?.Levels.Single(l => l.Level == 1);
@@ -232,7 +232,7 @@ public sealed partial class AlgorithmicController
                 yield return One("PreserveCash", "ExtractionPause", 200000, new(ActionKind.SetEquipmentMode, Equipment: machine.Id, Mode: EquipmentMode.Off));
             var type = o.EquipmentTypes.Single(t => t.Id == machine.TypeId);
             var level = type.Levels.Single(l => l.Level == machine.Level);
-            if (!recovery && machine.Mode != EquipmentMode.Automatic && machine.PersonalJobId == 0 &&
+            if (machine.Deployed!=false && !recovery && machine.Mode != EquipmentMode.Automatic && machine.PersonalJobId == 0 &&
                 cash >= checked(level.CrewCapacity * level.WageMinor * settings.WageReviewTicks) &&
                 o.Population >= level.MinimumCrew + o.Enterprises.Sum(e => o.Map.Recipes.Single(r => r.Id == e.RecipeId).MinimumStaff))
                 yield return One("AutomateExtraction", type.Id, 70000, new(ActionKind.SetEquipmentMode, Equipment: machine.Id, Mode: EquipmentMode.Automatic));
