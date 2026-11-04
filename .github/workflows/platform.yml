@@ -109,9 +109,13 @@ jobs:
           name: windows-platform-probe
           path: artifacts/
 
-  city-ux-ui:
+  city-ux-native:
     runs-on: windows-2025
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        case: [city, compact, forms]
     env:
       DOTNET_PROCESSOR_COUNT: '2'
     steps:
@@ -133,14 +137,19 @@ jobs:
           if (!$engine) { throw 'Missing Godot .NET console executable' }
           "DELSK_GODOT=$engine" >> $env:GITHUB_ENV
       - name: Prepare ordinary-command G2 UI fixtures
+        if: matrix.case == 'forms'
         shell: pwsh
         run: |
           python scripts/run_check.py --name city-ux-fixtures --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_headless.py --phase tests --suite ux --output artifacts/city-ux-fixtures
           exit $LASTEXITCODE
-      - name: Actual ordinary city UX windows, RU and EN, narrow touch input and delivery regression
+      - name: Disjoint ordinary city UX windows, RU and EN, narrow touch input and delivery regression
         shell: pwsh
+        env:
+          NATIVE_CASE: ${{ matrix.case }}
         run: |
-          python scripts/run_check.py --name city-ux-native --timeout 600 --log-directory artifacts/gate-checks -- python scripts/check_city_experience_ui.py --godot "$env:DELSK_GODOT" --output artifacts/city-ux-ui --fixtures artifacts/city-ux-fixtures/g2-fixtures
+          $arguments = @('--godot', "$env:DELSK_GODOT", '--output', 'artifacts/city-ux-ui', '--case', "$env:NATIVE_CASE")
+          if ($env:NATIVE_CASE -eq 'forms') { $arguments += @('--fixtures', 'artifacts/city-ux-fixtures/g2-fixtures') }
+          python scripts/run_check.py --name city-ux-native --timeout 600 --log-directory artifacts/gate-checks -- python scripts/check_city_experience_ui.py @arguments
           exit $LASTEXITCODE
       - name: Failed city UX check diagnostics
         if: failure()
@@ -155,5 +164,16 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: windows-city-ux-ui
+          name: windows-city-ux-${{ matrix.case }}
           path: artifacts/
+
+  city-ux-ui:
+    if: ${{ always() }}
+    needs: [city-ux-native]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    steps:
+      - name: Require all nine native cases across bounded disjoint groups
+        env:
+          NATIVE_RESULT: ${{ needs.city-ux-native.result }}
+        run: test "$NATIVE_RESULT" = success

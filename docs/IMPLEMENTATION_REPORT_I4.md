@@ -156,6 +156,27 @@ CRC всех записей проверен. После исправления 
 фикстурах из этого Windows artifact прошёл обе формы и прежний F2 delivery probe
 на Linux software GL. Выбор профиля формы больше не зависит от нового default I4.
 
+На следующем HEAD `1623ea7` полный
+[Core #496](https://github.com/MaksShelest/Delsk/actions/runs/41901347958) также
+прошёл целиком. Windows core/replay успешен. В
+[Godot #199](https://github.com/MaksShelest/Delsk/actions/runs/41901348193) все
+шесть map cases и обе формы прошли, но общий native timer 600 s прервал последний
+delivery probe. Выполнен один запрос повтора только упавшего UI job на том же
+HEAD и с прежними лимитами. В повторе все девять native cases и проверки их
+журналов завершились с exit0, но последовательная сборка/импорт/девять окон снова
+исчерпали общий лимит 600 s до итогового завершения gate. Этот exit124 не засчитан
+как успех. Реальные timings и SHA/CRC архива:
+[windows-budget.json](verification/equipment-i4/windows-budget.json).
+
+Вместо дальнейших одинаковых повторов Windows UI разделён на три непересекающиеся
+группы: три городских map cases, три compact cases, RU/EN forms + F2 delivery.
+Все прежние девять cases сохранены; `--case all` по-прежнему доступен. Каждая
+группа проверяет число своих cases, собирает/аудирует ordinary client и сохраняет
+native logs/artifacts. Лимиты 180 s на case, 600 s на группу и 15 min на Windows job
+не повышены. Прежнее обязательное имя `city-ux-ui` сохранено как always-run
+агрегатор, требующий успеха всех трёх групп. Новый HEAD после этого изменения
+обязан пройти полный CI; результаты предыдущего HEAD его не подменяют.
+
 ## Совместимость и границы
 
 Для I4 используется world schema 31 и явный флаг equipment dealer; прежние

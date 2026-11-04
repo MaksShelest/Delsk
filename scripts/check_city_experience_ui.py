@@ -6,7 +6,7 @@ import argparse,hashlib,json,os,shutil,subprocess,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser(description=__doc__);p.add_argument('--godot',required=True);p.add_argument('--output',required=True,type=Path)
-p.add_argument('--case',choices=['all','small','large','narrow','forms','compact'],default='all');p.add_argument('--fixtures',type=Path);p.add_argument('--display');p.add_argument('--asset-cache',type=Path);p.add_argument('--reuse-stage',action='store_true');p.add_argument('--attempt',type=int,default=1)
+p.add_argument('--case',choices=['all','city','small','large','narrow','forms','compact'],default='all');p.add_argument('--fixtures',type=Path);p.add_argument('--display');p.add_argument('--asset-cache',type=Path);p.add_argument('--reuse-stage',action='store_true');p.add_argument('--attempt',type=int,default=1)
 a=p.parse_args();out=a.output.resolve();stage=out/'source';project=stage/'src/Client.Godot';marker=stage/'.delsk-city-ux-stage';prefix='a'+str(a.attempt)
 if a.attempt<1:p.error('Use a positive attempt number')
 if a.case=='forms' and a.fixtures is None:p.error('--case forms requires --fixtures')
@@ -54,7 +54,7 @@ cases=[]
 base_project=(project/'project.godot').read_text(encoding='utf-8')
 for map_key,count,language,width in [('small-river',6,'ru',640),('large-districts',10,'en',1100),('large-districts',10,'ru',360),('compact-valley',3,'ru',640),('compact-valley',6,'en',800),('compact-valley',10,'en',360)]:
     tag='compact' if map_key=='compact-valley' else 'small' if map_key=='small-river' else 'large' if width>500 else 'narrow'
-    if a.case not in ('all',tag):continue
+    if a.case not in ('all',tag) and not (a.case=='city' and map_key!='compact-valley'):continue
     name=map_key+'-'+str(count)+'-'+language+'-'+str(width);folder=case_root/name;folder.mkdir()
     identity=hashlib.sha256(str(folder).encode()).hexdigest()[:16]
     (project/'project.godot').write_text(base_project.replace('[application]','[application]\nconfig/use_custom_user_dir=true\nconfig/custom_user_dir_name="Delsk-G2-'+identity+'"',1),encoding='utf-8')
@@ -74,6 +74,7 @@ if a.fixtures:
     check('service-runs',180,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','res://ServiceRunProbe.tscn','--','--output',folder,'--fixtures',fixtures,'--windowed'],env|{'XDG_DATA_HOME':str(out/('user-'+prefix+'-service-runs'))})
     check('service-runs-logs',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks'/(prefix+'-service-runs')])
     cases.append(dict(status='succeeded',prepared=True,scope='Existing F2 native delivery execution/partial payment/cancellation/restore probe on the same final client source, RU/EN'))
+if a.case in ('city','compact','forms'):assert len(cases)==3,'Incomplete disjoint native group'
 assert all(hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest for name,digest in inputs.items()),'Sources changed during the native gate'
 (out/(prefix+'-inputs.json')).write_text(json.dumps(dict(inputs=inputs,stageOnlyChanges=['verified identical asset import in an isolated project without Mono editor initialization','isolated forbidden probe','isolated per-case user data directory'],scope='Exact source digests; asset cache verified separately'),indent=2)+'\n',encoding='utf-8')
 (out/(prefix+'-gate.json')).write_text(json.dumps(dict(status='succeeded',requestedCases=a.case,cases=cases,matchedInputs=len(inputs),scope='Ordinary native window with synthetic keyboard/mouse/touch input; no physical Android/device assertion'),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
