@@ -22,7 +22,7 @@ public partial class HouseholdObjectCard : VBoxContainer
     private readonly Label _workers = new() { AutowrapMode = TextServer.AutowrapMode.WordSmart };
     private readonly Label _delivery = new() { AutowrapMode = TextServer.AutowrapMode.WordSmart };
     private readonly ProgressBar _progress = new() { CustomMinimumSize = new(0, 18), ShowPercentage = true };
-    private readonly SpinBox _quantity = new() { MinValue = 1, MaxValue = 1000000, Value = 1, Step = 1, CustomMinimumSize = new(125, 0) };
+    private readonly SpinBox _quantity = new() { Name="HouseholdTransferQuantity", MinValue = 1, MaxValue = 1000000, Value = 1, Step = 1, CustomMinimumSize = new(125, 0) };
     private readonly VBoxContainer _actions = new();
     private readonly Dictionary<string, (Button Button, GameAction Action)> _buttons = [];
     private readonly RouteEditor _routes;
@@ -38,11 +38,15 @@ public partial class HouseholdObjectCard : VBoxContainer
     private bool _paused;
     private string? _activeTransferKey;
     private readonly Dictionary<string, Container> _actionGroups = [];
-    private readonly CompactProductionTablet? _compact;
+    private readonly TabletColumns _quickTransfers=new(){Name="EnterpriseQuickTransfers",Breakpoint=760,Visible=false};
+    private readonly QuickStockTransfer _quickPut,_quickTake;
 
     public HouseholdObjectCard(ScenarioDefinition scenario, string language, string kind, long id,
-        System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access,System.Func<long,bool,DemolitionQuote?>? demolitionQuote=null,bool compactPrototype=false)
+        System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access,System.Func<long,bool,DemolitionQuote?>? demolitionQuote=null)
     {
+        _quickPut=new(scenario,language,"EnterprisePut",PlayerText.Local(language,"Положить всё","Store all"),submit,access);
+        _quickTake=new(scenario,language,"EnterpriseTake",PlayerText.Local(language,"Забрать всё","Take all"),submit,access);
+        _quickTransfers.AddChild(_quickPut);_quickTransfers.AddChild(_quickTake);AddChild(_quickTransfers);
         _scenario = scenario; _language = language; _kind = kind; _id = id; _submit = submit; _access = access;
         if(scenario.Economy?.Storage is not null&&kind=="building"){_storagePanel=new(scenario,language,kind,id,submit,access,true);AddChild(_storagePanel);}
         if(demolitionQuote is not null&&kind=="building"){_demolitionPanel=new(language,submit,demolitionQuote,access);AddChild(_demolitionPanel);}
@@ -57,14 +61,6 @@ public partial class HouseholdObjectCard : VBoxContainer
         _routes=new(scenario,language,kind,id,submit){Visible=false};_details.AddChild(_routes);routeToggle.Pressed+=()=>_routes.Visible=!_routes.Visible;
         TabletDesign.CompactInputs(this);Resized+=LayoutCard;
         _quantity.ValueChanged += _ => { if (_lastView is not null) ShowData(_lastView,_pending,_paused); };
-        if(compactPrototype)
-        {
-            SizeFlagsVertical=SizeFlags.ExpandFill;
-            _compact=new(scenario,language,id,submit,access);
-            void Move(Control? control,string page){if(control is null)return;RemoveChild(control);_compact.Page(page).AddChild(control);}
-            Move(_details,"logistics");Move(_workshopPanel,"recipes");Move(_developmentPanel,"development");Move(_storagePanel,"development");Move(_demolitionPanel,"development");
-            _recipeCards.Visible=false;AddChild(_compact);
-        }
     }
 
     public void ShowData(PlayerView view, bool pending, bool paused)
@@ -126,6 +122,14 @@ public partial class HouseholdObjectCard : VBoxContainer
                 Add("upgrade", L("Улучшить здание — ", "Upgrade building — ") + PlayerText.Money(upgrade.PriceMinor) + " + " + string.Join(", ", upgrade.Materials.Select(m => PlayerText.Item(_language, m.ItemId) + " ×" + m.Quantity)),
                     new(ActionKind.UpgradeBuilding, Building: building.Id,Quantity:building.Level+1), enterprise is null || !enterprise.Enabled && enterprise.BatchId == 0);
         }
+        _quickTransfers.Visible=enterprise is not null&&building?.Kind==BuildingKind.Production;
+        if(_quickTransfers.Visible)
+        {
+            var input=view.Inventories.Single(i=>i.Id==enterprise!.InputId);var output=view.Inventories.Single(i=>i.Id==enterprise!.OutputId);
+            var recipes=enterprise!.Workshops.IsDefault?new[]{enterprise.RecipeId}:enterprise.Workshops.Select(w=>w.RecipeId).ToArray();
+            _quickPut.ShowData(view,pack.Id,input.Id,recipes.SelectMany(id=>_scenario.Recipes.Single(r=>r.Id==id).Ingredients.Select(i=>i.ItemId)).Concat(pack.Stock.Select(i=>i.ItemId)).Concat(input.Stock.Select(i=>i.ItemId)),pending,"input");
+            _quickTake.ShowData(view,output.Id,pack.Id,recipes.Select(id=>_scenario.Recipes.Single(r=>r.Id==id).OutputItem).Concat(output.Stock.Select(i=>i.ItemId)),pending,"output");
+        }
         _stock.Text = string.Join("\n", stocks.Select(i => Stock(view, i))) + "\n" + L("Рюкзак: ", "Backpack: ") + string.Join(", ", pack.Stock.Select(s => PlayerText.Item(_language, s.ItemId) + $" ×{s.Quantity - s.Reserved}"));
         foreach (var inventory in stocks)
             foreach (var item in _scenario.Items)
@@ -133,7 +137,7 @@ public partial class HouseholdObjectCard : VBoxContainer
                 string name = PlayerText.Item(_language, item.Id), destination = InventoryName(view, inventory.Id);
                 void TransferChoice(string direction,InventoryView from,InventoryView to,long wanted,string suffix)
                 {
-                    long possible=Math.Min(Free(from,item.Id),Math.Max(0,to.Capacity-to.OccupiedVolume-to.ReservedCapacity)/item.UnitVolume);
+                    long possible=ManualTransferChoice.MaximumQuantity(from,to,item.Id,item.UnitVolume);
                     long q=Math.Min(wanted,possible);
                     string amount=suffix=="one"?L("1 ед.: ","1 unit: "):suffix=="all"?L("Всё: ","All: "):L("Выбранное: ","Selected: ");
                     Add($"{direction}:{inventory.Id.Value}:{item.Id}:{suffix}",amount+(direction=="put"?L("Передать ","Supply "):L("Забрать ","Take "))+name+$" ×{q} "+(direction=="put"?"→ ":"← ")+destination,
@@ -159,7 +163,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         UpdateActions(actions, pending);
         var artworkRecipe=enterprise is null?null:_scenario.Recipes.Single(r=>r.Id==enterprise.RecipeId);
         _showProductionTablet=_scenario.Economy?.Workshops is null && artworkRecipe is not null && building is not null && ProductionTabletPresenter.Supports(building.TypeId,artworkRecipe);
-        if(_compact is null && _showProductionTablet && _productionTablet is null)
+        if(_showProductionTablet && _productionTablet is null)
         {
             _productionTablet=new(_scenario,_language,_id,RevealLogistics,building!.TypeId);
             _productionTablet.RecipesRequested+=()=>{_recipeCards.Visible=!_recipeCards.Visible;};
@@ -167,8 +171,7 @@ public partial class HouseholdObjectCard : VBoxContainer
             _detailsToggle=new Button{Text=L("Подробности · перенос, маршруты, транспорт","Details · transfers, routes, transport"),FocusMode=FocusModeEnum.None};AddChild(_detailsToggle);MoveChild(_detailsToggle,1);MoveChild(_recipeCards,1);
             _detailsToggle.Pressed+=()=>{_expanded=!_expanded;LayoutCard();};
         }
-        if(_compact is not null)_compact.ShowData(view,pending);
-        else if(_showProductionTablet){_productionTablet!.ShowData(view,paused,_buttons);ShowRecipeCards(building!,enterprise!);}LayoutCard();
+        if(_showProductionTablet){_productionTablet!.ShowData(view,paused,_buttons);ShowRecipeCards(building!,enterprise!);}LayoutCard();
         if(view.Transfers.Length==0 && !pending)_activeTransferKey=null;
         foreach(var (key,pair) in _buttons)
             if(pair.Button is ContextActionButton button)
@@ -216,7 +219,6 @@ public partial class HouseholdObjectCard : VBoxContainer
     private bool _showProductionTablet;
     private void LayoutCard()
     {
-        if(_compact is not null)return;
         bool artwork=_showProductionTablet && Size.X>=980;
         if(_productionTablet is not null)_productionTablet.Visible=artwork;
         if(_detailsToggle is not null)_detailsToggle.Visible=artwork;
@@ -273,6 +275,7 @@ public partial class HouseholdObjectCard : VBoxContainer
             if (!_buttons.TryGetValue(row.Key, out var old))
             {
                 Button button = row.Action.Kind==ActionKind.Transfer ? new ContextActionButton(row.Text) : new Button { FocusMode = FocusModeEnum.None, Alignment = HorizontalAlignment.Left, AutowrapMode = TextServer.AutowrapMode.WordSmart };
+                if(row.Action.Kind==ActionKind.Transfer)button.Name="HouseholdTransfer_"+row.Key.Replace(':','_');
                 if(_kind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion==1)
                 {
                     if(row.Action.Kind!=ActionKind.Transfer){button.AutowrapMode=TextServer.AutowrapMode.Off;button.SizeFlagsHorizontal=SizeFlags.ShrinkBegin;}
@@ -288,15 +291,16 @@ public partial class HouseholdObjectCard : VBoxContainer
                 };
                 if (!_actionGroups.TryGetValue(section,out var group))
                 {
-                    var toggle = new Button {Text = section + " ▸",FocusMode=FocusModeEnum.None,Alignment=HorizontalAlignment.Left};
+                    var toggle = new Button {Name="HouseholdGroup_"+(row.Action.Kind==ActionKind.Transfer?"Transfer":row.Action.Kind.ToString()),Text = section + " ▸",FocusMode=FocusModeEnum.None,Alignment=HorizontalAlignment.Left};
                     _actions.AddChild(toggle); group = _kind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion==1&&row.Action.Kind!=ActionKind.Transfer?TabletDesign.Flow():new VBoxContainer();group.Visible=section==L("Работа и улучшения", "Work and upgrades"); _actions.AddChild(group);
                     var target=group;toggle.Pressed += () => target.Visible=!target.Visible;_actionGroups.Add(section,group);
                 }
                 group.AddChild(button); old = (button, row.Action);
             }
-            var access = _access(row.Action); if(old.Button is ContextActionButton transferButton)transferButton.ShowCaption(row.Text);else old.Button.Text = row.Text;
-            old.Button.Disabled = pending || !row.Enabled || !access.Allowed;
+            var access = _access(row.Action);var transfer=row.Action.Kind==ActionKind.Transfer?ManualTransferChoice.Read(_scenario,_lastView!,row.Action.Source,row.Action.Destination,row.Action.ItemId,_access,pending,row.Action.Quantity):(ManualTransferChoice?)null; if(old.Button is ContextActionButton transferButton)transferButton.ShowCaption(row.Text);else old.Button.Text = row.Text;
+            old.Button.Disabled = pending || !row.Enabled || !access.Allowed || transfer is {Enabled:false};
             old.Button.TooltipText = access.Allowed ? row.Enabled ? "" : L("Проверьте запас, место и безопасное состояние объекта.", "Check stock, capacity and the object's safe state.") : PlayerText.Reason(_language, access.ReasonCode) + " " + string.Join(", ", access.Locations.Select(c => $"({c.X},{c.Z})"));
+            if(transfer is {Enabled:false} denied)old.Button.TooltipText=denied.Explain(_language);
             _buttons[row.Key] = (old.Button, row.Action);
         }
     }

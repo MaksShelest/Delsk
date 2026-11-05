@@ -91,10 +91,7 @@ public partial class Playfield
         string title = _tabletState.Kind==TabletKind.Notices?L("События хозяйства","Business notices"):_tabletState.Kind==TabletKind.Tutorial?L("Короткое обучение","Quick guide"):_tabletState.Kind == TabletKind.CityMap ? L("Карта всего города","City map") : _tabletState.Kind == TabletKind.Player ? L("Планшет игрока", "Player tablet") : _tabletState.Kind == TabletKind.Object ? L("Карточка хозяйства", "Holdings card") : _tabletState.Kind == TabletKind.Market ? PlayerText.Local(_language,"Рынок участников · лавки","Participant market · shops") : _tabletState.Kind == TabletKind.Capital ? PlayerText.Local(_language,"Биржа · столичные заказы","Exchange · capital orders")
             : PlayerText.Building(_language,view.Buildings.Single(b => b.Id.Value == _tabletState.EnterpriseId).TypeId) + " #" + _tabletState.EnterpriseId;
         _tabletPanel = new TabletPanel(title,_language,_tabletState.Kind==TabletKind.Player?"home":_tabletState.Kind is TabletKind.Capital or TabletKind.Market?"market":"warehouse");
-        bool compactProduction=_tabletState.Kind is TabletKind.Enterprise or TabletKind.Object &&
-            (_tabletState.Kind!=TabletKind.Object||_objectKind=="building")&&
-            view.Buildings.Any(b=>b.Id.Value==_tabletState.EnterpriseId&&b.TypeId=="woodworking");
-        if(_tabletState.Kind==TabletKind.Player||compactProduction)_tabletPanel.UseCompactFrame();
+        if(_tabletState.Kind==TabletKind.Player)_tabletPanel.UseCompactFrame();
         _tabletPanel.Closed += CloseTablet;
         _tabletPanel.HelpRequested += () => OpenHelp(_tabletState.Kind switch
         { TabletKind.CityMap=>"map",TabletKind.Notices or TabletKind.Tutorial=>"journey",TabletKind.Player => _playerTablet?.SelectedTab switch { 0 => _playerTablet.HelpTopic, 2 => "politics", _ => "city" },
@@ -119,6 +116,8 @@ public partial class Playfield
         {
             _playerTablet = new PlayerTablet(_scenario,_language,Submit,a => _session.Engine.AccessFor(_human,a),(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction),(offset,bills)=>_session.Engine.AccountOf(_human,offset,20,bills),terms=>_session.Engine.QuoteDeliveryService(_human,terms));
             _playerTablet.RoadWorkRequested+=OpenRoadWork;
+            _playerTablet.ObjectRequested+=OpenObjectTablet;
+            _tabletPanel.AttachNavigation(_playerTablet.SectionPicker);
             _playerTablet.HelpRequested+=()=>OpenHelp(_playerTablet.HelpTopic);
             _playerTablet.MapRequested+=OpenCityMap;_playerTablet.NoticesRequested+=OpenCityNotices;_playerTablet.TutorialRequested+=OpenCityJourney;
             _tabletPanel.Body.AddChild(_playerTablet);_playerTablet.OpenSection(_playerSection=="object"?"holdings":_playerSection);
@@ -134,7 +133,7 @@ public partial class Playfield
         }
         else
         {
-            _enterpriseTablet = new HouseholdObjectCard(_scenario,_language,_tabletState.Kind == TabletKind.Object ? _objectKind : "building",_tabletState.EnterpriseId,Submit,a => _session.Engine.AccessFor(_human,a),(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction),compactPrototype:compactProduction);
+            _enterpriseTablet = new HouseholdObjectCard(_scenario,_language,_tabletState.Kind == TabletKind.Object ? _objectKind : "building",_tabletState.EnterpriseId,Submit,a => _session.Engine.AccessFor(_human,a),(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction));
             _enterpriseTablet.ArtworkHeaderChanged+=_tabletPanel.UseArtworkHeader;
             _enterpriseTablet.HelpRequested+=_tabletPanel.RequestHelp;_enterpriseTablet.CloseRequested+=_tabletPanel.RequestClose;
             _tabletPanel.Body.AddChild(_enterpriseTablet);

@@ -6,6 +6,8 @@ using Simulation.Hosting;
 public partial class PlayerTablet : VBoxContainer
 {
     public event System.Action? HelpRequested;
+    public event Action<string,long>? ObjectRequested;
+    public OptionButton SectionPicker=>_mobile;
     public event Action<long>? RoadWorkRequested;
     public event System.Action? MapRequested;
     public event System.Action? TutorialRequested;
@@ -17,8 +19,10 @@ public partial class PlayerTablet : VBoxContainer
     private readonly TabContainer _tabs=new(){Name="PlayerSections",TabsVisible=false,SizeFlagsVertical=SizeFlags.ExpandFill,SizeFlagsHorizontal=SizeFlags.ExpandFill};
     private readonly Dictionary<string,int> _pages=[];
     private readonly Dictionary<string,Button> _navigation=[];
+    private readonly Dictionary<string,(Button Header,VBoxContainer Body,string Title)> _groups=[];
+    private readonly Dictionary<string,string> _pageGroups=[];
     private readonly OptionButton _mobile=new(){Name="PlayerSectionPicker",FitToLongestItem=false,CustomMinimumSize=new(0,40)};
-    private readonly ScrollContainer _navScroll=new(){Name="PlayerNavigation",CustomMinimumSize=new(184,0),HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};
+    private readonly ScrollContainer _navScroll=new(){Name="PlayerNavigation",CustomMinimumSize=new(220,0),HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};
     private readonly VBoxContainer _nav=new(){SizeFlagsHorizontal=SizeFlags.ExpandFill};
     private readonly VBoxContainer _summaryObjects=new();
     private readonly Label _notices=Wrapped();
@@ -56,19 +60,28 @@ public partial class PlayerTablet : VBoxContainer
         Theme=CompactTabletDesign.Theme;SizeFlagsVertical=SizeFlags.ExpandFill;
         AddChild(_mobile);var workspace=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill};AddChild(workspace);
         workspace.AddChild(_navScroll);_navScroll.AddChild(_nav);workspace.AddChild(_tabs);
-        void Group(string ru,string en){var title=new Label{Text=L(ru,en)};title.AddThemeFontSizeOverride("font_size",13);title.AddThemeColorOverride("font_color",new("68746f"));_nav.AddChild(title);}
+        string currentGroup="";
+        void Group(string key,string ru,string en)
+        {
+            currentGroup=key;string title=L(ru,en);
+            var header=new Button{Name="PlayerGroup_"+key,Text="▾ "+title,ToggleMode=true,ButtonPressed=true,Alignment=HorizontalAlignment.Left,CustomMinimumSize=new(0,32),SizeFlagsHorizontal=SizeFlags.ExpandFill,ClipText=true};
+            header.AddThemeFontSizeOverride("font_size",13);header.AddThemeStyleboxOverride("pressed",CompactTabletDesign.Surface("eef1ef",6));header.AddThemeColorOverride("font_pressed_color",new("52625c"));
+            var body=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};_nav.AddChild(header);_nav.AddChild(body);_groups.Add(key,(header,body,title));
+            header.Toggled+=open=>{body.Visible=open;header.Text=(open?"▾ ":"▸ ")+title;header.TooltipText=L(open?"Свернуть группу":"Раскрыть группу",open?"Collapse group":"Expand group");};
+        }
         void Nav(string key,string ru,string en)
         {
             var button=CompactTabletDesign.Button("PlayerNav_"+key,L(ru,en),()=>OpenSection(key));button.ToggleMode=true;button.Alignment=HorizontalAlignment.Left;
-            _nav.AddChild(button);_navigation.Add(key,button);_mobile.AddItem(L(ru,en));
+            button.SizeFlagsHorizontal=SizeFlags.ExpandFill;button.CustomMinimumSize=new(0,40);button.ClipText=true;button.TextOverrunBehavior=TextServer.OverrunBehavior.TrimEllipsis;button.TooltipText=L(ru,en);
+            _groups[currentGroup].Body.AddChild(button);_navigation.Add(key,button);_pageGroups.Add(key,currentGroup);_mobile.AddItem(L(ru,en));
         }
-        Group("ХОЗЯЙСТВО","HOLDINGS");Nav("overview","Обзор","Overview");Nav("holdings","Мои объекты","My objects");
+        Group("holdings","ХОЗЯЙСТВО","HOLDINGS");Nav("overview","Обзор","Overview");Nav("holdings","Мои объекты","My objects");
         if(scenario.Economy?.Fleet is not null)Nav("fleet","Транспорт","Vehicles");
         if(scenario.Economy?.Services is not null)Nav("services","Доставка","Delivery");
         if(scenario.Economy?.Roads is not null)Nav("roads","Дороги","Roads");
-        Group("ЭКОНОМИКА","ECONOMY");Nav("account","Счёт","Account");Nav("quests","Задания","Quests");Nav("negotiations","Переговоры","Negotiations");Nav("purchases","Покупки","Purchases");
-        Group("ГОРОД","CITY");Nav("participants","Участники","Participants");Nav("city","Город и политика","City & politics");
-        Group("ИНФОРМАЦИЯ","INFORMATION");Nav("map","Карта","Map");Nav("notices","События","Notices");Nav("tutorial","Обучение","Guide");
+        Group("economy","ЭКОНОМИКА","ECONOMY");Nav("account","Счёт","Account");Nav("quests","Задания","Quests");Nav("negotiations","Переговоры","Negotiations");Nav("purchases","Покупки","Purchases");
+        Group("city","ГОРОД","CITY");Nav("participants","Участники","Participants");Nav("city","Город и политика","City & politics");
+        Group("information","ИНФОРМАЦИЯ","INFORMATION");Nav("map","Карта","Map");Nav("notices","События","Notices");Nav("tutorial","Обучение","Guide");
         _mobile.ItemSelected+=index=>OpenSection(_navigation.Keys.ElementAt((int)index));
         var overview=Page("overview");overview.AddChild(_overview);_overview.AddChild(TabletDesign.Heading(L("Обзор хозяйства","Holdings overview"),21));
         var stats=new TabletColumns{Breakpoint=560};_overview.AddChild(stats);
@@ -87,7 +100,7 @@ public partial class PlayerTablet : VBoxContainer
         var detail=Page("object");detail.AddChild(_back);detail.AddChild(_cardHost);
         _account=new(language,submit,accountQuery);Page("account").AddChild(_account);
         if(scenario.Economy?.Services is not null){_services=new(scenario,language,submit,serviceQuery,access);Page("services").AddChild(_services);}
-        if(scenario.Economy?.Fleet is not null){_fleet=new(language,submit,access);_fleet.RoadWorkRequested+=id=>RoadWorkRequested?.Invoke(id);Page("fleet").AddChild(_fleet);Page("fleet").AddChild(_parked);}
+        if(scenario.Economy?.Fleet is not null){_fleet=new(language,submit,access,scenario);_fleet.RoadWorkRequested+=id=>RoadWorkRequested?.Invoke(id);Page("fleet").AddChild(_fleet);Page("fleet").AddChild(_parked);}
         if(scenario.Economy?.Fleet is null)Page("holdings").AddChild(_parked);
         if(scenario.Economy?.Roads is not null){_roads=new(language,submit,access);Page("roads").AddChild(_roads);}
         _development=new(scenario,language,0,submit,access);Page("quests").AddChild(_development);
@@ -100,7 +113,7 @@ public partial class PlayerTablet : VBoxContainer
         var city=Page("city");city.AddChild(_city);city.AddChild(_labor);city.AddChild(PoliticsHost);
         Resized+=LayoutNavigation;Ready+=LayoutNavigation;OpenSection("overview");TabletDesign.CompactInputs(this);
     }
-    private void LayoutNavigation(){bool narrow=Size.X<700;_navScroll.Visible=!narrow;_mobile.Visible=narrow;CompactTabletDesign.FitControls(this,Size.X-(narrow?36:238));}
+    private void LayoutNavigation(){bool narrow=Size.X<700||GetViewportRect().Size.Y<540;_navScroll.Visible=!narrow;_mobile.Visible=narrow;CompactTabletDesign.FitControls(_tabs,Size.X-(narrow?36:274));}
     private VBoxContainer Page(string key)
     {
         if(_pages.TryGetValue(key,out int index))return (VBoxContainer)_tabs.GetChild<ScrollContainer>(index).GetChild(0);
@@ -111,6 +124,7 @@ public partial class PlayerTablet : VBoxContainer
     {
         if(!_pages.TryGetValue(section,out int index))return;_section=section;_tabs.CurrentTab=index;
         string selected=section=="object"?"holdings":section=="equipment"?"fleet":section;
+        if(_pageGroups.TryGetValue(selected,out string? group))_groups[group].Header.ButtonPressed=true;
         foreach(var entry in _navigation)entry.Value.SetPressedNoSignal(entry.Key==selected);
         int choice=Array.IndexOf(_navigation.Keys.ToArray(),selected);if(choice>=0)_mobile.Select(choice);
     }
@@ -121,13 +135,11 @@ public partial class PlayerTablet : VBoxContainer
     private void Back(){_cardHost.Visible=false;_back.Visible=false;SelectSection("holdings");}
     private void Open(string kind,long id)
     {
+        if(kind=="building"&&_view.Buildings.Any(b=>b.Id.Value==id&&b.Kind==BuildingKind.Production&&b.Footprint.Contains(_view.Participant.Position))&&ObjectRequested is not null){ObjectRequested.Invoke(kind,id);return;}
         foreach(Node child in _cardHost.GetChildren()){_cardHost.RemoveChild(child);child.QueueFree();}
         _cardObject=(kind,id);_card=null;_groundCard=null;
         if(kind=="ground"){_groundCard=new(_scenario,_language,kind,id,_submit,_access,demolitionQuote:_demolitionQuote);_cardHost.AddChild(_groundCard);_groundCard.ShowData(_view,_pending);}
-        else{bool compact=kind=="building"&&_view.Buildings.Any(b=>b.Id.Value==id&&b.TypeId=="woodworking");
-            var scroll=_tabs.GetChild<ScrollContainer>(_pages["object"]);scroll.VerticalScrollMode=compact?ScrollContainer.ScrollMode.Disabled:ScrollContainer.ScrollMode.Auto;
-            ((Control)scroll.GetChild(0)).SizeFlagsVertical=compact?SizeFlags.ExpandFill:SizeFlags.Fill;_cardHost.SizeFlagsVertical=compact?SizeFlags.ExpandFill:SizeFlags.Fill;
-            _card=new(_scenario,_language,kind,id,_submit,_access,_demolitionQuote,compactPrototype:compact);_card.CloseRequested+=Back;_card.HelpRequested+=()=>HelpRequested?.Invoke();_cardHost.AddChild(_card);_card.ShowData(_view,_pending,_paused);}
+        else{_card=new(_scenario,_language,kind,id,_submit,_access,_demolitionQuote){Theme=TabletDesign.Theme};_card.CloseRequested+=Back;_card.HelpRequested+=()=>HelpRequested?.Invoke();_cardHost.AddChild(_card);_card.ShowData(_view,_pending,_paused);}
         _cardHost.Visible=true;_back.Visible=true;SelectSection("object");
     }
     public void OpenHolding(string kind,long id){if(_view is not null)Open(kind,id);}

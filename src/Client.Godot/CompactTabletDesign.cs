@@ -38,11 +38,12 @@ public static class CompactTabletDesign
         var button=new Button{Name=name,Text=text,CustomMinimumSize=new(40,40),SizeFlagsHorizontal=Control.SizeFlags.ShrinkBegin};
         button.Pressed+=()=>{if(!button.Disabled)action();};return button;
     }
-    /// <summary>Content-sized controls inside the two prototypes, including reused legacy pages.</summary>
+    /// <summary>Content-sized controls inside player pages, including reused legacy pages.</summary>
     public static void FitControls(Node root,float availableWidth)
     {
         foreach(var node in root.GetChildren())
         {
+            if(node is HouseholdObjectCard)continue;
             if(node is Button button&&button is not OptionButton&&button is not CheckButton&&button is not CheckBox&&button is not ContextActionButton)
             {
                 float natural=button.GetThemeFont("font").GetStringSize(button.Text,fontSize:button.GetThemeFontSize("font_size")).X+24;
