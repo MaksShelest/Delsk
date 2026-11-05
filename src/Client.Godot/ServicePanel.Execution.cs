@@ -23,10 +23,10 @@ public partial class ServicePanel
         bool handling=r.Stage is "Loading" or "Unloading" or "UnloadingReturn";
         if(carrier&&view.Fleet?.Vehicles.SingleOrDefault(v=>v.Vehicle.Id==run.Vehicle) is {} car)
         {
-            row.AddChild(new Label{Text=run.Automatic?L("Числовой водитель: ","Numeric driver: ")+run.Headcount+" / 1":L("Личное управление владельцем","Owner drives personally")});
+            row.AddChild(new Label{Text=run.Automatic?L("Наёмный водитель: ","Hired driver: ")+run.Headcount+" / 1":L("Личное управление владельцем","Owner drives personally")});
             if(car.Vehicle.Driver==0&&(!handling||run.Automatic))
             {
-                Button(row,"ServiceAutomation_"+order.Id,run.Automatic?L("Остановить числовую команду","Stop numeric team"):L("Назначить числового водителя (найм и зарплата)","Assign numeric driver (hiring and wages)"),new(ActionKind.SetServiceAutomation,VehicleId:run.Vehicle,Enabled:!run.Automatic));
+                Button(row,"ServiceAutomation_"+order.Id,run.Automatic?L("Остановить команду","Stop crew"):L("Нанять водителя","Hire driver"),new(ActionKind.SetServiceAutomation,VehicleId:run.Vehicle,Enabled:!run.Automatic));
                 if(!run.Automatic)
                 {
                     if(view.Participant.Position!=car.Position)Button(row,"ServiceWalk_"+order.Id,L("Подойти к машине ","Walk to vehicle ")+Coordinates(car.Position),new(ActionKind.MoveTo,Target:car.Position));
@@ -38,8 +38,8 @@ public partial class ServicePanel
                 row.AddChild(new Label{Text=L("Зарплата за рабочий тик: ","Wage per working tick: ")+PlayerText.Money(crew.Group.WageMinor)+" · "+TabletText.Reason(_language,crew.Group.ReadinessReason)});
                 long actual=crew.Group.PendingWageMinor??crew.Group.WageMinor;
                 if(_wageDrafts.TryGetValue(order.Id,out var saved)&&saved==actual)_wageDrafts.Remove(order.Id);
-                var wage=new SpinBox{Name="ServiceWage_"+order.Id,UpdateOnTextChanged=true,MinValue=1,MaxValue=1000000,Value=_wageDrafts.GetValueOrDefault(order.Id,actual),Suffix=L(" сотых"," minor"),TooltipText=L("100 сотых = 1.00 монеты","100 minor = 1.00 coin")};wage.ValueChanged+=value=>_wageDrafts[order.Id]=value;row.AddChild(wage);
-                var change=new Button{Name="ServiceSetWage_"+order.Id,Text=L("Изменить зарплату у машины","Set wage at vehicle")};change.Pressed+=()=>_submit(new(ActionKind.SetWage,Group:crew.Group.Id,WageMinor:(long)wage.Value));row.AddChild(change);_buttons.Add((change,new(ActionKind.SetWage,Group:crew.Group.Id)));
+                var wage=new SpinBox{Name="ServiceWage_"+order.Id,UpdateOnTextChanged=true,MinValue=1,MaxValue=1000000,Value=_wageDrafts.GetValueOrDefault(order.Id,actual)/100d,Step=.01,Suffix=L(" монет"," coins"),TooltipText=L("Ставка за рабочий тик","Wage per working tick")};wage.ValueChanged+=value=>_wageDrafts[order.Id]=Math.Round(value*100);row.AddChild(wage);
+                var change=new Button{Name="ServiceSetWage_"+order.Id,Text=L("Изменить зарплату у машины","Set wage at vehicle")};change.Pressed+=()=>_submit(new(ActionKind.SetWage,Group:crew.Group.Id,WageMinor:(long)Math.Round(wage.Value*100)));row.AddChild(change);_buttons.Add((change,new(ActionKind.SetWage,Group:crew.Group.Id)));
             }
             if(!run.Automatic&&car.Vehicle.Driver==view.Participant.Id.Value&&!view.Participant.Busy)
             {

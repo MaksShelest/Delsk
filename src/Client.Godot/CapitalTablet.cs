@@ -16,12 +16,15 @@ public partial class CapitalTablet : VBoxContainer
         public required Button One;
         public required Button All;
         public required Button Cancel;
+        public required Label Why;
+        public required Button Go;
         public long SellQuantity;
     }
     private readonly string _language;
     private readonly ScenarioDefinition _scenario;
     private readonly CapitalTablePreferences _preferences;
     private readonly System.Action<GameAction> _submit;
+    private readonly Func<GameAction,ActionAccess>? _access;
     private readonly VBoxContainer _rows;
     private readonly VBoxContainer _orders;
     private readonly VBoxContainer _results;
@@ -36,12 +39,13 @@ public partial class CapitalTablet : VBoxContainer
     private OwnCapitalTrading? _trading;
     private bool _pending;
 
-    public CapitalTablet(ScenarioDefinition scenario, string language, CapitalTablePreferences preferences, System.Action<GameAction> submit)
+    public CapitalTablet(ScenarioDefinition scenario, string language, CapitalTablePreferences preferences, System.Action<GameAction> submit,Func<GameAction,ActionAccess>? access=null)
     {
-        _scenario = scenario; _language = language; _preferences = preferences; _submit = submit;
+        _scenario = scenario; _language = language; _preferences = preferences; _submit = submit;_access=access;
         var pages = TabletDesign.Flow();_pageButtons=pages; AddChild(pages);
         var orders = Action(pages, L("Предложения", "Offers")); var history = Action(pages, L("История", "History"));
         _orders = new VBoxContainer(); AddChild(_orders);
+        _orders.AddChild(GameUi.Hint(L("Столица покупает товары из вашего рюкзака. Выберите заказ и продайте доступное количество у точки приёмки.","The capital buys goods from your backpack. Choose an order and sell available stock at its receiving point.")));
         _results = new VBoxContainer { Visible = false }; AddChild(_results);
         orders.Pressed += () => { _orders.Visible = true; _results.Visible = false; };
         history.Pressed += () => { _orders.Visible = false; _results.Visible = true; };
@@ -95,11 +99,14 @@ public partial class CapitalTablet : VBoxContainer
             row.WindowBox.Visible = offer.CutoffTick.HasValue;
             row.WindowText.Text = offer.CutoffTick is long cutoff ? L("Расчёт через ", "Settlement in ") + TabletProgress.Remaining(cutoff, view.Tick) + L(" с", " s") : "";
             row.One.Visible = row.SellQuantity > 1;
-            row.One.Disabled = _pending || view.Participant.Busy || free < 1;
-            row.All.Disabled = _pending || view.Participant.Busy || row.SellQuantity < 1;
+            var permission=_access?.Invoke(PlayerDesk.Sell(offer.Id,offer.ItemId,Math.Max(1,row.SellQuantity)));
+            row.One.Disabled = _pending || view.Participant.Busy || free < 1||permission?.Allowed==false;
+            row.All.Disabled = _pending || view.Participant.Busy || row.SellQuantity < 1||permission?.Allowed==false;
             row.All.Text = row.SellQuantity > 0 ? L("Продать ", "Sell ") + row.SellQuantity : L("Продать", "Sell");
             string why = view.Participant.Busy ? L("Персонаж занят", "Participant busy") : free < 1 ? L("Нет доступного товара в рюкзаке", "No available goods in your backpack") : L("Подать заявку на продажу", "Submit a sale request");
             row.One.TooltipText = row.All.TooltipText = why;
+            row.Why.Text=_pending?L("Заявка ожидает выполнения. Включите время.","Request queued. Run time to apply it."):permission?.Allowed==false?GameUi.Reason(_language,permission.ReasonCode):row.All.Disabled?why:"";row.Why.Visible=row.Why.Text.Length>0;
+            row.Go.Visible=permission?.Allowed==false;row.Go.Disabled=_pending||view.Participant.Busy;
             row.Cancel.Visible = request is not null; row.Cancel.Disabled = _pending;
         }
         if (_historyCount == trading.Settlements.Length) return;
@@ -113,20 +120,23 @@ public partial class CapitalTablet : VBoxContainer
     {
         var panel = new PanelContainer(); _rows.AddChild(panel);
         panel.AddThemeStyleboxOverride("panel",TabletDesign.Card());
-        var row = new TabletColumns{Breakpoint=980}; panel.AddChild(row);
+        var row = new TabletColumns{Breakpoint=800}; panel.AddChild(row);
         row.AddChild(TabletDesign.Art(offer.ItemId,new(56,56)));
-        var terms = new Label { SizeFlagsHorizontal = SizeFlags.ExpandFill, CustomMinimumSize = new Vector2(280, 0), AutowrapMode = TextServer.AutowrapMode.WordSmart }; row.AddChild(terms);
-        var timing = new VBoxContainer { CustomMinimumSize = new Vector2(190, 0) }; row.AddChild(timing);
-        var deadline = new Label(); timing.AddChild(deadline);
+        var terms = GameUi.Text("",18); row.AddChild(terms);
+        var timing = new VBoxContainer { SizeFlagsHorizontal=SizeFlags.ExpandFill }; row.AddChild(timing);
+        var deadline = GameUi.Hint(""); timing.AddChild(deadline);
         var window = new VBoxContainer(); timing.AddChild(window);
         var bar = new ProgressBar { ShowPercentage = false, CustomMinimumSize = new Vector2(175, 10) }; window.AddChild(bar);
         var left = new Label(); window.AddChild(left);
-        var actions = TabletDesign.Flow(); row.AddChild(actions);
+        var actionBox=new VBoxContainer();var actions = TabletDesign.Flow();actionBox.AddChild(actions);row.AddChild(actionBox);
         var one = Action(actions, L("Продать 1", "Sell 1")); var all = Action(actions, ""); var cancel = Action(actions, L("Отменить", "Cancel"));
-        var model = new OfferRow { Offer = offer, Terms = terms, Deadline = deadline, Window = bar, WindowText = left, WindowBox = window, One = one, All = all, Cancel = cancel };
-        one.Pressed += () => _submit(PlayerDesk.Sell(model.Offer.Id, model.Offer.ItemId, 1));
-        all.Pressed += () => { if (model.SellQuantity > 0) _submit(PlayerDesk.Sell(model.Offer.Id, model.Offer.ItemId, model.SellQuantity)); };
-        cancel.Pressed += () => _submit(PlayerDesk.CancelSale(model.Offer.Id));
+        var reason=GameUi.Hint("");actionBox.AddChild(reason);var go=Action(actions,L("Подойти","Go there"));
+        var model = new OfferRow { Offer = offer, Terms = terms, Deadline = deadline, Window = bar, WindowText = left, WindowBox = window, One = one, All = all, Cancel = cancel,Why=reason,Go=go };
+        one.Name="CapitalSellOne_"+offer.Id;all.Name="CapitalSellAll_"+offer.Id;cancel.Name="CapitalCancel_"+offer.Id;go.Name="CapitalGo_"+offer.Id;
+        GameUi.Command(one,()=>{if(_pending)return;_pending=true;_submit(PlayerDesk.Sell(model.Offer.Id,model.Offer.ItemId,1));});
+        GameUi.Command(all,()=>{if(_pending||model.SellQuantity<1)return;_pending=true;_submit(PlayerDesk.Sell(model.Offer.Id,model.Offer.ItemId,model.SellQuantity));});
+        GameUi.Command(cancel,()=>{if(_pending)return;_pending=true;_submit(PlayerDesk.CancelSale(model.Offer.Id));});
+        GameUi.Command(go,()=>{if(_pending)return;_pending=true;_submit(PlayerDesk.Move(model.Offer.Position.X,model.Offer.Position.Z));});
         _offers.Add(offer.Id, model);
     }
     private static Button Action(Container parent, string text)

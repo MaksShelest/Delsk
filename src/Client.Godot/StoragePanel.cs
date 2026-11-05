@@ -10,7 +10,7 @@ public partial class StoragePanel : VBoxContainer
     private readonly Label _title=TabletDesign.Heading("",23),_status=GameUi.Text(),_progress=GameUi.Hint("");
     private readonly UiResourceList _resources=new();private readonly ProgressBar _fill=new(){ShowPercentage=false,CustomMinimumSize=new(0,10)};
     private readonly SpinBox _quantity=new(){Name="StorageQuantity",MinValue=1,MaxValue=1000000,Value=1,Step=1,CustomMinimumSize=new(130,40)};
-    private readonly VBoxContainer _actions=new(),_legacyTransfers=new();private string _signature="";private long _focusedInventory;
+    private readonly VBoxContainer _actions=new(),_legacyTransfers=new(),_overflowRows=new();private string _signature="";private long _focusedInventory;
     private readonly QuickStockTransfer _quickPut,_quickTake;private readonly TabletColumns _quick=new(){Name="StorageQuickTransfers",Breakpoint=700};
     private readonly List<(Button Button,Func<GameAction> Action,Func<PlayerView,bool> Allowed)> _buttons=[];
     private readonly Dictionary<long,Label> _deadlines=[];private readonly Dictionary<long,Button> _overflowAll=[];
@@ -25,13 +25,13 @@ public partial class StoragePanel : VBoxContainer
         var exact=new VBoxContainer();exact.AddChild(GameUi.Hint(L("Количество для прежних точных операций","Quantity for the detailed operations")));exact.AddChild(_quantity);exact.AddChild(_legacyTransfers);
         if(!overflowOnly)
         {
-            _pages=new("StorageNav_");AddChild(_pages);var stocks=_pages.Add("stock",L("Запасы","Stock"));stocks.AddChild(GameUi.Card(overview));stocks.AddChild(_quick);
+            _pages=new("StorageNav_");AddChild(_pages);var stocks=_pages.Add("stock",L("Запасы","Stock"));stocks.AddChild(GameUi.Card(overview));stocks.AddChild(_overflowRows);stocks.AddChild(_quick);
             _buildOpen=GameUi.Button("StorageBuildOpen",L("Строительство и развитие","Build & develop"),()=>_pages.Select("build"));stocks.AddChild(_buildOpen);
             var transfers=_pages.Add("transfer",L("Перенос","Transfer"));_manual=new(scenario,language,"StorageManual",submit,access);transfers.AddChild(GameUi.Card(_manual));transfers.AddChild(new UiDisclosure(L("Точные операции по товарам","Detailed item operations"),exact));
             var build=_pages.Add("build",L("Строительство","Construction"));build.AddChild(GameUi.Hint(L("Материалы должны лежать на этой клетке. Платёж и начало работ проверяет игра.","Stage the materials on this cell. The game validates payment and starts the work.")));build.AddChild(_actions);
             if(demolitionQuote is not null){var management=_pages.Add("management",L("Управление","Management"));_demolitionPanel=new(language,submit,demolitionQuote,access);management.AddChild(_demolitionPanel);}
         }
-        else{AddChild(GameUi.Card(overview));AddChild(_actions);exact.Visible=false;AddChild(exact);_quick.Visible=false;AddChild(_quick);_fill.Visible=false;_resources.Visible=false;}
+        else{AddChild(GameUi.Card(overview));AddChild(_overflowRows);AddChild(_actions);exact.Visible=false;AddChild(exact);_quick.Visible=false;AddChild(_quick);_fill.Visible=false;_resources.Visible=false;}
         _quantity.ValueChanged+=_=>{if(_view is {} v)ShowData(v,_pending);};
     }
     private string L(string ru,string en)=>GameUi.L(_lang,ru,en);
@@ -69,7 +69,7 @@ public partial class StoragePanel : VBoxContainer
         string signature=inventory+":"+building?.Level+":"+(work is not null)+":"+string.Join(',',stock.Stock.Select(s=>s.ItemId).Concat(pack.Stock.Select(s=>s.ItemId)).Distinct().Order())+":"+string.Join(',',overflow.Select(l=>l.Id));
         if(signature!=_signature)
         {
-            _signature=signature;foreach(var host in new[]{_actions,_legacyTransfers})foreach(Node child in host.GetChildren()){host.RemoveChild(child);child.QueueFree();}_buttons.Clear();_deadlines.Clear();_overflowAll.Clear();
+            _signature=signature;foreach(var host in new[]{_actions,_legacyTransfers,_overflowRows})foreach(Node child in host.GetChildren()){host.RemoveChild(child);child.QueueFree();}_buttons.Clear();_deadlines.Clear();_overflowAll.Clear();
             InventoryView Current(PlayerView v)=>v.Inventories.Single(i=>i.Id.Value==inventory);InventoryView Pack(PlayerView v)=>v.Inventories.Single(i=>i.Id==v.Participant.InventoryId);
             if(!_overflowOnly)foreach(string item in stock.Stock.Select(s=>s.ItemId).Concat(pack.Stock.Select(s=>s.ItemId)).Distinct().Order())
             {
@@ -80,9 +80,9 @@ public partial class StoragePanel : VBoxContainer
             foreach(var lot in overflow)
             {
                 long lotId=lot.Id;string item=lot.ItemId;var box=new VBoxContainer();var deadline=GameUi.Text();box.AddChild(TabletDesign.Art(item,new(36,36)));box.AddChild(deadline);_deadlines.Add(lotId,deadline);
-                var quantity=new SpinBox{MinValue=1,MaxValue=1000000,Value=1,Step=1,Rounded=true,CustomMinimumSize=new(120,40)};box.AddChild(quantity);var buttons=TabletDesign.Flow();box.AddChild(buttons);_actions.AddChild(GameUi.Card(box));
+                var quantity=new SpinBox{Name=_deadlines.Count==1?"StorageQuantity":"OverflowQuantity_"+lotId,MinValue=1,MaxValue=1000000,Value=1,Step=1,Rounded=true,CustomMinimumSize=new(120,40)};box.AddChild(quantity);var buttons=TabletDesign.Flow();box.AddChild(buttons);_overflowRows.AddChild(GameUi.Card(box));
                 long Maximum(PlayerView v)=>Math.Min((Current(v).Overflow??[]).FirstOrDefault(l=>l.Id==lotId)?.Quantity??0,Space(Pack(v),item));
-                foreach(bool single in new[]{true,false})Action(single?L("Спасти 1","Rescue 1"):L("Спасти выбранное","Rescue selected"),()=>new(ActionKind.TakeOverflow,Source:stock.Id,OfferId:lotId,ItemId:item,Quantity:single?1:(long)quantity.Value),v=>Maximum(v)>=(single?1:(long)quantity.Value),buttons);
+                foreach(bool single in new[]{true,false})Action(single?L("Спасти 1","Rescue 1"):L("Спасти излишек: ","Rescue overflow: ")+PlayerText.Item(_lang,item),()=>new(ActionKind.TakeOverflow,Source:stock.Id,OfferId:lotId,ItemId:item,Quantity:single?1:(long)quantity.Value),v=>Maximum(v)>=(single?1:(long)quantity.Value),buttons);
                 var all=Action(L("Спасти всё","Rescue all"),()=>new(ActionKind.TakeOverflow,Source:stock.Id,OfferId:lotId,ItemId:item,Quantity:Math.Max(1,Maximum(_view!))),v=>Maximum(v)>0,buttons,"StorageOverflowAll_"+lotId);_overflowAll.Add(lotId,all);
                 quantity.ValueChanged+=_=>{if(_view is {} current)ShowData(current,_pending);};
             }

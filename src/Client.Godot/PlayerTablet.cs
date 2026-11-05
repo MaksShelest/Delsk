@@ -110,8 +110,8 @@ public partial class PlayerTablet : VBoxContainer
         _purchases=new(scenario,language,submit,access);_purchases.DealerRequested+=()=>{OpenSection("fleet");_fleet?.ShowCatalog(true);};Page("equipment").AddChild(_purchases);
         Page("holdings").AddChild(CompactTabletDesign.Button("PlayerBuyEquipment",L("Купить технику","Buy equipment"),()=>OpenSection("equipment")));
         Page("participants").AddChild(_participants);
-        var talks=Page("negotiations");_negotiations=new(scenario,language,submit);talks.AddChild(_negotiations);
-        _deals=new(scenario,language,submit,access);talks.AddChild(Fold(L("Закупки, договоры и поддержка","Offers, contracts and support"),_deals));
+        var talks=Page("negotiations");var tradePages=new UiSections("TradeNav_");talks.AddChild(tradePages);_negotiations=new(scenario,language,submit);tradePages.Add("offers",L("Переговоры","Negotiations")).AddChild(_negotiations);
+        _deals=new(scenario,language,submit,access);tradePages.Add("contracts",L("Договоры и поддержка","Contracts & support")).AddChild(_deals);
         _pickups=new(scenario,language,submit);Page("purchases").AddChild(_pickups);
         var city=Page("city");city.AddChild(_city);city.AddChild(_labor);city.AddChild(PoliticsHost);
         Resized+=LayoutNavigation;Ready+=LayoutNavigation;OpenSection("overview");TabletDesign.CompactInputs(this);
@@ -147,7 +147,7 @@ public partial class PlayerTablet : VBoxContainer
         _cardHost.SizeFlagsVertical=woodworking?SizeFlags.ExpandFill:SizeFlags.Fill;
         ((ScrollContainer)objectPage.GetParent()).VerticalScrollMode=woodworking?ScrollContainer.ScrollMode.Disabled:ScrollContainer.ScrollMode.Auto;
         if(kind=="ground"){_groundCard=new(_scenario,_language,kind,id,_submit,_access,demolitionQuote:_demolitionQuote);_cardHost.AddChild(_groundCard);_groundCard.ShowData(_view,_pending);}
-        else{_card=new(_scenario,_language,kind,id,_submit,_access,_demolitionQuote,woodworkingPrototype:woodworking,productionType:_view.Buildings.FirstOrDefault(b=>b.Id.Value==id)?.TypeId??"woodworking"){Theme=TabletDesign.Theme};_card.CloseRequested+=Back;_card.HelpRequested+=()=>HelpRequested?.Invoke();_card.MapRequested+=()=>MapRequested?.Invoke();_cardHost.AddChild(_card);_card.ShowData(_view,_pending,_paused);}
+        else{_card=new(_scenario,_language,kind,id,_submit,_access,_demolitionQuote,woodworkingPrototype:woodworking,productionType:_view.Buildings.FirstOrDefault(b=>b.Id.Value==id)?.TypeId??"woodworking"){Theme=TabletDesign.Theme};_card.CloseRequested+=Back;_card.HelpRequested+=()=>HelpRequested?.Invoke();_card.MapRequested+=()=>MapRequested?.Invoke();_card.FleetRequested+=()=>OpenSection("fleet");_cardHost.AddChild(_card);_card.ShowData(_view,_pending,_paused);}
         _cardHost.Visible=true;_back.Visible=true;SelectSection("object");
     }
     public void OpenHolding(string kind,long id){if(_view is not null)Open(kind,id);}

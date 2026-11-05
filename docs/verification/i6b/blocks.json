@@ -78,5 +78,11 @@
       }
     },
     "inputManifestSha256": "a2f27b7eb8fd7dedfe3ffa744b12637ff32fd8d8316285e015867e5a51758520"
+  },
+  "C": {
+    "status": "succeeded",
+    "scope": "Ordinary Client build and AssemblyAudit only; native acceptance pending",
+    "receipts": {},
+    "inputManifestSha256": "874cfa41bfbbff3542976bcaec118083447bf8d8731770933bcd9412c1397c7a"
   }
 }

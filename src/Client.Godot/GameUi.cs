@@ -30,6 +30,7 @@ public static class GameUi
     public static string InventoryName(PlayerView view,long id,string language)
     {
         if(view.Participant.InventoryId.Value==id)return L(language,"Рюкзак","Backpack");
+        if(view.ProductionContent?.Pickup?.Value==id)return L(language,"Выдача импорта","Import pickup");
         var vehicle=view.Fleet?.Vehicles.FirstOrDefault(v=>v.Vehicle.CargoInventory.Value==id);
         if(vehicle is not null)return L(language,"Кузов · ","Cargo · ")+vehicle.Model.Name;
         var b=view.Buildings.FirstOrDefault(b=>b.InputId.Value==id||b.OutputId?.Value==id);

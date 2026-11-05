@@ -21,7 +21,7 @@ public partial class TradeNegotiationPanel : VBoxContainer
     public TradeNegotiationPanel(ScenarioDefinition scenario,string language,System.Action<GameAction> submit)
     {
         _language=language;_submit=submit;
-        AddChild(new Label{Text=L("Двусторонние переговоры","Bilateral negotiations")});AddChild(_status);
+        AddChild(GameUi.Intro(L("Предложения и переговоры","Offers & negotiations"),L("Выберите участника, товар и условия. Отправка предложения не означает заключение сделки.","Choose a participant, goods and terms. Sending an offer does not complete a trade."),"market",64));AddChild(GameUi.Card(_status));
         Row(L("Переписка","Thread"),_threads);
         var fresh=new Button{Text=L("Новое предложение","New proposal")};AddChild(fresh);fresh.Pressed+=()=>{_shown=null;Update();};
         _refresh.Text=L("Показать последнюю версию","Show latest version");AddChild(_refresh);_refresh.Pressed+=LoadSelected;
@@ -30,13 +30,13 @@ public partial class TradeNegotiationPanel : VBoxContainer
         _sellSupport.Text=L("Предложить свой блок поддержки","Offer my own support block");AddChild(_sellSupport);
         foreach(var item in scenario.Items){_item.AddItem(PlayerText.Item(language,item.Id));_item.SetItemMetadata(_item.ItemCount-1,item.Id);}
         Row(L("Товар / компенсация","Item / compensation"),_item);Row(L("Количество","Quantity"),_quantity);
-        Row(L("Цена за единицу","Unit price"),_price);Row(L("Срок исполнения, тиков","Fulfillment ticks"),_duration);
+        Row(L("Цена за единицу","Unit price"),_price);Row(L("Срок, активных секунд","Duration, active seconds"),_duration);
         Row(L("Свой источник","Own source"),_source);Row(L("Свой получатель","Own destination"),_destination);
         _propose.Text=L("Отправить предложение","Send proposal");_counter.Text=L("Предложить встречные условия","Counteroffer");
         _reject.Text=L("Отказаться от версии","Reject version");
         _publish.Text=L("Опубликовать выбранное на общем рынке","Publish selected stock on public market");
-        _publish.Pressed+=()=>{var t=Terms();var shop=_view!.Buildings.First(b=>b.Kind==BuildingKind.Shop);_submit(PlayerDesk.PublishLot(shop.Id.Value,t.ItemId,t.Quantity,t.UnitPriceMinor,t.Source.Value));};
-        foreach(var b in new[]{_publish,_propose,_counter,_accept,_reject})AddChild(b);
+        _publish.Pressed+=()=>{if(_pending||_publish.Disabled)return;var t=Terms();_pending=true;_publish.Disabled=true;var shop=_view!.Buildings.First(b=>b.Kind==BuildingKind.Shop);_submit(PlayerDesk.PublishLot(shop.Id.Value,t.ItemId,t.Quantity,t.UnitPriceMinor,t.Source.Value));};
+        var commands=TabletDesign.Flow();foreach(var b in new[]{_propose,_counter,_accept,_reject})commands.AddChild(b);AddChild(commands);var publicOffer=new VBoxContainer();publicOffer.AddChild(_publish);AddChild(new UiDisclosure(L("Продать на общем рынке","Sell on the public market"),publicOffer));
         _propose.Pressed+=()=>Send(ActionKind.ProposeTrade);_counter.Pressed+=()=>Send(ActionKind.CounterTrade);
         _accept.Pressed+=()=>Send(ActionKind.AcceptTrade);_reject.Pressed+=()=>Send(ActionKind.RejectTrade);
         _threads.ItemSelected+=_=>LoadSelected();_kind.ItemSelected+=_=>Update();_source.ItemSelected+=_=>Update();
@@ -62,7 +62,7 @@ public partial class TradeNegotiationPanel : VBoxContainer
             foreach(var inventory in inventories)
             {
                 var b=view.Buildings.Single(b=>b.InputId==inventory.Id||b.OutputId==inventory.Id);
-                string caption=PlayerText.Building(_language,b.TypeId)+" #"+b.Id.Value+$" ({inventory.Position.X},{inventory.Position.Z})"+(b.OutputId==inventory.Id?L(" · выход"," · output"):L(" · вход"," · input"));
+                string caption=GameUi.InventoryName(view,inventory.Id.Value,_language);
                 _source.AddItem(caption);_source.SetItemMetadata(_source.ItemCount-1,inventory.Id.Value);
                 if(b.InputId==inventory.Id){_destination.AddItem(caption);_destination.SetItemMetadata(_destination.ItemCount-1,inventory.Id.Value);}
             }
@@ -74,7 +74,7 @@ public partial class TradeNegotiationPanel : VBoxContainer
             _threadKey=key;_threads.Clear();foreach(var n in view.Negotiations)
             {_threads.AddItem($"#{n.Id} · v{n.Current.Version} · "+Status(n.Status));_threads.SetItemMetadata(_threads.ItemCount-1,n.Id);if(n.Id==selectedId)_threads.Select(_threads.ItemCount-1);}
         }
-        Update();
+        Update();if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Size.X);
     }
     private void LoadSelected()
     {
@@ -103,6 +103,7 @@ public partial class TradeNegotiationPanel : VBoxContainer
     private void Send(ActionKind kind)
     {
         if(_pending || _view is null)return;
+        _pending=true;Update();
         // Keep the reviewed version, including when another response arrived during editing.
         _submit(new(kind,NegotiationId:_shown?.Id??0,NegotiationVersion:_shown?.Current.Version??0,
             Terms:kind is ActionKind.ProposeTrade or ActionKind.CounterTrade?Terms():null));
@@ -122,10 +123,10 @@ public partial class TradeNegotiationPanel : VBoxContainer
         _reject.Disabled=_pending||_shown is null||stale||!other;
         _accept.Text=L("Принять версию ","Accept version ")+(_shown?.Current.Version.ToString()??"—");
         _status.Text=!access?PlayerText.Reason(_language,"ShopRequired"):_shown is null?L("До согласия товар и деньги не резервируются. Поддержка подписывается только после фактической компенсации.","No stock or money is reserved during talks. Support is signed only after physical compensation."):
-            $"#{_shown.Id} · v{_shown.Current.Version} · "+L("срок ответа ","reply due ")+_shown.ExpiresTick+" · "+_shown.Current.Terms.Seller.Value+" → "+_shown.Current.Terms.Buyer.Value+
+            L("Условия ","Terms ")+_shown.Current.Version+" · "+L("ответить за ","reply within ")+GameDuration.Format(_shown.ExpiresTick-_view.Tick,_language)+" · "+WorldSkins.ActorName(_shown.Current.Terms.Seller.Value,_language)+" → "+WorldSkins.ActorName(_shown.Current.Terms.Buyer.Value,_language)+
             "\n"+Describe(_shown.Current.Terms)+(_shown.Current.Position is {} p?$" · ({p.X},{p.Z})":"")+"\n"+(stale?L("Условия изменились. Загрузите последнюю версию перед подтверждением.","Terms changed. Load the latest version before confirming."):Status(_shown.Status));
     }
-    private string Describe(TradeTerms t)=>t.Kind==TradeKind.Support?string.Join(", ",t.Compensation.Select(m=>PlayerText.Item(_language,m.ItemId)+" ×"+m.Quantity)):PlayerText.Item(_language,t.ItemId)+" ×"+t.Quantity+" · "+PlayerText.Money(t.UnitPriceMinor)+L(" за единицу · срок "," per unit · due in ")+t.FulfillmentTicks+L(" тиков · источник #"," ticks · source #")+t.Source.Value+L(" · получатель #"," · destination #")+t.Destination.Value;
+    private string Describe(TradeTerms t)=>t.Kind==TradeKind.Support?string.Join(", ",t.Compensation.Select(m=>PlayerText.Item(_language,m.ItemId)+" ×"+m.Quantity)):PlayerText.Item(_language,t.ItemId)+" ×"+t.Quantity+" · "+PlayerText.Money(t.UnitPriceMinor)+L(" за единицу · срок "," per unit · due in ")+GameDuration.Format(t.FulfillmentTicks,_language)+(_view is null?"":" · "+GameUi.InventoryName(_view,t.Source.Value,_language)+" → "+GameUi.InventoryName(_view,t.Destination.Value,_language));
     private string Status(NegotiationStatus s)=>s switch {NegotiationStatus.Proposed=>L("Ожидает ответа","Awaiting response"),NegotiationStatus.Accepted=>L("Договор заключён","Agreement concluded"),NegotiationStatus.Rejected=>L("Отказ","Rejected"),_=>L("Срок истёк","Expired")};
     private string L(string ru,string en)=>PlayerText.Local(_language,ru,en);
 }

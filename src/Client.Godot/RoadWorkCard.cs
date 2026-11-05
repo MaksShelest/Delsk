@@ -20,6 +20,7 @@ public partial class RoadWorkCard : PanelContainer
     private readonly Button _board=new(){Name="RoadPaverBoard"};
     private readonly VBoxContainer _loadBlock=new();
     private readonly SpinBox _quantity=new(){Name="RoadMaterialQuantity",MinValue=1,MaxValue=70,Step=1,Value=1,UpdateOnTextChanged=true,CustomMinimumSize=new(78,44)};
+    private readonly ScrollContainer _scroll=new(){HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled,VerticalScrollMode=ScrollContainer.ScrollMode.Auto,SizeFlagsVertical=SizeFlags.ExpandFill};
     private Cell[] _cells=[];private long[] _sources=[];private PlayerView? _view;private RoadCellQuote? _current;private bool _pending;
     private string _cellsKey="",_sourcesKey="";
     public Cell? Selected=>_cell.Selected>=0&&_cell.Selected<_cells.Length?_cells[_cell.Selected]:null;
@@ -35,24 +36,25 @@ public partial class RoadWorkCard : PanelContainer
         var box=new VBoxContainer();box.AddThemeConstantOverride("separation",6);AddChild(box);
         var header=TabletDesign.Flow();var heading=TabletDesign.Heading(L("Дорожные работы","Road works"),20);heading.AutowrapMode=TextServer.AutowrapMode.Off;header.AddChild(heading);
         var close=new Button{Name="RoadCellClose",Text=L("Закрыть","Close")};close.Pressed+=()=>CloseRequested?.Invoke();header.AddChild(close);box.AddChild(header);
-        var choice=TabletDesign.Flow();choice.AddChild(_cell);choice.AddChild(_mode);box.AddChild(choice);
+        var content=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};_scroll.AddChild(content);box.AddChild(_scroll);
+        var choice=TabletDesign.Flow();choice.AddChild(_cell);choice.AddChild(_mode);content.AddChild(choice);
         _mode.AddItem(L("Лично · 50%","Personal · 50%"));_mode.AddItem(L("Автоматика","Automatic"));
         _cell.ItemSelected+=_=>Update();_mode.ItemSelected+=_=>Update();
-        box.AddChild(_details);box.AddChild(_stock);box.AddChild(_progress);box.AddChild(_status);box.AddChild(_result);
+        content.AddChild(TabletDesign.Art("truck",new(72,72)));content.AddChild(_details);content.AddChild(_stock);content.AddChild(_progress);content.AddChild(_status);content.AddChild(_result);
         var actions=TabletDesign.Flow();_start.Text=L("Начать строительство","Start construction");_pause.Text=L("Приостановить","Pause");_go.Text=L("К участку","Go to cell");
-        foreach(var b in new[]{_start,_pause,_go})actions.AddChild(b);box.AddChild(actions);
+        foreach(var b in new[]{_start,_pause,_go})actions.AddChild(b);content.AddChild(actions);
         _wage.Text=L("Повысить ставку группы","Raise crew wage");actions.AddChild(_wage);
-        _wage.Pressed+=()=>{if(Work is {} w&&!_pending)_submit(PlayerDesk.Wage(w.Group.Id.Value,(w.Group.PendingWageMinor??w.Group.WageMinor)+(_view?.Economy?.PlayerWageStepMinor??PlayerDesk.WageStepMinor)));};
+        _wage.Pressed+=()=>{if(!_wage.Disabled&&Work is {} w&&!_pending)Send(PlayerDesk.Wage(w.Group.Id.Value,(w.Group.PendingWageMinor??w.Group.WageMinor)+(_view?.Economy?.PlayerWageStepMinor??PlayerDesk.WageStepMinor)));};
         _start.AddThemeColorOverride("font_color",new Color("16533b"));_start.Pressed+=Start;_pause.Pressed+=Pause;
-        actions.AddChild(_board);_board.Pressed+=()=>{if(_view?.Fleet?.Vehicles.FirstOrDefault(v=>v.Vehicle.Id==_vehicle) is {} v)_submit(new(v.Vehicle.Driver==0?ActionKind.BoardVehicle:ActionKind.LeaveVehicle,VehicleId:_vehicle));};
+        actions.AddChild(_board);_board.Pressed+=()=>{if(_view?.Fleet?.Vehicles.FirstOrDefault(v=>v.Vehicle.Id==_vehicle) is {} v)Send(new(v.Vehicle.Driver==0?ActionKind.BoardVehicle:ActionKind.LeaveVehicle,VehicleId:_vehicle));};
         _go.Pressed+=()=>
         {
             if(Selected is not {} cell||_view is null)return;
             if(Mode==EquipmentMode.Automatic&&_view.Participant.Position==cell)
                 cell=_cells.FirstOrDefault(c=>c!=cell&&!_view.Blocked.Contains(c),cell);
-            _submit(PlayerDesk.Move(cell.X,cell.Z));
+            Send(PlayerDesk.Move(cell.X,cell.Z));
         };
-        box.AddChild(_loadBlock);_loadBlock.AddThemeConstantOverride("separation",4);
+        content.AddChild(new UiDisclosure(L("Загрузка материалов","Load materials"),_loadBlock,true));_loadBlock.AddThemeConstantOverride("separation",4);
         _loadBlock.AddChild(new HSeparator());_loadBlock.AddChild(Text(L("Загрузить из своих запасов рядом","Load from your nearby stock")));
         var load=TabletDesign.Flow();foreach(var c in new Control[]{_source,_material,_quantity,_load})load.AddChild(c);_loadBlock.AddChild(load);
         foreach(string item in scenario.Economy!.Roads!.Stages.SelectMany(s=>s.Materials).Select(m=>m.ItemId).Distinct())
@@ -95,7 +97,7 @@ public partial class RoadWorkCard : PanelContainer
         _progress.Visible=work?.Batch is not null;_loadBlock.Visible=!active;_go.Visible=_board.Visible=!active;
         _cell.Disabled=_mode.Disabled=active||_pending;
         _details.Text=q is null?L("Не выбран участок.","Select a cell."):$"{Surface(q.CurrentLevel)} → {(q.Next is null?"—":Surface(q.Next.Level))}\n"+
-            (q.Next is null?"":PlayerText.Money(q.Next.PriceMinor)+L(" · базовых тиков: "," · base ticks: ")+q.Next.Ticks+L(" · работа: "," · work: ")+(q.ExpectedTicks?.ToString()??"—")+L(" тиков"," ticks"));
+            (q.Next is null?"":PlayerText.Money(q.Next.PriceMinor)+L(" монет · "," coins · ")+(q.ExpectedTicks is {} ticks?GameDuration.Format(ticks,_language):"—"));
         _stock.Text=L("Тракт-Д1 #","Trakt-D1 #")+_vehicle+L(" · запас "," · cargo ")+$"{cargo.OccupiedVolume}+{cargo.ReservedCapacity}/{cargo.Capacity}\n"+
             L("Нужно / в кузове: ","Required / in cargo: ")+string.Join(" · ",(q?.Materials??[]).Select(m=>PlayerText.Item(_language,m.ItemId)+$" {m.Required}/{m.Available}"+ (m.Available<m.Required?L(" · загрузить "," · load ")+(m.Required-m.Available):"")));
         if(work?.Batch is not null)_stock.Text=L("Тракт-Д1 #","Trakt-D1 #")+_vehicle+L(" · запас "," · cargo ")+$"{cargo.OccupiedVolume}+{cargo.ReservedCapacity}/{cargo.Capacity}\n"+
@@ -123,17 +125,19 @@ public partial class RoadWorkCard : PanelContainer
         _go.Disabled=_pending||active||selected is null||(Mode==EquipmentMode.Automatic?vehicle.Vehicle.Driver!=0||_view.Participant.Position!=cargo.Position:cargo.Position==selected);
         _load.Disabled=_pending||_view.Participant.Busy||active||LoadAction() is null;
     }
+    private void Send(GameAction action){if(_pending)return;_pending=true;Update();_submit(action);}
+    public void FitHeight(float height){CustomMinimumSize=new(0,0);Size=new(Size.X,height);_scroll.CustomMinimumSize=new(0,Math.Max(80,height-80));if(Size.X>0)GameUi.FitControls(this,Size.X-28);}
     private void Start()
     {
-        if(_pending)return;var w=Work;
+        if(_pending||_start.Disabled)return;var w=Work;
         if(w is {Enabled:false}&&(w.Batch is not null||w.Reason=="PaverPositioningPaused"))
-            _submit(new(ActionKind.SetRoadCellEnabled,VehicleId:_vehicle,Enabled:true));
-        else if(_current is {CanStart:true,Next:{} rule} q)_submit(new(ActionKind.StartRoadCell,Target:q.Cell,VehicleId:_vehicle,EquipmentLevel:rule.Level,Mode:Mode));
+            Send(new(ActionKind.SetRoadCellEnabled,VehicleId:_vehicle,Enabled:true));
+        else if(_current is {CanStart:true,Next:{} rule} q)Send(new(ActionKind.StartRoadCell,Target:q.Cell,VehicleId:_vehicle,EquipmentLevel:rule.Level,Mode:Mode));
     }
     private void Pause()
     {
         if(_pending||Work is not {} w)return;
-        _submit(new(ActionKind.SetRoadCellEnabled,VehicleId:_vehicle,Enabled:false));
+        Send(new(ActionKind.SetRoadCellEnabled,VehicleId:_vehicle,Enabled:false));
     }
     private GameAction? LoadAction()
     {
@@ -145,5 +149,5 @@ public partial class RoadWorkCard : PanelContainer
             (Int128)quantity*_scenario.Items.Single(i=>i.Id==item).UnitVolume<=cargo.Capacity-cargo.OccupiedVolume-cargo.ReservedCapacity?
             PlayerDesk.Transfer(source.Id.Value,cargo.Id.Value,item,quantity):null;
     }
-    private void Load(){if(!_pending&&LoadAction() is {} a)_submit(a);}
+    private void Load(){if(!_load.Disabled&&!_pending&&LoadAction() is {} a)Send(a);}
 }

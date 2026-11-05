@@ -8,6 +8,7 @@ public partial class HouseholdObjectCard : VBoxContainer
     public event System.Action<bool>? ArtworkHeaderChanged;
     public event System.Action? HelpRequested;
     public event System.Action? MapRequested;
+    public event System.Action? FleetRequested;
     public event System.Action? CloseRequested;
     private readonly ScenarioDefinition _scenario;
     private readonly string _language;
@@ -62,7 +63,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         _details.AddChild(_actions);
         var routeToggle=new Button{Name="HouseholdRoutes",Text=L("Маршруты ▸","Routes ▸"),FocusMode=FocusModeEnum.None};_details.AddChild(routeToggle);
         routeToggle.Visible=!(kind=="equipment"&&scenario.Economy?.Fleet?.EquipmentDealerVersion==1);
-        _routes=new(scenario,language,kind,id,submit){Visible=false};_details.AddChild(_routes);routeToggle.Pressed+=()=>_routes.Visible=!_routes.Visible;
+        _routes=new(scenario,language,kind,id,submit){Visible=false};_routes.FleetRequested+=()=>FleetRequested?.Invoke();_details.AddChild(_routes);routeToggle.Pressed+=()=>_routes.Visible=!_routes.Visible;
         TabletDesign.CompactInputs(this);Resized+=LayoutCard;
         _quantity.ValueChanged += _ => { if (_lastView is not null) ShowData(_lastView,_pending,_paused); };
         if(_storeObject){_details.Visible=false;if(_workshopPanel is not null)_workshopPanel.Visible=false;if(_developmentPanel is not null)_developmentPanel.Visible=false;}
@@ -70,7 +71,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         {
             SizeFlagsVertical=SizeFlags.ExpandFill;_woodworking=new(scenario,language,id,submit,access,_quickPut,_quickTake,productionType);_woodworking.MapRequested+=()=>MapRequested?.Invoke();
             void Move(Control? control,string page){if(control is null)return;RemoveChild(control);_woodworking.Page(page).AddChild(control);}
-            Move(_workshopPanel,"workers");Move(_developmentPanel,"development");Move(_details,"delivery");Move(_storagePanel,"delivery");
+            Move(_workshopPanel,"workers");Move(_developmentPanel,"development");RemoveChild(_details);_details.RemoveChild(_routes);routeToggle.Visible=false;_routes.Visible=true;_woodworking.Page("delivery").AddChild(_routes);_woodworking.Page("delivery").AddChild(new UiDisclosure(L("Запасы и расширенные настройки","Stocks & advanced settings"),_details));Move(_storagePanel,"delivery");
             if(_demolitionPanel is not null){RemoveChild(_demolitionPanel);_woodworking.Management.AddChild(_demolitionPanel);}
             _recipeCards.Visible=false;AddChild(_woodworking);
         }

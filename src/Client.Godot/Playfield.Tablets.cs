@@ -137,7 +137,7 @@ public partial class Playfield
         else
         {
             _enterpriseTablet = new HouseholdObjectCard(_scenario,_language,_tabletState.Kind == TabletKind.Object ? _objectKind : "building",_tabletState.EnterpriseId,Submit,a => _session.Engine.AccessFor(_human,a),(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction),woodworkingPrototype:woodworking,productionType:view.Buildings.FirstOrDefault(b=>b.Id.Value==_tabletState.EnterpriseId)?.TypeId??"woodworking");
-            _enterpriseTablet.MapRequested+=OpenCityMap;
+            _enterpriseTablet.MapRequested+=OpenCityMap;_enterpriseTablet.FleetRequested+=()=>OpenCitySection("fleet");
             _enterpriseTablet.ArtworkHeaderChanged+=_tabletPanel.UseArtworkHeader;
             _enterpriseTablet.HelpRequested+=_tabletPanel.RequestHelp;_enterpriseTablet.CloseRequested+=_tabletPanel.RequestClose;
             _tabletPanel.Body.AddChild(_enterpriseTablet);
@@ -149,7 +149,7 @@ public partial class Playfield
         if (!_tabletState.IsOpen || _surface != Surface.Play) return;
         if (_tabletPanel is null) RebuildTablet();
         _cityMapPanel?.ShowData(CityMap.Read(Presentation.Read(_scenario,_session.Engine,_human.Value),view),view,WaitingCommand);
-        _exchangeTablet?.ShowHeader(view);
+        _exchangeTablet?.ShowHeader(view,WaitingCommand);
         _capitalTablet?.ShowData(view,_session.Engine.CapitalTradingOf(_human),WaitingCommand,_session.Paused);
         _marketTablet?.ShowData(view,WaitingCommand);
         _enterpriseTablet?.ShowData(view,WaitingCommand,_session.Paused);
