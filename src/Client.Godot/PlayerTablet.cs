@@ -59,7 +59,8 @@ public partial class PlayerTablet : VBoxContainer
         _demolitionQuote=demolitionQuote;Name="PlayerPages";_scenario=scenario;_language=language;_submit=submit;_access=access;
         Theme=CompactTabletDesign.Theme;SizeFlagsVertical=SizeFlags.ExpandFill;
         AddChild(_mobile);var workspace=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill};AddChild(workspace);
-        workspace.AddChild(_navScroll);_navScroll.AddChild(_nav);workspace.AddChild(_tabs);
+        workspace.AddChild(_navScroll);var inset=new MarginContainer{Name="PlayerNavigationInset",SizeFlagsHorizontal=SizeFlags.ExpandFill};
+        inset.AddThemeConstantOverride("margin_left",13);inset.AddThemeConstantOverride("margin_right",13);_navScroll.AddChild(inset);inset.AddChild(_nav);workspace.AddChild(_tabs);
         string currentGroup="";
         void Group(string key,string ru,string en)
         {
@@ -138,8 +139,13 @@ public partial class PlayerTablet : VBoxContainer
         if(kind=="building"&&_view.Buildings.Any(b=>b.Id.Value==id&&b.Kind==BuildingKind.Production&&b.Footprint.Contains(_view.Participant.Position))&&ObjectRequested is not null){ObjectRequested.Invoke(kind,id);return;}
         foreach(Node child in _cardHost.GetChildren()){_cardHost.RemoveChild(child);child.QueueFree();}
         _cardObject=(kind,id);_card=null;_groundCard=null;
+        bool woodworking=kind=="building"&&_view.Buildings.Any(b=>b.Id.Value==id&&b.TypeId=="woodworking");
+        // The sawmill owns its page scrolls; give its inline remote view the available height.
+        var objectPage=Page("object");objectPage.SizeFlagsVertical=woodworking?SizeFlags.ExpandFill:SizeFlags.Fill;
+        _cardHost.SizeFlagsVertical=woodworking?SizeFlags.ExpandFill:SizeFlags.Fill;
+        ((ScrollContainer)objectPage.GetParent()).VerticalScrollMode=woodworking?ScrollContainer.ScrollMode.Disabled:ScrollContainer.ScrollMode.Auto;
         if(kind=="ground"){_groundCard=new(_scenario,_language,kind,id,_submit,_access,demolitionQuote:_demolitionQuote);_cardHost.AddChild(_groundCard);_groundCard.ShowData(_view,_pending);}
-        else{_card=new(_scenario,_language,kind,id,_submit,_access,_demolitionQuote){Theme=TabletDesign.Theme};_card.CloseRequested+=Back;_card.HelpRequested+=()=>HelpRequested?.Invoke();_cardHost.AddChild(_card);_card.ShowData(_view,_pending,_paused);}
+        else{_card=new(_scenario,_language,kind,id,_submit,_access,_demolitionQuote,woodworkingPrototype:woodworking){Theme=TabletDesign.Theme};_card.CloseRequested+=Back;_card.HelpRequested+=()=>HelpRequested?.Invoke();_card.MapRequested+=()=>MapRequested?.Invoke();_cardHost.AddChild(_card);_card.ShowData(_view,_pending,_paused);}
         _cardHost.Visible=true;_back.Visible=true;SelectSection("object");
     }
     public void OpenHolding(string kind,long id){if(_view is not null)Open(kind,id);}

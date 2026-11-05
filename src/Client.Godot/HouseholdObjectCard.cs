@@ -7,6 +7,7 @@ public partial class HouseholdObjectCard : VBoxContainer
 {
     public event System.Action<bool>? ArtworkHeaderChanged;
     public event System.Action? HelpRequested;
+    public event System.Action? MapRequested;
     public event System.Action? CloseRequested;
     private readonly ScenarioDefinition _scenario;
     private readonly string _language;
@@ -40,9 +41,10 @@ public partial class HouseholdObjectCard : VBoxContainer
     private readonly Dictionary<string, Container> _actionGroups = [];
     private readonly TabletColumns _quickTransfers=new(){Name="EnterpriseQuickTransfers",Breakpoint=760,Visible=false};
     private readonly QuickStockTransfer _quickPut,_quickTake;
+    private readonly WoodworkingTabletPresenter? _woodworking;
 
     public HouseholdObjectCard(ScenarioDefinition scenario, string language, string kind, long id,
-        System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access,System.Func<long,bool,DemolitionQuote?>? demolitionQuote=null)
+        System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access,System.Func<long,bool,DemolitionQuote?>? demolitionQuote=null,bool woodworkingPrototype=false)
     {
         _quickPut=new(scenario,language,"EnterprisePut",PlayerText.Local(language,"Положить всё","Store all"),submit,access);
         _quickTake=new(scenario,language,"EnterpriseTake",PlayerText.Local(language,"Забрать всё","Take all"),submit,access);
@@ -56,11 +58,19 @@ public partial class HouseholdObjectCard : VBoxContainer
         var amount = new TabletColumns{Breakpoint=650}; _details.AddChild(amount);
         amount.AddChild(new Label { Text = L("Количество для переноса", "Transfer quantity") }); amount.AddChild(_quantity);
         _details.AddChild(_actions);
-        var routeToggle=new Button{Text=L("Маршруты ▸","Routes ▸"),FocusMode=FocusModeEnum.None};_details.AddChild(routeToggle);
+        var routeToggle=new Button{Name="HouseholdRoutes",Text=L("Маршруты ▸","Routes ▸"),FocusMode=FocusModeEnum.None};_details.AddChild(routeToggle);
         routeToggle.Visible=!(kind=="equipment"&&scenario.Economy?.Fleet?.EquipmentDealerVersion==1);
         _routes=new(scenario,language,kind,id,submit){Visible=false};_details.AddChild(_routes);routeToggle.Pressed+=()=>_routes.Visible=!_routes.Visible;
         TabletDesign.CompactInputs(this);Resized+=LayoutCard;
         _quantity.ValueChanged += _ => { if (_lastView is not null) ShowData(_lastView,_pending,_paused); };
+        if(woodworkingPrototype)
+        {
+            SizeFlagsVertical=SizeFlags.ExpandFill;_woodworking=new(scenario,language,id,submit,access,_quickPut,_quickTake);_woodworking.MapRequested+=()=>MapRequested?.Invoke();
+            void Move(Control? control,string page){if(control is null)return;RemoveChild(control);_woodworking.Page(page).AddChild(control);}
+            Move(_workshopPanel,"workers");Move(_developmentPanel,"development");Move(_details,"delivery");Move(_storagePanel,"delivery");
+            if(_demolitionPanel is not null){RemoveChild(_demolitionPanel);_woodworking.Management.AddChild(_demolitionPanel);}
+            _recipeCards.Visible=false;AddChild(_woodworking);
+        }
     }
 
     public void ShowData(PlayerView view, bool pending, bool paused)
@@ -122,7 +132,7 @@ public partial class HouseholdObjectCard : VBoxContainer
                 Add("upgrade", L("Улучшить здание — ", "Upgrade building — ") + PlayerText.Money(upgrade.PriceMinor) + " + " + string.Join(", ", upgrade.Materials.Select(m => PlayerText.Item(_language, m.ItemId) + " ×" + m.Quantity)),
                     new(ActionKind.UpgradeBuilding, Building: building.Id,Quantity:building.Level+1), enterprise is null || !enterprise.Enabled && enterprise.BatchId == 0);
         }
-        _quickTransfers.Visible=enterprise is not null&&building?.Kind==BuildingKind.Production;
+        _quickTransfers.Visible=_woodworking is null&&enterprise is not null&&building?.Kind==BuildingKind.Production;
         if(_quickTransfers.Visible)
         {
             var input=view.Inventories.Single(i=>i.Id==enterprise!.InputId);var output=view.Inventories.Single(i=>i.Id==enterprise!.OutputId);
@@ -163,7 +173,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         UpdateActions(actions, pending);
         var artworkRecipe=enterprise is null?null:_scenario.Recipes.Single(r=>r.Id==enterprise.RecipeId);
         _showProductionTablet=_scenario.Economy?.Workshops is null && artworkRecipe is not null && building is not null && ProductionTabletPresenter.Supports(building.TypeId,artworkRecipe);
-        if(_showProductionTablet && _productionTablet is null)
+        if(_woodworking is null && _showProductionTablet && _productionTablet is null)
         {
             _productionTablet=new(_scenario,_language,_id,RevealLogistics,building!.TypeId);
             _productionTablet.RecipesRequested+=()=>{_recipeCards.Visible=!_recipeCards.Visible;};
@@ -171,7 +181,8 @@ public partial class HouseholdObjectCard : VBoxContainer
             _detailsToggle=new Button{Text=L("Подробности · перенос, маршруты, транспорт","Details · transfers, routes, transport"),FocusMode=FocusModeEnum.None};AddChild(_detailsToggle);MoveChild(_detailsToggle,1);MoveChild(_recipeCards,1);
             _detailsToggle.Pressed+=()=>{_expanded=!_expanded;LayoutCard();};
         }
-        if(_showProductionTablet){_productionTablet!.ShowData(view,paused,_buttons);ShowRecipeCards(building!,enterprise!);}LayoutCard();
+        if(_woodworking is not null)_woodworking.ShowData(view,pending);
+        else if(_showProductionTablet){_productionTablet!.ShowData(view,paused,_buttons);ShowRecipeCards(building!,enterprise!);}LayoutCard();
         if(view.Transfers.Length==0 && !pending)_activeTransferKey=null;
         foreach(var (key,pair) in _buttons)
             if(pair.Button is ContextActionButton button)
@@ -219,6 +230,7 @@ public partial class HouseholdObjectCard : VBoxContainer
     private bool _showProductionTablet;
     private void LayoutCard()
     {
+        if(_woodworking is not null)return;
         bool artwork=_showProductionTablet && Size.X>=980;
         if(_productionTablet is not null)_productionTablet.Visible=artwork;
         if(_detailsToggle is not null)_detailsToggle.Visible=artwork;

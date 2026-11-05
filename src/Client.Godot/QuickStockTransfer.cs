@@ -11,6 +11,8 @@ public partial class QuickStockTransfer : VBoxContainer
     private readonly OptionButton _item=new(){FitToLongestItem=false,CustomMinimumSize=new(150,40),SizeFlagsHorizontal=SizeFlags.ExpandFill};
     private readonly Button _all=new(){CustomMinimumSize=new(40,40),SizeFlagsHorizontal=SizeFlags.ShrinkBegin};
     private readonly Label _hint=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};
+    private bool _friendly,_deposit;
+    public void UseProductionCard(bool deposit){_friendly=true;_deposit=deposit;_stock.Visible=false;_item.CustomMinimumSize=new(100,40);}
     private PlayerView? _view;private InventoryId _source,_destination;private bool _pending;private string[] _items=[];
     public QuickStockTransfer(ScenarioDefinition scenario,string language,string name,string caption,Action<GameAction> submit,Func<GameAction,ActionAccess> access)
     {
@@ -36,9 +38,11 @@ public partial class QuickStockTransfer : VBoxContainer
         ManualTransferChoice.Read(_scenario,_view,_source,_destination,_items[_item.Selected],_access,_pending);
     private void Render()
     {
+        _item.Visible=!_friendly||_items.Length>1;
         var choice=Choice();_all.Text=_caption+" ("+(choice?.Maximum??0)+")";_all.Disabled=choice is null||!choice.Value.Enabled;
         _all.TooltipText=choice?.Explain(_language)??PlayerText.Local(_language,"Нет подходящего товара.","No item available.");
-        _hint.Text=_all.Disabled?choice is {Reason:"NoFreeStock"}?PlayerText.Local(_language,"Нет свободного товара.","No available stock."):_all.TooltipText:"";_hint.Visible=_hint.Text.Length>0;_item.Disabled=_pending;
+        _hint.Text=_all.Disabled?choice is {Reason:"NoFreeStock"}?PlayerText.Local(_language,"Нет свободного товара.","No available stock."):_all.TooltipText:"";if(_friendly&&choice is {Reason:"NoFreeStock"})_hint.Text=PlayerText.Local(_language,_deposit?"В рюкзаке пока нет сырья.":"Готовой продукции пока нет.",_deposit?"No materials in your backpack yet.":"No finished goods yet.");
+        _hint.Visible=_hint.Text.Length>0;_item.Disabled=_pending;
     }
     private void Send()
     {

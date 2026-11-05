@@ -9,15 +9,21 @@ public partial class DemolitionPanel:VBoxContainer
     private readonly Label _summary=new(){Name="DemolitionSummary",AutowrapMode=TextServer.AutowrapMode.WordSmart};
     private readonly Button _prepare=new(){Name="PrepareDemolition"},_resume=new(){Name="CancelDemolitionPreparation"},_open=new(){Name="DemolitionPreview"},_hold=new(){Name="DemolitionHold",FocusMode=FocusModeEnum.None},_cancel=new(){Name="DemolitionCancel"};
     private Window? _window;
-    private readonly VBoxContainer _preview=new(){Visible=false};private DemolitionQuote? _current;private long _target;private bool _construction,_holding;private double _held;private string _token="";
+    private readonly VBoxContainer _preview=new(){Visible=false};
+    private readonly VBoxContainer _management=new(){Visible=false};private DemolitionQuote? _current;private long _target;private bool _construction,_holding;private double _held;private string _token="";
     private string L(string ru,string en)=>PlayerText.Local(_language,ru,en);
     private string Item(string id)=>id switch{"steel"=>L("сталь","steel"),"beam"=>L("балки","beams"),"concrete"=>L("бетон","concrete"),_=>PlayerText.Item(_language,id)};
     private string Materials(IEnumerable<MaterialCost> items){var list=items.Where(m=>m.Quantity>0).ToArray();return list.Length==0?L("нет","none"):string.Join(", ",list.Select(m=>Item(m.ItemId)+" ×"+m.Quantity));}
     public DemolitionPanel(string language,Action<GameAction> submit,Func<long,bool,DemolitionQuote?> quote,Func<GameAction,ActionAccess> access)
     {
-        _access=access;_language=language;_submit=submit;_quote=quote;Name="DemolitionPanel";AddChild(new HSeparator());AddChild(_prepare);AddChild(_resume);AddChild(_open);AddChild(_preview);_preview.AddChild(_summary);_preview.AddChild(_hold);_preview.AddChild(_cancel);
+        _access=access;_language=language;_submit=submit;_quote=quote;Name="DemolitionPanel";
+        var toggle=new Button{Name="ObjectManagementToggle",Text=L("Управление объектом ▸","Object management ▸"),ToggleMode=true,SizeFlagsHorizontal=SizeFlags.ShrinkBegin,CustomMinimumSize=new(0,40)};
+        AddChild(toggle);AddChild(_management);toggle.Toggled+=open=>{_management.Visible=open;toggle.Text=L("Управление объектом ","Object management ")+(open?"▾":"▸");if(!open)ResetHold();};
+        var actions=new HFlowContainer();_management.AddChild(actions);actions.AddChild(_prepare);actions.AddChild(_resume);actions.AddChild(_open);_management.AddChild(_preview);_preview.AddChild(_summary);
+        var confirm=new HFlowContainer();_preview.AddChild(confirm);confirm.AddChild(_hold);confirm.AddChild(_cancel);
         _prepare.Text=L("Подготовить к сносу","Prepare for demolition");_resume.Text=L("Отменить подготовку (без автозапуска)","Cancel preparation (no automatic restart)");_cancel.Text=L("Отмена — ничего не списывать","Cancel — spend nothing");
-        foreach(var b in new[]{_prepare,_resume,_open,_hold,_cancel}){b.AutowrapMode=TextServer.AutowrapMode.WordSmart;b.CustomMinimumSize=new(0,44);}
+        foreach(var b in new[]{_prepare,_resume,_open,_hold,_cancel}){b.AutowrapMode=TextServer.AutowrapMode.Off;b.CustomMinimumSize=new(0,44);b.SizeFlagsHorizontal=SizeFlags.ShrinkBegin;}
+        _hold.CustomMinimumSize=new(380,44);
         _prepare.Pressed+=()=>_submit(new(ActionKind.PrepareDemolition,Building:new(_target)));_resume.Pressed+=()=>_submit(new(ActionKind.CancelDemolitionPreparation,Building:new(_target)));
         _open.Pressed+=()=>{_preview.Visible=true;ResetHold();};_cancel.Pressed+=()=>{_preview.Visible=false;ResetHold();};
         _hold.ButtonDown+=()=>{if(_current is null||_hold.Disabled)return;_holding=true;_held=0;_token=_current.Token;};_hold.ButtonUp+=ResetHold;_hold.MouseExited+=ResetHold;VisibilityChanged+=()=>{if(!IsVisibleInTree())ResetHold();};

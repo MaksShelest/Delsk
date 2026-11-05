@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""One scoped native I6-A run: Small valley, 3 NPCs, RU/EN, 1100x720/960x440/800x360. No economy study.
+"""One scoped native I6-A Revision 2 run: Small valley, 3 NPCs, RU/EN, 1100x720/960x440. No economy study.
 Author: Шелестов Максим Евгеньевич.
 """
 import argparse,hashlib,json,os,shutil,socket,subprocess,sys,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--godot',required=True);p.add_argument('--xorg',default='/usr/lib/xorg/Xorg');p.add_argument('--prepared',type=Path,help='Reuse prior ordinary references and imported assets; only UI sources may differ');p.add_argument('--probe-only',action='store_true',help='Recompile only the isolated probe when all game sources match the prepared run');p.add_argument('--case',choices=['all','navigation','transfers','landscape','landscape-800','remaining'],default='all');a=p.parse_args()
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--godot',required=True);p.add_argument('--xorg',default='/usr/lib/xorg/Xorg');p.add_argument('--prepared',type=Path,help='Reuse prior ordinary references and imported assets; only UI sources may differ');p.add_argument('--probe-only',action='store_true',help='Recompile only the isolated probe when all game sources match the prepared run');p.add_argument('--fixture',type=Path,help='Reuse one existing ordinary prepared world');p.add_argument('--case',choices=['all','layout','production','secondary','remaining','demolition','remote'],default='all');a=p.parse_args()
 out=a.output.resolve();stage=out/'source';project=stage/'src/Client.Godot'
 if out.exists() and any(out.iterdir()):p.error('Use an empty output; retain earlier failures')
 out.mkdir(parents=True);inputs={};client_changed=False
@@ -89,7 +89,7 @@ with (out/'xorg.stdout.log').open('w') as log:
             except OSError:time.sleep(.1)
         assert ready,'Owned display not ready'
         env=os.environ|{'DISPLAY':'127.0.0.1:94.0','LIBGL_ALWAYS_SOFTWARE':'1','LP_NUM_THREADS':'2','XDG_DATA_HOME':str(out/'runtime/data'),'XDG_CONFIG_HOME':str(out/'runtime/config'),'XDG_CACHE_HOME':str(out/'runtime/cache')}
-        check('native',180,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','--windowed','--resolution','1100x720','res://I6ATabletProbe.tscn','--','--repository',ROOT,'--output',out/'native','--case',a.case],env)
+        check('native',180,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','--windowed','--resolution','1100x720','res://I6ATabletProbe.tscn','--','--repository',ROOT,'--output',out/'native','--case',a.case,*(['--fixture',a.fixture.resolve()] if a.fixture else [])],env)
         check('native-log',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks/native'])
         assert json.loads((out/'native/native.json').read_text())['status']=='succeeded'
     finally:
