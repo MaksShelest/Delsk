@@ -55,9 +55,9 @@ public partial class TabletPanel : PanelContainer
     private readonly string _language;
     public TabletPanel(string title,string language,string icon="home")
     {
-        Name="GameTablet";_language=language;Theme=TabletDesign.Theme;MouseFilter=MouseFilterEnum.Stop;
+        Name="GameTablet";_language=language;Theme=CompactTabletDesign.Theme;MouseFilter=MouseFilterEnum.Stop;_compactFrame=true;
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);OffsetTop=66;OffsetBottom=-18;
-        AddThemeStyleboxOverride("panel",TabletDesign.Box("f7f3e8",28,22));
+        AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("fafafa",12));
         var column=new VBoxContainer();_column=column;AddChild(column);
         var header=new HBoxContainer();_header=header;column.AddChild(header);header.AddChild(TabletDesign.Art(icon,new(56,56)));
         header.AddChild(new Label{Text=title,SizeFlagsHorizontal=SizeFlags.ExpandFill,AutowrapMode=TextServer.AutowrapMode.WordSmart,ThemeTypeVariation="TabletTitle"});
@@ -81,6 +81,7 @@ public partial class TabletPanel : PanelContainer
         _clock.Text=PlayerText.Local(_language,paused?"Мир на паузе":"Активное время",paused?"World paused":"Active time")+" · "+$"{tick/3600:00}:{tick/60%60:00}:{tick%60:00}";
         if(ShortLandscape)_clock.Text=$"{tick/3600:00}:{tick/60%60:00}:{tick%60:00}";
         _status.Text=feedback;_status.Visible=feedback.Length>0;
+        if(IsInsideTree()&&Body.Size.X>0)GameUi.FitControls(Body,Body.Size.X);
     }
     private string L(string ru,string en)=>PlayerText.Local(_language,ru,en);
 }

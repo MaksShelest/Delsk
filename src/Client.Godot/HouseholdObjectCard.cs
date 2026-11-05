@@ -44,7 +44,7 @@ public partial class HouseholdObjectCard : VBoxContainer
     private readonly WoodworkingTabletPresenter? _woodworking;
 
     public HouseholdObjectCard(ScenarioDefinition scenario, string language, string kind, long id,
-        System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access,System.Func<long,bool,DemolitionQuote?>? demolitionQuote=null,bool woodworkingPrototype=false)
+        System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access,System.Func<long,bool,DemolitionQuote?>? demolitionQuote=null,bool woodworkingPrototype=false,string productionType="woodworking")
     {
         _quickPut=new(scenario,language,"EnterprisePut",PlayerText.Local(language,"Положить всё","Store all"),submit,access);
         _quickTake=new(scenario,language,"EnterpriseTake",PlayerText.Local(language,"Забрать всё","Take all"),submit,access);
@@ -65,7 +65,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         _quantity.ValueChanged += _ => { if (_lastView is not null) ShowData(_lastView,_pending,_paused); };
         if(woodworkingPrototype)
         {
-            SizeFlagsVertical=SizeFlags.ExpandFill;_woodworking=new(scenario,language,id,submit,access,_quickPut,_quickTake);_woodworking.MapRequested+=()=>MapRequested?.Invoke();
+            SizeFlagsVertical=SizeFlags.ExpandFill;_woodworking=new(scenario,language,id,submit,access,_quickPut,_quickTake,productionType);_woodworking.MapRequested+=()=>MapRequested?.Invoke();
             void Move(Control? control,string page){if(control is null)return;RemoveChild(control);_woodworking.Page(page).AddChild(control);}
             Move(_workshopPanel,"workers");Move(_developmentPanel,"development");Move(_details,"delivery");Move(_storagePanel,"delivery");
             if(_demolitionPanel is not null){RemoveChild(_demolitionPanel);_woodworking.Management.AddChild(_demolitionPanel);}

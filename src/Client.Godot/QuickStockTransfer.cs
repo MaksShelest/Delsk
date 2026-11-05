@@ -28,7 +28,9 @@ public partial class QuickStockTransfer : VBoxContainer
         if(!_items.SequenceEqual(ids))
         {
             string selected=_item.Selected>=0&&_item.Selected<_items.Length?_items[_item.Selected]:"";_items=ids;_item.Clear();
-            foreach(string id in ids)_item.AddItem(PlayerText.Item(_language,id));int index=Array.IndexOf(ids,selected);if(ids.Length>0)_item.Select(Math.Max(0,index));
+            foreach(string id in ids)_item.AddItem(PlayerText.Item(_language,id));int index=Array.IndexOf(ids,selected);
+            if(index<0)index=Array.FindIndex(ids,id=>view.Inventories.Single(i=>i.Id==source).Stock.Any(s=>s.ItemId==id&&s.Quantity>s.Reserved));
+            if(ids.Length>0)_item.Select(Math.Max(0,index));
         }
         var inventory=view.Inventories.Single(i=>i.Id==(label=="input"||label=="storage"?destination:source));
         _stock.Text=PlayerText.Local(_language,label=="input"?"Вход":label=="storage"?"Хранилище":"Выход",label=="input"?"Input":label=="storage"?"Storage":"Output")+$" · {inventory.OccupiedVolume}+{inventory.ReservedCapacity}/{inventory.Capacity}";
@@ -42,6 +44,7 @@ public partial class QuickStockTransfer : VBoxContainer
         var choice=Choice();_all.Text=_caption+" ("+(choice?.Maximum??0)+")";_all.Disabled=choice is null||!choice.Value.Enabled;
         _all.TooltipText=choice?.Explain(_language)??PlayerText.Local(_language,"Нет подходящего товара.","No item available.");
         _hint.Text=_all.Disabled?choice is {Reason:"NoFreeStock"}?PlayerText.Local(_language,"Нет свободного товара.","No available stock."):_all.TooltipText:"";if(_friendly&&choice is {Reason:"NoFreeStock"})_hint.Text=PlayerText.Local(_language,_deposit?"В рюкзаке пока нет сырья.":"Готовой продукции пока нет.",_deposit?"No materials in your backpack yet.":"No finished goods yet.");
+        if(_friendly&&_items.Length>1&&choice is {Reason:"NoFreeStock"})_hint.Text=PlayerText.Local(_language,"Нет свободного запаса выбранного ресурса. Выберите другой товар или пополните рюкзак.","No free stock of this material. Select another item or refill your backpack.");
         _hint.Visible=_hint.Text.Length>0;_item.Disabled=_pending;
     }
     private void Send()

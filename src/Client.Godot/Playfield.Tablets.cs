@@ -91,8 +91,8 @@ public partial class Playfield
         string title = _tabletState.Kind==TabletKind.Notices?L("События хозяйства","Business notices"):_tabletState.Kind==TabletKind.Tutorial?L("Короткое обучение","Quick guide"):_tabletState.Kind == TabletKind.CityMap ? L("Карта всего города","City map") : _tabletState.Kind == TabletKind.Player ? L("Планшет игрока", "Player tablet") : _tabletState.Kind == TabletKind.Object ? L("Карточка хозяйства", "Holdings card") : _tabletState.Kind == TabletKind.Market ? PlayerText.Local(_language,"Рынок участников · лавки","Participant market · shops") : _tabletState.Kind == TabletKind.Capital ? PlayerText.Local(_language,"Биржа · столичные заказы","Exchange · capital orders")
             : PlayerText.Building(_language,view.Buildings.Single(b => b.Id.Value == _tabletState.EnterpriseId).TypeId) + " #" + _tabletState.EnterpriseId;
         bool woodworking=_tabletState.Kind is TabletKind.Enterprise or TabletKind.Object&&
-            (_tabletState.Kind!=TabletKind.Object||_objectKind=="building")&&view.Buildings.Any(b=>b.Id.Value==_tabletState.EnterpriseId&&b.TypeId=="woodworking");
-        if(woodworking)title=L("Лесопилка","Sawmill")+" · #"+_tabletState.EnterpriseId;
+            (_tabletState.Kind!=TabletKind.Object||_objectKind=="building")&&view.Buildings.Any(b=>b.Id.Value==_tabletState.EnterpriseId&&b.Kind==BuildingKind.Production&&view.Enterprises.Any(e=>e.Id==new EnterpriseId(b.Id.Value)));
+        if(woodworking){var b=view.Buildings.Single(b=>b.Id.Value==_tabletState.EnterpriseId);title=GameUi.Industry(_language,b.TypeId,b.Level);}
         _tabletPanel = new TabletPanel(title,_language,_tabletState.Kind==TabletKind.Player?"home":_tabletState.Kind is TabletKind.Capital or TabletKind.Market?"market":"warehouse");
         if(_tabletState.Kind==TabletKind.Player||woodworking)_tabletPanel.UseCompactFrame();
         _tabletPanel.Closed += CloseTablet;
@@ -136,7 +136,7 @@ public partial class Playfield
         }
         else
         {
-            _enterpriseTablet = new HouseholdObjectCard(_scenario,_language,_tabletState.Kind == TabletKind.Object ? _objectKind : "building",_tabletState.EnterpriseId,Submit,a => _session.Engine.AccessFor(_human,a),(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction),woodworkingPrototype:woodworking);
+            _enterpriseTablet = new HouseholdObjectCard(_scenario,_language,_tabletState.Kind == TabletKind.Object ? _objectKind : "building",_tabletState.EnterpriseId,Submit,a => _session.Engine.AccessFor(_human,a),(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction),woodworkingPrototype:woodworking,productionType:view.Buildings.FirstOrDefault(b=>b.Id.Value==_tabletState.EnterpriseId)?.TypeId??"woodworking");
             _enterpriseTablet.MapRequested+=OpenCityMap;
             _enterpriseTablet.ArtworkHeaderChanged+=_tabletPanel.UseArtworkHeader;
             _enterpriseTablet.HelpRequested+=_tabletPanel.RequestHelp;_enterpriseTablet.CloseRequested+=_tabletPanel.RequestClose;

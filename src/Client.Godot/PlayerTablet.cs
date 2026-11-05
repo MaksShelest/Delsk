@@ -139,13 +139,13 @@ public partial class PlayerTablet : VBoxContainer
         if(kind=="building"&&_view.Buildings.Any(b=>b.Id.Value==id&&b.Kind==BuildingKind.Production&&b.Footprint.Contains(_view.Participant.Position))&&ObjectRequested is not null){ObjectRequested.Invoke(kind,id);return;}
         foreach(Node child in _cardHost.GetChildren()){_cardHost.RemoveChild(child);child.QueueFree();}
         _cardObject=(kind,id);_card=null;_groundCard=null;
-        bool woodworking=kind=="building"&&_view.Buildings.Any(b=>b.Id.Value==id&&b.TypeId=="woodworking");
+        bool woodworking=kind=="building"&&_view.Buildings.Any(b=>b.Id.Value==id&&b.Kind==BuildingKind.Production&&_view.Enterprises.Any(e=>e.Id.Value==b.Id.Value));
         // The sawmill owns its page scrolls; give its inline remote view the available height.
         var objectPage=Page("object");objectPage.SizeFlagsVertical=woodworking?SizeFlags.ExpandFill:SizeFlags.Fill;
         _cardHost.SizeFlagsVertical=woodworking?SizeFlags.ExpandFill:SizeFlags.Fill;
         ((ScrollContainer)objectPage.GetParent()).VerticalScrollMode=woodworking?ScrollContainer.ScrollMode.Disabled:ScrollContainer.ScrollMode.Auto;
         if(kind=="ground"){_groundCard=new(_scenario,_language,kind,id,_submit,_access,demolitionQuote:_demolitionQuote);_cardHost.AddChild(_groundCard);_groundCard.ShowData(_view,_pending);}
-        else{_card=new(_scenario,_language,kind,id,_submit,_access,_demolitionQuote,woodworkingPrototype:woodworking){Theme=TabletDesign.Theme};_card.CloseRequested+=Back;_card.HelpRequested+=()=>HelpRequested?.Invoke();_card.MapRequested+=()=>MapRequested?.Invoke();_cardHost.AddChild(_card);_card.ShowData(_view,_pending,_paused);}
+        else{_card=new(_scenario,_language,kind,id,_submit,_access,_demolitionQuote,woodworkingPrototype:woodworking,productionType:_view.Buildings.FirstOrDefault(b=>b.Id.Value==id)?.TypeId??"woodworking"){Theme=TabletDesign.Theme};_card.CloseRequested+=Back;_card.HelpRequested+=()=>HelpRequested?.Invoke();_card.MapRequested+=()=>MapRequested?.Invoke();_cardHost.AddChild(_card);_card.ShowData(_view,_pending,_paused);}
         _cardHost.Visible=true;_back.Visible=true;SelectSection("object");
     }
     public void OpenHolding(string kind,long id){if(_view is not null)Open(kind,id);}
