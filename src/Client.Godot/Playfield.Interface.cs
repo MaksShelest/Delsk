@@ -13,12 +13,14 @@ public partial class Playfield
     private double _harvestVisual;
     private string _noticeValue = "";
     private double _noticeSeconds;
+    private bool _contextDismissTouch;
 
     private string L(string ru, string en) => PlayerText.Local(_language, ru, en);
     private void OpenHelp(string topic = "basics")
     {
         DismissHelp();
-        StopHeading(); _waitRelease = true;
+        StopHeading();
+        CloseContextActions(); _waitRelease = true;
         _helpOverlay = new HelpOverlay(_language, topic,_session.Engine.Configuration().Economy?.Movement,_session.Engine.UsesFreeVehicleControl);
         _helpOverlay.Closed += CloseHelp;
         AddChild(_helpOverlay);
@@ -108,12 +110,31 @@ public partial class Playfield
             mapPanel.OffsetLeft=-248;mapPanel.OffsetRight=-16;mapPanel.OffsetTop=110;mapPanel.OffsetBottom=284;
             _miniMap=new DebugBoard{CustomMinimumSize=new(232,174),MouseFilter=MouseFilterEnum.Ignore};mapPanel.MouseFilter=MouseFilterEnum.Ignore;mapPanel.AddChild(_miniMap);_playChrome.AddChild(mapPanel);
         }
-        var dock = new MarginContainer { MouseFilter = MouseFilterEnum.Ignore, GrowVertical=GrowDirection.Begin };
-        dock.SetAnchorsAndOffsetsPreset(LayoutPreset.BottomWide);
+        var dock = new MarginContainer { MouseFilter = MouseFilterEnum.Ignore, GrowVertical=GrowDirection.End };
+        dock.SetAnchorsAndOffsetsPreset(LayoutPreset.TopLeft);
         dock.OffsetTop = -132; dock.OffsetBottom = -16; dock.OffsetLeft = 16; dock.OffsetRight = -16;
         _playChrome.AddChild(dock); _bottomChrome = dock;
-        UiSafeArea.Track(dock,()=>{var safe=UiSafeArea.Read(dock);dock.OffsetBottom=-16-(float)safe.Bottom;dock.OffsetTop=-132-(float)safe.Bottom;dock.OffsetLeft=16+(float)safe.Left;dock.OffsetRight=-16-(float)safe.Right;});
+        UiSafeArea.Track(dock,LayoutContextDock);
         _contextHost = new VBoxContainer { MouseFilter = MouseFilterEnum.Ignore }; dock.AddChild(_contextHost);
+        _contextActions=null;_contextCommandId=null;_contextMessage="";
+        _contextShield=new ColorRect{Name="ContextShield",Color=new Color(0,0,0,.15f),MouseFilter=MouseFilterEnum.Stop,Visible=false,ZIndex=40};
+        _contextShield.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);_playChrome.AddChild(_contextShield);dock.ZIndex=41;
+        // GUI hit testing follows sibling order, independently of CanvasItem.ZIndex.
+        _playChrome.MoveChild(dock,_playChrome.GetChildCount()-1);
+        _contextShield.GuiInput+=e=>
+        {
+            if(e is InputEventScreenTouch touch)
+            {
+                _contextShield.AcceptEvent();
+                if(touch.Pressed)_contextDismissTouch=true;
+                else if(_contextDismissTouch){_contextDismissTouch=false;Callable.From(CloseContextActions).CallDeferred();}
+            }
+            else if(e is InputEventMouseButton {ButtonIndex:MouseButton.Left} mouse)
+            {
+                _contextShield.AcceptEvent();
+                if(mouse.Pressed&&!_contextDismissTouch)Callable.From(CloseContextActions).CallDeferred();
+            }
+        };
         _contextKey = ""; _choices = [];LayoutCityHud(bar);
     }
     private void LayoutCityHud(Control bar)
@@ -127,47 +148,61 @@ public partial class Playfield
     }
     private void FillPlayContext(VBoxContainer host)
     {
-        foreach (Node child in host.GetChildren()) { host.RemoveChild(child); child.QueueFree(); }
-        _harvestButtons.Clear(); host.Visible = _choices.Length > 0;
-        if (_choices.Length == 0) return;
-        var row = new HFlowContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill}; host.AddChild(row);
-        int count = _choices.Length > 3 ? 2 : _choices.Length;
-        for (int i = 0; i < count; i++)
+        if(_contextActions is null)
         {
-            int index = i == 1 && _choices.Length > 3 && _contextIndex >= 2 ? _contextIndex : i;
-            var choice = _choices[index];
-            string caption = choice.Command?.Kind == ActionKind.StopHarvest ? L("Остановить добычу", "Stop harvesting") : choice.Label;
-            var button = new ContextActionButton(caption) { Disabled = !choice.Enabled,
-                TooltipText = choice.Enabled ? choice.Label : choice.Details };
-            if (index == _contextIndex) button.AddThemeStyleboxOverride("normal", new StyleBoxFlat {
-                BgColor = new Color("3b595b"), BorderColor = new Color("9fc6ad"),
-                BorderWidthLeft = 2, BorderWidthRight = 2, BorderWidthTop = 2, BorderWidthBottom = 2,
-                CornerRadiusTopLeft = 6, CornerRadiusTopRight = 6, CornerRadiusBottomLeft = 6, CornerRadiusBottomRight = 6 });
-            button.Pressed += () => { _contextIndex = index; ConfirmContext(); };
-            row.AddChild(button);
-            if (choice.Command?.Kind == ActionKind.StopHarvest) _harvestButtons.Add(button);
+            _contextActions=new ContextActionsPanel();host.AddChild(_contextActions);
+            _contextActions.Requested+=ConfirmContextChoice;
+            _contextActions.ExpansionChanged+=expanded=>
+            {if(expanded){StopHeading();_waitRelease=true;}else _contextDismissTouch=false;if(_contextShield is not null)_contextShield.Visible=expanded;ApplyPause();};
+            _contextActions.Resized+=LayoutContextDock;
         }
-        if (_choices.Length > 3)
+        var response=_contextCommandId is {} id?_session.Engine.Result(id):null;
+        string status=_contextCommandId is null?"":ContextActions.ResultText(_language,response);
+        if(_contextMessage.Length>0)status=_contextMessage;
+        var contextView=PlayerDesk.Read(_session.Engine,_human);
+        _contextActions.ShowSummary(string.Join(" · ",contextView.Resources.Where(r=>r.Position==contextView.Participant.Position).Select(r=>PlayerText.Item(_language,r.ItemId)+$" · {r.Stock-r.Reserved}/{r.Capacity}")));
+        _contextActions.ShowData(ContextActions.Scope(contextView),_choices,_language,WaitingCommand,status,_roadCardTop);
+        LayoutContextDock();
+    }
+    private bool _layingContext;
+    private Vector2 _contextViewport;
+    private void LayoutContextDock()
+    {
+        if(_layingContext||_bottomChrome is not {} dock||_contextActions is null||!IsInsideTree())return;
+        _layingContext=true;
+        try
         {
-            var more = new MenuButton { Text = L("Ещё действия", "More actions"), FocusMode = FocusModeEnum.None, CustomMinimumSize = new Vector2(150, 54) };
-            var popup = more.GetPopup();
-            for (int i = 2; i < _choices.Length; i++) { popup.AddItem(_choices[i].Label, i); popup.SetItemDisabled(i - 2, !_choices[i].Enabled); }
-            popup.IdPressed += id => { _contextIndex = (int)id; ConfirmContext(); };
-            row.AddChild(more);
+            var viewport=GetViewportRect().Size;var safe=UiSafeArea.Read(dock);bool wide=viewport.X>=800;
+            bool expanded=_contextActions.Expanded;
+            if(_contextActions.Pressing&&_contextViewport==viewport)return;
+            float width=Math.Min(expanded?520:wide?Math.Min(400,viewport.X/2-40):viewport.X-32,viewport.X-(float)safe.Left-(float)safe.Right-24);
+            dock.Size=new(width,0);
+            var point=new Vector2((viewport.X-width)/2,viewport.Y-dock.Size.Y-(float)safe.Bottom-12);
+            if(wide&&!expanded&&_stage?.HumanScreenPosition() is {} actor&&_view is not null)
+            {
+                var stageSize=_stage.GetViewport().GetVisibleRect().Size;
+                var screen=_view.GlobalPosition+actor*_view.Size/stageSize;
+                point=new(screen.X+28,screen.Y+24);
+            }
+            float left=(float)safe.Left+12,right=Math.Max(left,viewport.X-(float)safe.Right-width-12);
+            float top=_roadCardTop+8,bottom=Math.Max(top,viewport.Y-(float)safe.Bottom-dock.Size.Y-12);
+            dock.Position=new(Math.Clamp(point.X,left,right),Math.Clamp(point.Y,top,bottom));
+            _stick?.AvoidBottom(wide?132:dock.Size.Y);
+            _contextViewport=viewport;
         }
-        var help = new Button { Text = "?", TooltipText = L("Об этом действии", "About this action"), FocusMode = FocusModeEnum.None,
-            CustomMinimumSize = new Vector2(44, 54) };
-        help.Pressed += () => OpenHelp(ContextTopic()); row.AddChild(help);
+        finally{_layingContext=false;}
     }
     private void AnimateInterface(double delta)
     {
         if (_session is null) return;
+        LayoutContextDock();
         var job = _session.Engine.HarvestOf(_human);
         string cycle = job is null ? "" : $"{job.StartTick}:{job.CompletionTick}:{job.ItemId}";
         double target = HarvestProgress.Percent(job, _session.Engine.Tick, _session.Engine.TravelQuantum);
         if (_harvestCycle != cycle) { _harvestCycle = cycle; _harvestVisual = 0; }
         if (!_session.Paused) _harvestVisual = Mathf.MoveToward(_harvestVisual, target, delta * 160);
         foreach (var button in _harvestButtons) button.ShowProgress(_harvestVisual);
+        _contextActions?.ShowProgress(_harvestVisual);
         if (_noticeSeconds > 0) _noticeSeconds = Math.Max(0, _noticeSeconds - delta);
         if(_noticeSeconds==0)_electionNotice="";
         if (_playNotice is not null) _playNotice.Visible = _noticeSeconds > 0 && !_tabletState.IsOpen && _helpOverlay is null;

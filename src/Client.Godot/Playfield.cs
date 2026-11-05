@@ -47,6 +47,13 @@ public partial class Playfield : Control
     private Label? _playNotice;
     private Label? _tooltip;
     private VBoxContainer? _contextHost;
+    private ContextActionsPanel? _contextActions;
+    private ColorRect? _contextShield;
+    private string? _contextCommandId;
+    private string _contextMessage="";
+    private void CloseContextActions()=>_contextActions?.SetExpanded(false);
+    private ContextChoice[] CurrentContext()=>_surface==Surface.Play?ContextActions.Read(_session.Engine,_human,_scenario,_language):PlayContext.At(PlayerDesk.Read(_session.Engine,_human),_scenario,_language);
+
     private VBoxContainer? _debugContext;
     private VBoxContainer _cards = null!;
     private ContextChoice[] _choices = [];
@@ -110,6 +117,8 @@ public partial class Playfield : Control
             if (key.Pressed && !key.Echo && key.Keycode == Key.Escape) CloseHelp();
             GetViewport().SetInputAsHandled(); return;
         }
+        if(_surface==Surface.Play&&_contextActions?.Expanded==true&&key.Pressed&&!key.Echo&&key.Keycode==Key.Escape)
+        {CloseContextActions();GetViewport().SetInputAsHandled();return;}
         if(_roadWorkCard is not null&&key.Pressed&&!key.Echo&&key.Keycode==Key.Escape)
         {CloseRoadWork();GetViewport().SetInputAsHandled();return;}
         if(_roadWorkCard is not null&&key.Keycode is Key.Left or Key.Right or Key.Up or Key.Down or Key.Enter or Key.KpEnter or Key.Space)return;
@@ -123,8 +132,13 @@ public partial class Playfield : Control
         }
         if (key.Echo) return;
         if (_surface == Surface.Play && _tabletState.IsOpen && key.Keycode != Key.Escape) return;
+        // A focused context button already processes its own keyboard activation/navigation.
+        // Do not also dispatch the global selected command from the same key event.
+        if(_surface==Surface.Play&&_contextActions is {} context&&GetViewport().GuiGetFocusOwner() is Control focused&&context.IsAncestorOf(focused)&&key.Keycode is Key.Enter or Key.KpEnter or Key.Space or Key.Left or Key.Right or Key.Up or Key.Down)
+        {GetViewport().SetInputAsHandled();return;}
         if (_surface is Surface.Play or Surface.Debug && key.Keycode is Key.Left or Key.Right or Key.Up or Key.Down)
         {
+            if(_surface==Surface.Play&&_contextActions is not null){_contextActions.Navigate(key.Keycode is Key.Right or Key.Down?1:-1);GetViewport().SetInputAsHandled();return;}
             if (_choices.Length > 0)
                 _contextIndex = ( _contextIndex + (key.Keycode is Key.Right or Key.Down ? 1 : _choices.Length - 1)) % _choices.Length;
             _contextKey = "";
@@ -134,7 +148,7 @@ public partial class Playfield : Control
         }
         if (_surface is Surface.Play or Surface.Debug && key.Keycode is Key.Enter or Key.KpEnter or Key.Space)
         {
-            ConfirmContext();
+            if(_surface==Surface.Play&&_contextActions is not null)_contextActions.ConfirmSelected();else ConfirmContext();
             GetViewport().SetInputAsHandled();
             return;
         }
@@ -186,8 +200,8 @@ public partial class Playfield : Control
     public override void _Notification(int what)
     {
         if (_left || _session is null) return;
-        if (what == NotificationApplicationPaused) { _suspended = true; _waitRelease = true; StopHeading(); }
-        else if (what == NotificationApplicationFocusOut) { _unfocused = true; _waitRelease = true; StopHeading(); }
+        if (what == NotificationApplicationPaused) { _suspended = true; _waitRelease = true; CloseContextActions();StopHeading(); }
+        else if (what == NotificationApplicationFocusOut) { _unfocused = true; _waitRelease = true; CloseContextActions();StopHeading(); }
         else if (what == NotificationApplicationResumed) { _suspended = false; _skipNextFrame = true; }
         else if (what == NotificationApplicationFocusIn) { _unfocused = false; _skipNextFrame = true; }
         else return;
@@ -328,7 +342,7 @@ public partial class Playfield : Control
     {
         if (_session is null) return;
         bool paused = _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots || ModelBarrier);
-        if(_stick is not null)_stick.Visible=!paused&&_roadWorkCard is null&&!(_tabletState.Kind==TabletKind.Object&&_objectKind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion==1);
+        if(_stick is not null)_stick.Visible=!paused&&_contextActions?.Expanded!=true&&_roadWorkCard is null&&!(_tabletState.Kind==TabletKind.Object&&_objectKind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion==1);
         if(paused&&!_session.Paused){StopHeading();_waitRelease=true;}
         if (_session.Paused != paused) _scheduler.SetPaused(paused);
         FeedbackPause();
@@ -368,12 +382,25 @@ public partial class Playfield : Control
     private void ConfirmContext()
     {
         if (_choices.Length == 0) return;
-        var current = PlayContext.At(PlayerDesk.Read(_session.Engine, _human), _scenario, _language, _surface == Surface.Play);
-        var choice = _choices[Math.Clamp(_contextIndex, 0, _choices.Length - 1)];
+        ConfirmContextChoice(_choices[Math.Clamp(_contextIndex,0,_choices.Length-1)]);
+    }
+    private void ConfirmContextChoice(ContextChoice choice)
+    {
+        var current=CurrentContext();
+        if(_surface==Surface.Play&&_contextActions is {} panel)
+        {
+            string scope=ContextActions.Scope(PlayerDesk.Read(_session.Engine,_human));
+            if(scope!=panel.Selection.Scope){_contextMessage=L("Контекст изменился. Выберите действие заново.","Context changed. Select the action again.");Refresh();return;}
+            panel.Selection.Update(scope,current);panel.Selection.Pending=WaitingCommand;
+            if(!panel.Selection.TryChoose(choice,out _)){_contextMessage=WaitingCommand?T("command.sent"):choice.Enabled?L("Действие изменилось. Выберите его заново.","Action changed. Select it again."):choice.Details;Refresh();return;}
+        }
         var valid = current.FirstOrDefault(c => c.Key == choice.Key);
-        if (valid is null) { Refresh(); return; }
+        if(valid is null||valid.Command!=choice.Command){_contextMessage=L("Действие изменилось. Выберите его заново.","Action changed. Select it again.");Refresh();return;}
+        if(choice.Command is not null&&WaitingCommand)return;
+        _contextMessage="";
         choice = valid;
         if (!choice.Enabled) { _feedback = choice.Details; _gain = ""; _trackedId = null; Refresh(); return; }
+        if(choice.Key.StartsWith("section:",StringComparison.Ordinal)){OpenCitySection(choice.Key[8..]);return;}
         if(choice.Key.StartsWith("road-work:",StringComparison.Ordinal)){OpenRoadWork(long.Parse(choice.Key[10..],CultureInfo.InvariantCulture));return;}
         if (choice.Key.StartsWith("object:", StringComparison.Ordinal))
         {
@@ -392,7 +419,8 @@ public partial class Playfield : Control
         if(choice.Key=="city"){_playerTab=3;OpenPlayerTablet();return;}
         if(choice.Key=="dealership"){if(_scenario.Economy?.Fleet is not null){_playerTab=0;OpenPlayerTablet();}else OpenHelp("dealership");return;}
         if (choice.Key == "exchange") { OpenCapitalTablet(); return; }
-        if (choice.Command is { } action) Offer(action);
+        if (choice.Command is { } action)
+        {string? prior=_trackedId;Offer(action);if(_surface==Surface.Play&&_trackedId!=prior)_contextCommandId=_trackedId;Refresh();}
     }
 
     private readonly List<ProgressBar> _harvestBars = [];
@@ -479,6 +507,8 @@ public partial class Playfield : Control
     {
         if (_status is null) return;
         var view = PlayerDesk.Read(_session.Engine, _human);
+        if(_surface!=Surface.Play||_tabletState.IsOpen||_helpOverlay is not null||_roadWorkCard is not null)CloseContextActions();
+        if(_bottomChrome is not null)_bottomChrome.Visible=_surface==Surface.Play&&!_tabletState.IsOpen&&_helpOverlay is null&&_roadWorkCard is null;
         RefreshVoting();
         var actor = view.Participant;
         var travelOffset = _session.Engine.TravelOf(_human);
@@ -498,14 +528,15 @@ public partial class Playfield : Control
         if (_inventoryLabel is not null) _inventoryLabel.Text = inventory;
         if (_playInventory is not null) _playInventory.Text = HudStock(view, pack);
         UpdateHudGoods(pack);
-        var next = PlayContext.At(view, _scenario, _language, _surface == Surface.Play);
+        var next = CurrentContext();
         _contextIndex = PlayContext.Keep(_contextIndex, _choices, next);
         if (WaitingCommand)
-            next = next.Select(c => c.Command?.Kind is ActionKind.StartHarvesting or ActionKind.StopHarvest
+            next = next.Select(c => c.Command is not null
                 ? c with { Enabled = false, Details = T("command.sent") } : c).ToArray();
         _choices = next;
         string contextKey = _contextIndex.ToString(CultureInfo.InvariantCulture) + "|" + string.Join(",", next.Select(c => $"{c.Key}:{c.Label}:{c.Enabled}:{c.Details}"));
-        if (contextKey != _contextKey) { _contextKey = contextKey; RebuildContext(); }
+        if(_surface==Surface.Play&&_contextHost is not null)FillPlayContext(_contextHost);
+        if (contextKey != _contextKey) { _contextKey = contextKey; if(_debugContext is not null)FillContext(_debugContext); }
         foreach (var bar in _harvestBars)
         {
             bar.Value = HarvestProgress.Percent(view.Harvest, view.Tick, _session.Engine.TravelQuantum);
@@ -842,7 +873,8 @@ public partial class Playfield : Control
     private void ApplySurface()
     {
         if (_view is not null) { _view.Visible = _surface == Surface.Play; _view.OffsetBottom = 0; }
-        if (_bottomChrome is not null) _bottomChrome.Visible = !_tabletState.IsOpen;
+        if(_surface!=Surface.Play||_tabletState.IsOpen||_roadWorkCard is not null||_helpOverlay is not null)CloseContextActions();
+        if (_bottomChrome is not null) _bottomChrome.Visible = !_tabletState.IsOpen&&_helpOverlay is null&&_roadWorkCard is null;
         if (_tabletPanel is not null) _tabletPanel.Visible = _surface == Surface.Play && _tabletState.IsOpen;
         if (_stage?.GetParent() is SubViewport viewport)
             viewport.RenderTargetUpdateMode = _surface == Surface.Play ? SubViewport.UpdateMode.Always : SubViewport.UpdateMode.Disabled;
@@ -1013,7 +1045,7 @@ public partial class Playfield : Control
 
     private void SampleHeading()
     {
-        if (_surface != Surface.Play || _roadWorkCard is not null || _waitRelease || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots) return;
+        if (_surface != Surface.Play || _contextActions?.Expanded==true || _roadWorkCard is not null || _waitRelease || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots) return;
         if(_tabletState.Kind is TabletKind.CityMap or TabletKind.Notices or TabletKind.Tutorial||GetViewport().GuiGetFocusOwner() is LineEdit or TextEdit)
         {StopHeading();_waitRelease=true;return;}
         var heading = TravelHeading.FromKeys(

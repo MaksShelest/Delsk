@@ -106,7 +106,7 @@ public partial class PlayerTablet : VBoxContainer
             case "quests":target=_development;break;
             case "purchases":SelectedTab=2;target=_pickups;break;
         }
-        if(target is not null)UiNavigation.Reveal(target);
+        if(target is not null){if(id==0)UiNavigation.RevealStart(target);else UiNavigation.Reveal(target);}
     }
     public void ShowData(PlayerView view,bool pending,bool paused)
     {

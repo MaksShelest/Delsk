@@ -61,7 +61,8 @@ public partial class Playfield
     }
     private void PrepareTablet()
     {
-        CloseRoadWork();StopHeading(); _waitRelease = true;
+        CloseRoadWork();StopHeading();
+        CloseContextActions(); _waitRelease = true;
         _tabletCommand = null; _tabletError = "";
         ApplyPause(); RebuildTablet(); ApplySurface(); Refresh();
     }

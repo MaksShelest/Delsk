@@ -6,6 +6,11 @@ public partial class PresentationStage : Node3D
 {
     public event System.Action<int, int>? CellChosen;
     private Camera3D _camera = null!;
+    public Vector2? HumanScreenPosition()
+    {
+        var human=_actors.Values.FirstOrDefault(a=>a.Human);
+        return human is null||_camera is null||_camera.IsPositionBehind(human.Node.GlobalPosition)?null:_camera.UnprojectPosition(human.Node.GlobalPosition+Vector3.Up*.5f);
+    }
     private float _cameraDistance=4.2f,_cameraTarget=4.2f,_mapSpan=20;
     private Vector3 _mapCenter;
     private readonly Dictionary<long,Label3D> _buildingStates=[];
