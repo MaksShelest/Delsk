@@ -49,6 +49,17 @@ Control. Добавлен настоящий цикл press/release; отсут�
 mouse activation. Добавлен сброс и нативный сценарий «touch drag → OS focus-out →
 focus-in → mouse selection». Он не меняет игровые команды или pause rules.
 
+В первом полном CI старый Windows forms gate обнаружил ошибку lifetime подписки
+safe-area при пересоздании HUD: `Track(dock, LayoutContextDock)` передавал один
+и тот же method delegate от Playfield для разных Control. Пока старый dock ещё
+ожидал QueueFree, Godot отклонял повторное подключение; затем старый TreeExiting
+отключал callback нового dock. Формы исполнились с process exit0, но строгий
+проверяющий журналов правильно вернул exit1 из-за двух ERROR. UiSafeArea.Track
+теперь создаёт отдельный callback на lifetime каждого Control и пропускает уже
+вышедшие из дерева узлы. Probe дважды пересоздаёт HUD и меняет viewport size;
+Windows forms fixtures из исходного CI сохранены и повторно используются для
+целевой проверки. Verifier и прежние deadlines не ослаблялись.
+
 ## Реализация
 
 ContextActions — read-only presenter над PlayerDesk/PlayContext и общим AccessFor.
@@ -147,6 +158,9 @@ frozen source/DLL hashes и исходные отказы публикуются
 RU360-сценарий с прерыванием жеста:
 [focus-cancel-check.json](verification/context-i5/focus-cancel-check.json).
 Обязательный GitHub native gate повторяет все шесть случаев на финальном HEAD.
+Заключительный целевой прогон lifetime/resize и трёх старых forms cases записан
+отдельно в [lifecycle-forms-check.json](verification/context-i5/lifecycle-forms-check.json),
+включая ссылку, SHA256 и причину первоначального CI-отказа.
 В каждом из шести случаев проходят реальная прокрутка до последней строки,
 выбор последнего стабильного ключа после тиков, дополнительная команда режима
 техники и блокировка повторной транзакции. Исходные product failures и отдельная

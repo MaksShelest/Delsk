@@ -54,6 +54,10 @@ public partial class I5ContextProbe : Control
             string save=typeof(Playfield).GetProperty("SavePath",Flags)!.GetValue(_app)!.ToString()!;System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(save)!);System.IO.File.Copy(Arg("--fixture"),save,true);
             Set(_app,"_language",language);Call(_app,"Load");await Frames();Call(_app,"ContinueGame");await Frames();_app.SetProcess(false);_app.Notification((int)NotificationApplicationFocusIn);_app._Process(0);
             _session=Field<GameSession>(_app,"_session");_session.SetPaused(false);Call(_app,"Refresh");await Frames(8);
+            string beforeRebuild=_session.Engine.ComputeStateHash();int tapeBeforeRebuild=_session.CommandTape.Length;
+            Call(_app,"RebuildChrome");Call(_app,"RebuildChrome");await Frames(8);
+            var size=GetWindow().Size;GetWindow().Size=size+new Vector2I(1,0);await Frames();GetWindow().Size=size;await Frames();
+            Check(Panel.IsVisibleInTree()&&_session.Engine.ComputeStateHash()==beforeRebuild&&_session.CommandTape.Length==tapeBeforeRebuild,"repeated HUD rebuild and viewport resize retain a live panel without changing the world");
             var equipment=_session.Engine.Observe(new(1)).OwnEquipment.Single();long id=equipment.Id.Value;
             Check(_session.Engine.Configuration().Participants.Length==4,"ordinary three NPC roster");
             await Click(ContextActionsPanel.ButtonName("vehicle:"+id));Step();await Frames();
