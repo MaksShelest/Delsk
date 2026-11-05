@@ -49,7 +49,7 @@ public partial class FleetProbe : Control
                 GetWindow().Size=language=="ru"?new(800,720):new(1100,800);GetWindow().ContentScaleSize=GetWindow().Size;
                 foreach(Node n in _scroll.GetChildren()){_scroll.RemoveChild(n);n.QueueFree();}await Frames();
                 _session=CheckpointStore.Decode(System.IO.File.ReadAllText(fixtures+"/native-fleet.save.json"));_session.SetPaused(true);
-                _panel=new(language,a=>_session.Send(new(1),a),a=>_session.Engine.AccessFor(new(1),a)){SizeFlagsHorizontal=SizeFlags.ExpandFill};_scroll.AddChild(_panel);Refresh();await Frames();
+                _panel=new(language,a=>_session.Send(new(1),a),a=>_session.Engine.AccessFor(new(1),a),_session.Engine.Configuration()){SizeFlagsHorizontal=SizeFlags.ExpandFill};_scroll.AddChild(_panel);Refresh();await Frames();
                 var listing=_session.Engine.FleetOf(new(1))!.Stock.Single(s=>s.ModelId=="vector200");long tick=_session.Engine.Tick,cash=_session.Engine.Observe(new(1)).Account.BalanceMinor;
                 await Click("FleetBuy_"+listing.Id);Check(_session.Engine.Tick==tick,"Paused purchase advanced time");await Drive(1);
                 Check(_session.Engine.InspectFleet()!.Vehicles.IsEmpty&&_session.Engine.Observe(new(1)).Account.AvailableMinor==cash-900000,"Purchase did not reserve real money");await Drive(5);
