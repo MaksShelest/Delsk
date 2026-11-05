@@ -40,7 +40,9 @@ public partial class TabletPanel : PanelContainer
         _title.AddThemeFontSizeOverride("font_size",20);
         _header.GetChild<Control>(0).CustomMinimumSize=new(28,28);
         foreach(var button in _header.GetChildren().OfType<Button>())button.SizeFlagsVertical=SizeFlags.ShrinkCenter;
-        _scroll.HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled;
+        // Contain a legacy page's minimum width inside the body. Disabled propagates it
+        // into the whole frame and can push Help/Close beyond a narrow viewport.
+        _scroll.HorizontalScrollMode=ScrollContainer.ScrollMode.ShowNever;
         _scroll.VerticalScrollMode=ScrollContainer.ScrollMode.Disabled;
         Body.SizeFlagsVertical=SizeFlags.ExpandFill;
         if(IsInsideTree())LayoutFrame();
