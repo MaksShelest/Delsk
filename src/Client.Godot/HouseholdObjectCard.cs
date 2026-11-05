@@ -38,9 +38,10 @@ public partial class HouseholdObjectCard : VBoxContainer
     private bool _paused;
     private string? _activeTransferKey;
     private readonly Dictionary<string, Container> _actionGroups = [];
+    private readonly CompactProductionTablet? _compact;
 
     public HouseholdObjectCard(ScenarioDefinition scenario, string language, string kind, long id,
-        System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access,System.Func<long,bool,DemolitionQuote?>? demolitionQuote=null)
+        System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access,System.Func<long,bool,DemolitionQuote?>? demolitionQuote=null,bool compactPrototype=false)
     {
         _scenario = scenario; _language = language; _kind = kind; _id = id; _submit = submit; _access = access;
         if(scenario.Economy?.Storage is not null&&kind=="building"){_storagePanel=new(scenario,language,kind,id,submit,access,true);AddChild(_storagePanel);}
@@ -56,6 +57,14 @@ public partial class HouseholdObjectCard : VBoxContainer
         _routes=new(scenario,language,kind,id,submit){Visible=false};_details.AddChild(_routes);routeToggle.Pressed+=()=>_routes.Visible=!_routes.Visible;
         TabletDesign.CompactInputs(this);Resized+=LayoutCard;
         _quantity.ValueChanged += _ => { if (_lastView is not null) ShowData(_lastView,_pending,_paused); };
+        if(compactPrototype)
+        {
+            SizeFlagsVertical=SizeFlags.ExpandFill;
+            _compact=new(scenario,language,id,submit,access);
+            void Move(Control? control,string page){if(control is null)return;RemoveChild(control);_compact.Page(page).AddChild(control);}
+            Move(_details,"logistics");Move(_workshopPanel,"recipes");Move(_developmentPanel,"development");Move(_storagePanel,"development");Move(_demolitionPanel,"development");
+            _recipeCards.Visible=false;AddChild(_compact);
+        }
     }
 
     public void ShowData(PlayerView view, bool pending, bool paused)
@@ -150,7 +159,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         UpdateActions(actions, pending);
         var artworkRecipe=enterprise is null?null:_scenario.Recipes.Single(r=>r.Id==enterprise.RecipeId);
         _showProductionTablet=_scenario.Economy?.Workshops is null && artworkRecipe is not null && building is not null && ProductionTabletPresenter.Supports(building.TypeId,artworkRecipe);
-        if(_showProductionTablet && _productionTablet is null)
+        if(_compact is null && _showProductionTablet && _productionTablet is null)
         {
             _productionTablet=new(_scenario,_language,_id,RevealLogistics,building!.TypeId);
             _productionTablet.RecipesRequested+=()=>{_recipeCards.Visible=!_recipeCards.Visible;};
@@ -158,7 +167,8 @@ public partial class HouseholdObjectCard : VBoxContainer
             _detailsToggle=new Button{Text=L("Подробности · перенос, маршруты, транспорт","Details · transfers, routes, transport"),FocusMode=FocusModeEnum.None};AddChild(_detailsToggle);MoveChild(_detailsToggle,1);MoveChild(_recipeCards,1);
             _detailsToggle.Pressed+=()=>{_expanded=!_expanded;LayoutCard();};
         }
-        if(_showProductionTablet){_productionTablet!.ShowData(view,paused,_buttons);ShowRecipeCards(building!,enterprise!);}LayoutCard();
+        if(_compact is not null)_compact.ShowData(view,pending);
+        else if(_showProductionTablet){_productionTablet!.ShowData(view,paused,_buttons);ShowRecipeCards(building!,enterprise!);}LayoutCard();
         if(view.Transfers.Length==0 && !pending)_activeTransferKey=null;
         foreach(var (key,pair) in _buttons)
             if(pair.Button is ContextActionButton button)
@@ -206,6 +216,7 @@ public partial class HouseholdObjectCard : VBoxContainer
     private bool _showProductionTablet;
     private void LayoutCard()
     {
+        if(_compact is not null)return;
         bool artwork=_showProductionTablet && Size.X>=980;
         if(_productionTablet is not null)_productionTablet.Visible=artwork;
         if(_detailsToggle is not null)_detailsToggle.Visible=artwork;

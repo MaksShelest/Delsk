@@ -9,6 +9,19 @@ public partial class TabletPanel : PanelContainer
     public event System.Action<bool>? TimeRunningChanged;
     public VBoxContainer Body {get;}
     private readonly HBoxContainer _header;
+    private readonly ScrollContainer _scroll;
+    /// <summary>Opt-in I6-A frame: the child owns scrolling; legacy tablets keep their frame.</summary>
+    public void UseCompactFrame()
+    {
+        Theme=CompactTabletDesign.Theme;
+        AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("fafafa",12));
+        ((Label)_header.GetChild(1)).AddThemeFontSizeOverride("font_size",20);
+        _header.GetChild<Control>(0).CustomMinimumSize=new(28,28);
+        foreach(var button in _header.GetChildren().OfType<Button>())button.SizeFlagsVertical=SizeFlags.ShrinkCenter;
+        _scroll.HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled;
+        _scroll.VerticalScrollMode=ScrollContainer.ScrollMode.Disabled;
+        Body.SizeFlagsVertical=SizeFlags.ExpandFill;
+    }
     public void UseArtworkHeader(bool active)=>_header.Visible=!active;
     public void RequestHelp()=>HelpRequested?.Invoke();
     public void RequestClose()=>Closed?.Invoke();
@@ -28,7 +41,7 @@ public partial class TabletPanel : PanelContainer
         help.Pressed+=()=>HelpRequested?.Invoke();header.AddChild(help);
         var close=new Button{Name="TabletClose",Text="×",TooltipText=L("Закрыть","Close"),FocusMode=FocusModeEnum.None,CustomMinimumSize=new(44,44)};
         close.Pressed+=()=>Closed?.Invoke();header.AddChild(close);column.AddChild(new HSeparator());
-        var scroll=new ScrollContainer{Name="TabletScroll",SizeFlagsVertical=SizeFlags.ExpandFill,HorizontalScrollMode=ScrollContainer.ScrollMode.Auto};column.AddChild(scroll);
+        var scroll=new ScrollContainer{Name="TabletScroll",SizeFlagsVertical=SizeFlags.ExpandFill,HorizontalScrollMode=ScrollContainer.ScrollMode.Auto};_scroll=scroll;column.AddChild(scroll);
         Body=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};scroll.AddChild(Body);
         _status=new Label{Name="TabletFeedback",AutowrapMode=TextServer.AutowrapMode.WordSmart,MaxLinesVisible=3};column.AddChild(_status);
         column.AddChild(new HSeparator());var footer=new TabletColumns{Breakpoint=560};column.AddChild(footer);var clockRow=new HBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};footer.AddChild(clockRow);clockRow.AddChild(TabletDesign.Art("clock",new(26,26)));
