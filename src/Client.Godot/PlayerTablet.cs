@@ -41,6 +41,7 @@ public partial class PlayerTablet : VBoxContainer
     public string HelpTopic=>_section switch{"account"=>"account","services"=>"services","fleet"=>"dealership","roads"=>"map",_=>"holdings"};
     public void OpenServices()=>OpenSection("services");
     private readonly FleetPanel? _fleet;
+    private readonly BackpackPanel _backpack;
     private readonly RoadPanel? _roads;
     private readonly PersonalAccountPanel _account;
     public void OpenAccount()=>OpenSection("account");
@@ -76,7 +77,7 @@ public partial class PlayerTablet : VBoxContainer
             button.SizeFlagsHorizontal=SizeFlags.ExpandFill;button.CustomMinimumSize=new(0,40);button.ClipText=true;button.TextOverrunBehavior=TextServer.OverrunBehavior.TrimEllipsis;button.TooltipText=L(ru,en);
             _groups[currentGroup].Body.AddChild(button);_navigation.Add(key,button);_pageGroups.Add(key,currentGroup);_mobile.AddItem(L(ru,en));
         }
-        Group("holdings","ХОЗЯЙСТВО","HOLDINGS");Nav("overview","Обзор","Overview");Nav("holdings","Мои объекты","My objects");
+        Group("holdings","ХОЗЯЙСТВО","HOLDINGS");Nav("overview","Обзор","Overview");Nav("holdings","Мои объекты","My objects");Nav("inventory","Рюкзак","Backpack");
         if(scenario.Economy?.Fleet is not null)Nav("fleet","Транспорт","Vehicles");
         if(scenario.Economy?.Services is not null)Nav("services","Доставка","Delivery");
         if(scenario.Economy?.Roads is not null)Nav("roads","Дороги","Roads");
@@ -99,13 +100,14 @@ public partial class PlayerTablet : VBoxContainer
         _previousHoldings.Pressed+=()=>HoldingsPage(-20);_nextHoldings.Pressed+=()=>HoldingsPage(20);
         _back.Text=L("‹ Мои объекты","‹ My objects");_back.SizeFlagsHorizontal=SizeFlags.ShrinkBegin;_back.Visible=false;_back.Pressed+=Back;
         var detail=Page("object");detail.AddChild(_back);detail.AddChild(_cardHost);
+        _backpack=new(scenario,language,submit,access);Page("inventory").AddChild(_backpack);
         _account=new(language,submit,accountQuery);Page("account").AddChild(_account);
         if(scenario.Economy?.Services is not null){_services=new(scenario,language,submit,serviceQuery,access);Page("services").AddChild(_services);}
         if(scenario.Economy?.Fleet is not null){_fleet=new(language,submit,access,scenario);_fleet.RoadWorkRequested+=id=>RoadWorkRequested?.Invoke(id);Page("fleet").AddChild(_fleet);Page("fleet").AddChild(_parked);}
         if(scenario.Economy?.Fleet is null)Page("holdings").AddChild(_parked);
         if(scenario.Economy?.Roads is not null){_roads=new(language,submit,access);Page("roads").AddChild(_roads);}
         _development=new(scenario,language,0,submit,access);Page("quests").AddChild(_development);
-        _purchases=new(scenario,language,submit,access);_purchases.DealerRequested+=()=>OpenSection("fleet");Page("equipment").AddChild(_purchases);
+        _purchases=new(scenario,language,submit,access);_purchases.DealerRequested+=()=>{OpenSection("fleet");_fleet?.ShowCatalog(true);};Page("equipment").AddChild(_purchases);
         Page("holdings").AddChild(CompactTabletDesign.Button("PlayerBuyEquipment",L("Купить технику","Buy equipment"),()=>OpenSection("equipment")));
         Page("participants").AddChild(_participants);
         var talks=Page("negotiations");_negotiations=new(scenario,language,submit);talks.AddChild(_negotiations);
@@ -114,7 +116,7 @@ public partial class PlayerTablet : VBoxContainer
         var city=Page("city");city.AddChild(_city);city.AddChild(_labor);city.AddChild(PoliticsHost);
         Resized+=LayoutNavigation;Ready+=LayoutNavigation;OpenSection("overview");TabletDesign.CompactInputs(this);
     }
-    private void LayoutNavigation(){bool narrow=Size.X<700||GetViewportRect().Size.Y<540;_navScroll.Visible=!narrow;_mobile.Visible=narrow;CompactTabletDesign.FitControls(_tabs,Size.X-(narrow?36:274));}
+    private void LayoutNavigation(){bool narrow=Size.X<700||GetViewportRect().Size.Y<540;_navScroll.Visible=!narrow;_mobile.Visible=narrow;GameUi.FitControls(_tabs,Size.X-(narrow?36:274));}
     private VBoxContainer Page(string key)
     {
         if(_pages.TryGetValue(key,out int index))return (VBoxContainer)_tabs.GetChild<ScrollContainer>(index).GetChild(0);
@@ -160,13 +162,14 @@ public partial class PlayerTablet : VBoxContainer
             case "services":if(id>0)_services?.FocusOrder(id);break;
             case "account":if(id>0)_account.FocusInvoice(id);break;
             case "fleet":if(id>0)_fleet?.FocusVehicle(id);break;
+            case "dealer":section="fleet";_fleet?.ShowCatalog();break;
         }
         SelectSection(section);
     }
     public void ShowData(PlayerView view,bool pending,bool paused)
     {
         if(_cardObject is {} selected&&selected.Kind=="building"&&!view.Buildings.Any(b=>b.Id.Value==selected.Id)){_card=null;_cardObject=null;Back();}
-        _view=view;_pending=pending;
+        _view=view;_pending=pending;_backpack.ShowData(view,pending);
         _services?.ShowData(view,pending);
         if(view.PersonalAccount is {} account)_account.ShowData(account,pending);
         _paused=paused;

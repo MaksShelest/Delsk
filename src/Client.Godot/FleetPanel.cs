@@ -2,136 +2,146 @@ using Godot;
 using Simulation.Core;
 using Simulation.Hosting;
 
-/// <summary>Own fleet and public dealer listings. All mutations use the ordinary command inbox.</summary>
+/// <summary>Own fleet, a separate illustrated dealer and the shared manual cargo form.</summary>
 public partial class FleetPanel : VBoxContainer
 {
+    private sealed class Listing
+    {
+        public required Control Shell;public Label Terms=GameUi.Text(),Price=GameUi.Text("",22),Why=GameUi.Hint("");public Button Buy=new();
+    }
+    private sealed class VehicleCard
+    {
+        public required Control Shell;public Label Status=GameUi.Text(),Capacity=GameUi.Hint(""),Crew=GameUi.Hint(""),Guidance=GameUi.Hint("");
+        public UiResourceList Stock=new();public ProgressBar Fill=new(){ShowPercentage=false,CustomMinimumSize=new(0,10)},Work=new(){ShowPercentage=true,CustomMinimumSize=new(0,10)};
+        public VBoxContainer Controls=new(),Advanced=new();
+    }
     public event Action<long>? RoadWorkRequested;
-    private readonly string _language;
-    private readonly Action<GameAction> _submit;
-    private readonly Func<GameAction,ActionAccess> _access;
-    private readonly VBoxContainer _stock=new(),_owned=new(),_platforms=new();
-    private readonly Label _summary=TextLabel();
-    private readonly OptionButton _source=new(){Name="FleetTransferSource"},_destination=new(){Name="FleetTransferDestination"},_item=new(){Name="FleetTransferItem"};
-    private readonly SpinBox _quantity=new(){Name="FleetTransferQuantity",MinValue=1,MaxValue=100000,Step=1,Value=1,UpdateOnTextChanged=true};
-    private readonly Button _transfer=new(){Name="FleetTransfer"},_all=new(){Name="FleetTransferAll",SizeFlagsHorizontal=SizeFlags.ShrinkBegin};
-    private bool _pending;
-    private readonly Dictionary<long,(Label Label,Button Buy)> _listings=[];
-    private readonly Dictionary<long,(Label Label,VBoxContainer Controls)> _vehicles=[];
+    private readonly string _language;private readonly ScenarioDefinition _scenario;
+    private readonly Action<GameAction> _submit;private readonly Func<GameAction,ActionAccess> _access;
+    private readonly UiSections _sections=new("FleetNav_");private readonly VBoxContainer _stock=new(),_owned=new(),_platforms=new();
+    private readonly GridContainer _catalog=new(){Columns=2,SizeFlagsHorizontal=SizeFlags.ExpandFill};
+    private readonly OptionButton _category=new(){Name="FleetCategory",FitToLongestItem=false,ClipText=true};
+    private readonly Label _summary=GameUi.Hint(""),_emptyDealer=GameUi.Hint(""),_ownSummary=GameUi.Hint("");
+    private readonly InventoryTransferPanel _transfer;
+    private readonly Dictionary<long,Listing> _listings=[];private readonly Dictionary<long,VehicleCard> _vehicles=[];
+    private readonly Dictionary<Container,HFlowContainer> _flows=[];private readonly Dictionary<Container,Container> _advanced=[];
     private readonly List<(Button Button,GameAction Action)> _actions=[];
-    private PlayerView? _view;
-    private long[] _inventoryIds=[];
-    private string _controlsKey="",_transferKey="";
+    private PlayerView? _view;private bool _pending;private long _focus;private string _controlsKey="uninitialized";
     public FleetPanel(string language,Action<GameAction> submit,Func<GameAction,ActionAccess> access,ScenarioDefinition scenario)
     {
-        _scenarioForTransfer=scenario;Name="FleetPanel";_language=language;_submit=submit;_access=access;
-        AddChild(TabletDesign.Heading(L("Автопарк и автосалон","Fleet and dealer")));AddChild(_summary);AddChild(_stock);AddChild(_owned);
-        AddChild(new HSeparator());AddChild(TextLabel(L("Передача груза · источник → получатель. Машина и груз должны быть рядом с вами. Комплекты монтируются из материалов в кузове.","Cargo transfer · source → destination. Vehicle and cargo must be beside you. Kits use materials in the vehicle cargo.")));
-        var flow=TabletDesign.Flow();foreach(var c in new Control[]{_source,_destination,_item,_quantity,_all,_transfer})flow.AddChild(c);AddChild(flow);
-        _transfer.Text=L("Перенести","Transfer");_transfer.Pressed+=()=>SendTransfer(false);_all.Pressed+=()=>SendTransfer(true);
-        _quantity.ValueChanged+=_=>RefreshTransfer();foreach(var choice in new[]{_source,_destination,_item})choice.ItemSelected+=_=>RefreshTransfer();
-        AddChild(_platforms);
+        Name="FleetPanel";_language=language;_submit=submit;_access=access;_scenario=scenario;AddChild(_sections);
+        var own=_sections.Add("owned",L("Мой транспорт","My vehicles"));own.AddChild(_ownSummary);own.AddChild(_owned);
+        var dealer=_sections.Add("dealer",L("Автосалон","Dealer"));dealer.AddChild(GameUi.Hint(L("Выберите модель по назначению и вместимости. Для покупки подойдите ко входу в автосалон.","Choose a model for its purpose and capacity. Visit the dealer entrance to buy.")));
+        foreach(var name in new[]{L("Все модели","All models"),L("Легковые","Passenger"),L("Грузовые","Cargo"),L("Добывающие","Extraction"),L("Дорожные","Road works")})_category.AddItem(name);
+        dealer.AddChild(_category);dealer.AddChild(_stock);_stock.AddChild(_catalog);_emptyDealer.Text=L("Машин в продаже пока нет. Включите время и дождитесь новой поставки.","No vehicles in stock. Run time and wait for the next delivery.");dealer.AddChild(_emptyDealer);
+        dealer.AddChild(new UiDisclosure(L("Условия покупки","Purchase details"),_summary));_category.ItemSelected+=_=>FilterCatalog();
+        var cargo=_sections.Add("cargo",L("Груз","Cargo"));cargo.AddChild(GameUi.Intro(L("Погрузка и разгрузка","Load & unload"),L("Выберите источник, товар и получателя. Кнопки учитывают свободное место и резервы; перенос выполняется рядом с грузом.","Choose source, goods and recipient. Amounts allow for capacity and holds; transfers require you to be beside the cargo."),"truck",64));
+        _transfer=new(scenario,language,"FleetTransfer",submit,access);cargo.AddChild(GameUi.Card(_transfer));
+        var platforms=_sections.Add("platforms",L("Погрузка и оснащение","Platforms & equipment"));platforms.AddChild(GameUi.Hint(L("Площадки ускоряют работу с грузом у здания. Условия оплаты и материалы показаны возле действия.","Platforms improve cargo handling at buildings. Each action shows its price and materials.")));platforms.AddChild(_platforms);
+        Resized+=()=>_catalog.Columns=Size.X>=700&&GetViewportRect().Size.Y>=540?2:1;
     }
+    private string L(string ru,string en)=>GameUi.L(_language,ru,en);
     private string ResourceItem(VehicleModel model)=>_view!.Fleet!.EquipmentTypes.Single(t=>t.Id==model.EquipmentTypeId).ItemId;
-    private string ModelName(VehicleModel model)=>model.EquipmentTypeId is null?model.Name:PlayerText.Item(_language,ResourceItem(model))+" · "+(model.EquipmentLevel==1?L("малая","small"):L("большая","large"));
-    private string L(string ru,string en)=>PlayerText.Local(_language,ru,en);
-    public void FocusVehicle(long id)
-    {if(_vehicles.TryGetValue(id,out var row)){row.Label.AddThemeColorOverride("font_color",new Color("956019"));UiNavigation.Reveal(row.Label);}}
-    private static Label TextLabel(string text="")=>new(){Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart};
+    private string ModelName(VehicleModel model)=>model.EquipmentTypeId is null?model.Name:L("Добыча: ","Extract: ")+PlayerText.Item(_language,ResourceItem(model))+" · "+(model.EquipmentLevel==1?L("малая","small"):L("большая","large"));
+    public void ShowCatalog(bool extractionOnly=false){_sections.Select("dealer");if(extractionOnly)_category.Select(3);FilterCatalog();}
+    public void FocusVehicle(long id){_focus=id;_sections.Select("owned");if(_vehicles.TryGetValue(id,out var row))UiNavigation.Reveal(row.Shell);}
+    private HFlowContainer Flow(Container host)
+    {if(host is HFlowContainer existing)return existing;if(!_flows.TryGetValue(host,out var flow)){flow=TabletDesign.Flow();host.AddChild(flow);_flows.Add(host,flow);}return flow;}
     private void ActionButton(Container host,string name,string text,GameAction action)
-    {var button=new Button{Name=name,Text=text,FocusMode=FocusModeEnum.None,AutowrapMode=TextServer.AutowrapMode.WordSmart};button.SizeFlagsHorizontal=text.Length<=24?SizeFlags.ShrinkBegin:SizeFlags.Fill;button.AutowrapMode=text.Length<=24?TextServer.AutowrapMode.Off:TextServer.AutowrapMode.WordSmart;button.Pressed+=()=>_submit(action);host.AddChild(button);_actions.Add((button,action));}
+    {
+        if(_advanced.TryGetValue(host,out var secondary)&&(name.StartsWith("FleetTurn_")||name.StartsWith("FleetKit_")||name.StartsWith("FleetAssign_")))host=secondary;
+        var button=GameUi.Button(name,text,()=>{});GameUi.Command(button,()=>{if(_pending||!_access(action).Allowed)return;_pending=true;_submit(action);});Flow(host).AddChild(button);_actions.Add((button,action));
+    }
     private static void Clear(Container host){foreach(Node n in host.GetChildren()){host.RemoveChild(n);n.QueueFree();}}
+    private void FilterCatalog()
+    {
+        if(_view?.Fleet is not {} fleet)return;
+        foreach(var entry in _listings)
+        {
+            var listing=fleet.Stock.FirstOrDefault(s=>s.Id==entry.Key);if(listing is null)continue;var model=fleet.Models.Single(m=>m.Id==listing.ModelId);
+            entry.Value.Shell.Visible=_category.Selected switch{1=>model.Id=="sputnik20",2=>model.EquipmentTypeId is null&&!model.MaterialsOnly&&model.Id!="sputnik20",3=>model.EquipmentTypeId is not null,4=>model.MaterialsOnly,_=>true};
+        }
+    }
     public void ShowData(PlayerView view,bool pending)
     {
-        _view=view;_pending=pending;Visible=view.Fleet is not null;if(view.Fleet is not {} f)return;
-        _summary.Text=L("Покупка у входа в автосалон: ","Purchase at the dealer entrance: ")+$"({f.Dealer.X},{f.Dealer.Z})"+L(". Окно конкуренции 5 тиков. Поставки каждые 500, замена непроданного после 2500. Купленная машина остаётся на стоянке до выезда. Базовая ручная погрузка 10 объёма/тик; кузов её не увеличивает. Время включается кнопкой планшета.",". Competitive window: 5 ticks. Supply every 500, unsold replacement after 2500. A purchased vehicle stays parked until driven away. Base manual loading: 10 volume/tick; a larger body adds no loading power. Use the tablet time button.");
-        foreach(long id in _listings.Keys.Where(id=>!f.Stock.Any(v=>v.Id==id)).ToArray()){var row=_listings[id].Label.GetParent().GetParent();row.GetParent().RemoveChild(row);row.QueueFree();_listings.Remove(id);}
-        foreach(var listing in f.Stock)
+        _view=view;_pending=pending;Visible=view.Fleet is not null;if(view.Fleet is not {} fleet)return;
+        _ownSummary.Text=L("Ваших машин: ","Your vehicles: ")+fleet.Vehicles.Length+L(". Откройте груз для переноса ресурсов или выберите машину для поездки и работы.",". Open Cargo to move resources, or choose a vehicle to travel and work.");
+        _summary.Text=L("Вход автосалона: ","Dealer entrance: ")+$"({fleet.Dealer.X},{fleet.Dealer.Z})"+L(". Покупка проходит через обычное окно заявок. Машина остаётся на стоянке; сядьте и вывезите её. Во время паузы заявки и перемещения ожидают включения времени.",". Purchases use the ordinary request window. The vehicle stays parked; board it and drive away. Requests and movement wait while time is paused.");
+        _emptyDealer.Visible=fleet.Stock.IsEmpty;
+        foreach(long id in _listings.Keys.Where(id=>!fleet.Stock.Any(v=>v.Id==id)).ToArray()){var row=_listings[id];row.Shell.GetParent().RemoveChild(row.Shell);row.Shell.QueueFree();_listings.Remove(id);}
+        foreach(var listing in fleet.Stock)
         {
-            var model=f.Models.Single(m=>m.Id==listing.ModelId);long id=listing.Id;
-            if(!_listings.TryGetValue(id,out var row)){var box=new VBoxContainer();row=(TextLabel(),new Button{Name="FleetBuy_"+id,FocusMode=FocusModeEnum.None,Text=L("Заявка на покупку","Request purchase")});row.Buy.Pressed+=()=>_submit(new(ActionKind.BuyVehicle,VehicleId:id));row.Buy.SizeFlagsHorizontal=SizeFlags.ShrinkBegin;box.AddChild(row.Label);box.AddChild(row.Buy);_stock.AddChild(TabletDesign.Wrap(box));_listings.Add(id,row);}
-            row.Label.Text=model.Name+" #"+id+" · "+PlayerText.Money(model.PriceMinor)+L(" · объём "," · volume ")+model.CapacityVolume+L(" · скорость до "," · top speed ")+model.Speed+L(" км/ч · возраст "," km/h · stock age ")+(view.Tick-listing.DeliveredTick)+L(" тиков · "," ticks · ")+(model.MaterialsOnly?L("дорожные материалы","road materials"):model.Id=="sputnik20"?L("легковой","passenger car"):L("грузовой","cargo"));
-            if(model.EquipmentTypeId is {} typeId)
+            var model=fleet.Models.Single(m=>m.Id==listing.ModelId);long id=listing.Id;
+            if(!_listings.TryGetValue(id,out var row))
             {
-                var characteristics=f.EquipmentTypes.Single(t=>t.Id==typeId).Levels.Single(l=>l.Level==model.EquipmentLevel);
-                row.Label.Text=PlayerText.Item(_language,ResourceItem(model))+" · "+(model.EquipmentLevel==1?L("малая","small"):L("большая","large"))+" #"+id+" · "+PlayerText.Money(model.PriceMinor)+L(" · выпуск "," · output ")+characteristics.CycleQuantity+L(" за "," per ")+characteristics.CycleTicks+L(" тика · запас "," ticks · storage ")+model.CapacityVolume+L(" · штат "," · crew ")+characteristics.CrewCapacity+L(" · в наличии ("," · available (")+listing.Position.X+","+listing.Position.Z+")";
+                var body=new VBoxContainer();var shell=GameUi.Card(body);row=new(){Shell=shell};body.AddChild(TabletDesign.Heading(ModelName(model),18));
+                var description=new HBoxContainer();description.AddChild(GameUiArt.Vehicle(model,new(112,82)));var words=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};words.AddChild(row.Price);words.AddChild(row.Terms);description.AddChild(words);body.AddChild(description);
+                row.Buy=GameUi.Button("FleetBuy_"+id,L("Купить","Buy"),()=>{},true);var captured=row;GameUi.Command(row.Buy,()=>{if(_pending||_view?.Fleet?.Stock.Any(s=>s.Id==id)!=true)return;_pending=true;_submit(new(ActionKind.BuyVehicle,VehicleId:id));});body.AddChild(row.Buy);body.AddChild(row.Why);_catalog.AddChild(shell);_listings.Add(id,captured);
             }
-            row.Buy.TooltipText=view.AvailableCashMinor<model.PriceMinor?PlayerText.Reason(_language,"NoMoney"):PlayerText.Reason(_language,_access(new(ActionKind.BuyVehicle,VehicleId:id)).ReasonCode);
-            row.Buy.Disabled=pending||view.Participant.Busy||f.OwnRequests.Length>0||view.AvailableCashMinor<model.PriceMinor||!_access(new(ActionKind.BuyVehicle,VehicleId:id)).Allowed;
+            row.Price.Text=PlayerText.Money(model.PriceMinor)+L(" монет"," coins");
+            row.Terms.Text=L("Скорость до ","Top speed ")+model.Speed+L(" км/ч · объём "," km/h · capacity ")+model.CapacityVolume+"\n"+(model.MaterialsOnly?L("Дорожные работы","Road construction"):model.Id=="sputnik20"?L("Поездки по городу","City travel"):model.EquipmentTypeId is null?L("Перевозка грузов","Cargo transport"):L("Ресурс: ","Resource: ")+PlayerText.Item(_language,ResourceItem(model)));
+            if(model.EquipmentTypeId is {} typeId){var data=fleet.EquipmentTypes.Single(t=>t.Id==typeId).Levels.Single(l=>l.Level==model.EquipmentLevel);row.Terms.Text+="\n"+data.CycleQuantity+L(" за цикл · команда до "," per cycle · crew up to ")+data.CrewCapacity;}
+            var access=_access(new(ActionKind.BuyVehicle,VehicleId:id));row.Buy.Disabled=pending||view.Participant.Busy||fleet.OwnRequests.Length>0||view.AvailableCashMinor<model.PriceMinor||!access.Allowed;
+            row.Why.Text=pending?L("Заявка отправляется. Включите время.","Request queued. Run time."):fleet.OwnRequests.Length>0?L("Дождитесь результата текущей заявки.","Wait for your current purchase request."):view.AvailableCashMinor<model.PriceMinor?GameUi.Reason(_language,"NoMoney"):!access.Allowed?GameUi.Reason(_language,access.ReasonCode):view.Participant.Busy?GameUi.Reason(_language,"ParticipantBusy"):"";row.Why.Visible=row.Why.Text.Length>0;row.Buy.TooltipText=row.Why.Text;
         }
-        string key=string.Join(',',(view.Equipment??[]).Select(e=>$"{e.Id.Value}:{e.Deployed}:{e.Mode}:{e.PersonalJobId!=0}"))+"|"+string.Join(',',f.Vehicles.Select(v=>$"{v.Vehicle.Id}:{v.Vehicle.Driver}:{v.Vehicle.HandlingLevel}:{v.Vehicle.Installation?.Level}:{v.Logistics.Value}"))+"|"+string.Join(',',view.Enterprises.Select(e=>e.Id.Value))+"|"+string.Join(',',view.Buildings.Select(b=>b.Id.Value))+"|"+string.Join(',',f.Platforms.Select(p=>$"{p.Id}:{p.Level}:{p.Installation?.Level}:{p.Group.Headcount}:{p.Group.WageMinor}:{p.Group.PendingWageMinor}"));
+        FilterCatalog();
+        string key=string.Join(',',(view.Equipment??[]).Select(e=>$"{e.Id.Value}:{e.Deployed}:{e.Mode}:{e.PersonalJobId!=0}"))+"|"+string.Join(',',fleet.Vehicles.Select(v=>$"{v.Vehicle.Id}:{v.Vehicle.Driver}:{v.Vehicle.HandlingLevel}:{v.Vehicle.Installation?.Level}:{v.Logistics.Value}"))+"|"+string.Join(',',view.Enterprises.Select(e=>e.Id.Value))+"|"+string.Join(',',view.Buildings.Select(b=>b.Id.Value))+"|"+string.Join(',',fleet.Platforms.Select(p=>$"{p.Id}:{p.Level}:{p.Installation?.Level}:{p.Group.Headcount}:{p.Group.WageMinor}:{p.Group.PendingWageMinor}"));
         if(key!=_controlsKey)
         {
-            _controlsKey=key;Clear(_owned);Clear(_platforms);_vehicles.Clear();_actions.Clear();
-            foreach(var item in f.Vehicles)
+            var scroll=UiNavigation.KeepScroll(this);var focus=UiNavigation.KeepFocus(this);_controlsKey=key;Clear(_owned);Clear(_platforms);_vehicles.Clear();_flows.Clear();_advanced.Clear();_actions.Clear();
+            if(fleet.Vehicles.IsEmpty){_owned.AddChild(GameUi.Intro(L("Своих машин пока нет","No vehicles owned yet"),L("Откройте автосалон, чтобы сравнить модели и выбрать подходящую.","Open the dealer to compare models and choose one."),"truck",80));_owned.AddChild(GameUi.Button("FleetOpenDealer",L("Открыть автосалон","Open dealer"),()=>ShowCatalog(),true));}
+            foreach(var item in fleet.Vehicles)
             {
-                var v=item.Vehicle;var box=new VBoxContainer();var label=TextLabel();box.AddChild(label);var buttons=new VBoxContainer();box.AddChild(buttons);_owned.AddChild(TabletDesign.Wrap(box));_vehicles.Add(v.Id,(label,buttons));
-                // Resolve current position at click time, so the button never follows an old captured coordinate.
-                var walk=new Button{Name="FleetFind_"+v.Id,Text=L("К машине","Go to vehicle"),SizeFlagsHorizontal=SizeFlags.ShrinkBegin,FocusMode=FocusModeEnum.None};walk.Pressed+=()=>{var current=_view!.Fleet!.Vehicles.Single(x=>x.Vehicle.Id==v.Id).Position;_submit(new(ActionKind.MoveTo,Target:current));};buttons.AddChild(walk);
-                ActionButton(buttons,"FleetBoard_"+v.Id,v.Driver==0?L("Сесть","Board"):L("Выйти","Leave"),new(v.Driver==0?ActionKind.BoardVehicle:ActionKind.LeaveVehicle,VehicleId:v.Id));
-                if(item.Model.MaterialsOnly&&view.Roads is not null)
-                {var road=new Button{Name="FleetRoadWork_"+v.Id,Text=L("Строить / улучшить дорогу","Build / upgrade road")};road.Pressed+=()=>RoadWorkRequested?.Invoke(v.Id);buttons.AddChild(road);}
-                if(view.Roads is not null)ActionButton(buttons,"FleetTurn_"+v.Id,L("Развернуться в свободном месте","Turn in a free place"),new(ActionKind.TurnVehicle,VehicleId:v.Id));
-                foreach(var kit in f.Kits.Where(k=>k.Level>v.HandlingLevel&&(k.Level==2?v.ModelId=="vector200":v.ModelId is "muravey70" or "eger70" or "trakt_d1")))ActionButton(buttons,"FleetKit_"+v.Id+"_"+kit.Level,L("Комплект ","Handling kit ")+kit.Throughput+" · "+PlayerText.Money(kit.PriceMinor)+" + "+string.Join(", ",kit.Materials.Select(m=>PlayerText.Item(_language,m.ItemId)+" ×"+m.Quantity))+L(" · 60 тиков"," · 60 ticks"),new(ActionKind.InstallVehicleKit,VehicleId:v.Id,EquipmentLevel:kit.Level,Source:v.CargoInventory));
+                var vehicle=item.Vehicle;var body=new VBoxContainer();var card=new VehicleCard{Shell=GameUi.Card(body)};body.AddChild(TabletDesign.Heading(ModelName(item.Model),20));
+                var hero=new HBoxContainer();hero.AddChild(GameUiArt.Vehicle(item.Model,new(140,100)));var state=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};state.AddChild(card.Status);state.AddChild(card.Capacity);state.AddChild(card.Fill);hero.AddChild(state);body.AddChild(hero);
+                body.AddChild(card.Guidance);body.AddChild(card.Work);body.AddChild(card.Crew);body.AddChild(card.Stock);body.AddChild(card.Controls);body.AddChild(new UiDisclosure(L("Настройки и оснащение","Settings & equipment"),card.Advanced));_advanced.Add(card.Controls,card.Advanced);_owned.AddChild(card.Shell);_vehicles.Add(vehicle.Id,card);
+                Flow(card.Controls).AddChild(GameUi.Button("FleetFind_"+vehicle.Id,L("К машине","Go to vehicle"),()=>{if(_pending)return;var current=_view!.Fleet!.Vehicles.Single(v=>v.Vehicle.Id==vehicle.Id).Position;_pending=true;_submit(new(ActionKind.MoveTo,Target:current));}));
+                ActionButton(card.Controls,"FleetBoard_"+vehicle.Id,vehicle.Driver==0?L("Сесть","Board"):L("Выйти","Leave"),new(vehicle.Driver==0?ActionKind.BoardVehicle:ActionKind.LeaveVehicle,VehicleId:vehicle.Id));
+                Flow(card.Controls).AddChild(GameUi.Button("FleetCargo_"+vehicle.Id,L("Груз","Cargo"),()=>{_sections.Select("cargo");_transfer.FocusInventory(vehicle.CargoInventory.Value);}));
+                if(item.Model.MaterialsOnly&&view.Roads is not null)Flow(card.Controls).AddChild(GameUi.Button("FleetRoadWork_"+vehicle.Id,L("Строить дорогу","Build road"),()=>RoadWorkRequested?.Invoke(vehicle.Id)));
+                if(view.Roads is not null)ActionButton(card.Controls,"FleetTurn_"+vehicle.Id,L("Развернуться","Turn around"),new(ActionKind.TurnVehicle,VehicleId:vehicle.Id));
+                foreach(var kit in fleet.Kits.Where(k=>k.Level>vehicle.HandlingLevel&&(k.Level==2?vehicle.ModelId=="vector200":vehicle.ModelId is "muravey70" or "eger70" or "trakt_d1")))
+                    ActionButton(card.Controls,"FleetKit_"+vehicle.Id+"_"+kit.Level,L("Погрузочный комплект ","Handling kit ")+kit.Throughput+" · "+PlayerText.Money(kit.PriceMinor)+" + "+string.Join(", ",kit.Materials.Select(m=>PlayerText.Item(_language,m.ItemId)+" ×"+m.Quantity)),new(ActionKind.InstallVehicleKit,VehicleId:vehicle.Id,EquipmentLevel:kit.Level,Source:vehicle.CargoInventory));
                 if(item.Model.EquipmentTypeId is not null)
                 {
-                    var equipment=view.Equipment!.Single(e=>e.Id.Value==v.Id);var eid=equipment.Id;
-                    var flow=TabletDesign.Flow();buttons.AddChild(flow);
-                    ActionButton(flow,"I4Place_"+v.Id,L("Разместить технику","Place equipment"),new(ActionKind.PlaceEquipment,Equipment:eid));
-                    ActionButton(flow,"I4Start_"+v.Id,L("Начать добычу","Start mining"),new(ActionKind.StartHarvesting,Equipment:eid,ItemId:ResourceItem(item.Model),Quantity:f.EquipmentTypes.Single(t=>t.Id==item.Model.EquipmentTypeId).Levels.Single(l=>l.Level==item.Model.EquipmentLevel).CycleQuantity));
-                    ActionButton(flow,"I4Auto_"+v.Id,L("Авто / наём","Auto / hire"),new(ActionKind.SetEquipmentMode,Equipment:eid,Mode:EquipmentMode.Automatic));
-                    ActionButton(flow,"I4Stop_"+v.Id,L("Остановить","Stop"),new(ActionKind.SetEquipmentMode,Equipment:eid,Mode:EquipmentMode.Off));
-                    ActionButton(flow,"I4Pack_"+v.Id,L("Забрать технику","Pick up equipment"),new(ActionKind.PackEquipment,Equipment:eid));
-                    if(equipment.Mode!=EquipmentMode.Personal)ActionButton(flow,"I4Personal_"+v.Id,L("Лично","Personal"),new(ActionKind.SetEquipmentMode,Equipment:eid,Mode:EquipmentMode.Personal));
+                    var equipment=view.Equipment!.Single(e=>e.Id.Value==vehicle.Id);var eid=equipment.Id;
+                    ActionButton(card.Controls,"I4Place_"+vehicle.Id,L("Разместить","Place"),new(ActionKind.PlaceEquipment,Equipment:eid));
+                    ActionButton(card.Controls,"I4Start_"+vehicle.Id,L("Начать добычу","Start mining"),new(ActionKind.StartHarvesting,Equipment:eid,ItemId:ResourceItem(item.Model),Quantity:fleet.EquipmentTypes.Single(t=>t.Id==item.Model.EquipmentTypeId).Levels.Single(l=>l.Level==item.Model.EquipmentLevel).CycleQuantity));
+                    ActionButton(card.Controls,"I4Auto_"+vehicle.Id,L("Автоматически","Automatic"),new(ActionKind.SetEquipmentMode,Equipment:eid,Mode:EquipmentMode.Automatic));
+                    ActionButton(card.Controls,"I4Stop_"+vehicle.Id,L("Остановить","Stop"),new(ActionKind.SetEquipmentMode,Equipment:eid,Mode:EquipmentMode.Off));
+                    ActionButton(card.Controls,"I4Pack_"+vehicle.Id,L("Забрать технику","Pack equipment"),new(ActionKind.PackEquipment,Equipment:eid));
+                    if(equipment.Mode!=EquipmentMode.Personal)ActionButton(card.Controls,"I4Personal_"+vehicle.Id,L("Личный режим","Personal mode"),new(ActionKind.SetEquipmentMode,Equipment:eid,Mode:EquipmentMode.Personal));
                 }
-                if(item.Model.EquipmentTypeId is null&&!item.Model.MaterialsOnly)foreach(var enterprise in view.Enterprises)ActionButton(buttons,"FleetAssign_"+v.Id+"_"+enterprise.Id.Value,L("Назначить предприятию #","Assign to enterprise #")+enterprise.Id.Value,new(ActionKind.AssignVehicle,VehicleId:v.Id,Enterprise:enterprise.Id));
+                if(item.Model.EquipmentTypeId is null&&!item.Model.MaterialsOnly)foreach(var enterprise in view.Enterprises)
+                {var b=view.Buildings.Single(b=>b.Id.Value==enterprise.Id.Value);ActionButton(card.Controls,"FleetAssign_"+vehicle.Id+"_"+enterprise.Id.Value,L("Назначить: ","Assign: ")+GameUi.Industry(_language,b.TypeId,b.Level),new(ActionKind.AssignVehicle,VehicleId:vehicle.Id,Enterprise:enterprise.Id));}
             }
-            foreach(var b in view.Buildings)
+            foreach(var building in view.Buildings)
             {
-                var p=f.Platforms.SingleOrDefault(p=>p.Building==b.Id.Value);var box=new VBoxContainer();box.AddChild(TextLabel(PlayerText.Building(_language,b.TypeId)+" #"+b.Id.Value+L(" · погрузочная площадка "," · loading platform ")+(p?.Level??0)));
-                if(p?.Installation is {} install)box.AddChild(TextLabel(L("Монтаж до тика ","Installing until tick ")+install.CompletionTick));
-                if((p?.Level??0)<3){int level=(p?.Level??0)+1;var upgrade=f.PlatformUpgrades.Single(u=>u.Level==level);ActionButton(box,"FleetPlatform_"+b.Id.Value,L("Площадка ","Platform ")+level+" · "+PlayerText.Money(upgrade.PriceMinor)+" + "+string.Join(", ",upgrade.Materials.Select(m=>PlayerText.Item(_language,m.ItemId)+" ×"+m.Quantity)),new(ActionKind.BuildLoadingPlatform,Building:b.Id,EquipmentLevel:level));}
-                if(p is not null){box.AddChild(TextLabel(L("Работников: ","Staff: ")+p.Group.Headcount+"/1 · "+PlayerText.Money(p.Group.WageMinor)+L("/рабочий тик","/working tick")));ActionButton(box,"FleetWage_"+p.Id,L("Ставка +","Wage +"),new(ActionKind.SetWage,Group:p.Group.Id,WageMinor:p.Group.WageMinor+(view.Economy??new()).PlayerWageStepMinor));}
-                _platforms.AddChild(TabletDesign.Wrap(box));
+                var platform=fleet.Platforms.SingleOrDefault(p=>p.Building==building.Id.Value);var box=new VBoxContainer();box.AddChild(TabletDesign.Heading(PlayerText.Building(_language,building.TypeId),19));box.AddChild(GameUi.Text(L("Площадка уровня ","Platform level ")+(platform?.Level??0)));
+                if(platform?.Installation is {} install)box.AddChild(GameUi.Hint(L("Монтаж: осталось ","Installation: remaining ")+GameDuration.Format(install.CompletionTick-view.Tick,_language)));
+                if((platform?.Level??0)<3){int level=(platform?.Level??0)+1;var upgrade=fleet.PlatformUpgrades.Single(u=>u.Level==level);ActionButton(box,"FleetPlatform_"+building.Id.Value,L("Улучшить до ","Upgrade to ")+level+" · "+PlayerText.Money(upgrade.PriceMinor)+" + "+string.Join(", ",upgrade.Materials.Select(m=>PlayerText.Item(_language,m.ItemId)+" ×"+m.Quantity)),new(ActionKind.BuildLoadingPlatform,Building:building.Id,EquipmentLevel:level));}
+                if(platform is not null){box.AddChild(GameUi.Hint(L("Работников ","Crew ")+platform.Group.Headcount+" / 1 · "+PlayerText.Money(platform.Group.WageMinor)));ActionButton(box,"FleetWage_"+platform.Id,L("Ставка +","Wage +"),new(ActionKind.SetWage,Group:platform.Group.Id,WageMinor:platform.Group.WageMinor+(view.Economy??new()).PlayerWageStepMinor));}
+                _platforms.AddChild(GameUi.Card(box));
+            }
+            Callable.From(()=>{scroll();focus();}).CallDeferred();
+        }
+        foreach(var item in fleet.Vehicles)
+        {
+            var inventory=view.Inventories.Single(i=>i.Id==item.Vehicle.CargoInventory);var row=_vehicles[item.Vehicle.Id];var vehicle=item.Vehicle;
+            row.Status.Text=State(item.State)+$" · ({item.Position.X},{item.Position.Z})"+(vehicle.Installation is {} install?"\n"+L("Монтаж: осталось ","Installation: remaining ")+GameDuration.Format(install.CompletionTick-view.Tick,_language):"");
+            row.Capacity.Text=L("Кузов ","Cargo ")+inventory.OccupiedVolume+" / "+inventory.Capacity+(inventory.ReservedCapacity>0?L(" · резерв места "," · space held ")+inventory.ReservedCapacity:"");row.Fill.MaxValue=Math.Max(1,inventory.Capacity);row.Fill.Value=inventory.OccupiedVolume+inventory.ReservedCapacity;row.Stock.ShowStock(inventory,_language);
+            row.Work.Visible=row.Crew.Visible=row.Guidance.Visible=item.Model.EquipmentTypeId is not null;
+            if(item.Model.EquipmentTypeId is not null)
+            {
+                var equipment=view.Equipment!.Single(e=>e.Id.Value==vehicle.Id);var group=view.Employment.Single(g=>g.Id==equipment.GroupId);
+                row.Status.Text=(equipment.Deployed==true?GameUi.Reason(_language,equipment.ReasonCode):L("Готова к перевозке","Packed for transport"))+$" · ({equipment.Position.X},{equipment.Position.Z})";
+                row.Guidance.Text=equipment.Deployed!=true?L("Доставьте машину на свой участок с подходящим ресурсом и нажмите «Разместить».","Drive to your own matching resource site, then choose Place."):equipment.ReasonCode=="NoStaff"?L("Найм идёт постепенно. Проверьте ставку и наличие ресурса.","Hiring takes time. Check wages and resource availability."):L("Личный режим использует персонажа; автоматический — наёмную команду.","Personal mode uses your character; automatic mode uses a hired crew.");
+                row.Work.MaxValue=Math.Max(1,equipment.WorkRequired);row.Work.Value=equipment.WorkDone;row.Crew.Text=L("Команда ","Crew ")+group.Headcount+" / "+group.Capacity+L(" · ставка "," · wage ")+PlayerText.Money(group.WageMinor);
             }
         }
-        foreach(var item in f.Vehicles)
-        {
-            var inv=view.Inventories.Single(i=>i.Id==item.Vehicle.CargoInventory);var v=item.Vehicle;
-            _vehicles[v.Id].Label.Text=ModelName(item.Model)+" #"+v.Id+" · "+L("Объём ","Volume ")+$"{inv.OccupiedVolume}+{inv.ReservedCapacity}/{inv.Capacity}"+" · "+$"({item.Position.X},{item.Position.Z})"+" · "+State(item.Model.EquipmentTypeId is null?item.State:v.Driver!=0?"Personal":view.Equipment!.Single(e=>e.Id.Value==v.Id).Deployed==true?view.Equipment!.Single(e=>e.Id.Value==v.Id).ReasonCode:"EquipmentPacked")+(v.Installation is {} job?L(" до тика "," until tick ")+job.CompletionTick:"")+"\n"+string.Join(" · ",inv.Stock.Select(s=>PlayerText.Item(_language,s.ItemId)+" ×"+s.Quantity));
-        }
-        foreach(var item in f.Vehicles.Where(v=>v.Model.EquipmentTypeId is not null))
-        {
-            var e=view.Equipment!.Single(e=>e.Id.Value==item.Vehicle.Id);var group=view.Employment.Single(g=>g.Id==e.GroupId);
-            _vehicles[e.Id.Value].Label.Text+="\n"+(e.Deployed==true?L("Размещена · рабочий участок ","Deployed · work site ")+$"({e.Position.X},{e.Position.Z})":L("Транспортное положение","Packed for transport"))+" · "+PlayerText.Reason(_language,e.ReasonCode)+L(" · прогресс "," · progress ")+e.WorkDone+"/"+e.WorkRequired+L(" · штат "," · crew ")+group.Headcount+"/"+group.Capacity;
-        }
-        foreach(var a in _actions)
-        {
-            var access=_access(a.Action);bool stop=a.Action.Kind==ActionKind.SetEquipmentMode&&a.Action.Mode==EquipmentMode.Off;
-            a.Button.Disabled=pending||!access.Allowed||view.Participant.Busy&&!stop;
-            a.Button.TooltipText=!access.Allowed?PlayerText.Reason(_language,access.ReasonCode):view.Participant.Busy&&!stop?PlayerText.Reason(_language,"ParticipantBusy"):"";
-        }
-        var nearby=view.Inventories.Where(i=>i.Position==view.Participant.Position).OrderBy(i=>i.Id.Value).ToArray();
-        string tk=string.Join(',',nearby.Select(i=>i.Id.Value));if(tk!=_transferKey){_transferKey=tk;_source.Clear();_destination.Clear();_inventoryIds=nearby.Select(i=>i.Id.Value).ToArray();foreach(var i in nearby){string label=i.Id==view.Participant.InventoryId?L("Рюкзак","Backpack"):f.Vehicles.FirstOrDefault(v=>v.Vehicle.CargoInventory==i.Id) is {} vehicle?ModelName(vehicle.Model):L("Хранилище","Storage");_source.AddItem(label+" #"+i.Id.Value);_destination.AddItem(label+" #"+i.Id.Value);}if(nearby.Length>1)_destination.Select(1);}
-        // Newly acquired items join the list without resetting the current choice.
-        foreach(var id in view.Inventories.SelectMany(i=>i.Stock).Select(s=>s.ItemId).Distinct().Order(StringComparer.Ordinal))if(!Enumerable.Range(0,_item.ItemCount).Any(n=>_item.GetItemMetadata(n).AsString()==id)){_item.AddItem(PlayerText.Item(_language,id));_item.SetItemMetadata(_item.ItemCount-1,id);}
-        RefreshTransfer();
-        if(f.OwnRequests.Length>0)_summary.Text+="\n"+L("Заявка ждёт распределения до тика ","Purchase request closes at tick ")+f.OwnRequests[0].CutoffTick;
+        foreach(var item in _actions){var access=_access(item.Action);bool stop=item.Action.Kind==ActionKind.SetEquipmentMode&&item.Action.Mode==EquipmentMode.Off;item.Button.Disabled=pending||!access.Allowed||view.Participant.Busy&&!stop;item.Button.TooltipText=!access.Allowed?GameUi.Reason(_language,access.ReasonCode):view.Participant.Busy&&!stop?GameUi.Reason(_language,"ParticipantBusy"):"";}
+        _transfer.ShowData(view,pending);if(_focus>0&&_vehicles.TryGetValue(_focus,out var selected)){_focus=0;Callable.From(()=>UiNavigation.Reveal(selected.Shell)).CallDeferred();}
+        if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Size.X);
     }
-    private ManualTransferChoice? TransferChoice(bool all)
-    {
-        if(_view is null||_source.Selected<0||_destination.Selected<0||_source.Selected>=_inventoryIds.Length||_destination.Selected>=_inventoryIds.Length||_item.Selected<0)return null;
-        return ManualTransferChoice.Read(_scenarioForTransfer,_view,new(_inventoryIds[_source.Selected]),new(_inventoryIds[_destination.Selected]),_item.GetItemMetadata(_item.Selected).AsString(),_access,_pending,all?null:(long)_quantity.Value);
-    }
-    private readonly ScenarioDefinition _scenarioForTransfer;
-    private void RefreshTransfer()
-    {
-        if(_view is null)return;var all=TransferChoice(true);var selected=TransferChoice(false);
-        _all.Text=L("Всё","All")+" ("+(all?.Maximum??0)+")";_all.Disabled=all is null||!all.Value.Enabled;_transfer.Disabled=selected is null||!selected.Value.Enabled;
-        _all.TooltipText=all?.Explain(_language)??L("Выберите источник, товар и получателя.","Choose source, item and destination.");_transfer.TooltipText=selected?.Explain(_language)??_all.TooltipText;
-    }
-    private void SendTransfer(bool all)
-    {
-        var choice=TransferChoice(all);if(choice is not ManualTransferChoice {Enabled:true} current)return;_pending=true;RefreshTransfer();_submit(current.Action);
-    }
-    private string State(string state)=>state switch{"ServiceReserved"=>L("Закреплена за доставкой","Reserved for delivery"),"Parked"=>L("Свободна","Parked"),"Personal"=>L("Личное управление","Personal control"),"Installing"=>L("Монтаж","Installing"),_=>TabletText.Reason(_language,state)};
+    private string State(string state)=>state switch{"ServiceReserved"=>L("Закреплена за доставкой","Reserved for delivery"),"Parked"=>L("Свободна","Parked"),"Personal"=>L("Личное управление","Personal control"),"Installing"=>L("Монтаж","Installing"),_=>GameUi.Reason(_language,state)};
 }

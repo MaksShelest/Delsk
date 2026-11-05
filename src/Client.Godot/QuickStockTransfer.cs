@@ -11,8 +11,8 @@ public partial class QuickStockTransfer : VBoxContainer
     private readonly OptionButton _item=new(){FitToLongestItem=false,CustomMinimumSize=new(150,40),SizeFlagsHorizontal=SizeFlags.ExpandFill};
     private readonly Button _all=new(){CustomMinimumSize=new(40,40),SizeFlagsHorizontal=SizeFlags.ShrinkBegin};
     private readonly Label _hint=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};
-    private bool _friendly,_deposit;
-    public void UseProductionCard(bool deposit){_friendly=true;_deposit=deposit;_stock.Visible=false;_item.CustomMinimumSize=new(100,40);}
+    private bool _friendly,_deposit;private string? _emptyHint;
+    public void UseProductionCard(bool deposit,string? emptyHint=null){_friendly=true;_deposit=deposit;_emptyHint=emptyHint;_stock.Visible=false;_item.CustomMinimumSize=new(100,40);}
     private PlayerView? _view;private InventoryId _source,_destination;private bool _pending;private string[] _items=[];
     public QuickStockTransfer(ScenarioDefinition scenario,string language,string name,string caption,Action<GameAction> submit,Func<GameAction,ActionAccess> access)
     {
@@ -45,6 +45,7 @@ public partial class QuickStockTransfer : VBoxContainer
         _all.TooltipText=choice?.Explain(_language)??PlayerText.Local(_language,"Нет подходящего товара.","No item available.");
         _hint.Text=_all.Disabled?choice is {Reason:"NoFreeStock"}?PlayerText.Local(_language,"Нет свободного товара.","No available stock."):_all.TooltipText:"";if(_friendly&&choice is {Reason:"NoFreeStock"})_hint.Text=PlayerText.Local(_language,_deposit?"В рюкзаке пока нет сырья.":"Готовой продукции пока нет.",_deposit?"No materials in your backpack yet.":"No finished goods yet.");
         if(_friendly&&_items.Length>1&&choice is {Reason:"NoFreeStock"})_hint.Text=PlayerText.Local(_language,"Нет свободного запаса выбранного ресурса. Выберите другой товар или пополните рюкзак.","No free stock of this material. Select another item or refill your backpack.");
+        if(_friendly&&_emptyHint is not null&&choice is {Reason:"NoFreeStock"})_hint.Text=_emptyHint;
         _hint.Visible=_hint.Text.Length>0;_item.Disabled=_pending;
     }
     private void Send()

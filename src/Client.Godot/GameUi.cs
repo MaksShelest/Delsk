@@ -88,6 +88,8 @@ public partial class UiSections : VBoxContainer
     }
     public void Select(string key)
     {if(!_pages.ContainsKey(key))return;Selected=key;foreach(var p in _pages){p.Value.Body.Visible=p.Key==key;p.Value.Button.SetPressedNoSignal(p.Key==key);}}
+    public void SetAvailable(string key,bool available)
+    {if(!_pages.TryGetValue(key,out var page))return;page.Button.Visible=available;if(!available){page.Body.Visible=false;if(Selected==key)Select(_pages.First(p=>p.Value.Button.Visible).Key);}}
 }
 
 public partial class UiDisclosure : VBoxContainer
