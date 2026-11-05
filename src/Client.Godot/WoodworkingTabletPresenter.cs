@@ -21,7 +21,7 @@ public partial class WoodworkingTabletPresenter : VBoxContainer
     private readonly ProgressBar _progress=new(){Name="WoodworkingProgress",ShowPercentage=false,CustomMinimumSize=new(0,10),SizeFlagsHorizontal=SizeFlags.ExpandFill,SizeFlagsVertical=SizeFlags.ShrinkCenter};
     private readonly Button _work,_staff,_map;
     private readonly TextureRect _illustration;
-    private readonly PanelContainer _artCard;
+    private readonly PanelContainer _artCard;private readonly VBoxContainer _mainInfo;private readonly HFlowContainer _mainActions;private bool _shortActions;
     private readonly OptionButton _line=new(){Name="WoodworkingLine",FitToLongestItem=false,CustomMinimumSize=new(120,36),Visible=false};
     private PlayerView? _view;private bool _pending;private long _selectedLine;private string _lineSignature="";
     public VBoxContainer Management {get;}
@@ -37,12 +37,12 @@ public partial class WoodworkingTabletPresenter : VBoxContainer
         var art=new VBoxContainer();_level.AddThemeFontSizeOverride("font_size",13);_level.AddThemeColorOverride("font_color",new("58735a"));art.AddChild(_level);
         _illustration=TabletDesign.Art(industry,new(240,170));_illustration.Name="WoodworkingIllustration";art.AddChild(_illustration);
         _artCard=CompactTabletDesign.Card(art);_artCard.SizeFlagsHorizontal=SizeFlags.ShrinkBegin;_artCard.AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("eff4e9",10));hero.AddChild(_artCard);
-        var production=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};hero.AddChild(production);
+        var production=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};_mainInfo=production;hero.AddChild(production);
         _status.Name="WoodworkingStatus";_status.AddThemeFontSizeOverride("font_size",14);production.AddChild(_status);
         _headline.AddThemeFontSizeOverride("font_size",24);production.AddChild(_headline);production.AddChild(_recipe);
         _hint.Name="WoodworkingGuidance";production.AddChild(_hint);
         var progress=new HBoxContainer();progress.AddChild(_progress);_percent.AddThemeFontSizeOverride("font_size",14);_percent.AutowrapMode=TextServer.AutowrapMode.Off;_percent.SizeFlagsVertical=SizeFlags.ShrinkCenter;progress.AddChild(_percent);production.AddChild(progress);
-        var actions=TabletDesign.Flow();_work=GameUi.Button("WoodworkingWork","",ToggleWork,true);actions.AddChild(_work);
+        var actions=TabletDesign.Flow();_mainActions=actions;_work=GameUi.Button("WoodworkingWork","",ToggleWork,true);actions.AddChild(_work);
         _staff=CompactTabletDesign.Button("WoodworkingStaff","",()=>Select("workers"));actions.AddChild(_staff);
         _map=CompactTabletDesign.Button("WoodworkingFindInputs",L("Найти сырьё","Find materials"),()=>MapRequested?.Invoke());actions.AddChild(_map);actions.AddChild(_line);production.AddChild(actions);
         _line.ItemSelected+=index=>{_selectedLine=_line.GetItemId((int)index);if(_view is not null)ShowData(_view,_pending);};
@@ -64,7 +64,10 @@ public partial class WoodworkingTabletPresenter : VBoxContainer
         Resized+=LayoutArtwork;Ready+=LayoutArtwork;Select("production");
     }
     private void LayoutArtwork()
-    {bool shortScreen=GetViewportRect().Size.Y<540;_illustration.CustomMinimumSize=shortScreen?new(180,128):new(240,170);_artCard.CustomMinimumSize=new(shortScreen?200:260,0);}
+    {
+        bool shortScreen=GetViewportRect().Size.Y<540;_illustration.CustomMinimumSize=shortScreen?new(180,128):new(240,170);_artCard.CustomMinimumSize=new(shortScreen?200:260,0);_headline.AddThemeFontSizeOverride("font_size",shortScreen?20:24);
+        if(_shortActions==shortScreen)return;_shortActions=shortScreen;Callable.From(()=>{if(!IsInsideTree()||IsQueuedForDeletion())return;var target=_shortActions?Page("production"):_mainInfo;if(_mainActions.GetParent()!=target){_mainActions.GetParent()?.RemoveChild(_mainActions);target.AddChild(_mainActions);if(_shortActions)target.MoveChild(_mainActions,0);}}).CallDeferred();
+    }
     public VBoxContainer Page(string key)=>_pages.GetChild<ScrollContainer>(Array.IndexOf(_navigation.Keys.ToArray(),key)).GetChild<VBoxContainer>(0);
     public void Select(string key)
     {int index=Array.IndexOf(_navigation.Keys.ToArray(),key);if(index<0)return;SelectedPage=key;_pages.CurrentTab=index;foreach(var row in _navigation)row.Value.SetPressedNoSignal(row.Key==key);}

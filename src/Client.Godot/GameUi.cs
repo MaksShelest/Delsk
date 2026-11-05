@@ -32,7 +32,7 @@ public static class GameUi
         if(view.Participant.InventoryId.Value==id)return L(language,"Рюкзак","Backpack");
         if(view.ProductionContent?.Pickup?.Value==id)return L(language,"Выдача импорта","Import pickup");
         var vehicle=view.Fleet?.Vehicles.FirstOrDefault(v=>v.Vehicle.CargoInventory.Value==id);
-        if(vehicle is not null)return L(language,"Кузов · ","Cargo · ")+vehicle.Model.Name;
+        if(vehicle is not null)return L(language,"Кузов · ","Cargo · ")+(vehicle.Model.EquipmentTypeId is null?vehicle.Model.Name:L(language,"добыча ","extract ")+PlayerText.Item(language,view.Fleet!.EquipmentTypes.Single(t=>t.Id==vehicle.Model.EquipmentTypeId).ItemId));
         var b=view.Buildings.FirstOrDefault(b=>b.InputId.Value==id||b.OutputId?.Value==id);
         if(b is not null)return (b.Kind==BuildingKind.Production?Industry(language,b.TypeId,b.Level):PlayerText.Building(language,b.TypeId))+
             (b.Kind==BuildingKind.Production?(b.OutputId?.Value==id?L(language," · продукция"," · goods"):L(language," · сырьё"," · materials")):"")+$" ({b.Position.X},{b.Position.Z})";

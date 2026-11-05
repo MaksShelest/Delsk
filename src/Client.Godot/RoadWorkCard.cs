@@ -98,6 +98,7 @@ public partial class RoadWorkCard : PanelContainer
         _cell.Disabled=_mode.Disabled=active||_pending;
         _details.Text=q is null?L("Не выбран участок.","Select a cell."):$"{Surface(q.CurrentLevel)} → {(q.Next is null?"—":Surface(q.Next.Level))}\n"+
             (q.Next is null?"":PlayerText.Money(q.Next.PriceMinor)+L(" монет · "," coins · ")+(q.ExpectedTicks is {} ticks?GameDuration.Format(ticks,_language):"—"));
+        var order=_view.Roads?.Orders.FirstOrDefault(o=>o.Cell==selected&&o.Level==q?.Next?.Level&&o.PaidTick==0);if(order is not null)_details.Text+="\n"+L("Городской заказ · награда ","City order · reward ")+PlayerText.Money(order.Reward)+L(" монет"," coins")+(order.Assignee==0?L(" · примите в разделе дорог"," · accept in Roads"):order.Assignee==_view.Participant.Id.Value?L(" · принят вами"," · accepted by you"):L(" · принят другим участником"," · assigned to another participant"));
         _stock.Text=L("Тракт-Д1 #","Trakt-D1 #")+_vehicle+L(" · запас "," · cargo ")+$"{cargo.OccupiedVolume}+{cargo.ReservedCapacity}/{cargo.Capacity}\n"+
             L("Нужно / в кузове: ","Required / in cargo: ")+string.Join(" · ",(q?.Materials??[]).Select(m=>PlayerText.Item(_language,m.ItemId)+$" {m.Required}/{m.Available}"+ (m.Available<m.Required?L(" · загрузить "," · load ")+(m.Required-m.Available):"")));
         if(work?.Batch is not null)_stock.Text=L("Тракт-Д1 #","Trakt-D1 #")+_vehicle+L(" · запас "," · cargo ")+$"{cargo.OccupiedVolume}+{cargo.ReservedCapacity}/{cargo.Capacity}\n"+

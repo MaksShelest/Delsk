@@ -8,7 +8,7 @@ public partial class PersonalAccountPanel : VBoxContainer
     private readonly string _language;
     private readonly Action<GameAction> _submit;
     private readonly Func<int,int,PersonalAccount>? _query;
-    private readonly Label _summary=Wrap(),_invoice=Wrap(),_history=Wrap(),_help=Wrap();
+    private readonly Label _summary=Wrap(),_invoice=Wrap(),_history=Wrap();
     private readonly CheckButton _auto=new(){Name="AccountAutoPay"};
     private readonly OptionButton _invoices=new(){Name="AccountInvoice"};
     private readonly Button _view=new(){Name="AccountViewInvoice"},_pay=new(){Name="AccountPayInvoice"};
@@ -31,8 +31,8 @@ public partial class PersonalAccountPanel : VBoxContainer
         buttons.AddChild(_view);buttons.AddChild(_amount);buttons.AddChild(_pay);invoicePage.AddChild(buttons);GameUi.Primary(_pay);
         _view.Pressed+=()=>{if(!_view.Disabled&&Selected>0)Send(new(ActionKind.ViewInvoice,OfferId:Selected));};
         _pay.Pressed+=()=>{if(!_pay.Disabled&&Selected>0)Send(new(ActionKind.PayInvoice,OfferId:Selected,Quantity:checked((long)Math.Round((decimal)_amount.Value*100,MidpointRounding.AwayFromZero))));};
-        _help.Text=L("Сумма в монетах; 0 — доступная часть всего счёта. Сначала основной долг, затем пени. Просмотр не означает оплату. Резервы и escrow защищены. Долг не запрещает работать.",
-            "Amount in coins; 0 pays as much as available. Principal first, then penalties. Viewing does not pay. Holds and escrow stay protected. Debt does not block work.");invoicePage.AddChild(GameUi.Hint(_help.Text));
+        string help=L("Сумма в монетах; 0 — доступная часть всего счёта. Сначала основной долг, затем пени. Просмотр не означает оплату. Резервы и escrow защищены. Долг не запрещает работать.",
+            "Amount in coins; 0 pays as much as available. Principal first, then penalties. Viewing does not pay. Holds and escrow stay protected. Debt does not block work.");invoicePage.AddChild(GameUi.Hint(help));
         historyPage.AddChild(TabletDesign.Heading(L("Доходы и расходы","Income & expenses"),20));historyPage.AddChild(GameUi.Card(_history));
         var pages=TabletDesign.Flow();_newer.Text=L("‹ Новые операции","‹ Newer operations");_older.Text=L("Ранние операции ›","Older operations ›");pages.AddChild(_newer);pages.AddChild(_older);historyPage.AddChild(pages);
         _newer.Pressed+=()=>{_offset=Math.Max(0,_offset-20);Reload();};_older.Pressed+=()=>{_offset+=20;Reload();};

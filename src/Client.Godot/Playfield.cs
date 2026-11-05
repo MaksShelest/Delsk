@@ -434,6 +434,7 @@ public partial class Playfield : Control
 
     private void FillContext(VBoxContainer host)
     {
+        _harvestBars.Clear();
         foreach (Node child in host.GetChildren()) child.QueueFree();
         _contextFirst = Math.Clamp(_contextIndex - 1, 0, Math.Max(0, _choices.Length - 3));
         for (int i = _contextFirst; i < Math.Min(_choices.Length, _contextFirst + 3); i++)
@@ -821,7 +822,7 @@ public partial class Playfield : Control
         column.AddChild(_cards);
         _cardsSignature = "";
 
-        _menu = new ColorRect { Color = new Color(0.15f, 0.20f, 0.23f, 0.97f), MouseFilter = MouseFilterEnum.Stop };
+        _menu = new ColorRect { Theme=TabletDesign.Theme,Color = new Color("edf1eb"), MouseFilter = MouseFilterEnum.Stop };
         _menu.SetAnchorsPreset(LayoutPreset.FullRect);
         AddChild(_menu);
         var menuScroll=new ScrollContainer{HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};menuScroll.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);_menu.AddChild(menuScroll);
@@ -829,7 +830,7 @@ public partial class Playfield : Control
         var box = new VBoxContainer { SizeFlagsHorizontal=SizeFlags.ExpandFill };center.AddChild(box);
         box.AddChild(new Label { Text = T("menu.title") + " · " + PlayMaps.Name(_mapKey, _language), HorizontalAlignment = HorizontalAlignment.Center,AutowrapMode=TextServer.AutowrapMode.WordSmart });
         box.AddChild(new Label { Text = T("menu.escape"), AutowrapMode = TextServer.AutowrapMode.WordSmart });
-        Button(box, "menu.continue", ContinueGame);
+        Button(box, "menu.continue", ContinueGame);GameUi.Primary(box.GetChildren().OfType<Button>().Last());
 #if DEBUG
         Button(box, "menu.debug", OpenDebug);
 #endif
@@ -845,7 +846,7 @@ public partial class Playfield : Control
         display.Pressed += ToggleFullscreen; box.AddChild(display);
         var handbook = new Button { Text = L("Справка", "Help"), FocusMode = FocusModeEnum.None };
         handbook.Pressed += () => OpenHelp(); box.AddChild(handbook);
-        Button(box, "menu.exit", ExitGame);
+        Button(box, "menu.exit", ExitGame);GameUi.FitControls(box,440);
         RebuildTablet();
         ApplySurface();
     }

@@ -8,9 +8,10 @@ public static class GameUiArt
     private static Texture2D Svg(string key,string body,int width,int height)
     {
         if(Cache.TryGetValue(key,out var cached))return cached;
-        var image=new Image();image.LoadSvgFromString($"<svg xmlns='http://www.w3.org/2000/svg' width='{width}' height='{height}' viewBox='0 0 {width} {height}'>{body}</svg>");
+        using var image=new Image();image.LoadSvgFromString($"<svg xmlns='http://www.w3.org/2000/svg' width='{width}' height='{height}' viewBox='0 0 {width} {height}'>{body}</svg>");
         var texture=ImageTexture.CreateFromImage(image);Cache.Add(key,texture);return texture;
     }
+    public static void Release(){foreach(var texture in Cache.Values)texture.Dispose();Cache.Clear();}
     public static Texture2D Item(string key)
     {
         string color=key switch{"iron_ore" or "coke" or "steel" or "steel_sheet"=>"8a9696","copper_ore" or "copper" or "wire"=>"b97951","sand" or "limestone" or "soda"=>"d6bf85","stone" or "gravel" or "cement" or "concrete"=>"a4a99e","glass" or "window"=>"92bdc5","motor" or "conveyor"=>"72978f","flour" or "curd" or "cream"=>"e4d9ba",_=>"9baf7d"};

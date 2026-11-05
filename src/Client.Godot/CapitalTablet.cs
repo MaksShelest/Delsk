@@ -33,7 +33,7 @@ public partial class CapitalTablet : VBoxContainer
     private readonly HFlowContainer _pageButtons;
     public void ShowPage(bool history){_pageButtons.Visible=false;_orders.Visible=!history;_results.Visible=history;}
     private readonly Dictionary<long, OfferRow> _offers = [];
-    private string _key = "";
+    private string _key = "",_packKey="";private readonly HFlowContainer _quickGoods=TabletDesign.Flow();private OptionButton _goodsFilter=null!;private string[] _goodsIds=[];
     private int _historyCount = -1;
     private PlayerView? _view;
     private OwnCapitalTrading? _trading;
@@ -49,10 +49,10 @@ public partial class CapitalTablet : VBoxContainer
         _results = new VBoxContainer { Visible = false }; AddChild(_results);
         orders.Pressed += () => { _orders.Visible = true; _results.Visible = false; };
         history.Pressed += () => { _orders.Visible = false; _results.Visible = true; };
-        var filters = TabletDesign.Flow(); _orders.AddChild(filters);
-        var goods = new OptionButton { FocusMode = FocusModeEnum.None };
+        _orders.AddChild(_quickGoods);var filters = TabletDesign.Flow(); _orders.AddChild(filters);
+        var goods = new OptionButton { FocusMode = FocusModeEnum.None };_goodsFilter=goods;
         var ids = new[] { "" }.Concat(scenario.Items.Select(i => i.Id).OrderBy(id => id, StringComparer.Ordinal)).ToArray();
-        foreach (string id in ids) goods.AddItem(id.Length == 0 ? L("Все товары", "All goods") : PlayerText.Item(language, id));
+        _goodsIds=ids;foreach (string id in ids) goods.AddItem(id.Length == 0 ? L("Все товары", "All goods") : PlayerText.Item(language, id));
         goods.Selected = Math.Max(0, Array.IndexOf(ids, preferences.ItemId));
         goods.ItemSelected += index => { preferences.ItemId = ids[(int)index]; RefreshRows(); }; filters.AddChild(goods);
         var sort = new OptionButton { FocusMode = FocusModeEnum.None };
@@ -81,6 +81,13 @@ public partial class CapitalTablet : VBoxContainer
             foreach (var offer in offers) AddOffer(offer);
         }
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
+        string packKey=string.Join('|',pack.Stock.Where(s=>s.Quantity>s.Reserved).Select(s=>s.ItemId+":"+(s.Quantity-s.Reserved)));if(packKey!=_packKey)
+        {
+            _packKey=packKey;foreach(Node child in _quickGoods.GetChildren()){_quickGoods.RemoveChild(child);child.QueueFree();}
+            if(packKey.Length>0)_quickGoods.AddChild(GameUi.Hint(L("В рюкзаке:","In backpack:")));
+            foreach(var held in pack.Stock.Where(s=>s.Quantity>s.Reserved))
+            {string item=held.ItemId;_quickGoods.AddChild(GameUi.Button("CapitalGoods_"+item,PlayerText.Item(_language,item)+" ×"+(held.Quantity-held.Reserved),()=>{_preferences.ItemId=item;_goodsFilter.Select(Array.IndexOf(_goodsIds,item));RefreshRows();}));}
+        }
         _summary.Text = L("Предложений: ", "Offers: ") + offers.Length+L(" · рюкзак "," · backpack ")+$"{pack.OccupiedVolume}/{pack.Capacity}";
         foreach (var offer in offers)
         {
@@ -109,6 +116,7 @@ public partial class CapitalTablet : VBoxContainer
             row.Go.Visible=permission?.Allowed==false;row.Go.Disabled=_pending||view.Participant.Busy;
             row.Cancel.Visible = request is not null; row.Cancel.Disabled = _pending;
         }
+        if(IsInsideTree()&&Size.X>0)GameUi.FitControls(_orders,Size.X);
         if (_historyCount == trading.Settlements.Length) return;
         _historyCount = trading.Settlements.Length;
         _history.Text = trading.Settlements.Length == 0 ? L("Завершённых сделок пока нет", "No completed trades yet") :
@@ -120,15 +128,12 @@ public partial class CapitalTablet : VBoxContainer
     {
         var panel = new PanelContainer(); _rows.AddChild(panel);
         panel.AddThemeStyleboxOverride("panel",TabletDesign.Card());
-        var row = new TabletColumns{Breakpoint=800}; panel.AddChild(row);
-        row.AddChild(TabletDesign.Art(offer.ItemId,new(56,56)));
-        var terms = GameUi.Text("",18); row.AddChild(terms);
-        var timing = new VBoxContainer { SizeFlagsHorizontal=SizeFlags.ExpandFill }; row.AddChild(timing);
-        var deadline = GameUi.Hint(""); timing.AddChild(deadline);
-        var window = new VBoxContainer(); timing.AddChild(window);
-        var bar = new ProgressBar { ShowPercentage = false, CustomMinimumSize = new Vector2(175, 10) }; window.AddChild(bar);
-        var left = new Label(); window.AddChild(left);
-        var actionBox=new VBoxContainer();var actions = TabletDesign.Flow();actionBox.AddChild(actions);row.AddChild(actionBox);
+        var row = new VBoxContainer();panel.AddChild(row);var header=new HBoxContainer();row.AddChild(header);
+        header.AddChild(TabletDesign.Art(offer.ItemId,new(48,48)));
+        var terms=GameUi.Text("",18);header.AddChild(terms);
+        var timing=new VBoxContainer{CustomMinimumSize=new(180,0)};header.AddChild(timing);var deadline=GameUi.Hint("");timing.AddChild(deadline);
+        var window=new VBoxContainer();timing.AddChild(window);var bar=new ProgressBar{ShowPercentage=false,CustomMinimumSize=new(175,10)};window.AddChild(bar);var left=GameUi.Hint("");window.AddChild(left);
+        var actionBox=new VBoxContainer();row.AddChild(actionBox);var actions=TabletDesign.Flow();actionBox.AddChild(actions);
         var one = Action(actions, L("Продать 1", "Sell 1")); var all = Action(actions, ""); var cancel = Action(actions, L("Отменить", "Cancel"));
         var reason=GameUi.Hint("");actionBox.AddChild(reason);var go=Action(actions,L("Подойти","Go there"));
         var model = new OfferRow { Offer = offer, Terms = terms, Deadline = deadline, Window = bar, WindowText = left, WindowBox = window, One = one, All = all, Cancel = cancel,Why=reason,Go=go };

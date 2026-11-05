@@ -106,4 +106,4 @@ with (out/'xorg.stdout.log').open('w') as log:
         except subprocess.TimeoutExpired:server.kill();server.wait(timeout=5)
 assert all(hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==h for name,h in inputs.items()),'Source changed during run'
 (out/'inputs.json').write_text(json.dumps(inputs,indent=2)+'\n')
-(out/'gate.json').write_text(json.dumps(dict(status='succeeded',selection=a.case,scope='Selected I6-A Revision phase only: '+a.case+'; prepared Small valley / three ordinary NPCs. Software GL and synthetic input.'),indent=2)+'\n')
+(out/'gate.json').write_text(json.dumps(dict(status='succeeded',selection=a.case,scope='Selected '+probe_name+' phase only: '+a.case+'; prepared Small valley / three ordinary NPCs. Software GL and synthetic input.'),indent=2)+'\n')

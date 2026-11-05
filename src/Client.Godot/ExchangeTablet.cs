@@ -20,7 +20,7 @@ public partial class ExchangeTablet : VBoxContainer
         {
             int page=_tabs.Count;var b=new Button{Name="ExchangePage"+page,Text=PlayerText.Local(language,pair.Item1,pair.Item2),ToggleMode=true,FocusMode=FocusModeEnum.None,SizeFlagsHorizontal=SizeFlags.ExpandFill};b.Pressed+=()=>SelectPage(page);_tabs.Add(b);nav.AddChild(b);
         }
-        Capital=new(scenario,language,capital,submit,access);Market=new(scenario,language,market,shop,submit,access);_imports=new(language,submit,scenario,access);AddChild(Capital);AddChild(Market);AddChild(_imports);SelectPage(atMarket?1:0);
+        Capital=new(scenario,language,capital,submit,access);Market=new(scenario,language,market,shop,submit,access);_imports=new(language,submit,scenario,access);AddChild(Capital);AddChild(Market);AddChild(_imports);SelectPage(atMarket?1:0);Resized+=()=>{if(Size.X>0)GameUi.FitControls(this,Size.X);};
     }
     public void SelectPage(int page)
     {

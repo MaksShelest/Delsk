@@ -7,7 +7,7 @@ public partial class FleetPanel : VBoxContainer
 {
     private sealed class Listing
     {
-        public required Control Shell;public Label Terms=GameUi.Text(),Price=GameUi.Text("",22),Why=GameUi.Hint("");public Button Buy=new();
+        public required Control Shell;public Label Terms=GameUi.Text(),Price=GameUi.Text("",22),Why=GameUi.Hint("");public Button Buy=null!;
     }
     private sealed class VehicleCard
     {
@@ -38,7 +38,7 @@ public partial class FleetPanel : VBoxContainer
         var cargo=_sections.Add("cargo",L("Груз","Cargo"));cargo.AddChild(GameUi.Intro(L("Погрузка и разгрузка","Load & unload"),L("Выберите источник, товар и получателя. Кнопки учитывают свободное место и резервы; перенос выполняется рядом с грузом.","Choose source, goods and recipient. Amounts allow for capacity and holds; transfers require you to be beside the cargo."),"truck",64));
         _transfer=new(scenario,language,"FleetTransfer",submit,access);cargo.AddChild(GameUi.Card(_transfer));
         var platforms=_sections.Add("platforms",L("Погрузка и оснащение","Platforms & equipment"));platforms.AddChild(GameUi.Hint(L("Площадки ускоряют работу с грузом у здания. Условия оплаты и материалы показаны возле действия.","Platforms improve cargo handling at buildings. Each action shows its price and materials.")));platforms.AddChild(_platforms);
-        Resized+=()=>_catalog.Columns=Size.X>=700&&GetViewportRect().Size.Y>=540?2:1;
+        Resized+=()=>_catalog.Columns=Size.X>=700?2:1;
     }
     private string L(string ru,string en)=>GameUi.L(_language,ru,en);
     private string ResourceItem(VehicleModel model)=>_view!.Fleet!.EquipmentTypes.Single(t=>t.Id==model.EquipmentTypeId).ItemId;

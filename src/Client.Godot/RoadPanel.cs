@@ -15,7 +15,7 @@ public partial class RoadPanel : VBoxContainer
     private readonly Button _start=new(){Name="RoadStart"},_stop=new(){Name="RoadStop"},_turn=new(){Name="RoadTurn"};
     private readonly SpinBox _wage=new(){Name="RoadWage",MinValue=0,MaxValue=1000,Step=.05,Value=.20};
     private readonly Button _pay=new(){Name="RoadSetWage"};
-    private readonly VBoxContainer _orders=new();
+    private readonly VBoxContainer _orders=new();private readonly List<(Button Button,GameAction Action)> _orderButtons=[];
     private bool _pending;private long _selectedState;private long[] _ids=[];private string _key="",_orderKey="";private PlayerView? _view;
     public RoadPanel(string language,Action<GameAction> submit,Func<GameAction,ActionAccess> access)
     {
@@ -82,12 +82,13 @@ public partial class RoadPanel : VBoxContainer
         _pay.Disabled=pending||work is null||!_access(new(ActionKind.SetWage,Group:new(Selected),WageMinor:(long)Math.Round(_wage.Value*100))).Allowed;
         _turn.Disabled=pending||Selected==0||!_access(new(ActionKind.TurnVehicle,VehicleId:Selected)).Allowed;
         string orderKey=string.Join(';',roads.Orders.Select(o=>$"{o.Id}/{o.Assignee}/{o.PaidTick}"));
-        if(orderKey==_orderKey)return;_orderKey=orderKey;foreach(Node n in _orders.GetChildren()){_orders.RemoveChild(n);n.QueueFree();}
+        foreach(var entry in _orderButtons){var permission=_access(entry.Action);entry.Button.Disabled=pending||!permission.Allowed;entry.Button.TooltipText=permission.Allowed?"":GameUi.Reason(_language,permission.ReasonCode);}
+        if(orderKey==_orderKey)return;_orderButtons.Clear();_orderKey=orderKey;foreach(Node n in _orders.GetChildren()){_orders.RemoveChild(n);n.QueueFree();}
         foreach(var order in roads.Orders.Where(o=>o.PaidTick==0).Take(3))
         {
             var line=new VBoxContainer();line.AddChild(Wrap(L("Городской маршрут: ","City route: ")+$"{order.Cell.X},{order.Cell.Z} · {order.Level} · {order.Reward/100m}"+L(" монет"," coins")));
             var accept=new Button{Text=order.Assignee==0?L("Принять задание","Accept task"):L("Задание принято","Task accepted"),Disabled=order.Assignee!=0};
-            accept.Pressed+=()=>Submit(new(ActionKind.AcceptRoadOrder,OfferId:order.Id));line.AddChild(accept);_orders.AddChild(line);
+            var action=new GameAction(ActionKind.AcceptRoadOrder,OfferId:order.Id);var permission=_access(action);accept.Disabled=pending||!permission.Allowed;line.AddChild(GameUi.Hint(permission.Allowed?L("Награда выплачивается за готовое покрытие.","The reward is paid for completed road surface."):GameUi.Reason(_language,permission.ReasonCode)));_orderButtons.Add((accept,action));accept.Pressed+=()=>Submit(action);line.AddChild(accept);_orders.AddChild(line);
         }
     }
 }

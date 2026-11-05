@@ -35,8 +35,8 @@ public static class CompactTabletDesign
     {var panel=new PanelContainer{SizeFlagsHorizontal=Control.SizeFlags.ExpandFill};panel.AddThemeStyleboxOverride("panel",Surface("ffffff",10));panel.AddChild(content);return panel;}
     public static Button Button(string name,string text,Action action)
     {
-        var button=new Button{Name=name,Text=text,CustomMinimumSize=new(40,40),SizeFlagsHorizontal=Control.SizeFlags.ShrinkBegin};
-        button.Pressed+=()=>{if(!button.Disabled)action();};return button;
+        var button=new Button{Text=text,CustomMinimumSize=new(40,40),SizeFlagsHorizontal=Control.SizeFlags.ShrinkBegin};
+        if(!string.IsNullOrWhiteSpace(name))button.Name=name;button.Pressed+=()=>{if(!button.Disabled)action();};return button;
     }
     /// <summary>Content-sized controls inside player pages, including reused legacy pages.</summary>
     public static void FitControls(Node root,float availableWidth)

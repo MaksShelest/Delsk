@@ -75,5 +75,5 @@ public static class TabletDesign
 public partial class TabletColumns : BoxContainer
 {
     public float Breakpoint {get;set;}=850;
-    public TabletColumns(){SizeFlagsHorizontal=SizeFlags.ExpandFill;Resized+=()=>Vertical=Size.X<Breakpoint||GetViewportRect().Size.Y<540;}
+    public TabletColumns(){SizeFlagsHorizontal=SizeFlags.ExpandFill;Resized+=()=>{Vertical=Size.X<Breakpoint;AddThemeConstantOverride("separation",GetViewportRect().Size.Y<540?3:8);};}
 }

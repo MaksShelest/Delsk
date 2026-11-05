@@ -31,7 +31,7 @@ public partial class PlayerTablet : VBoxContainer
     private readonly VBoxContainer _overview=new(),_cardHost=new(),_holdings=new();
     private readonly Button _back=new();
     private int _holdingOffset;private readonly Button _previousHoldings=new(){Name="HoldingsPrevious"},_nextHoldings=new(){Name="HoldingsNext"};private readonly Label _holdingPage=new();
-    private readonly Label _empty=Wrapped(),_participants=Wrapped(),_city=Wrapped(),_labor=Wrapped();
+    private readonly Label _empty=Wrapped(),_city=Wrapped(),_labor=Wrapped();
     private readonly UiMetric _cityPopulation,_cityEmployment,_cityValue;private readonly Dictionary<long,(Control Card,Label Body)> _participantCards=[];private readonly VBoxContainer _participantList=new();
     private readonly Label _capital=TabletDesign.Heading("",27),_employed=TabletDesign.Heading("",27),_room=TabletDesign.Heading("",27);
     private readonly CurrentDealsPanel _deals;
@@ -117,7 +117,7 @@ public partial class PlayerTablet : VBoxContainer
         var city=Page("city");city.AddChild(GameUi.Intro(L("Наш город","Our city"),L("Развитие складывается из общей работы. Население, занятость и результаты поставок обновляются вместе с миром.","Shared work develops the city. Population, employment and delivery results update with the world."),"city",64));var cityMetrics=new TabletColumns{Breakpoint=600};_cityPopulation=new(L("Население","Population"));_cityEmployment=new(L("Занятые","Employed"));_cityValue=new(L("Капитал города","City capital"));foreach(var metric in new[]{_cityPopulation,_cityEmployment,_cityValue})cityMetrics.AddChild(GameUi.Card(metric));city.AddChild(cityMetrics);var cityPages=new UiSections("CityNav_");city.AddChild(cityPages);cityPages.Add("politics",L("Политика","Politics")).AddChild(PoliticsHost);cityPages.Add("labor",L("Рынок труда","Labour market")).AddChild(GameUi.Card(_labor));cityPages.Add("development",L("Развитие города","City development")).AddChild(GameUi.Card(_city));
         Resized+=LayoutNavigation;Ready+=LayoutNavigation;OpenSection("overview");TabletDesign.CompactInputs(this);
     }
-    private void LayoutNavigation(){bool narrow=Size.X<700||GetViewportRect().Size.Y<540;_navScroll.Visible=!narrow;_mobile.Visible=narrow;GameUi.FitControls(_tabs,Size.X-(narrow?36:274));}
+    private void LayoutNavigation(){_back.Visible=_cardObject is not null&&GetViewportRect().Size.Y>=540;bool narrow=Size.X<700||GetViewportRect().Size.Y<540;_navScroll.Visible=!narrow;_mobile.Visible=narrow;GameUi.FitControls(_tabs,Size.X-(narrow?36:274));}
     private VBoxContainer Page(string key)
     {
         if(_pages.TryGetValue(key,out int index))return (VBoxContainer)_tabs.GetChild<ScrollContainer>(index).GetChild(0);
@@ -223,7 +223,7 @@ public partial class PlayerTablet : VBoxContainer
             if(_fleet is not null)fleet.AddChild(CompactTabletDesign.Button("OverviewOpenFleet",L("Автопарк","Fleet"),()=>OpenSection("fleet")));
         }
         if(_summaryFleet is not null)_summaryFleet.Text=L("Машин: ","Vehicles: ")+(view.Fleet?.Vehicles.Length??0)+L(" · добывающих: "," · extractors: ")+(view.Equipment?.Length??0)+"\n"+
-            string.Join("\n",(view.Fleet?.Vehicles??[]).Take(2).Select(v=>v.Model.Name+" #"+v.Vehicle.Id));
+            string.Join("\n",(view.Fleet?.Vehicles??[]).Take(2).Select(v=>(v.Model.EquipmentTypeId is null?v.Model.Name:L("Добыча: ","Extract: ")+PlayerText.Item(_language,view.Fleet!.EquipmentTypes.Single(t=>t.Id==v.Model.EquipmentTypeId).ItemId))+" #"+v.Vehicle.Id));
         _roads?.ShowData(view,pending,paused);_fleet?.ShowData(view,pending);_development.ShowData(view,pending);_card?.ShowData(view,pending,paused);_groundCard?.ShowData(view,pending);_deals.ShowData(view,pending);_negotiations.ShowData(view,pending);_pickups.ShowData(view,pending);_purchases.ShowData(view,pending);
         _cityPopulation.Value.Text=city.Population.ToString();_cityEmployment.Value.Text=city.Employed+" / "+city.Population;_cityValue.Value.Text=PlayerText.Money(city.CapitalMinor);
         var ranked=city.Participants.OrderByDescending(p=>p.CapitalMinor).ThenBy(p=>p.Actor.Value).ToArray();
