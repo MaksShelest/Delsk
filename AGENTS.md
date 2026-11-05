@@ -1,3 +1,20 @@
+## I5,05.11.2026 — контекстные действия
+
+- Явное задание I5 разрешает ветку feat/vnext-i5-context-actions от слитого
+  I4/PR82, 2e309350. PR в feat/economic-cycle-p00-p05, без auto merge. I6–I8 не начинать.
+- ContextActions/ContextSelection — read-only presenter и несохраняемое UI-состояние.
+  ContextActionsPanel сохраняет Control по ключам; обычный Refresh не уничтожает
+  открытый список. Отправка перепроверяет scope/key/payload и pending.
+- Все команды проходят обычный PlayerDesk/Core. Core, баланс, физика, NPC и
+  schemas не меняются. SetTravelHeading остаётся отдельным travel-input путём;
+  Developer APIs не добавлять в ActionKind или обычный клиент.
+- Дополнительный список имеет непустые группы, видимые причины, защитный shield,
+  mouse/keyboard/touch и safe-area bounds. Клавиши сфокусированного контекстного
+  Control не должны повторно попадать в глобальный ConfirmContext.
+- Матрица всех 96 ActionKind, причины/ограничения и фактические gates —
+  docs/IMPLEMENTATION_REPORT_I5.md и verification/context-i5. Native probe
+  изолирован и запрещён ordinary AssemblyAudit. Ready только после mandatory CI.
+
 ## I3,04.11.2026 — дорожные работы обычного игрока
 
 - Явное задание I3 разрешает работу поверх PR80/a9d7a078, ветка
