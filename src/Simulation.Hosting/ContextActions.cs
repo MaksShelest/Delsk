@@ -1,0 +1,147 @@
+using Simulation.Core;
+
+namespace Simulation.Hosting;
+
+/// <summary>Read-only client actions. AccessFor is the same participant-safe query used by NPCs.</summary>
+public static class ContextActions
+{
+    public static string Scope(PlayerView v) => v.Participant.Id.Value+":"+v.Participant.Position+":"+
+        string.Join(',',v.Buildings.Where(b=>b.Footprint.Contains(v.Participant.Position)).Select(b=>"b"+b.Id.Value)
+        .Concat((v.Equipment??[]).Where(e=>e.Position==v.Participant.Position).Select(e=>"e"+e.Id.Value))
+        .Concat((v.Fleet?.Vehicles??[]).Where(e=>e.Position==v.Participant.Position).Select(e=>"v"+e.Vehicle.Id)));
+
+    public static ContextChoice[] Read(SimulationEngine engine,ParticipantId actor,ScenarioDefinition scenario,string language)
+    {
+        var v=PlayerDesk.Read(engine,actor);var cell=v.Participant.Position;
+        string L(string ru,string en)=>PlayerText.Local(language,ru,en);
+        var choices=PlayContext.At(v,scenario,language,true).Where(c=>!c.Key.StartsWith("resource:info:",StringComparison.Ordinal)).ToList();
+        choices.RemoveAll(c=>c.Command?.Kind==ActionKind.BoardVehicle&&(v.Equipment??[]).Any(e=>e.Id.Value==c.Command.VehicleId&&e.Deployed==true));
+        for(int n=0;n<choices.Count;n++)
+        {
+            var c=choices[n];
+            if(c.Command?.Kind==ActionKind.StartHarvesting&&c.Command.Equipment.Value==0)
+                choices[n]=c with{Label=L("Добывать: ","Harvest: ")+PlayerText.Item(language,c.Command.ItemId)};
+            if(c.Key.StartsWith("vehicle:",StringComparison.Ordinal)&&v.Fleet?.Vehicles.FirstOrDefault(e=>"vehicle:"+e.Vehicle.Id==c.Key) is {} vehicle&&vehicle.Model.EquipmentTypeId is {} type)
+                choices[n]=c with{Label=L("Техника: ","Equipment: ")+PlayerText.Item(language,scenario.EquipmentTypes!.Single(e=>e.Id==type).ItemId)+" · "+(vehicle.Vehicle.Driver==0?L("сесть","board"):L("выйти","leave"))};
+        }
+        void Add(string key,string text,GameAction action)=>choices.Add(new(key,text,action));
+        void Link(string section,string ru,string en)=>choices.Add(new("section:"+section,L(ru,en),null));
+        foreach(var e in (v.Equipment??[]).Where(e=>e.Position==cell&&e.Deployed is not null))
+        {
+            var type=scenario.EquipmentTypes!.Single(t=>t.Id==e.TypeId);var level=type.Levels.Single(l=>l.Level==e.Level);
+            if(e.Deployed==true)
+            {
+                if(e.Mode!=EquipmentMode.Off||e.PersonalJobId!=0)
+                    Add("machine:stop:"+e.Id.Value,L("Остановить технику","Stop equipment"),new(ActionKind.SetEquipmentMode,Equipment:e.Id,Mode:EquipmentMode.Off));
+                else
+                {
+                    Add("machine:start:"+e.Id.Value,L("Начать добычу","Start mining"),new(ActionKind.StartHarvesting,Equipment:e.Id,ItemId:type.ItemId,Quantity:level.CycleQuantity));
+                    Add("machine:auto:"+e.Id.Value,L("Автоматическая добыча","Automatic extraction"),new(ActionKind.SetEquipmentMode,Equipment:e.Id,Mode:EquipmentMode.Automatic));
+                }
+                Add("machine:pack:"+e.Id.Value,L("Забрать технику","Pick up equipment"),new(ActionKind.PackEquipment,Equipment:e.Id));
+            }
+            else Add("machine:place:"+e.Id.Value,L("Разместить технику","Place equipment"),new(ActionKind.PlaceEquipment,Equipment:e.Id));
+        }
+        // Every owned local inventory, including vehicle cargo and production input/output.
+        // Equipment and its Fleet body share one inventory, so this enumeration cannot duplicate cargo.
+        var pack=v.Inventories.Single(i=>i.Id==v.Participant.InventoryId);
+        var building=v.Buildings.FirstOrDefault(b=>b.Footprint.Contains(cell));
+        foreach(var inventory in v.Inventories.Where(i=>i.Id!=pack.Id&&i.Position==cell&&i.OwnerId==actor))
+        {
+            if(building?.Kind is BuildingKind.Warehouse or BuildingKind.Shop && inventory.Id==building.InputId)continue;
+            string title=InventoryName(v,inventory.Id,language);
+            foreach(var item in pack.Stock.Where(s=>s.Quantity>s.Reserved))
+                Add($"inventory:{pack.Id.Value}:{inventory.Id.Value}:{item.ItemId}",L("Выложить ","Store ")+PlayerText.Item(language,item.ItemId)+" → "+title,PlayerDesk.Transfer(pack.Id.Value,inventory.Id.Value,item.ItemId,1));
+            foreach(var item in inventory.Stock.Where(s=>s.Quantity>s.Reserved))
+                Add($"inventory:{inventory.Id.Value}:{pack.Id.Value}:{item.ItemId}",L("Забрать ","Take ")+PlayerText.Item(language,item.ItemId)+" ← "+title,PlayerDesk.Transfer(inventory.Id.Value,pack.Id.Value,item.ItemId,1));
+        }
+        Link("holdings","Хозяйство и персонал","Holdings and workers");
+        if(v.Fleet is not null)Link("fleet","Транспорт и автосалон","Fleet and dealer");
+        if(v.Services is not null)Link("services","Доставка и договоры","Delivery and contracts");
+        if(v.Roads is not null)Link("roads","Дороги и заказы","Roads and orders");
+        if(v.Development is not null)Link("quests","Развитие и задания","Development and quests");
+        if(v.PersonalAccount is not null)Link("account","Личный счёт","Personal account");
+        if(v.Market is not null)Link("purchases","Покупки и обязательства","Purchases and commitments");
+        return choices.Select(c=>
+        {
+            if(c.Command is not {} a)return c;
+            var access=engine.AccessFor(actor,a);
+            if(!access.Allowed)return c with{Enabled=false,Details=PlayerText.Reason(language,access.ReasonCode)};
+            if(a.Kind==ActionKind.Transfer)
+            {
+                var dest=v.Inventories.FirstOrDefault(i=>i.Id==a.Destination);
+                if(dest is not null&&dest.OccupiedVolume+dest.ReservedCapacity+scenario.Items.Single(i=>i.Id==a.ItemId).UnitVolume>dest.Capacity)
+                    return c with{Enabled=false,Details=PlayerText.Reason(language,"NoCapacity")};
+            }
+            if(v.Participant.Busy&&a.Kind is not (ActionKind.StopHarvest or ActionKind.StopTransfer or ActionKind.SetEquipmentMode))
+                return c with{Enabled=false,Details=PlayerText.Reason(language,"ParticipantBusy")};
+            if(!c.Enabled&&c.Details.Length==0)return c with{Details=PlayerText.Reason(language,a.Kind is ActionKind.BuyResource or ActionKind.LeaseResource?"NoMoney":"NotAvailable")};
+            return c;
+        }).OrderBy(Priority).ThenBy(c=>c.Key,StringComparer.Ordinal).ToArray();
+    }
+
+    private static string InventoryName(PlayerView v,InventoryId id,string language)
+    {
+        string L(string ru,string en)=>PlayerText.Local(language,ru,en);
+        if(v.Fleet?.Vehicles.Any(e=>e.Vehicle.CargoInventory==id)==true)return L("кузов","cargo");
+        if(v.Buildings.Any(b=>b.OutputId==id))return L("выпуск","output");
+        if(v.Buildings.Any(b=>b.InputId==id))return L("вход","input");
+        if(v.Equipment?.Any(e=>e.StorageId==id)==true)return L("техника","equipment");
+        return L("запас #","stock #")+id.Value;
+    }
+    public static int Priority(ContextChoice c)=>c.Command?.Kind switch
+    {
+        ActionKind.StopHarvest or ActionKind.StopTransfer=>0,
+        ActionKind.SetEquipmentMode when c.Command.Mode==EquipmentMode.Off=>1,
+        ActionKind.StartHarvesting when c.Command.Equipment.Value!=0=>5,
+        ActionKind.BoardVehicle or ActionKind.LeaveVehicle=>10,
+        ActionKind.PlaceEquipment=>12,ActionKind.PackEquipment=>14,
+        ActionKind.StartHarvesting or ActionKind.Harvest=>15,
+        _=>c.Key.StartsWith("road-work:",StringComparison.Ordinal)?3:c.Key.StartsWith("object:",StringComparison.Ordinal)||c.Key.StartsWith("card:",StringComparison.Ordinal)?20:c.Command?.Kind==ActionKind.Transfer?30:c.Key.StartsWith("section:",StringComparison.Ordinal)?90:40
+    };
+    public static string ResultText(string language,CommandResult? result)=>result is null?PlayerText.Get(language,"command.sent"):result.Status==ResultStatus.Rejected?PlayerText.Reason(language,result.ReasonCode):PlayerText.Get(language,"command.done");
+    public static string Group(ContextChoice c)=>c.Command?.Kind switch
+    {
+        ActionKind.BoardVehicle or ActionKind.LeaveVehicle or ActionKind.TurnVehicle=>"transport",
+        ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.StopHarvest or ActionKind.Transfer or ActionKind.StopTransfer or ActionKind.PlaceEquipment or ActionKind.PackEquipment or ActionKind.SetEquipmentMode or ActionKind.BuyResource or ActionKind.LeaseResource=>"resources",
+        ActionKind.Build or ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.CancelPlotReservation=>"production",
+        ActionKind.SellAvailableToCapital=>"trade",
+        _=>c.Key.StartsWith("section:",StringComparison.Ordinal)?"management":c.Key.StartsWith("market:",StringComparison.Ordinal)||c.Key=="exchange"?"trade":c.Key.StartsWith("road-work:",StringComparison.Ordinal)||c.Key.StartsWith("card:",StringComparison.Ordinal)?"production":c.Key=="dealership"?"transport":"interaction"
+    };
+    public static string GroupName(string key,string language)=>key switch
+    {
+        "transport"=>PlayerText.Local(language,"Транспорт","Transport"),"resources"=>PlayerText.Local(language,"Ресурсы и хранение","Resources and storage"),
+        "production"=>PlayerText.Local(language,"Производство и строительство","Production and construction"),"trade"=>PlayerText.Local(language,"Торговля и договоры","Trade and contracts"),
+        "management"=>PlayerText.Local(language,"Управление","Management"),_=>PlayerText.Local(language,"Взаимодействие","Interaction")
+    };
+}
+
+/// <summary>Ephemeral selection, never serialized into the game. No numeric popup IDs.</summary>
+public sealed class ContextSelection
+{
+    public string Scope {get;private set;}="";
+    public string SelectedKey {get;private set;}="";
+    public bool Expanded {get;set;}
+    public bool Pending {get;set;}
+    public ContextChoice[] Choices {get;private set;}=[];
+    public void Update(string scope,ContextChoice[] choices)
+    {
+        if(scope!=Scope){Scope=scope;Expanded=false;SelectedKey="";}
+        Choices=choices;
+        if(!choices.Any(c=>c.Key==SelectedKey))SelectedKey=choices.FirstOrDefault()?.Key??"";
+    }
+    public void Select(string key){if(Choices.Any(c=>c.Key==key))SelectedKey=key;}
+    public void Cycle(int delta)
+    {if(Choices.Length>0)SelectedKey=Choices[(Array.FindIndex(Choices,c=>c.Key==SelectedKey)+delta+Choices.Length)%Choices.Length].Key;}
+    public bool TryChoose(ContextChoice pressed,out ContextChoice? current)
+    {
+        current=Choices.FirstOrDefault(c=>c.Key==pressed.Key);
+        if(current is not {Enabled:true}||Pending&&current.Command is not null||current.Command!=pressed.Command)return false;
+        SelectedKey=current.Key;if(current.Command is not null)Pending=true;return true;
+    }
+    public string[] PrimaryKeys()
+    {
+        var local=Choices.Where(c=>ContextActions.Priority(c)<80).Take(3).Select(c=>c.Key).ToArray();
+        return local.Length>0?local:Choices.Take(1).Select(c=>c.Key).ToArray();
+    }
+}
