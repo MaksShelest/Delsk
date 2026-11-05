@@ -111,6 +111,20 @@ public partial class I5ContextProbe : Control
             Check(Field<TabletState>(_app,"_tabletState").Kind==TabletKind.Player&&Field<PlayerTablet>(_app,"_playerTablet").HelpTopic=="services","last row opens exactly delivery rather than its neighbour");
             Check(_session.CommandTape.Length==tape,"navigation sends no economic command");Check(!Panel.Expanded,"incompatible tablet deliberately closes additional panel");
             await Click("TabletClose");await Click("ContextMore");
+            if(_mode=="touch")
+            {
+                // A real drag interrupted by OS focus loss must not leave mouse input suppressed.
+                var start=scroll.GetGlobalRect().GetCenter();
+                Input.ParseInputEvent(new InputEventScreenTouch{WindowId=window,Index=0,Position=start,Pressed=true});await Frames(1);
+                Input.ParseInputEvent(new InputEventScreenDrag{WindowId=window,Index=0,Position=start-new Vector2(0,30),Relative=new(0,-30)});await Frames(1);
+                _app.Notification((int)NotificationApplicationFocusOut);await Frames();
+                Check(!Panel.Expanded,"focus loss deliberately closes an interrupted touch gesture");
+                Input.ParseInputEvent(new InputEventScreenTouch{WindowId=window,Index=0,Position=start-new Vector2(0,30),Pressed=false});await Frames();
+                _app.Notification((int)NotificationApplicationFocusIn);await Frames();
+                _mode="mouse";await Click("ContextMore");await Click(ContextActionsPanel.ButtonName(last.Key));
+                Check(Field<TabletState>(_app,"_tabletState").Kind==TabletKind.Player&&Field<PlayerTablet>(_app,"_playerTablet").HelpTopic=="services","mouse activation recovers after interrupted touch and focus return");
+                await Click("TabletClose");_mode="touch";await Click("ContextMore");
+            }
             tape=_session.CommandTape.Length;long tick=_session.Engine.Tick;
             await Click(ContextActionsPanel.ButtonName("machine:place:"+id));
             Check(_session.CommandTape.Length==tape+1&&_session.Engine.Tick==tick,"one native click queues exactly one command without ticking");

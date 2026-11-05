@@ -33,7 +33,7 @@ public partial class ContextActionsPanel : PanelContainer
     public void SetExpanded(bool value)
     {
         if(Selection.Expanded==value)return;
-        Selection.Expanded=value;_scroll.Visible=value;if(!value)_touchIndex=-1;LayoutRows();ExpansionChanged?.Invoke(value);
+        Selection.Expanded=value;_scroll.Visible=value;if(!value){_touchIndex=-1;_touchDragged=false;}LayoutRows();ExpansionChanged?.Invoke(value);
     }
     public override void _Input(InputEvent @event)
     {
@@ -63,7 +63,7 @@ public partial class ContextActionsPanel : PanelContainer
     public void ShowData(string scope,ContextChoice[] choices,string language,bool pending,string status,float top)
     {
         bool was=Expanded;_language=language;Selection.Update(scope,choices);Selection.Pending=pending;
-        if(was!=Expanded)ExpansionChanged?.Invoke(Expanded);
+        if(was!=Expanded){_touchIndex=-1;_touchDragged=false;ExpansionChanged?.Invoke(Expanded);}
         var primary=Selection.PrimaryKeys();
         foreach(string key in _rows.Keys.Except(choices.Select(c=>c.Key)).ToArray())
         {var row=_rows[key].Row;row.GetParent()?.RemoveChild(row);row.QueueFree();_rows.Remove(key);}

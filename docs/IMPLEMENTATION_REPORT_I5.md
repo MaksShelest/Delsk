@@ -44,6 +44,10 @@ Shield сохраняется до отпускания, затем закрыв
 wheel-down не имело paired release и удерживало GUI mouse-focus mask на старом
 Control. Добавлен настоящий цикл press/release; отсутствие ButtonDown последней
 строки сохранено в исходной диагностике. Это не приписывается дефекту продукта.
+Заключительный просмотр выявил необходимость сбрасывать незавершённый drag
+при закрытии панели/смене scope: иначе после focus-out мог сохраниться запрет
+mouse activation. Добавлен сброс и нативный сценарий «touch drag → OS focus-out →
+focus-in → mouse selection». Он не меняет игровые команды или pause rules.
 
 ## Реализация
 
@@ -138,7 +142,11 @@ Core-команда, pending/double press, положение/границы, с
 frozen source/DLL hashes и исходные отказы публикуются в
 [local-checks.json](verification/context-i5/local-checks.json).
 
-Полный итоговый локальный native gate `i5-native-acceptance` завершён успешно.
+Полный локальный native gate `i5-native-acceptance` завершён успешно до
+заключительного исправления отмены drag. После него отдельно проверен полный
+RU360-сценарий с прерыванием жеста:
+[focus-cancel-check.json](verification/context-i5/focus-cancel-check.json).
+Обязательный GitHub native gate повторяет все шесть случаев на финальном HEAD.
 В каждом из шести случаев проходят реальная прокрутка до последней строки,
 выбор последнего стабильного ключа после тиков, дополнительная команда режима
 техники и блокировка повторной транзакции. Исходные product failures и отдельная
