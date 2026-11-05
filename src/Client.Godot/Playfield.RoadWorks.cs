@@ -11,6 +11,7 @@ public partial class Playfield
     private void OpenRoadWork(long vehicle)
     {
         if(_surface!=Surface.Play||_playChrome is null)return;
+        CloseContextActions();
         if(_tabletState.IsOpen)CloseTablet();
         CloseRoadWork();StopHeading();_waitRelease=true;
         _roadWorkVehicle=vehicle;_roadWorkCommand=null;

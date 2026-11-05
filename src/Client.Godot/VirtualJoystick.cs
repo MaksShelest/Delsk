@@ -6,6 +6,9 @@ public partial class VirtualJoystick : Control
 {
     private readonly TravelStick _stick=new();
     private Vector2 _point;
+    private float _bottom=156;
+    public void AvoidBottom(float height){_bottom=Math.Max(156,height+24);ApplyInsets();}
+    private void ApplyInsets(){var safe=UiSafeArea.Read(this);OffsetLeft=20+(float)safe.Left;OffsetRight=164+(float)safe.Left;OffsetTop=-_bottom-144-(float)safe.Bottom;OffsetBottom=-_bottom-(float)safe.Bottom;}
     private int _finger=-1;
     public TravelHeading Heading=>_stick.Heading;
     public bool Held=>_finger!=-1;
@@ -14,9 +17,7 @@ public partial class VirtualJoystick : Control
     {
         Name="TravelJoystick";CustomMinimumSize=new(144,144);MouseFilter=MouseFilterEnum.Stop;
         SetAnchorsAndOffsetsPreset(LayoutPreset.BottomLeft);OffsetLeft=20;OffsetTop=-300;OffsetRight=164;OffsetBottom=-156;ZIndex=20;
-        UiSafeArea.Track(this,()=>{var safe=UiSafeArea.Read(this);
-            OffsetLeft=20+(float)safe.Left;OffsetRight=164+(float)safe.Left;
-            OffsetTop=-300-(float)safe.Bottom;OffsetBottom=-156-(float)safe.Bottom;});
+        UiSafeArea.Track(this,ApplyInsets);
     }
     public void Clear(){_finger=-1;_point=Vector2.Zero;_stick.Clear();QueueRedraw();}
     private void Sample(Vector2 at)

@@ -28,7 +28,7 @@ public partial class TabletPanel : PanelContainer
         help.Pressed+=()=>HelpRequested?.Invoke();header.AddChild(help);
         var close=new Button{Name="TabletClose",Text="×",TooltipText=L("Закрыть","Close"),FocusMode=FocusModeEnum.None,CustomMinimumSize=new(44,44)};
         close.Pressed+=()=>Closed?.Invoke();header.AddChild(close);column.AddChild(new HSeparator());
-        var scroll=new ScrollContainer{Name="TabletScroll",SizeFlagsVertical=SizeFlags.ExpandFill,HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};column.AddChild(scroll);
+        var scroll=new ScrollContainer{Name="TabletScroll",SizeFlagsVertical=SizeFlags.ExpandFill,HorizontalScrollMode=ScrollContainer.ScrollMode.Auto};column.AddChild(scroll);
         Body=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};scroll.AddChild(Body);
         _status=new Label{Name="TabletFeedback",AutowrapMode=TextServer.AutowrapMode.WordSmart,MaxLinesVisible=3};column.AddChild(_status);
         column.AddChild(new HSeparator());var footer=new TabletColumns{Breakpoint=560};column.AddChild(footer);var clockRow=new HBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};footer.AddChild(clockRow);clockRow.AddChild(TabletDesign.Art("clock",new(26,26)));

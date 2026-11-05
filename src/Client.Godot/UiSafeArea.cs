@@ -10,7 +10,13 @@ public static class UiSafeArea
     }
     public static void Track(Control control,Action apply)
     {
-        void Bind(){var viewport=control.GetViewport();viewport.SizeChanged+=apply;control.TreeExiting+=()=>viewport.SizeChanged-=apply;apply();}
+        void Bind()
+        {
+            var viewport=control.GetViewport();
+            // Each control owns a distinct callable, even when several lifetimes use the same method.
+            void Apply(){if(GodotObject.IsInstanceValid(control)&&control.IsInsideTree())apply();}
+            viewport.SizeChanged+=Apply;control.TreeExiting+=()=>viewport.SizeChanged-=Apply;Apply();
+        }
         if(control.IsInsideTree())Bind();else control.Ready+=Bind;
     }
     public static void Panel(Control panel,float top=66,float bottom=18,float margin=12,float wideMargin=64)

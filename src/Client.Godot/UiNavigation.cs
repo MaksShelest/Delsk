@@ -2,6 +2,18 @@ using Godot;
 
 public static class UiNavigation
 {
+    public static async void RevealStart(Control target)
+    {
+        Reveal(target);
+        await target.ToSignal(target.GetTree(),SceneTree.SignalName.ProcessFrame);
+        if(!GodotObject.IsInstanceValid(target)||!target.IsInsideTree())return;
+        for(Node? node=target.GetParent();node is not null;node=node.GetParent())
+            if(node is ScrollContainer scroll)
+            {
+                int offset=(int)Math.Round(target.GlobalPosition.Y-scroll.GlobalPosition.Y);
+                scroll.ScrollVertical=Math.Max(0,scroll.ScrollVertical+offset);
+            }
+    }
     public static Action KeepFocus(Control root)
     {
         var focus=root.GetViewport().GuiGetFocusOwner();
