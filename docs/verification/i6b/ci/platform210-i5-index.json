@@ -1,0 +1,27 @@
+{
+  "run": 42116436218,
+  "job": 127557211612,
+  "head": "cb39f35681fc8b783194dc0b55ecb32bed5e78b1",
+  "url": "https://github.com/MaksShelest/Delsk/actions/runs/42116436218",
+  "status": "failure",
+  "assertion": "panel fits the real viewport",
+  "localReproduction": {
+    "panel": [
+      12,
+      178,
+      336,
+      645
+    ],
+    "dock": [
+      12,
+      178,
+      336,
+      618
+    ],
+    "viewport": [
+      360,
+      800
+    ]
+  },
+  "logSha256": "f4190da64158dc5f4823226611528c0d02b89e054f8d1bde93e7658eae6e1745"
+}

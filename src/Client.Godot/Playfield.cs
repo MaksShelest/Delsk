@@ -434,6 +434,7 @@ public partial class Playfield : Control
 
     private void FillContext(VBoxContainer host)
     {
+        _harvestBars.Clear();
         foreach (Node child in host.GetChildren()) child.QueueFree();
         _contextFirst = Math.Clamp(_contextIndex - 1, 0, Math.Max(0, _choices.Length - 3));
         for (int i = _contextFirst; i < Math.Min(_choices.Length, _contextFirst + 3); i++)
@@ -567,7 +568,7 @@ public partial class Playfield : Control
             _cardsSignature = signature;
             FillCards(view, _cards);
             if (_tabletPolitics is not null)
-            { foreach (Node child in _tabletPolitics.GetChildren()) child.QueueFree(); FillPolitics(view,_tabletPolitics); }
+            { FillPolitics(view,_tabletPolitics); }
         }
         RefreshTablet(view);
     }
@@ -644,27 +645,7 @@ public partial class Playfield : Control
 
     private void FillPolitics(PlayerView view,Container host)
     {
-        host.AddChild(new Label { Text = T("support.title") });
-        if (view.Support.Proposals.Length == 0) host.AddChild(new Label { Text = T("support.none") });
-        foreach (var proposal in view.Support.Proposals)
-        {
-            var row = new HBoxContainer();
-            host.AddChild(row);
-            string terms = string.Join(", ", proposal.Compensation.Select(m => $"{m.Quantity} {m.ItemId}"));
-            row.AddChild(new Label { Text = $"#{proposal.Id} {proposal.Status} {proposal.Candidate.Value}->{proposal.Seller.Value} {terms}" });
-            if (proposal.Seller == _human && proposal.Status == SupportProposalStatus.Proposed)
-                Button(row, "support.accept", () => Offer(PlayerDesk.AcceptSupport(proposal.Id)));
-            if (proposal.Status is SupportProposalStatus.Proposed or SupportProposalStatus.AcceptedAwaitingResources)
-                Button(row, "support.reject", () => Offer(PlayerDesk.RejectSupport(proposal.Id)));
-        }
-        if (view.Elections.NextElectionId is { } election)
-        {
-            host.AddChild(new Label { Text = $"{T("vote.title")} #{election.Value}  {view.Elections.OwnChoice?.Value.ToString() ?? T("no")}" });
-            var votes = new VBoxContainer();
-            host.AddChild(votes);
-            foreach (var candidate in view.Elections.Participants.Where(p => p != _human))
-                Button(votes, "vote.choose", () => Offer(PlayerDesk.Vote(election.Value, candidate.Value)), candidate.Value.ToString(CultureInfo.InvariantCulture));
-        }
+        var panel=host.GetChildren().OfType<CityPoliticsPanel>().FirstOrDefault();if(panel is null){panel=new(_language,action=>Offer(action));host.AddChild(panel);}panel.ShowData(view,WaitingCommand);
     }
 
     private void WageRow(Container parent, EmploymentView group)
@@ -841,7 +822,7 @@ public partial class Playfield : Control
         column.AddChild(_cards);
         _cardsSignature = "";
 
-        _menu = new ColorRect { Color = new Color(0.15f, 0.20f, 0.23f, 0.97f), MouseFilter = MouseFilterEnum.Stop };
+        _menu = new ColorRect { Theme=TabletDesign.Theme,Color = new Color("edf1eb"), MouseFilter = MouseFilterEnum.Stop };
         _menu.SetAnchorsPreset(LayoutPreset.FullRect);
         AddChild(_menu);
         var menuScroll=new ScrollContainer{HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};menuScroll.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);_menu.AddChild(menuScroll);
@@ -849,7 +830,7 @@ public partial class Playfield : Control
         var box = new VBoxContainer { SizeFlagsHorizontal=SizeFlags.ExpandFill };center.AddChild(box);
         box.AddChild(new Label { Text = T("menu.title") + " · " + PlayMaps.Name(_mapKey, _language), HorizontalAlignment = HorizontalAlignment.Center,AutowrapMode=TextServer.AutowrapMode.WordSmart });
         box.AddChild(new Label { Text = T("menu.escape"), AutowrapMode = TextServer.AutowrapMode.WordSmart });
-        Button(box, "menu.continue", ContinueGame);
+        Button(box, "menu.continue", ContinueGame);GameUi.Primary(box.GetChildren().OfType<Button>().Last());
 #if DEBUG
         Button(box, "menu.debug", OpenDebug);
 #endif
@@ -865,7 +846,7 @@ public partial class Playfield : Control
         display.Pressed += ToggleFullscreen; box.AddChild(display);
         var handbook = new Button { Text = L("Справка", "Help"), FocusMode = FocusModeEnum.None };
         handbook.Pressed += () => OpenHelp(); box.AddChild(handbook);
-        Button(box, "menu.exit", ExitGame);
+        Button(box, "menu.exit", ExitGame);GameUi.FitControls(box,440);
         RebuildTablet();
         ApplySurface();
     }

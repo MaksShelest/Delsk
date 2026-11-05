@@ -20,12 +20,12 @@ public partial class ContextActionsPanel : PanelContainer
     private readonly Dictionary<string,VBoxContainer> _groups=[];
     private string _language="en";
     private int _touchIndex=-1,_touchScroll;
-    private Vector2 _touchOrigin;
+    private Vector2 _touchOrigin;private float _heightTop;private bool _fittingHeight;
     private bool _touchDragged;
     public ContextActionsPanel()
     {
-        Name="ContextActions";MouseFilter=MouseFilterEnum.Stop;
-        AddThemeStyleboxOverride("panel",new StyleBoxFlat{BgColor=new Color("243a3e"),ContentMarginLeft=10,ContentMarginRight=10,ContentMarginTop=8,ContentMarginBottom=8,CornerRadiusTopLeft=10,CornerRadiusTopRight=10,CornerRadiusBottomLeft=10,CornerRadiusBottomRight=10});
+        Name="ContextActions";Theme=TabletDesign.Theme;MouseFilter=MouseFilterEnum.Stop;
+        AddThemeStyleboxOverride("panel",new StyleBoxFlat{BgColor=new Color("f6f8f2"),ContentMarginLeft=10,ContentMarginRight=10,ContentMarginTop=8,ContentMarginBottom=8,CornerRadiusTopLeft=10,CornerRadiusTopRight=10,CornerRadiusBottomLeft=10,CornerRadiusBottomRight=10});
         var body=new VBoxContainer();AddChild(body);body.AddChild(_summary);body.AddChild(_primary);body.AddChild(_more);body.AddChild(_scroll);_scroll.AddChild(_list);_list.SizeFlagsHorizontal=SizeFlags.ExpandFill;body.AddChild(_status);
         _more.Pressed+=()=>SetExpanded(!Expanded);
         Resized+=LayoutRows;
@@ -102,8 +102,7 @@ public partial class ContextActionsPanel : PanelContainer
         _more.Visible=choices.Length>primary.Length;
         _more.Text=PlayerText.Local(language,Expanded?"Закрыть действия":"Ещё действия",Expanded?"Close actions":"More actions")+" · "+(choices.Length-primary.Length);
         _scroll.Visible=Expanded;_status.Text=status;_status.Visible=status.Length>0;
-        float height=GetViewportRect().Size.Y;
-        _scroll.CustomMinimumSize=new(0,Math.Clamp(height-top-_primary.GetCombinedMinimumSize().Y-150,60,280));
+        _heightTop=top;
         Visible=choices.Length>0;LayoutRows();
     }
     private void LayoutRows()
@@ -117,6 +116,22 @@ public partial class ContextActionsPanel : PanelContainer
             item.Row.CustomMinimumSize=new(Math.Min(width,Math.Max(90,measured)),0);
             item.Reason.CustomMinimumSize=new(Math.Min(width,Math.Max(90,measured)),0);
         }
+        FitListHeight();
+    }
+    private void FitListHeight()
+    {
+        if(_fittingHeight||!Expanded||!IsInsideTree())return;_fittingHeight=true;
+        try
+        {
+            var body=GetChild<VBoxContainer>(0);var visible=body.GetChildren().OfType<Control>().Where(c=>c.Visible).ToArray();
+            float chrome=GetThemeStylebox("panel").GetMinimumSize().Y+body.GetThemeConstant("separation")*Math.Max(0,visible.Length-1);
+            foreach(var child in visible.Where(c=>c!=_scroll))chrome+=child.GetCombinedMinimumSize().Y;
+            // Include the actual wrapped summary, primary rows and result footer. The old
+            // fixed allowance missed their extra line after a state change in a narrow window.
+            float available=GetViewportRect().Size.Y-_heightTop-24;
+            _scroll.CustomMinimumSize=new(0,Math.Clamp(available-chrome-16,60,280));
+        }
+        finally{_fittingHeight=false;}
     }
     public void Navigate(int delta)
     {

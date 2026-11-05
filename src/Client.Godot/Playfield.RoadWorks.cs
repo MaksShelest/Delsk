@@ -32,7 +32,7 @@ public partial class Playfield
         if(_roadWorkCard is null)return;
         var rect=GetViewportRect();float width=Math.Min(460,rect.Size.X-24);
         _roadWorkCard.OffsetLeft=-width-12;_roadWorkCard.OffsetRight=-12;_roadWorkCard.OffsetTop=_roadCardTop;
-        _roadWorkCard.Size=new(width,_roadWorkCard.GetCombinedMinimumSize().Y);
+        _roadWorkCard.Size=new(width,Math.Max(160,rect.Size.Y-_roadCardTop-12));_roadWorkCard.FitHeight(Math.Max(160,rect.Size.Y-_roadCardTop-12));
     }
     private void CloseRoadWork()
     {

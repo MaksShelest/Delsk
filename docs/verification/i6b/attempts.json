@@ -1,0 +1,456 @@
+{
+  "attempts": [
+    {
+      "attempt": 1,
+      "overall": "failed",
+      "completedChecks": {
+        "assets": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.115
+        },
+        "import": {
+          "exit_code": 0,
+          "elapsed_seconds": 5.866
+        },
+        "imports-reuse": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.165
+        },
+        "ordinary-audit": {
+          "exit_code": 0,
+          "elapsed_seconds": 1.877
+        },
+        "ordinary-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 11.11
+        },
+        "probe-build": {
+          "exit_code": 1,
+          "elapsed_seconds": 10.189
+        }
+      },
+      "phasesReached": [],
+      "failure": null,
+      "gate": null,
+      "archivePath": "attempts/native-1/",
+      "inputManifestSha256": "77f43f1da4c0e0651d3fc59104c35a6029398886311e1ea7da66238e78d81bf5"
+    },
+    {
+      "attempt": 2,
+      "overall": "failed",
+      "completedChecks": {
+        "assets": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.115
+        },
+        "import": {
+          "exit_code": 0,
+          "elapsed_seconds": 5.584
+        },
+        "imports-reuse": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.165
+        },
+        "native": {
+          "exit_code": 1,
+          "elapsed_seconds": 21.968
+        },
+        "ordinary-audit": {
+          "exit_code": 0,
+          "elapsed_seconds": 1.877
+        },
+        "probe-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 14.316
+        }
+      },
+      "phasesReached": [],
+      "failure": "System.InvalidOperationException: real sawmill made workshop materials\n   at I6BUnifiedProbe.Check(Boolean ok, String reason) in /workspace/Delsk/work/i6b/native-2/source/src/Client.Godot/I6BUnifiedProbe.cs:line 20\n   at I6BUnifiedProbe.PrepareFixture(String root, String source) in /workspace/Delsk/work/i6b/native-2/source/src/Client.Godot/I6BUnifiedProbe.cs:line 73\n   at I6BUnifiedProbe._Ready() in /workspace/Delsk/work/i6b/native-2/source/src/Client.Godot/I6BUnifiedProbe.cs:line 184",
+      "gate": null,
+      "archivePath": "attempts/native-2/",
+      "inputManifestSha256": "38abd8bc66ac1775bbed308f1c9405874c7b56fa6617f247fc979ff50fd8d149"
+    },
+    {
+      "attempt": 3,
+      "overall": "failed",
+      "completedChecks": {
+        "assets": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.114
+        },
+        "import": {
+          "exit_code": 0,
+          "elapsed_seconds": 5.484
+        },
+        "imports-reuse": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.165
+        },
+        "native": {
+          "exit_code": 1,
+          "elapsed_seconds": 12.34
+        },
+        "ordinary-audit": {
+          "exit_code": 0,
+          "elapsed_seconds": 1.621
+        },
+        "ordinary-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 10.821
+        },
+        "probe-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 10.513
+        }
+      },
+      "phasesReached": [],
+      "failure": "System.InvalidOperationException: RestoreControllers required before advancing this checkpoint\n   at Simulation.Hosting.GameSession.SubmitControllerInputs() in /workspace/Delsk/work/i6a/native-1/source/src/Simulation.Hosting/SessionControllers.cs:line 110\n   at Simulation.Hosting.GameSession.Step() in /workspace/Delsk/work/i6a/native-1/source/src/Simulation.Hosting/GameSession.cs:line 73\n   at Simulation.Hosting.GameSession.AdvanceTravelQuantum() in /workspace/Delsk/work/i6a/native-1/source/src/Simulation.Hosting/GameSession.cs:line 130\n   at Simulation.Hosting.GameSession.CompleteTravelTick() in /workspace/Delsk/work/i6a/native-1/source/src/Simulation.Hosting/GameSession.cs:line 141\n   at Simulation.Hosting.GameSession.Step() in /workspace/Delsk/work/i6a/native-1/source/src/Simulation.Hosting/GameSession.cs:line 68\n   at I6BUnifiedProbe.Prepare(GameAction action) in /workspace/Delsk/work/i6b/native-3/source/src/Client.Godot/I6BUnifiedProbe.cs:line 26\n   at I6BUnifiedProbe.CompletePreparation(String source, BuildingDefinition[] builds) in /workspace/Delsk/work/i6b/native-3/source/src/Client.Godot/I6BUnifiedProbe.cs:line 76\n   at I6BUnifiedProbe._Ready() in /workspace/Delsk/work/i6b/native-3/source/src/Client.Godot/I6BUnifiedProbe.cs:line 187",
+      "gate": null,
+      "archivePath": "attempts/native-3/",
+      "inputManifestSha256": "13f13188cd3514364eb281c5f28acb39d7693c32c2c183cd90f91a242a630bfb"
+    },
+    {
+      "attempt": 4,
+      "overall": "failed",
+      "completedChecks": {
+        "native": {
+          "exit_code": 1,
+          "elapsed_seconds": 86.197
+        },
+        "ordinary-audit": {
+          "exit_code": 0,
+          "elapsed_seconds": 1.621
+        },
+        "probe-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 12.316
+        }
+      },
+      "phasesReached": [
+        "navigation",
+        "production"
+      ],
+      "failure": "System.InvalidOperationException: Sequence contains no matching element\n   at System.Linq.ThrowHelper.ThrowNoMatchException()\n   at System.Linq.Enumerable.First[TSource](IEnumerable`1 source, Func`2 predicate)\n   at I6BUnifiedProbe.Named[T](String name) in /workspace/Delsk/work/i6b/native-4/source/src/Client.Godot/I6BUnifiedProbe.cs:line 18\n   at I6BUnifiedProbe.Production() in /workspace/Delsk/work/i6b/native-4/source/src/Client.Godot/I6BUnifiedProbe.cs:line 98\n   at I6BUnifiedProbe._Ready() in /workspace/Delsk/work/i6b/native-4/source/src/Client.Godot/I6BUnifiedProbe.cs:line 192",
+      "gate": null,
+      "archivePath": "attempts/native-4/",
+      "inputManifestSha256": "be489a5270db227abd398aa829529284ef7ea9ffa7d3d799b5bed0b48f232bb4"
+    },
+    {
+      "attempt": 5,
+      "overall": "failed",
+      "completedChecks": {
+        "native": {
+          "exit_code": 1,
+          "elapsed_seconds": 131.269
+        },
+        "ordinary-audit": {
+          "exit_code": 0,
+          "elapsed_seconds": 1.621
+        },
+        "probe-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 10.99
+        }
+      },
+      "phasesReached": [
+        "production",
+        "equipment"
+      ],
+      "failure": "System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation.\n ---> System.ObjectDisposedException: Cannot access a disposed object.\nObject name: 'Godot.ProgressBar'.\n   at Godot.GodotObject.GetPtr(GodotObject instance) in /root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/GodotObject.base.cs:line 93\n   at Godot.Range.SetValue(Double value) in /root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/GodotObjects/Range.cs:line 257\n   at Godot.Range.set_Value(Double value) in /root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/GodotObjects/Range.cs:line 85\n   at Playfield.Refresh() in /workspace/Delsk/work/i6b/native-5/source/src/Client.Godot/Playfield.cs:line 542\n   at InvokeStub_Playfield.Refresh(Object, Object, IntPtr*)\n   at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n   --- End of inner exception stack trace ---\n   at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n   at I6BUnifiedProbe.Call(Object o, String key, Object[] args) in /workspace/Delsk/work/i6b/native-5/source/src/Client.Godot/I6BUnifiedProbe.cs:line 16\n   at I6BUnifiedProbe.Refresh() in /workspace/Delsk/work/i6b/native-5/source/src/Client.Godot/I6BUnifiedProbe.cs:line 22\n   at I6BUnifiedProbe.RawClick(Button button, Boolean duringRefresh) in /workspace/Delsk/work/i6b/native-5/source/src/Client.Godot/I6BUnifiedProbe.cs:line 34\n   at I6BUnifiedProbe.Click(String name, Boolean refresh) in /workspace/Delsk/work/i6b/native-5/source/src/Client.Godot/I6BUnifiedProbe.cs:line 37\n   at I6BUnifiedProbe.Equipment() in /workspace/Delsk/work/i6b/native-5/source/src/Client.Godot/I6BUnifiedProbe.cs:line 106\n   at I6BUnifiedProbe._Ready() in /workspace/Delsk/work/i6b/native-5/source/src/Client.Godot/I6BUnifiedProbe.cs:line 192",
+      "gate": null,
+      "archivePath": "attempts/native-5/",
+      "inputManifestSha256": "80cbfdb6dac3b7d60983c82228e6f32712d0032781477cfcf0843a7c8f959b50"
+    },
+    {
+      "attempt": 6,
+      "overall": "failed",
+      "completedChecks": {
+        "assets": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.115
+        },
+        "import": {
+          "exit_code": 0,
+          "elapsed_seconds": 5.839
+        },
+        "imports-reuse": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.167
+        },
+        "native": {
+          "exit_code": 1,
+          "elapsed_seconds": 57.854
+        },
+        "ordinary-audit": {
+          "exit_code": 0,
+          "elapsed_seconds": 1.669
+        },
+        "ordinary-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 13.991
+        },
+        "probe-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 10.609
+        }
+      },
+      "phasesReached": [
+        "equipment",
+        "fleet"
+      ],
+      "failure": "System.InvalidOperationException: bounded preparation\n   at I6BUnifiedProbe.Check(Boolean ok, String reason) in /workspace/Delsk/work/i6b/native-6/source/src/Client.Godot/I6BUnifiedProbe.cs:line 20\n   at I6BUnifiedProbe.Prepare(GameAction action) in /workspace/Delsk/work/i6b/native-6/source/src/Client.Godot/I6BUnifiedProbe.cs:line 27\n   at I6BUnifiedProbe.Move(Cell cell) in /workspace/Delsk/work/i6b/native-6/source/src/Client.Godot/I6BUnifiedProbe.cs:line 46\n   at I6BUnifiedProbe.Fleet() in /workspace/Delsk/work/i6b/native-6/source/src/Client.Godot/I6BUnifiedProbe.cs:line 110\n   at I6BUnifiedProbe._Ready() in /workspace/Delsk/work/i6b/native-6/source/src/Client.Godot/I6BUnifiedProbe.cs:line 192",
+      "gate": null,
+      "archivePath": "attempts/native-6/",
+      "inputManifestSha256": "e32b45e28484ccdaf0ad400ddeab142c542963594f7a06a1895f97e282d9cecb"
+    },
+    {
+      "attempt": 7,
+      "overall": "failed",
+      "completedChecks": {
+        "assets": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.115
+        },
+        "import": {
+          "exit_code": 0,
+          "elapsed_seconds": 5.426
+        },
+        "imports-reuse": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.115
+        },
+        "native": {
+          "exit_code": 1,
+          "elapsed_seconds": 115.832
+        },
+        "ordinary-audit": {
+          "exit_code": 0,
+          "elapsed_seconds": 1.525
+        },
+        "ordinary-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 10.577
+        },
+        "probe-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 10.723
+        }
+      },
+      "phasesReached": [
+        "fleet",
+        "stock",
+        "trade",
+        "logistics",
+        "roads"
+      ],
+      "failure": "System.InvalidOperationException: native hit inside viewport @Button@13130\n   at I6BUnifiedProbe.Check(Boolean ok, String reason) in /workspace/Delsk/work/i6b/native-7/source/src/Client.Godot/I6BUnifiedProbe.cs:line 20\n   at I6BUnifiedProbe.RawClick(Button button, Boolean duringRefresh) in /workspace/Delsk/work/i6b/native-7/source/src/Client.Godot/I6BUnifiedProbe.cs:line 37\n   at I6BUnifiedProbe.Roads() in /workspace/Delsk/work/i6b/native-7/source/src/Client.Godot/I6BUnifiedProbe.cs:line 145\n   at I6BUnifiedProbe._Ready() in /workspace/Delsk/work/i6b/native-7/source/src/Client.Godot/I6BUnifiedProbe.cs:line 198",
+      "gate": null,
+      "archivePath": "attempts/native-7/",
+      "inputManifestSha256": "3ba63c3a01053ccde8fe19afedddee8e732f0247b4c2c0d26776433c53b665ad"
+    },
+    {
+      "attempt": 8,
+      "overall": "failed",
+      "completedChecks": {
+        "assets": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.114
+        },
+        "import": {
+          "exit_code": 0,
+          "elapsed_seconds": 6.284
+        },
+        "imports-reuse": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.164
+        },
+        "native-log": {
+          "exit_code": 1,
+          "elapsed_seconds": 0.064
+        },
+        "native": {
+          "exit_code": 0,
+          "elapsed_seconds": 112.767
+        },
+        "ordinary-audit": {
+          "exit_code": 0,
+          "elapsed_seconds": 1.772
+        },
+        "ordinary-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 12.886
+        },
+        "probe-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 12.178
+        }
+      },
+      "phasesReached": [
+        "roads",
+        "city",
+        "landscape",
+        "demolition"
+      ],
+      "failure": null,
+      "gate": null,
+      "archivePath": "attempts/native-8/",
+      "inputManifestSha256": "fb907eaaf832968bc3ee52763ffb20136b527358f854cf21d1166e2d3eb596be"
+    },
+    {
+      "attempt": 9,
+      "overall": "failed",
+      "completedChecks": {
+        "assets": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.114
+        },
+        "import": {
+          "exit_code": 0,
+          "elapsed_seconds": 5.588
+        },
+        "imports-reuse": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.115
+        },
+        "ordinary-audit": {
+          "exit_code": 0,
+          "elapsed_seconds": 1.67
+        },
+        "ordinary-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 12.598
+        },
+        "probe-build": {
+          "exit_code": 1,
+          "elapsed_seconds": 10.689
+        }
+      },
+      "phasesReached": [],
+      "failure": null,
+      "gate": null,
+      "archivePath": "attempts/native-9/",
+      "inputManifestSha256": "93d8c429b0c2603710158b3132c499ebd23857fe8ac6ef652d306d51a1bb0ac2"
+    },
+    {
+      "attempt": 10,
+      "overall": "failed",
+      "completedChecks": {
+        "native": {
+          "exit_code": 1,
+          "elapsed_seconds": 163.172
+        },
+        "ordinary-audit": {
+          "exit_code": 0,
+          "elapsed_seconds": 1.67
+        },
+        "probe-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 11.282
+        }
+      },
+      "phasesReached": [
+        "navigation",
+        "production",
+        "equipment",
+        "trade"
+      ],
+      "failure": "System.InvalidOperationException: Sequence contains no matching element\n   at System.Linq.ThrowHelper.ThrowNoMatchException()\n   at System.Linq.Enumerable.First[TSource](IEnumerable`1 source, Func`2 predicate)\n   at I6BUnifiedProbe.Named[T](String name) in /workspace/Delsk/work/i6b/native-10/source/src/Client.Godot/I6BUnifiedProbe.cs:line 18\n   at I6BUnifiedProbe.Click(String name, Boolean refresh) in /workspace/Delsk/work/i6b/native-10/source/src/Client.Godot/I6BUnifiedProbe.cs:line 43\n   at I6BUnifiedProbe.Trade() in /workspace/Delsk/work/i6b/native-10/source/src/Client.Godot/I6BUnifiedProbe.cs:line 134\n   at I6BUnifiedProbe._Ready() in /workspace/Delsk/work/i6b/native-10/source/src/Client.Godot/I6BUnifiedProbe.cs:line 198",
+      "gate": null,
+      "archivePath": "attempts/native-10/",
+      "inputManifestSha256": "d8834339763058e41d8f0b0a29e939a8d9e9a105bb6f0431940600383cd097c1"
+    },
+    {
+      "attempt": 11,
+      "overall": "succeeded",
+      "completedChecks": {
+        "native-log": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.064
+        },
+        "native": {
+          "exit_code": 0,
+          "elapsed_seconds": 44.353
+        },
+        "ordinary-audit": {
+          "exit_code": 0,
+          "elapsed_seconds": 1.67
+        },
+        "probe-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 13.023
+        }
+      },
+      "phasesReached": [
+        "city"
+      ],
+      "failure": null,
+      "gate": {
+        "status": "succeeded",
+        "selection": "city",
+        "scope": "Selected I6BUnifiedProbe phase only: city; prepared Small valley / three ordinary NPCs. Software GL and synthetic input."
+      },
+      "archivePath": "attempts/native-11/",
+      "inputManifestSha256": "d20607ef0dc46e6dc85566c7e9b95b6d2cbf66fa343520289f45e207a1eef39c"
+    },
+    {
+      "attempt": 12,
+      "overall": "succeeded",
+      "completedChecks": {
+        "assets": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.115
+        },
+        "import": {
+          "exit_code": 0,
+          "elapsed_seconds": 5.891
+        },
+        "imports-reuse": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.165
+        },
+        "native-log": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.065
+        },
+        "native": {
+          "exit_code": 0,
+          "elapsed_seconds": 378.919
+        },
+        "ordinary-audit": {
+          "exit_code": 0,
+          "elapsed_seconds": 1.775
+        },
+        "ordinary-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 11.534
+        },
+        "probe-build": {
+          "exit_code": 0,
+          "elapsed_seconds": 10.982
+        }
+      },
+      "phasesReached": [
+        "navigation",
+        "production",
+        "equipment",
+        "fleet",
+        "stock",
+        "trade",
+        "logistics",
+        "roads",
+        "city",
+        "landscape",
+        "demolition"
+      ],
+      "failure": null,
+      "gate": {
+        "status": "succeeded",
+        "selection": "from-navigation",
+        "scope": "Selected I6BUnifiedProbe phase only: from-navigation; prepared Small valley / three ordinary NPCs. Software GL and synthetic input."
+      },
+      "archivePath": "attempts/native-12/",
+      "inputManifestSha256": "1c71b926957e46a0a46e7510ddbe47af3add1a4e56f851e0da9681efa35e6f56"
+    }
+  ],
+  "archiveSha256": "5be0aef2b409e9f5fabb6ba6bdfa396207bdb9f1f8eaa3eb3e8e085ec6859260"
+}

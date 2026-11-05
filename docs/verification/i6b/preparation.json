@@ -1,0 +1,92 @@
+{
+  "source": "/workspace/Delsk/work/i6b/native-2/native/failed.save.json",
+  "kind": "I6-A configuration with explicitly prepared owned buildings/plots; funded human inherited; ordinary prices/rules/controllers unchanged",
+  "buildings": [
+    {
+      "Id": 8,
+      "OwnerId": 1,
+      "Position": {
+        "X": 13,
+        "Z": 0
+      },
+      "TypeId": "woodworking",
+      "Level": 2,
+      "Staff": 5,
+      "Enabled": false
+    },
+    {
+      "Id": 9,
+      "OwnerId": 1,
+      "Position": {
+        "X": 16,
+        "Z": 0
+      },
+      "TypeId": "metallurgy",
+      "Level": 1,
+      "Staff": 5,
+      "Enabled": false
+    },
+    {
+      "Id": 10,
+      "OwnerId": 1,
+      "Position": {
+        "X": 19,
+        "Z": 0
+      },
+      "TypeId": "materials",
+      "Level": 1,
+      "Staff": 5,
+      "Enabled": false
+    },
+    {
+      "Id": 11,
+      "OwnerId": 1,
+      "Position": {
+        "X": 22,
+        "Z": 0
+      },
+      "TypeId": "food",
+      "Level": 1,
+      "Staff": 5,
+      "Enabled": false
+    },
+    {
+      "Id": 12,
+      "OwnerId": 1,
+      "Position": {
+        "X": 25,
+        "Z": 0
+      },
+      "TypeId": "dairy",
+      "Level": 1,
+      "Staff": 5,
+      "Enabled": false
+    },
+    {
+      "Id": 13,
+      "OwnerId": 1,
+      "Position": {
+        "X": 28,
+        "Z": 0
+      },
+      "TypeId": "machinery",
+      "Level": 1,
+      "Staff": 5,
+      "Enabled": false
+    },
+    {
+      "Id": 14,
+      "OwnerId": 1,
+      "Position": {
+        "X": 13,
+        "Z": 6
+      },
+      "TypeId": "warehouse",
+      "Level": 1,
+      "Staff": 0,
+      "Enabled": false
+    }
+  ],
+  "tick": 413,
+  "commandCount": 111
+}

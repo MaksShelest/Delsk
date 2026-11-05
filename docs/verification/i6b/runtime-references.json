@@ -1,0 +1,8 @@
+{
+  "Agents.Algorithmic.dll": "0041b64ad23acfdfa573c847f78e52168674f7e358c3ca40277070326342dbaa",
+  "Agents.Llm.dll": "170fd7868dfa947e6eb1c480639b2bfb3bd9ead4779fd4c8c1c9653afd47c265",
+  "GodotSharp.dll": "2afe2686aacfefac36da6601b59aeb05e560f06e4970cd5036100acd2ca4249d",
+  "GodotSharpEditor.dll": "195c81c1ccb7c05559fc79b4acbb9025154a74ad99ecb9bb3747b5fbfc2ed1d1",
+  "Simulation.Core.dll": "085f4dc90d598e0861158d23e0abec9a037c11d0ccf005245218a7dca2427a64",
+  "Simulation.Hosting.dll": "0fd2bc41c7ddaa28f9f7990269108e58926fa42df832e6a7687d127e69d27d20"
+}

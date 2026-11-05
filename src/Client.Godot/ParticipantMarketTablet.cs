@@ -27,6 +27,8 @@ public partial class ParticipantMarketTablet : VBoxContainer
         _ownOffers.Visible=_page==2;if(_ownOffers.GetParent() is Control ownShell)ownShell.Visible=_ownOffers.Visible;
         _seller.Visible=_page==2 && owns;if(_seller.GetParent() is Control shell)shell.Visible=_seller.Visible;_emptyOwn.Visible=_page==2 && !owns;
     }
+    private readonly Label _reason=GameUi.Hint("");
+    private readonly Dictionary<long,(Control Root,Label Text,Button Collect)> _pickupRows=[];
     private readonly Label _selected = new() { AutowrapMode = TextServer.AutowrapMode.WordSmart };
     private readonly Label _stock = new() { AutowrapMode = TextServer.AutowrapMode.WordSmart };
     private readonly Label _history = new() { AutowrapMode = TextServer.AutowrapMode.WordSmart };
@@ -56,8 +58,8 @@ public partial class ParticipantMarketTablet : VBoxContainer
     {
         _scenario = scenario; _language = language; _preferences = preferences; _shop = shop; _submit = submit;
         _access=access;_item = scenario.Items[0].Id; _price.Value = scenario.Items[0].BasePriceMinor / 100d;
-        AddChild(new Label { Text = L("Для торговли нужна своя лавка. Источник лота выбирается отдельно; место выдачи видно до заявки. При дефиците действует аукцион. Покупку нужно физически получить до срока.",
-            "Trading requires your own shop. Select a separate stock source; the pickup point is visible before bidding. Shortages trigger an auction. Physically collect purchases before the deadline."), AutowrapMode = TextServer.AutowrapMode.WordSmart });
+        AddChild(new Label { Text = L("Выберите товар и максимальную цену. Оплаченную покупку нужно забрать до срока; для торговли требуется своя лавка.",
+            "Choose goods and your maximum price. Successful purchases must be collected before their deadline. Your own shop is needed to trade."), AutowrapMode = TextServer.AutowrapMode.WordSmart });
         var filters = TabletDesign.Flow();_filters=filters; AddChild(filters);
         var items = new[] { "" }.Concat(scenario.Items.Select(i => i.Id)).ToArray();
         var filter = new OptionButton { FocusMode = FocusModeEnum.None };
@@ -71,7 +73,7 @@ public partial class ParticipantMarketTablet : VBoxContainer
         var inputs = TabletDesign.Flow();_inputs=inputs; AddChild(inputs);
         inputs.AddChild(new Label { Text = L("Количество", "Quantity") }); inputs.AddChild(_quantity);
         _priceLabel=new Label { Text = L("Цена/лимит за 1", "Unit price/limit") };inputs.AddChild(_priceLabel); inputs.AddChild(_price);
-        AddChild(_selected);
+        AddChild(GameUi.Card(_selected));AddChild(_reason);
         var actions = TabletDesign.Flow();_bidActions=actions; AddChild(actions);
         _buy = Action(actions, L("Подать заявку", "Request goods"), () => _submit(PlayerDesk.Bid(_offer, Quantity, Price)));
         _raise = Action(actions, L("Повысить ставку до цены", "Raise bid to price"), () => {
@@ -96,10 +98,10 @@ public partial class ParticipantMarketTablet : VBoxContainer
         _pickupTitle=new Label { Text = L("Мои покупки: физическое получение", "My purchases: physical pickup") };AddChild(_pickupTitle);
         AddChild(_pickups); AddChild(_history);TabletDesign.CompactInputs(this);ApplyPage();
     }
-    private Button Action(Node host, string text, System.Action action)
+    private Button Action(Node host, string text, System.Action action,bool command=true)
     {
         var button = new Button { Text = text, FocusMode = FocusModeEnum.None };
-        button.Pressed += () => { if (!_pending) action(); }; host.AddChild(button); return button;
+        button.SizeFlagsHorizontal=SizeFlags.ShrinkBegin;button.CustomMinimumSize=new(40,40);button.Pressed += () => { if(button.Disabled||command&&_pending)return;if(command){_pending=true;button.Disabled=true;}action(); }; host.AddChild(button); return button;
     }
     public void ShowData(PlayerView view, bool pending) { _view = view; _pending = pending; Refresh(); }
     private void Transfer(bool deposit)
@@ -125,7 +127,7 @@ public partial class ParticipantMarketTablet : VBoxContainer
     private void Refresh()
     {
         if (_view?.Market is not { } market) return;
-        string key = _preferences.ItemId + _preferences.HighestPriceFirst + _pending + string.Join(';', market.Offers.Select(o => $"{o.Id}:{o.Status}:{o.Round}:{o.AllocatedQuantity}:" + string.Join(',',o.Bids))) +
+        string key = _preferences.ItemId + _preferences.HighestPriceFirst + string.Join(';', market.Offers.Select(o => $"{o.Id}:{o.Status}:{o.Round}:{o.AllocatedQuantity}:" + string.Join(',',o.Bids))) +
             string.Join(';', market.Allocations.Select(a => $"{a.Id}:{a.Status}:{a.CollectedQuantity}"));
         if (key != _key)
         {
@@ -143,7 +145,7 @@ public partial class ParticipantMarketTablet : VBoxContainer
                 var row = new TabletColumns{Breakpoint=800}; _rows.AddChild(TabletDesign.Wrap(row));
                 row.AddChild(TabletDesign.Art(offer.ItemId,new(48,48)));
                 var text = new Label { SizeFlagsHorizontal = SizeFlags.ExpandFill, AutowrapMode = TextServer.AutowrapMode.WordSmart }; row.AddChild(text);
-                Action(row, L("Выбрать", "Select") + " #" + offer.Id, () => { _offer = offer.Id; _price.Value = offer.BasePriceMinor / 100d; UpdateActions(); });
+                var choose=Action(row,L("Выбрать","Select"),()=>{_offer=offer.Id;_price.Value=offer.BasePriceMinor/100d;UpdateActions();Callable.From(()=>UiNavigation.Reveal(_selected)).CallDeferred();},false);choose.Name="MarketSelect_"+offer.Id;
                 var bar = new ProgressBar { CustomMinimumSize = new Vector2(100,8), ShowPercentage = false, MaxValue = 100 }; row.AddChild(bar);
                 _windows.Add((offer.Id,text,bar));
             }
@@ -152,27 +154,30 @@ public partial class ParticipantMarketTablet : VBoxContainer
         foreach (var row in _windows)
         {
             var o = market.Offers.Single(o => o.Id == row.Id);
-            row.Text.Text = $"#{o.Id} · " + PlayerText.Item(_language,o.ItemId) + $" ×{o.Quantity} · " + PlayerText.Money(o.BasePriceMinor) +
-                L(" за 1 · продавец ", " per unit · seller ") + o.Seller.Value + $" · ({o.Position.X},{o.Position.Z}) · " +
+            row.Text.Text = $"" + PlayerText.Item(_language,o.ItemId) + $" ×{o.Quantity} · " + PlayerText.Money(o.BasePriceMinor) +
+                L(" за 1 · продавец ", " per unit · seller ") + WorldSkins.ActorName(o.Seller.Value,_language) + $" · ({o.Position.X},{o.Position.Z}) · " +
                 (o.Status == MarketOfferStatus.Closed ? L("Закрыт", "Closed") : o.Status == MarketOfferStatus.Auction ? L("Аукцион, раунд ", "Auction, round ") + o.Round : L("Сбор заявок", "Collecting requests")) +
                 L(" · осталось секунд: ", " · seconds left: ") + Math.Max(0,o.CutoffTick-_view.Tick) +
                 (o.Bids.Length == 0 ? "" : "\n" + L("Публичные ставки: ", "Public bids: ") + string.Join("; ",o.Bids.Select(b => $"#{b.Buyer.Value} ×{b.Quantity}: " + PlayerText.Money(b.CurrentPriceMinor))));
             int duration = o.Status == MarketOfferStatus.Auction ? market.Rules.AuctionRoundTicks : _scenario.TradeWindowTicks;
             row.Bar.Value = o.Status == MarketOfferStatus.Closed ? 100 : 100d * Math.Clamp(duration-Math.Max(0,o.CutoffTick-_view.Tick),0,duration)/duration;
         }
-        foreach (Node n in _pickups.GetChildren()){_pickups.RemoveChild(n);n.QueueFree();}
+        var currentClaims=market.Allocations.Where(a=>a.Buyer==_view.Participant.Id&&a.RemainingQuantity>0).ToArray();
+        foreach(long id in _pickupRows.Keys.Except(currentClaims.Select(c=>c.Id)).ToArray()){var old=_pickupRows[id];_pickups.RemoveChild(old.Root);old.Root.QueueFree();_pickupRows.Remove(id);}
         _collectButtons.Clear();
-        foreach (var claim in market.Allocations.Where(a => a.Buyer == _view.Participant.Id && a.RemainingQuantity > 0))
+        if(currentClaims.Length>0)foreach(var empty in _pickups.GetChildren().OfType<Label>().ToArray()){_pickups.RemoveChild(empty);empty.QueueFree();}
+        foreach(var claim in currentClaims)
         {
-            var offer = market.Offers.SingleOrDefault(o => o.Id == claim.OfferId);
-            var row = new TabletColumns{Breakpoint=750}; _pickups.AddChild(TabletDesign.Wrap(row));
-            row.AddChild(new Label { SizeFlagsHorizontal = SizeFlags.ExpandFill, Text = $"#{claim.Id} · " + PlayerText.Item(_language,claim.ItemId) + $" ×{claim.RemainingQuantity} · " +
-                L("забрать в течение ","collect within ") + Math.Max(0,claim.DeadlineTick-_view.Tick) + L(" с", " s") + (offer is null ? "" : $" · ({offer.Position.X},{offer.Position.Z})") });
-            var collect = Action(row,L("Забрать", "Collect"),()=>Collect(claim.Id));
-            _collectButtons.Add((claim.Id,collect));
-            collect.TooltipText = L("Подойдите к точке выдачи лота. Выдача ограничена выбранным количеством и местом в рюкзаке.","Visit the lot pickup point. Pickup is limited by the selected quantity and backpack capacity.");
+            var offer=market.Offers.SingleOrDefault(o=>o.Id==claim.OfferId);
+            if(!_pickupRows.TryGetValue(claim.Id,out var display))
+            {
+                var body=new VBoxContainer();var row=new HBoxContainer();row.AddChild(TabletDesign.Art(claim.ItemId,new(42,42)));var text=GameUi.Text();row.AddChild(text);body.AddChild(row);
+                var collect=Action(body,L("Забрать","Collect"),()=>Collect(claim.Id));collect.Name="MarketCollect_"+claim.Id;var shell=GameUi.Card(body);_pickups.AddChild(shell);display=(shell,text,collect);_pickupRows.Add(claim.Id,display);
+            }
+            display.Text.Text=PlayerText.Item(_language,claim.ItemId)+" ×"+claim.RemainingQuantity+" · "+L("получить за ","collect within ")+GameDuration.Format(claim.DeadlineTick-_view.Tick,_language)+(offer is null?"":$" · ({offer.Position.X},{offer.Position.Z})");
+            display.Collect.TooltipText=L("Подойдите к месту выдачи. Количество ограничено выбранным значением и местом в рюкзаке.","Visit the pickup point. Collection is limited by the selected amount and backpack capacity.");_collectButtons.Add((claim.Id,display.Collect));
         }
-        if(_collectButtons.Count==0)_pickups.AddChild(new Label{Text=L("Оплаченных покупок к выдаче нет.","No paid purchases awaiting collection."),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        if(_collectButtons.Count==0&&_pickups.GetChildCount()==0)_pickups.AddChild(GameUi.Hint(L("Оплаченных покупок к выдаче нет.","No paid purchases awaiting collection.")));
         _history.Text = L("Результаты: ","Results: ") + string.Join("; ",market.Allocations.TakeLast(8).Select(a => $"#{a.Id} " + ClaimStatus(a.Status) + " · " + L("выдано ","collected ") + a.CollectedQuantity + L(" · штраф "," · fine ") + PlayerText.Money(a.FineMinor)));
         UpdateActions();
     }
@@ -201,13 +206,16 @@ public partial class ParticipantMarketTablet : VBoxContainer
             var source = market.Offers.SingleOrDefault(o => o.Id == claim.OfferId);
             row.Button.Disabled = _pending || _view.Participant.Busy || PickupQuantity(claim) <= 0 || _view.PurchaseGuides.SingleOrDefault(g=>g.PurchaseId==claim.Id)?.Position != _view.Participant.Position;
         }
+        _reason.Text=_pending?L("Действие ожидает выполнения. Включите время.","Action queued. Run time."):offer is null?L("Выберите лот, затем укажите количество и цену.","Select a lot, then enter quantity and price."):offer.Seller==_view.Participant.Id?L("Это ваш лот. Управляйте им в «Моих предложениях».","This is your own lot. Manage it in My offers."):offer.Status==MarketOfferStatus.Closed?L("Лот уже закрыт. Выберите другое предложение.","This lot is closed. Choose another offer."):_buy.Disabled&&_raise.Disabled?L("Проверьте свободные деньги, допустимую цену и текущий этап торгов.","Check available funds, the price and the current trading stage."):L("После оплаты товар нужно физически получить до срока.","After payment, collect the goods before their deadline.");
+        _buy.TooltipText=_raise.TooltipText=_reason.Text;
+        if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Size.X);
         var shop = _view.Buildings.SingleOrDefault(b => b.Id.Value == _shop && b.Kind == BuildingKind.Shop);
         ApplyPage();
         if (shop is null) return;
         var sources=_view.Inventories.Where(i=>_view.Buildings.Any(b=>b.InputId==i.Id||b.OutputId==i.Id)).ToArray();
         string sourcesKey=string.Join(',',sources.Select(i=>i.Id.Value));
-        if(sourcesKey!=_sourcesKey){_sourcesKey=sourcesKey;_source.Clear();foreach(var i in sources){_source.AddItem("#"+i.Id.Value+$" ({i.Position.X},{i.Position.Z})");_source.SetItemMetadata(_source.ItemCount-1,i.Id.Value);}}
-        var storage=Source()!;
+        if(sourcesKey!=_sourcesKey){_sourcesKey=sourcesKey;_source.Clear();foreach(var i in sources){_source.AddItem(GameUi.InventoryName(_view,i.Id.Value,_language));_source.SetItemMetadata(_source.ItemCount-1,i.Id.Value);}}
+        var storage=Source();if(storage is null)return;
         var pack = _view.Inventories.Single(i => i.Id == _view.Participant.InventoryId);
         long Free(InventoryView i) => i.Stock.Where(s=>s.ItemId==_item).Sum(s=>s.Quantity-s.Reserved);
         long volume = _scenario.Items.Single(i=>i.Id==_item).UnitVolume;

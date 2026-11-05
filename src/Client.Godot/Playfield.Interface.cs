@@ -65,9 +65,9 @@ public partial class Playfield
         _stick=null;
         if(OS.HasFeature("mobile")||OS.GetCmdlineUserArgs().Contains("--touch-controls"))
         {_stick=new VirtualJoystick();_playChrome!.AddChild(_stick);}
-        var bar = new PanelContainer { MouseFilter = MouseFilterEnum.Stop };
+        var bar = new PanelContainer { Theme=TabletDesign.Theme, MouseFilter = MouseFilterEnum.Stop };
         bar.SetAnchorsAndOffsetsPreset(LayoutPreset.TopWide); bar.OffsetBottom = 54;
-        bar.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color("243a3e"),
+        bar.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color("f6f8f2"),
             ContentMarginLeft = 12, ContentMarginRight = 12, ContentMarginTop = 6, ContentMarginBottom = 6 });
         _playChrome!.AddChild(bar);
         UiSafeArea.Track(bar,()=>{var safe=UiSafeArea.Read(bar);bar.OffsetLeft=(float)safe.Left;bar.OffsetRight=-(float)safe.Right;bar.OffsetTop=(float)safe.Top;bar.OffsetBottom=54+(float)safe.Top;});
@@ -177,7 +177,10 @@ public partial class Playfield
             if(_contextActions.Pressing&&_contextViewport==viewport)return;
             float width=Math.Min(expanded?520:wide?Math.Min(400,viewport.X/2-40):viewport.X-32,viewport.X-(float)safe.Left-(float)safe.Right-24);
             dock.Size=new(width,0);
-            var point=new Vector2((viewport.X-width)/2,viewport.Y-dock.Size.Y-(float)safe.Bottom-12);
+            // The child can grow before its MarginContainer has completed its next sort.
+            // Anchor using both actual rectangles so a fresh status line cannot protrude.
+            float height=Math.Max(dock.Size.Y,_contextActions.Size.Y);
+            var point=new Vector2((viewport.X-width)/2,viewport.Y-height-(float)safe.Bottom-12);
             if(wide&&!expanded&&_stage?.HumanScreenPosition() is {} actor&&_view is not null)
             {
                 var stageSize=_stage.GetViewport().GetVisibleRect().Size;
@@ -185,7 +188,7 @@ public partial class Playfield
                 point=new(screen.X+28,screen.Y+24);
             }
             float left=(float)safe.Left+12,right=Math.Max(left,viewport.X-(float)safe.Right-width-12);
-            float top=_roadCardTop+8,bottom=Math.Max(top,viewport.Y-(float)safe.Bottom-dock.Size.Y-12);
+            float bottom=Math.Max((float)safe.Top+12,viewport.Y-(float)safe.Bottom-height-12),top=Math.Min(_roadCardTop+8,bottom);
             dock.Position=new(Math.Clamp(point.X,left,right),Math.Clamp(point.Y,top,bottom));
             _stick?.AvoidBottom(wide?132:dock.Size.Y);
             _contextViewport=viewport;

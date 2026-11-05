@@ -5,7 +5,7 @@ Author: Шелестов Максим Евгеньевич. Linux software GL is
 import argparse,hashlib,json,os,shutil,socket,subprocess,sys,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--fixtures',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--godot',required=True);p.add_argument('--xorg',default='Xorg');p.add_argument('--xvfb',help='Unprivileged CI display server');p.add_argument('--prepared',type=Path,help='Reuse verified upstream code; rebuild the ordinary client when its UI changes');p.add_argument('--case',choices=['all','ru-1280','en-1280','ru-800','en-800','ru-360','en-360'],default='all');a=p.parse_args()
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--fixtures',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--godot',required=True);p.add_argument('--xorg',default='Xorg');p.add_argument('--xvfb',help='Unprivileged CI display server');p.add_argument('--prepared',type=Path,help='Reuse verified upstream code; rebuild the ordinary client when its UI changes');p.add_argument('--case',choices=['all','narrow','ru-1280','en-1280','ru-800','en-800','ru-360','en-360'],default='all');a=p.parse_args()
 out=a.output.resolve();stage=out/'source';project=stage/'src/Client.Godot'
 if out.exists() and any(out.iterdir()):p.error('Use an empty output; previous attempts are retained')
 out.mkdir(parents=True);inputs={}
@@ -99,7 +99,7 @@ with (out/'xorg.stdout.log').open('w') as log:
         assert ready,'Owned Xorg did not become ready'
         env|={'DISPLAY':'127.0.0.1:94.0','LIBGL_ALWAYS_SOFTWARE':'1','LP_NUM_THREADS':'2'}
         for case in ['ru-1280','en-1280','ru-800','en-800','ru-360','en-360']:
-            if a.case not in ('all',case):continue
+            if a.case not in ('all',case) and not (a.case=='narrow' and case.endswith('-360')):continue
             target=out/case
             check(case,120,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','--windowed','--resolution','1000x760','res://I5ContextProbe.tscn','--','--touch-controls','--fixture',a.fixtures.resolve()/'physically-arrived.save.json','--case',case,'--output',target],env)
             check(case+'-log',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks'/case]);assert json.loads((target/'native.json').read_text())['status']=='succeeded'
@@ -109,4 +109,4 @@ with (out/'xorg.stdout.log').open('w') as log:
         except subprocess.TimeoutExpired:server.kill();server.wait(timeout=5)
 assert all(digest(ROOT/name)==h for name,h in inputs.items()),'Native source changed during the gate'
 (out/'inputs.json').write_text(json.dumps(inputs,indent=2)+'\n')
-(out/'gate.json').write_text(json.dumps(dict(status='succeeded',cases=6 if a.case=='all' else 1,selection=a.case,scope='Linux Godot Mono, software GL, ordinary three-NPC checkpoint, keyed context controls, real mouse/keyboard/touch across refresh, double-click prevention, authoritative equipment actions and save/load. No physical device claim.'),indent=2)+'\n')
+(out/'gate.json').write_text(json.dumps(dict(status='succeeded',cases=6 if a.case=='all' else 2 if a.case=='narrow' else 1,selection=a.case,scope='Linux Godot Mono, software GL, ordinary three-NPC checkpoint, keyed context controls, real mouse/keyboard/touch across refresh, double-click prevention, authoritative equipment actions and save/load. No physical device claim.'),indent=2)+'\n')

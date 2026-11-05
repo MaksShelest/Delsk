@@ -3,13 +3,13 @@ using Godot;
 /// <summary>Scoped visual tokens from the supplied tablet kit. No game state or clock.</summary>
 public static class TabletDesign
 {
-    public static readonly Color Ink=new("254237"),Muted=new("788579"),Green=new("2b7b57");
+    public static readonly Color Ink=new("24292f"),Muted=new("69766e"),Green=new("24664f");
     private static Theme? _theme;
     public static Theme Theme => _theme ??= Create();
     private static Theme Create()
     {
         var t=(Theme)GD.Load<Theme>("res://tablets_v1/theme.tres").Duplicate(true);
-        t.DefaultFontSize=18;
+        t.DefaultFontSize=16;
         foreach(string type in new[]{"Label","Button","CheckButton","CheckBox","OptionButton","LineEdit","SpinBox","ItemList","RichTextLabel","TabContainer","TabBar"})
         {
             t.SetColor("font_color",type,Ink);t.SetColor("font_hover_color",type,Ink);t.SetColor("font_focus_color",type,Ink);
@@ -20,8 +20,8 @@ public static class TabletDesign
         t.SetStylebox("panel","PanelContainer",Card());
         foreach(string type in new[]{"Button","OptionButton"})
         {
-            t.SetStylebox("normal",type,Box("f4f4e9",12,12));t.SetStylebox("hover",type,Box("e2ebd5",12,12));
-            t.SetStylebox("pressed",type,Box("2b7b57",12,12));t.SetStylebox("disabled",type,Box("edf1df",12,12));
+            t.SetStylebox("normal",type,Box("ffffff",8,9));t.SetStylebox("hover",type,Box("edf3f0",8,9));
+            t.SetStylebox("pressed",type,Box("24664f",8,9));t.SetStylebox("disabled",type,Box("f3f4f5",8,9));
         }
         foreach(string state in new[]{"normal","read_only"})t.SetStylebox(state,"LineEdit",Box("f4f4e9",10,10));
         t.SetStylebox("focus","LineEdit",Box("fffdf6",10,10));t.SetColor("font_color","LineEdit",Ink);
@@ -36,26 +36,28 @@ public static class TabletDesign
         t.SetIcon("updown","SpinBox",GD.Load<Texture2D>("res://tablets_v1/assets/icons/stepper.svg"));
         t.SetStylebox("slider","HSlider",Box("dce5cd",4,0));t.SetStylebox("grabber_area","HSlider",Box("7da568",4,0));t.SetStylebox("grabber_area_highlight","HSlider",Box("2b7b57",4,0));
         t.SetStylebox("background","ProgressBar",Box("dce5cd",5,0));t.SetStylebox("fill","ProgressBar",Box("7da568",5,0));t.SetColor("font_color","ProgressBar",Ink);
-        t.SetConstant("separation","VBoxContainer",12);t.SetConstant("separation","HBoxContainer",12);
-        t.SetConstant("h_separation","HFlowContainer",10);t.SetConstant("v_separation","HFlowContainer",10);
+        t.SetConstant("separation","VBoxContainer",8);t.SetConstant("separation","HBoxContainer",8);
+        t.SetConstant("h_separation","HFlowContainer",8);t.SetConstant("v_separation","HFlowContainer",6);
         return t;
     }
     public static StyleBoxFlat Box(string color,int radius,int margin)=>new(){BgColor=new(color),BorderColor=new("dfe3d1"),
         BorderWidthLeft=1,BorderWidthRight=1,BorderWidthTop=1,BorderWidthBottom=1,
         CornerRadiusTopLeft=radius,CornerRadiusTopRight=radius,CornerRadiusBottomLeft=radius,CornerRadiusBottomRight=radius,
         ContentMarginLeft=margin,ContentMarginRight=margin,ContentMarginTop=margin,ContentMarginBottom=margin};
-    public static StyleBoxFlat Card(bool soft=false)=>Box(soft?"edf1df":"fffdf9",20,18);
+    public static StyleBoxFlat Card(bool soft=false)=>Box(soft?"eff4e9":"ffffff",8,10);
     public static PanelContainer Wrap(Control content,bool soft=false)
     {var panel=new PanelContainer{SizeFlagsHorizontal=Control.SizeFlags.ExpandFill};panel.AddThemeStyleboxOverride("panel",Card(soft));panel.AddChild(content);return panel;}
     public static Label Heading(string text,int size=23)
     {var l=new Label{Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart};l.AddThemeFontSizeOverride("font_size",size);l.AddThemeFontOverride("font",GD.Load<Font>("res://delsk_sawmill_ui/assets/fonts/Nunito-ExtraBold.ttf"));return l;}
     public static TextureRect Art(string key,Vector2 size)
+        =>new(){Texture=Texture(key),CustomMinimumSize=size,ExpandMode=TextureRect.ExpandModeEnum.IgnoreSize,StretchMode=TextureRect.StretchModeEnum.KeepAspectCentered,MouseFilter=Control.MouseFilterEnum.Ignore};
+    public static Texture2D Texture(string key)
     {
-        key=key switch{"wood"=>"logs","plank"=>"boards","shop"=>"market","sugar-factory"=>"sugar_factory",_=>key};
+        key=key switch{"wood"=>"logs","plank"=>"boards","shop"=>"market","sugar-factory"=>"sugar_factory","woodworking"=>"sawmill","food"=>"bakery",_=>key};
         string path=key is "dairy" or "sugar_factory" or "confectionery" or "bakery"?"res://tablets_v1/assets/"+key+".svg":"res://tablets_v1/assets/icons/"+key+".svg";
         if(key=="sawmill")path="res://delsk_sawmill_ui/assets/sawmill.svg";
-        if(!ResourceLoader.Exists(path))path="res://tablets_v1/assets/icons/home.svg";
-        return new(){Texture=GD.Load<Texture2D>(path),CustomMinimumSize=size,ExpandMode=TextureRect.ExpandModeEnum.IgnoreSize,StretchMode=TextureRect.StretchModeEnum.KeepAspectCentered,MouseFilter=Control.MouseFilterEnum.Ignore};
+        if(key is "metallurgy" or "materials" or "machinery")path="res://game_ui/art/"+key+".svg";
+        return ResourceLoader.Exists(path)?GD.Load<Texture2D>(path):GameUiArt.Item(key);
     }
     public static void CompactInputs(Node root)
     {
@@ -73,5 +75,5 @@ public static class TabletDesign
 public partial class TabletColumns : BoxContainer
 {
     public float Breakpoint {get;set;}=850;
-    public TabletColumns(){SizeFlagsHorizontal=SizeFlags.ExpandFill;Resized+=()=>Vertical=Size.X<Breakpoint;}
+    public TabletColumns(){SizeFlagsHorizontal=SizeFlags.ExpandFill;Resized+=()=>{Vertical=Size.X<Breakpoint;AddThemeConstantOverride("separation",GetViewportRect().Size.Y<540?3:8);};}
 }

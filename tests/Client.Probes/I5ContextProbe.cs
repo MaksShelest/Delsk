@@ -145,7 +145,7 @@ public partial class I5ContextProbe : Control
             var copy=CheckpointStore.Decode(CheckpointStore.Encode(_session));copy.RestoreControllers(c=>c.Kind==SelfBallotController.Kind?SelfBallotController.Restore(c):AlgorithmicController.Restore(c));
             for(int i=0;i<3;i++){_session.Step();copy.Step();Check(_session.Engine.ComputeStateHash()==copy.Engine.ComputeStateHash(),"UI actions preserve exact restored future");}
             Call(_app,"Refresh");
-            Check(Panel.GetGlobalRect().Position.X>=0&&Panel.GetGlobalRect().End.X<=width+1&&Panel.GetGlobalRect().End.Y<=GetViewportRect().Size.Y+1,"panel fits the real viewport");
+            Check(Panel.GetGlobalRect().Position.X>=0&&Panel.GetGlobalRect().End.X<=width+1&&Panel.GetGlobalRect().End.Y<=GetViewportRect().Size.Y+1,"panel fits the real viewport: panel="+Panel.GetGlobalRect()+" viewport="+GetViewportRect()+" dock="+Field<Control>(_app,"_bottomChrome").GetGlobalRect());
             await Shot("after-command");
             var at=_session.Engine.Observe(new(1)).Participant.Position;var target=new Cell(at.X,at.Z+1);
             string move=_session.Send(new(1),PlayerDesk.Move(target.X,target.Z));

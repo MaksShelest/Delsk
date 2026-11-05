@@ -8,6 +8,7 @@ public partial class HouseholdObjectCard : VBoxContainer
     public event System.Action<bool>? ArtworkHeaderChanged;
     public event System.Action? HelpRequested;
     public event System.Action? MapRequested;
+    public event System.Action? FleetRequested;
     public event System.Action? CloseRequested;
     private readonly ScenarioDefinition _scenario;
     private readonly string _language;
@@ -42,16 +43,18 @@ public partial class HouseholdObjectCard : VBoxContainer
     private readonly TabletColumns _quickTransfers=new(){Name="EnterpriseQuickTransfers",Breakpoint=760,Visible=false};
     private readonly QuickStockTransfer _quickPut,_quickTake;
     private readonly WoodworkingTabletPresenter? _woodworking;
+    private readonly ExtractionTabletPresenter? _extraction;
+    private readonly bool _storeObject;
 
     public HouseholdObjectCard(ScenarioDefinition scenario, string language, string kind, long id,
-        System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access,System.Func<long,bool,DemolitionQuote?>? demolitionQuote=null,bool woodworkingPrototype=false)
+        System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access,System.Func<long,bool,DemolitionQuote?>? demolitionQuote=null,bool woodworkingPrototype=false,string productionType="woodworking")
     {
         _quickPut=new(scenario,language,"EnterprisePut",PlayerText.Local(language,"Положить всё","Store all"),submit,access);
         _quickTake=new(scenario,language,"EnterpriseTake",PlayerText.Local(language,"Забрать всё","Take all"),submit,access);
         _quickTransfers.AddChild(_quickPut);_quickTransfers.AddChild(_quickTake);AddChild(_quickTransfers);
-        _scenario = scenario; _language = language; _kind = kind; _id = id; _submit = submit; _access = access;
-        if(scenario.Economy?.Storage is not null&&kind=="building"){_storagePanel=new(scenario,language,kind,id,submit,access,true);AddChild(_storagePanel);}
-        if(demolitionQuote is not null&&kind=="building"){_demolitionPanel=new(language,submit,demolitionQuote,access);AddChild(_demolitionPanel);}
+        _scenario = scenario; _language = language; _kind = kind; _id = id; _submit = submit; _access = access;_storeObject=kind=="building"&&(productionType is "warehouse" or "shop");
+        if(scenario.Economy?.Storage is not null&&kind=="building"){_storagePanel=new(scenario,language,kind,id,submit,access,!_storeObject,_storeObject?demolitionQuote:null);AddChild(_storagePanel);}
+        if(demolitionQuote is not null&&kind=="building"&&!_storeObject){_demolitionPanel=new(language,submit,demolitionQuote,access);AddChild(_demolitionPanel);}
         if(scenario.Economy?.Workshops is not null&&kind=="building"){_workshopPanel=new(scenario,language,id,submit,access);AddChild(_workshopPanel);}
         if(scenario.Economy?.Development is not null&&kind=="building"){_developmentPanel=new(scenario,language,id,submit,access);AddChild(_developmentPanel);}
         AddChild(_details);AddChild(_recipeCards);_details.AddChild(_heading);_details.AddChild(_progress);_details.AddChild(_stock);_details.AddChild(_workers);_details.AddChild(_delivery);
@@ -60,22 +63,29 @@ public partial class HouseholdObjectCard : VBoxContainer
         _details.AddChild(_actions);
         var routeToggle=new Button{Name="HouseholdRoutes",Text=L("Маршруты ▸","Routes ▸"),FocusMode=FocusModeEnum.None};_details.AddChild(routeToggle);
         routeToggle.Visible=!(kind=="equipment"&&scenario.Economy?.Fleet?.EquipmentDealerVersion==1);
-        _routes=new(scenario,language,kind,id,submit){Visible=false};_details.AddChild(_routes);routeToggle.Pressed+=()=>_routes.Visible=!_routes.Visible;
+        _routes=new(scenario,language,kind,id,submit){Visible=false};_routes.FleetRequested+=()=>FleetRequested?.Invoke();_details.AddChild(_routes);routeToggle.Pressed+=()=>_routes.Visible=!_routes.Visible;
         TabletDesign.CompactInputs(this);Resized+=LayoutCard;
         _quantity.ValueChanged += _ => { if (_lastView is not null) ShowData(_lastView,_pending,_paused); };
+        if(_storeObject){_details.Visible=false;if(_workshopPanel is not null)_workshopPanel.Visible=false;if(_developmentPanel is not null)_developmentPanel.Visible=false;}
         if(woodworkingPrototype)
         {
-            SizeFlagsVertical=SizeFlags.ExpandFill;_woodworking=new(scenario,language,id,submit,access,_quickPut,_quickTake);_woodworking.MapRequested+=()=>MapRequested?.Invoke();
+            SizeFlagsVertical=SizeFlags.ExpandFill;_woodworking=new(scenario,language,id,submit,access,_quickPut,_quickTake,productionType);_woodworking.MapRequested+=()=>MapRequested?.Invoke();
             void Move(Control? control,string page){if(control is null)return;RemoveChild(control);_woodworking.Page(page).AddChild(control);}
-            Move(_workshopPanel,"workers");Move(_developmentPanel,"development");Move(_details,"delivery");Move(_storagePanel,"delivery");
+            Move(_workshopPanel,"workers");Move(_developmentPanel,"development");RemoveChild(_details);_details.RemoveChild(_routes);routeToggle.Visible=false;_routes.Visible=true;_woodworking.Page("delivery").AddChild(_routes);_woodworking.Page("delivery").AddChild(new UiDisclosure(L("Запасы и расширенные настройки","Stocks & advanced settings"),_details));Move(_storagePanel,"delivery");
             if(_demolitionPanel is not null){RemoveChild(_demolitionPanel);_woodworking.Management.AddChild(_demolitionPanel);}
             _recipeCards.Visible=false;AddChild(_woodworking);
+        }
+        else if(kind=="equipment"&&scenario.Economy?.Fleet?.EquipmentDealerVersion==1)
+        {
+            RemoveChild(_details);_heading.Visible=_stock.Visible=_workers.Visible=_delivery.Visible=_progress.Visible=false;
+            _extraction=new(scenario,language,id,submit,access,_details);_extraction.MapRequested+=()=>MapRequested?.Invoke();AddChild(_extraction);
         }
     }
 
     public void ShowData(PlayerView view, bool pending, bool paused)
     {
         if(_storagePanel is not null){_storagePanel.Visible=view.Buildings.Any(b=>b.Id.Value==_id);if(_storagePanel.Visible)_storagePanel.ShowData(view,pending);}
+        if(_storeObject)return;
         var buildingWork=view.Storage?.Construction.FirstOrDefault(c=>c.BuildingId==_id);_demolitionPanel?.ShowData(view,pending,buildingWork?.Id??_id,buildingWork is not null);
         _workshopPanel?.ShowData(view,pending);_developmentPanel?.ShowData(view,pending);
         _lastView = view; _pending = pending; _paused = paused;_routes.ShowData(view,pending);
@@ -182,6 +192,7 @@ public partial class HouseholdObjectCard : VBoxContainer
             _detailsToggle.Pressed+=()=>{_expanded=!_expanded;LayoutCard();};
         }
         if(_woodworking is not null)_woodworking.ShowData(view,pending);
+        else if(_extraction is not null)_extraction.ShowData(view,pending);
         else if(_showProductionTablet){_productionTablet!.ShowData(view,paused,_buttons);ShowRecipeCards(building!,enterprise!);}LayoutCard();
         if(view.Transfers.Length==0 && !pending)_activeTransferKey=null;
         foreach(var (key,pair) in _buttons)
@@ -230,7 +241,7 @@ public partial class HouseholdObjectCard : VBoxContainer
     private bool _showProductionTablet;
     private void LayoutCard()
     {
-        if(_woodworking is not null)return;
+        if(_woodworking is not null||_extraction is not null||_storeObject)return;
         bool artwork=_showProductionTablet && Size.X>=980;
         if(_productionTablet is not null)_productionTablet.Visible=artwork;
         if(_detailsToggle is not null)_detailsToggle.Visible=artwork;
@@ -293,7 +304,7 @@ public partial class HouseholdObjectCard : VBoxContainer
                     if(row.Action.Kind!=ActionKind.Transfer){button.AutowrapMode=TextServer.AutowrapMode.Off;button.SizeFlagsHorizontal=SizeFlags.ShrinkBegin;}
                     button.Name="I4Object_"+row.Key.Replace(':','_')+"_"+_id;
                 }
-                string key = row.Key; button.Pressed += () => {var action=_buttons[key].Action;if(action.Kind==ActionKind.Transfer)_activeTransferKey=key;_submit(action);};
+                string key = row.Key; button.Pressed += () => {if(_pending||!_buttons.TryGetValue(key,out var current)||current.Button.Disabled)return;var action=current.Action;if(action.Kind==ActionKind.Transfer)_activeTransferKey=key;_pending=true;current.Button.Disabled=true;_submit(action);};
                 string section = row.Action.Kind switch
                 {
                     ActionKind.Transfer => L("Запасы и перенос", "Stock and transfers"),
@@ -304,8 +315,11 @@ public partial class HouseholdObjectCard : VBoxContainer
                 if (!_actionGroups.TryGetValue(section,out var group))
                 {
                     var toggle = new Button {Name="HouseholdGroup_"+(row.Action.Kind==ActionKind.Transfer?"Transfer":row.Action.Kind.ToString()),Text = section + " ▸",FocusMode=FocusModeEnum.None,Alignment=HorizontalAlignment.Left};
-                    _actions.AddChild(toggle); group = _kind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion==1&&row.Action.Kind!=ActionKind.Transfer?TabletDesign.Flow():new VBoxContainer();group.Visible=section==L("Работа и улучшения", "Work and upgrades"); _actions.AddChild(group);
-                    var target=group;toggle.Pressed += () => target.Visible=!target.Visible;_actionGroups.Add(section,group);
+                    var host=_extraction is null?_actions:section==L("Работа и улучшения","Work and upgrades")?_extraction.WorkActions:section==L("Работники и зарплата","Workers and wages")?_extraction.TeamActions:_extraction.ExtraActions;
+                    group=_kind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion==1&&row.Action.Kind!=ActionKind.Transfer?TabletDesign.Flow():new VBoxContainer();
+                    bool primary=_extraction is not null&&row.Action.Kind!=ActionKind.Transfer;group.Visible=primary||section==L("Работа и улучшения","Work and upgrades");
+                    if(!primary)host.AddChild(toggle);else toggle.QueueFree();host.AddChild(group);
+                    var target=group;if(!primary)toggle.Pressed+=()=>{target.Visible=!target.Visible;toggle.Text=section+(target.Visible?" ▾":" ▸");};_actionGroups.Add(section,group);
                 }
                 group.AddChild(button); old = (button, row.Action);
             }

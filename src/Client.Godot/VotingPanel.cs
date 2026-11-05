@@ -9,16 +9,16 @@ public partial class VotingPanel:PanelContainer
     private readonly string _language;
     public VotingPanel(string language,ElectionObservation election,System.Action<ParticipantId> cast)
     {
-        _language=language;Theme=TabletDesign.Theme;SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);OffsetLeft=80;OffsetRight=-80;OffsetTop=76;OffsetBottom=-55;
-        AddThemeStyleboxOverride("panel",TabletDesign.Box("f7f3e8",28,22));
+        _language=language;Theme=TabletDesign.Theme;SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);OffsetLeft=16;OffsetRight=-16;OffsetTop=16;OffsetBottom=-16;
+        AddThemeStyleboxOverride("panel",TabletDesign.Box("f7f8f3",12,10));
         var box=new VBoxContainer();AddChild(box);
-        box.AddChild(TabletDesign.Art("vote",new(60,60)));box.AddChild(TabletDesign.Heading(L("Выборы · экономика остановлена","Election · economy stopped"),25));box.AddChild(TabletDesign.Wrap(_summary,true));
+        box.AddChild(TabletDesign.Heading(L("Выборы · экономика остановлена","Election · economy stopped"),25));box.AddChild(TabletDesign.Wrap(_summary,true));
         var scroll=new ScrollContainer{SizeFlagsVertical=SizeFlags.ExpandFill,HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};box.AddChild(scroll);
         var choices=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};scroll.AddChild(choices);
         foreach(var candidate in election.Participants)
         {
             var button=new Button{Text=L("Отдать голос: ","Cast ballot: ")+WorldSkins.ActorName(candidate.Value,_language),FocusMode=FocusModeEnum.None};
-            button.Pressed+=()=>cast(candidate);choices.AddChild(button);_votes.Add(candidate,button);
+            button.CustomMinimumSize=new(40,44);button.Pressed+=()=>{if(button.Disabled)return;button.Disabled=true;cast(candidate);};choices.AddChild(button);_votes.Add(candidate,button);
         }
     }
     public void ShowData(ParticipantId actor,ElectionObservation election)

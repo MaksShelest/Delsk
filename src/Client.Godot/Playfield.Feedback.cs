@@ -42,7 +42,7 @@ public partial class Playfield
     }
     private void OpenFeedbackSettings()
     {
-        var dialog=new AcceptDialog{Title=L("Реплики и звук","Speech and audio"),Size=new(540,310)};
+        var dialog=new AcceptDialog{Theme=TabletDesign.Theme,Title=L("Реплики и звук","Speech and audio"),Size=new(540,310)};
         var column=new VBoxContainer();dialog.AddChild(column);
         var speech=new CheckButton{Text=L("Реплики NPC","NPC speech"),ButtonPressed=_feedbackPreferences.Speech};column.AddChild(speech);
         speech.Toggled+=enabled=>{_feedbackPreferences=_feedbackPreferences with {Speech=enabled};SaveFeedback();};

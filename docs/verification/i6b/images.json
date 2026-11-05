@@ -1,0 +1,82 @@
+[
+  {
+    "file": "i6b-01-player-ru-1100.png",
+    "width": 1100,
+    "height": 720,
+    "sha256": "7563d8ef99a2be53b7537dad65ee5579b2533d105adcee31831c779be1b0ca8e",
+    "source": "native-12",
+    "prepared": true
+  },
+  {
+    "file": "i6b-02-sawmill-ru-1100.png",
+    "width": 1100,
+    "height": 720,
+    "sha256": "1a7a96dce88f253f7ed4af9b7157e774cdcdf43401fff3d950a98c03bb3e9177",
+    "source": "native-12",
+    "prepared": true
+  },
+  {
+    "file": "i6b-03-multi-input-ru-1100.png",
+    "width": 1100,
+    "height": 720,
+    "sha256": "afa5dcc72696ae0b6413fcbe08da4fa0c059ac0e8a9a1a4c8a5d7e6f259aa1e5",
+    "source": "native-12",
+    "prepared": true
+  },
+  {
+    "file": "i6b-04-extraction-ru-1100.png",
+    "width": 1100,
+    "height": 720,
+    "sha256": "40f324b4ea426922ccaa12373c7244d365437e4c821b554c073ff35a1e60e479",
+    "source": "native-12",
+    "prepared": true
+  },
+  {
+    "file": "i6b-05-dealer-ru-1100.png",
+    "width": 1100,
+    "height": 720,
+    "sha256": "130ba9a368d6e237a73180db025c59ae8a87143371347894bfdf97d4cc4fabe0",
+    "source": "native-12",
+    "prepared": true
+  },
+  {
+    "file": "i6b-06-warehouse-ru-1100.png",
+    "width": 1100,
+    "height": 720,
+    "sha256": "37762462ce7dd39c3eeee6cf794768d718ae10ffafbbe0b49fc99b369b4d71c8",
+    "source": "native-12",
+    "prepared": true
+  },
+  {
+    "file": "i6b-07-exchange-ru-1100.png",
+    "width": 1100,
+    "height": 720,
+    "sha256": "67f834b19ca980d85d648a31f5b31ff0146e3a1144270ad027705e220e93d584",
+    "source": "native-12",
+    "prepared": true
+  },
+  {
+    "file": "i6b-08-logistics-ru-1100.png",
+    "width": 1100,
+    "height": 720,
+    "sha256": "09fd90610fb6e4dc1f65e13c652d8612f8f4086c1e5b9085d634a67d3a00f097",
+    "source": "native-12",
+    "prepared": true
+  },
+  {
+    "file": "i6b-09-city-ru-1100.png",
+    "width": 1100,
+    "height": 720,
+    "sha256": "c257772f41e69ba33d97c250fdd70b522e388915ada037b5718f22a6f2dfaba3",
+    "source": "native-12",
+    "prepared": true
+  },
+  {
+    "file": "i6b-10-landscape-en-960.png",
+    "width": 960,
+    "height": 440,
+    "sha256": "8264a064f98cbb51030b472effc7012abe424f02a6b04bf3aec036b78d54a6a8",
+    "source": "native-12",
+    "prepared": true
+  }
+]

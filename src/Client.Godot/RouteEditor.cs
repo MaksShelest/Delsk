@@ -2,115 +2,95 @@ using Godot;
 using Simulation.Core;
 using Simulation.Hosting;
 
-/// <summary>Edits ordinary commands; the core owns route validity, pathfinding and execution.</summary>
+/// <summary>Source → goods → recipient → executor. Existing Core routes retain their physical semantics.</summary>
 public partial class RouteEditor : VBoxContainer
 {
-    private readonly ScenarioDefinition _scenario;
-    private readonly string _language,_kind;
-    private readonly long _object;
-    private readonly System.Action<GameAction> _submit;
-    private readonly RouteMiniMap _map;
-    private readonly List<Cell> _stops=[];
-    private readonly CheckBox _repeat=null!;
-    private readonly Label _status=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};
-    private readonly OptionButton _source=null!,_destination=null!,_item=null!;
-    private readonly Button _apply=new(),_stop=new();
-    private PlayerView? _view;
-    private string _inventoryKey="";
-    private bool _extractionInitialized,_transportInitialized;
-    public RouteEditor(ScenarioDefinition scenario,string language,string kind,long id,System.Action<GameAction> submit)
+    public event Action? FleetRequested;
+    private readonly ScenarioDefinition _scenario;private readonly string _language,_kind;private readonly long _object;private readonly Action<GameAction> _submit;
+    private readonly RouteMiniMap _map;private readonly List<Cell> _stops=[];private readonly CheckBox _repeat=null!;
+    private readonly Label _status=GameUi.Text(),_overview=GameUi.Text();private readonly OptionButton _source=null!,_destination=null!,_item=null!;
+    private readonly Button _apply=new(),_stop=new(),_fleet;
+    private PlayerView? _view;private bool _pending,_extractionInitialized,_transportInitialized;private string _inventoryKey="";
+    public RouteEditor(ScenarioDefinition scenario,string language,string kind,long id,Action<GameAction> submit)
     {
-        _scenario=scenario;_language=language;_kind=kind;_object=id;_submit=submit;
-        AddChild(_status);_map=new(scenario){CustomMinimumSize=new(520,260)};AddChild(_map);
+        Name="RouteEditor";_scenario=scenario;_language=language;_kind=kind;_object=id;_submit=submit;_status.Name="RouteStatus";_overview.Name="RouteOverview";
+        AddChild(TabletDesign.Heading(L("Маршрут доставки","Delivery route"),21));AddChild(_status);AddChild(GameUi.Card(_overview));
+        _map=new(scenario){CustomMinimumSize=new(0,210),SizeFlagsHorizontal=SizeFlags.ExpandFill};
+        _fleet=GameUi.Button("RouteFleet",L("Выбрать машину в автопарке","Choose a vehicle in Fleet"),()=>FleetRequested?.Invoke());AddChild(_fleet);
         if(kind=="equipment")
         {
-            _repeat=new();
-            _map.Chosen+=cell=>{if(_map.Allowed.Contains(cell)&&_stops.Count<32){_stops.Add(cell);RefreshStops();}};
-            var row=new TabletColumns{Breakpoint=650};AddChild(row);
-            var undo=new Button{Text=L("Убрать последнюю","Remove last")};undo.Pressed+=()=>{if(_stops.Count>0)_stops.RemoveAt(_stops.Count-1);RefreshStops();};row.AddChild(undo);
-            var clear=new Button{Text=L("Очистить","Clear")};clear.Pressed+=()=>{_stops.Clear();RefreshStops();};row.AddChild(clear);
-            _repeat.Text=L("Повторять","Repeat");row.AddChild(_repeat);
-            var move=new Button{Text=L("Переехать к первой остановке","Move to first stop")};
-            move.Pressed+=()=>{if(_stops.Count>0)_submit(new(ActionKind.MoveEquipment,Equipment:new(_object),Target:_stops[0]));};row.AddChild(move);
-            _apply.Text=L("Сохранить и включить маршрут","Save and enable route");_apply.Pressed+=()=>_submit(new(ActionKind.SetExtractionRoute,Equipment:new(_object),Stops:[.._stops],Repeat:_repeat.ButtonPressed,Enabled:true));
-            _stop.Text=L("Выключить маршрут после текущего перехода","Disable route after current leg");_stop.Pressed+=()=>_submit(new(ActionKind.SetExtractionRoute,Equipment:new(_object),Stops:[.._stops],Repeat:_repeat.ButtonPressed,Enabled:false));
+            _repeat=new(){Text=L("Повторять","Repeat")};_map.Chosen+=cell=>{if(_map.Allowed.Contains(cell)&&_stops.Count<32){_stops.Add(cell);RefreshStops();}};
+            var row=TabletDesign.Flow();AddChild(row);row.AddChild(GameUi.Button("RouteUndo",L("Убрать последнюю","Remove last"),()=>{if(_stops.Count>0)_stops.RemoveAt(_stops.Count-1);RefreshStops();}));row.AddChild(GameUi.Button("RouteClear",L("Очистить","Clear"),()=>{_stops.Clear();RefreshStops();}));row.AddChild(_repeat);
+            row.AddChild(GameUi.Button("RouteMoveFirst",L("К первой остановке","Go to first stop"),()=>{if(_stops.Count>0)Send(new(ActionKind.MoveEquipment,Equipment:new(_object),Target:_stops[0]));}));
+            _apply.Text=L("Сохранить и включить","Save & enable");_apply.Pressed+=()=>Send(new(ActionKind.SetExtractionRoute,Equipment:new(_object),Stops:[.._stops],Repeat:_repeat.ButtonPressed,Enabled:true));
+            _stop.Text=L("Остановить маршрут","Stop route");_stop.Pressed+=()=>Send(new(ActionKind.SetExtractionRoute,Equipment:new(_object),Stops:[.._stops],Repeat:_repeat.ButtonPressed,Enabled:false));AddChild(_map);
         }
         else
         {
-            _source=new();_destination=new();_item=new();
-            foreach(var pair in new[]{(L("Источник","Source"),_source),(L("Получатель","Destination"),_destination),(L("Товар","Item"),_item)})
-            {var row=new TabletColumns{Breakpoint=650};row.AddChild(new Label{Text=pair.Item1,CustomMinimumSize=new(130,0)});pair.Item2.SizeFlagsHorizontal=SizeFlags.ExpandFill;row.AddChild(pair.Item2);AddChild(row);}
+            _source=new(){Name="RouteSource"};_destination=new(){Name="RouteDestination"};_item=new(){Name="RouteItem"};
+            var fields=new TabletColumns{Breakpoint=700};AddChild(fields);
+            foreach(var pair in new[]{(L("Источник","Source"),_source),(L("Товар","Goods"),_item),(L("Получатель","Recipient"),_destination)})
+            {var box=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};box.AddChild(GameUi.Hint(pair.Item1));pair.Item2.SizeFlagsHorizontal=SizeFlags.ExpandFill;box.AddChild(pair.Item2);fields.AddChild(box);pair.Item2.ItemSelected+=_=>Preview();}
             foreach(var item in scenario.Items){_item.AddItem(PlayerText.Item(language,item.Id));_item.SetItemMetadata(_item.ItemCount-1,item.Id);}
-            _apply.Text=L("Сохранить и включить доставку","Save and enable transport");_apply.Pressed+=()=>SendTransport(true);
-            _stop.Text=L("Выключить маршрут; начатый рейс завершится","Disable route; finish current trip");_stop.Pressed+=()=>SendTransport(false);
+            _apply.Text=L("Сохранить и включить доставку","Save & enable delivery");_apply.Pressed+=()=>SendTransport(true);_stop.Text=L("Остановить маршрут","Stop route");_stop.Pressed+=()=>SendTransport(false);
+            AddChild(new UiDisclosure(L("Карта и подробности","Map & details"),_map));
         }
-        AddChild(_apply);AddChild(_stop);
+        var actions=TabletDesign.Flow();_apply.Name="RouteApply";_stop.Name="RouteStop";actions.AddChild(_apply);actions.AddChild(_stop);AddChild(actions);GameUi.Primary(_apply);
+        AddChild(GameUi.Hint(L("Начатый рейс завершится после выключения маршрута. Груз и обязательства сохраняются.","An active trip finishes after disabling the route. Cargo and commitments are retained.")));
+        Resized+=()=>_map.CustomMinimumSize=new(0,GetViewportRect().Size.Y<540?140:210);
     }
+    private string L(string ru,string en)=>GameUi.L(_language,ru,en);
+    private void Send(GameAction action){if(_pending)return;_pending=true;_apply.Disabled=_stop.Disabled=true;_submit(action);}
+    private static long Id(OptionButton option)=>option.Selected>=0&&option.ItemCount>0?option.GetItemMetadata(option.Selected).AsInt64():0;
     public void ShowData(PlayerView view,bool pending)
     {
-        _view=view;_map.Blocked=view.Blocked.ToHashSet();
+        _view=view;_pending=pending;_map.Blocked=view.Blocked.ToHashSet();
         if(_kind=="equipment")
         {
             var machine=view.Equipment!.Single(e=>e.Id.Value==_object);string item=_scenario.EquipmentTypes!.Single(t=>t.Id==machine.TypeId).ItemId;
-            if(!_extractionInitialized && machine.Route is {} route)
-            {_stops.Clear();_stops.AddRange(route.Stops);_repeat.SetPressedNoSignal(route.Repeat);_extractionInitialized=true;}
-            _map.Allowed=view.Resources.Where(r=>r.Owner==view.Participant.Id && r.ItemId==item).Select(r=>r.Position).ToHashSet();
-            _map.Current=machine.Position;
-            _status.Text=TabletText.Reason(_language,machine.ReasonCode)+L("\nВыберите свои клетки на карте по порядку (до 32). Рейс и груз сохраняются при изменении маршрута.","\nSelect owned stops in order (up to 32). Editing preserves the active leg and cargo.")+"\n"+
-                L("Действующий маршрут: ","Active route: ")+string.Join(" → ",machine.Route?.Stops.Select(c=>$"({c.X},{c.Z})")??[]);
-            _apply.Disabled=pending||_stops.Count==0;_stop.Disabled=pending;RefreshStops();
+            if(!_extractionInitialized&&machine.Route is {} route){_stops.Clear();_stops.AddRange(route.Stops);_repeat.SetPressedNoSignal(route.Repeat);_extractionInitialized=true;}
+            _map.Allowed=view.Resources.Where(r=>r.Owner==view.Participant.Id&&r.ItemId==item).Select(r=>r.Position).ToHashSet();_map.Current=machine.Position;
+            _status.Text=GameUi.Reason(_language,machine.ReasonCode);_overview.Text=L("Выберите свои участки на карте по порядку. Остановок: ","Select your owned sites on the map in order. Stops: ")+_stops.Count;
+            _apply.Disabled=pending||_stops.Count==0;_stop.Disabled=pending;_fleet.Visible=false;RefreshStops();
         }
         else
         {
             var system=view.Logistics.SingleOrDefault(l=>l.EnterpriseId.Value==_object);
-            _status.Text=system is null?L("Сначала купите доставку предприятия.","Buy the enterprise's logistics first."):
-                TabletText.Reason(_language,system.ReasonCode)+L("\nИсточник → получатель; количество определяется запасом и вместимостью.","\nSource → destination; stock and capacity determine quantity.");
-            var sources=view.Inventories.Where(i=>view.Buildings.Any(b=>b.InputId==i.Id||b.OutputId==i.Id)||view.Equipment!.Any(e=>e.StorageId==i.Id)).ToArray();
-            var destinations=view.Inventories.Where(i=>view.Buildings.Any(b=>b.InputId==i.Id)).ToArray();
-            string key=string.Join(',',sources.Select(i=>$"{i.Id.Value}:{i.Position}"))+"|"+string.Join(',',destinations.Select(i=>i.Id.Value));
-            if(key!=_inventoryKey){_inventoryKey=key;Fill(_source,sources);Fill(_destination,destinations);}
+            _status.Text=system is null?L("Назначьте предприятию машину в автопарке, затем выберите точки доставки.","Assign a vehicle to this enterprise in Fleet, then choose delivery endpoints."):GameUi.Reason(_language,system.ReasonCode);
+            _fleet.Visible=system is null;
+            var sources=view.Inventories.Where(i=>view.Buildings.Any(b=>b.InputId==i.Id||b.OutputId==i.Id)||(view.Equipment??[]).Any(e=>e.StorageId==i.Id)).ToArray();
+            var destinations=view.Inventories.Where(i=>view.Buildings.Any(b=>b.InputId==i.Id)).ToArray();string key=string.Join(',',sources.Select(i=>$"{i.Id.Value}:{i.Position}"))+"|"+string.Join(',',destinations.Select(i=>i.Id.Value));
+            if(key!=_inventoryKey&&!_source.GetPopup().Visible&&!_destination.GetPopup().Visible){_inventoryKey=key;Fill(_source,sources);Fill(_destination,destinations);}
             var configured=system?.Queue.Where(j=>j.Source.Value!=0).OrderByDescending(j=>j.Enabled).ThenByDescending(j=>j.LastServed).FirstOrDefault();
-            if(!_transportInitialized && configured is not null)
+            if(!_transportInitialized)
             {
-                Select(_source,configured.Source.Value);Select(_destination,configured.Destination.Value);
-                for(int i=0;i<_item.ItemCount;i++)if(_item.GetItemMetadata(i).AsString()==configured.ItemId)_item.Select(i);
-                _transportInitialized=true;
+                if(configured is not null){Select(_source,configured.Source.Value);Select(_destination,configured.Destination.Value);SelectItem(configured.ItemId);_transportInitialized=true;}
+                else if(view.Enterprises.FirstOrDefault(e=>e.Id.Value==_object) is {} enterprise)
+                {Select(_source,enterprise.OutputId.Value);var warehouse=view.Buildings.FirstOrDefault(b=>b.Kind==BuildingKind.Warehouse);if(warehouse is not null)Select(_destination,warehouse.InputId.Value);SelectItem(_scenario.Recipes.Single(r=>r.Id==enterprise.RecipeId).OutputItem);_transportInitialized=true;}
             }
             _map.Allowed=sources.Concat(destinations).Select(i=>i.Position).ToHashSet();_map.Current=view.Participant.Position;
-            bool unavailable=pending||system is null||sources.Length==0||destinations.Length==0;
-            _apply.Disabled=unavailable||_source.GetItemMetadata(_source.Selected).AsInt64()==_destination.GetItemMetadata(_destination.Selected).AsInt64();
-            _stop.Disabled=pending||system is null||!system.Queue.Any(j=>j.Source.Value!=0&&j.Enabled);
-            _map.QueueRedraw();
+            _apply.Disabled=pending||system is null||sources.Length==0||destinations.Length==0||Id(_source)==Id(_destination);_stop.Disabled=pending||system is null||!system.Queue.Any(j=>j.Source.Value!=0&&j.Enabled);Preview();_map.QueueRedraw();
         }
+        if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Size.X);
     }
+    private void Preview()
+    {
+        if(_kind=="equipment"||_view is null)return;
+        var system=_view.Logistics.FirstOrDefault(l=>l.EnterpriseId.Value==_object);var car=_view.Fleet?.Vehicles.FirstOrDefault(v=>v.Vehicle.Id==system?.VehicleId);
+        string executor=car?.Model.Name??L("Команда логистики","Logistics crew"),item=_item.Selected<0?"":_item.GetItemMetadata(_item.Selected).AsString();
+        _overview.Text=GameUi.InventoryName(_view,Id(_source),_language)+" → "+PlayerText.Item(_language,item)+" → "+GameUi.InventoryName(_view,Id(_destination),_language)+"\n"+L("Исполнитель: ","Executor: ")+executor+" · "+(system?.Trip is {} trip?trip.Quantity+L(" ед. в текущем рейсе"," units in the current trip"):L("Количество определяется запасом и местом в кузове.","Quantity follows available stock and cargo capacity."));
+    }
+    private void SelectItem(string id){for(int i=0;i<_item.ItemCount;i++)if(_item.GetItemMetadata(i).AsString()==id)_item.Select(i);}
     private void SendTransport(bool enabled)
     {
-        var system=_view!.Logistics.Single(l=>l.EnterpriseId.Value==_object);
-        if(!enabled)
-        {
-            var job=system.Queue.FirstOrDefault(j=>j.Source.Value!=0&&j.Enabled);
-            if(job is not null)_submit(new(ActionKind.SetTransportRoute,Logistics:system.Id,Source:job.Source,Destination:job.Destination,ItemId:job.ItemId,Enabled:false));
-            return;
-        }
-        _submit(new(ActionKind.SetTransportRoute,Logistics:system.Id,Source:new(_source.GetItemMetadata(_source.Selected).AsInt64()),
-            Destination:new(_destination.GetItemMetadata(_destination.Selected).AsInt64()),ItemId:_item.GetItemMetadata(_item.Selected).AsString(),Enabled:enabled));
+        if(_pending||_view?.Logistics.FirstOrDefault(l=>l.EnterpriseId.Value==_object) is not {} system)return;
+        if(!enabled){var job=system.Queue.FirstOrDefault(j=>j.Source.Value!=0&&j.Enabled);if(job is not null)Send(new(ActionKind.SetTransportRoute,Logistics:system.Id,Source:job.Source,Destination:job.Destination,ItemId:job.ItemId,Enabled:false));return;}
+        if(_apply.Disabled||_item.Selected<0)return;Send(new(ActionKind.SetTransportRoute,Logistics:system.Id,Source:new(Id(_source)),Destination:new(Id(_destination)),ItemId:_item.GetItemMetadata(_item.Selected).AsString(),Enabled:true));
     }
     private void Fill(OptionButton option,InventoryView[] inventories)
-    {
-        long selected=option.ItemCount>0?option.GetItemMetadata(option.Selected).AsInt64():0;option.Clear();
-        foreach(var inventory in inventories)
-        {
-            var building=_view!.Buildings.SingleOrDefault(b=>b.InputId==inventory.Id||b.OutputId==inventory.Id);
-            var machine=_view.Equipment!.SingleOrDefault(e=>e.StorageId==inventory.Id);
-            string name=building is not null?PlayerText.Building(_language,building.TypeId)+" #"+building.Id.Value+(building.OutputId==inventory.Id?L(" · выход"," · output"):L(" · запас"," · stock")):
-                machine is not null?L("Техника #","Equipment #")+machine.Id.Value:L("Запас #","Stock #")+inventory.Id.Value;
-            option.AddItem(name+$" ({inventory.Position.X},{inventory.Position.Z})");int i=option.ItemCount-1;option.SetItemMetadata(i,inventory.Id.Value);if(inventory.Id.Value==selected)option.Select(i);
-        }
-    }
-    private static void Select(OptionButton option,long id)
-    {for(int i=0;i<option.ItemCount;i++)if(option.GetItemMetadata(i).AsInt64()==id)option.Select(i);}
+    {long selected=Id(option);option.Clear();foreach(var inventory in inventories){option.AddItem(GameUi.InventoryName(_view!,inventory.Id.Value,_language));option.SetItemMetadata(option.ItemCount-1,inventory.Id.Value);if(inventory.Id.Value==selected)option.Select(option.ItemCount-1);}}
+    private static void Select(OptionButton option,long id){for(int i=0;i<option.ItemCount;i++)if(option.GetItemMetadata(i).AsInt64()==id)option.Select(i);}
     private void RefreshStops(){_map.Stops=[.._stops];_map.QueueRedraw();}
-    private string L(string ru,string en)=>PlayerText.Local(_language,ru,en);
 }
 
 public partial class RouteMiniMap(ScenarioDefinition scenario) : Control
