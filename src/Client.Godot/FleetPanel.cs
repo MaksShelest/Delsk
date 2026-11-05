@@ -13,20 +13,22 @@ public partial class FleetPanel : VBoxContainer
     private readonly Label _summary=TextLabel();
     private readonly OptionButton _source=new(){Name="FleetTransferSource"},_destination=new(){Name="FleetTransferDestination"},_item=new(){Name="FleetTransferItem"};
     private readonly SpinBox _quantity=new(){Name="FleetTransferQuantity",MinValue=1,MaxValue=100000,Step=1,Value=1,UpdateOnTextChanged=true};
-    private readonly Button _transfer=new(){Name="FleetTransfer"};
+    private readonly Button _transfer=new(){Name="FleetTransfer"},_all=new(){Name="FleetTransferAll",SizeFlagsHorizontal=SizeFlags.ShrinkBegin};
+    private bool _pending;
     private readonly Dictionary<long,(Label Label,Button Buy)> _listings=[];
     private readonly Dictionary<long,(Label Label,VBoxContainer Controls)> _vehicles=[];
     private readonly List<(Button Button,GameAction Action)> _actions=[];
     private PlayerView? _view;
     private long[] _inventoryIds=[];
     private string _controlsKey="",_transferKey="";
-    public FleetPanel(string language,Action<GameAction> submit,Func<GameAction,ActionAccess> access)
+    public FleetPanel(string language,Action<GameAction> submit,Func<GameAction,ActionAccess> access,ScenarioDefinition scenario)
     {
-        Name="FleetPanel";_language=language;_submit=submit;_access=access;
+        _scenarioForTransfer=scenario;Name="FleetPanel";_language=language;_submit=submit;_access=access;
         AddChild(TabletDesign.Heading(L("Автопарк и автосалон","Fleet and dealer")));AddChild(_summary);AddChild(_stock);AddChild(_owned);
         AddChild(new HSeparator());AddChild(TextLabel(L("Передача груза · источник → получатель. Машина и груз должны быть рядом с вами. Комплекты монтируются из материалов в кузове.","Cargo transfer · source → destination. Vehicle and cargo must be beside you. Kits use materials in the vehicle cargo.")));
-        var flow=TabletDesign.Flow();foreach(var c in new Control[]{_source,_destination,_item,_quantity,_transfer})flow.AddChild(c);AddChild(flow);
-        _transfer.Text=L("Перенести","Transfer");_transfer.Pressed+=()=>{if(_view is null||_source.Selected<0||_destination.Selected<0||_item.Selected<0)return;_submit(new(ActionKind.Transfer,Source:new(_inventoryIds[_source.Selected]),Destination:new(_inventoryIds[_destination.Selected]),ItemId:_item.GetItemMetadata(_item.Selected).AsString(),Quantity:(long)_quantity.Value));};
+        var flow=TabletDesign.Flow();foreach(var c in new Control[]{_source,_destination,_item,_quantity,_all,_transfer})flow.AddChild(c);AddChild(flow);
+        _transfer.Text=L("Перенести","Transfer");_transfer.Pressed+=()=>SendTransfer(false);_all.Pressed+=()=>SendTransfer(true);
+        _quantity.ValueChanged+=_=>RefreshTransfer();foreach(var choice in new[]{_source,_destination,_item})choice.ItemSelected+=_=>RefreshTransfer();
         AddChild(_platforms);
     }
     private string ResourceItem(VehicleModel model)=>_view!.Fleet!.EquipmentTypes.Single(t=>t.Id==model.EquipmentTypeId).ItemId;
@@ -40,7 +42,7 @@ public partial class FleetPanel : VBoxContainer
     private static void Clear(Container host){foreach(Node n in host.GetChildren()){host.RemoveChild(n);n.QueueFree();}}
     public void ShowData(PlayerView view,bool pending)
     {
-        _view=view;Visible=view.Fleet is not null;if(view.Fleet is not {} f)return;
+        _view=view;_pending=pending;Visible=view.Fleet is not null;if(view.Fleet is not {} f)return;
         _summary.Text=L("Покупка у входа в автосалон: ","Purchase at the dealer entrance: ")+$"({f.Dealer.X},{f.Dealer.Z})"+L(". Окно конкуренции 5 тиков. Поставки каждые 500, замена непроданного после 2500. Купленная машина остаётся на стоянке до выезда. Базовая ручная погрузка 10 объёма/тик; кузов её не увеличивает. Время включается кнопкой планшета.",". Competitive window: 5 ticks. Supply every 500, unsold replacement after 2500. A purchased vehicle stays parked until driven away. Base manual loading: 10 volume/tick; a larger body adds no loading power. Use the tablet time button.");
         foreach(long id in _listings.Keys.Where(id=>!f.Stock.Any(v=>v.Id==id)).ToArray()){var row=_listings[id].Label.GetParent().GetParent();row.GetParent().RemoveChild(row);row.QueueFree();_listings.Remove(id);}
         foreach(var listing in f.Stock)
@@ -112,8 +114,24 @@ public partial class FleetPanel : VBoxContainer
         string tk=string.Join(',',nearby.Select(i=>i.Id.Value));if(tk!=_transferKey){_transferKey=tk;_source.Clear();_destination.Clear();_inventoryIds=nearby.Select(i=>i.Id.Value).ToArray();foreach(var i in nearby){string label=i.Id==view.Participant.InventoryId?L("Рюкзак","Backpack"):f.Vehicles.FirstOrDefault(v=>v.Vehicle.CargoInventory==i.Id) is {} vehicle?ModelName(vehicle.Model):L("Хранилище","Storage");_source.AddItem(label+" #"+i.Id.Value);_destination.AddItem(label+" #"+i.Id.Value);}if(nearby.Length>1)_destination.Select(1);}
         // Newly acquired items join the list without resetting the current choice.
         foreach(var id in view.Inventories.SelectMany(i=>i.Stock).Select(s=>s.ItemId).Distinct().Order(StringComparer.Ordinal))if(!Enumerable.Range(0,_item.ItemCount).Any(n=>_item.GetItemMetadata(n).AsString()==id)){_item.AddItem(PlayerText.Item(_language,id));_item.SetItemMetadata(_item.ItemCount-1,id);}
-        _transfer.Disabled=pending||view.Participant.Busy||nearby.Length<2||_item.ItemCount==0;
+        RefreshTransfer();
         if(f.OwnRequests.Length>0)_summary.Text+="\n"+L("Заявка ждёт распределения до тика ","Purchase request closes at tick ")+f.OwnRequests[0].CutoffTick;
+    }
+    private ManualTransferChoice? TransferChoice(bool all)
+    {
+        if(_view is null||_source.Selected<0||_destination.Selected<0||_source.Selected>=_inventoryIds.Length||_destination.Selected>=_inventoryIds.Length||_item.Selected<0)return null;
+        return ManualTransferChoice.Read(_scenarioForTransfer,_view,new(_inventoryIds[_source.Selected]),new(_inventoryIds[_destination.Selected]),_item.GetItemMetadata(_item.Selected).AsString(),_access,_pending,all?null:(long)_quantity.Value);
+    }
+    private readonly ScenarioDefinition _scenarioForTransfer;
+    private void RefreshTransfer()
+    {
+        if(_view is null)return;var all=TransferChoice(true);var selected=TransferChoice(false);
+        _all.Text=L("Всё","All")+" ("+(all?.Maximum??0)+")";_all.Disabled=all is null||!all.Value.Enabled;_transfer.Disabled=selected is null||!selected.Value.Enabled;
+        _all.TooltipText=all?.Explain(_language)??L("Выберите источник, товар и получателя.","Choose source, item and destination.");_transfer.TooltipText=selected?.Explain(_language)??_all.TooltipText;
+    }
+    private void SendTransfer(bool all)
+    {
+        var choice=TransferChoice(all);if(choice is not ManualTransferChoice {Enabled:true} current)return;_pending=true;RefreshTransfer();_submit(current.Action);
     }
     private string State(string state)=>state switch{"ServiceReserved"=>L("Закреплена за доставкой","Reserved for delivery"),"Parked"=>L("Свободна","Parked"),"Personal"=>L("Личное управление","Personal control"),"Installing"=>L("Монтаж","Installing"),_=>TabletText.Reason(_language,state)};
 }

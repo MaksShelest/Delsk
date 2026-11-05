@@ -1,0 +1,79 @@
+{
+  "status": "completed selected phases; no claim of one successful final aggregate",
+  "world": "one prepared compact_valley with human + 3 ordinary NPCs, original checkpoint reused",
+  "phases": [
+    {
+      "name": "player navigation / local holdings open",
+      "attempt": "native-1",
+      "completed": true,
+      "enclosingProcess": "failed at later demolition hold",
+      "evidence": "revision2-attempts.json#native-1"
+    },
+    {
+      "name": "production / recipe / state guidance / transfers / workers",
+      "attempt": "native-2",
+      "completed": true,
+      "enclosingProcess": "succeeded"
+    },
+    {
+      "name": "routes / development / natural button geometry / EN landscape",
+      "attempt": "native-3",
+      "completed": true,
+      "enclosingProcess": "failed at later hold test wall budget"
+    },
+    {
+      "name": "safe quoted demolition / checkpoint round trip",
+      "attempt": "native-4",
+      "completed": true,
+      "enclosingProcess": "succeeded"
+    },
+    {
+      "name": "remote inline sawmill height / scroll / reachability / transfer disabled",
+      "attempt": "native-5",
+      "completed": true,
+      "enclosingProcess": "succeeded"
+    }
+  ],
+  "ordinaryBuildAndAssemblyAudit": "passed; final client build in native-5, isolated probe only in native-4 with byte-unchanged game sources",
+  "nativeLogValidation": {
+    "native-2": 0,
+    "native-4": 0,
+    "native-5": 0
+  },
+  "screenshots": {
+    "revision2-01-player-navigation-ru-1100.png": {
+      "attempt": "native-1",
+      "sha256": "a24eb4b4cc1556c3a35c4edf9bc8c401c741c1085cef40972385d13cac342e95",
+      "resolution": "1100x720",
+      "language": "ru",
+      "source": "native Godot viewport; prepared ordinary Small valley / three NPCs"
+    },
+    "revision2-02-sawmill-working-ru-1100.png": {
+      "attempt": "native-2",
+      "sha256": "29177854653915039726a48ed2f2923ca5ed02962e771e58c2bb25c6f142d5fe",
+      "resolution": "1100x720",
+      "language": "ru",
+      "source": "native Godot viewport; prepared ordinary Small valley / three NPCs"
+    },
+    "revision2-03-sawmill-materials-needed-ru-1100.png": {
+      "attempt": "native-2",
+      "sha256": "4677e1ba13ef6f125eaf863428a7bba2489ec325fe2bb45c69ffdc9f0a268813",
+      "resolution": "1100x720",
+      "language": "ru",
+      "source": "native Godot viewport; prepared ordinary Small valley / three NPCs"
+    },
+    "revision2-04-sawmill-object-actions-ru-1100.png": {
+      "attempt": "native-3",
+      "sha256": "f4dda88ace431ba4f7031a8595bbfbc016223e6268bdf9a0394d6fd125b2cf18",
+      "resolution": "1100x720",
+      "language": "ru",
+      "source": "native Godot viewport; prepared ordinary Small valley / three NPCs"
+    }
+  },
+  "limitations": [
+    "Linux software GL with synthetic input; no physical Android/Windows acceptance",
+    "No usability study with new players",
+    "No additional maps, NPC matrices or economy studies",
+    "Core, economy, NPC, saved formats and mandatory CI unchanged"
+  ]
+}

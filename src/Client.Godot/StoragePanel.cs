@@ -11,16 +11,20 @@ public partial class StoragePanel : VBoxContainer
     private readonly Label _progress=new(){Name="ConstructionProgress",AutowrapMode=TextServer.AutowrapMode.WordSmart};
     private readonly SpinBox _quantity=new(){Name="StorageQuantity",MinValue=1,MaxValue=1000000,Value=1,Step=1,CustomMinimumSize=new(130,44)};
     private readonly VBoxContainer _actions=new();private string _signature="";
+    private readonly QuickStockTransfer _quickPut,_quickTake;
+    private readonly TabletColumns _quick=new(){Name="StorageQuickTransfers",Breakpoint=760};
     private readonly List<(Button Button,Func<GameAction> Action,Func<PlayerView,bool> Allowed)> _buttons=[];
     private readonly Dictionary<long,Label> _deadlines=[];private readonly DemolitionPanel? _demolitionPanel;private PlayerView? _view;private bool _pending;
     public StoragePanel(ScenarioDefinition scenario,string language,string kind,long id,Action<GameAction> submit,Func<GameAction,ActionAccess> access,bool overflowOnly=false,Func<long,bool,DemolitionQuote?>? demolitionQuote=null)
-    {_overflowOnly=overflowOnly;_scenario=scenario;_lang=language;_kind=kind;_id=id;_submit=submit;_access=access;Name="StoragePanel";AddChild(_status);AddChild(_progress);AddChild(_quantity);AddChild(_actions);if(demolitionQuote is not null){_demolitionPanel=new(language,submit,demolitionQuote,access);AddChild(_demolitionPanel);}_quantity.ValueChanged+=_=>{if(_view is {} v)ShowData(v,_pending);};}
+    {_overflowOnly=overflowOnly;_scenario=scenario;_lang=language;_kind=kind;_id=id;_submit=submit;_access=access;Name="StoragePanel";AddChild(_status);AddChild(_progress);AddChild(_quantity);
+        _quickPut=new(scenario,language,"StoragePut",L("Положить всё","Store all"),submit,access);_quickTake=new(scenario,language,"StorageTake",L("Забрать всё","Take all"),submit,access);
+        _quick.AddChild(_quickPut);_quick.AddChild(_quickTake);AddChild(_quick);AddChild(_actions);if(demolitionQuote is not null){_demolitionPanel=new(language,submit,demolitionQuote,access);AddChild(_demolitionPanel);}_quantity.ValueChanged+=_=>{if(_view is {} v)ShowData(v,_pending);};}
     private string L(string ru,string en)=>PlayerText.Local(_lang,ru,en);
     private long Q=>checked((long)_quantity.Value);
     private static long Free(InventoryView i,string item)=>i.Stock.Where(s=>s.ItemId==item).Sum(s=>s.Quantity-s.Reserved);
-    private long Space(InventoryView i,string item)=>Math.Max(0,i.Capacity-i.OccupiedVolume-i.ReservedCapacity)/_scenario.Items.Single(x=>x.Id==item).UnitVolume;
+    private long Space(InventoryView i,string item)=>(long)Int128.Max(0,(Int128)i.Capacity-i.OccupiedVolume-i.ReservedCapacity)/_scenario.Items.Single(x=>x.Id==item).UnitVolume;
     private void Action(string label,Func<GameAction> action,Func<PlayerView,bool> allowed)
-    {var b=new Button{Text=label,CustomMinimumSize=new(0,44),AutowrapMode=TextServer.AutowrapMode.WordSmart};b.Pressed+=()=>_submit(action());_actions.AddChild(b);_buttons.Add((b,action,allowed));}
+    {var b=new Button{Text=label,CustomMinimumSize=new(0,44),AutowrapMode=TextServer.AutowrapMode.WordSmart};b.Pressed+=()=>{if(b.Disabled||_pending||_view is null)return;var current=action();if(!_access(current).Allowed||!allowed(_view))return;_pending=true;b.Disabled=true;_submit(current);};_actions.AddChild(b);_buttons.Add((b,action,allowed));}
     public void ShowData(PlayerView view,bool pending)
     {
         _view=view;_pending=pending;
@@ -29,6 +33,12 @@ public partial class StoragePanel : VBoxContainer
         long? inventory=building?.InputId.Value??view.Storage?.Ground.SingleOrDefault(g=>g.PlotId==_id)?.InventoryId;
         Visible=inventory is not null;if(inventory is null)return;
         var stock=view.Inventories.Single(i=>i.Id.Value==inventory);var carrier=view.Inventories.Single(i=>i.Id==view.Participant.InventoryId);
+        _quick.Visible=!_overflowOnly;
+        if(!_overflowOnly)
+        {
+            var items=stock.Stock.Select(s=>s.ItemId).Concat(carrier.Stock.Select(s=>s.ItemId));
+            _quickPut.ShowData(view,carrier.Id,stock.Id,items,pending,"storage");_quickTake.ShowData(view,stock.Id,carrier.Id,items,pending,"output");
+        }
         var work=view.Storage?.Construction.SingleOrDefault(c=>c.InventoryId==inventory);var overflow=stock.Overflow??[];
         long expected=view.Contracts?.Where(c=>c.Buyer==view.Participant.Id&&c.DestinationInventory==stock.Id&&c.ClosedTick is null).Sum(c=>checked(c.RemainingQuantity*_scenario.Items.Single(i=>i.Id==c.ItemId).UnitVolume))??0;
         long excess=overflow.Sum(l=>checked(l.Quantity*_scenario.Items.Single(i=>i.Id==l.ItemId).UnitVolume));
@@ -46,8 +56,8 @@ public partial class StoragePanel : VBoxContainer
             if(!_overflowOnly)foreach(string item in stock.Stock.Select(s=>s.ItemId).Concat(carrier.Stock.Select(s=>s.ItemId)).Distinct().Order())
             {
                 string key=item;
-                Action(L("Выложить: ","Store: ")+PlayerText.Item(_lang,key),()=>new(ActionKind.Transfer,Source:carrier.Id,Destination:stock.Id,ItemId:key,Quantity:Q),v=>Free(Pack(v),key)>=Q&&Space(Current(v),key)>=Q);
-                Action(L("Забрать: ","Take: ")+PlayerText.Item(_lang,key),()=>new(ActionKind.Transfer,Source:stock.Id,Destination:carrier.Id,ItemId:key,Quantity:Q),v=>Free(Current(v),key)>=Q&&Space(Pack(v),key)>=Q);
+                Action(L("Выложить: ","Store: ")+PlayerText.Item(_lang,key),()=>new(ActionKind.Transfer,Source:carrier.Id,Destination:stock.Id,ItemId:key,Quantity:Q),v=>ManualTransferChoice.Read(_scenario,v,Pack(v).Id,Current(v).Id,key,_access,_pending,Q).Enabled);
+                Action(L("Забрать: ","Take: ")+PlayerText.Item(_lang,key),()=>new(ActionKind.Transfer,Source:stock.Id,Destination:carrier.Id,ItemId:key,Quantity:Q),v=>ManualTransferChoice.Read(_scenario,v,Current(v).Id,Pack(v).Id,key,_access,_pending,Q).Enabled);
             }
             foreach(var lot in overflow)
             {

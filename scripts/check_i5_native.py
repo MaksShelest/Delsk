@@ -27,7 +27,16 @@ for name in subprocess.check_output(['git','ls-files','--cached','--others','--e
         else:shutil.copyfile(source,destination)
         inputs[name]=digest(source)
 def check(name,timeout,command,env=None):
-    subprocess.run([sys.executable,ROOT/'scripts/run_check.py','--name',name,'--timeout',str(timeout),'--log-directory',out/'checks','--',*map(str,command)],cwd=ROOT,env=env,check=True)
+    try:
+        subprocess.run([sys.executable,ROOT/'scripts/run_check.py','--name',name,'--timeout',str(timeout),'--log-directory',out/'checks','--',*map(str,command)],cwd=ROOT,env=env,check=True)
+    except subprocess.CalledProcessError:
+        # Keep original receipts/artifacts and expose the actual assertion in CI job logs.
+        for suffix in ['stdout.log','stderr.log']:
+            path=out/'checks'/f'{name}.{suffix}'
+            if path.exists():print(path.read_text(errors='replace')[-24000:],file=sys.stderr,flush=True)
+        result=out/name/'native.json'
+        if result.exists():print(result.read_text(),file=sys.stderr,flush=True)
+        raise
 if not a.prepared:check('restore',180,['dotnet','restore',project/'Delsk.Client.csproj','--locked-mode','--disable-parallel','-m:1'])
 if not a.prepared:check('ordinary-build',180,['dotnet','build',project/'Delsk.Client.csproj','--no-restore','--disable-build-servers','-m:1'])
 ordinary=project/'.godot/mono/temp/bin/Debug'
