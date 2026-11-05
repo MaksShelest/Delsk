@@ -1,0 +1,77 @@
+{
+  "attempts": [
+    {
+      "attempt": 1,
+      "gate": null,
+      "cases": {
+        "ru-360": {
+          "status": "failed",
+          "error": "System.InvalidOperationException: panel fits the real viewport: panel=(12, 178), (336, 645) viewport=(0, 0), (360, 800) dock=(12, 178), (336, 618)\n   at I5ContextProbe.Check(Boolean ok, String reason) in /workspace/Delsk/work/i6b/context-1/source/src/Client.Godot/I5ContextProbe.cs:line 21\n   at I5ContextProbe._Ready() in /workspace/Delsk/work/i6b/context-1/source/src/Client.Godot/I5ContextProbe.cs:line 148",
+          "bounds": []
+        }
+      }
+    },
+    {
+      "attempt": 2,
+      "gate": {
+        "status": "succeeded",
+        "cases": 1,
+        "selection": "ru-360",
+        "scope": "Linux Godot Mono, software GL, ordinary three-NPC checkpoint, keyed context controls, real mouse/keyboard/touch across refresh, double-click prevention, authoritative equipment actions and save/load. No physical device claim."
+      },
+      "cases": {
+        "ru-360": {
+          "status": "succeeded",
+          "error": null,
+          "bounds": [
+            "panel fits the real viewport: panel=(12, 198), (336, 590) viewport=(0, 0), (360, 800) dock=(12, 198), (336, 590)"
+          ]
+        }
+      }
+    },
+    {
+      "attempt": 3,
+      "gate": {
+        "status": "succeeded",
+        "cases": 1,
+        "selection": "en-360",
+        "scope": "Linux Godot Mono, software GL, ordinary three-NPC checkpoint, keyed context controls, real mouse/keyboard/touch across refresh, double-click prevention, authoritative equipment actions and save/load. No physical device claim."
+      },
+      "cases": {
+        "en-360": {
+          "status": "succeeded",
+          "error": null,
+          "bounds": [
+            "panel fits the real viewport: panel=(12, 219), (336, 569) viewport=(0, 0), (360, 800) dock=(12, 219), (336, 569)"
+          ]
+        }
+      }
+    },
+    {
+      "attempt": 4,
+      "gate": {
+        "status": "succeeded",
+        "cases": 2,
+        "selection": "narrow",
+        "scope": "Linux Godot Mono, software GL, ordinary three-NPC checkpoint, keyed context controls, real mouse/keyboard/touch across refresh, double-click prevention, authoritative equipment actions and save/load. No physical device claim."
+      },
+      "cases": {
+        "ru-360": {
+          "status": "succeeded",
+          "error": null,
+          "bounds": [
+            "panel fits the real viewport: panel=(12, 198), (336, 590) viewport=(0, 0), (360, 800) dock=(12, 198), (336, 590)"
+          ]
+        },
+        "en-360": {
+          "status": "succeeded",
+          "error": null,
+          "bounds": [
+            "panel fits the real viewport: panel=(12, 219), (336, 569) viewport=(0, 0), (360, 800) dock=(12, 219), (336, 569)"
+          ]
+        }
+      }
+    }
+  ],
+  "archiveSha256": "c4ba529b534d950a1bcf0b1271206350109179cebc0da0fb15cff508ae8b8df9"
+}

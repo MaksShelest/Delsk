@@ -17,3 +17,5 @@ python scripts/check_i6b_ui.py \
 Нужны Xorg с dummy driver и software GL, как в существующем драйвере I6-A. Output должен быть новым: отказы не перезаписываются. Без `--prepared` собираются обычные текущие references; с `--prepared` разрешены только изменения Client, а с `--probe-only` игровые исходники должны побайтно совпадать. Probe лежит за пределами shipped client и запрещён в обычном AssemblyAudit.
 
 Linux/synthetic input не является аппаратной приёмкой Windows/Android. Полный отчёт — [IMPLEMENTATION_REPORT_I6B](../../IMPLEMENTATION_REPORT_I6B.md).
+
+`context/` — отдельная регрессия обязательного I5 CI после публикации: исходный отказ и целевые RU/EN 360px с неизменными assertions/deadlines. Итоговый context-4 прошёл оба случая; `ci/` хранит исходный журнал platform210. Это compatibility-проверка существующей матрицы I5, а не дополнительная портретная версия I6-B.
