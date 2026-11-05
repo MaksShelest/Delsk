@@ -24,8 +24,8 @@ public partial class ContextActionsPanel : PanelContainer
     private bool _touchDragged;
     public ContextActionsPanel()
     {
-        Name="ContextActions";MouseFilter=MouseFilterEnum.Stop;
-        AddThemeStyleboxOverride("panel",new StyleBoxFlat{BgColor=new Color("243a3e"),ContentMarginLeft=10,ContentMarginRight=10,ContentMarginTop=8,ContentMarginBottom=8,CornerRadiusTopLeft=10,CornerRadiusTopRight=10,CornerRadiusBottomLeft=10,CornerRadiusBottomRight=10});
+        Name="ContextActions";Theme=TabletDesign.Theme;MouseFilter=MouseFilterEnum.Stop;
+        AddThemeStyleboxOverride("panel",new StyleBoxFlat{BgColor=new Color("f6f8f2"),ContentMarginLeft=10,ContentMarginRight=10,ContentMarginTop=8,ContentMarginBottom=8,CornerRadiusTopLeft=10,CornerRadiusTopRight=10,CornerRadiusBottomLeft=10,CornerRadiusBottomRight=10});
         var body=new VBoxContainer();AddChild(body);body.AddChild(_summary);body.AddChild(_primary);body.AddChild(_more);body.AddChild(_scroll);_scroll.AddChild(_list);_list.SizeFlagsHorizontal=SizeFlags.ExpandFill;body.AddChild(_status);
         _more.Pressed+=()=>SetExpanded(!Expanded);
         Resized+=LayoutRows;

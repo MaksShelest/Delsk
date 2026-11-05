@@ -65,9 +65,9 @@ public partial class Playfield
         _stick=null;
         if(OS.HasFeature("mobile")||OS.GetCmdlineUserArgs().Contains("--touch-controls"))
         {_stick=new VirtualJoystick();_playChrome!.AddChild(_stick);}
-        var bar = new PanelContainer { MouseFilter = MouseFilterEnum.Stop };
+        var bar = new PanelContainer { Theme=TabletDesign.Theme, MouseFilter = MouseFilterEnum.Stop };
         bar.SetAnchorsAndOffsetsPreset(LayoutPreset.TopWide); bar.OffsetBottom = 54;
-        bar.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color("243a3e"),
+        bar.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color("f6f8f2"),
             ContentMarginLeft = 12, ContentMarginRight = 12, ContentMarginTop = 6, ContentMarginBottom = 6 });
         _playChrome!.AddChild(bar);
         UiSafeArea.Track(bar,()=>{var safe=UiSafeArea.Read(bar);bar.OffsetLeft=(float)safe.Left;bar.OffsetRight=-(float)safe.Right;bar.OffsetTop=(float)safe.Top;bar.OffsetBottom=54+(float)safe.Top;});

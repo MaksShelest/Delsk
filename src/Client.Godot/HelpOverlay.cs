@@ -21,10 +21,10 @@ public partial class HelpOverlay : ColorRect
     {
         Name="HelpTablet";_language=language;_movement=movement;_freeControl=freeControl;Theme=TabletDesign.Theme;
         Color=new Color(.12f,.25f,.20f,.94f);MouseFilter=MouseFilterEnum.Stop;SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        var panel=new PanelContainer();panel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);panel.OffsetTop=66;panel.OffsetBottom=-18;panel.OffsetLeft=32;panel.OffsetRight=-32;
-        panel.AddThemeStyleboxOverride("panel",TabletDesign.Box("f7f3e8",28,22));AddChild(panel);UiSafeArea.Panel(panel);Ready+=()=>UiSafeArea.Keyboard(this);
+        var panel=new PanelContainer();panel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);panel.OffsetTop=16;panel.OffsetBottom=-16;panel.OffsetLeft=16;panel.OffsetRight=-16;
+        panel.AddThemeStyleboxOverride("panel",TabletDesign.Box("f7f8f3",12,10));AddChild(panel);UiSafeArea.Panel(panel);Ready+=()=>UiSafeArea.Keyboard(this);
         var column=new VBoxContainer();panel.AddChild(column);var header=new HBoxContainer();column.AddChild(header);
-        header.AddChild(TabletDesign.Art("book",new(56,56)));var title=TabletDesign.Heading(L("Справка","Help"),28);title.SizeFlagsHorizontal=SizeFlags.ExpandFill;header.AddChild(title);
+        header.AddChild(TabletDesign.Art("book",new(40,40)));var title=TabletDesign.Heading(L("Справка","Help"),28);title.SizeFlagsHorizontal=SizeFlags.ExpandFill;header.AddChild(title);
         var close=new Button{Name="HelpClose",Text="×",CustomMinimumSize=new(44,44),FocusMode=FocusModeEnum.None};close.Pressed+=()=>Closed?.Invoke();header.AddChild(close);column.AddChild(new HSeparator());
         _topics=new OptionButton{Name="HelpTopics",FocusMode=FocusModeEnum.None};foreach(string key in Keys)_topics.AddItem(Title(key));
         _topics.Selected=Math.Max(0,Array.IndexOf(Keys,topic));_topics.ItemSelected+=_=>ShowTopic();column.AddChild(_topics);
@@ -41,7 +41,7 @@ public partial class HelpOverlay : ColorRect
         _body=new RichTextLabel{Name="HelpFullText",BbcodeEnabled=true,ScrollActive=true,SizeFlagsVertical=SizeFlags.ExpandFill,Visible=false};_body.AddThemeFontSizeOverride("normal_font_size",18);content.AddChild(_body);
         _rules=new Button{Name="HelpRules",Text=L("Полные правила ›","Full rules ›"),FocusMode=FocusModeEnum.None};_rules.Pressed+=()=>{_full=!_full;ShowTopic();};content.AddChild(_rules);
         column.AddChild(new HSeparator());column.AddChild(new Label{Text=L("Справка останавливает мир. Закройте её, чтобы вернуться к прежнему режиму времени.","Help pauses the world. Close it to return to the previous time mode."),AutowrapMode=TextServer.AutowrapMode.WordSmart});
-        Resized+=()=>{bool wide=Size.X>=1080;_sidebar.Visible=wide;_topics.Visible=!wide;};ShowTopic();
+        Resized+=()=>{bool wide=Size.X>=1080&&Size.Y>=540;_sidebar.Visible=wide;_topics.Visible=!wide;};ShowTopic();
     }
     private void ShowTopic()
     {
@@ -66,7 +66,7 @@ public partial class HelpOverlay : ColorRect
         "account"=>[L("Просмотр и оплата — разные действия; новая отметка исчезает после команды просмотра.","Viewing and paying are separate actions; a new marker clears after the view command."),L("Без пеней до t+1000 включительно; первая пеня в t+1001. Частичная оплата сначала гасит основной долг.","No penalty through t+1000 inclusive; the first penalty is at t+1001. Partial payment clears principal first."),L("Автоплата использует только свободные деньги. Долг не мешает работать и зарабатывать.","Auto pay uses only free money. Debt does not block work or earning.")],
         "overflow"=>[L("Излишек — настоящий товар под риском, а не новая вместимость.","Overflow is actual cargo at risk, not extra capacity."),L("У каждой партии свой срок: перенесите её либо освободите нормальное место.","Each lot has its own expiry: move it or free normal storage room."),L("Просмотр предупреждения не продлевает срок и не удаляет товар.","Viewing a warning does not extend expiry or remove goods.")],
         "journey"=>CityJourney.Steps.Select(x=>L(x.TitleRu+": "+x.BodyRu,x.TitleEn+": "+x.BodyEn)).ToArray(),
-        "dealership"=>[L("Автосалон E1: конечный ассортимент и честное окно покупки.","E1 dealer: limited stock and a competitive purchase window."),L("Пять моделей, несколько собственных машин, один реальный кузов у каждой.","Five models, multiple owned vehicles, one real cargo inventory per vehicle."),L("Без топлива. Тракт работает на дорогах; грузовые услуги доступны остальным подходящим моделям.","No fuel. Trakt works on roads; other suitable models can offer cargo delivery.")],
+        "dealership"=>[L("Выберите машину в автосалоне: цена, вместимость и назначение указаны в карточке.","Choose a vehicle at the dealer: each card shows price, capacity and purpose."),L("Грузовики перевозят товары, добывающая техника работает на ресурсах, Тракт строит дороги.","Trucks carry goods, extraction machines work resource sites, and Trakt builds roads."),L("Без топлива. Тракт работает на дорогах; грузовые услуги доступны остальным подходящим моделям.","No fuel. Trakt works on roads; other suitable models can offer cargo delivery.")],
         "harvest"=>[L("Подойдите к ресурсу и начните добычу.","Visit a resource and start harvesting."),L("Товар появится после полного цикла; уход отменяет незавершённую работу.","Goods arrive after a complete cycle; leaving cancels unfinished work."),L("Следите за объёмом рюкзака и доступностью источника.","Watch backpack volume and resource availability.")],
         "land"=>[L("Выберите отмеченный свободный участок.","Select a designated available plot."),L("Бронь оплачивается отдельно; для стройки нужна собственная земля.","Reservation costs extra; building requires owned land."),L("Принесите материалы и проверьте проходы, прежде чем строить.","Bring materials and check access before building.")],
         "exchange"=>[L("Принесите свободный товар к столице.","Bring available goods to the capital."),L("Продажа подаёт заявку; расчёт происходит после торгов.","Selling submits a request; settlement follows the trading window."),L("При общем дефиците принят может быть только остаток спроса.","When demand is scarce, only part of your request may settle.")],

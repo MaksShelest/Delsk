@@ -10,7 +10,7 @@ public partial class CityInboxPanel : VBoxContainer
     private CityNotice[] _current=[];
     public CityInboxPanel(string language,Action<CityNotice> open,Action<CityNotice> read)
     {
-        Name="CityInbox";_language=language;_open=open;_read=read;
+        Name="CityInbox";_language=language;_open=open;_read=read;AddChild(GameUi.Intro(L("События города","City notices"),L("Счета, доставки, завершённая работа и товары под риском — с переходом к действию.","Invoices, deliveries, completed work and cargo at risk — with a path to the next action."),"city",64));
         AddChild(new Label{Text=L("Просмотр не означает оплату. Новые события не ставят мир на паузу. Отметка счёта/заявки выполняется обычной командой при следующем активном тике.","Viewing does not pay. Incoming notices do not pause the world. Invoice/order acknowledgement is an ordinary command applied on the next active tick."),AutowrapMode=TextServer.AutowrapMode.WordSmart});
         _empty.Text=L("Новых событий пока нет.","No notices yet.");AddChild(_empty);
     }
@@ -38,7 +38,7 @@ public partial class CityInboxPanel : VBoxContainer
             row.Text.AddThemeColorOverride("font_color",n.Category=="overflow"?new Color("a2491e"):n.Category=="bill"?new("a72f43"):n.Category=="service"?new("5b408c"):new("286455"));
             row.Read.Disabled=pending||!n.Unread||viewedPending?.Contains(n.Key)==true;row.Open.Disabled=pending;
         }
-        _empty.Visible=notices.Length==0;
+        _empty.Visible=notices.Length==0;if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Size.X);
     }
 }
 

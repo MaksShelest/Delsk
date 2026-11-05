@@ -82,7 +82,81 @@
   "C": {
     "status": "succeeded",
     "scope": "Ordinary Client build and AssemblyAudit only; native acceptance pending",
-    "receipts": {},
+    "receipts": {
+      "ordinary-build": {
+        "command": [
+          "dotnet",
+          "build",
+          "/workspace/Delsk/work/i6b/build-c-1/source/src/Client.Godot/Delsk.Client.csproj",
+          "--no-restore",
+          "--disable-build-servers",
+          "-m:1",
+          "-p:BuildProjectReferences=false"
+        ],
+        "timeout_seconds": 180,
+        "started_at": "2026-11-05T17:49:24.125448+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 10.873,
+        "finished_at": "2026-11-05T17:49:34.998304+00:00"
+      },
+      "ordinary-audit": {
+        "command": [
+          "dotnet",
+          "run",
+          "--project",
+          "/workspace/Delsk/tools/AssemblyAudit",
+          "-c",
+          "Release",
+          "--",
+          "/workspace/Delsk/work/i6b/build-c-1/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+        ],
+        "timeout_seconds": 120,
+        "started_at": "2026-11-05T17:49:35.041745+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 3.433,
+        "finished_at": "2026-11-05T17:49:38.475093+00:00"
+      }
+    },
     "inputManifestSha256": "874cfa41bfbbff3542976bcaec118083447bf8d8731770933bcd9412c1397c7a"
+  },
+  "D": {
+    "status": "succeeded",
+    "scope": "Ordinary Client build and AssemblyAudit only; native acceptance pending",
+    "receipts": {
+      "ordinary-build": {
+        "command": [
+          "dotnet",
+          "build",
+          "/workspace/Delsk/work/i6b/build-d-2/source/src/Client.Godot/Delsk.Client.csproj",
+          "--no-restore",
+          "--disable-build-servers",
+          "-m:1",
+          "-p:BuildProjectReferences=false"
+        ],
+        "timeout_seconds": 180,
+        "started_at": "2026-11-05T17:52:52.092087+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 15.145,
+        "finished_at": "2026-11-05T17:53:07.236764+00:00"
+      },
+      "ordinary-audit": {
+        "command": [
+          "dotnet",
+          "run",
+          "--project",
+          "/workspace/Delsk/tools/AssemblyAudit",
+          "-c",
+          "Release",
+          "--",
+          "/workspace/Delsk/work/i6b/build-d-2/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+        ],
+        "timeout_seconds": 120,
+        "started_at": "2026-11-05T17:53:07.280815+00:00",
+        "exit_code": 0,
+        "elapsed_seconds": 1.671,
+        "finished_at": "2026-11-05T17:53:08.951378+00:00"
+      }
+    },
+    "inputManifestSha256": "904b048627539773e130d1a4d8cf079556f764181e88157641bd71a7f49c87f2"
   }
 }

@@ -28,31 +28,32 @@ public partial class MapSelectionScreen : ColorRect
     {
         new OrdinaryGameOptions(npcCount).Validate();NpcCount=npcCount;_readSetup=readSetup;
         SelectedMap = selected; _read = read; _language = language;
-        Color = new Color("26383d"); SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        Theme=TabletDesign.Theme;Color = new Color("edf1eb"); SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         var scroll=new ScrollContainer{HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};scroll.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);AddChild(scroll);
         var center = new MarginContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill,SizeFlagsVertical=SizeFlags.ExpandFill};scroll.AddChild(center);
         var column = new VBoxContainer { SizeFlagsHorizontal=SizeFlags.ExpandFill }; center.AddChild(column);UiSafeArea.CenterColumn(scroll,center,600);
-        column.AddChild(new Label { Text = "Delsk", HorizontalAlignment = HorizontalAlignment.Center });
+        column.AddChild(TabletDesign.Heading("Delsk",32));
         column.AddChild(_preview); ShowPreview();
         var roster=new HFlowContainer();column.AddChild(roster);
         roster.AddChild(new Label{Text=L("Ботов","Bots")});
         var count=new SpinBox{Name="NpcCount",MinValue=3,MaxValue=10,Step=1,Rounded=true,Value=npcCount,CustomMinimumSize=new(110,48)};roster.AddChild(count);
         var total=new Label{Name="ParticipantCount",Text=L("Всего участников: ","Total participants: ")+(NpcCount+1)};roster.AddChild(total);
         count.ValueChanged+=value=>{NpcCount=checked((int)value);new OrdinaryGameOptions(NpcCount).Validate();total.Text=L("Всего участников: ","Total participants: ")+(NpcCount+1);ShowPreview();};
-        AddNpcSettings(column,difficulty,model);
+        var npcSettings=new VBoxContainer();AddNpcSettings(npcSettings,difficulty,model);column.AddChild(new UiDisclosure(L("Сложность и локальная модель","Difficulty & local model"),npcSettings));
         AddButton(column, L("Сменить карту", "Change map"), ShowCatalog);
-        _startButton=AddButton(column, L("Начать", "Start"), () => {if(_previewAvailable)MapChosen?.Invoke(SelectedMap);});_startButton.Disabled=!_previewAvailable;
+        _startButton=AddButton(column, L("Начать", "Start"), () => {if(_previewAvailable)MapChosen?.Invoke(SelectedMap);});_startButton.Disabled=!_previewAvailable;GameUi.Primary(_startButton);
         if (canContinue) AddButton(column, L("Продолжить", "Continue"), () => Continued?.Invoke());
-        AddButton(column, L("Настройки экрана", "Display settings"), () => DisplaySettingsRequested?.Invoke());
-        AddButton(column,L("Реплики и звук","Speech and audio"),()=>FeedbackSettingsRequested?.Invoke());
-        AddButton(column,L("Оформление и персонажи","Appearance and characters"),()=>AppearanceSettingsRequested?.Invoke());
+        var preferences=new VBoxContainer();column.AddChild(new UiDisclosure(L("Настройки игры","Game settings"),preferences));
+        AddButton(preferences, L("Настройки экрана", "Display settings"), () => DisplaySettingsRequested?.Invoke());
+        AddButton(preferences,L("Реплики и звук","Speech and audio"),()=>FeedbackSettingsRequested?.Invoke());
+        AddButton(preferences,L("Оформление и персонажи","Appearance and characters"),()=>AppearanceSettingsRequested?.Invoke());
         AddButton(column, L("English", "Русский"), () => LanguageChanged?.Invoke());
-        AddButton(column, L("Выйти из игры", "Quit"), () => QuitRequested?.Invoke());
+        AddButton(column, L("Выйти из игры", "Quit"), () => QuitRequested?.Invoke());Resized+=()=>GameUi.FitControls(column,Math.Min(600,Size.X-32));
     }
     private void AddNpcSettings(VBoxContainer column,NpcDifficulty difficulty,LocalGameModel? model)
     {
         Difficulty=difficulty;ModelConfiguration=model;
-        var row=new HBoxContainer();column.AddChild(row);row.AddChild(new Label{Text=L("Сложность NPC","NPC difficulty")});
+        var row=TabletDesign.Flow();column.AddChild(row);row.AddChild(new Label{Text=L("Сложность NPC","NPC difficulty")});
         var choices=new OptionButton();foreach(var text in new[]{L("Лёгкая","Easy"),L("Средняя","Medium"),L("Сложная","Hard")})choices.AddItem(text);
         choices.Selected=Math.Clamp((int)difficulty-1,0,2);row.AddChild(choices);choices.ItemSelected+=i=>Difficulty=(NpcDifficulty)(i+1);
         var hybrid=new CheckButton{Text=L("Гибрид · локальная модель","Hybrid · local model"),ButtonPressed=model is not null};column.AddChild(hybrid);

@@ -21,7 +21,7 @@ public partial class CityMapPanel : VBoxContainer
     public CityMapPanel(ScenarioDefinition scenario,string language,CityMapPreferences state,Action<GameAction> submit,Func<Cell,MovementGuide> route)
     {
         Name="FullCityMap";_language=language;_state=state;_submit=submit;_route=route;
-        Canvas=new(state);Canvas.CellChosen+=Choose;AddChild(Canvas);
+        AddChild(GameUi.Intro(L("Карта города","City map"),L("Выберите объект, посмотрите путь и откройте его карточку.","Select an object, preview a route and open its card."),"city",48));Canvas=new(state);Canvas.CellChosen+=Choose;AddChild(Canvas);
         var toolbar=TabletDesign.Flow();AddChild(toolbar);
         toolbar.AddChild(Button("MapZoomIn","+",()=>Canvas!.Zoom(1.25)));toolbar.AddChild(Button("MapZoomOut","−",()=>Canvas!.Zoom(.8)));
         toolbar.AddChild(Button("MapFit",L("Весь город","Fit city"),()=>Canvas!.Fit()));
@@ -36,7 +36,7 @@ public partial class CityMapPanel : VBoxContainer
         _objects.ItemSelected+=i=>{_state.SelectedKey=_keys[i];UpdateDetails(false);};AddChild(_objects);AddChild(_details);
         var actions=TabletDesign.Flow();AddChild(actions);_open.Pressed+=OpenSelected;actions.AddChild(_open);
         _walk.Text=L("Маршрут и движение","Route and move");_walk.Pressed+=()=>{if(_guide is {Allowed:true} g)_submit(new(ActionKind.MoveTo,Target:g.Target));};actions.AddChild(_walk);AddChild(_routeInfo);
-        var legend=Button("MapLegend",L("Легенда и собственники ▾","Legend and owners ▾"),()=>{_legend.Visible=!_legend.Visible;_owners.Visible=_legend.Visible;});AddChild(legend);_legend.Visible=true;AddChild(_legend);AddChild(_owners);
+        var legend=Button("MapLegend",L("Легенда и собственники ▾","Legend and owners ▾"),()=>{_legend.Visible=!_legend.Visible;_owners.Visible=_legend.Visible;});AddChild(legend);_legend.Visible=false;_owners.Visible=false;AddChild(_legend);AddChild(_owners);
     }
     private string L(string ru,string en)=>PlayerText.Local(_language,ru,en);
     private static Label Wrap()=>new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};
@@ -53,7 +53,7 @@ public partial class CityMapPanel : VBoxContainer
             var group=new ButtonGroup{AllowUnpress=false};
             foreach(long id in ids)
             {
-                var choice=new Button{Name="MapParticipant_"+id,Text=id==0?L("Все","All"):"#"+id,TooltipText=id==0?L("Все участники","All participants"):OwnerCaption(id),ToggleMode=true,ButtonGroup=group,CustomMinimumSize=new(44,44)};
+                var choice=new Button{Name="MapParticipant_"+id,Text=id==0?L("Все","All"):WorldSkins.ActorName(id,_language),TooltipText=id==0?L("Все участники","All participants"):OwnerCaption(id),ToggleMode=true,ButtonGroup=group,CustomMinimumSize=new(44,44)};
                 choice.SetPressedNoSignal(id==_state.Participant);
                 choice.Toggled+=on=>{if(!on)return;_state.Participant=id;Canvas.QueueRedraw();UpdateDetails();};_participant.AddChild(choice);
             }
@@ -61,8 +61,8 @@ public partial class CityMapPanel : VBoxContainer
             foreach(long id in map.Participants){var row=new HBoxContainer();row.AddChild(new ColorRect{Color=MapSymbols.ActorColor(id,id==map.Viewer),CustomMinimumSize=new(16,16),SizeFlagsVertical=SizeFlags.ShrinkCenter});row.AddChild(new Label{Text=OwnerCaption(id)});_owners.AddChild(row);}
         }
         _participantCaption.Text=L("По участнику: ","By participant: ")+(_state.Participant==0?L("Все участники","All participants"):OwnerCaption(_state.Participant));
-        Canvas.ShowData(map);Canvas.CustomMinimumSize=new(220,Math.Clamp(GetViewportRect().Size.Y*.43f,230,570));
-        UpdateDetails();_walk.Disabled|=pending;_open.Disabled|=pending;
+        Canvas.ShowData(map);Canvas.CustomMinimumSize=new(220,Math.Clamp(GetViewportRect().Size.Y*.43f,140,570));
+        UpdateDetails();_walk.Disabled|=pending;_open.Disabled|=pending;if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Size.X);
         _legend.Text=L("R ресурс · I уровень объекта · V машина · D услуги · → поставка. Обводка — участок, точка — участник. Цвет собственника совпадает с его цветом в мире.","R resource · I object level · V vehicle · D service · → delivery. Outline: plot; dot: participant. Owner colours match the world.")+"\n"+
             L("Грунт 20 · дорога I 40 · магистраль II 60. У дороги несколько вкладов; городская основа сохраняется. Тёмные клетки — преграды. Показаны только публичные и свои данные; ожидаемый груз не является физическим запасом.","Dirt 20 · road I 40 · highway II 60. Roads retain multiple contributions and the city foundation. Dark cells are obstacles. Only public and own data is shown; expected cargo is not physical stock.")+"\n"+string.Join(" · ",map.Participants.Select(OwnerCaption));
     }
