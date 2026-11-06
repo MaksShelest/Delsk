@@ -1,0 +1,5 @@
+System.InvalidOperationException: dock stays within usable viewport (1100, 720) (200, 341), (1084, 367)
+   at I6BUnifiedProbe.Check(Boolean ok, String reason) in /workspace/Delsk/work/i6c1/native-3/source/src/Client.Godot/I6BUnifiedProbe.cs:line 20
+   at I6BUnifiedProbe.HudBounds() in /workspace/Delsk/work/i6c1/native-3/source/src/Client.Godot/I6BUnifiedProbe.cs:line 195
+   at I6BUnifiedProbe.Hud() in /workspace/Delsk/work/i6c1/native-3/source/src/Client.Godot/I6BUnifiedProbe.cs:line 208
+   at I6BUnifiedProbe._Ready() in /workspace/Delsk/work/i6c1/native-3/source/src/Client.Godot/I6BUnifiedProbe.cs:line 238

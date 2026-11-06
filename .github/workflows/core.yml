@@ -1,11 +1,15 @@
 name: Core and research slice
 on:
+  # Feature branches are checked by their PR; do not create a second check suite
+  # on the same SHA which the PR run would cancel.
   push:
+    branches: ['feat/economic-cycle-p00-p05']
+    tags: ['**']
   pull_request:
 permissions:
   contents: read
 concurrency:
-  group: core-${{ github.head_ref || github.ref_name }}
+  group: core-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 jobs:
   unit:

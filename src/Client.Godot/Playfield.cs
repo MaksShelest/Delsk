@@ -521,7 +521,6 @@ public partial class Playfield : Control
         _stage?.ShowBuildingStates(view,_language);
         _stage?.ShowRoadWorkEffects(view);
         if (_surface == Surface.Debug) _board?.Show(frame, _cellX, _cellZ);
-        _miniMap?.Show(frame,null,null);
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
         string stock = pack.Stock.Length == 0 ? T("inventory.empty")
             : string.Join(", ", pack.Stock.OrderBy(s => s.ItemId, StringComparer.Ordinal).Select(s => $"{PlayerText.Item(_language, s.ItemId)} ×{s.Quantity}"));
@@ -558,9 +557,8 @@ public partial class Playfield : Control
         _feedbackLabel.Text = _feedback;
         UpdatePlayNotice();
         StorageNotice(view);UpdateCityExperience(view);
-        if(_serviceNotice is not null&&view.Services is {} serviceNotice){int unread=serviceNotice.OwnOrders.Count(o=>o.Carrier==view.Participant.Id?!o.CarrierViewed:!o.CustomerViewed);_serviceNotice.Text=unread>0?L("● Доставка: ","● Delivery: ")+unread:L("Доставка","Delivery");_serviceNotice.Modulate=unread>0?new Color("ff7777"):Colors.White;}
-        if(_accountNotice is not null&&view.PersonalAccount is {} accountNotice){_accountNotice.Text=accountNotice.UnreadCount>0?L("● Счета: ","● Invoices: ")+accountNotice.UnreadCount:L("Счёт","Account");_accountNotice.Modulate=accountNotice.UnreadCount>0?new Color("ff7777"):Colors.White;}
-        if (_gameClock is not null) _gameClock.Text = L("Время ", "Time ") + GameTime(view.Tick) + (_session.Paused ? "  Ⅱ" : "  ▸");
+        if(_accountNotice is not null&&view.PersonalAccount is {} accountNotice){_accountNotice.Text=L("Счёт","Account")+(accountNotice.UnreadCount>0?" ●":"");_accountNotice.Modulate=accountNotice.UnreadCount>0?new Color("ff7777"):Colors.White;}
+        if (_gameClock is not null) _gameClock.Text = "◷ " + GameTime(view.Tick) + (_session.Paused ? "  Ⅱ" : "  ▸");
         if (_cellLabel is not null) _cellLabel.Text = CellText(frame);
         string signature = _selectedEnterprise + "|" + CardSignature(view);
         if (signature != _cardsSignature)
@@ -574,7 +572,7 @@ public partial class Playfield : Control
     }
 
     private string HudStock(PlayerView view, InventoryView pack) =>
-        $"{T("money")} {PlayerText.Money(view.CashMinor)} · {T("inventory.capacity")} {pack.OccupiedVolume}/{pack.Capacity}";
+        $"{PlayerText.Money(view.CashMinor)} · {L("Рюкзак","Pack")} {pack.OccupiedVolume}/{pack.Capacity}";
 
     private void UpdateHudGoods(InventoryView pack) => _hudGoods?.ShowInventory(pack, _language);
 

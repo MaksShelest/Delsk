@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/workspace/Delsk/scripts/prepare_godot_asset_import.py",
+    "--source",
+    "/workspace/Delsk/work/i6c1/native-1/source/src/Client.Godot",
+    "--output",
+    "/workspace/Delsk/work/i6c1/native-1/assets",
+    "--report",
+    "/workspace/Delsk/work/i6c1/native-1/assets.json"
+  ],
+  "timeout_seconds": 30,
+  "started_at": "2026-11-06T10:15:25.826868+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.114,
+  "finished_at": "2026-11-06T10:15:25.941176+00:00"
+}

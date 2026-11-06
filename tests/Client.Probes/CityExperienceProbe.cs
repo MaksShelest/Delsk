@@ -32,6 +32,15 @@ public partial class CityExperienceProbe : Control
     private async Task KeyInput(Key key,bool down=true,uint unicode=0)
     {int id=DisplayServer.WindowGetActivePopup();if(id<0)id=GetTree().Root.GetWindowId();Input.ParseInputEvent(new InputEventKey{WindowId=id,Keycode=key,PhysicalKeycode=key,Unicode=unicode,Pressed=down});await Frames(1);}
     private async Task Press(Key key){await KeyInput(key);await KeyInput(key,false);await Frames();}
+    private async Task OpenPlayerSection(string key,string ru,string en)
+    {
+        await Click(Named<Button>("HudTablet"));
+        var navigation=All(_app).OfType<Button>().FirstOrDefault(b=>b.Name=="PlayerNav_"+key&&b.IsVisibleInTree());
+        if(navigation is not null){await Click(navigation);return;}
+        var picker=Named<OptionButton>("PlayerSectionPicker");string caption=_language=="ru"?ru:en;
+        int index=Enumerable.Range(0,picker.ItemCount).Single(i=>picker.GetItemText(i)==caption);
+        await Click(picker);picker.GetPopup().SetFocusedItem(index);await Press(Key.Enter);await Frames();
+    }
     private async Task Number(SpinBox spin,string number)
     {await Reveal(spin);var edit=spin.GetLineEdit();edit.GrabFocus();edit.SelectAll();foreach(char c in number){await KeyInput((Key)c,true,c);await KeyInput((Key)c,false);}await Press(Key.Enter);}
     private async Task Capture(string name)
@@ -75,7 +84,7 @@ public partial class CityExperienceProbe : Control
         var saved=prefs.Capture();await Press(Key.Escape);Check(!Field<TabletState>(_app,"_tabletState").IsOpen,"Esc did not close current map");
         await Click(Named<Button>("OpenCityMap"));Check(saved==Named<CityMapPanel>("FullCityMap").Canvas.State.Capture(),"Reopening map reset viewport");
         long focusTick=Session.Engine.Tick;_app.Notification((int)NotificationApplicationFocusOut);await Frames(8);Check(Session.Engine.Tick==focusTick,"Focus loss advanced world");_app.Notification((int)NotificationApplicationFocusIn);
-        await Press(Key.Escape);await Click(Named<Button>("OpenJourney"));Check(All(_app).OfType<CityJourneyPanel>().Any(p=>p.IsVisibleInTree()),"No short tutorial");
+        await Press(Key.Escape);await OpenPlayerSection("tutorial","Обучение","Guide");Check(All(_app).OfType<CityJourneyPanel>().Any(p=>p.IsVisibleInTree()),"No short tutorial");
         await Click(Named<Button>("JourneyNext"));Check(Field<CityReadState>(_app,"_cityRead").TutorialPage==1,"Guide did not retain next page");await Press(Key.Escape);
         await Click(TextButton(_language=="ru"?"Меню":"Menu"));await Click(TextButton(_language=="ru"?"Оформление и персонажи":"Appearance and characters"));
         string cosmetic=Session.Engine.ComputeStateHash();await Click(Named<Button>("WorldSkinSet"));await Click(Named<Button>("PeopleSkinSet"));Check(Session.Engine.ComputeStateHash()==cosmetic,"Skin changed authoritative state");

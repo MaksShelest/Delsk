@@ -97,7 +97,13 @@ public partial class OrdinarySetupProbe:Control
             var stage=Field<PresentationStage>(app,"_stage")!;Check(stage.GetNodeOrNull<Node3D>("Actor_"+(_count+1)) is not null,"Last actor not rendered");
             Check(stage.GetNode<Label3D>("Actor_"+(_count+1)+"/Appearance/Caption").Text.Contains("#"+(_count+1)),"Last caption missing stable actor number");await Capture("live-en");
             if(session.Engine.Configuration().Layout is not null)
-            {var mini=Field<DebugBoard>(app,"_miniMap")!;Check(mini.IsVisibleInTree()&&mini.Size.X>0,"Missing live minimap");Check(Field<PresentationFrame>(mini,"_frame")!.Actors.Length==_count+1,"Minimap lost roster");}
+            {
+                Check(!All(app).Any(n=>n.Name=="PlayMiniMap"),"Ordinary HUD still creates removed minimap");
+                await Click(All(app).OfType<Button>().Single(b=>b.Name=="OpenCityMap"));
+                var map=All(app).OfType<CityMapPanel>().Single(p=>p.IsVisibleInTree());
+                Check(map.Canvas.Size.X>0&&Field<CityMapFrame>(map.Canvas,"_map")!.Participants.Length==_count+1,"Full city map lost live roster");
+                await Click(All(app).OfType<Button>().Single(b=>b.Name=="TabletClose"));
+            }
             if(session.Engine.Configuration().Layout is not null && _count==3)await DesignedInteractions(app,session);
             await Click(Button("Menu"));await Click(Button("Choose map / new game"));screen=Field<MapSelectionScreen>(app,"_mapSelection")!;
             await Count(screen,_count==3?10:3);await Click(Button("Start"));

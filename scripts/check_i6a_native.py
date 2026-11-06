@@ -97,7 +97,7 @@ with (out/'xorg.stdout.log').open('w') as log:
             except OSError:time.sleep(.1)
         assert ready,'Owned display not ready'
         env=os.environ|{'DISPLAY':'127.0.0.1:94.0','LIBGL_ALWAYS_SOFTWARE':'1','LP_NUM_THREADS':'2','XDG_DATA_HOME':str(out/'runtime/data'),'XDG_CONFIG_HOME':str(out/'runtime/config'),'XDG_CACHE_HOME':str(out/'runtime/cache')}
-        check('native',600 if probe_name=='I6BUnifiedProbe' else 180,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','--windowed','--resolution','1100x720','res://'+probe_name+'.tscn','--','--repository',ROOT,'--output',out/'native','--case',a.case,*(['--fixture',a.fixture.resolve()] if a.fixture else [])],env)
+        check('native',600 if probe_name=='I6BUnifiedProbe' else 180,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','--windowed','--resolution','1100x720','res://'+probe_name+'.tscn','--','--repository',ROOT,'--output',out/'native','--case',a.case,*(['--touch-controls'] if a.case=='hud' else []),*(['--fixture',a.fixture.resolve()] if a.fixture else [])],env)
         check('native-log',15,[sys.executable,ROOT/'scripts/verify_platform_probe.py','--log-prefix',out/'checks/native'])
         assert json.loads((out/'native/native.json').read_text())['status']=='succeeded'
     finally:

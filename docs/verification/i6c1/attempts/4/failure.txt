@@ -1,0 +1,4 @@
+System.InvalidOperationException: explicit Enter restores dock without executing a hidden command
+   at I6BUnifiedProbe.Check(Boolean ok, String reason) in /workspace/Delsk/work/i6c1/native-4/source/src/Client.Godot/I6BUnifiedProbe.cs:line 20
+   at I6BUnifiedProbe.Hud() in /workspace/Delsk/work/i6c1/native-4/source/src/Client.Godot/I6BUnifiedProbe.cs:line 214
+   at I6BUnifiedProbe._Ready() in /workspace/Delsk/work/i6c1/native-4/source/src/Client.Godot/I6BUnifiedProbe.cs:line 238
