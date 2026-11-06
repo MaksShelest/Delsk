@@ -1,0 +1,12 @@
+Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+I6B explicit native phase selection
+I6B_PHASE hud
+I6B one existing compact-valley world with three ordinary NPCs
+I6B ordinary HUD creates no minimap or DebugBoard
+I6B exact five-button HUD order
+I6B dock stays within usable viewport (1100, 720) (200, 603), (700, 105)
+I6B dock is horizontally centred
+I6B semantic primary actions share one horizontal row
+I6B top navigation remains one compact row

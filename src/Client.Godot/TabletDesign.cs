@@ -3,7 +3,7 @@ using Godot;
 /// <summary>Scoped visual tokens from the supplied tablet kit. No game state or clock.</summary>
 public static class TabletDesign
 {
-    public static readonly Color Ink=new("24292f"),Muted=new("69766e"),Green=new("24664f");
+    public static readonly Color Ink=new("303a35"),Muted=new("69766e"),Green=new("49735f");
     private static Theme? _theme;
     public static Theme Theme => _theme ??= Create();
     private static Theme Create()
@@ -20,8 +20,8 @@ public static class TabletDesign
         t.SetStylebox("panel","PanelContainer",Card());
         foreach(string type in new[]{"Button","OptionButton"})
         {
-            t.SetStylebox("normal",type,Box("ffffff",8,9));t.SetStylebox("hover",type,Box("edf3f0",8,9));
-            t.SetStylebox("pressed",type,Box("24664f",8,9));t.SetStylebox("disabled",type,Box("f3f4f5",8,9));
+            t.SetStylebox("normal",type,Box("f8f7f2",8,9));t.SetStylebox("hover",type,Box("e8eee6",8,9));
+            t.SetStylebox("pressed",type,Box("49735f",8,9));t.SetStylebox("disabled",type,Box("eceee8",8,9));
         }
         foreach(string state in new[]{"normal","read_only"})t.SetStylebox(state,"LineEdit",Box("f4f4e9",10,10));
         t.SetStylebox("focus","LineEdit",Box("fffdf6",10,10));t.SetColor("font_color","LineEdit",Ink);
@@ -29,22 +29,22 @@ public static class TabletDesign
         t.SetStylebox("panel","TabContainer",Box("f7f3e8",12,12));
         foreach(string type in new[]{"TabBar","TabContainer"})
         {
-            t.SetStylebox("tab_selected",type,Box("2b7b57",12,12));t.SetStylebox("tab_unselected",type,Box("f4f4e9",12,12));
+            t.SetStylebox("tab_selected",type,Box("49735f",12,12));t.SetStylebox("tab_unselected",type,Box("f4f4e9",12,12));
             t.SetStylebox("tab_hovered",type,Box("e2ebd5",12,12));t.SetColor("font_selected_color",type,new("fffbee"));t.SetColor("font_unselected_color",type,Ink);
         }
         t.SetIcon("arrow","OptionButton",GD.Load<Texture2D>("res://tablets_v1/assets/icons/down.svg"));
         t.SetIcon("updown","SpinBox",GD.Load<Texture2D>("res://tablets_v1/assets/icons/stepper.svg"));
-        t.SetStylebox("slider","HSlider",Box("dce5cd",4,0));t.SetStylebox("grabber_area","HSlider",Box("7da568",4,0));t.SetStylebox("grabber_area_highlight","HSlider",Box("2b7b57",4,0));
+        t.SetStylebox("slider","HSlider",Box("dce5cd",4,0));t.SetStylebox("grabber_area","HSlider",Box("7da568",4,0));t.SetStylebox("grabber_area_highlight","HSlider",Box("49735f",4,0));
         t.SetStylebox("background","ProgressBar",Box("dce5cd",5,0));t.SetStylebox("fill","ProgressBar",Box("7da568",5,0));t.SetColor("font_color","ProgressBar",Ink);
         t.SetConstant("separation","VBoxContainer",8);t.SetConstant("separation","HBoxContainer",8);
         t.SetConstant("h_separation","HFlowContainer",8);t.SetConstant("v_separation","HFlowContainer",6);
         return t;
     }
-    public static StyleBoxFlat Box(string color,int radius,int margin)=>new(){BgColor=new(color),BorderColor=new("dfe3d1"),
+    public static StyleBoxFlat Box(string color,int radius,int margin)=>new(){BgColor=new(color),BorderColor=new("d9dfd5"),
         BorderWidthLeft=1,BorderWidthRight=1,BorderWidthTop=1,BorderWidthBottom=1,
         CornerRadiusTopLeft=radius,CornerRadiusTopRight=radius,CornerRadiusBottomLeft=radius,CornerRadiusBottomRight=radius,
         ContentMarginLeft=margin,ContentMarginRight=margin,ContentMarginTop=margin,ContentMarginBottom=margin};
-    public static StyleBoxFlat Card(bool soft=false)=>Box(soft?"eff4e9":"ffffff",8,10);
+    public static StyleBoxFlat Card(bool soft=false)=>Box(soft?"eff4e9":"f8f7f2",8,10);
     public static PanelContainer Wrap(Control content,bool soft=false)
     {var panel=new PanelContainer{SizeFlagsHorizontal=Control.SizeFlags.ExpandFill};panel.AddThemeStyleboxOverride("panel",Card(soft));panel.AddChild(content);return panel;}
     public static Label Heading(string text,int size=23)

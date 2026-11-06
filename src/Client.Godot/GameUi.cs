@@ -41,7 +41,7 @@ public static class GameUi
     }
     public static void Primary(Button button)
     {
-        foreach(var pair in new[]{("normal","24664f"),("hover","2e785b"),("pressed","1d513e")})
+        foreach(var pair in new[]{("normal","49735f"),("hover","3d6552"),("pressed","315441")})
             button.AddThemeStyleboxOverride(pair.Item1,CompactTabletDesign.Surface(pair.Item2,9));
         foreach(string state in new[]{"font_color","font_hover_color","font_pressed_color","font_focus_color"})button.AddThemeColorOverride(state,Colors.White);
     }

@@ -1,0 +1,110 @@
+Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+I6B explicit native phase selection
+I6B_PHASE hud
+I6B one existing compact-valley world with three ordinary NPCs
+I6B ordinary HUD creates no minimap or DebugBoard
+I6B exact five-button HUD order
+I6B dock stays within usable viewport (1100, 720) (250, 625), (600, 83)
+I6B dock is horizontally centred
+I6B semantic primary actions share one horizontal row
+I6B top navigation remains one compact row
+I6B dock does not intersect joystick
+I6B captured 01-desktop-collapsed
+I6B available ContextMore
+I6B native hit inside viewport ContextMore
+I6B refresh retains pressed control
+I6B native more expands upward across refresh
+I6B dock stays within usable viewport (1100, 720) (250, 341), (600, 367)
+I6B dock is horizontally centred
+I6B semantic primary actions share one horizontal row
+I6B top navigation remains one compact row
+I6B expansion preserves bottom action row position
+I6B captured 02-desktop-expanded
+I6B ticks retain selection and actual keyed control
+I6B bounded grouped list can reach its last action
+I6B available ContextMore
+I6B native hit inside viewport ContextMore
+I6B more collapses without dismissal
+I6B available ContextMore
+I6B native hit inside viewport ContextMore
+I6B Escape collapses upward list
+I6B available ContextMore
+I6B native hit inside viewport ContextMore
+I6B outside click collapses and shields Menu underneath
+I6B available ContextDismiss
+I6B native hit inside viewport ContextDismiss
+I6B close fully hides dock and shield
+I6B ordinary ticks and refresh do not reopen dismissed context
+I6B explicit Enter restores dock without executing a hidden command
+I6B dock stays within usable viewport (960, 440) (180, 345), (600, 83)
+I6B dock is horizontally centred
+I6B semantic primary actions share one horizontal row
+I6B top navigation remains one compact row
+I6B dock does not intersect joystick
+I6B captured 03-landscape-dock
+I6B native touch opens more
+I6B dock stays within usable viewport (960, 440) (180, 94), (600, 334)
+I6B dock is horizontally centred
+I6B semantic primary actions share one horizontal row
+I6B top navigation remains one compact row
+I6B dock stays within usable viewport (800, 360) (100, 265), (600, 83)
+I6B dock is horizontally centred
+I6B semantic primary actions share one horizontal row
+I6B top navigation remains one compact row
+I6B dock does not intersect joystick
+I6B available ContextMore
+I6B native hit inside viewport ContextMore
+I6B dock stays within usable viewport (800, 360) (100, 94), (600, 254)
+I6B dock is horizontally centred
+I6B semantic primary actions share one horizontal row
+I6B top navigation remains one compact row
+I6B available ContextMore
+I6B native hit inside viewport ContextMore
+I6B dock stays within usable viewport (800, 360) (144.5, 265), (511, 83)
+I6B dock is horizontally centred
+I6B semantic primary actions share one horizontal row
+I6B top navigation remains one compact row
+I6B dock does not intersect joystick
+I6B English HUD remains available
+I6B available ContextMore
+I6B native hit inside viewport ContextMore
+I6B native hit inside viewport Context_machine_place_1052
+I6B refresh retains pressed control
+I6B real command queues once and pending disables duplicate
+I6B native hit inside viewport Context_machine_place_1052
+I6B disabled repeat sends no command
+I6B ordinary Core accepts context placement
+I6B automatic mode is an additional action
+I6B native hit inside viewport Context_machine_auto_1052
+I6B refresh retains pressed control
+I6B real additional-row click sends its exact payload once across refresh
+I6B ordinary Core accepts additional automatic-mode command
+I6B stale payload cannot repeat an obsolete command
+I6B available ContextDismiss
+I6B native hit inside viewport ContextDismiss
+I6B ordinary preparation MoveTo Accepted
+I6B bounded preparation
+I6B new physical location reopens meaningful context
+I6B dock stays within usable viewport (1100, 720) (391, 572), (318, 136)
+I6B dock is horizontally centred
+I6B semantic primary actions share one horizontal row
+I6B top navigation remains one compact row
+I6B dock does not intersect joystick
+I6B available HudTablet
+I6B native hit inside viewport HudTablet
+I6B single compact footer status and 44px touch switch
+I6B footer switch stays inside tablet
+I6B captured 04-tablet-footer
+I6B native hit inside viewport TabletTime
+I6B small footer switch retains existing pause delegate
+I6B available TabletClose
+I6B native hit inside viewport TabletClose
+I6B full city map remains accessible with M
+I6B ordinary checkpoint round trip
+I6B checkpoint future with restored ordinary controllers 0
+I6B checkpoint future with restored ordinary controllers 1
+I6B checkpoint future with restored ordinary controllers 2
+DELSK_I6B_PASS
+I6B remaining orphan nodes: 0

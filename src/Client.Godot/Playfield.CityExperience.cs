@@ -9,7 +9,6 @@ public partial class Playfield
     private CityInboxPanel? _cityInbox;
     private CityJourneyPanel? _journey;
     private CityNotice[] _cityNotices=[];
-    private Button? _cityNoticeButton;
     private readonly Dictionary<string,string> _noticeViews=[];
     private void LoadCityExperience(bool fresh)
     {
@@ -54,8 +53,6 @@ public partial class Playfield
     {
         foreach(var key in _noticeViews.Keys.ToArray())if(_session.Engine.Result(_noticeViews[key]) is {} result){if(result.Status==ResultStatus.Rejected)_tabletError=PlayerText.Reason(_language,result.ReasonCode);_noticeViews.Remove(key);}
         _cityNotices=CityNotices.Read(_scenario,view,_cityRead);
-        if(_cityNoticeButton is not null)
-        {int count=_cityNotices.Count(n=>n.Unread);_cityNoticeButton.Text=L("События","Notices")+(count>0?" · ● "+count:"");_cityNoticeButton.TooltipText=L("Счета · заявки · работы · переполнение","Invoices · orders · completed work · overflow");}
         _cityInbox?.ShowData(_cityNotices,view.Tick,WaitingCommand,_noticeViews.Keys.ToHashSet(StringComparer.Ordinal));
     }
 }

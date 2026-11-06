@@ -1,0 +1,13 @@
+/workspace/Delsk/work/i6c1/native-1/source/src/Client.Godot/I6BUnifiedProbe.cs(222,566): error CS1503: Argument 1: cannot convert from 'bool?' to 'bool' [/workspace/Delsk/work/i6c1/native-1/source/src/Client.Godot/Delsk.Client.csproj]
+/workspace/Delsk/work/i6c1/native-1/source/src/Client.Godot/I6BUnifiedProbe.cs(225,571): error CS1061: 'TabletState' does not contain a definition for 'TimeRunning' and no accessible extension method 'TimeRunning' accepting a first argument of type 'TabletState' could be found (are you missing a using directive or an assembly reference?) [/workspace/Delsk/work/i6c1/native-1/source/src/Client.Godot/Delsk.Client.csproj]
+/workspace/Delsk/work/i6c1/native-1/source/src/Client.Godot/I6BUnifiedProbe.cs(225,652): error CS1061: 'TabletState' does not contain a definition for 'TimeRunning' and no accessible extension method 'TimeRunning' accepting a first argument of type 'TabletState' could be found (are you missing a using directive or an assembly reference?) [/workspace/Delsk/work/i6c1/native-1/source/src/Client.Godot/Delsk.Client.csproj]
+
+Build FAILED.
+
+/workspace/Delsk/work/i6c1/native-1/source/src/Client.Godot/I6BUnifiedProbe.cs(222,566): error CS1503: Argument 1: cannot convert from 'bool?' to 'bool' [/workspace/Delsk/work/i6c1/native-1/source/src/Client.Godot/Delsk.Client.csproj]
+/workspace/Delsk/work/i6c1/native-1/source/src/Client.Godot/I6BUnifiedProbe.cs(225,571): error CS1061: 'TabletState' does not contain a definition for 'TimeRunning' and no accessible extension method 'TimeRunning' accepting a first argument of type 'TabletState' could be found (are you missing a using directive or an assembly reference?) [/workspace/Delsk/work/i6c1/native-1/source/src/Client.Godot/Delsk.Client.csproj]
+/workspace/Delsk/work/i6c1/native-1/source/src/Client.Godot/I6BUnifiedProbe.cs(225,652): error CS1061: 'TabletState' does not contain a definition for 'TimeRunning' and no accessible extension method 'TimeRunning' accepting a first argument of type 'TabletState' could be found (are you missing a using directive or an assembly reference?) [/workspace/Delsk/work/i6c1/native-1/source/src/Client.Godot/Delsk.Client.csproj]
+    0 Warning(s)
+    3 Error(s)
+
+Time Elapsed 00:00:11.02

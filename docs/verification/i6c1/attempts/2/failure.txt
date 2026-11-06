@@ -1,0 +1,4 @@
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at I6BUnifiedProbe.HudBounds() in /workspace/Delsk/work/i6c1/native-2/source/src/Client.Godot/I6BUnifiedProbe.cs:line 199
+   at I6BUnifiedProbe.Hud() in /workspace/Delsk/work/i6c1/native-2/source/src/Client.Godot/I6BUnifiedProbe.cs:line 206
+   at I6BUnifiedProbe._Ready() in /workspace/Delsk/work/i6c1/native-2/source/src/Client.Godot/I6BUnifiedProbe.cs:line 238

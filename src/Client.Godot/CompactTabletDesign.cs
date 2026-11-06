@@ -10,16 +10,16 @@ public static class CompactTabletDesign
         var theme=(Theme)TabletDesign.Theme.Duplicate(true);theme.DefaultFontSize=16;
         foreach(string type in new[]{"Label","Button","OptionButton","CheckButton","CheckBox","LineEdit","RichTextLabel"})
         {
-            theme.SetColor("font_color",type,new("24292f"));theme.SetColor("font_hover_color",type,new("24292f"));
-            theme.SetColor("font_focus_color",type,new("24292f"));theme.SetColor("font_disabled_color",type,new("7a8189"));
+            theme.SetColor("font_color",type,new("303a35"));theme.SetColor("font_hover_color",type,new("303a35"));
+            theme.SetColor("font_focus_color",type,new("303a35"));theme.SetColor("font_disabled_color",type,new("748077"));
         }
         foreach(string type in new[]{"Button","OptionButton"})
         {
-            theme.SetStylebox("normal",type,Surface("ffffff",8));theme.SetStylebox("hover",type,Surface("edf3f0",8));
-            theme.SetStylebox("pressed",type,Surface("22664f",8));theme.SetStylebox("disabled",type,Surface("f3f4f5",8));
-            theme.SetStylebox("focus",type,new StyleBoxFlat{BgColor=Colors.Transparent,BorderColor=new("22664f"),BorderWidthLeft=2,BorderWidthRight=2,BorderWidthTop=2,BorderWidthBottom=2});
+            theme.SetStylebox("normal",type,Surface("f8f7f2",8));theme.SetStylebox("hover",type,Surface("e8eee6",8));
+            theme.SetStylebox("pressed",type,Surface("49735f",8));theme.SetStylebox("disabled",type,Surface("eceee8",8));
+            theme.SetStylebox("focus",type,new StyleBoxFlat{BgColor=Colors.Transparent,BorderColor=new("49735f"),BorderWidthLeft=2,BorderWidthRight=2,BorderWidthTop=2,BorderWidthBottom=2});
         }
-        theme.SetStylebox("panel","PanelContainer",Surface("ffffff",10));theme.SetStylebox("panel","TabContainer",Surface("fafafa",4));
+        theme.SetStylebox("panel","PanelContainer",Surface("f8f7f2",10));theme.SetStylebox("panel","TabContainer",Surface("f1f2ec",4));
         var arrow=new Image();arrow.LoadSvgFromString("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\"><path d=\"m4 6 4 4 4-4\" fill=\"none\" stroke=\"#52625c\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg>");
         theme.SetIcon("arrow","OptionButton",ImageTexture.CreateFromImage(arrow));
         foreach(string type in new[]{"VBoxContainer","HBoxContainer"})theme.SetConstant("separation",type,8);
@@ -27,12 +27,12 @@ public static class CompactTabletDesign
         theme.SetStylebox("background","ProgressBar",Surface("e9eeeb",0));theme.SetStylebox("fill","ProgressBar",Surface("408269",0));
         return theme;
     }
-    public static StyleBoxFlat Surface(string color,int margin)=>new(){BgColor=new(color),BorderColor=new("e0e4e2"),
+    public static StyleBoxFlat Surface(string color,int margin)=>new(){BgColor=new(color),BorderColor=new("d9dfd5"),
         BorderWidthLeft=1,BorderWidthRight=1,BorderWidthTop=1,BorderWidthBottom=1,
         CornerRadiusTopLeft=8,CornerRadiusTopRight=8,CornerRadiusBottomLeft=8,CornerRadiusBottomRight=8,
         ContentMarginLeft=margin,ContentMarginRight=margin,ContentMarginTop=margin,ContentMarginBottom=margin};
     public static PanelContainer Card(Control content)
-    {var panel=new PanelContainer{SizeFlagsHorizontal=Control.SizeFlags.ExpandFill};panel.AddThemeStyleboxOverride("panel",Surface("ffffff",10));panel.AddChild(content);return panel;}
+    {var panel=new PanelContainer{SizeFlagsHorizontal=Control.SizeFlags.ExpandFill};panel.AddThemeStyleboxOverride("panel",Surface("f8f7f2",10));panel.AddChild(content);return panel;}
     public static Button Button(string name,string text,Action action)
     {
         var button=new Button{Text=text,CustomMinimumSize=new(40,40),SizeFlagsHorizontal=Control.SizeFlags.ShrinkBegin};

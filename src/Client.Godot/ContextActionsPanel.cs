@@ -9,13 +9,17 @@ public partial class ContextActionsPanel : PanelContainer
     public event Action<bool>? ExpansionChanged;
     public readonly ContextSelection Selection=new();
     public bool Expanded=>Selection.Expanded;
-    public bool Pressing=>_more.ButtonPressed||_rows.Values.Any(r=>r.Button.ButtonPressed);
-    private readonly HFlowContainer _primary=new();
+    public bool Dismissed {get;private set;}
+    private string _dismissedScope="";
+    public bool Pressing=>_dismiss.ButtonPressed||_more.ButtonPressed||_rows.Values.Any(r=>r.Button.ButtonPressed);
+    private readonly HFlowContainer _primary=new(){SizeFlagsHorizontal=SizeFlags.ExpandFill};
+    private readonly HBoxContainer _actions=new();
+    private readonly Button _dismiss=new(){Name="ContextDismiss",Text="×",CustomMinimumSize=new(44,44),SizeFlagsVertical=SizeFlags.ShrinkBegin};
     private readonly VBoxContainer _list=new();
     private readonly ScrollContainer _scroll=new(){HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled,FollowFocus=true};
-    private readonly Button _more=new(){Name="ContextMore",CustomMinimumSize=new(0,44),SizeFlagsHorizontal=SizeFlags.ShrinkBegin};
-    private readonly Label _status=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};
-    private readonly Label _summary=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart,MouseFilter=MouseFilterEnum.Ignore};
+    private readonly Button _more=new(){Name="ContextMore",CustomMinimumSize=new(44,44),SizeFlagsVertical=SizeFlags.ShrinkBegin};
+    private readonly Label _status=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart,MaxLinesVisible=1,TextOverrunBehavior=TextServer.OverrunBehavior.TrimEllipsis};
+    private readonly Label _summary=new(){TextOverrunBehavior=TextServer.OverrunBehavior.TrimEllipsis,MouseFilter=MouseFilterEnum.Ignore};
     private readonly Dictionary<string,(VBoxContainer Row,Button Button,Label Reason,ProgressBar Progress)> _rows=[];
     private readonly Dictionary<string,VBoxContainer> _groups=[];
     private string _language="en";
@@ -24,16 +28,32 @@ public partial class ContextActionsPanel : PanelContainer
     private bool _touchDragged;
     public ContextActionsPanel()
     {
-        Name="ContextActions";Theme=TabletDesign.Theme;MouseFilter=MouseFilterEnum.Stop;
-        AddThemeStyleboxOverride("panel",new StyleBoxFlat{BgColor=new Color("f6f8f2"),ContentMarginLeft=10,ContentMarginRight=10,ContentMarginTop=8,ContentMarginBottom=8,CornerRadiusTopLeft=10,CornerRadiusTopRight=10,CornerRadiusBottomLeft=10,CornerRadiusBottomRight=10});
-        var body=new VBoxContainer();AddChild(body);body.AddChild(_summary);body.AddChild(_primary);body.AddChild(_more);body.AddChild(_scroll);_scroll.AddChild(_list);_list.SizeFlagsHorizontal=SizeFlags.ExpandFill;body.AddChild(_status);
-        _more.Pressed+=()=>SetExpanded(!Expanded);
+        Name="ContextActions";Theme=CompactTabletDesign.Theme;MouseFilter=MouseFilterEnum.Stop;
+        AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("f3f3ed",8));
+        var body=new VBoxContainer();body.AddThemeConstantOverride("separation",4);AddChild(body);
+        body.AddChild(_scroll);_scroll.AddChild(_list);_list.SizeFlagsHorizontal=SizeFlags.ExpandFill;
+        body.AddChild(_summary);_summary.AddThemeFontSizeOverride("font_size",13);body.AddChild(_status);body.AddChild(_actions);
+        _actions.AddChild(_primary);_actions.AddChild(_more);_actions.AddChild(_dismiss);
+        _more.Pressed+=()=>SetExpanded(!Expanded);_dismiss.Pressed+=Dismiss;
         Resized+=LayoutRows;
+    }
+    public void Dismiss()
+    {
+        _dismissedScope=Selection.Scope;Dismissed=true;SetExpanded(false);Hide();
+        if(GetViewport().GuiGetFocusOwner() is Control focused&&IsAncestorOf(focused))focused.ReleaseFocus();
+    }
+    public void Reopen(){Dismissed=false;_dismissedScope="";Visible=Selection.Choices.Length>0;}
+    public float DockWidth(float maximum)
+    {
+        float natural=16+44+(_more.Visible?52:0)+8;
+        foreach(string key in Selection.PrimaryKeys())if(_rows.TryGetValue(key,out var row))
+            natural+=Math.Clamp(row.Button.GetThemeFont("font").GetStringSize(row.Button.Text,fontSize:row.Button.GetThemeFontSize("font_size")).X+24,90,190)+8;
+        return Math.Min(maximum,Expanded?Math.Max(natural,560):natural);
     }
     public void SetExpanded(bool value)
     {
         if(Selection.Expanded==value)return;
-        Selection.Expanded=value;_scroll.Visible=value;if(!value){_touchIndex=-1;_touchDragged=false;}LayoutRows();ExpansionChanged?.Invoke(value);
+        Selection.Expanded=value;_scroll.Visible=value;_more.TooltipText=MoreHint();if(!value){_touchIndex=-1;_touchDragged=false;}LayoutRows();ExpansionChanged?.Invoke(value);
     }
     public override void _Input(InputEvent @event)
     {
@@ -62,7 +82,7 @@ public partial class ContextActionsPanel : PanelContainer
     public void ShowSummary(string text){_summary.Text=text;_summary.Visible=text.Length>0;}
     public void ShowData(string scope,ContextChoice[] choices,string language,bool pending,string status,float top)
     {
-        bool was=Expanded;_language=language;Selection.Update(scope,choices);Selection.Pending=pending;
+        bool was=Expanded;_language=language;if(Dismissed&&scope!=_dismissedScope)Reopen();Selection.Update(scope,choices);if(choices.Length==0)Selection.Expanded=false;Selection.Pending=pending;
         if(was!=Expanded){_touchIndex=-1;_touchDragged=false;ExpansionChanged?.Invoke(Expanded);}
         var primary=Selection.PrimaryKeys();
         foreach(string key in _rows.Keys.Except(choices.Select(c=>c.Key)).ToArray())
@@ -93,28 +113,41 @@ public partial class ContextActionsPanel : PanelContainer
             if(item.Row.GetParent()!=host){item.Row.GetParent()?.RemoveChild(item.Row);host.AddChild(item.Row);}
             int position=positions.GetValueOrDefault(host,host==_primary?0:1);positions[host]=position+1;
             if(!Pressing&&item.Row.GetIndex()!=position)host.MoveChild(item.Row,position);
-            item.Button.Text=choice.Label;item.Button.Disabled=!choice.Enabled||pending&&choice.Command is not null;
+            item.Button.Text=choice.Command?.Kind switch
+            {ActionKind.BoardVehicle=>PlayerText.Local(language,"Сесть","Board"),ActionKind.LeaveVehicle=>PlayerText.Local(language,"Выйти","Leave"),_=>choice.Label};item.Button.Disabled=!choice.Enabled||pending&&choice.Command is not null;
             item.Button.TooltipText=choice.Label+"\n"+choice.Details;
             item.Reason.Text=!choice.Enabled?choice.Details:"";item.Reason.Visible=item.Reason.Text.Length>0;
             item.Progress.Visible=choice.Command?.Kind==ActionKind.StopHarvest;
         }
         foreach(var group in _groups.Values)group.Visible=group.GetChildCount()>1;
         _more.Visible=choices.Length>primary.Length;
-        _more.Text=PlayerText.Local(language,Expanded?"Закрыть действия":"Ещё действия",Expanded?"Close actions":"More actions")+" · "+(choices.Length-primary.Length);
-        _scroll.Visible=Expanded;_status.Text=status;_status.Visible=status.Length>0;
+        _more.Text="⋯";_more.TooltipText=MoreHint();_dismiss.TooltipText=PlayerText.Local(language,"Скрыть действия · Enter, чтобы вернуть","Dismiss actions · Enter to reopen");
+        string feedback=string.Join(" · ",new[]{status}.Concat(choices.Where(c=>primary.Contains(c.Key)&&!c.Enabled).Select(c=>c.Details)).Where(t=>t.Length>0).Distinct());
+        _scroll.Visible=Expanded;_status.Text=feedback;_status.TooltipText=feedback;_status.Visible=feedback.Length>0;
         _heightTop=top;
-        Visible=choices.Length>0;LayoutRows();
+        Visible=choices.Length>0&&!Dismissed;LayoutRows();
     }
     private void LayoutRows()
     {
         if(!IsInsideTree())return;
-        float width=Math.Max(90,Math.Min(Size.X-24,GetViewportRect().Size.X-56));
+        float maximum=GetViewportRect().Size.X-40;
+        float width=Math.Max(90,Math.Min(Size.X-16,maximum));
+        var primaryRows=_rows.Values.Where(r=>r.Row.GetParent()==_primary).ToArray();
+        float Natural(Button button)=>Math.Clamp(button.GetThemeFont("font").GetStringSize(button.Text,fontSize:button.GetThemeFontSize("font_size")).X+28,90,190);
+        int count=Math.Max(1,primaryRows.Length);
+        float budget=Math.Max(44*count,width-(_more.Visible?52:0)-52-8*(count-1));
+        float desired=primaryRows.Sum(r=>Natural(r.Button)),floor=Math.Min(64,budget/count);
         foreach(var item in _rows.Values)
         {
-            float measured=item.Button.GetThemeDefaultFont().GetStringSize(item.Button.Text,HorizontalAlignment.Left,-1,item.Button.GetThemeDefaultFontSize()).X+28;
-            item.Button.CustomMinimumSize=new(Math.Min(width,Math.Max(90,measured)),44);
-            item.Row.CustomMinimumSize=new(Math.Min(width,Math.Max(90,measured)),0);
-            item.Reason.CustomMinimumSize=new(Math.Min(width,Math.Max(90,measured)),0);
+            bool primary=item.Row.GetParent()==_primary;
+            float natural=Natural(item.Button);
+            float primaryWidth=desired<=budget?natural:floor+(budget-floor*count)*(natural-floor)/Math.Max(1,desired-floor*count);
+            float rowWidth=primary?primaryWidth:Math.Max(60,width-_scroll.GetVScrollBar().GetCombinedMinimumSize().X-4);
+            item.Button.AutowrapMode=primary?TextServer.AutowrapMode.Off:TextServer.AutowrapMode.WordSmart;item.Button.ClipText=true;
+            item.Button.TextOverrunBehavior=TextServer.OverrunBehavior.TrimEllipsis;
+            item.Button.CustomMinimumSize=new(rowWidth,44);item.Row.CustomMinimumSize=new(rowWidth,0);
+            item.Reason.CustomMinimumSize=new(rowWidth,0);item.Reason.Visible=!primary&&item.Reason.Text.Length>0;
+            item.Button.SizeFlagsHorizontal=primary?SizeFlags.ShrinkBegin:SizeFlags.ExpandFill;item.Button.Alignment=primary?HorizontalAlignment.Center:HorizontalAlignment.Left;
         }
         FitListHeight();
     }
@@ -128,13 +161,15 @@ public partial class ContextActionsPanel : PanelContainer
             foreach(var child in visible.Where(c=>c!=_scroll))chrome+=child.GetCombinedMinimumSize().Y;
             // Include the actual wrapped summary, primary rows and result footer. The old
             // fixed allowance missed their extra line after a state change in a narrow window.
-            float available=GetViewportRect().Size.Y-_heightTop-24;
+            float available=GetViewportRect().Size.Y-_heightTop-(float)UiSafeArea.Read(this).Bottom-24;
             _scroll.CustomMinimumSize=new(0,Math.Clamp(available-chrome-16,60,280));
         }
         finally{_fittingHeight=false;}
     }
+    private string MoreHint()=>PlayerText.Local(_language,Expanded?"Свернуть действия":"Все действия",Expanded?"Collapse actions":"All actions")+" · "+Math.Max(0,Selection.Choices.Length-Selection.PrimaryKeys().Length);
     public void Navigate(int delta)
     {
+        Reopen();
         Selection.Cycle(delta);
         if(_rows.TryGetValue(Selection.SelectedKey,out var row))
         {
@@ -143,7 +178,7 @@ public partial class ContextActionsPanel : PanelContainer
         }
     }
     public void ConfirmSelected()
-    {var choice=Selection.Choices.FirstOrDefault(c=>c.Key==Selection.SelectedKey);if(choice is not null)Requested?.Invoke(choice);}
+    {if(Dismissed){Reopen();return;}var choice=Selection.Choices.FirstOrDefault(c=>c.Key==Selection.SelectedKey);if(choice is not null)Requested?.Invoke(choice);}
     public void ShowProgress(double percent){foreach(var row in _rows.Values)if(row.Progress.Visible)row.Progress.Value=percent;}
     public static string ButtonName(string key)=>"Context_"+key.Replace(':','_');
 }

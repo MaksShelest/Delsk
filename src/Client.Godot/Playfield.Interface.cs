@@ -5,9 +5,8 @@ using Simulation.Hosting;
 public partial class Playfield
 {
     private HelpOverlay? _helpOverlay;
-    private DebugBoard? _miniMap;
     private Label? _gameClock;
-    private Button? _accountNotice;private Button? _serviceNotice;
+    private Button? _accountNotice;
     private readonly System.Collections.Generic.List<ContextActionButton> _harvestButtons = [];
     private string _harvestCycle = "";
     private double _harvestVisual;
@@ -67,28 +66,25 @@ public partial class Playfield
         {_stick=new VirtualJoystick();_playChrome!.AddChild(_stick);}
         var bar = new PanelContainer { Theme=TabletDesign.Theme, MouseFilter = MouseFilterEnum.Stop };
         bar.SetAnchorsAndOffsetsPreset(LayoutPreset.TopWide); bar.OffsetBottom = 54;
-        bar.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color("f6f8f2"),
+        bar.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color("f3f3ed"),
             ContentMarginLeft = 12, ContentMarginRight = 12, ContentMarginTop = 6, ContentMarginBottom = 6 });
         _playChrome!.AddChild(bar);
         UiSafeArea.Track(bar,()=>{var safe=UiSafeArea.Read(bar);bar.OffsetLeft=(float)safe.Left;bar.OffsetRight=-(float)safe.Right;bar.OffsetTop=(float)safe.Top;bar.OffsetBottom=54+(float)safe.Top;});
         bar.Resized+=()=>LayoutCityHud(bar);
-        var row = new HFlowContainer { Alignment = FlowContainer.AlignmentMode.Begin }; bar.AddChild(row);
-        var menu = new Button { Text = L("Меню", "Menu"), FocusMode = FocusModeEnum.None };
+        var row = new HBoxContainer { Name="HudRow" };row.AddThemeConstantOverride("separation",6); bar.AddChild(row);
+        var menu = new Button { Name="HudMenu", Text = L("Меню", "Menu"), FocusMode = FocusModeEnum.None };
         menu.Pressed += OpenMenu; row.AddChild(menu);
-        var tablet = new Button { Text = L("Планшет", "Tablet"), FocusMode = FocusModeEnum.None };
+        var tablet = new Button { Name="HudTablet", Text = L("Планшет", "Tablet"), FocusMode = FocusModeEnum.None };
         tablet.Pressed += OpenPlayerTablet; row.AddChild(tablet);
         var cityMap=new Button{Name="OpenCityMap",Text=L("Карта","Map"),TooltipText=L("Карта всего города · M","City map · M")};cityMap.Pressed+=OpenCityMap;row.AddChild(cityMap);
-        _cityNoticeButton=new Button{Name="CityNotices",Text=L("События","Notices")};_cityNoticeButton.Pressed+=OpenCityNotices;row.AddChild(_cityNoticeButton);
-        var journey=new Button{Name="OpenJourney",Text=L("Путь","Guide")};journey.Pressed+=OpenCityJourney;row.AddChild(journey);
         _accountNotice=new(){Name="AccountNotification",Text=L("Счёт","Account"),FocusMode=FocusModeEnum.None};
         _accountNotice.Pressed+=()=>{OpenPlayerTablet();_playerTablet?.OpenAccount();};row.AddChild(_accountNotice);
-        if(_scenario.Economy?.Services is not null){_serviceNotice=new(){Name="ServiceNotification",Text=L("Доставка","Delivery"),FocusMode=FocusModeEnum.None};_serviceNotice.Pressed+=()=>{OpenPlayerTablet();_playerTablet?.OpenServices();};row.AddChild(_serviceNotice);}
-        var help = new Button { Text = "?", TooltipText = L("Справка", "Help"), FocusMode = FocusModeEnum.None, CustomMinimumSize = new Vector2(36, 36) };
+        var help = new Button { Name="HudHelp", Text = "?", TooltipText = L("Справка", "Help"), FocusMode = FocusModeEnum.None, CustomMinimumSize = new Vector2(36, 36) };
         help.Pressed += () => OpenHelp(); row.AddChild(help);
-        _gameClock = new Label { VerticalAlignment = VerticalAlignment.Center, CustomMinimumSize = new Vector2(185, 0) }; row.AddChild(_gameClock);
+        _gameClock = new Label { VerticalAlignment = VerticalAlignment.Center, Name="HudClock" }; row.AddChild(_gameClock);
         row.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill });
-        _playInventory = new Label { VerticalAlignment = VerticalAlignment.Center }; row.AddChild(_playInventory);
-        _hudGoods = new ResourceInventoryHud { Name = "InventoryHud", Alignment = FlowContainer.AlignmentMode.End, SizeFlagsHorizontal=SizeFlags.ExpandFill };
+        _playInventory = new Label { Name="HudStock", VerticalAlignment = VerticalAlignment.Center }; row.AddChild(_playInventory);
+        _hudGoods = new ResourceInventoryHud { Name = "InventoryHud", Alignment = FlowContainer.AlignmentMode.End, SizeFlagsHorizontal=SizeFlags.ShrinkEnd };
         row.AddChild(_hudGoods);
         _playNotice = new Label { HorizontalAlignment = HorizontalAlignment.Center, MouseFilter = MouseFilterEnum.Ignore,
             AutowrapMode = TextServer.AutowrapMode.WordSmart };
@@ -103,13 +99,6 @@ public partial class Playfield
             CornerRadiusTopLeft = 6, CornerRadiusTopRight = 6, CornerRadiusBottomLeft = 6, CornerRadiusBottomRight = 6 });
         _playChrome.AddChild(_tooltip);
         _storageWarning=new Label{Name="StorageWarning",AutowrapMode=TextServer.AutowrapMode.WordSmart,MouseFilter=MouseFilterEnum.Ignore};_storageWarning.SetAnchorsAndOffsetsPreset(LayoutPreset.TopWide);_storageWarning.OffsetLeft=16;_storageWarning.OffsetRight=-260;_storageWarning.OffsetTop=96;_storageWarning.OffsetBottom=158;_storageWarning.AddThemeColorOverride("font_color",new Color("ffcc75"));_playChrome.AddChild(_storageWarning);
-        _miniMap=null;
-        if(_scenario.Layout is not null)
-        {
-            var mapPanel=new PanelContainer{Name="PlayMiniMap"};mapPanel.SetAnchorsPreset(LayoutPreset.TopRight);
-            mapPanel.OffsetLeft=-248;mapPanel.OffsetRight=-16;mapPanel.OffsetTop=110;mapPanel.OffsetBottom=284;
-            _miniMap=new DebugBoard{CustomMinimumSize=new(232,174),MouseFilter=MouseFilterEnum.Ignore};mapPanel.MouseFilter=MouseFilterEnum.Ignore;mapPanel.AddChild(_miniMap);_playChrome.AddChild(mapPanel);
-        }
         var dock = new MarginContainer { MouseFilter = MouseFilterEnum.Ignore, GrowVertical=GrowDirection.End };
         dock.SetAnchorsAndOffsetsPreset(LayoutPreset.TopLeft);
         dock.OffsetTop = -132; dock.OffsetBottom = -16; dock.OffsetLeft = 16; dock.OffsetRight = -16;
@@ -135,6 +124,15 @@ public partial class Playfield
                 if(mouse.Pressed&&!_contextDismissTouch)Callable.From(CloseContextActions).CallDeferred();
             }
         };
+        foreach(var button in row.GetChildren().OfType<Button>())button.CustomMinimumSize=new(40,40);
+        void FitHud()
+        {
+            // Optional goods yield space to navigation and the two useful metrics.
+            if(_hudGoods is null)return;
+            float fixedWidth=row.GetChildren().OfType<Control>().Where(c=>c!=_hudGoods).Sum(c=>c.GetCombinedMinimumSize().X)+row.GetThemeConstant("separation")*(row.GetChildCount()-1);
+            _hudGoods.Visible=_hudGoods.GetChildCount()>0&&fixedWidth+_hudGoods.GetCombinedMinimumSize().X<=bar.Size.X-24;
+        }
+        row.Resized+=FitHud;row.MinimumSizeChanged+=()=>Callable.From(FitHud).CallDeferred();
         _contextKey = ""; _choices = [];LayoutCityHud(bar);
     }
     private void LayoutCityHud(Control bar)
@@ -142,9 +140,8 @@ public partial class Playfield
         float top=bar.Position.Y+bar.Size.Y;var safe=UiSafeArea.Read(bar);bool narrow=GetViewportRect().Size.X<800;
         _roadCardTop=top+12;LayoutRoadWork();
         if(_playNotice is not null){_playNotice.OffsetTop=top+8;_playNotice.OffsetBottom=top+42;_playNotice.OffsetLeft=16+(float)safe.Left;_playNotice.OffsetRight=-16-(float)safe.Right;}
-        if(_storageWarning is not null){_storageWarning.OffsetTop=top+44;_storageWarning.OffsetBottom=top+100;_storageWarning.OffsetRight=-(narrow?16:260)-(float)safe.Right;}
+        if(_storageWarning is not null){_storageWarning.OffsetTop=top+44;_storageWarning.OffsetBottom=top+100;_storageWarning.OffsetRight=-16-(float)safe.Right;}
         if(_tooltip is not null)_tooltip.Position=new(16+(float)safe.Left,top+96);
-        if(_miniMap?.GetParent() is Control mini){mini.Visible=!narrow;mini.OffsetTop=top+56;mini.OffsetBottom=top+230;}
     }
     private void FillPlayContext(VBoxContainer host)
     {
@@ -172,25 +169,16 @@ public partial class Playfield
         _layingContext=true;
         try
         {
-            var viewport=GetViewportRect().Size;var safe=UiSafeArea.Read(dock);bool wide=viewport.X>=800;
-            bool expanded=_contextActions.Expanded;
+            var viewport=GetViewportRect().Size;var safe=UiSafeArea.Read(dock);
             if(_contextActions.Pressing&&_contextViewport==viewport)return;
-            float width=Math.Min(expanded?520:wide?Math.Min(400,viewport.X/2-40):viewport.X-32,viewport.X-(float)safe.Left-(float)safe.Right-24);
+            float width=_contextActions.DockWidth(viewport.X-(float)safe.Left-(float)safe.Right-24);
             dock.Size=new(width,0);
-            // The child can grow before its MarginContainer has completed its next sort.
-            // Anchor using both actual rectangles so a fresh status line cannot protrude.
             float height=Math.Max(dock.Size.Y,_contextActions.Size.Y);
-            var point=new Vector2((viewport.X-width)/2,viewport.Y-height-(float)safe.Bottom-12);
-            if(wide&&!expanded&&_stage?.HumanScreenPosition() is {} actor&&_view is not null)
-            {
-                var stageSize=_stage.GetViewport().GetVisibleRect().Size;
-                var screen=_view.GlobalPosition+actor*_view.Size/stageSize;
-                point=new(screen.X+28,screen.Y+24);
-            }
+            var point=new Vector2(((float)safe.Left+viewport.X-(float)safe.Right-width)/2,viewport.Y-height-(float)safe.Bottom-12);
             float left=(float)safe.Left+12,right=Math.Max(left,viewport.X-(float)safe.Right-width-12);
             float bottom=Math.Max((float)safe.Top+12,viewport.Y-(float)safe.Bottom-height-12),top=Math.Min(_roadCardTop+8,bottom);
             dock.Position=new(Math.Clamp(point.X,left,right),Math.Clamp(point.Y,top,bottom));
-            _stick?.AvoidBottom(wide?132:dock.Size.Y);
+            _stick?.AvoidBottom(_contextActions.IsVisibleInTree()?height:0);
             _contextViewport=viewport;
         }
         finally{_layingContext=false;}

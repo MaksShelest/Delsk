@@ -1,0 +1,22 @@
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+ERROR: System.NullReferenceException: Object reference not set to an instance of an object.
+   at I6BUnifiedProbe.HudBounds() in /workspace/Delsk/work/i6c1/native-2/source/src/Client.Godot/I6BUnifiedProbe.cs:line 199
+   at I6BUnifiedProbe.Hud() in /workspace/Delsk/work/i6c1/native-2/source/src/Client.Godot/I6BUnifiedProbe.cs:line 206
+   at I6BUnifiedProbe._Ready() in /workspace/Delsk/work/i6c1/native-2/source/src/Client.Godot/I6BUnifiedProbe.cs:line 238
+   at: void I6BUnifiedProbe+<_Ready>d__52.MoveNext() (res://I6BUnifiedProbe.cs:238)
+   C# backtrace (most recent call first):
+       [0] void Godot.GD.PushError(string) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/GD.cs:366)
+       [1] void I6BUnifiedProbe+<_Ready>d__52.MoveNext() (/workspace/Delsk/work/i6c1/native-2/source/src/Client.Godot/I6BUnifiedProbe.cs:238)
+       [2] void System.Threading.ExecutionContext.RunInternal(System.Threading.ExecutionContext, System.Threading.ContextCallback, object)
+       [3] void System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1.MoveNext(System.Threading.Thread)
+       [4] void System.Threading.Tasks.AwaitTaskContinuation.RunCallback(System.Threading.ContextCallback, object, System.Threading.Tasks.Task&)
+       [5] void System.Threading.Tasks.Task.RunContinuations(object)
+       [6] bool System.Threading.Tasks.Task`1.TrySetResult(TResult)
+       [7] void System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.SetExistingTaskResult(System.Threading.Tasks.Task`1[TResult], TResult)
+       [8] void I6BUnifiedProbe+<Frames>d__14.MoveNext() (/workspace/Delsk/work/i6c1/native-2/source/src/Client.Godot/I6BUnifiedProbe.cs:21)
+       [9] void System.Threading.ExecutionContext.RunInternal(System.Threading.ExecutionContext, System.Threading.ContextCallback, object)
+       [10] void System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1.MoveNext(System.Threading.Thread)
+       [11] void Godot.SignalAwaiter.SignalCallback(nint, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_bool*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/SignalAwaiter.cs:65)
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
