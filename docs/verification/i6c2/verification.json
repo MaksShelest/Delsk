@@ -60,5 +60,14 @@
     "04-woodland-town-hall.png": "2af90d415e59f7e539c1ac0dcb068a97572436a109fbcc0f645c9fae9c7ca327",
     "01-valley-overview.png": "498a90c7c2de1acc024610f4df5d96028752a5b61582ab4f8424f1538986dfbd",
     "05-map-catalog.png": "dbb554db588aa1c1784e9e2f8ebb18303c54892d4f42c9908969dd631738c65b"
+  },
+  "legacyProfileCiFix": {
+    "failedRun": 42301293997,
+    "failedJob": 128179461474,
+    "cause": "Explicit G1 profile cannot apply I4 delivery bays; preserve historical compact snapshot for explicit pre-I4 profile only. Default ordinary games remain current I6-C2.",
+    "targetedNative": "legacy-profile-native.json",
+    "groups": 11,
+    "status": "succeeded",
+    "runtimeReferences": "Frozen; only affected ordinary client recompiled."
   }
 }

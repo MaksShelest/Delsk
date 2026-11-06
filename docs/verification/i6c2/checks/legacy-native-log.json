@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/workspace/Delsk/scripts/verify_platform_probe.py",
+    "--log-prefix",
+    "/workspace/Delsk/work/i6c2/legacy-profile/checks/legacy-native"
+  ],
+  "timeout_seconds": 15,
+  "started_at": "2026-11-06T22:07:39.971324+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.065,
+  "finished_at": "2026-11-06T22:07:40.036117+00:00"
+}

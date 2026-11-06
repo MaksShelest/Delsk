@@ -106,7 +106,7 @@ public partial class MapSelectionScreen : ColorRect
         try
         {
             var scenario=PreviewScenario(key);
-            if(PlayMaps.UserCatalog.Contains(key)&&scenario.Economy is not {Storage:not null,ProductionContent:not null,Fleet:{EquipmentDealerVersion:1}})
+            if(scenario.Id is PlayMaps.CompactValleyScenarioId or PlayMaps.WoodlandScenarioId&&scenario.Economy is not {Storage:not null,ProductionContent:not null,Fleet:{EquipmentDealerVersion:1}})
                 throw new InvalidOperationException("Modern economy required");
             reason="";return true;
         }

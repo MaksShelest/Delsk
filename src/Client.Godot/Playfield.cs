@@ -221,7 +221,13 @@ public partial class Playfield : Control
         {var read=VNextBalanceReader.Read(System.Text.Encoding.UTF8.GetBytes(Text("Play.vnext-balance.json")));if(!read.IsValid || read.Sha256!=provenance.FullBalanceSha256)throw new InvalidOperationException("Full balance/profile mismatch");full=read.Balance;}
         return OrdinaryNewGame.Resolve(map,economy,new(count,_newDifficulty.ToString()),vnextBalance:full);
     }
-    private ScenarioDefinition ReadMap(string key)=>JsonSerializer.Deserialize<ScenarioDefinition>(Text(PlayMaps.NewGameResource(key)),SimulationJson.Options)??throw new InvalidOperationException(key);
+    private ScenarioDefinition ReadMap(string key)
+    {
+        // An explicit pre-I4 research profile retains its historical map snapshot.
+        // Ordinary starts without an override always use the current versioned worlds.
+        bool legacy=key==PlayMaps.CompactValley&&OS.GetCmdlineUserArgs().Contains("--economy")&&ReadEconomy(key).Id!=VNextMobileEquipmentProfile.ProfileId;
+        return JsonSerializer.Deserialize<ScenarioDefinition>(Text(legacy?PlayMaps.Resource(key):PlayMaps.NewGameResource(key)),SimulationJson.Options)??throw new InvalidOperationException(key);
+    }
 
     private void DismissMaps()
     { if (_mapSelection is not null) {_newNpcCount=_mapSelection.NpcCount;_newMapKey = _mapSelection.SelectedMap;_newDifficulty=_mapSelection.Difficulty;_newModel=_mapSelection.ModelConfiguration;} _mapSelection?.QueueFree(); _mapSelection = null; }
