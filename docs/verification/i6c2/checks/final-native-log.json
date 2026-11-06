@@ -3,11 +3,11 @@
     "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
     "/workspace/Delsk/scripts/verify_platform_probe.py",
     "--log-prefix",
-    "/workspace/Delsk/work/i6c2/native-final/checks/native"
+    "/workspace/Delsk/work/i6c2/native-clearance/checks/native"
   ],
   "timeout_seconds": 15,
-  "started_at": "2026-11-06T21:56:35.293242+00:00",
+  "started_at": "2026-11-06T22:27:28.006525+00:00",
   "exit_code": 0,
-  "elapsed_seconds": 0.115,
-  "finished_at": "2026-11-06T21:56:35.408436+00:00"
+  "elapsed_seconds": 0.064,
+  "finished_at": "2026-11-06T22:27:28.070989+00:00"
 }

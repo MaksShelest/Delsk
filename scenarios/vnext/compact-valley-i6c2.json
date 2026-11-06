@@ -2152,42 +2152,8 @@
     {
       "itemId": "grain",
       "position": {
-        "x": 6,
-        "z": 6
-      },
-      "rules": {
-        "public": false,
-        "capacity": 120,
-        "regenerationQuantity": 1,
-        "regenerationTicks": 8,
-        "purchasePriceMinor": 15000,
-        "leasePriceMinor": 1500,
-        "leaseTicks": 1200,
-        "initialOwner": null
-      }
-    },
-    {
-      "itemId": "grain",
-      "position": {
-        "x": 7,
-        "z": 6
-      },
-      "rules": {
-        "public": false,
-        "capacity": 120,
-        "regenerationQuantity": 1,
-        "regenerationTicks": 8,
-        "purchasePriceMinor": 15000,
-        "leasePriceMinor": 1500,
-        "leaseTicks": 1200,
-        "initialOwner": null
-      }
-    },
-    {
-      "itemId": "grain",
-      "position": {
-        "x": 8,
-        "z": 6
+        "x": 5,
+        "z": 8
       },
       "rules": {
         "public": false,
@@ -2204,24 +2170,7 @@
       "itemId": "grain",
       "position": {
         "x": 6,
-        "z": 7
-      },
-      "rules": {
-        "public": false,
-        "capacity": 120,
-        "regenerationQuantity": 1,
-        "regenerationTicks": 8,
-        "purchasePriceMinor": 15000,
-        "leasePriceMinor": 1500,
-        "leaseTicks": 1200,
-        "initialOwner": null
-      }
-    },
-    {
-      "itemId": "grain",
-      "position": {
-        "x": 7,
-        "z": 7
+        "z": 8
       },
       "rules": {
         "public": false,
@@ -2239,6 +2188,57 @@
       "position": {
         "x": 7,
         "z": 8
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 5,
+        "z": 9
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 6,
+        "z": 9
+      },
+      "rules": {
+        "public": false,
+        "capacity": 120,
+        "regenerationQuantity": 1,
+        "regenerationTicks": 8,
+        "purchasePriceMinor": 15000,
+        "leasePriceMinor": 1500,
+        "leaseTicks": 1200,
+        "initialOwner": null
+      }
+    },
+    {
+      "itemId": "grain",
+      "position": {
+        "x": 6,
+        "z": 10
       },
       "rules": {
         "public": true,
@@ -7386,7 +7386,7 @@
     "version": "map-adapter-2",
     "sourceId": "compact_valley_i6c2",
     "sourceName": "\u041C\u0430\u043B\u0430\u044F \u0434\u043E\u043B\u0438\u043D\u0430",
-    "sourceSha256": "fc672b7761ab56d35447152ae08cb8a24ff9c8e1b52909b6bc9d2c95c7254570",
+    "sourceSha256": "33dd052a444240f9c76ad3f63f836732f92a853af22d1b7eb986d4110c1e9716",
     "maxParticipants": 11,
     "roadCenterCells": [
       {
@@ -11289,34 +11289,34 @@
         "profile": "grain",
         "cells": [
           {
-            "x": 6,
-            "z": 6
-          },
-          {
-            "x": 7,
-            "z": 6
-          },
-          {
-            "x": 8,
-            "z": 6
+            "x": 5,
+            "z": 8
           },
           {
             "x": 6,
-            "z": 7
-          },
-          {
-            "x": 7,
-            "z": 7
+            "z": 8
           },
           {
             "x": 7,
             "z": 8
+          },
+          {
+            "x": 5,
+            "z": 9
+          },
+          {
+            "x": 6,
+            "z": 9
+          },
+          {
+            "x": 6,
+            "z": 10
           }
         ],
         "publicCells": [
           {
-            "x": 7,
-            "z": 8
+            "x": 6,
+            "z": 10
           }
         ]
       },

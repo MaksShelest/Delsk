@@ -2,7 +2,7 @@
   "command": [
     "/workspace/.tools/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64",
     "--path",
-    "/workspace/Delsk/work/i6c2/native-final/source/src/Client.Godot",
+    "/workspace/Delsk/work/i6c2/native-clearance/source/src/Client.Godot",
     "--rendering-method",
     "gl_compatibility",
     "--audio-driver",
@@ -15,13 +15,13 @@
     "--repository",
     "/workspace/Delsk",
     "--output",
-    "/workspace/Delsk/work/i6c2/native-final/native",
+    "/workspace/Delsk/work/i6c2/native-clearance/native",
     "--case",
     "all"
   ],
   "timeout_seconds": 180,
-  "started_at": "2026-11-06T21:55:29.092974+00:00",
+  "started_at": "2026-11-06T22:26:25.982706+00:00",
   "exit_code": 0,
-  "elapsed_seconds": 66.115,
-  "finished_at": "2026-11-06T21:56:35.208127+00:00"
+  "elapsed_seconds": 61.974,
+  "finished_at": "2026-11-06T22:27:27.956487+00:00"
 }

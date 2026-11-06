@@ -11,7 +11,8 @@
     "compile": "Initial xUnit analyzer errors corrected.",
     "geometry": "Boundary delivery bay could not turn; moved bays. Static spawn actors blocked the southern maneuver; put spawns in public industrial verges.",
     "fixtures": "Corrected ledger reason, acquired resource ownership before machinery, and explicit ballot-only policies for manual earning beyond t600.",
-    "native1": "51 native assertions passed on earlier geometry, but overall source freeze check rejected the run after a map snapshot changed. Final client recompiled the changed embedded snapshot using frozen runtime references; 51 assertions and source freeze passed."
+    "native1": "51 native assertions passed on earlier geometry, but overall source freeze check rejected the run after a map snapshot changed. Final client recompiled the changed embedded snapshot using frozen runtime references; 51 assertions and source freeze passed.",
+    "tractorClearance": "Trakt safely left parking but its straight route reached a corner beside a private grain cell. Shifted the six-cell grain patch south; no Core movement change. All 21 models now complete real departures on both maps."
   },
   "maps": {
     "compact-valley-i6c2": {
@@ -30,8 +31,8 @@
         "stone": 5,
         "sand": 5
       },
-      "sourceSha256": "fc672b7761ab56d35447152ae08cb8a24ff9c8e1b52909b6bc9d2c95c7254570",
-      "scenarioSha256": "414532439a8c6f7c6d1a9c3062eee8e73073e5025a586dd37dcf5d65069635d2"
+      "sourceSha256": "33dd052a444240f9c76ad3f63f836732f92a853af22d1b7eb986d4110c1e9716",
+      "scenarioSha256": "a02494610ed5637d0f2d379dbd25b52af787b25c768f623d08fcb84799ac28ca"
     },
     "woodland-region-i6c2": {
       "id": "woodland_region_i6c2",
@@ -58,8 +59,8 @@
     "06-concrete-car-purchase.png": "2aa76e7b550d76cfa545aaf10d656acfa8a440afa9bce8dc02beafbdb7df2e6b",
     "02-valley-center-industry.png": "8683153778f38039404582a31df886cbf7228b30b6d7f2c568c1e05541794979",
     "04-woodland-town-hall.png": "2af90d415e59f7e539c1ac0dcb068a97572436a109fbcc0f645c9fae9c7ca327",
-    "01-valley-overview.png": "498a90c7c2de1acc024610f4df5d96028752a5b61582ab4f8424f1538986dfbd",
-    "05-map-catalog.png": "dbb554db588aa1c1784e9e2f8ebb18303c54892d4f42c9908969dd631738c65b"
+    "01-valley-overview.png": "f67e09a7ba4e6d65aa617f15884bb1c63e8fb42ad8cc9c291e5ca66310933b1a",
+    "05-map-catalog.png": "c44f478ea60f66b7162e6299a0ab67c85d33be3445926aa227fc5619a80aface"
   },
   "legacyProfileCiFix": {
     "failedRun": 42301293997,
@@ -69,5 +70,6 @@
     "groups": 11,
     "status": "succeeded",
     "runtimeReferences": "Frozen; only affected ordinary client recompiled."
-  }
+  },
+  "stockedVehicleDepartures": 42
 }

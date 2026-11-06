@@ -80,13 +80,13 @@ public class I6C2MapsTests
         Evidence(s,key+"-ordinary-npcs");
     }
     [Theory][InlineData(PlayMaps.CompactValley)][InlineData(PlayMaps.Second)]
-    public void EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(string key)
+    public void EveryStockedVehicleCanPhysicallyLeaveItsRealDeliveryBay(string key)
     {
         var d=Resolve(key).Scenario;d=d with{Participants=d.Participants.Select(p=>p with{CashMinor=10000000}).ToArray()};
         var exit=d.Layout!.InitialCityDirtCells.OrderBy(c=>Math.Abs(c.X-11)+Math.Abs(c.Z-5)).First(c=>!d.Participants.Any(p=>p.Position==c));
-        foreach(var model in d.Economy!.Fleet!.Models.Where(m=>m.EquipmentTypeId is not null))
+        foreach(var model in d.Economy!.Fleet!.Models)
         {
-            var s=new GameSession(new(d));var v=MobileEquipmentI4Tests.Buy(s,d.EquipmentTypes!.Single(t=>t.Id==model.EquipmentTypeId).ItemId,model.EquipmentLevel);
+            var s=new GameSession(new(d));var v=model.EquipmentTypeId is null?FleetE1Tests.Buy(s,model.Id):MobileEquipmentI4Tests.Buy(s,d.EquipmentTypes!.Single(t=>t.Id==model.EquipmentTypeId).ItemId,model.EquipmentLevel);
             FleetE1Tests.Board(s,v);Step(s,new(ActionKind.MoveTo,Target:exit));int bound=100;
             while(s.Engine.Observe(Human).Participant.Busy&&bound-->0)s.Step();
             Assert.True(bound>0,$"{key}: trapped {model.Id} at {StorageC1Tests.Inventory(s,v.CargoInventory).Position}");

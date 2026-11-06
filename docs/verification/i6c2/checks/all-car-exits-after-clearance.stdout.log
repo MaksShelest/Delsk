@@ -1,0 +1,40 @@
+moving sputnik20 from Cell { X = 12, Z = 18 } to Cell { X = 5, Z = 21 }
+moving sputnik20 from Cell { X = 5, Z = 21 } to Cell { X = 5, Z = 22 }
+moving sputnik20 from Cell { X = 5, Z = 22 } to Cell { X = 11, Z = 5 }
+compact-valley-i6c2 sputnik20 departed at t49
+moving muravey70 from Cell { X = 12, Z = 18 } to Cell { X = 5, Z = 21 }
+moving muravey70 from Cell { X = 5, Z = 21 } to Cell { X = 5, Z = 22 }
+moving muravey70 from Cell { X = 5, Z = 22 } to Cell { X = 11, Z = 5 }
+compact-valley-i6c2 muravey70 departed at t49
+moving eger70 from Cell { X = 12, Z = 18 } to Cell { X = 5, Z = 21 }
+moving eger70 from Cell { X = 5, Z = 21 } to Cell { X = 6, Z = 22 }
+moving eger70 from Cell { X = 6, Z = 22 } to Cell { X = 11, Z = 5 }
+compact-valley-i6c2 eger70 departed at t49
+moving vector200 from Cell { X = 12, Z = 18 } to Cell { X = 5, Z = 21 }
+moving vector200 from Cell { X = 5, Z = 21 } to Cell { X = 7, Z = 22 }
+moving vector200 from Cell { X = 7, Z = 22 } to Cell { X = 11, Z = 5 }
+compact-valley-i6c2 vector200 departed at t49
+moving trakt_d1 from Cell { X = 12, Z = 18 } to Cell { X = 5, Z = 21 }
+moving trakt_d1 from Cell { X = 5, Z = 21 } to Cell { X = 8, Z = 22 }
+moving trakt_d1 from Cell { X = 8, Z = 22 } to Cell { X = 11, Z = 5 }
+compact-valley-i6c2 trakt_d1 departed at t59
+moving sputnik20 from Cell { X = 14, Z = 13 } to Cell { X = 5, Z = 2 }
+moving sputnik20 from Cell { X = 5, Z = 2 } to Cell { X = 5, Z = 3 }
+moving sputnik20 from Cell { X = 5, Z = 3 } to Cell { X = 11, Z = 5 }
+woodland-region-i6c2 sputnik20 departed at t49
+moving muravey70 from Cell { X = 14, Z = 13 } to Cell { X = 5, Z = 2 }
+moving muravey70 from Cell { X = 5, Z = 2 } to Cell { X = 5, Z = 3 }
+moving muravey70 from Cell { X = 5, Z = 3 } to Cell { X = 11, Z = 5 }
+woodland-region-i6c2 muravey70 departed at t49
+moving eger70 from Cell { X = 14, Z = 13 } to Cell { X = 5, Z = 2 }
+moving eger70 from Cell { X = 5, Z = 2 } to Cell { X = 6, Z = 3 }
+moving eger70 from Cell { X = 6, Z = 3 } to Cell { X = 11, Z = 5 }
+woodland-region-i6c2 eger70 departed at t50
+moving vector200 from Cell { X = 14, Z = 13 } to Cell { X = 5, Z = 2 }
+moving vector200 from Cell { X = 5, Z = 2 } to Cell { X = 7, Z = 3 }
+moving vector200 from Cell { X = 7, Z = 3 } to Cell { X = 11, Z = 5 }
+woodland-region-i6c2 vector200 departed at t51
+moving trakt_d1 from Cell { X = 14, Z = 13 } to Cell { X = 5, Z = 2 }
+moving trakt_d1 from Cell { X = 5, Z = 2 } to Cell { X = 8, Z = 3 }
+moving trakt_d1 from Cell { X = 8, Z = 3 } to Cell { X = 11, Z = 5 }
+woodland-region-i6c2 trakt_d1 departed at t54
