@@ -92,6 +92,13 @@ public sealed partial class SimulationEngine
             _dealerStock.Add(listing);
         }
     }
+    private Cell[]? VehiclePurchaseLocations(long id)
+    {
+        if(Fleet is null || _dealerStock.SingleOrDefault(v=>v.Id==id) is not {} listing)return null;
+        // Only this live dealer listing supplies an additional physical interaction point.
+        // Owned/removed vehicles cannot grant purchase access; the entrance remains valid.
+        return [Dealer.Entry,listing.Position,..RoadNeighbors(listing.Position).Where(_map.Walkable)];
+    }
     private void BuyVehicle(ActorState actor, CommandEnvelope c)
     {
         RequireIdle(actor); RequireActionLocation(actor, c.Action);

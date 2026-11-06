@@ -122,7 +122,7 @@ public partial class ContextActionsPanel : PanelContainer
             int position=positions.GetValueOrDefault(host,0);positions[host]=position+1;
             if(!Pressing&&item.Row.GetIndex()!=position)host.MoveChild(item.Row,position);
             item.Button.Text=choice.Command?.Kind switch
-            {ActionKind.BuyVehicle=>choice.Label.Split(" · ")[0],ActionKind.BoardVehicle=>PlayerText.Local(language,"Сесть","Board"),ActionKind.LeaveVehicle=>PlayerText.Local(language,"Выйти","Leave"),_=>choice.Label};item.Button.Disabled=!choice.Enabled||pending&&choice.Command is not null;
+            {ActionKind.BuyVehicle=>choice.Label.Replace(" · ","\n",StringComparison.Ordinal),ActionKind.BoardVehicle=>PlayerText.Local(language,"Сесть","Board"),ActionKind.LeaveVehicle=>PlayerText.Local(language,"Выйти","Leave"),_=>choice.Label};item.Button.Disabled=!choice.Enabled||pending&&choice.Command is not null;
             item.Button.TooltipText=choice.Label+"\n"+choice.Details;
             item.Reason.Text=!choice.Enabled?choice.Details:"";item.Reason.Visible=item.Reason.Text.Length>0;
             item.Progress.Visible=choice.Command?.Kind==ActionKind.StopHarvest;
