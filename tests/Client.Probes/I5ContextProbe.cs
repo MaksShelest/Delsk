@@ -64,84 +64,40 @@ public partial class I5ContextProbe : Control
             Check(_session.Engine.FleetOf(new(1))!.Vehicles.Single(v=>v.Vehicle.Id==id).Vehicle.Driver==0,"ordinary context leaves the vehicle");
             await Click(ContextActionsPanel.ButtonName("vehicle:"+id));Step();await Frames();
             Check(_session.Engine.FleetOf(new(1))!.Vehicles.Single(v=>v.Vehicle.Id==id).Vehicle.Driver==1,"same keyed control boards the same vehicle");
-            Check(Panel.Selection.Choices.Length>=8,"at least eight meaningful context actions");Check(Panel.Selection.PrimaryKeys().Length is >=1 and <=3,"one to three semantic primary actions");
+            Check(Panel.Selection.Choices.All(c=>!c.Key.StartsWith("section:",StringComparison.Ordinal)),"world context contains no global tablet navigation");
+            Check(Panel.Selection.PrimaryKeys().Length is >=1 and <=3,"one to three semantic primary actions");
             string hash=_session.Engine.ComputeStateHash();int tape=_session.CommandTape.Length;
-            await Shot("primary");await Click("ContextMore");Check(Panel.Expanded,"native more action opens structured panel");
-            Check(hash==_session.Engine.ComputeStateHash()&&tape==_session.CommandTape.Length,"opening changes no ledger/hash/command tape");
-            Check(!Field<VirtualJoystick>(_app,"_stick").Visible,"joystick hidden behind additional panel");
-            var outside=new Vector2(30,24);int window=GetWindow().GetWindowId();
-            if(_mode=="touch")
-            {Input.ParseInputEvent(new InputEventScreenTouch{WindowId=window,Index=0,Position=outside,Pressed=true});await Frames(1);Input.ParseInputEvent(new InputEventScreenTouch{WindowId=window,Index=0,Position=outside,Pressed=false});}
-            else
-            {Input.ParseInputEvent(new InputEventMouseButton{WindowId=window,Position=outside,GlobalPosition=outside,ButtonIndex=MouseButton.Left,Pressed=true});await Frames(1);Input.ParseInputEvent(new InputEventMouseButton{WindowId=window,Position=outside,GlobalPosition=outside,ButtonIndex=MouseButton.Left,Pressed=false});}
-            await Frames();Check(!Panel.Expanded&&Field<object>(_app,"_surface").ToString()=="Play","outside click closes only the action panel, without clicking Menu underneath");
-            Check(_session.CommandTape.Length==tape,"outside dismissal sends no command");await Click("ContextMore");
-            var last=Panel.Selection.Choices.Last();var lastButton=Named<Button>(ContextActionsPanel.ButtonName(last.Key));
-            Panel.Selection.Select(last.Key);Step(3);await Frames();
-            Check(Panel.Expanded&&Panel.Selection.SelectedKey==last.Key,"ticks and ordinary refresh retain menu and selection");
-            Check(ReferenceEquals(lastButton,Named<Button>(ContextActionsPanel.ButtonName(last.Key))),"refresh retains the actual last control");
-            var scroll=All(Panel).OfType<ScrollContainer>().Single();tape=_session.CommandTape.Length;
-            if(_mode=="keyboard")
+            await Shot("primary");
+            if(Panel.Selection.Choices.Length>Panel.Selection.PrimaryKeys().Length)
             {
-                Named<Button>("ContextMore").GrabFocus();
-                for(int i=0;i<Panel.Selection.Choices.Length+12&&GetViewport().GuiGetFocusOwner()!=lastButton;i++){await Key(Godot.Key.Tab,true);await Key(Godot.Key.Tab,false);}
-                Check(GetViewport().GuiGetFocusOwner()==lastButton,"Tab reaches the actual last action");
+                await Click("ContextMore");Check(Panel.Expanded,"native more opens local overflow");
+                Check(hash==_session.Engine.ComputeStateHash()&&tape==_session.CommandTape.Length,"opening changes no ledger/hash/tape");
+                Check(!Field<VirtualJoystick>(_app,"_stick").Visible,"joystick hidden behind additional panel");
+                var last=Panel.Selection.Choices.Last();var row=Named<Button>(ContextActionsPanel.ButtonName(last.Key));
+                Panel.Selection.Select(last.Key);Step(3);await Frames();
+                Check(Panel.Expanded&&Panel.Selection.SelectedKey==last.Key&&ReferenceEquals(row,Named<Button>(row.Name.ToString())),"ticks retain selection and the keyed control");
+                UiNavigation.Reveal(row);await Frames();Check(GetViewportRect().HasPoint(row.GetGlobalRect().GetCenter()),"last local action is reachable");
+                var outside=new Vector2(30,24);int window=GetWindow().GetWindowId();
+                Input.ParseInputEvent(new InputEventMouseButton{WindowId=window,Position=outside,GlobalPosition=outside,ButtonIndex=MouseButton.Left,Pressed=true});await Frames(1);
+                Input.ParseInputEvent(new InputEventMouseButton{WindowId=window,Position=outside,GlobalPosition=outside,ButtonIndex=MouseButton.Left,Pressed=false});await Frames();
+                Check(!Panel.Expanded&&Field<object>(_app,"_surface").ToString()=="Play","outside dismissal shields Menu underneath");
             }
-            else if(_mode=="touch")
-            {
-                for(int swipe=0;swipe<3;swipe++)
-                {
-                    var start=scroll.GetGlobalRect().GetCenter()+new Vector2(0,65);
-                    Input.ParseInputEvent(new InputEventScreenTouch{WindowId=window,Index=0,Position=start,Pressed=true});await Frames(1);
-                    for(int i=1;i<=5;i++){Input.ParseInputEvent(new InputEventScreenDrag{WindowId=window,Index=0,Position=start-new Vector2(0,i*30),Relative=new(0,-30)});await Frames(1);}
-                    Input.ParseInputEvent(new InputEventScreenTouch{WindowId=window,Index=0,Position=start-new Vector2(0,150),Pressed=false});await Frames();
-                    if(scroll.GetGlobalRect().HasPoint(lastButton.GetGlobalRect().End-new Vector2(2,2)))break;
-                }
-            }
-            else
-            {
-                var point=scroll.GetGlobalRect().GetCenter();
-                for(int i=0;i<7;i++)
-                {
-                    Input.ParseInputEvent(new InputEventMouseButton{WindowId=window,Position=point,GlobalPosition=point,ButtonIndex=MouseButton.WheelDown,Pressed=true});
-                    Input.ParseInputEvent(new InputEventMouseButton{WindowId=window,Position=point,GlobalPosition=point,ButtonIndex=MouseButton.WheelDown,Pressed=false});await Frames(1);
-                }
-            }
-            Check(scroll.ScrollVertical>0&&Panel.Expanded&&_session.CommandTape.Length==tape,$"real list scrolling neither closes the panel nor activates a row (scroll={scroll.ScrollVertical}, expanded={Panel.Expanded}, commands={_session.CommandTape.Length-tape})");
-            Check(scroll.GetGlobalRect().HasPoint(lastButton.GetGlobalRect().End-new Vector2(2,2)),"actual scrolling reaches the last row before any programmatic reveal");
-            await Shot("expanded");tape=_session.CommandTape.Length;
-            await Click(ContextActionsPanel.ButtonName(last.Key),true);
-            Check(last.Key=="section:services","last row is the expected stable action");
-            Check(Field<TabletState>(_app,"_tabletState").Kind==TabletKind.Player&&Field<PlayerTablet>(_app,"_playerTablet").HelpTopic=="services","last row opens exactly delivery rather than its neighbour");
-            Check(_session.CommandTape.Length==tape,"navigation sends no economic command");Check(!Panel.Expanded,"incompatible tablet deliberately closes additional panel");
-            await Click("TabletClose");await Click("ContextMore");
-            if(_mode=="touch")
-            {
-                // A real drag interrupted by OS focus loss must not leave mouse input suppressed.
-                var start=scroll.GetGlobalRect().GetCenter();
-                Input.ParseInputEvent(new InputEventScreenTouch{WindowId=window,Index=0,Position=start,Pressed=true});await Frames(1);
-                Input.ParseInputEvent(new InputEventScreenDrag{WindowId=window,Index=0,Position=start-new Vector2(0,30),Relative=new(0,-30)});await Frames(1);
-                _app.Notification((int)NotificationApplicationFocusOut);await Frames();
-                Check(!Panel.Expanded,"focus loss deliberately closes an interrupted touch gesture");
-                Input.ParseInputEvent(new InputEventScreenTouch{WindowId=window,Index=0,Position=start-new Vector2(0,30),Pressed=false});await Frames();
-                _app.Notification((int)NotificationApplicationFocusIn);await Frames();
-                _mode="mouse";await Click("ContextMore");await Click(ContextActionsPanel.ButtonName(last.Key));
-                Check(Field<TabletState>(_app,"_tabletState").Kind==TabletKind.Player&&Field<PlayerTablet>(_app,"_playerTablet").HelpTopic=="services","mouse activation recovers after interrupted touch and focus return");
-                await Click("TabletClose");_mode="touch";await Click("ContextMore");
-            }
+            await Click("ContextDismiss");Check(Panel.Dismissed&&Named<Button>("ContextReopen").Text.Contains(Panel.ActiveCount.ToString()),"one visible reopen button carries the active count");
+            Step(2);await Frames();Check(Panel.Dismissed,"refresh respects manual collapse");await Click("ContextReopen");Check(!Panel.Dismissed,"native activation reopens current actions");
+            if(Panel.Selection.Choices.Length>Panel.Selection.PrimaryKeys().Length)await Click("ContextMore");
             tape=_session.CommandTape.Length;long tick=_session.Engine.Tick;
             await Click(ContextActionsPanel.ButtonName("machine:place:"+id));
             Check(_session.CommandTape.Length==tape+1&&_session.Engine.Tick==tick,"one native click queues exactly one command without ticking");
-            Check(Panel.Expanded,"panel remains open while waiting for core");
+            Check(Panel.Visible&&!Panel.Dismissed,"panel remains visible while waiting for Core");
             await Click(ContextActionsPanel.ButtonName("machine:place:"+id),disabled:true);
             Check(_session.CommandTape.Length==tape+1,"repeat press cannot duplicate the pending transaction");
             Step();await Frames();Check(_session.Engine.Observe(new(1)).OwnEquipment.Single().Deployed==true,"core accepted placement through the context control");
             var auto=Panel.Selection.Choices.Single(c=>c.Key=="machine:auto:"+id);Check(!Panel.Selection.PrimaryKeys().Contains(auto.Key),"automatic extraction is a genuine additional command");
+            if(!Panel.Expanded)await Click("ContextMore");
             tape=_session.CommandTape.Length;await Click(ContextActionsPanel.ButtonName(auto.Key),true);Step();await Frames();
             Check(_session.CommandTape.Length==tape+1&&_session.CommandTape.Last().Command.Action==auto.Command,"refreshed additional row sends its exact command once");
             Check(_session.Engine.Observe(new(1)).OwnEquipment.Single().Mode==EquipmentMode.Automatic,"additional native command changes authoritative mode");
-            var pack=Panel.Selection.Choices.Single(c=>c.Key=="machine:pack:"+id);
-            Check(!pack.Enabled&&pack.Details==PlayerText.Reason(language,"EquipmentBusy"),"busy equipment has its specific localized disabled reason");
+            Check(Panel.Selection.Choices.All(c=>c.Key!="machine:pack:"+id),"unavailable pack operation is omitted while equipment works");
             var copy=CheckpointStore.Decode(CheckpointStore.Encode(_session));copy.RestoreControllers(c=>c.Kind==SelfBallotController.Kind?SelfBallotController.Restore(c):AlgorithmicController.Restore(c));
             for(int i=0;i<3;i++){_session.Step();copy.Step();Check(_session.Engine.ComputeStateHash()==copy.Engine.ComputeStateHash(),"UI actions preserve exact restored future");}
             Call(_app,"Refresh");

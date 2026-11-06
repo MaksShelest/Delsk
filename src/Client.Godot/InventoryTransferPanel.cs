@@ -39,6 +39,8 @@ public partial class InventoryTransferPanel : VBoxContainer
         return true;
     }
     public void FocusInventory(long id){_preferred=id;if(_view is not null){Select(_source,id);Select(_destination,_view.Participant.InventoryId.Value);Render();}}
+    public void FocusRoute(long source,long destination)
+    {Select(_source,source);Select(_destination,destination);Render();}
     private static void Select(OptionButton option,long id){for(int i=0;i<option.ItemCount;i++)if(option.GetItemMetadata(i).AsInt64()==id)option.Select(i);}
     public void ShowData(PlayerView view,bool pending)
     {
@@ -91,6 +93,7 @@ public partial class BackpackPanel : VBoxContainer
         var box=new VBoxContainer();box.AddChild(_capacity);box.AddChild(_fill);box.AddChild(_stock);AddChild(GameUi.Card(box));
         _transfer=new(scenario,language,"BackpackTransfer",submit,access);AddChild(GameUi.Card(_transfer));
     }
+    public void FocusRoute(long source,long destination)=>_transfer.FocusRoute(source,destination);
     public void ShowData(PlayerView view,bool pending)
     {
         var pack=view.Inventories.Single(i=>i.Id==view.Participant.InventoryId);_capacity.Text=GameUi.L(_language,"Занято ","Used ")+pack.OccupiedVolume+" / "+pack.Capacity+(pack.ReservedCapacity>0?GameUi.L(_language," · место под ожидаемый груз "," · held for incoming cargo ")+pack.ReservedCapacity:"");
