@@ -70,7 +70,7 @@ public partial class Playfield : Control
 
     private enum Surface { Play, Menu, Debug, Maps }
     private string _mapKey = PlayMaps.First;
-    private string _newMapKey = PlayMaps.First;
+    private string _newMapKey = PlayMaps.CompactValley;
     private MapSelectionScreen? _mapSelection;
     private ResourceInventoryHud? _hudGoods;
 
@@ -221,7 +221,7 @@ public partial class Playfield : Control
         {var read=VNextBalanceReader.Read(System.Text.Encoding.UTF8.GetBytes(Text("Play.vnext-balance.json")));if(!read.IsValid || read.Sha256!=provenance.FullBalanceSha256)throw new InvalidOperationException("Full balance/profile mismatch");full=read.Balance;}
         return OrdinaryNewGame.Resolve(map,economy,new(count,_newDifficulty.ToString()),vnextBalance:full);
     }
-    private ScenarioDefinition ReadMap(string key)=>ResolveNewGame(key,_newNpcCount).Scenario;
+    private ScenarioDefinition ReadMap(string key)=>JsonSerializer.Deserialize<ScenarioDefinition>(Text(PlayMaps.Resource(key)),SimulationJson.Options)??throw new InvalidOperationException(key);
 
     private void DismissMaps()
     { if (_mapSelection is not null) {_newNpcCount=_mapSelection.NpcCount;_newMapKey = _mapSelection.SelectedMap;_newDifficulty=_mapSelection.Difficulty;_newModel=_mapSelection.ModelConfiguration;} _mapSelection?.QueueFree(); _mapSelection = null; }
@@ -256,6 +256,7 @@ public partial class Playfield : Control
         _mapSelection.FeedbackSettingsRequested += OpenFeedbackSettings;
         _mapSelection.AppearanceSettingsRequested += OpenAppearanceSettings;
         _mapSelection.QuitRequested += ExitGame;
+        if(_session is not null)DeveloperMenu(_mapSelection.AdditionalSettings);
         AddChild(_mapSelection);
     }
 
@@ -292,6 +293,7 @@ public partial class Playfield : Control
             _scenario = JsonSerializer.Deserialize<ScenarioDefinition>(Text("Play.logistics-cycle.json"), SimulationJson.Options)
                 ?? throw new InvalidOperationException("Play.logistics-cycle.json");
             _human = new(1);
+            _contextCollapsed=false;
             _session = new GameSession(new SimulationEngine(_scenario));
             _scheduler = new TickScheduler(_session,controllerBarrier:()=>ModelBarrier);
             _feedback = "";
@@ -318,6 +320,7 @@ public partial class Playfield : Control
             config = config with { Npcs = config.Npcs.Select(n => AlgorithmicController.WithEconomy(n, economy.Npc)).ToArray() };
         }
         _human = new(config.HumanActorId);
+        _contextCollapsed=false;
         _session = new GameSession(new SimulationEngine(_scenario));
         AttachGameControllers(config,mode=="economy");
         _scheduler = new TickScheduler(_session,controllerBarrier:()=>ModelBarrier);
@@ -400,6 +403,8 @@ public partial class Playfield : Control
         _contextMessage="";
         choice = valid;
         if (!choice.Enabled) { _feedback = choice.Details; _gain = ""; _trackedId = null; Refresh(); return; }
+        if(choice.Key.StartsWith("local-transfer:",StringComparison.Ordinal))
+        {var parts=choice.Key.Split(':');OpenPlayerTablet();_playerTablet?.OpenTransfer(long.Parse(parts[1],CultureInfo.InvariantCulture),long.Parse(parts[2],CultureInfo.InvariantCulture));return;}
         if(choice.Key.StartsWith("section:",StringComparison.Ordinal)){OpenCitySection(choice.Key[8..]);return;}
         if(choice.Key.StartsWith("road-work:",StringComparison.Ordinal)){OpenRoadWork(long.Parse(choice.Key[10..],CultureInfo.InvariantCulture));return;}
         if (choice.Key.StartsWith("object:", StringComparison.Ordinal))
@@ -417,7 +422,7 @@ public partial class Playfield : Control
         if (choice.Key.StartsWith("market:", StringComparison.Ordinal))
         { OpenMarketTablet(long.Parse(choice.Key[7..], CultureInfo.InvariantCulture)); return; }
         if(choice.Key=="city"){_playerTab=3;OpenPlayerTablet();return;}
-        if(choice.Key=="dealership"){if(_scenario.Economy?.Fleet is not null){_playerTab=0;OpenPlayerTablet();}else OpenHelp("dealership");return;}
+        if(choice.Key=="dealership"){if(_scenario.Economy?.Fleet is not null){OpenCitySection("dealer");}else OpenHelp("dealership");return;}
         if (choice.Key == "exchange") { OpenCapitalTablet(); return; }
         if (choice.Command is { } action)
         {string? prior=_trackedId;Offer(action);if(_surface==Surface.Play&&_trackedId!=prior)_contextCommandId=_trackedId;Refresh();}

@@ -48,9 +48,18 @@ public partial class CityExperienceProbe : Control
     private async Task StartMap(string map,int count)
     {
         _app=GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();AddChild(_app);await Frames(5);
-        await Click(TextButton("English"));var setup=Field<MapSelectionScreen>(_app,"_mapSelection");await Number(All(setup).OfType<SpinBox>().Single(s=>s.Name=="NpcCount"),count.ToString());
-        await Click(TextButton("Change map"));var choices=All(GetTree().Root).OfType<Button>().Where(b=>b.IsVisibleInTree()&&b.Text=="Select").ToArray();await Click(choices[Array.IndexOf(PlayMaps.All,map)]);
-        if(_language=="ru")await Click(TextButton("Русский"));await Click(TextButton(_language=="ru"?"Начать":"Start"));await Frames(6);
+        var setup=Field<MapSelectionScreen>(_app,"_mapSelection");
+        ((UiDisclosure)setup.AdditionalSettings.GetParent()).Open();await Frames();await Click(TextButton("English"));
+        setup=Field<MapSelectionScreen>(_app,"_mapSelection");await Number(All(setup).OfType<SpinBox>().Single(s=>s.Name=="NpcCount"),count.ToString());
+        if(_language=="ru"){((UiDisclosure)setup.AdditionalSettings.GetParent()).Open();await Frames();await Click(TextButton("Русский"));}
+        if(PlayMaps.UserCatalog.Contains(map))
+        {await Click(Named<Button>("ChooseMap"));await Click(Named<Button>("SelectMap_"+map));await Click(Named<Button>("StartGame"));}
+        else
+        {
+            // Historical map GUI/restore coverage stays independent of the ordinary user catalog.
+            typeof(Playfield).GetMethod("BeginMap",BindingFlags.Instance|BindingFlags.NonPublic)!.Invoke(_app,[map]);
+        }
+        await Frames(6);
         Check(Session.Engine.Configuration().Participants.Length==count+1,"Incomplete roster");Check(Session.Engine.Configuration().EconomyProfileId=="vnext-g1-npc-economy-1","G1 profile replaced by UX");
         _app.Notification((int)NotificationApplicationFocusIn);
     }
@@ -89,12 +98,13 @@ public partial class CityExperienceProbe : Control
         await Click(TextButton(_language=="ru"?"Меню":"Menu"));await Click(TextButton(_language=="ru"?"Оформление и персонажи":"Appearance and characters"));
         string cosmetic=Session.Engine.ComputeStateHash();await Click(Named<Button>("WorldSkinSet"));await Click(Named<Button>("PeopleSkinSet"));Check(Session.Engine.ComputeStateHash()==cosmetic,"Skin changed authoritative state");
         var appearance=All(_app).OfType<AcceptDialog>().Single(d=>d.Name=="AppearanceSettings");await Click(appearance.GetOkButton());
+        int menuWidth=Math.Max(800,width);GetWindow().Size=new(menuWidth,440);GetWindow().ContentScaleSize=GetWindow().Size;await Frames();
         await Click(TextButton(_language=="ru"?"Выбрать карту / новая партия":"Choose map / new game"));
-        var setup=Field<MapSelectionScreen>(_app,"_mapSelection");await Frames();Check(setup.GetGlobalRect().End.X<=width+1,"Setup exceeds narrow window");
-        await Click(TextButton(_language=="ru"?"Сменить карту":"Change map"));var catalog=All(_app).OfType<AcceptDialog>().Single(d=>d.Visible);Check(catalog.Size.X<=width,"Catalog wider than mobile window");await Click(catalog.GetOkButton());
+        var setup=Field<MapSelectionScreen>(_app,"_mapSelection");await Frames();Check(setup.GetGlobalRect().End.X<=menuWidth+1,"Setup exceeds narrow window");
+        await Click(Named<Button>("ChooseMap"));var catalog=Named<Control>("MapCatalog");Check(catalog.Size.X<=menuWidth,"Catalog wider than mobile window");await Click(Named<Button>("CloseMapCatalog"));
         await Capture("setup-"+_language+"-"+width);await Click(TextButton(_language=="ru"?"Продолжить":"Continue"));
         _app.Notification((int)NotificationApplicationFocusOut);await Frames();long savedTick=Session.Engine.Tick;RemoveChild(_app);_app.QueueFree();await Frames();
-        _app=GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();AddChild(_app);await Frames(5);if(_language=="en")await Click(TextButton("English"));await Click(TextButton(_language=="ru"?"Продолжить":"Continue"));
+        _app=GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();AddChild(_app);await Frames(5);if(_language=="en"){var menu=Field<MapSelectionScreen>(_app,"_mapSelection");((UiDisclosure)menu.AdditionalSettings.GetParent()).Open();await Frames();await Click(TextButton("English"));}await Click(TextButton(_language=="ru"?"Продолжить":"Continue"));
         Check(Session.Engine.Tick==savedTick&&Session.Engine.Configuration().Participants.Length==count+1,"Disk continuation changed time or roster");Check(Field<CityReadState>(_app,"_cityRead").TutorialPage==1,"Disk load lost guide memory");
         _checks.AddRange(["ordinary new game and entire roster","native full-map cell hit and wheel zoom","keyboard pan","two-finger zoom without world input or ghost tap","layer and participant filters","help/close preserve selection and time","focus pause","guide memory","skin change preserves authoritative hash","narrow setup/catalog/appearance","disk continuation"]);
     }

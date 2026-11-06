@@ -1,5 +1,5 @@
 using Simulation.Core;
-using Simulation.Hosting;
+namespace Simulation.Hosting;
 
 /// <summary>UI-only preview of an existing single-item Transfer. Core still validates the submitted command.</summary>
 public readonly record struct ManualTransferChoice(GameAction Action,long Maximum,bool Enabled,string Reason)

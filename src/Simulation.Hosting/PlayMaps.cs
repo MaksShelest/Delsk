@@ -3,6 +3,7 @@ namespace Simulation.Hosting;
 /// <summary>Prepared maps only. Reading this catalog does not start a world.</summary>
 public static class PlayMaps
 {
+    public static readonly string[] UserCatalog=[CompactValley,Second];
     public const string SmallRiver="small-river";
     public const string LargeDistricts="large-districts";
     public const string CompactValley="compact-valley";
@@ -34,5 +35,7 @@ public static class PlayMaps
         key == CompactValley ? "Малая долина" : key == SmallRiver ? "Речные кварталы · E2" : key == LargeDistricts ? "Большой округ · E2" : key == FourQuarters ? "Четыре квартала" : key == CityCorridor ? "Городской тракт" : key == Third ? "Третья карта" : key == Second ? "Вторая карта" : "Первая карта", key == CompactValley ? "Small valley" : key == SmallRiver ? "River quarters · E2" : key == LargeDistricts ? "Large district · E2" : key == FourQuarters ? "Four quarters" : key == CityCorridor ? "City corridor" : key == Third ? "Third map" : key == Second ? "Second map" : "First map");
     public static string Description(string key,string language)=>key==CompactValley?PlayerText.Local(language,
         "Восемь ресурсов, 24 промышленных площадки и городской центр рядом. Короткие маршруты для 3–10 ботов и игрока; полный набор механик.",
-        "Eight resources, 24 industrial sites and a nearby town center. Short routes for 3–10 bots and the player; all current mechanics."):"";
+        "Eight resources, 24 industrial sites and a nearby town center. Short routes for 3–10 bots and the player; all current mechanics."):key==Second?PlayerText.Local(language,
+        "Будущая карта. Адаптация к современной экономике запланирована в I6-C2.",
+        "Coming soon. Adaptation to the current economy is planned for I6-C2."):"";
 }

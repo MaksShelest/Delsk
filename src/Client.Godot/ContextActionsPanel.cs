@@ -10,18 +10,21 @@ public partial class ContextActionsPanel : PanelContainer
     public readonly ContextSelection Selection=new();
     public bool Expanded=>Selection.Expanded;
     public bool Dismissed {get;private set;}
-    private string _dismissedScope="";
-    public bool Pressing=>_dismiss.ButtonPressed||_more.ButtonPressed||_rows.Values.Any(r=>r.Button.ButtonPressed);
+    public event Action<bool>? CollapsedChanged;
+    public int ActiveCount=>Selection.Choices.Count(c=>c.Enabled&&(!Selection.Pending||c.Command is null));
+    private readonly VBoxContainer _body=new();
+    private readonly Button _reopen=new(){Name="ContextReopen",CustomMinimumSize=new(68,44)};
+    public bool Pressing=>_reopen.ButtonPressed||_dismiss.ButtonPressed||_more.ButtonPressed||_rows.Values.Any(r=>r.Button.ButtonPressed);
     private readonly HFlowContainer _primary=new(){SizeFlagsHorizontal=SizeFlags.ExpandFill};
     private readonly HBoxContainer _actions=new();
-    private readonly Button _dismiss=new(){Name="ContextDismiss",Text="×",CustomMinimumSize=new(44,44),SizeFlagsVertical=SizeFlags.ShrinkBegin};
-    private readonly VBoxContainer _list=new();
+    private readonly Button _dismiss=new(){Name="ContextDismiss",Text="▾",CustomMinimumSize=new(44,44),SizeFlagsVertical=SizeFlags.ShrinkBegin};
+    private readonly HFlowContainer _list=new(){SizeFlagsHorizontal=SizeFlags.ExpandFill};
     private readonly ScrollContainer _scroll=new(){HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled,FollowFocus=true};
     private readonly Button _more=new(){Name="ContextMore",CustomMinimumSize=new(44,44),SizeFlagsVertical=SizeFlags.ShrinkBegin};
     private readonly Label _status=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart,MaxLinesVisible=1,TextOverrunBehavior=TextServer.OverrunBehavior.TrimEllipsis};
     private readonly Label _summary=new(){TextOverrunBehavior=TextServer.OverrunBehavior.TrimEllipsis,MouseFilter=MouseFilterEnum.Ignore};
     private readonly Dictionary<string,(VBoxContainer Row,Button Button,Label Reason,ProgressBar Progress)> _rows=[];
-    private readonly Dictionary<string,VBoxContainer> _groups=[];
+
     private string _language="en";
     private int _touchIndex=-1,_touchScroll;
     private Vector2 _touchOrigin;private float _heightTop;private bool _fittingHeight;
@@ -30,7 +33,7 @@ public partial class ContextActionsPanel : PanelContainer
     {
         Name="ContextActions";Theme=CompactTabletDesign.Theme;MouseFilter=MouseFilterEnum.Stop;
         AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("f3f3ed",8));
-        var body=new VBoxContainer();body.AddThemeConstantOverride("separation",4);AddChild(body);
+        var body=_body;body.AddThemeConstantOverride("separation",4);AddChild(body);AddChild(_reopen);_reopen.Hide();_reopen.Pressed+=Reopen;
         body.AddChild(_scroll);_scroll.AddChild(_list);_list.SizeFlagsHorizontal=SizeFlags.ExpandFill;
         body.AddChild(_summary);_summary.AddThemeFontSizeOverride("font_size",13);body.AddChild(_status);body.AddChild(_actions);
         _actions.AddChild(_primary);_actions.AddChild(_more);_actions.AddChild(_dismiss);
@@ -39,15 +42,23 @@ public partial class ContextActionsPanel : PanelContainer
     }
     public void Dismiss()
     {
-        _dismissedScope=Selection.Scope;Dismissed=true;SetExpanded(false);Hide();
+        Dismissed=true;SetExpanded(false);ApplyCollapsed();CollapsedChanged?.Invoke(true);
         if(GetViewport().GuiGetFocusOwner() is Control focused&&IsAncestorOf(focused))focused.ReleaseFocus();
     }
-    public void Reopen(){Dismissed=false;_dismissedScope="";Visible=Selection.Choices.Length>0;}
+    public void Reopen(){Dismissed=false;ApplyCollapsed();CollapsedChanged?.Invoke(false);}
+    private void ApplyCollapsed()
+    {
+        _body.Visible=!Dismissed;_reopen.Visible=Dismissed;
+        _reopen.Text="⚡ "+ActiveCount;_reopen.TooltipText=PlayerText.Local(_language,"Раскрыть локальные действия","Show local actions");
+        AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("f3f3ed",Dismissed?0:8));
+        Visible=Selection.Choices.Length>0;CustomMinimumSize=Vector2.Zero;Size=new(Size.X,0);
+    }
     public float DockWidth(float maximum)
     {
-        float natural=16+44+(_more.Visible?52:0)+8;
+        if(Dismissed)return _reopen.GetCombinedMinimumSize().X;
+        float natural=40+44+(_more.Visible?52:0)+8;
         foreach(string key in Selection.PrimaryKeys())if(_rows.TryGetValue(key,out var row))
-            natural+=Math.Clamp(row.Button.GetThemeFont("font").GetStringSize(row.Button.Text,fontSize:row.Button.GetThemeFontSize("font_size")).X+24,90,190)+8;
+            natural+=Math.Clamp(row.Button.GetThemeFont("font").GetStringSize(row.Button.Text,fontSize:row.Button.GetThemeFontSize("font_size")).X+28,90,280)+8;
         return Math.Min(maximum,Expanded?Math.Max(natural,560):natural);
     }
     public void SetExpanded(bool value)
@@ -82,7 +93,7 @@ public partial class ContextActionsPanel : PanelContainer
     public void ShowSummary(string text){_summary.Text=text;_summary.Visible=text.Length>0;}
     public void ShowData(string scope,ContextChoice[] choices,string language,bool pending,string status,float top)
     {
-        bool was=Expanded;_language=language;if(Dismissed&&scope!=_dismissedScope)Reopen();Selection.Update(scope,choices);if(choices.Length==0)Selection.Expanded=false;Selection.Pending=pending;
+        bool was=Expanded;_language=language;Selection.Update(scope,choices);if(choices.Length==0)Selection.Expanded=false;Selection.Pending=pending;
         if(was!=Expanded){_touchIndex=-1;_touchDragged=false;ExpansionChanged?.Invoke(Expanded);}
         var primary=Selection.PrimaryKeys();
         foreach(string key in _rows.Keys.Except(choices.Select(c=>c.Key)).ToArray())
@@ -105,49 +116,39 @@ public partial class ContextActionsPanel : PanelContainer
             Container host=_primary;
             if(!primary.Contains(choice.Key))
             {
-                string group=ContextActions.Group(choice);
-                if(!_groups.TryGetValue(group,out var target))
-                {target=new VBoxContainer{Name="ContextGroup_"+group};target.AddChild(new Label{Text=ContextActions.GroupName(group,language),AutowrapMode=TextServer.AutowrapMode.WordSmart});_groups.Add(group,target);_list.AddChild(target);}
-                host=target;
+                host=_list;
             }
             if(item.Row.GetParent()!=host){item.Row.GetParent()?.RemoveChild(item.Row);host.AddChild(item.Row);}
-            int position=positions.GetValueOrDefault(host,host==_primary?0:1);positions[host]=position+1;
+            int position=positions.GetValueOrDefault(host,0);positions[host]=position+1;
             if(!Pressing&&item.Row.GetIndex()!=position)host.MoveChild(item.Row,position);
             item.Button.Text=choice.Command?.Kind switch
-            {ActionKind.BoardVehicle=>PlayerText.Local(language,"Сесть","Board"),ActionKind.LeaveVehicle=>PlayerText.Local(language,"Выйти","Leave"),_=>choice.Label};item.Button.Disabled=!choice.Enabled||pending&&choice.Command is not null;
+            {ActionKind.BuyVehicle=>choice.Label.Split(" · ")[0],ActionKind.BoardVehicle=>PlayerText.Local(language,"Сесть","Board"),ActionKind.LeaveVehicle=>PlayerText.Local(language,"Выйти","Leave"),_=>choice.Label};item.Button.Disabled=!choice.Enabled||pending&&choice.Command is not null;
             item.Button.TooltipText=choice.Label+"\n"+choice.Details;
             item.Reason.Text=!choice.Enabled?choice.Details:"";item.Reason.Visible=item.Reason.Text.Length>0;
             item.Progress.Visible=choice.Command?.Kind==ActionKind.StopHarvest;
         }
-        foreach(var group in _groups.Values)group.Visible=group.GetChildCount()>1;
         _more.Visible=choices.Length>primary.Length;
-        _more.Text="⋯";_more.TooltipText=MoreHint();_dismiss.TooltipText=PlayerText.Local(language,"Скрыть действия · Enter, чтобы вернуть","Dismiss actions · Enter to reopen");
+        _more.Text="⋯";_more.TooltipText=MoreHint();_dismiss.TooltipText=PlayerText.Local(language,"Свернуть действия","Collapse actions");
         string feedback=string.Join(" · ",new[]{status}.Concat(choices.Where(c=>primary.Contains(c.Key)&&!c.Enabled).Select(c=>c.Details)).Where(t=>t.Length>0).Distinct());
         _scroll.Visible=Expanded;_status.Text=feedback;_status.TooltipText=feedback;_status.Visible=feedback.Length>0;
         _heightTop=top;
-        Visible=choices.Length>0&&!Dismissed;LayoutRows();
+        ApplyCollapsed();LayoutRows();
     }
     private void LayoutRows()
     {
         if(!IsInsideTree())return;
         float maximum=GetViewportRect().Size.X-40;
         float width=Math.Max(90,Math.Min(Size.X-16,maximum));
-        var primaryRows=_rows.Values.Where(r=>r.Row.GetParent()==_primary).ToArray();
-        float Natural(Button button)=>Math.Clamp(button.GetThemeFont("font").GetStringSize(button.Text,fontSize:button.GetThemeFontSize("font_size")).X+28,90,190);
-        int count=Math.Max(1,primaryRows.Length);
-        float budget=Math.Max(44*count,width-(_more.Visible?52:0)-52-8*(count-1));
-        float desired=primaryRows.Sum(r=>Natural(r.Button)),floor=Math.Min(64,budget/count);
+        float Natural(Button button)=>Math.Clamp(button.GetThemeFont("font").GetStringSize(button.Text,fontSize:button.GetThemeFontSize("font_size")).X+28,90,280);
         foreach(var item in _rows.Values)
         {
             bool primary=item.Row.GetParent()==_primary;
-            float natural=Natural(item.Button);
-            float primaryWidth=desired<=budget?natural:floor+(budget-floor*count)*(natural-floor)/Math.Max(1,desired-floor*count);
-            float rowWidth=primary?primaryWidth:Math.Max(60,width-_scroll.GetVScrollBar().GetCombinedMinimumSize().X-4);
-            item.Button.AutowrapMode=primary?TextServer.AutowrapMode.Off:TextServer.AutowrapMode.WordSmart;item.Button.ClipText=true;
-            item.Button.TextOverrunBehavior=TextServer.OverrunBehavior.TrimEllipsis;
+            float rowWidth=Math.Min(Natural(item.Button),Math.Max(90,width-112));
+            item.Button.AutowrapMode=TextServer.AutowrapMode.WordSmart;item.Button.ClipText=false;
+            item.Button.TextOverrunBehavior=TextServer.OverrunBehavior.NoTrimming;
             item.Button.CustomMinimumSize=new(rowWidth,44);item.Row.CustomMinimumSize=new(rowWidth,0);
             item.Reason.CustomMinimumSize=new(rowWidth,0);item.Reason.Visible=!primary&&item.Reason.Text.Length>0;
-            item.Button.SizeFlagsHorizontal=primary?SizeFlags.ShrinkBegin:SizeFlags.ExpandFill;item.Button.Alignment=primary?HorizontalAlignment.Center:HorizontalAlignment.Left;
+            item.Button.SizeFlagsHorizontal=SizeFlags.ExpandFill;item.Button.Alignment=HorizontalAlignment.Center;
         }
         FitListHeight();
     }
@@ -156,13 +157,14 @@ public partial class ContextActionsPanel : PanelContainer
         if(_fittingHeight||!Expanded||!IsInsideTree())return;_fittingHeight=true;
         try
         {
-            var body=GetChild<VBoxContainer>(0);var visible=body.GetChildren().OfType<Control>().Where(c=>c.Visible).ToArray();
+            var body=_body;var visible=body.GetChildren().OfType<Control>().Where(c=>c.Visible).ToArray();
             float chrome=GetThemeStylebox("panel").GetMinimumSize().Y+body.GetThemeConstant("separation")*Math.Max(0,visible.Length-1);
             foreach(var child in visible.Where(c=>c!=_scroll))chrome+=child.GetCombinedMinimumSize().Y;
             // Include the actual wrapped summary, primary rows and result footer. The old
             // fixed allowance missed their extra line after a state change in a narrow window.
             float available=GetViewportRect().Size.Y-_heightTop-(float)UiSafeArea.Read(this).Bottom-24;
-            _scroll.CustomMinimumSize=new(0,Math.Clamp(available-chrome-16,60,280));
+            float content=_list.GetCombinedMinimumSize().Y;
+            _scroll.CustomMinimumSize=new(0,Math.Min(content,Math.Max(44,available-chrome-16)));
         }
         finally{_fittingHeight=false;}
     }

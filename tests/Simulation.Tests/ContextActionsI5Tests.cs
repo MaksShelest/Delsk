@@ -49,14 +49,15 @@ public class ContextActionsI5Tests
         Assert.Equal("resources",ContextActions.Group(choices[2]));
     }
     [Theory][InlineData("ru")][InlineData("en")]
-    public void OrdinaryContextExposesExistingManagementWithoutChangingWorldOrTape(string language)
+    public void OrdinaryContextContainsOnlyLocalChoicesWithoutChangingWorldOrTape(string language)
     {
         var d=OrdinaryNewGame.Resolve(MapDesignTests.Template("compact_valley"),MobileEquipmentI4Tests.Profile(),new(3),vnextBalance:MapDesignTests.Balance()).Scenario;
         var s=new GameSession(new(d));string before=s.Engine.ComputeStateHash();int schema=s.Engine.ActiveCheckpointSchemaVersion;
         var choices=ContextActions.Read(s.Engine,Human,d,language);var state=new ContextSelection();
         state.Update(ContextActions.Scope(PlayerDesk.Read(s.Engine,Human)),choices);state.Expanded=true;
         for(int n=0;n<3;n++)ContextActions.Read(s.Engine,Human,d,language);
-        Assert.Contains(choices,c=>c.Key=="section:fleet");Assert.Contains(choices,c=>c.Key=="section:services");Assert.Contains(choices,c=>c.Key=="section:purchases");
+        Assert.DoesNotContain(choices,c=>c.Key.StartsWith("section:",StringComparison.Ordinal));
+        Assert.All(choices.Where(c=>c.Command is not null&&c.Enabled),c=>Assert.True(s.Engine.AccessFor(Human,c.Command!).Allowed));
         Assert.Equal(choices.Length,choices.Select(c=>c.Key).Distinct().Count());Assert.Equal(before,s.Engine.ComputeStateHash());Assert.Empty(s.CommandTape);
         var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));Assert.Equal(before,copy.Engine.ComputeStateHash());Assert.Equal(schema,copy.Engine.ActiveCheckpointSchemaVersion);
     }
@@ -80,8 +81,10 @@ public class ContextActionsI5Tests
     {
         var d=MobileEquipmentI4Tests.Prepared();var s=new GameSession(new(d));var vehicle=MobileEquipmentI4Tests.Buy(s);
         FleetE1Tests.Move(s,StorageC1Tests.Inventory(s,vehicle.CargoInventory).Position);
-        var place=Assert.Single(ContextActions.Read(s.Engine,Human,d,"en"),c=>c.Key=="machine:place:"+vehicle.Id);
-        Assert.False(place.Enabled);Assert.Equal(PlayerText.Reason("en",s.Engine.AccessFor(Human,place.Command!).ReasonCode),place.Details);
+        var action=new GameAction(ActionKind.PlaceEquipment,Equipment:new(vehicle.Id));
+        Assert.False(s.Engine.AccessFor(Human,action).Allowed);
+        var place=new ContextChoice("machine:place:"+vehicle.Id,"Place",action);
+        Assert.DoesNotContain(ContextActions.Read(s.Engine,Human,d,"en"),c=>c.Key==place.Key);
         Assert.DoesNotContain(ContextActions.Read(s.Engine,new(2),d,"en"),c=>c.Key==place.Key);
         Assert.False(s.Engine.AccessFor(new(2),place.Command!).Allowed);
         string id=s.Send(new(2),PlayerDesk.Check(place.Command!));s.Step();Assert.Equal(ResultStatus.Rejected,s.Engine.Result(id)!.Status);
@@ -91,6 +94,32 @@ public class ContextActionsI5Tests
     {
         var choices=new[]{Choice("vehicle:1",ActionKind.LeaveVehicle),new ContextChoice("road-work:1","Road work",null)}.OrderBy(ContextActions.Priority).ToArray();
         Assert.Equal("road-work:1",choices[0].Key);
+    }
+    [Theory][InlineData("ru")][InlineData("en")]
+    public void DealerOffersUseRealPricesAndCountOnlyExecutableLocalActions(string language)
+    {
+        var d=OrdinaryNewGame.Resolve(MapDesignTests.Template("compact_valley"),MobileEquipmentI4Tests.Profile(),new(3),vnextBalance:MapDesignTests.Balance()).Scenario;
+        var dealer=d.Layout!.CivicObjects.Single(c=>c.Kind=="dealership").Entry;
+        d=d with{Participants=d.Participants.Select(p=>p.Id==1?p with{Position=dealer,CashMinor=0}:p).ToArray()};
+        var e=new SimulationEngine(d);var choices=ContextActions.Read(e,Human,d,language);var fleet=e.FleetOf(Human)!;
+        var buys=choices.Where(c=>c.Command?.Kind==ActionKind.BuyVehicle).ToArray();Assert.InRange(buys.Length,1,3);
+        foreach(var offer in buys)
+        {
+            var listing=fleet.Stock.Single(s=>s.Id==offer.Command!.VehicleId);var model=fleet.Models.Single(m=>m.Id==listing.ModelId);
+            Assert.Contains(PlayerText.Money(model.PriceMinor),offer.Label);Assert.False(offer.Enabled);Assert.Equal(PlayerText.Reason(language,"NoMoney"),offer.Details);
+            Assert.True(e.AccessFor(Human,offer.Command!).Allowed);
+        }
+        Assert.DoesNotContain(choices,c=>c.Key.StartsWith("section:",StringComparison.Ordinal));
+        Assert.True(choices.Count(c=>c.Enabled)<choices.Length);
+    }
+    [Fact] public void UserCatalogDoesNotReplaceHistoricalScenarioResolution()
+    {
+        Assert.Equal(new[]{PlayMaps.CompactValley,PlayMaps.Second},PlayMaps.UserCatalog);
+        Assert.NotEqual(PlayMaps.Second,PlayMaps.FourQuarters);
+        Assert.Contains(PlayMaps.First,PlayMaps.All);Assert.Contains(PlayMaps.FourQuarters,PlayMaps.All);
+        Assert.Equal(PlayMaps.Second,PlayMaps.KeyForScenario(PlayMaps.SecondScenarioId));
+        Assert.Equal(PlayMaps.Second,PlayMaps.KeyForScenario(PlayMaps.CurrentSecondScenarioId));
+        Assert.Equal(PlayMaps.First,PlayMaps.KeyForScenario(PlayMaps.FirstScenarioId));
     }
     [Fact] public void TheAvailabilityMatrixAccountsForEveryKindIncludingTheDedicatedInputPath()
     {

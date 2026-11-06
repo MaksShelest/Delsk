@@ -40,6 +40,7 @@ public partial class PlayerTablet : VBoxContainer
     private string _section="overview";
     public string CurrentSection=>_section;
     public string HelpTopic=>_section switch{"account"=>"account","services"=>"services","fleet"=>"dealership","roads"=>"map",_=>"holdings"};
+    public void OpenTransfer(long source,long destination){OpenSection("inventory");_backpack.FocusRoute(source,destination);}
     public void OpenServices()=>OpenSection("services");
     private readonly FleetPanel? _fleet;
     private readonly BackpackPanel _backpack;

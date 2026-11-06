@@ -13,6 +13,7 @@ public partial class Playfield
     private string _noticeValue = "";
     private double _noticeSeconds;
     private bool _contextDismissTouch;
+    private bool _contextCollapsed;
 
     private string L(string ru, string en) => PlayerText.Local(_language, ru, en);
     private void OpenHelp(string topic = "basics")
@@ -149,6 +150,8 @@ public partial class Playfield
         {
             _contextActions=new ContextActionsPanel();host.AddChild(_contextActions);
             _contextActions.Requested+=ConfirmContextChoice;
+            _contextActions.CollapsedChanged+=collapsed=>{_contextCollapsed=collapsed;LayoutContextDock();};
+            if(_contextCollapsed)_contextActions.Dismiss();
             _contextActions.ExpansionChanged+=expanded=>
             {if(expanded){StopHeading();_waitRelease=true;}else _contextDismissTouch=false;if(_contextShield is not null)_contextShield.Visible=expanded;ApplyPause();};
             _contextActions.Resized+=LayoutContextDock;
@@ -174,7 +177,7 @@ public partial class Playfield
             float width=_contextActions.DockWidth(viewport.X-(float)safe.Left-(float)safe.Right-24);
             dock.Size=new(width,0);
             float height=Math.Max(dock.Size.Y,_contextActions.Size.Y);
-            var point=new Vector2(((float)safe.Left+viewport.X-(float)safe.Right-width)/2,viewport.Y-height-(float)safe.Bottom-12);
+            var point=new Vector2(_contextActions.Dismissed?viewport.X-(float)safe.Right-width-12:((float)safe.Left+viewport.X-(float)safe.Right-width)/2,viewport.Y-height-(float)safe.Bottom-12);
             float left=(float)safe.Left+12,right=Math.Max(left,viewport.X-(float)safe.Right-width-12);
             float bottom=Math.Max((float)safe.Top+12,viewport.Y-(float)safe.Bottom-height-12),top=Math.Min(_roadCardTop+8,bottom);
             dock.Position=new(Math.Clamp(point.X,left,right),Math.Clamp(point.Y,top,bottom));
