@@ -1,0 +1,13 @@
+{
+  "command": [
+    "dotnet",
+    "run",
+    "--project",
+    "work/i6c2/vehicle-exits"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-06T22:20:33.293131+00:00",
+  "exit_code": 134,
+  "elapsed_seconds": 11.933,
+  "finished_at": "2026-11-06T22:20:45.226352+00:00"
+}

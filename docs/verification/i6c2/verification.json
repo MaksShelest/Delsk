@@ -1,0 +1,75 @@
+{
+  "base": "dd803ae802a2af7f824d5cc95f1cbf100056f804",
+  "author": "Шелестов Максим Евгеньевич",
+  "status": "succeeded",
+  "targetedCases": 17,
+  "contextRegressionCases": 17,
+  "nativeChecks": 51,
+  "mandatoryCI": "See PR checks on final HEAD; no workflow or deadline edits.",
+  "scope": "Two new maps only; 3 NPCs; prepared factory/cash explicitly distinct from ordinary manual earning; Linux software GL, not device acceptance.",
+  "attempts": {
+    "compile": "Initial xUnit analyzer errors corrected.",
+    "geometry": "Boundary delivery bay could not turn; moved bays. Static spawn actors blocked the southern maneuver; put spawns in public industrial verges.",
+    "fixtures": "Corrected ledger reason, acquired resource ownership before machinery, and explicit ballot-only policies for manual earning beyond t600.",
+    "native1": "51 native assertions passed on earlier geometry, but overall source freeze check rejected the run after a map snapshot changed. Final client recompiled the changed embedded snapshot using frozen runtime references; 51 assertions and source freeze passed.",
+    "tractorClearance": "Trakt safely left parking but its straight route reached a corner beside a private grain cell. Shifted the six-cell grain patch south; no Core movement change. All 21 models now complete real departures on both maps."
+  },
+  "maps": {
+    "compact-valley-i6c2": {
+      "id": "compact_valley_i6c2",
+      "width": 32,
+      "height": 25,
+      "industrialLots": 15,
+      "maxParticipants": 11,
+      "resources": {
+        "wood": 18,
+        "grain": 16,
+        "milk": 7,
+        "beet": 6,
+        "iron_ore": 3,
+        "copper_ore": 3,
+        "stone": 5,
+        "sand": 5
+      },
+      "sourceSha256": "33dd052a444240f9c76ad3f63f836732f92a853af22d1b7eb986d4110c1e9716",
+      "scenarioSha256": "a02494610ed5637d0f2d379dbd25b52af787b25c768f623d08fcb84799ac28ca"
+    },
+    "woodland-region-i6c2": {
+      "id": "woodland_region_i6c2",
+      "width": 18,
+      "height": 15,
+      "industrialLots": 6,
+      "maxParticipants": 4,
+      "resources": {
+        "wood": 9,
+        "grain": 4,
+        "milk": 3,
+        "beet": 3,
+        "stone": 3,
+        "sand": 2,
+        "iron_ore": 2,
+        "copper_ore": 2
+      },
+      "sourceSha256": "f26f11c36b1bbbcb153bb13fe10c457d22a3b9a67cea13c87cc685685786fe26",
+      "scenarioSha256": "bde473ad68e1642e0c982b7f107b9def6125a4afde47bf7f91df737530e67f89"
+    }
+  },
+  "files": {
+    "03-woodland-overview.png": "4a61a4a05ed8de9693e2d34b963fc338da4ef6571d0a4427813c47eb19ff6601",
+    "06-concrete-car-purchase.png": "2aa76e7b550d76cfa545aaf10d656acfa8a440afa9bce8dc02beafbdb7df2e6b",
+    "02-valley-center-industry.png": "8683153778f38039404582a31df886cbf7228b30b6d7f2c568c1e05541794979",
+    "04-woodland-town-hall.png": "2af90d415e59f7e539c1ac0dcb068a97572436a109fbcc0f645c9fae9c7ca327",
+    "01-valley-overview.png": "f67e09a7ba4e6d65aa617f15884bb1c63e8fb42ad8cc9c291e5ca66310933b1a",
+    "05-map-catalog.png": "c44f478ea60f66b7162e6299a0ab67c85d33be3445926aa227fc5619a80aface"
+  },
+  "legacyProfileCiFix": {
+    "failedRun": 42301293997,
+    "failedJob": 128179461474,
+    "cause": "Explicit G1 profile cannot apply I4 delivery bays; preserve historical compact snapshot for explicit pre-I4 profile only. Default ordinary games remain current I6-C2.",
+    "targetedNative": "legacy-profile-native.json",
+    "groups": 11,
+    "status": "succeeded",
+    "runtimeReferences": "Frozen; only affected ordinary client recompiled."
+  },
+  "stockedVehicleDepartures": 42
+}

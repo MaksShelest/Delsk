@@ -19,7 +19,8 @@ public class OrdinaryNewGameTests
     [Theory] [InlineData(3)] [InlineData(4)] [InlineData(5)] [InlineData(6)] [InlineData(7)] [InlineData(8)] [InlineData(9)] [InlineData(10)]
     public void EveryOrdinaryCountOnEveryOldMapHasOneHumanAndIndependentControllers(int count)
     {
-        foreach(string map in PlayMaps.All.Where(k=>!PlayMaps.IsDesigned(k)))
+        // These are the five frozen historical snapshots, even when a key now has a modern new-game version.
+        foreach(string map in new[]{PlayMaps.First,PlayMaps.Second,PlayMaps.Third,PlayMaps.FourQuarters,PlayMaps.CityCorridor})
         {
             var raw=Map(map);string before=JsonSerializer.Serialize(raw,SimulationJson.Options);
             var resolved=OrdinaryNewGame.Resolve(raw,Economy(),new(count));var d=resolved.Scenario;

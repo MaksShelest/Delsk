@@ -1,0 +1,37 @@
+{
+  "tick": 197,
+  "hash": "050f2c165782a1cbb64d5c4269c668512382f8edfbf43a0eeee7b2600c7c1cc8",
+  "participants": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "commands": [
+    {
+      "actor": 1,
+      "kind": "MoveTo",
+      "count": 3
+    },
+    {
+      "actor": 1,
+      "kind": "Harvest",
+      "count": 1
+    },
+    {
+      "actor": 1,
+      "kind": "Transfer",
+      "count": 2
+    },
+    {
+      "actor": 1,
+      "kind": "SetProductionEnabled",
+      "count": 2
+    },
+    {
+      "actor": 1,
+      "kind": "SellAvailableToCapital",
+      "count": 1
+    }
+  ]
+}

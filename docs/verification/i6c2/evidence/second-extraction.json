@@ -1,0 +1,72 @@
+{
+  "tick": 1064,
+  "hash": "19ab4ee6d6731528a2aa2380140f5b85f65c0dd3e04c948662f12c21a17c38a4",
+  "participants": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "commands": [
+    {
+      "actor": 1,
+      "kind": "MoveTo",
+      "count": 36
+    },
+    {
+      "actor": 1,
+      "kind": "Harvest",
+      "count": 3
+    },
+    {
+      "actor": 1,
+      "kind": "SellAvailableToCapital",
+      "count": 17
+    },
+    {
+      "actor": 1,
+      "kind": "SetVoteChoice",
+      "count": 1
+    },
+    {
+      "actor": 2,
+      "kind": "SetVoteChoice",
+      "count": 1
+    },
+    {
+      "actor": 3,
+      "kind": "SetVoteChoice",
+      "count": 1
+    },
+    {
+      "actor": 4,
+      "kind": "SetVoteChoice",
+      "count": 1
+    },
+    {
+      "actor": 1,
+      "kind": "BuyResource",
+      "count": 1
+    },
+    {
+      "actor": 1,
+      "kind": "BuyVehicle",
+      "count": 1
+    },
+    {
+      "actor": 1,
+      "kind": "BoardVehicle",
+      "count": 1
+    },
+    {
+      "actor": 1,
+      "kind": "PlaceEquipment",
+      "count": 1
+    },
+    {
+      "actor": 1,
+      "kind": "StartHarvesting",
+      "count": 1
+    }
+  ]
+}

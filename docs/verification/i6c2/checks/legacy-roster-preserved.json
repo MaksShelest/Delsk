@@ -1,0 +1,24 @@
+{
+  "command": [
+    "dotnet",
+    "run",
+    "--project",
+    "tests/Simulation.Tests",
+    "-c",
+    "Release",
+    "--no-launch-profile",
+    "--",
+    "-class",
+    "Simulation.Tests.OrdinaryNewGameTests",
+    "-method",
+    "*EveryOrdinaryCountOnEveryOldMap*",
+    "-reporter",
+    "verbose",
+    "-nocolor"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-06T22:15:25.917867+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 59.392,
+  "finished_at": "2026-11-06T22:16:25.310205+00:00"
+}

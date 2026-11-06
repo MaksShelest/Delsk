@@ -1,0 +1,18 @@
+{
+  "command": [
+    "dotnet",
+    "tests/Simulation.Tests/bin/Release/net10.0/Simulation.Tests.dll",
+    "-class",
+    "Simulation.Tests.I6C2MapsTests",
+    "-method",
+    "*ThreeIndependent*",
+    "-reporter",
+    "verbose",
+    "-nocolor"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-06T22:27:05.174633+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 26.526,
+  "finished_at": "2026-11-06T22:27:31.700477+00:00"
+}

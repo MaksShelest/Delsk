@@ -1,0 +1,24 @@
+{
+  "command": [
+    "dotnet",
+    "run",
+    "--project",
+    "tests/Simulation.Tests",
+    "-c",
+    "Release",
+    "--no-launch-profile",
+    "--",
+    "-class",
+    "Simulation.Tests.I6C2MapsTests",
+    "-class",
+    "Simulation.Tests.ContextActionsI5Tests",
+    "-reporter",
+    "verbose",
+    "-nocolor"
+  ],
+  "timeout_seconds": 180,
+  "started_at": "2026-11-06T21:47:01.592178+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 52.574,
+  "finished_at": "2026-11-06T21:47:54.167460+00:00"
+}

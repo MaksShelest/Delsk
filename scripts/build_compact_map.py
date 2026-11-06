@@ -50,7 +50,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true')
     args = parser.parse_args()
-    path = ROOT/'docs/vnext/maps/compact_valley.json'
+    path = ROOT/'docs/vnext/maps/compact_valley_h3.json'
     content = json.dumps(design(), ensure_ascii=False, indent=2)+'\n'
     if args.check:
         if path.read_text(encoding='utf-8') != content:

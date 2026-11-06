@@ -1,0 +1,29 @@
+xUnit.net v3 In-Process Runner v4.0.2+0c7aa4991f (64-bit .NET 10.0.12)
+  Discovering: Simulation.Tests
+  Discovered:  Simulation.Tests
+  Starting:    Simulation.Tests
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "compact-valley") [STARTING]
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "compact-valley") [FAIL]
+      System.InvalidOperationException : ElectionWaitingForBallots
+      Stack Trace:
+        src/Simulation.Hosting/SessionCheckpoint.cs(65,0): at Simulation.Hosting.GameSession.AdvanceTo(Int64 finalTick)
+        tests/Simulation.Tests/I6C2MapsTests.cs(117,0): at Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(String key)
+           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+           at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "compact-valley") [FINISHED] Time: 9.259s
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "second") [STARTING]
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "second") [FAIL]
+      System.InvalidOperationException : ElectionWaitingForBallots
+      Stack Trace:
+        src/Simulation.Hosting/SessionCheckpoint.cs(65,0): at Simulation.Hosting.GameSession.AdvanceTo(Int64 finalTick)
+        tests/Simulation.Tests/I6C2MapsTests.cs(117,0): at Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(String key)
+           at InvokeStub_I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "second") [FINISHED] Time: 2.446s
+    Simulation.Tests.I6C2MapsTests.InitialFactoryOnRealFullLotHiresConsumesProducesAndSells(key: "compact-valley") [STARTING]
+    Simulation.Tests.I6C2MapsTests.InitialFactoryOnRealFullLotHiresConsumesProducesAndSells(key: "compact-valley") [FINISHED] Time: 1.522s
+    Simulation.Tests.I6C2MapsTests.InitialFactoryOnRealFullLotHiresConsumesProducesAndSells(key: "second") [STARTING]
+    Simulation.Tests.I6C2MapsTests.InitialFactoryOnRealFullLotHiresConsumesProducesAndSells(key: "second") [FINISHED] Time: 1.21s
+  Finished:    Simulation.Tests (ID = 'b00ba06d382565ef33cd4232e1a7f682a055199d54044b1e7c966bb403320b88')
+=== TEST EXECUTION SUMMARY ===
+   Simulation.Tests  Total: 4, Errors: 0, Failed: 2, Skipped: 0, Not Run: 0, Time: 14.713s

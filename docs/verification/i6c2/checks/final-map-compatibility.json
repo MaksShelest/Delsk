@@ -1,0 +1,30 @@
+{
+  "command": [
+    "dotnet",
+    "run",
+    "--project",
+    "tests/Simulation.Tests",
+    "-c",
+    "Release",
+    "--no-launch-profile",
+    "--",
+    "-class",
+    "Simulation.Tests.I6C2MapsTests",
+    "-method",
+    "*NewSnapshot*",
+    "-method",
+    "*FullIndustrial*",
+    "-method",
+    "*ThreeIndependent*",
+    "-method",
+    "*LegacyValley*",
+    "-reporter",
+    "verbose",
+    "-nocolor"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-06T21:57:22.221554+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 34.153,
+  "finished_at": "2026-11-06T21:57:56.375007+00:00"
+}

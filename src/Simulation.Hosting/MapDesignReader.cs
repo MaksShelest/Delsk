@@ -10,7 +10,7 @@ public static class MapDesignReader
     public const int MaximumBytes=2*1024*1024;
     private sealed record Lot([property:JsonRequired]string Id,[property:JsonRequired]int[][] Cells,[property:JsonRequired]int[] Entry);
     private sealed record District([property:JsonRequired]string Id,[property:JsonRequired]string Item,[property:JsonRequired]int[][] Cells,[property:JsonRequired]int[][] PublicCells,[property:JsonRequired]string Profile);
-    private sealed record Civic([property:JsonRequired]string Id,[property:JsonRequired]string Kind,[property:JsonRequired]int[][] Footprint,int[][]? Building=null,int[][]? Parking=null,int[]? Entry=null);
+    private sealed record Civic([property:JsonRequired]string Id,[property:JsonRequired]string Kind,[property:JsonRequired]int[][] Footprint,int[][]? Building=null,int[][]? Parking=null,int[]? Entry=null,int[][]? EquipmentParking=null);
     private sealed record Stall([property:JsonRequired]string Id,[property:JsonRequired]int[] Cell);
     private sealed record Design([property:JsonRequired]string SchemaVersion,[property:JsonRequired]string Id,[property:JsonRequired]string Name,[property:JsonRequired]int Width,[property:JsonRequired]int Height,
         [property:JsonRequired]int MaxParticipants,[property:JsonRequired]int[][] RoadCenterCells,[property:JsonRequired]int[][] RoadCorridorCells,[property:JsonRequired]int[][] InitialCityDirtCells,
@@ -42,7 +42,7 @@ public static class MapDesignReader
             int apron=c.Kind=="dealership"?2:1;int edge=footprint.Max(p=>p.Z)-apron;
             var body=source??footprint.Where(p=>p.Z<=edge).ToArray();
             var entry=c.Entry is not null?Point(c.Entry):(parking??footprint.Where(p=>p.Z==footprint.Max(q=>q.Z)).ToArray()).OrderBy(p=>p.X).ThenBy(p=>p.Z).First();
-            return new CivicSite(c.Id,c.Kind,footprint,source,parking,body,entry);
+            return new CivicSite(c.Id,c.Kind,footprint,source,parking,body,entry,c.EquipmentParking is null?null:Cells(c.EquipmentParking));
         }).ToArray();
         var layout=new MapLayout(d.SchemaVersion=="delsk-map-design-2"?"map-adapter-2":"map-adapter-1",d.Id,d.Name,VNextBalanceReader.Digest(bytes.Span),d.MaxParticipants,Cells(d.RoadCenterCells),Cells(d.RoadCorridorCells),Cells(d.InitialCityDirtCells),
             d.IndustrialLots.Select(l=>new IndustrialLot(l.Id,Cells(l.Cells),Point(l.Entry))).ToArray(),
@@ -60,7 +60,8 @@ public static class MapDesignReader
         var terminal=civic.Single(c=>c.Kind=="terminal").Entry;var w=economy.World;
         var scenario=new ScenarioDefinition(d.Id,17,d.Width,d.Height,civic.SelectMany(c=>c.Body).ToArray(),w.Items,w.Recipes,
             Enumerable.Range(1,4).Select(i=>new ParticipantDefinition(i,w.StartingCashMinor,layout.SpawnCells[i-1],w.PersonalInventoryCapacity,i==1?"":layout.ResourceDistricts[(i-2)%layout.ResourceDistricts.Length].Item)).ToArray(),
-            [],[],nodes,Plots:plots,Buildings:[],BuildingTypes:w.BuildingTypes,CapitalDemand:w.CapitalDemand with{Terminal=terminal},Support:w.Support with{TradingPoint=terminal},Layout:layout);
+            [],[],nodes,Plots:plots,Buildings:[],BuildingTypes:w.BuildingTypes,CapitalDemand:w.CapitalDemand with{Terminal=terminal},Support:w.Support with{TradingPoint=terminal},Layout:layout,
+            Economy:civic.Any(c=>c.EquipmentParking is not null)?w.Rules:null);
         // Full profile values and controllers are applied once by the ordinary resolver/caller.
         ScenarioValidation.ValidateMapLayout(scenario);return scenario;
     }

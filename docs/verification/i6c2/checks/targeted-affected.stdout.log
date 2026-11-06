@@ -1,0 +1,43 @@
+xUnit.net v3 In-Process Runner v4.0.2+0c7aa4991f (64-bit .NET 10.0.12)
+  Discovering: Simulation.Tests
+  Discovered:  Simulation.Tests
+  Starting:    Simulation.Tests
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "compact-valley") [STARTING]
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "compact-valley") [FAIL]
+      Assert.Equal() Failure: Values differ
+      Expected: Accepted
+      Actual:   Rejected
+      Stack Trace:
+        tests/Simulation.Tests/StorageC1Tests.cs(23,0): at Simulation.Tests.StorageC1Tests.Step(GameSession s, GameAction a, Int64 actor, Boolean accepted)
+        tests/Simulation.Tests/FleetE1Tests.cs(34,0): at Simulation.Tests.FleetE1Tests.Step(GameSession s, GameAction a, Boolean accepted, Int64 actor)
+        tests/Simulation.Tests/I6C2MapsTests.cs(27,0): at Simulation.Tests.I6C2MapsTests.Step(GameSession s, GameAction a, Boolean accepted)
+        tests/Simulation.Tests/I6C2MapsTests.cs(111,0): at Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(String key)
+           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+           at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "compact-valley") [FINISHED] Time: 7.409s
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "second") [STARTING]
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "second") [FAIL]
+      Assert.Equal() Failure: Values differ
+      Expected: Accepted
+      Actual:   Rejected
+      Stack Trace:
+        tests/Simulation.Tests/StorageC1Tests.cs(23,0): at Simulation.Tests.StorageC1Tests.Step(GameSession s, GameAction a, Int64 actor, Boolean accepted)
+        tests/Simulation.Tests/FleetE1Tests.cs(34,0): at Simulation.Tests.FleetE1Tests.Step(GameSession s, GameAction a, Boolean accepted, Int64 actor)
+        tests/Simulation.Tests/I6C2MapsTests.cs(27,0): at Simulation.Tests.I6C2MapsTests.Step(GameSession s, GameAction a, Boolean accepted)
+        tests/Simulation.Tests/I6C2MapsTests.cs(111,0): at Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(String key)
+           at InvokeStub_I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "second") [FINISHED] Time: 1.013s
+    Simulation.Tests.I6C2MapsTests.EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(key: "compact-valley") [STARTING]
+    Simulation.Tests.I6C2MapsTests.EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(key: "compact-valley") [FINISHED] Time: 8.907s
+    Simulation.Tests.I6C2MapsTests.EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(key: "second") [STARTING]
+    Simulation.Tests.I6C2MapsTests.EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(key: "second") [FAIL]
+      second: trapped extractor_extract_sand_1 at Cell { X = 7, Z = 13 }
+      Stack Trace:
+        tests/Simulation.Tests/I6C2MapsTests.cs(92,0): at Simulation.Tests.I6C2MapsTests.EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(String key)
+           at InvokeStub_I6C2MapsTests.EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+    Simulation.Tests.I6C2MapsTests.EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(key: "second") [FINISHED] Time: 2.304s
+  Finished:    Simulation.Tests (ID = 'b00ba06d382565ef33cd4232e1a7f682a055199d54044b1e7c966bb403320b88')
+=== TEST EXECUTION SUMMARY ===
+   Simulation.Tests  Total: 4, Errors: 0, Failed: 3, Skipped: 0, Not Run: 0, Time: 19.981s

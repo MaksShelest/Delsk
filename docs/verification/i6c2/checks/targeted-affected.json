@@ -1,0 +1,26 @@
+{
+  "command": [
+    "dotnet",
+    "run",
+    "--project",
+    "tests/Simulation.Tests",
+    "-c",
+    "Release",
+    "--no-launch-profile",
+    "--",
+    "-class",
+    "Simulation.Tests.I6C2MapsTests",
+    "-method",
+    "*EveryStocked*",
+    "-method",
+    "*PublicHarvest*",
+    "-reporter",
+    "verbose",
+    "-nocolor"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-06T21:49:32.575464+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 35.612,
+  "finished_at": "2026-11-06T21:50:08.187257+00:00"
+}

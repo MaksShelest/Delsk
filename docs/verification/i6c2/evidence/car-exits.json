@@ -1,0 +1,106 @@
+{
+  "status": "succeeded",
+  "scope": "Funded genuine purchases and movement, three static NPC slots, unchanged profile and frozen runtime references",
+  "rows": [
+    {
+      "map": "compact-valley-i6c2",
+      "model": "sputnik20",
+      "tick": 49,
+      "at": {
+        "x": 11,
+        "z": 5
+      },
+      "status": "succeeded"
+    },
+    {
+      "map": "compact-valley-i6c2",
+      "model": "muravey70",
+      "tick": 49,
+      "at": {
+        "x": 11,
+        "z": 5
+      },
+      "status": "succeeded"
+    },
+    {
+      "map": "compact-valley-i6c2",
+      "model": "eger70",
+      "tick": 49,
+      "at": {
+        "x": 11,
+        "z": 5
+      },
+      "status": "succeeded"
+    },
+    {
+      "map": "compact-valley-i6c2",
+      "model": "vector200",
+      "tick": 49,
+      "at": {
+        "x": 11,
+        "z": 5
+      },
+      "status": "succeeded"
+    },
+    {
+      "map": "compact-valley-i6c2",
+      "model": "trakt_d1",
+      "tick": 59,
+      "at": {
+        "x": 11,
+        "z": 5
+      },
+      "status": "succeeded"
+    },
+    {
+      "map": "woodland-region-i6c2",
+      "model": "sputnik20",
+      "tick": 49,
+      "at": {
+        "x": 11,
+        "z": 5
+      },
+      "status": "succeeded"
+    },
+    {
+      "map": "woodland-region-i6c2",
+      "model": "muravey70",
+      "tick": 49,
+      "at": {
+        "x": 11,
+        "z": 5
+      },
+      "status": "succeeded"
+    },
+    {
+      "map": "woodland-region-i6c2",
+      "model": "eger70",
+      "tick": 50,
+      "at": {
+        "x": 11,
+        "z": 5
+      },
+      "status": "succeeded"
+    },
+    {
+      "map": "woodland-region-i6c2",
+      "model": "vector200",
+      "tick": 51,
+      "at": {
+        "x": 11,
+        "z": 5
+      },
+      "status": "succeeded"
+    },
+    {
+      "map": "woodland-region-i6c2",
+      "model": "trakt_d1",
+      "tick": 54,
+      "at": {
+        "x": 11,
+        "z": 5
+      },
+      "status": "succeeded"
+    }
+  ]
+}

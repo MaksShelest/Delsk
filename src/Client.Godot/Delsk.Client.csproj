@@ -11,6 +11,8 @@
     <Error Condition="'$(DelskDeveloperPackage)' != 'true'" Text="Use scripts/build_developer_client.py for an isolated Developer client package." />
   </Target>
   <ItemGroup>
+    <EmbeddedResource Include="../../scenarios/vnext/compact-valley-i6c2.json" LogicalName="Play.compact-valley-i6c2.json" />
+    <EmbeddedResource Include="../../scenarios/vnext/woodland-region-i6c2.json" LogicalName="Play.woodland-region-i6c2.json" />
     <EmbeddedResource Include="../../scenarios/vnext/compact-valley.json" LogicalName="Play.compact-valley.json" />
     <EmbeddedResource Include="../../scenarios/vnext/small-river.json" LogicalName="Play.small-river.json" />
     <EmbeddedResource Include="../../scenarios/vnext/large-districts.json" LogicalName="Play.large-districts.json" />

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "dotnet",
+    "build",
+    "/workspace/Delsk/work/i6c2/native-final/source/src/Client.Godot/Delsk.Client.csproj",
+    "--no-restore",
+    "--disable-build-servers",
+    "-m:1",
+    "-p:BuildProjectReferences=false"
+  ],
+  "timeout_seconds": 180,
+  "started_at": "2026-11-06T21:54:52.286080+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 15.782,
+  "finished_at": "2026-11-06T21:55:08.068772+00:00"
+}

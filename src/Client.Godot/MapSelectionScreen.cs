@@ -21,6 +21,8 @@ public partial class MapSelectionScreen : ColorRect
     private readonly VBoxContainer _preview = new();
     private bool _previewAvailable=true;
     private Button? _startButton;
+    private SpinBox _npcCount=null!;
+    private Label _participantCount=null!;
     private readonly System.Func<string,int,ScenarioDefinition>? _readSetup;
     private readonly string _language;
     private readonly System.Func<string, ScenarioDefinition> _read;
@@ -46,8 +48,8 @@ public partial class MapSelectionScreen : ColorRect
         controls.AddChild(TabletDesign.Heading("Delsk",32));
         _selected.Name="SelectedMapName";_selected.AutowrapMode=TextServer.AutowrapMode.WordSmart;controls.AddChild(_selected);
         var roster=new HBoxContainer();controls.AddChild(roster);roster.AddChild(new Label{Text=L("NPC","NPC"),SizeFlagsVertical=SizeFlags.ShrinkCenter});
-        var count=new SpinBox{Name="NpcCount",MinValue=3,MaxValue=10,Step=1,Rounded=true,Value=npcCount,CustomMinimumSize=new(90,40)};roster.AddChild(count);
-        var total=new Label{Name="ParticipantCount",Text=L("Всего: ","Total: ")+(NpcCount+1),SizeFlagsVertical=SizeFlags.ShrinkCenter};roster.AddChild(total);
+        var count=_npcCount=new SpinBox{Name="NpcCount",MinValue=3,MaxValue=10,Step=1,Rounded=true,Value=npcCount,CustomMinimumSize=new(90,40)};roster.AddChild(count);
+        var total=_participantCount=new Label{Name="ParticipantCount",Text=L("Всего: ","Total: ")+(NpcCount+1),SizeFlagsVertical=SizeFlags.ShrinkCenter};roster.AddChild(total);
         count.ValueChanged+=value=>{NpcCount=checked((int)value);new OrdinaryGameOptions(NpcCount).Validate();total.Text=L("Всего: ","Total: ")+(NpcCount+1);ShowPreview();};
         Difficulty=difficulty;ModelConfiguration=model;
         var difficultyRow=new HBoxContainer();controls.AddChild(difficultyRow);difficultyRow.AddChild(new Label{Text=L("Сложность","Difficulty"),SizeFlagsVertical=SizeFlags.ShrinkCenter});
@@ -97,30 +99,35 @@ public partial class MapSelectionScreen : ColorRect
             finally{if(GodotObject.IsInstanceValid(probe))probe.Disabled=false;}
         };
     }
+    private int MaximumNpcs(string key)=>Math.Min(10,(_read(key).Layout?.MaxParticipants??11)-1);
+    private ScenarioDefinition PreviewScenario(string key)=>_readSetup?.Invoke(key,Math.Min(NpcCount,MaximumNpcs(key)))??_read(key);
     private bool TrySetup(string key,out string reason)
     {
         try
         {
-            var scenario=_readSetup?.Invoke(key,NpcCount)??_read(key);
-            if(key==PlayMaps.Second&&scenario.Economy is not {Storage:not null,ProductionContent:not null,Fleet:{EquipmentDealerVersion:1}})
+            var scenario=PreviewScenario(key);
+            if(scenario.Id is PlayMaps.CompactValleyScenarioId or PlayMaps.WoodlandScenarioId&&scenario.Economy is not {Storage:not null,ProductionContent:not null,Fleet:{EquipmentDealerVersion:1}})
                 throw new InvalidOperationException("Modern economy required");
             reason="";return true;
         }
         catch(Exception error)when(error is ArgumentException or InvalidOperationException)
-        {reason=key==PlayMaps.Second?L("Скоро · требуется адаптация экономики I6-C2","Coming soon · economy adaptation I6-C2 required"):L("Недоступна с текущим профилем","Unavailable with the current profile");return false;}
+        {reason=L("Недоступна с текущим профилем","Unavailable with the current profile");return false;}
     }
     private void ShowPreview()
     {
+        NpcCount=Math.Min(NpcCount,MaximumNpcs(SelectedMap));
+        _npcCount.MaxValue=MaximumNpcs(SelectedMap);_npcCount.SetValueNoSignal(NpcCount);
+        _participantCount.Text=L("Всего: ","Total: ")+(NpcCount+1);
         foreach(Node child in _preview.GetChildren()){_preview.RemoveChild(child);child.QueueFree();}
         _selected.Text=PlayMaps.Name(SelectedMap,_language);
         // Geography always comes from the real map, even when its new-game profile is unsupported.
-        _previewAvailable=TrySetup(SelectedMap,out string reason);var scenario=_previewAvailable?(_readSetup?.Invoke(SelectedMap,NpcCount)??_read(SelectedMap)):_read(SelectedMap);
+        _previewAvailable=TrySetup(SelectedMap,out string reason);var scenario=_previewAvailable?PreviewScenario(SelectedMap):_read(SelectedMap);
         _startButton!.Disabled=!_previewAvailable;_startButton.TooltipText=reason;
         _preview.AddChild(TabletDesign.Heading(PlayMaps.Name(SelectedMap,_language),24));
         var map=new MapPreview(scenario){Name="MainMapPreview",CustomMinimumSize=new(180,100),SizeFlagsVertical=SizeFlags.ExpandFill,SizeFlagsHorizontal=SizeFlags.ExpandFill};_preview.AddChild(map);
         _preview.AddChild(new Label{Text=PlayMaps.Description(SelectedMap,_language),AutowrapMode=TextServer.AutowrapMode.WordSmart});
         _preview.AddChild(new Label{Text=$"{scenario.MapWidth} × {scenario.MapHeight}"+L(" клеток · "," cells · ")+scenario.ResourceNodes.Select(n=>n.ItemId).Distinct().Count()+L(" ресурсов"," resources"),AutowrapMode=TextServer.AutowrapMode.WordSmart});
-        var status=new Label{Name="MapAvailability",Text=_previewAvailable?L("Рекомендуемая карта · готова к игре","Recommended · ready to play"):reason,AutowrapMode=TextServer.AutowrapMode.WordSmart};
+        var status=new Label{Name="MapAvailability",Text=_previewAvailable?L("Готова к игре · максимум NPC: ","Ready to play · maximum NPCs: ")+MaximumNpcs(SelectedMap):reason,AutowrapMode=TextServer.AutowrapMode.WordSmart};
         status.AddThemeColorOverride("font_color",new Color(_previewAvailable?"38633d":"83552c"));_preview.AddChild(status);
     }
     private void ShowCatalog()
@@ -135,7 +142,7 @@ public partial class MapSelectionScreen : ColorRect
         var list=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};list.AddThemeConstantOverride("separation",8);scroll.AddChild(list);
         foreach(string key in PlayMaps.UserCatalog)
         {
-            string choice=key;bool available=TrySetup(key,out string reason);var scenario=available?(_readSetup?.Invoke(key,NpcCount)??_read(key)):_read(key);
+            string choice=key;bool available=TrySetup(key,out string reason);var scenario=available?PreviewScenario(key):_read(key);
             var card=new PanelContainer{Name="MapCard_"+key};card.AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("f7f8f1",10));list.AddChild(card);
             var row=new HBoxContainer();row.AddThemeConstantOverride("separation",16);card.AddChild(row);
             var text=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};row.AddChild(text);

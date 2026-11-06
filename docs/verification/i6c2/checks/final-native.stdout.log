@@ -1,0 +1,54 @@
+Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+I6C2 default Small valley
+I6C2 enabled ChooseMap
+I6C2 exactly two current map cards
+I6C2 localized Woodland Region name
+I6C2 capture 05-map-catalog
+I6C2 enabled SelectMap_second
+I6C2 Woodland ordinary start enabled
+I6C2 Woodland roster capped at three NPCs
+I6C2 enabled StartGame
+I6C2 ordinary start uses versioned Woodland world
+I6C2 ordinary start attaches three independent NPCs
+I6C2 no appended lower equipment corridor
+I6C2 capture 03-woodland-overview
+I6C2 capture 04-woodland-town-hall
+I6C2 Core MoveTo Accepted
+I6C2 bounded real movement/work
+I6C2 Core Harvest Accepted
+I6C2 bounded real movement/work
+I6C2 ordinary public harvesting
+I6C2 Core MoveTo Accepted
+I6C2 bounded real movement/work
+I6C2 Core BuyPlot Accepted
+I6C2 bounded real movement/work
+I6C2 ordinary legal plot ownership
+I6C2 new Small valley scenario identity
+I6C2 capture 01-valley-overview
+I6C2 capture 02-valley-center-industry
+I6C2 five by three full industrial lots
+I6C2 Core MoveTo Accepted
+I6C2 bounded real movement/work
+I6C2 RU button shows concrete model and actual price
+I6C2 local offer works away from the dealership entrance
+I6C2 capture 06-concrete-car-purchase
+I6C2 enabled Context_dealer_buy_1029
+I6C2 pending suppresses repeated vehicle purchase
+I6C2 one purchase receipt for the selected instance
+I6C2 one actual vehicle charge
+I6C2 sold listing disappears from local context
+I6C2 Core BoardVehicle Accepted
+I6C2 bounded real movement/work
+I6C2 Core MoveTo Accepted
+I6C2 bounded real movement/work
+I6C2 purchased car physically leaves its parking place
+I6C2 Core LeaveVehicle Accepted
+I6C2 bounded real movement/work
+I6C2 Core MoveTo Accepted
+I6C2 bounded real movement/work
+I6C2 EN button retains name and catalog price
+I6C2 entrance purchase access retained
+I6C2 compact purchase dock stays inside viewport
+I6C2 new world preserves bought car and physical route on load

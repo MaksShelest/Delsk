@@ -1,0 +1,21 @@
+xUnit.net v3 In-Process Runner v4.0.2+0c7aa4991f (64-bit .NET 10.0.12)
+  Discovering: Simulation.Tests
+  Discovered:  Simulation.Tests
+  Starting:    Simulation.Tests
+    Simulation.Tests.I6C2MapsTests.NewSnapshotMatchesSourceAndCurrentEconomyWithoutAnAppendedYard(key: "compact-valley", width: 32, height: 25, sites: 15, capacity: 11) [STARTING]
+    Simulation.Tests.I6C2MapsTests.NewSnapshotMatchesSourceAndCurrentEconomyWithoutAnAppendedYard(key: "compact-valley", width: 32, height: 25, sites: 15, capacity: 11) [FINISHED] Time: 1.051s
+    Simulation.Tests.I6C2MapsTests.NewSnapshotMatchesSourceAndCurrentEconomyWithoutAnAppendedYard(key: "second", width: 18, height: 15, sites: 6, capacity: 4) [STARTING]
+    Simulation.Tests.I6C2MapsTests.NewSnapshotMatchesSourceAndCurrentEconomyWithoutAnAppendedYard(key: "second", width: 18, height: 15, sites: 6, capacity: 4) [FINISHED] Time: 0.25s
+    Simulation.Tests.I6C2MapsTests.ThreeIndependentOrdinaryNpcsHarvestTradeAndRestoreWithoutPreparedAssets(key: "compact-valley") [STARTING]
+    Simulation.Tests.I6C2MapsTests.ThreeIndependentOrdinaryNpcsHarvestTradeAndRestoreWithoutPreparedAssets(key: "compact-valley") [FINISHED] Time: 11.279s
+    Simulation.Tests.I6C2MapsTests.ThreeIndependentOrdinaryNpcsHarvestTradeAndRestoreWithoutPreparedAssets(key: "second") [STARTING]
+    Simulation.Tests.I6C2MapsTests.ThreeIndependentOrdinaryNpcsHarvestTradeAndRestoreWithoutPreparedAssets(key: "second") [FINISHED] Time: 4.055s
+    Simulation.Tests.I6C2MapsTests.FullIndustrialOccupancyKeepsEveryResourceCivicEntryMarketAndSpawnReachable(key: "compact-valley") [STARTING]
+    Simulation.Tests.I6C2MapsTests.FullIndustrialOccupancyKeepsEveryResourceCivicEntryMarketAndSpawnReachable(key: "compact-valley") [FINISHED] Time: 0.066s
+    Simulation.Tests.I6C2MapsTests.FullIndustrialOccupancyKeepsEveryResourceCivicEntryMarketAndSpawnReachable(key: "second") [STARTING]
+    Simulation.Tests.I6C2MapsTests.FullIndustrialOccupancyKeepsEveryResourceCivicEntryMarketAndSpawnReachable(key: "second") [FINISHED] Time: 0.022s
+    Simulation.Tests.I6C2MapsTests.LegacyValleyKeepsOwnedLandVehicleIdAndAnActiveTransportRoute [STARTING]
+    Simulation.Tests.I6C2MapsTests.LegacyValleyKeepsOwnedLandVehicleIdAndAnActiveTransportRoute [FINISHED] Time: 1.975s
+  Finished:    Simulation.Tests (ID = 'b00ba06d382565ef33cd4232e1a7f682a055199d54044b1e7c966bb403320b88')
+=== TEST EXECUTION SUMMARY ===
+   Simulation.Tests  Total: 7, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 18.925s

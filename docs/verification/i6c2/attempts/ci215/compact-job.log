@@ -1,0 +1,367 @@
+﻿2026-11-06T22:00:33.4525691Z Current runner version: '2.338.2'
+2026-11-06T22:00:33.4546299Z ##[group]Runner Image Provisioner
+2026-11-06T22:00:33.4546965Z Hosted Compute Agent
+2026-11-06T22:00:33.4547432Z Version: 20261103.629
+2026-11-06T22:00:33.4547910Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-06T22:00:33.4548450Z Build Date: 2026-11-03T17:26:59Z
+2026-11-06T22:00:33.4548957Z Worker ID: {2bd733a5-ceaf-42e7-81b6-8349768d6149}
+2026-11-06T22:00:33.4549498Z Region: westus3
+2026-11-06T22:00:33.4549892Z Cloud: Azure
+2026-11-06T22:00:33.4550284Z ##[endgroup]
+2026-11-06T22:00:33.4551245Z ##[group]Operating System
+2026-11-06T22:00:33.4551727Z Microsoft Windows Server 2025
+2026-11-06T22:00:33.4552250Z 10.0.26100
+2026-11-06T22:00:33.4552628Z Datacenter
+2026-11-06T22:00:33.4553004Z ##[endgroup]
+2026-11-06T22:00:33.4553411Z ##[group]Runner Image
+2026-11-06T22:00:33.4553845Z Image: windows-2025-vs2026
+2026-11-06T22:00:33.4554285Z Version: 20261103.298.1
+2026-11-06T22:00:33.4555771Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261103.298/images/windows/Windows2025-VS2026-Readme.md
+2026-11-06T22:00:33.4557104Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261103.298
+2026-11-06T22:00:33.4557845Z ##[endgroup]
+2026-11-06T22:00:33.4558678Z ##[group]GITHUB_TOKEN Permissions
+2026-11-06T22:00:33.4560263Z Contents: read
+2026-11-06T22:00:33.4560707Z Metadata: read
+2026-11-06T22:00:33.4561108Z ##[endgroup]
+2026-11-06T22:00:33.4562688Z Secret source: Actions
+2026-11-06T22:00:33.4563393Z Cache mode: write
+2026-11-06T22:00:33.4563986Z Prepare workflow directory
+2026-11-06T22:00:33.4915949Z Prepare all required actions
+2026-11-06T22:00:33.4960232Z Getting action download info
+2026-11-06T22:00:33.7951997Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-06T22:00:33.9003953Z Download action repository 'actions/setup-dotnet@v4' (SHA:67a3573c9a986a3f9c594539f4ab511d57bb3ce9)
+2026-11-06T22:00:34.5496561Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-06T22:00:34.6763124Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-06T22:00:34.9888726Z Complete job name: city-ux-native (compact)
+2026-11-06T22:00:35.1333121Z ##[group]Run actions/checkout@v4
+2026-11-06T22:00:35.1333947Z with:
+2026-11-06T22:00:35.1334275Z   repository: MaksShelest/Delsk
+2026-11-06T22:00:35.1337202Z   token: ***
+2026-11-06T22:00:35.1337645Z   ssh-strict: true
+2026-11-06T22:00:35.1338121Z   ssh-user: git
+2026-11-06T22:00:35.1338481Z   persist-credentials: true
+2026-11-06T22:00:35.1338819Z   clean: true
+2026-11-06T22:00:35.1339157Z   sparse-checkout-cone-mode: true
+2026-11-06T22:00:35.1339548Z   fetch-depth: 1
+2026-11-06T22:00:35.1339869Z   fetch-tags: false
+2026-11-06T22:00:35.1340378Z   show-progress: true
+2026-11-06T22:00:35.1340715Z   lfs: false
+2026-11-06T22:00:35.1341026Z   submodules: false
+2026-11-06T22:00:35.1341372Z   set-safe-directory: true
+2026-11-06T22:00:35.1341711Z   allow-unsafe-pr-checkout: false
+2026-11-06T22:00:35.1342364Z env:
+2026-11-06T22:00:35.1342665Z   DOTNET_PROCESSOR_COUNT: 2
+2026-11-06T22:00:35.1343017Z ##[endgroup]
+2026-11-06T22:00:35.2580053Z Syncing repository: MaksShelest/Delsk
+2026-11-06T22:00:35.2581261Z ##[group]Getting Git version info
+2026-11-06T22:00:35.2581589Z Working directory is 'D:\a\Delsk\Delsk'
+2026-11-06T22:00:35.3241795Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-06T22:00:35.8344613Z git version 2.56.0.windows.4
+2026-11-06T22:00:35.8403183Z ##[endgroup]
+2026-11-06T22:00:35.8407955Z Temporarily overriding HOME='D:\a\_temp\3df00548-1c78-4411-b2dc-f68f96f20ea8' before making global git config changes
+2026-11-06T22:00:35.8408631Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-06T22:00:35.8412850Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Delsk\Delsk
+2026-11-06T22:00:35.9148694Z Deleting the contents of 'D:\a\Delsk\Delsk'
+2026-11-06T22:00:35.9153261Z ##[group]Initializing the repository
+2026-11-06T22:00:35.9160901Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\Delsk\Delsk
+2026-11-06T22:00:35.9945810Z Initialized empty Git repository in D:/a/Delsk/Delsk/.git/
+2026-11-06T22:00:35.9982977Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/MaksShelest/Delsk
+2026-11-06T22:00:36.1334113Z ##[endgroup]
+2026-11-06T22:00:36.1334741Z ##[group]Disabling automatic garbage collection
+2026-11-06T22:00:36.1342262Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-11-06T22:00:36.1635487Z ##[endgroup]
+2026-11-06T22:00:36.1635905Z ##[group]Setting up auth
+2026-11-06T22:00:36.1645459Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-06T22:00:36.1935638Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-06T22:00:38.0668744Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-06T22:00:38.0962742Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-06T22:00:38.5647778Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-06T22:00:38.5943715Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-06T22:00:39.0869577Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-11-06T22:00:39.1165311Z ##[endgroup]
+2026-11-06T22:00:39.1165746Z ##[group]Fetching the repository
+2026-11-06T22:00:39.1177250Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +3360e8e0d8f6c22baa865e96932a672100eaf14d:refs/remotes/pull/88/merge
+2026-11-06T22:00:42.3840357Z From https://github.com/MaksShelest/Delsk
+2026-11-06T22:00:42.3841234Z  * [new ref]         3360e8e0d8f6c22baa865e96932a672100eaf14d -> pull/88/merge
+2026-11-06T22:00:42.3878007Z ##[endgroup]
+2026-11-06T22:00:42.3878483Z ##[group]Determining the checkout info
+2026-11-06T22:00:42.3880388Z ##[endgroup]
+2026-11-06T22:00:42.3892538Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-11-06T22:00:42.4393683Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-11-06T22:00:42.4699482Z ##[group]Checking out the ref
+2026-11-06T22:00:42.4707882Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force refs/remotes/pull/88/merge
+2026-11-06T22:00:43.5396309Z Updating files:  60% (2114/3482)
+2026-11-06T22:00:43.5548218Z Updating files:  61% (2125/3482)
+2026-11-06T22:00:43.5691545Z Updating files:  62% (2159/3482)
+2026-11-06T22:00:43.5804810Z Updating files:  63% (2194/3482)
+2026-11-06T22:00:43.6041510Z Updating files:  64% (2229/3482)
+2026-11-06T22:00:43.6253296Z Updating files:  65% (2264/3482)
+2026-11-06T22:00:43.6479134Z Updating files:  66% (2299/3482)
+2026-11-06T22:00:43.6721408Z Updating files:  67% (2333/3482)
+2026-11-06T22:00:43.6780353Z Updating files:  68% (2368/3482)
+2026-11-06T22:00:43.6930310Z Updating files:  69% (2403/3482)
+2026-11-06T22:00:43.7015610Z Updating files:  70% (2438/3482)
+2026-11-06T22:00:43.7117673Z Updating files:  71% (2473/3482)
+2026-11-06T22:00:43.7197081Z Updating files:  72% (2508/3482)
+2026-11-06T22:00:43.7258921Z Updating files:  73% (2542/3482)
+2026-11-06T22:00:43.7328337Z Updating files:  74% (2577/3482)
+2026-11-06T22:00:43.7398868Z Updating files:  75% (2612/3482)
+2026-11-06T22:00:43.7459551Z Updating files:  76% (2647/3482)
+2026-11-06T22:00:43.7523116Z Updating files:  77% (2682/3482)
+2026-11-06T22:00:43.7584535Z Updating files:  78% (2716/3482)
+2026-11-06T22:00:43.7651215Z Updating files:  79% (2751/3482)
+2026-11-06T22:00:43.7711126Z Updating files:  80% (2786/3482)
+2026-11-06T22:00:43.7843551Z Updating files:  81% (2821/3482)
+2026-11-06T22:00:43.7967005Z Updating files:  82% (2856/3482)
+2026-11-06T22:00:43.8060467Z Updating files:  83% (2891/3482)
+2026-11-06T22:00:43.8160093Z Updating files:  84% (2925/3482)
+2026-11-06T22:00:43.8284002Z Updating files:  85% (2960/3482)
+2026-11-06T22:00:43.8348977Z Updating files:  86% (2995/3482)
+2026-11-06T22:00:43.8419292Z Updating files:  87% (3030/3482)
+2026-11-06T22:00:43.8489005Z Updating files:  88% (3065/3482)
+2026-11-06T22:00:43.8558895Z Updating files:  89% (3099/3482)
+2026-11-06T22:00:43.8626467Z Updating files:  90% (3134/3482)
+2026-11-06T22:00:43.8704395Z Updating files:  91% (3169/3482)
+2026-11-06T22:00:43.8769650Z Updating files:  92% (3204/3482)
+2026-11-06T22:00:43.8837208Z Updating files:  93% (3239/3482)
+2026-11-06T22:00:43.8905836Z Updating files:  94% (3274/3482)
+2026-11-06T22:00:43.8972455Z Updating files:  95% (3308/3482)
+2026-11-06T22:00:43.9068094Z Updating files:  96% (3343/3482)
+2026-11-06T22:00:43.9151614Z Updating files:  97% (3378/3482)
+2026-11-06T22:00:43.9223984Z Updating files:  98% (3413/3482)
+2026-11-06T22:00:43.9288060Z Updating files:  99% (3448/3482)
+2026-11-06T22:00:43.9290440Z Updating files: 100% (3482/3482)
+2026-11-06T22:00:43.9290818Z Updating files: 100% (3482/3482), done.
+2026-11-06T22:00:43.9389644Z Note: switching to 'refs/remotes/pull/88/merge'.
+2026-11-06T22:00:43.9389955Z 
+2026-11-06T22:00:43.9390193Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-06T22:00:43.9390777Z changes and commit them, and you can discard any commits you make in this
+2026-11-06T22:00:43.9391365Z state without impacting any branches by switching back to a branch.
+2026-11-06T22:00:43.9391742Z 
+2026-11-06T22:00:43.9391979Z If you want to create a new branch to retain commits you create, you may
+2026-11-06T22:00:43.9392525Z do so (now or later) by using -c with the switch command. Example:
+2026-11-06T22:00:43.9393950Z 
+2026-11-06T22:00:43.9394163Z   git switch -c <new-branch-name>
+2026-11-06T22:00:43.9394393Z 
+2026-11-06T22:00:43.9394518Z Or undo this operation with:
+2026-11-06T22:00:43.9394725Z 
+2026-11-06T22:00:43.9394820Z   git switch -
+2026-11-06T22:00:43.9394968Z 
+2026-11-06T22:00:43.9395229Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-06T22:00:43.9395614Z 
+2026-11-06T22:00:43.9396026Z HEAD is now at 3360e8e Merge d690bf4841f58ded003caef89511b29a614aa3b1 into dd803ae802a2af7f824d5cc95f1cbf100056f804
+2026-11-06T22:00:43.9515049Z ##[endgroup]
+2026-11-06T22:00:43.9853505Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-11-06T22:00:44.0193839Z 3360e8e0d8f6c22baa865e96932a672100eaf14d
+2026-11-06T22:00:44.0556859Z ##[group]Run actions/setup-dotnet@v4
+2026-11-06T22:00:44.0557124Z with:
+2026-11-06T22:00:44.0557281Z   dotnet-version: 10.0.401
+2026-11-06T22:00:44.0557468Z   cache: false
+2026-11-06T22:00:44.0557600Z env:
+2026-11-06T22:00:44.0557738Z   DOTNET_PROCESSOR_COUNT: 2
+2026-11-06T22:00:44.0557914Z ##[endgroup]
+2026-11-06T22:00:44.1885060Z (node:5452) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-06T22:00:44.1886152Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-06T22:00:44.9547400Z [command]"C:\Program Files\PowerShell\7\pwsh.exe" -NoLogo -Sta -NoProfile -NonInteractive -ExecutionPolicy Unrestricted -Command & 'D:\a\_actions\actions\setup-dotnet\v4\externals\install-dotnet.ps1' -SkipNonVersionedFiles -Runtime dotnet -Channel LTS
+2026-11-06T22:00:47.8994660Z dotnet-install: .NET Core Runtime with version '10.0.14' is already installed.
+2026-11-06T22:00:48.0362206Z [command]"C:\Program Files\PowerShell\7\pwsh.exe" -NoLogo -Sta -NoProfile -NonInteractive -ExecutionPolicy Unrestricted -Command & 'D:\a\_actions\actions\setup-dotnet\v4\externals\install-dotnet.ps1' -SkipNonVersionedFiles -Version 10.0.401
+2026-11-06T22:01:04.3882874Z dotnet-install: Downloaded file https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.401/dotnet-sdk-10.0.401-win-x64.zip size is 300608304 bytes.
+2026-11-06T22:01:04.3886462Z dotnet-install: Either downloaded or local package size can not be measured. One of them may be corrupted.
+2026-11-06T22:01:04.3905472Z dotnet-install: Extracting the archive.
+2026-11-06T22:01:22.2010491Z dotnet-install: Note that the script does not ensure your Windows version is supported during the installation.
+2026-11-06T22:01:22.2013308Z dotnet-install: To check the list of supported versions, go to https://learn.microsoft.com/dotnet/core/install/windows#supported-versions
+2026-11-06T22:01:22.2017330Z dotnet-install: Installed version is 10.0.401
+2026-11-06T22:01:22.2021019Z dotnet-install: Installation finished
+2026-11-06T22:01:22.2649045Z ##[group]Run actions/setup-python@v5
+2026-11-06T22:01:22.2649342Z with:
+2026-11-06T22:01:22.2649508Z   python-version: 3.12
+2026-11-06T22:01:22.2649703Z   check-latest: false
+2026-11-06T22:01:22.2651685Z   token: ***
+2026-11-06T22:01:22.2651855Z   update-environment: true
+2026-11-06T22:01:22.2652050Z   allow-prereleases: false
+2026-11-06T22:01:22.2652223Z   freethreaded: false
+2026-11-06T22:01:22.2652388Z env:
+2026-11-06T22:01:22.2652532Z   DOTNET_PROCESSOR_COUNT: 2
+2026-11-06T22:01:22.2652724Z   DOTNET_ROOT: C:\Program Files\dotnet
+2026-11-06T22:01:22.2652928Z ##[endgroup]
+2026-11-06T22:01:22.3952793Z ##[group]Installed versions
+2026-11-06T22:01:22.4163109Z (node:4932) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-06T22:01:22.4164050Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-06T22:01:22.4164686Z Successfully set up CPython (3.12.10)
+2026-11-06T22:01:22.4165326Z ##[endgroup]
+2026-11-06T22:01:22.4404384Z ##[group]Run New-Item -ItemType Directory -Force .tools | Out-Null
+2026-11-06T22:01:22.4404883Z [36;1mNew-Item -ItemType Directory -Force .tools | Out-Null[0m
+2026-11-06T22:01:22.4405790Z [36;1mpython scripts/run_check.py --name godot-download --timeout 180 -- curl.exe --fail --location --silent --show-error --max-time 170 https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_win64.zip --output .tools/godot.zip[0m
+2026-11-06T22:01:22.4406632Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-11-06T22:01:22.4407064Z [36;1mExpand-Archive .tools/godot.zip -DestinationPath .tools/godot[0m
+2026-11-06T22:01:22.4407668Z [36;1m$engine = (Get-ChildItem .tools/godot -Recurse -Filter '*_console.exe' | Select-Object -First 1).FullName[0m
+2026-11-06T22:01:22.4408125Z [36;1mif (!$engine) { throw 'Missing Godot .NET console executable' }[0m
+2026-11-06T22:01:22.4408486Z [36;1m"DELSK_GODOT=$engine" >> $env:GITHUB_ENV[0m
+2026-11-06T22:01:22.5474271Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-06T22:01:22.5474941Z env:
+2026-11-06T22:01:22.5475116Z   DOTNET_PROCESSOR_COUNT: 2
+2026-11-06T22:01:22.5475440Z   DOTNET_ROOT: C:\Program Files\dotnet
+2026-11-06T22:01:22.5475746Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:01:22.5476119Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-11-06T22:01:22.5476472Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:01:22.5476789Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:01:22.5477093Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:01:22.5477339Z ##[endgroup]
+2026-11-06T22:01:27.4247523Z godot-download: exit=0; logs=artifacts\checks
+2026-11-06T22:01:28.5160387Z ##[group]Run $arguments = @('--godot', "$env:DELSK_GODOT", '--output', 'artifacts/city-ux-ui', '--case', "$env:NATIVE_CASE")
+2026-11-06T22:01:28.5161483Z [36;1m$arguments = @('--godot', "$env:DELSK_GODOT", '--output', 'artifacts/city-ux-ui', '--case', "$env:NATIVE_CASE")[0m
+2026-11-06T22:01:28.5162051Z [36;1mif ($env:NATIVE_CASE -eq 'forms') { $arguments += @('--fixtures', 'artifacts/city-ux-fixtures/g2-fixtures') }[0m
+2026-11-06T22:01:28.5162783Z [36;1mpython scripts/run_check.py --name city-ux-native --timeout 600 --log-directory artifacts/gate-checks -- python scripts/check_city_experience_ui.py @arguments[0m
+2026-11-06T22:01:28.5163303Z [36;1mexit $LASTEXITCODE[0m
+2026-11-06T22:01:28.5219633Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-06T22:01:28.5219907Z env:
+2026-11-06T22:01:28.5220061Z   DOTNET_PROCESSOR_COUNT: 2
+2026-11-06T22:01:28.5220258Z   DOTNET_ROOT: C:\Program Files\dotnet
+2026-11-06T22:01:28.5220567Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:01:28.5220935Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-11-06T22:01:28.5221283Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:01:28.5221596Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:01:28.5221906Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:01:28.5222334Z   DELSK_GODOT: D:\a\Delsk\Delsk\.tools\godot\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64_console.exe
+2026-11-06T22:01:28.5222719Z   NATIVE_CASE: compact
+2026-11-06T22:01:28.5222884Z ##[endgroup]
+2026-11-06T22:02:33.6417178Z city-ux-native: exit=1; logs=artifacts\gate-checks
+2026-11-06T22:02:33.6707479Z ##[error]Process completed with exit code 1.
+2026-11-06T22:02:33.6850336Z ##[group]Run Get-ChildItem artifacts/gate-checks,artifacts/city-ux-ui/checks -Filter '*.stderr.log' -ErrorAction SilentlyContinue | ForEach-Object { Write-Output $_.Name; Get-Content $_.FullName -Tail 60 }
+2026-11-06T22:02:33.6851549Z [36;1mGet-ChildItem artifacts/gate-checks,artifacts/city-ux-ui/checks -Filter '*.stderr.log' -ErrorAction SilentlyContinue | ForEach-Object { Write-Output $_.Name; Get-Content $_.FullName -Tail 60 }[0m
+2026-11-06T22:02:33.6852539Z [36;1mGet-ChildItem artifacts/city-ux-ui -Recurse -Filter 'failure.json' -ErrorAction SilentlyContinue | ForEach-Object { Write-Output $_.FullName; Get-Content $_.FullName }[0m
+2026-11-06T22:02:33.6909359Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-06T22:02:33.6909651Z env:
+2026-11-06T22:02:33.6909811Z   DOTNET_PROCESSOR_COUNT: 2
+2026-11-06T22:02:33.6910007Z   DOTNET_ROOT: C:\Program Files\dotnet
+2026-11-06T22:02:33.6910318Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:02:33.6910672Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-11-06T22:02:33.6911013Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:02:33.6911329Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:02:33.6911631Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:02:33.6912062Z   DELSK_GODOT: D:\a\Delsk\Delsk\.tools\godot\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64_console.exe
+2026-11-06T22:02:33.6912444Z ##[endgroup]
+2026-11-06T22:02:34.0071693Z city-ux-native.stderr.log
+2026-11-06T22:02:34.0126960Z Traceback (most recent call last):
+2026-11-06T22:02:34.0135087Z   File "D:\a\Delsk\Delsk\scripts\check_city_experience_ui.py", line 62, in <module>
+2026-11-06T22:02:34.0136564Z     check(name,180,[a.godot,'--path',project,'--rendering-method','gl_compatibility','--audio-driver','Dummy','res://CityExperienceProbe.tscn','--','--economy',stage/'config/vnext/economy.g1-npc.json','--output',folder,'--map',map_key,'--count',count,'--language',language,'--width',width,'--windowed'],env|{'XDG_DATA_HOME':str(out/('user-'+prefix+'-'+name))})
+2026-11-06T22:02:34.0138711Z   File "D:\a\Delsk\Delsk\scripts\check_city_experience_ui.py", line 18, in check
+2026-11-06T22:02:34.0139401Z     subprocess.run([sys.executable,ROOT/'scripts/run_check.py','--name',prefix+'-'+name,'--timeout',str(timeout),'--log-directory',out/'checks','--',*map(str,cmd)],cwd=ROOT,env=env,check=True)
+2026-11-06T22:02:34.0140099Z   File "C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\subprocess.py", line 571, in run
+2026-11-06T22:02:34.0140483Z     raise CalledProcessError(retcode, process.args,
+2026-11-06T22:02:34.0143132Z subprocess.CalledProcessError: Command '['C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\python.exe', WindowsPath('D:/a/Delsk/Delsk/scripts/run_check.py'), '--name', 'a1-compact-valley-3-ru-640', '--timeout', '180', '--log-directory', WindowsPath('D:/a/Delsk/Delsk/artifacts/city-ux-ui/checks'), '--', 'D:\\a\\Delsk\\Delsk\\.tools\\godot\\Godot_v4.7.2-stable_mono_win64\\Godot_v4.7.2-stable_mono_win64_console.exe', '--path', 'D:\\a\\Delsk\\Delsk\\artifacts\\city-ux-ui\\source\\src\\Client.Godot', '--rendering-method', 'gl_compatibility', '--audio-driver', 'Dummy', 'res://CityExperienceProbe.tscn', '--', '--economy', 'D:\\a\\Delsk\\Delsk\\artifacts\\city-ux-ui\\source\\config\\vnext\\economy.g1-npc.json', '--output', 'D:\\a\\Delsk\\Delsk\\artifacts\\city-ux-ui\\cases-a1\\compact-valley-3-ru-640', '--map', 'compact-valley', '--count', '3', '--language', 'ru', '--width', '640', '--windowed']' returned non-zero exit status 1.
+2026-11-06T22:02:34.0146873Z a1-asset-cache.stderr.log
+2026-11-06T22:02:34.0153383Z a1-asset-completeness.stderr.log
+2026-11-06T22:02:34.0158797Z a1-asset-stage.stderr.log
+2026-11-06T22:02:34.0164321Z a1-compact-valley-3-ru-640.stderr.log
+2026-11-06T22:02:34.0172874Z WARNING: Your video card drivers seem not to support the required OpenGL 3.3 version, switching to ANGLE.
+2026-11-06T22:02:34.0173698Z    at: DisplayServerWindows (platform/windows/display_server_windows.cpp:8227)
+2026-11-06T22:02:34.0174719Z ERROR: System.InvalidOperationException: Button unavailable: StartGame Начать
+2026-11-06T22:02:34.0175458Z    at CityExperienceProbe.Check(Boolean ok, String reason) in D:\a\Delsk\Delsk\artifacts\city-ux-ui\source\src\Client.Godot\CityExperienceProbe.cs:line 14
+2026-11-06T22:02:34.0176541Z    at CityExperienceProbe.Click(BaseButton b) in D:\a\Delsk\Delsk\artifacts\city-ux-ui\source\src\Client.Godot\CityExperienceProbe.cs:line 29
+2026-11-06T22:02:34.0177659Z    at CityExperienceProbe.StartMap(String map, Int32 count) in D:\a\Delsk\Delsk\artifacts\city-ux-ui\source\src\Client.Godot\CityExperienceProbe.cs:line 56
+2026-11-06T22:02:34.0178824Z    at CityExperienceProbe.MapCase(String map, Int32 count, Int32 width) in D:\a\Delsk\Delsk\artifacts\city-ux-ui\source\src\Client.Godot\CityExperienceProbe.cs:line 68
+2026-11-06T22:02:34.0179700Z    at CityExperienceProbe._Ready() in D:\a\Delsk\Delsk\artifacts\city-ux-ui\source\src\Client.Godot\CityExperienceProbe.cs:line 117
+2026-11-06T22:02:34.0180523Z    at: void CityExperienceProbe+<_Ready>d__22.MoveNext() (res://CityExperienceProbe.cs:120)
+2026-11-06T22:02:34.0181096Z    C# backtrace (most recent call first):
+2026-11-06T22:02:34.0182437Z        [0] void Godot.GD.PushError(string) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/GD.cs:366)
+2026-11-06T22:02:34.0183310Z        [1] void CityExperienceProbe+<_Ready>d__22.MoveNext() (D:\a\Delsk\Delsk\artifacts\city-ux-ui\source\src\Client.Godot\CityExperienceProbe.cs:120)
+2026-11-06T22:02:34.0184591Z        [2] void System.Threading.ExecutionContext.RunInternal(System.Threading.ExecutionContext, System.Threading.ContextCallback, object)
+2026-11-06T22:02:34.0185850Z        [3] void System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1.MoveNext(System.Threading.Thread)
+2026-11-06T22:02:34.0186883Z        [4] void System.Threading.Tasks.AwaitTaskContinuation.RunCallback(System.Threading.ContextCallback, object, System.Threading.Tasks.Task&)
+2026-11-06T22:02:34.0187984Z        [5] void System.Threading.Tasks.Task.RunContinuations(object)
+2026-11-06T22:02:34.0188748Z        [6] bool System.Threading.Tasks.Task`1.TrySetResult(TResult)
+2026-11-06T22:02:34.0190216Z        [7] void System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.SetExistingTaskResult(System.Threading.Tasks.Task`1[TResult], TResult)
+2026-11-06T22:02:34.0191343Z        [8] void CityExperienceProbe+<Capture>d__19.MoveNext() (D:\a\Delsk\Delsk\artifacts\city-ux-ui\source\src\Client.Godot\CityExperienceProbe.cs:47)
+2026-11-06T22:02:34.0192469Z        [9] void System.Threading.ExecutionContext.RunInternal(System.Threading.ExecutionContext, System.Threading.ContextCallback, object)
+2026-11-06T22:02:34.0193397Z        [10] void System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1.MoveNext(System.Threading.Thread)
+2026-11-06T22:02:34.0194716Z        [11] void Godot.SignalAwaiter.SignalCallback(nint, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_bool*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/SignalAwaiter.cs:65)
+2026-11-06T22:02:34.0196587Z a1-import.stderr.log
+2026-11-06T22:02:34.0201988Z a1-ordinary-audit.stderr.log
+2026-11-06T22:02:34.0207413Z a1-ordinary-build.stderr.log
+2026-11-06T22:02:34.0212905Z a1-probe-build.stderr.log
+2026-11-06T22:02:34.0217854Z a1-restore.stderr.log
+2026-11-06T22:02:34.0252700Z D:\a\Delsk\Delsk\artifacts\city-ux-ui\cases-a1\compact-valley-3-ru-640\failure.json
+2026-11-06T22:02:34.0260133Z {"status":"failed","error":"System.InvalidOperationException: Button unavailable: StartGame \u041D\u0430\u0447\u0430\u0442\u044C\r\n   at CityExperienceProbe.Check(Boolean ok, String reason) in D:\\a\\Delsk\\Delsk\\artifacts\\city-ux-ui\\source\\src\\Client.Godot\\CityExperienceProbe.cs:line 14\r\n   at CityExperienceProbe.Click(BaseButton b) in D:\\a\\Delsk\\Delsk\\artifacts\\city-ux-ui\\source\\src\\Client.Godot\\CityExperienceProbe.cs:line 29\r\n   at CityExperienceProbe.StartMap(String map, Int32 count) in D:\\a\\Delsk\\Delsk\\artifacts\\city-ux-ui\\source\\src\\Client.Godot\\CityExperienceProbe.cs:line 56\r\n   at CityExperienceProbe.MapCase(String map, Int32 count, Int32 width) in D:\\a\\Delsk\\Delsk\\artifacts\\city-ux-ui\\source\\src\\Client.Godot\\CityExperienceProbe.cs:line 68\r\n   at CityExperienceProbe._Ready() in D:\\a\\Delsk\\Delsk\\artifacts\\city-ux-ui\\source\\src\\Client.Godot\\CityExperienceProbe.cs:line 117","checks":[]}
+2026-11-06T22:02:34.0855921Z ##[group]Run python scripts/report_check_results.py artifacts/city-ux-ui
+2026-11-06T22:02:34.0856387Z [36;1mpython scripts/report_check_results.py artifacts/city-ux-ui[0m
+2026-11-06T22:02:34.0912966Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-06T22:02:34.0913241Z env:
+2026-11-06T22:02:34.0913405Z   DOTNET_PROCESSOR_COUNT: 2
+2026-11-06T22:02:34.0913611Z   DOTNET_ROOT: C:\Program Files\dotnet
+2026-11-06T22:02:34.0913875Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:02:34.0914239Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-11-06T22:02:34.0914600Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:02:34.0914932Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:02:34.0915234Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:02:34.0915687Z   DELSK_GODOT: D:\a\Delsk\Delsk\.tools\godot\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64_console.exe
+2026-11-06T22:02:34.0916058Z ##[endgroup]
+2026-11-06T22:02:34.3432950Z Traceback (most recent call last):
+2026-11-06T22:02:34.3433564Z a1-asset-cache: {"exit_code": 0, "elapsed_seconds": 0.25, "timeout_seconds": 60}
+2026-11-06T22:02:34.3436134Z   File "D:\a\Delsk\Delsk\scripts\report_check_results.py", line 18, in <module>
+2026-11-06T22:02:34.3437193Z     if log.is_file():print(str(log)+':\n'+log.read_text(encoding='utf-8',errors='replace')[-12000:])
+2026-11-06T22:02:34.3438062Z a1-asset-completeness: {"exit_code": 0, "elapsed_seconds": 0.172, "timeout_seconds": 30}
+2026-11-06T22:02:34.3438866Z a1-asset-stage: {"exit_code": 0, "elapsed_seconds": 0.14, "timeout_seconds": 30}
+2026-11-06T22:02:34.3439334Z a1-compact-valley-3-ru-640: {"exit_code": 1, "elapsed_seconds": 5.344, "timeout_seconds": 180}
+2026-11-06T22:02:34.3439785Z artifacts\city-ux-ui\checks\a1-compact-valley-3-ru-640.stdout.log:
+2026-11-06T22:02:34.3440227Z Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org
+2026-11-06T22:02:34.3441134Z OpenGL API OpenGL ES 3.0 (ANGLE 2.1.1 git hash: aaebda1c5a40) - Compatibility - Using Device: Google Inc. (Microsoft) - ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11-10.0.26100.33648)
+2026-11-06T22:02:34.3441765Z 
+2026-11-06T22:02:34.3441770Z 
+2026-11-06T22:02:34.3441899Z                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-06T22:02:34.3442361Z   File "C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\encodings\cp1252.py", line 19, in encode
+2026-11-06T22:02:34.3493821Z     return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+2026-11-06T22:02:34.3494305Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-06T22:02:34.3494840Z UnicodeEncodeError: 'charmap' codec can't encode characters in position 326-331: character maps to <undefined>
+2026-11-06T22:02:34.4366410Z ##[error]Process completed with exit code 1.
+2026-11-06T22:02:34.4522178Z ##[group]Run actions/upload-artifact@v4
+2026-11-06T22:02:34.4522459Z with:
+2026-11-06T22:02:34.4522626Z   name: windows-city-ux-compact
+2026-11-06T22:02:34.4522828Z   path: artifacts/
+2026-11-06T22:02:34.4522997Z   if-no-files-found: warn
+2026-11-06T22:02:34.4523177Z   compression-level: 6
+2026-11-06T22:02:34.4523338Z   overwrite: false
+2026-11-06T22:02:34.4523686Z   include-hidden-files: false
+2026-11-06T22:02:34.4523870Z env:
+2026-11-06T22:02:34.4524025Z   DOTNET_PROCESSOR_COUNT: 2
+2026-11-06T22:02:34.4524215Z   DOTNET_ROOT: C:\Program Files\dotnet
+2026-11-06T22:02:34.4524500Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:02:34.4524858Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-11-06T22:02:34.4525204Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:02:34.4525658Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:02:34.4526039Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-06T22:02:34.4526470Z   DELSK_GODOT: D:\a\Delsk\Delsk\.tools\godot\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64_console.exe
+2026-11-06T22:02:34.4526839Z ##[endgroup]
+2026-11-06T22:02:34.6123656Z (node:8036) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-06T22:02:34.6124256Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-06T22:02:34.8035898Z With the provided path, there will be 1075 files uploaded
+2026-11-06T22:02:34.8040632Z Artifact name is valid!
+2026-11-06T22:02:34.8041618Z Root directory input is valid!
+2026-11-06T22:02:35.1460777Z Beginning upload of artifact content to blob storage
+2026-11-06T22:02:36.0751301Z (node:8036) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-06T22:02:37.0880370Z Uploaded bytes 8388608
+2026-11-06T22:02:37.3049957Z Uploaded bytes 13581848
+2026-11-06T22:02:37.3617044Z Finished uploading artifact content to blob storage!
+2026-11-06T22:02:37.3618133Z SHA256 digest of uploaded artifact zip is ce57669cfae19af4a8b543ad48c56f025cc403dc1510cddcbfa6c2367ae7cc18
+2026-11-06T22:02:37.3618921Z Finalizing artifact upload
+2026-11-06T22:02:37.7757210Z Artifact windows-city-ux-compact.zip successfully finalized. Artifact ID 13544691369
+2026-11-06T22:02:37.7758143Z Artifact windows-city-ux-compact has been successfully uploaded! Final size is 13581848 bytes. Artifact ID is 13544691369
+2026-11-06T22:02:37.7767578Z Artifact download URL: https://github.com/MaksShelest/Delsk/actions/runs/42301293997/artifacts/13544691369
+2026-11-06T22:02:37.8104669Z Post job cleanup.
+2026-11-06T22:02:37.9528290Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-06T22:02:37.9804028Z git version 2.56.0.windows.4
+2026-11-06T22:02:37.9857089Z Temporarily overriding HOME='D:\a\_temp\6f812ab6-d908-4363-8cac-52818ce8ffb9' before making global git config changes
+2026-11-06T22:02:37.9858078Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-06T22:02:37.9865502Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Delsk\Delsk
+2026-11-06T22:02:38.0175694Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-06T22:02:38.0470959Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-06T22:02:38.5679521Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-06T22:02:38.5947598Z http.https://github.com/.extraheader
+2026-11-06T22:02:38.5984568Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2026-11-06T22:02:38.6295367Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-06T22:02:39.0961638Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-06T22:02:39.1282947Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-06T22:02:39.6030158Z Cleaning up orphan processes
+2026-11-06T22:02:39.6394141Z Terminate orphan process: pid (2904) (VBCSCompiler)
+2026-11-06T22:02:39.6451437Z Terminate orphan process: pid (5628) (conhost)
+2026-11-06T22:02:39.6524345Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-dotnet@v4, actions/setup-python@v5, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

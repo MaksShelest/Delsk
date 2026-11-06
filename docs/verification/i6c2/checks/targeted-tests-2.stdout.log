@@ -1,0 +1,91 @@
+xUnit.net v3 In-Process Runner v4.0.2+0c7aa4991f (64-bit .NET 10.0.12)
+  Discovering: Simulation.Tests
+  Discovered:  Simulation.Tests
+  Starting:    Simulation.Tests
+    Simulation.Tests.I6C2MapsTests.NewSnapshotMatchesSourceAndCurrentEconomyWithoutAnAppendedYard(key: "compact-valley", width: 32, height: 25, sites: 15, capacity: 11) [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.PhysicalTravelChangesScopeAndTheAvailableLocalActions [STARTING]
+    Simulation.Tests.I6C2MapsTests.NewSnapshotMatchesSourceAndCurrentEconomyWithoutAnAppendedYard(key: "compact-valley", width: 32, height: 25, sites: 15, capacity: 11) [FINISHED] Time: 2.418s
+    Simulation.Tests.I6C2MapsTests.NewSnapshotMatchesSourceAndCurrentEconomyWithoutAnAppendedYard(key: "second", width: 18, height: 15, sites: 6, capacity: 4) [STARTING]
+    Simulation.Tests.I6C2MapsTests.NewSnapshotMatchesSourceAndCurrentEconomyWithoutAnAppendedYard(key: "second", width: 18, height: 15, sites: 6, capacity: 4) [FINISHED] Time: 0.317s
+    Simulation.Tests.I6C2MapsTests.ThreeIndependentOrdinaryNpcsHarvestTradeAndRestoreWithoutPreparedAssets(key: "compact-valley") [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.PhysicalTravelChangesScopeAndTheAvailableLocalActions [FINISHED] Time: 5.63s
+    Simulation.Tests.ContextActionsI5Tests.OrdinaryContextContainsOnlyLocalChoicesWithoutChangingWorldOrTape(language: "ru") [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.OrdinaryContextContainsOnlyLocalChoicesWithoutChangingWorldOrTape(language: "ru") [FINISHED] Time: 1.212s
+    Simulation.Tests.ContextActionsI5Tests.OrdinaryContextContainsOnlyLocalChoicesWithoutChangingWorldOrTape(language: "en") [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.OrdinaryContextContainsOnlyLocalChoicesWithoutChangingWorldOrTape(language: "en") [FINISHED] Time: 0.478s
+    Simulation.Tests.ContextActionsI5Tests.UserCatalogDoesNotReplaceHistoricalScenarioResolution [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.UserCatalogDoesNotReplaceHistoricalScenarioResolution [FINISHED] Time: 0.012s
+    Simulation.Tests.ContextActionsI5Tests.SameKeyWithChangedCommandCannotExecuteTheOldSnapshot [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.SameKeyWithChangedCommandCannotExecuteTheOldSnapshot [FINISHED] Time: 0.003s
+    Simulation.Tests.ContextActionsI5Tests.InsufficientCashHasASpecificReasonRatherThanAnEmptyDisabledAction [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.InsufficientCashHasASpecificReasonRatherThanAnEmptyDisabledAction [FINISHED] Time: 0.008s
+    Simulation.Tests.ContextActionsI5Tests.RefreshKeepsOpenMenuSelectionAndUsesKeysAfterReordering [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.RefreshKeepsOpenMenuSelectionAndUsesKeysAfterReordering [FINISHED] Time: 0.001s
+    Simulation.Tests.ContextActionsI5Tests.RoadWorkRemainsThePrimaryActionForTheDrivenPaver [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.RoadWorkRemainsThePrimaryActionForTheDrivenPaver [FINISHED] Time: 0s
+    Simulation.Tests.ContextActionsI5Tests.MobileEquipmentEntriesShareCorePermissionsForBothParticipants [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.MobileEquipmentEntriesShareCorePermissionsForBothParticipants [FINISHED] Time: 1.686s
+    Simulation.Tests.ContextActionsI5Tests.PrimaryPriorityIsSemanticAndDoesNotDependOnEnumOrInsertionOrder [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.PrimaryPriorityIsSemanticAndDoesNotDependOnEnumOrInsertionOrder [FINISHED] Time: 0.002s
+    Simulation.Tests.ContextActionsI5Tests.DealerOffersUseRealPricesAndCountOnlyExecutableLocalActions(language: "ru") [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.DealerOffersUseRealPricesAndCountOnlyExecutableLocalActions(language: "ru") [FINISHED] Time: 0.358s
+    Simulation.Tests.ContextActionsI5Tests.DealerOffersUseRealPricesAndCountOnlyExecutableLocalActions(language: "en") [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.DealerOffersUseRealPricesAndCountOnlyExecutableLocalActions(language: "en") [FINISHED] Time: 0.147s
+    Simulation.Tests.ContextActionsI5Tests.ScopeChangeClosesPanelAndRemovesTheOldTarget [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.ScopeChangeClosesPanelAndRemovesTheOldTarget [FINISHED] Time: 0s
+    Simulation.Tests.ContextActionsI5Tests.OnePendingCommandBlocksRepeatedTransactionsButAllowsDeliberateNavigation [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.OnePendingCommandBlocksRepeatedTransactionsButAllowsDeliberateNavigation [FINISHED] Time: 0s
+    Simulation.Tests.ContextActionsI5Tests.TheAvailabilityMatrixAccountsForEveryKindIncludingTheDedicatedInputPath [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.TheAvailabilityMatrixAccountsForEveryKindIncludingTheDedicatedInputPath [FINISHED] Time: 0.014s
+    Simulation.Tests.ContextActionsI5Tests.DisabledSelectionIsNeverSubmitted [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.DisabledSelectionIsNeverSubmitted [FINISHED] Time: 0s
+    Simulation.Tests.ContextActionsI5Tests.LanguagesShareStableKeysAndEveryVisibleGroupHasALocalizedName [STARTING]
+    Simulation.Tests.ContextActionsI5Tests.LanguagesShareStableKeysAndEveryVisibleGroupHasALocalizedName [FINISHED] Time: 0.128s
+    Simulation.Tests.I6C2MapsTests.ThreeIndependentOrdinaryNpcsHarvestTradeAndRestoreWithoutPreparedAssets(key: "compact-valley") [FINISHED] Time: 18.236s
+    Simulation.Tests.I6C2MapsTests.ThreeIndependentOrdinaryNpcsHarvestTradeAndRestoreWithoutPreparedAssets(key: "second") [STARTING]
+    Simulation.Tests.I6C2MapsTests.ThreeIndependentOrdinaryNpcsHarvestTradeAndRestoreWithoutPreparedAssets(key: "second") [FINISHED] Time: 3.565s
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "compact-valley") [STARTING]
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "compact-valley") [FAIL]
+      Assert.Contains() Failure: Filter not matched in collection
+      Collection: [LedgerRecord { Tick = 0, DebitAccount = AccountId { Value = 0 }, CreditAccount = AccountId { Value = 1002 }, AmountMinor = 20360, Reason = CapitalDemandBudget }, LedgerRecord { Tick = 60, DebitAccount = AccountId { Value = 0 }, CreditAccount = AccountId { Value = 1002 }, AmountMinor = 19856, Reason = CapitalDemandBudget }, LedgerRecord { Tick = 89, DebitAccount = AccountId { Value = 1002 }, CreditAccount = AccountId { Value = 1074 }, AmountMinor = 996, Reason = CapitalEscrow }, LedgerRecord { Tick = 89, DebitAccount = AccountId { Value = 1074 }, CreditAccount = AccountId { Value = 1003 }, AmountMinor = 996, Reason = CapitalSettlement }]
+      Stack Trace:
+        tests/Simulation.Tests/I6C2MapsTests.cs(105,0): at Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(String key)
+           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)
+           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)
+           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+           at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "compact-valley") [FINISHED] Time: 0.486s
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "second") [STARTING]
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "second") [FAIL]
+      Assert.Contains() Failure: Filter not matched in collection
+      Collection: [LedgerRecord { Tick = 0, DebitAccount = AccountId { Value = 0 }, CreditAccount = AccountId { Value = 1002 }, AmountMinor = 20360, Reason = CapitalDemandBudget }, LedgerRecord { Tick = 46, DebitAccount = AccountId { Value = 1002 }, CreditAccount = AccountId { Value = 1057 }, AmountMinor = 996, Reason = CapitalEscrow }, LedgerRecord { Tick = 46, DebitAccount = AccountId { Value = 1057 }, CreditAccount = AccountId { Value = 1003 }, AmountMinor = 996, Reason = CapitalSettlement }]
+      Stack Trace:
+        tests/Simulation.Tests/I6C2MapsTests.cs(105,0): at Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(String key)
+           at InvokeStub_I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+    Simulation.Tests.I6C2MapsTests.PublicHarvestInitialSaleAndLegalLandAndMachinePurchaseUseRealMap(key: "second") [FINISHED] Time: 0.187s
+    Simulation.Tests.I6C2MapsTests.FullIndustrialOccupancyKeepsEveryResourceCivicEntryMarketAndSpawnReachable(key: "compact-valley") [STARTING]
+    Simulation.Tests.I6C2MapsTests.FullIndustrialOccupancyKeepsEveryResourceCivicEntryMarketAndSpawnReachable(key: "compact-valley") [FINISHED] Time: 0.043s
+    Simulation.Tests.I6C2MapsTests.FullIndustrialOccupancyKeepsEveryResourceCivicEntryMarketAndSpawnReachable(key: "second") [STARTING]
+    Simulation.Tests.I6C2MapsTests.FullIndustrialOccupancyKeepsEveryResourceCivicEntryMarketAndSpawnReachable(key: "second") [FINISHED] Time: 0.025s
+    Simulation.Tests.I6C2MapsTests.OldValleyAndHistoricalSecondKeepGeometryRoutesIdsAndOwnershipOnLoad [STARTING]
+    Simulation.Tests.I6C2MapsTests.OldValleyAndHistoricalSecondKeepGeometryRoutesIdsAndOwnershipOnLoad [FINISHED] Time: 0.135s
+    Simulation.Tests.I6C2MapsTests.EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(key: "compact-valley") [STARTING]
+    Simulation.Tests.I6C2MapsTests.EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(key: "compact-valley") [FINISHED] Time: 8.056s
+    Simulation.Tests.I6C2MapsTests.EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(key: "second") [STARTING]
+    Simulation.Tests.I6C2MapsTests.EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(key: "second") [FAIL]
+      second: trapped extractor_extract_beet_1 at Cell { X = 0, Z = 4 }
+      Stack Trace:
+        tests/Simulation.Tests/I6C2MapsTests.cs(92,0): at Simulation.Tests.I6C2MapsTests.EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(String key)
+           at InvokeStub_I6C2MapsTests.EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(Object, Span`1)
+           at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+    Simulation.Tests.I6C2MapsTests.EveryStockedMachineCanPhysicallyLeaveItsRealDeliveryBay(key: "second") [FINISHED] Time: 0.583s
+    Simulation.Tests.I6C2MapsTests.ConcreteCarPurchaseKeepsCompetitionHoldsDistanceOwnershipAndSinglePayment(key: "compact-valley", entrance: False) [STARTING]
+    Simulation.Tests.I6C2MapsTests.ConcreteCarPurchaseKeepsCompetitionHoldsDistanceOwnershipAndSinglePayment(key: "compact-valley", entrance: False) [FINISHED] Time: 0.177s
+    Simulation.Tests.I6C2MapsTests.ConcreteCarPurchaseKeepsCompetitionHoldsDistanceOwnershipAndSinglePayment(key: "second", entrance: False) [STARTING]
+    Simulation.Tests.I6C2MapsTests.ConcreteCarPurchaseKeepsCompetitionHoldsDistanceOwnershipAndSinglePayment(key: "second", entrance: False) [FINISHED] Time: 0.086s
+    Simulation.Tests.I6C2MapsTests.ConcreteCarPurchaseKeepsCompetitionHoldsDistanceOwnershipAndSinglePayment(key: "second", entrance: True) [STARTING]
+    Simulation.Tests.I6C2MapsTests.ConcreteCarPurchaseKeepsCompetitionHoldsDistanceOwnershipAndSinglePayment(key: "second", entrance: True) [FINISHED] Time: 0.097s
+  Finished:    Simulation.Tests (ID = 'b00ba06d382565ef33cd4232e1a7f682a055199d54044b1e7c966bb403320b88')
+=== TEST EXECUTION SUMMARY ===
+   Simulation.Tests  Total: 31, Errors: 0, Failed: 3, Skipped: 0, Not Run: 0, Time: 34.969s
