@@ -36,6 +36,7 @@ public static class OrdinaryNewGame
         if(!map.Participants.Any(p=>p.Id==options.HumanActorId))throw new ArgumentException("Unknown human actor");
         // A2's exact fixed-four projection is applied once, then only the named aggregates are scaled.
         var baseScenario=economy.Apply(map);int count=checked(options.NpcCount+1);ulong seed=options.Seed??map.Seed;
+        if(map.Layout is {} layout && count>layout.MaxParticipants)throw new ArgumentException("Map participant capacity exceeded");
         if(options.HumanActorId>count)throw new ArgumentException("Human actor outside resolved roster");
         var navigation=new ScenarioNavigation(baseScenario);
         var origin=map.Participants.Single(p=>p.Id==options.HumanActorId).Position;

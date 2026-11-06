@@ -214,14 +214,14 @@ public partial class Playfield : Control
     private int _newNpcCount=3;
     private OrdinaryGameResolution ResolveNewGame(string key,int count)
     {
-        var map=JsonSerializer.Deserialize<ScenarioDefinition>(Text(PlayMaps.Resource(key)),SimulationJson.Options)??throw new InvalidOperationException(key);
+        var map=ReadMap(key);
         var economy=ReadEconomy(key);
         VNextBalance? full=null;
         if(economy.VNext is {} provenance)
         {var read=VNextBalanceReader.Read(System.Text.Encoding.UTF8.GetBytes(Text("Play.vnext-balance.json")));if(!read.IsValid || read.Sha256!=provenance.FullBalanceSha256)throw new InvalidOperationException("Full balance/profile mismatch");full=read.Balance;}
         return OrdinaryNewGame.Resolve(map,economy,new(count,_newDifficulty.ToString()),vnextBalance:full);
     }
-    private ScenarioDefinition ReadMap(string key)=>JsonSerializer.Deserialize<ScenarioDefinition>(Text(PlayMaps.Resource(key)),SimulationJson.Options)??throw new InvalidOperationException(key);
+    private ScenarioDefinition ReadMap(string key)=>JsonSerializer.Deserialize<ScenarioDefinition>(Text(PlayMaps.NewGameResource(key)),SimulationJson.Options)??throw new InvalidOperationException(key);
 
     private void DismissMaps()
     { if (_mapSelection is not null) {_newNpcCount=_mapSelection.NpcCount;_newMapKey = _mapSelection.SelectedMap;_newDifficulty=_mapSelection.Difficulty;_newModel=_mapSelection.ModelConfiguration;} _mapSelection?.QueueFree(); _mapSelection = null; }
