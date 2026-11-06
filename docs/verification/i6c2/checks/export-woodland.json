@@ -1,0 +1,17 @@
+{
+  "command": [
+    "dotnet",
+    "src/Research.Runner/bin/Release/net10.0/Research.Runner.dll",
+    "--export-map-design",
+    "docs/vnext/maps/woodland_region.json",
+    "--economy",
+    "config/vnext/economy.i4-mobile-equipment.json",
+    "--output",
+    "work/i6c2/export-woodland"
+  ],
+  "timeout_seconds": 30,
+  "started_at": "2026-11-06T21:41:45.325374+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.566,
+  "finished_at": "2026-11-06T21:41:45.890972+00:00"
+}

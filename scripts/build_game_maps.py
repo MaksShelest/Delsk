@@ -31,7 +31,7 @@ def common(name, id, width, height, maximum, roads, lots, resources, city, stall
     city[-1]['equipment_parking'] = bays
     return dict(schema_version='delsk-map-design-2', id=id, name=name, width=width, height=height,
                 max_participants=maximum, road_center_cells=sorted(roads),
-                road_corridor_cells=sorted(roads), initial_city_dirt_cells=sorted(roads),
+                road_corridor_cells=sorted(roads | set(spawns)), initial_city_dirt_cells=sorted(roads),
                 industrial_lots=lots, resource_districts=resources, civic_objects=city,
                 market_stalls=[dict(id=f'{id}_stall_{n+1:02}', cell=p) for n, p in enumerate(stalls)],
                 spawn_cells=spawns, turn_cells=[spawns[0]],
@@ -81,10 +81,10 @@ def woodland():
         district('woodland', 'iron_ore', [(14,0),(14,1)]),
         district('woodland', 'copper_ore', [(14,7),(14,8)]),
     ]
-    bays = [(x,4) for x in (0,2,4)] + [(x,7) for x in (0,2,6,8)] + [(x,z) for z in (9,11) for x in (3,6)] + [(x,12) for x in (0,2,7,9)] + [(9,9)]
+    bays = [(x,4) for x in (2,4)] + [(x,7) for x in (2,6,8)] + [(x,z) for z in (9,11) for x in (3,6)] + [(x,12) for x in (2,7,9)] + [(9,9)] + [(x,14) for x in (4,6,8)]
     return common('Лесной край', 'woodland_region_i6c2', 18, 15, 4, roads, lots, resources,
                   [civic(0,0,'town_hall','woodland'),civic(3,0,'terminal','woodland'),civic(5,0,'dealership','woodland')],
-                  [(x,14) for x in range(4)], [(x,13) for x in (4,6,8,10)], bays)
+                  [(x,14) for x in range(4)], [(14,z) for z in (2,9,12,13)], bays)
 
 
 def main():

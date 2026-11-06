@@ -1,0 +1,57 @@
+{
+  "tick": 245,
+  "hash": "6b1320c043f10dd70a409723e412fd176fa809c678eb9dae6bd380ecb1411cdc",
+  "participants": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "commands": [
+    {
+      "actor": 2,
+      "kind": "MoveTo",
+      "count": 12
+    },
+    {
+      "actor": 3,
+      "kind": "MoveTo",
+      "count": 8
+    },
+    {
+      "actor": 4,
+      "kind": "MoveTo",
+      "count": 8
+    },
+    {
+      "actor": 4,
+      "kind": "Harvest",
+      "count": 4
+    },
+    {
+      "actor": 3,
+      "kind": "Harvest",
+      "count": 4
+    },
+    {
+      "actor": 2,
+      "kind": "Harvest",
+      "count": 6
+    },
+    {
+      "actor": 2,
+      "kind": "SellAvailableToCapital",
+      "count": 5
+    },
+    {
+      "actor": 4,
+      "kind": "SellAvailableToCapital",
+      "count": 6
+    },
+    {
+      "actor": 3,
+      "kind": "SellAvailableToCapital",
+      "count": 6
+    }
+  ]
+}

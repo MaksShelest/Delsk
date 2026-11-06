@@ -1,0 +1,17 @@
+{
+  "command": [
+    "dotnet",
+    "run",
+    "--project",
+    "/workspace/Delsk/tools/AssemblyAudit",
+    "-c",
+    "Release",
+    "--",
+    "/workspace/Delsk/work/i6c2/native-1/source/src/Client.Godot/.godot/mono/temp/bin/Debug"
+  ],
+  "timeout_seconds": 120,
+  "started_at": "2026-11-06T21:52:02.672704+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 2.641,
+  "finished_at": "2026-11-06T21:52:05.313927+00:00"
+}

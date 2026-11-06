@@ -271,6 +271,17 @@ public partial class PresentationStage : Node3D
         }
         if(frame.Layout is {} layout)
         {
+            if(layout.SourceId is PlayMaps.CompactValleyScenarioId or PlayMaps.WoodlandScenarioId)
+            {
+                // One cleared pad per real six-cell lot; no cell grid or decorative machinery.
+                foreach(var lot in layout.IndustrialLots)
+                {
+                    float x=lot.Cells.Min(c=>c.X)+.5f,z=lot.Cells.Min(c=>c.Z)+1;
+                    WorldModels.Part(ground,new BoxMesh{Size=new(1.86f,.018f,2.86f)},new Color("a8a386"),new(x,.015f,z));
+                }
+                foreach(var stall in layout.MarketStalls)
+                    WorldModels.Part(ground,new BoxMesh{Size=new(.82f,.018f,.82f)},new Color("b5a3b1"),new(stall.Cell.X,.015f,stall.Cell.Z));
+            }
             if(frame.RoadCells.Length==0)foreach(var row in layout.InitialCityDirtCells.GroupBy(c=>c.Z))
             {
                 var cells=row.OrderBy(c=>c.X).ToArray();int begin=0;

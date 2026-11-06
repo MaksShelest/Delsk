@@ -1,0 +1,64 @@
+{
+  "base": "dd803ae802a2af7f824d5cc95f1cbf100056f804",
+  "author": "Шелестов Максим Евгеньевич",
+  "status": "succeeded",
+  "targetedCases": 17,
+  "contextRegressionCases": 17,
+  "nativeChecks": 51,
+  "mandatoryCI": "See PR checks on final HEAD; no workflow or deadline edits.",
+  "scope": "Two new maps only; 3 NPCs; prepared factory/cash explicitly distinct from ordinary manual earning; Linux software GL, not device acceptance.",
+  "attempts": {
+    "compile": "Initial xUnit analyzer errors corrected.",
+    "geometry": "Boundary delivery bay could not turn; moved bays. Static spawn actors blocked the southern maneuver; put spawns in public industrial verges.",
+    "fixtures": "Corrected ledger reason, acquired resource ownership before machinery, and explicit ballot-only policies for manual earning beyond t600.",
+    "native1": "51 native assertions passed on earlier geometry, but overall source freeze check rejected the run after a map snapshot changed. Final client recompiled the changed embedded snapshot using frozen runtime references; 51 assertions and source freeze passed."
+  },
+  "maps": {
+    "compact-valley-i6c2": {
+      "id": "compact_valley_i6c2",
+      "width": 32,
+      "height": 25,
+      "industrialLots": 15,
+      "maxParticipants": 11,
+      "resources": {
+        "wood": 18,
+        "grain": 16,
+        "milk": 7,
+        "beet": 6,
+        "iron_ore": 3,
+        "copper_ore": 3,
+        "stone": 5,
+        "sand": 5
+      },
+      "sourceSha256": "fc672b7761ab56d35447152ae08cb8a24ff9c8e1b52909b6bc9d2c95c7254570",
+      "scenarioSha256": "414532439a8c6f7c6d1a9c3062eee8e73073e5025a586dd37dcf5d65069635d2"
+    },
+    "woodland-region-i6c2": {
+      "id": "woodland_region_i6c2",
+      "width": 18,
+      "height": 15,
+      "industrialLots": 6,
+      "maxParticipants": 4,
+      "resources": {
+        "wood": 9,
+        "grain": 4,
+        "milk": 3,
+        "beet": 3,
+        "stone": 3,
+        "sand": 2,
+        "iron_ore": 2,
+        "copper_ore": 2
+      },
+      "sourceSha256": "f26f11c36b1bbbcb153bb13fe10c457d22a3b9a67cea13c87cc685685786fe26",
+      "scenarioSha256": "bde473ad68e1642e0c982b7f107b9def6125a4afde47bf7f91df737530e67f89"
+    }
+  },
+  "files": {
+    "03-woodland-overview.png": "4a61a4a05ed8de9693e2d34b963fc338da4ef6571d0a4427813c47eb19ff6601",
+    "06-concrete-car-purchase.png": "2aa76e7b550d76cfa545aaf10d656acfa8a440afa9bce8dc02beafbdb7df2e6b",
+    "02-valley-center-industry.png": "8683153778f38039404582a31df886cbf7228b30b6d7f2c568c1e05541794979",
+    "04-woodland-town-hall.png": "2af90d415e59f7e539c1ac0dcb068a97572436a109fbcc0f645c9fae9c7ca327",
+    "01-valley-overview.png": "498a90c7c2de1acc024610f4df5d96028752a5b61582ab4f8424f1538986dfbd",
+    "05-map-catalog.png": "dbb554db588aa1c1784e9e2f8ebb18303c54892d4f42c9908969dd631738c65b"
+  }
+}

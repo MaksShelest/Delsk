@@ -1,0 +1,14 @@
+restore: exit=0; logs=/workspace/Delsk/work/i6c2/native-1/checks
+ordinary-build: exit=0; logs=/workspace/Delsk/work/i6c2/native-1/checks
+ordinary-audit: exit=0; logs=/workspace/Delsk/work/i6c2/native-1/checks
+assets: exit=0; logs=/workspace/Delsk/work/i6c2/native-1/checks
+import: exit=0; logs=/workspace/Delsk/work/i6c2/native-1/checks
+imports-reuse: exit=0; logs=/workspace/Delsk/work/i6c2/native-1/checks
+probe-build: exit=0; logs=/workspace/Delsk/work/i6c2/native-1/checks
+native: exit=0; logs=/workspace/Delsk/work/i6c2/native-1/checks
+native-log: exit=0; logs=/workspace/Delsk/work/i6c2/native-1/checks
+Traceback (most recent call last):
+  File "/workspace/Delsk/scripts/check_i6a_native.py", line 107, in <module>
+    assert all(hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==h for name,h in inputs.items()),'Source changed during run'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Source changed during run

@@ -1633,8 +1633,8 @@
       "id": 1,
       "cashMinor": 20000,
       "position": {
-        "x": 4,
-        "z": 13
+        "x": 14,
+        "z": 2
       },
       "inventoryCapacity": 20,
       "publicPreferenceItem": ""
@@ -1643,8 +1643,8 @@
       "id": 2,
       "cashMinor": 20000,
       "position": {
-        "x": 6,
-        "z": 13
+        "x": 14,
+        "z": 9
       },
       "inventoryCapacity": 20,
       "publicPreferenceItem": "wood"
@@ -1653,8 +1653,8 @@
       "id": 3,
       "cashMinor": 20000,
       "position": {
-        "x": 8,
-        "z": 13
+        "x": 14,
+        "z": 12
       },
       "inventoryCapacity": 20,
       "publicPreferenceItem": "wood"
@@ -1663,7 +1663,7 @@
       "id": 4,
       "cashMinor": 20000,
       "position": {
-        "x": 10,
+        "x": 14,
         "z": 13
       },
       "inventoryCapacity": 20,
@@ -6113,7 +6113,7 @@
     "version": "map-adapter-2",
     "sourceId": "woodland_region_i6c2",
     "sourceName": "\u041B\u0435\u0441\u043D\u043E\u0439 \u043A\u0440\u0430\u0439",
-    "sourceSha256": "583c5377662c5e35122ce353de61948ac5aece8e66f8fbbc04881d9afcf2bd04",
+    "sourceSha256": "f26f11c36b1bbbcb153bb13fe10c457d22a3b9a67cea13c87cc685685786fe26",
     "maxParticipants": 4,
     "roadCenterCells": [
       {
@@ -6912,6 +6912,10 @@
       },
       {
         "x": 14,
+        "z": 2
+      },
+      {
+        "x": 14,
         "z": 3
       },
       {
@@ -6928,7 +6932,19 @@
       },
       {
         "x": 14,
+        "z": 9
+      },
+      {
+        "x": 14,
         "z": 10
+      },
+      {
+        "x": 14,
+        "z": 12
+      },
+      {
+        "x": 14,
+        "z": 13
       },
       {
         "x": 14,
@@ -8240,20 +8256,12 @@
         },
         "equipmentParking": [
           {
-            "x": 0,
-            "z": 4
-          },
-          {
             "x": 2,
             "z": 4
           },
           {
             "x": 4,
             "z": 4
-          },
-          {
-            "x": 0,
-            "z": 7
           },
           {
             "x": 2,
@@ -8284,10 +8292,6 @@
             "z": 11
           },
           {
-            "x": 0,
-            "z": 12
-          },
-          {
             "x": 2,
             "z": 12
           },
@@ -8302,6 +8306,18 @@
           {
             "x": 9,
             "z": 9
+          },
+          {
+            "x": 4,
+            "z": 14
+          },
+          {
+            "x": 6,
+            "z": 14
+          },
+          {
+            "x": 8,
+            "z": 14
           }
         ]
       }
@@ -8338,26 +8354,26 @@
     ],
     "spawnCells": [
       {
-        "x": 4,
-        "z": 13
+        "x": 14,
+        "z": 2
       },
       {
-        "x": 6,
-        "z": 13
+        "x": 14,
+        "z": 9
       },
       {
-        "x": 8,
-        "z": 13
+        "x": 14,
+        "z": 12
       },
       {
-        "x": 10,
+        "x": 14,
         "z": 13
       }
     ],
     "turnCells": [
       {
-        "x": 4,
-        "z": 13
+        "x": 14,
+        "z": 2
       }
     ],
     "passingBays": "Connected two-cell streets and public verges; distributed delivery bays face existing streets.",

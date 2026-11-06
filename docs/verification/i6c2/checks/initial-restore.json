@@ -1,0 +1,15 @@
+{
+  "command": [
+    "dotnet",
+    "restore",
+    "/workspace/Delsk/work/i6c2/native-1/source/src/Client.Godot/Delsk.Client.csproj",
+    "--locked-mode",
+    "--disable-parallel",
+    "-m:1"
+  ],
+  "timeout_seconds": 180,
+  "started_at": "2026-11-06T21:51:09.935889+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 2.484,
+  "finished_at": "2026-11-06T21:51:12.419777+00:00"
+}
