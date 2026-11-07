@@ -14,6 +14,7 @@ public partial class Playfield
     {
         _noticeViews.Clear();_cityRead=new();_cityMapPreferences.Reset();if(fresh){SaveCityExperience();return;}
         var file=new ConfigFile();if(file.Load("user://city-experience-"+_mode+".cfg")!=Error.Ok)return;
+        _showOwnership=file.GetValue("ux","ownership",false).AsBool();
         try
         {
             if(JsonSerializer.Deserialize<CityReadMemory>(file.GetValue("ux","memory","null").AsString()) is {} memory)_cityRead=CityReadState.Restore(memory);
@@ -24,7 +25,7 @@ public partial class Playfield
     }
     private void SaveCityExperience()
     {
-        var file=new ConfigFile();file.SetValue("ux","memory",JsonSerializer.Serialize(_cityRead.Capture()));file.SetValue("ux","map",JsonSerializer.Serialize(_cityMapPreferences.Capture()));
+        var file=new ConfigFile();file.SetValue("ux","memory",JsonSerializer.Serialize(_cityRead.Capture()));file.SetValue("ux","map",JsonSerializer.Serialize(_cityMapPreferences.Capture()));file.SetValue("ux","ownership",_showOwnership);
         if(file.Save("user://city-experience-"+_mode+".cfg")!=Error.Ok)_feedback=L("Не удалось сохранить настройки карты и памятки.","Could not save map and guide preferences.");
     }
     private void OpenCityNotices()

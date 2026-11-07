@@ -15,7 +15,7 @@ public partial class CityMapPanel : VBoxContainer
     private readonly HFlowContainer _participant=new(){Name="MapParticipants"};
     private readonly Label _participantCaption=Wrap(),_legend=Wrap(),_details=Wrap(),_routeInfo=Wrap();
     private readonly HFlowContainer _owners=new();
-    private readonly HBoxContainer _modes=new(),_body=new(){SizeFlagsVertical=SizeFlags.ExpandFill};
+    private readonly HFlowContainer _modes=new(){Name="MapFocusModes"},_body=new(){SizeFlagsVertical=SizeFlags.ExpandFill};
     private readonly VBoxContainer _side=new(){Name="MapDetails"},_filters=new(){Visible=false};
     private readonly Button _open=new(){Name="MapOpenObject"},_walk=new(){Name="MapNavigate"},_showRoute=new(){Name="MapShowRoute"},_detailsToggle=new(){Name="MapDetailsToggle"};
     private readonly Dictionary<CityLayer,CheckButton> _layers=new();
@@ -73,7 +73,12 @@ public partial class CityMapPanel : VBoxContainer
     {
         bool narrow=Narrow();_detailsToggle.Visible=narrow;_side.Visible=!narrow||_detailsOpen;
         _side.CustomMinimumSize=new(narrow?Mathf.Min(320,GetViewportRect().Size.X*.42f):280,0);
-        if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Size.X);
+        if(IsInsideTree()&&Size.X>0)
+        {
+            GameUi.FitControls(this,Size.X);
+            float each=Mathf.Clamp((Size.X-28)/2f,96,168);
+            foreach(var button in _focus.Values)button.CustomMinimumSize=new(each,36);
+        }
     }
     private void SyncLayers(){foreach(var (layer,toggle) in _layers)toggle.SetPressedNoSignal((_state.Layers&layer)!=0);SyncFocus();}
     private void SyncFocus(){foreach(var (focus,button) in _focus)button.SetPressedNoSignal(focus==_state.Focus);}
@@ -160,7 +165,11 @@ public partial class CityMapPanel : VBoxContainer
             lines.Add(o.Owner==_map!.Viewer?L("Нет данных","No data"):L("Чужие рецепты, запасы и внутренние показатели скрыты.","Foreign recipes, stocks and internal figures are hidden."));
         if(o.Level>0&&o.Kind is "production" or "equipment")lines.Add(L("Уровень ","Level ")+o.Level);
         if(o.Holder>0)lines.Add(L(o.Layer==CityLayer.Resources?"Арендатор: ":"Бронь: ",o.Layer==CityLayer.Resources?"Tenant: ":"Reserved by: ")+OwnerCaption(o.Holder)+(o.Deadline>0?L(" · до t"," · through t")+o.Deadline:""));
-        if(o.Layer==CityLayer.Roads)lines.Add(string.Join("\n",(o.Contributions??[]).OrderBy(c=>c.Level).Select(c=>RoadTitle(c.Level)+" · "+OwnerCaption(c.Builder.Value))));
+        if(o.Layer==CityLayer.Roads)
+        {
+            lines.Add(RoadCardText.Header(_language));
+            lines.Add(string.Join("\n",(o.Contributions??[]).OrderBy(c=>c.Level).Select(c=>RoadCardText.Line(_language,RoadTitle(c.Level),OwnerCaption(c.Builder.Value),c))));
+        }
         var reason=OwnReason(o);if(reason.Length>0&&(o.Facts?.Reason.Length??0)==0)lines.Add(reason);
         return string.Join("\n",lines.Where(l=>l.Length>0));
     }

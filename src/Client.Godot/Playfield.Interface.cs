@@ -1,3 +1,4 @@
+using System.Globalization;
 using Godot;
 using Simulation.Core;
 using Simulation.Hosting;
@@ -78,6 +79,8 @@ public partial class Playfield
         var tablet = new Button { Name="HudTablet", Text = L("Планшет", "Tablet"), FocusMode = FocusModeEnum.None };
         tablet.Pressed += OpenPlayerTablet; row.AddChild(tablet);
         var cityMap=new Button{Name="OpenCityMap",Text=L("Карта","Map"),TooltipText=L("Карта всего города · M","City map · M")};cityMap.Pressed+=OpenCityMap;row.AddChild(cityMap);
+        var plots=new Button{Name="HudPlots",Text=L("Участки","Plots"),ToggleMode=true,ButtonPressed=_showOwnership,TooltipText=L("Контуры собственности","Ownership outlines"),FocusMode=FocusModeEnum.None};
+        plots.Toggled+=on=>{_showOwnership=on;SaveCityExperience();Refresh();};row.AddChild(plots);
         _accountNotice=new(){Name="AccountNotification",Text=L("Счёт","Account"),FocusMode=FocusModeEnum.None};
         _accountNotice.Pressed+=()=>{OpenPlayerTablet();_playerTablet?.OpenAccount();};row.AddChild(_accountNotice);
         var help = new Button { Name="HudHelp", Text = "?", TooltipText = L("Справка", "Help"), FocusMode = FocusModeEnum.None, CustomMinimumSize = new Vector2(36, 36) };
@@ -99,6 +102,12 @@ public partial class Playfield
             ContentMarginLeft = 12, ContentMarginRight = 12, ContentMarginTop = 8, ContentMarginBottom = 8,
             CornerRadiusTopLeft = 6, CornerRadiusTopRight = 6, CornerRadiusBottomLeft = 6, CornerRadiusBottomRight = 6 });
         _playChrome.AddChild(_tooltip);
+        var hoverActions=new HBoxContainer{Position=new(16,252)};hoverActions.AddThemeConstantOverride("separation",6);
+        _openStorage=new Button{Name="OpenStorageCard",Text=L("Открыть хранение","Open storage"),FocusMode=FocusModeEnum.None,Visible=false};
+        _openStorage.Pressed+=()=>{if(_holdingKind.Length==0)return;OpenPlayerTablet();_playerTablet?.OpenHolding(_holdingKind,_holdingId);};
+        _openPlot=new Button{Name="OpenPlotCard",Text=L("Участок на карте","Plot on map"),FocusMode=FocusModeEnum.None,Visible=false};
+        _openPlot.Pressed+=()=>{if(_plotId==0)return;_cityMapPreferences.ApplyFocus(CityMapFocus.Property);_cityMapPreferences.SelectedKey="plot:"+_plotId.ToString(CultureInfo.InvariantCulture);_cityMapPreferences.Center(_plotX+.5,_plotZ+.5);OpenCityMap();};
+        hoverActions.AddChild(_openStorage);hoverActions.AddChild(_openPlot);_playChrome.AddChild(hoverActions);
         _storageWarning=new Label{Name="StorageWarning",AutowrapMode=TextServer.AutowrapMode.WordSmart,MouseFilter=MouseFilterEnum.Ignore};_storageWarning.SetAnchorsAndOffsetsPreset(LayoutPreset.TopWide);_storageWarning.OffsetLeft=16;_storageWarning.OffsetRight=-260;_storageWarning.OffsetTop=96;_storageWarning.OffsetBottom=158;_storageWarning.AddThemeColorOverride("font_color",new Color("ffcc75"));_playChrome.AddChild(_storageWarning);
         var dock = new MarginContainer { MouseFilter = MouseFilterEnum.Ignore, GrowVertical=GrowDirection.End };
         dock.SetAnchorsAndOffsetsPreset(LayoutPreset.TopLeft);

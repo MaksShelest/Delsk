@@ -46,6 +46,13 @@ public partial class Playfield : Control
     private Label? _playInventory;
     private Label? _playNotice;
     private Label? _tooltip;
+    private Button? _openStorage;
+    private Button? _openPlot;
+    private bool _showOwnership;
+    private string _holdingKind="";
+    private long _holdingId;
+    private long _plotId;
+    private int _plotX,_plotZ;
     private VBoxContainer? _contextHost;
     private ContextActionsPanel? _contextActions;
     private ColorRect? _contextShield;
@@ -574,8 +581,9 @@ public partial class Playfield : Control
         { DropTabletPanel(); ApplyPause(); ApplySurface(); }
         bool paused = _session.Paused;
         var frame = Presentation.Read(_scenario, _session.Engine, _human.Value);
-        if (_surface == Surface.Play || paused) _stage?.Show(frame, paused, _selectedEnterprise, T("you"), _surface == Surface.Play, _language);
+        if (_surface == Surface.Play || paused) _stage?.Show(frame, paused, _selectedEnterprise, T("you"), _surface == Surface.Play, _language, _session.Engine.TravelQuantum, _showOwnership, _hoverX??-1, _hoverZ??-1);
         _stage?.ShowBuildingStates(view,_language);
+        _stage?.ShowActivity(view);
         _stage?.ShowRoadWorkEffects(view);
         if (_surface == Surface.Debug) _board?.Show(frame, _cellX, _cellZ);
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
@@ -604,6 +612,16 @@ public partial class Playfield : Control
             int hx = _hoverX ?? actor.Position.X, hz = _hoverZ ?? actor.Position.Z;
             _tooltip.Text = PlayContext.Hover(frame, view, hx, hz, _language);
             _tooltip.Visible = _hoverX.HasValue && _hoverZ.HasValue && !_tabletState.IsOpen && _helpOverlay is null && frame.Markers.Any(m => m.X == hx && m.Z == hz);
+            var cell=new Cell(hx,hz);
+            var ownPlot=view.Plots.FirstOrDefault(p=>p.Position==cell);
+            bool ownGround=ownPlot?.OwnerId==view.Participant.Id && view.Storage?.Ground.Any(g=>g.PlotId==ownPlot.Id.Value)==true;
+            var ownStore=view.Buildings.FirstOrDefault(b=>b.OwnerId==view.Participant.Id && b.Footprint.Contains(cell) && b.Kind is BuildingKind.Warehouse or BuildingKind.Shop);
+            _holdingKind=ownGround?"ground":ownStore is not null?"building":"";
+            _holdingId=ownGround?ownPlot!.Id.Value:ownStore?.Id.Value??0;
+            _plotId=ownPlot?.Id.Value??0;_plotX=hx;_plotZ=hz;
+            bool hover=_hoverX.HasValue && !_tabletState.IsOpen && _helpOverlay is null;
+            if(_openStorage is not null)_openStorage.Visible=hover && _holdingKind.Length>0;
+            if(_openPlot is not null)_openPlot.Visible=hover && _plotId>0;
         }
         RefreshRoadWork(view);
         PollHarvest(view);

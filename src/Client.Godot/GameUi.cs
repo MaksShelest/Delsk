@@ -64,7 +64,7 @@ public static class GameUi
             float available=width;
             if(root is GridContainer grid)available=Math.Max(80,(width-8*(grid.Columns-1))/grid.Columns);
             if(root is TabletColumns columns&&!columns.Vertical)available=Math.Max(80,width/Math.Max(1,columns.GetChildren().OfType<Control>().Count(c=>c.Visible))-8);
-            if(child is Button b&&b is not OptionButton&&b is not CheckButton&&b is not CheckBox&&b.Name!="DemolitionHold"&&!b.Name.ToString().StartsWith("PlayerNav_")&&!b.Name.ToString().StartsWith("PlayerGroup_"))
+            if(child is Button b&&b is not OptionButton&&b is not CheckButton&&b is not CheckBox&&b.Name!="DemolitionHold"&&!b.Name.ToString().StartsWith("PlayerNav_")&&!b.Name.ToString().StartsWith("PlayerGroup_")&&!b.Name.ToString().StartsWith("MapFocus"))
             {
                 float natural=b.GetThemeFont("font").GetStringSize(b.Text,fontSize:b.GetThemeFontSize("font_size")).X+24;
                 float limit=Math.Max(80,available-4);b.CustomMinimumSize=new(Math.Min(Math.Max(40,natural),limit),Math.Max(40,Math.Min(48,b.CustomMinimumSize.Y)));
