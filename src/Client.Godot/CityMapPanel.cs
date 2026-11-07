@@ -15,7 +15,8 @@ public partial class CityMapPanel : VBoxContainer
     private readonly HFlowContainer _participant=new(){Name="MapParticipants"};
     private readonly Label _participantCaption=Wrap(),_legend=Wrap(),_details=Wrap(),_routeInfo=Wrap();
     private readonly HFlowContainer _owners=new();
-    private readonly HBoxContainer _modes=new(),_body=new(){SizeFlagsVertical=SizeFlags.ExpandFill};
+    private readonly HFlowContainer _modes=TabletDesign.Flow();
+    private readonly HBoxContainer _body=new(){SizeFlagsVertical=SizeFlags.ExpandFill};
     private readonly VBoxContainer _side=new(){Name="MapDetails"},_filters=new(){Visible=false};
     private readonly Button _open=new(){Name="MapOpenObject"},_walk=new(){Name="MapNavigate"},_showRoute=new(){Name="MapShowRoute"},_detailsToggle=new(){Name="MapDetailsToggle"};
     private readonly Dictionary<CityLayer,CheckButton> _layers=new();
@@ -160,7 +161,7 @@ public partial class CityMapPanel : VBoxContainer
             lines.Add(o.Owner==_map!.Viewer?L("Нет данных","No data"):L("Чужие рецепты, запасы и внутренние показатели скрыты.","Foreign recipes, stocks and internal figures are hidden."));
         if(o.Level>0&&o.Kind is "production" or "equipment")lines.Add(L("Уровень ","Level ")+o.Level);
         if(o.Holder>0)lines.Add(L(o.Layer==CityLayer.Resources?"Арендатор: ":"Бронь: ",o.Layer==CityLayer.Resources?"Tenant: ":"Reserved by: ")+OwnerCaption(o.Holder)+(o.Deadline>0?L(" · до t"," · through t")+o.Deadline:""));
-        if(o.Layer==CityLayer.Roads)lines.Add(string.Join("\n",(o.Contributions??[]).OrderBy(c=>c.Level).Select(c=>RoadTitle(c.Level)+" · "+OwnerCaption(c.Builder.Value))));
+        if(o.Layer==CityLayer.Roads)lines.Add(L("Вклады по ступеням и будущие права на доход:","Contributions by stage and future revenue rights:")+"\n"+string.Join("\n",(o.Contributions??[]).OrderBy(c=>c.Level).Select(c=>RoadTitle(c.Level)+" · "+OwnerCaption(c.Builder.Value)+" · t"+c.Tick+L(" · денежный вклад "," · cash contribution ")+PlayerText.Money(c.PriceMinor)+(c.Builder.Value==0?L(" · городу 100%"," · city 100%"):L(" · исполнителю 90%, городу 10%"," · builder 90%, city 10%")))));
         var reason=OwnReason(o);if(reason.Length>0&&(o.Facts?.Reason.Length??0)==0)lines.Add(reason);
         return string.Join("\n",lines.Where(l=>l.Length>0));
     }
