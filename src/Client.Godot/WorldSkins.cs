@@ -39,20 +39,13 @@ public static class WorldSkins
         var original=WorldProportions.Fit(geometry,new(WorldProportions.PersonWidth,WorldProportions.PersonHeight,WorldProportions.PersonWidth));
         original.Name="Appearance";original.SetMeta("skin_set",Preferences.PeopleSet);
         if(Preferences.PeopleSet==AppearancePreferences.Cozy)original.SetMeta("skin_id",AppearanceCatalog.People[Preferences.ForActor(actor)].Asset);
-        original.AddChild(new Label3D{Name="Caption",Text=caption,FontSize=24,PixelSize=.0028f,Position=new(0,WorldProportions.CaptionHeight,0),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,OutlineSize=5,Modulate=Colors.White});
+        original.AddChild(new Label3D{Name="Caption",Text=caption,FontSize=24,PixelSize=.0021f,Position=new(0,WorldProportions.CaptionHeight,0),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,OutlineSize=5,Modulate=Colors.White});
         return original;
     }
     public static Node3D Civic(CivicSite site)=>WorldModels.Civic(site,Preferences.ForModel(site.Kind=="town_hall"?"capital":site.Kind)==AppearancePreferences.Cozy);
 
     public static Node3D Resource(PresentationMarker marker)
-    {
-        if(Preferences.ForModel("resource:"+marker.Label)==AppearancePreferences.Cozy)
-        {
-            string key=AppearanceCatalog.ResourceModel(marker.Label,marker.Kind=="resource-depleted"?0:marker.ResourceStock,marker.ResourceCapacity,marker.ResourceSparse);
-            if(key.Length>0 && Model(key,.2f) is {} visual)return visual;
-        }
-        return Classic(marker.Kind=="resource-depleted"?WorldModels.DepletedResource(marker.Label):WorldModels.Resource(marker.Label));
-    }
+        => WorldArt.Resource(marker, Preferences.ForModel("resource:"+marker.Label)==AppearancePreferences.Cozy);
     public static Node3D Building(PresentationMarker marker)
     {
         if(marker.Kind=="capital")return WorldModels.EnterpriseExtent(marker,Preferences.ForModel("capital")==AppearancePreferences.Cozy?WorldModels.LegacyTownHall(true):Classic(WorldModels.LegacyTownHall(false)));
@@ -65,7 +58,7 @@ public static class WorldSkins
             float sourceWidth=id=="capital"?15:5;
             float scale=Mathf.Min(width/sourceWidth,depth/5f);
             if(Model(key,scale,new((minX+cells.Max(c=>c.X))/2f,0,(minZ+cells.Max(c=>c.Z))/2f)) is {} visual)
-            {AddLevel(visual,marker.Level);return WorldModels.EnterpriseExtent(marker,visual);}
+            {AddBuildingLevel(visual,marker.Level);return WorldModels.EnterpriseExtent(marker,visual);}
         }
         return WorldModels.EnterpriseExtent(marker,Classic(WorldModels.Building(marker.Kind,marker.Label,marker.Level)));
     }
@@ -76,17 +69,32 @@ public static class WorldSkins
     }
     public static Node3D Equipment(string item,int level)
     {
-        string mesh=item=="wood"?"ForestHarvester":item=="milk"?"FieldHarvester":item is "stone" or "sand" or "iron_ore" or "copper_ore"?"":"FieldHarvester";
-        if(mesh.Length>0&&Preferences.ForModel("equipment")==AppearancePreferences.Cozy && Model(mesh,1,reverse:true) is {} model)
-        {AddLevel(model,level);return Fitted(model,new(.56f,.58f,.64f));}
-        return Classic(Fitted(WorldModels.Equipment(item,level),new(.56f,.58f,.64f)));
+        // Класс машины, а не текущий ресурс: свёкла не превращает комбайн в другую технику, руда не превращает горную машину в грузовик.
+        string cls=WorldArtScatter.EquipmentClass(item);
+        if(cls.Length==0)cls="extract_field";
+        bool cozy=Preferences.ForModel("equipment")==AppearancePreferences.Cozy;
+        string baked=cozy?cls switch{"extract_forest"=>"ForestHarvester","extract_field"=>"FieldHarvester",_=>""}:"";
+        Node3D model;
+        bool procedural=true;
+        if(baked.Length>0 && Model(baked,1,reverse:true) is {} visual){model=visual;procedural=false;}
+        else model=WorldArt.Machine(item,level,cozy);
+        model.SetMeta("equipment_class",cls);
+        var fitted=Fitted(model,new(.56f,.58f,.64f));
+        fitted.SetMeta("equipment_class",cls);
+        if(!procedural && level>1)WorldArt.MarkLevel(fitted,cls);
+        return fitted;
     }
-    private static Node3D Fitted(Node3D node,Vector3 size){var root=WorldProportions.Fit(node,size);root.Name="Appearance";root.SetMeta("skin_set",node.HasMeta("skin_set")?node.GetMeta("skin_set"):AppearancePreferences.Cozy);return root;}
-    private static void AddLevel(Node3D root,int level)
+    private static void AddBuildingLevel(Node3D root,int level)
     {
-        // Existing real level only; decorative strips do not create capacity or upgrades.
         if(level<=1)return;
-        for(int i=0;i<Math.Min(level,4);i++)WorldModels.Part(root,new BoxMesh {Size=new(.035f,.018f,.12f)},new Color("e5c76c"),new(-.25f+i*.055f,.24f,.30f));
+        for(int i=0;i<Math.Min(level,4);i++)WorldModels.Part(root,new BoxMesh{Size=new(.035f,.018f,.12f)},new Color("e5c76c"),new(-.25f+i*.055f,.24f,.30f));
+    }
+    private static Node3D Fitted(Node3D node,Vector3 size)
+    {
+        var root=WorldProportions.Fit(node,size);root.Name="Appearance";
+        root.SetMeta("skin_set",node.HasMeta("skin_set")?node.GetMeta("skin_set"):AppearancePreferences.Cozy);
+        if(node.HasMeta("equipment_class"))root.SetMeta("equipment_class",node.GetMeta("equipment_class"));
+        return root;
     }
     public static Node3D Preview(string key) => key switch
     {

@@ -3,7 +3,8 @@ using Godot;
 /// <summary>One cell is one world unit. Cosmetic bounds only; Core owns navigation and land.</summary>
 public static class WorldProportions
 {
-    public const float PersonHeight=.48f, PersonWidth=.30f, CaptionHeight=.66f;
+    // Визуальный рост около двух третей прежнего. Ноги остаются на земле за счёт Fit, логика клетки не меняется.
+    public const float PersonHeight=.32f, PersonWidth=.20f, CaptionHeight=.50f;
     public static Aabb Bounds(Node3D node)
     {
         Aabb? result=null;

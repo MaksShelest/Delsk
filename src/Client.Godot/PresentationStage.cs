@@ -11,10 +11,11 @@ public partial class PresentationStage : Node3D
         var human=_actors.Values.FirstOrDefault(a=>a.Human);
         return human is null||_camera is null||_camera.IsPositionBehind(human.Node.GlobalPosition)?null:_camera.UnprojectPosition(human.Node.GlobalPosition+Vector3.Up*.5f);
     }
+    public const float CloseView=1.5f;
     private float _cameraDistance=4.2f,_cameraTarget=4.2f,_mapSpan=20;
     private Vector3 _mapCenter;
     private readonly Dictionary<long,Label3D> _buildingStates=[];
-    public void ZoomView(float factor)=>_cameraTarget=Mathf.Clamp(_cameraTarget*factor,4.2f,_mapSpan*1.3f);
+    public void ZoomView(float factor)=>_cameraTarget=Mathf.Clamp(_cameraTarget*factor,CloseView,Mathf.Max(CloseView+1f,_mapSpan*1.3f));
     public void ShowBuildingStates(Simulation.Hosting.PlayerView own,string language)
     {
         foreach(var (id,label) in _buildingStates)
@@ -53,7 +54,7 @@ public partial class PresentationStage : Node3D
 
     public override void _Ready()
     {
-        _camera = new Camera3D { Current = true, Fov = 46 };
+        _camera = new Camera3D { Current = true, Fov = 46, Near = 0.05f };
         AddChild(_camera);
         AddChild(new WorldEnvironment { Environment = new Godot.Environment
         { BackgroundMode = Godot.Environment.BGMode.Color, BackgroundColor = new Color("96aeb2"), AmbientLightSource=Godot.Environment.AmbientSource.Color, AmbientLightColor=new("f1e7cd"), AmbientLightEnergy=.32f } });
@@ -95,8 +96,9 @@ public partial class PresentationStage : Node3D
         _follow = followHuman;_mapSpan=Mathf.Max(frame.MapWidth,frame.MapHeight);_mapCenter=new(frame.MapWidth/2f-.5f,0,frame.MapHeight/2f-.5f);
         bool appearanceChanged=_appearanceRevision!=WorldSkins.Revision;
         _appearanceRevision=WorldSkins.Revision;
-        string staticKey = frame.Layout?.SourceSha256+"|"+WorldSkins.Revision+"|"+frame.MapWidth + "x" + frame.MapHeight + "|" + string.Join(",", frame.Markers.Select(m =>
-            $"{m.Kind}:{m.X}:{m.Z}:{(m.Kind == "capital" ? "" : m.Label)}:{(m.Kind == "capital" ? 0 : m.EntityId)}:{m.OwnerId}:{m.Level}:{(m.Kind.StartsWith("resource",StringComparison.Ordinal)?AppearanceCatalog.ResourceModel(m.Label,m.Kind=="resource-depleted"?0:m.ResourceStock,m.ResourceCapacity,m.ResourceSparse):"")}:{string.Join(";",m.Footprint)}:{string.Join(";",m.Walls)}"));
+        WorldArt.MapKey=frame.Layout?.SourceId ?? frame.MapWidth+"x"+frame.MapHeight;
+        string staticKey = frame.Layout?.SourceSha256+"|"+WorldSkins.Revision+"|"+WorldArt.MapKey+"|"+frame.MapWidth + "x" + frame.MapHeight + "|" + string.Join(",", frame.Markers.Select(m =>
+            $"{m.Kind}:{m.X}:{m.Z}:{(m.Kind == "capital" ? "" : m.Label)}:{(m.Kind == "capital" ? 0 : m.EntityId)}:{m.OwnerId}:{m.Level}:{(m.Kind.StartsWith("resource",StringComparison.Ordinal)?WorldArt.StateOf(m):"")}:{string.Join(";",m.Footprint)}:{string.Join(";",m.Walls)}"));
         if (_staticKey != staticKey)
         {
             _staticKey = staticKey;
@@ -107,7 +109,7 @@ public partial class PresentationStage : Node3D
         foreach (var actor in frame.Actors)
         {
             liveActors.Add(actor.Id);
-            var at = new Vector3(actor.X + (actor.OffsetX - 500) / 1000f, 0.07f, actor.Z + (actor.OffsetZ - 500) / 1000f);
+            var at = new Vector3(actor.X + (actor.OffsetX - 500) / 1000f, 0f, actor.Z + (actor.OffsetZ - 500) / 1000f);
             if (!_actors.TryGetValue(actor.Id, out var mover))
             {
                 var body = new Node3D {Name="Actor_"+actor.Id};
@@ -189,8 +191,8 @@ public partial class PresentationStage : Node3D
         {
             if(!_actors.TryGetValue(cue.Actor,out var actor))continue;
             if(!_speechLabels.TryGetValue(cue.Actor,out var label))
-            {label=new Label3D{FontSize=28,PixelSize=.006f,Position=new(0,1.38f,0),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,OutlineSize=5,Modulate=new("fff4ce"),NoDepthTest=true};actor.Node.AddChild(label);_speechLabels[cue.Actor]=label;}
-            label.Position=new(0,1.38f+.28f*row++,0);
+            {label=new Label3D{FontSize=28,PixelSize=.006f,Position=new(0,WorldProportions.CaptionHeight+.34f,0),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,OutlineSize=5,Modulate=new("fff4ce"),NoDepthTest=true};actor.Node.AddChild(label);_speechLabels[cue.Actor]=label;}
+            label.Position=new(0,WorldProportions.CaptionHeight+.34f+.22f*row++,0);
             label.Text=PresentationEffects.Text(cue,language);label.Visible=true;
         }
     }
@@ -278,6 +280,7 @@ public partial class PresentationStage : Node3D
             offset.X=Mathf.Clamp(offset.X-error/pixelsPerWorld,-_cameraDistance*4,_cameraDistance*4);
         }
         _camera.Position=rest+offset;
+        if(_camera.Position.Y<0.35f)_camera.Position=new(_camera.Position.X,0.35f,_camera.Position.Z);
     }
 
     public void Pick(Vector2 viewportPosition)
@@ -380,7 +383,7 @@ public partial class PresentationStage : Node3D
                 var gate=new Label3D{Text="▽ #"+marker.EntityId+" · "+marker.Level,FontSize=22,PixelSize=.0035f,Position=new(0,.46f,-.32f),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,OutlineSize=4,Modulate=new("fff7df")};node.AddChild(gate);
                 var state=new Label3D{FontSize=18,PixelSize=.0035f,Position=new(0,1.25f,0),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,OutlineSize=3,Visible=false};node.AddChild(state);_buildingStates[marker.EntityId]=state;
             }
-            if (node is not null) { node.Position = marker.Kind is "truck-home" or "equipment" ? new Vector3(marker.X + 0.28f, 0.08f, marker.Z + 0.42f) : new Vector3(marker.X, marker.Kind.StartsWith("resource",StringComparison.Ordinal) && WorldSkins.Preferences.ForModel("resource:"+marker.Label)==AppearancePreferences.Cozy ? .01f : .045f, marker.Z); AddStatic(node); }
+            if (node is not null) { node.Position = marker.Kind is "truck-home" or "equipment" ? new Vector3(marker.X + 0.28f, 0.08f, marker.Z + 0.42f) : new Vector3(marker.X, marker.Kind.StartsWith("resource",StringComparison.Ordinal) ? -0.055f : 0.045f, marker.Z); AddStatic(node); }
         }
     }
 }

@@ -1,4 +1,5 @@
 using Godot;
+using Simulation.Hosting;
 
 /// <summary>Small code-native models. They have no gameplay state or collision authority.</summary>
 public static partial class WorldModels
@@ -21,60 +22,9 @@ public static partial class WorldModels
     private static MeshInstance3D Cylinder(Node3D root, float radius, float height, Color color, Vector3 at, float? top = null) => Part(root,
         new CylinderMesh { TopRadius = top ?? radius, BottomRadius = radius, Height = height, RadialSegments = 8 }, color, at);
 
-    public static Node3D Resource(string item)
-    {
-        var root = new Node3D();
-        if (item == "wood")
-        {
-            foreach (var at in new[] { new Vector3(-0.22f, 0, 0.12f), new Vector3(0.22f, 0, -0.12f), new Vector3(0.1f, 0, 0.3f) })
-            {
-                Cylinder(root, 0.055f, 0.6f, new Color("795438"), at + new Vector3(0, 0.3f, 0));
-                Cylinder(root, 0.27f, 0.52f, new Color("3f7950"), at + new Vector3(0, 0.65f, 0), 0);
-                Cylinder(root, 0.2f, 0.45f, new Color("57955b"), at + new Vector3(0, 0.92f, 0), 0);
-            }
-        }
-        else if(item=="milk")
-        {
-            Box(root,new(.88f,.08f,.8f),new("879d9d"),new(0,.04f,0));
-            foreach(float x in new[]{-.34f,.34f})Box(root,new(.045f,.7f,.045f),new("6298ab"),new(x,.4f,0));
-            Box(root,new(.9f,.06f,.8f),new("70b4c9"),new(0,.78f,0));
-            foreach(float x in new[]{-.2f,0,.2f}){Cylinder(root,.08f,.3f,new("e5f0ed"),new(x,.23f,.12f));Cylinder(root,.06f,.035f,new("6799ad"),new(x,.4f,.12f));}
-        }
-        else if(item=="beet")
-        {
-            Box(root,new(.85f,.045f,.85f),new("8d6852"),new(0,.02f,0));
-            foreach(float x in new[]{-.25f,0,.25f})foreach(float z in new[]{-.25f,0,.25f})
-            {Round(root,.075f,new("9c486d"),new(x,.08f,z));Cylinder(root,.025f,.2f,new("5b9f48"),new(x,.22f,z),.06f);}
-        }
-        else if(item is "stone" or "iron_ore" or "copper_ore" or "sand")
-        {
-            Color color=item switch {"iron_ore"=>new("796c66"),"copper_ore"=>new("b27850"),"sand"=>new("cfbb83"),_=>new("8c9390")};
-            Box(root,new(.88f,.04f,.88f),new("8f846b"),new(0,.02f,0));
-            for(int i=0;i<4;i++)Round(root,item=="sand"?.21f:.16f,color,new((i%2)*.33f-.16f,.12f,(i/2)*.3f-.15f));
-        }
-        else
-        {
-            Box(root, new Vector3(0.85f, 0.045f, 0.85f), new Color("a77b48"), new Vector3(0, 0.02f, 0));
-            for (int x = -1; x <= 1; x++) for (int z = -1; z <= 1; z++)
-            {
-                var at = new Vector3(x * 0.23f, 0, z * 0.23f);
-                Cylinder(root, 0.012f, 0.38f, new Color("c1a64f"), at + new Vector3(0, 0.21f, 0));
-                Part(root, new SphereMesh { Radius = 0.045f, Height = 0.19f, RadialSegments = 6, Rings = 4 },
-                    new Color("edcd68"), at + new Vector3(0, 0.43f, 0));
-            }
-        }
-        return root;
-    }
+    public static Node3D Resource(string item) => WorldArt.Resource(new PresentationMarker("resource", 0, 0, item, 0, 0) { ResourceStock = 100, ResourceCapacity = 100 }, false);
 
-    public static Node3D DepletedResource(string item)
-    {
-        var root=new Node3D();
-        if(item=="wood")
-            foreach(float x in new[]{-.25f,0,.25f})Cylinder(root,.09f,.12f,new Color("795438"),new Vector3(x,.06f,0));
-        else if(item=="milk")Box(root,new(.88f,.08f,.8f),new("879d9d"),new(0,.04f,0));
-        else Box(root,new Vector3(.85f,.04f,.85f),new Color("98714b"),new Vector3(0,.02f,0));
-        return root;
-    }
+    public static Node3D DepletedResource(string item) => WorldArt.Resource(new PresentationMarker("resource-depleted", 0, 0, item, 0, 0) { ResourceStock = 0, ResourceCapacity = 100 }, false);
 
     public static Node3D Building(string kind,string type,int level=1)
     {
@@ -218,28 +168,5 @@ public static partial class WorldModels
         if(loaded) Box(root,new Vector3(0.3f,0.24f,0.36f),new Color("d5b263"),new Vector3(0,0.37f,0.1f));
         return root;
     }
-    public static Node3D Equipment(string item,int level=1)
-    {
-        var root=Truck(false);
-        if(item=="wood")
-        {
-            Box(root,new Vector3(0.08f,0.42f,0.08f),new Color("8d6a3d"),new Vector3(0.12f,0.52f,0.12f));
-            Box(root,new Vector3(0.34f,0.05f,0.05f),new Color("c49b43"),new Vector3(-0.02f,0.72f,0.12f));
-            Box(root,new Vector3(0.22f,0.08f,0.08f),new Color("6d8a4e"),new Vector3(-0.16f,0.7f,0.12f));
-        }
-        else if(item=="milk")
-        {
-            Box(root,new Vector3(0.28f,0.16f,0.42f),new Color("e7eef2"),new Vector3(0,0.36f,0.08f));
-            Box(root,new Vector3(0.08f,0.1f,0.08f),new Color("d5e4ea"),new Vector3(0,0.48f,-0.08f));
-        }
-        else if(item is "stone" or "sand" or "iron_ore" or "copper_ore")
-        {
-            Box(root,new Vector3(0.16f,0.1f,0.16f),new Color("8d8072"),new Vector3(0.02f,0.38f,0.16f));
-            Box(root,new Vector3(0.22f,0.06f,0.1f),new Color("6e6258"),new Vector3(0.16f,0.28f,0.28f));
-            Box(root,new Vector3(0.08f,0.08f,0.08f),new Color("b7a48a"),new Vector3(0.2f,0.22f,0.34f));
-        }
-        else Box(root,new Vector3(0.46f,0.08f,0.14f),new Color("e2bf57"),new Vector3(0,0.16f,-0.36f));
-        if(level>1)Box(root,new(.16f,.06f,.08f),new("cf8a46"),new(0,.48f,-0.16f));
-        return root;
-    }
+    public static Node3D Equipment(string item, int level = 1) => WorldArt.Machine(item, level, false);
 }
