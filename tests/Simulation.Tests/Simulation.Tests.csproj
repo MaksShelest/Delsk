@@ -6,6 +6,7 @@
     <EmbeddedResource Include="../../docs/vnext/maps/*.json" Exclude="../../docs/vnext/maps/compact_valley.json;../../docs/vnext/maps/compact_valley_h3.json" LogicalName="Fixture.%(Filename)%(Extension)" />
     <EmbeddedResource Include="../../docs/vnext/maps/compact_valley_h3.json" LogicalName="Fixture.compact_valley.json" />
     <EmbeddedResource Include="../../docs/vnext/maps/compact_valley.json" LogicalName="Fixture.compact_valley_i6c2.json" />
+    <EmbeddedResource Include="../../scenarios/vnext/compact-valley-i6c21.json" LogicalName="Fixture.compact-valley-i6c21.json" />
     <EmbeddedResource Include="../../scenarios/vnext/compact-valley-i6c2.json" LogicalName="Fixture.compact-valley-i6c2.json" />
     <EmbeddedResource Include="../../scenarios/vnext/woodland-region-i6c2.json" LogicalName="Fixture.woodland-region-i6c2.json" />
   </ItemGroup>

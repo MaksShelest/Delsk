@@ -271,12 +271,19 @@ public partial class PresentationStage : Node3D
         }
         if(frame.Layout is {} layout)
         {
-            if(layout.SourceId is PlayMaps.CompactValleyScenarioId or PlayMaps.WoodlandScenarioId)
+            if(layout.SourceId is PlayMaps.CompactValleyScenarioId or PlayMaps.CompactValleyI6C2ScenarioId or PlayMaps.WoodlandScenarioId)
             {
-                // One cleared pad per real six-cell lot; no cell grid or decorative machinery.
+                // One cleared pad per real six-cell lot. The current valley also gets a flat survey grid.
+                if(layout.SourceId==PlayMaps.CompactValleyScenarioId)
+                {
+                    var ink=new Color("5e6b58");
+                    for(int x=0;x<=frame.MapWidth;x++)WorldModels.Part(ground,new BoxMesh{Size=new(.02f,.012f,frame.MapHeight)},ink,new(x-.5f,.02f,frame.MapHeight/2f-.5f));
+                    for(int z=0;z<=frame.MapHeight;z++)WorldModels.Part(ground,new BoxMesh{Size=new(frame.MapWidth,.012f,.02f)},ink,new(frame.MapWidth/2f-.5f,.02f,z-.5f));
+                }
                 foreach(var lot in layout.IndustrialLots)
                 {
                     float x=lot.Cells.Min(c=>c.X)+.5f,z=lot.Cells.Min(c=>c.Z)+1;
+                    if(layout.SourceId==PlayMaps.CompactValleyScenarioId)WorldModels.Part(ground,new BoxMesh{Size=new(1.98f,.01f,2.98f)},new Color("5c5344"),new(x,.008f,z));
                     WorldModels.Part(ground,new BoxMesh{Size=new(1.86f,.018f,2.86f)},new Color("a8a386"),new(x,.015f,z));
                 }
                 foreach(var stall in layout.MarketStalls)

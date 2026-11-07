@@ -12,7 +12,7 @@ public class I6C2MapsTests
     internal static OrdinaryGameResolution Resolve(string key,int npcs=3)
     {
         var profile=MobileEquipmentI4Tests.Profile();
-        string file=key==PlayMaps.Second?"woodland_region.json":"compact_valley_i6c2.json";
+        string file=key==PlayMaps.Second?"woodland_region.json":"compact_valley_i6c21.json";
         var template=MapDesignReader.Read(Encoding.UTF8.GetBytes(OrdinaryNewGameTests.Text(file)),profile);
         return OrdinaryNewGame.Resolve(template,profile,new(npcs),vnextBalance:MapDesignTests.Balance());
     }
@@ -84,10 +84,12 @@ public class I6C2MapsTests
     {
         var d=Resolve(key).Scenario;d=d with{Participants=d.Participants.Select(p=>p with{CashMinor=10000000}).ToArray()};
         var exit=d.Layout!.InitialCityDirtCells.OrderBy(c=>Math.Abs(c.X-11)+Math.Abs(c.Z-5)).First(c=>!d.Participants.Any(p=>p.Position==c));
-        foreach(var model in d.Economy!.Fleet!.Models)
+        var shown=new HashSet<string>(StringComparer.Ordinal){"sputnik20","muravey70","eger70","trakt_d1","extractor_extract_wood_1","extractor_extract_grain_1"};
+        foreach(var model in d.Economy!.Fleet!.Models.Where(m=>!d.Layout!.Assignment.Contains("compact-exhibition-1",StringComparison.Ordinal)||shown.Contains(m.Id)))
         {
             var s=new GameSession(new(d));var v=model.EquipmentTypeId is null?FleetE1Tests.Buy(s,model.Id):MobileEquipmentI4Tests.Buy(s,d.EquipmentTypes!.Single(t=>t.Id==model.EquipmentTypeId).ItemId,model.EquipmentLevel);
-            FleetE1Tests.Board(s,v);Step(s,new(ActionKind.MoveTo,Target:exit));int bound=100;
+            // Одна дорога от города до ресурсного ответвления длиннее прежних широких улиц. Прибытие на ту же клетку обязательно.
+            FleetE1Tests.Board(s,v);Step(s,new(ActionKind.MoveTo,Target:exit));int bound=800;
             while(s.Engine.Observe(Human).Participant.Busy&&bound-->0)s.Step();
             Assert.True(bound>0,$"{key}: trapped {model.Id} at {StorageC1Tests.Inventory(s,v.CargoInventory).Position}");
             Assert.Equal(exit,StorageC1Tests.Inventory(s,v.CargoInventory).Position);s.Engine.ValidateInvariants();

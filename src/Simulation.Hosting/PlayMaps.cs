@@ -8,7 +8,8 @@ public static class PlayMaps
     public const string LargeDistricts="large-districts";
     public const string CompactValley="compact-valley";
     public static bool IsDesigned(string key)=>key is SmallRiver or LargeDistricts or CompactValley or Second;
-    public const string CompactValleyScenarioId="compact_valley_i6c2";
+    public const string CompactValleyScenarioId="compact_valley_i6c21";
+    public const string CompactValleyI6C2ScenarioId="compact_valley_i6c2";
     public const string WoodlandScenarioId="woodland_region_i6c2";
     public const string FourQuarters="four-quarters";
     public const string CityCorridor="city-corridor";
@@ -23,7 +24,7 @@ public static class PlayMaps
     // Versioned new starts. Resource retains the historical snapshots for explicit legacy callers.
     public static string NewGameResource(string key)=>key switch
     {
-        CompactValley=>"Play.compact-valley-i6c2.json",
+        CompactValley=>"Play.compact-valley-i6c21.json",
         Second=>"Play.woodland-region-i6c2.json",
         _=>Resource(key)
     };
@@ -39,12 +40,12 @@ public static class PlayMaps
         Second => "Play.presentation-map-two-v3.json",
         _ => throw new ArgumentOutOfRangeException(nameof(key))
     };
-    public static string KeyForScenario(string id) => id is "compact_valley" or CompactValleyScenarioId ? CompactValley : id=="small_river" ? SmallRiver : id=="large_districts" ? LargeDistricts : id=="four-corners-v1" ? FourQuarters : id=="city-corridor-v1" ? CityCorridor : (id == ThirdScenarioId || id == "presentation-map-three-v1") ? Third : (id == SecondScenarioId || id == CurrentSecondScenarioId || id == WoodlandScenarioId || id == "presentation-map-two-v2") ? Second : First;
+    public static string KeyForScenario(string id) => id is "compact_valley" or CompactValleyScenarioId or CompactValleyI6C2ScenarioId ? CompactValley : id=="small_river" ? SmallRiver : id=="large_districts" ? LargeDistricts : id=="four-corners-v1" ? FourQuarters : id=="city-corridor-v1" ? CityCorridor : (id == ThirdScenarioId || id == "presentation-map-three-v1") ? Third : (id == SecondScenarioId || id == CurrentSecondScenarioId || id == WoodlandScenarioId || id == "presentation-map-two-v2") ? Second : First;
     public static string Name(string key, string language) => PlayerText.Local(language,
         key == CompactValley ? "Малая долина" : key == SmallRiver ? "Речные кварталы · E2" : key == LargeDistricts ? "Большой округ · E2" : key == FourQuarters ? "Четыре квартала" : key == CityCorridor ? "Городской тракт" : key == Third ? "Третья карта" : key == Second ? "Лесной край" : "Первая карта", key == CompactValley ? "Small valley" : key == SmallRiver ? "River quarters · E2" : key == LargeDistricts ? "Large district · E2" : key == FourQuarters ? "Four quarters" : key == CityCorridor ? "City corridor" : key == Third ? "Third map" : key == Second ? "Woodland Region" : "First map");
     public static string Description(string key,string language)=>key==CompactValley?PlayerText.Local(language,
-        "Лесные массивы и поля, городской центр и 15 производственных площадок. Восемь ресурсов и все шесть отраслей; игрок и 3–10 NPC.",
-        "Woodlands and fields, a town center and 15 industrial sites. Eight resources and all six industries; one player and 3–10 NPCs."):key==Second?PlayerText.Local(language,
+        "Слева ресурсы, в центре пятнадцать площадок, справа город. Одна дорога и два узких ответвления; игрок и 3–10 NPC.",
+        "Resources on the left, fifteen sites in the center and the town on the right. One road and two narrow branches; one player and 3–10 NPCs."):key==Second?PlayerText.Local(language,
         "Небольшое лесное поселение с ратушей, рынком и шестью производственными площадками. Современная экономика и восемь ресурсов; игрок и три NPC.",
         "A small woodland settlement with a town hall, market and six industrial sites. Current economy and eight resources; one player and three NPCs."):"";
 }
