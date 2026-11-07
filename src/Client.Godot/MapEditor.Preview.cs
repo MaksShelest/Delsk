@@ -11,28 +11,40 @@ public partial class MapEditor
         _camera.Current=on;QueueRedraw();
     }
     public void ResetPreviewView()=>FrameCamera();
-    public void TopPreviewView(){_yaw=0;_pitch=Mathf.DegToRad(80);ApplyCamera();}
-    public void OrbitPreview(float yawDegrees,float pitchDegrees){_yaw+=Mathf.DegToRad(yawDegrees);_pitch+=Mathf.DegToRad(pitchDegrees);ApplyCamera();}
+    public void TopPreviewView(){_yaw=0;_pitch=Mathf.DegToRad(80);_distanceGlide=false;ApplyCamera();}
+    public void OrbitPreview(float yawDegrees,float pitchDegrees){_yaw+=Mathf.DegToRad(yawDegrees);_pitch+=Mathf.DegToRad(pitchDegrees);_distanceGlide=false;ApplyCamera();}
     private void FrameCamera()
     {
-        _focus=new(Draft.Width/2f-.5f,0,Draft.Height/2f-.5f);_yaw=0;_pitch=Mathf.DegToRad(50);
-        float radius=Mathf.Sqrt(Draft.Width*Draft.Width+Draft.Height*Draft.Height)*.5f;
-        float vertical=Mathf.Tan(Mathf.DegToRad(75)*.5f);float horizontal=vertical*Mathf.Max(.5f,Size.X/Mathf.Max(1,Size.Y));
-        _distance=radius*1.15f/Mathf.Max(.2f,Mathf.Min(vertical,horizontal));
-        ApplyCamera();
+        _focus=new(Draft.Width/2f-.5f,0,Draft.Height/2f-.5f);_yaw=0;_pitch=Mathf.DegToRad(50);_distanceGlide=false;
+        _camera.Current=true;
+        if(GetViewport().GetVisibleRect().Size.X<32){_distance=_distanceTarget=Mathf.Max(Draft.Width,Draft.Height)*1.2f;ApplyCamera();return;}
+        float lo=3,hi=Mathf.Max(Draft.Width,Draft.Height)*4f;
+        for(int step=0;step<16;step++){float mid=(lo+hi)*.5f;_distance=mid;ApplyCamera();if(CornersVisible())hi=mid;else lo=mid;}
+        _distance=_distanceTarget=hi;ApplyCamera();
+    }
+    private bool CornersVisible()
+    {
+        var rect=GetViewport().GetVisibleRect();float margin=18;
+        foreach(var corner in new[]{new Vector3(-.5f,0,-.5f),new(Draft.Width-.5f,0,-.5f),new(-.5f,0,Draft.Height-.5f),new(Draft.Width-.5f,0,Draft.Height-.5f)})
+        {
+            if(_camera.IsPositionBehind(corner))return false;
+            var point=_camera.UnprojectPosition(corner);
+            if(point.X<margin||point.Y<margin||point.X>rect.Size.X-margin||point.Y>rect.Size.Y-margin)return false;
+        }
+        return true;
     }
     private void ApplyCamera()
     {
         _pitch=Mathf.Clamp(_pitch,Mathf.DegToRad(18),Mathf.DegToRad(80));
         _focus=new(Mathf.Clamp(_focus.X,-.5f,Draft.Width-.5f),0,Mathf.Clamp(_focus.Z,-.5f,Draft.Height-.5f));
-        _distance=Mathf.Clamp(_distance,4,Mathf.Max(Draft.Width,Draft.Height)*4f);
+        _distance=Mathf.Clamp(_distance,3,Mathf.Max(Draft.Width,Draft.Height)*4f);_distanceTarget=Mathf.Clamp(_distanceTarget,3,Mathf.Max(Draft.Width,Draft.Height)*4f);
         var offset=new Vector3(Mathf.Sin(_yaw)*Mathf.Cos(_pitch),Mathf.Sin(_pitch),Mathf.Cos(_yaw)*Mathf.Cos(_pitch))*_distance;
         _camera.Fov=75;_camera.Position=_focus+offset;_camera.LookAt(_focus,Vector3.Up);
     }
     private void PreviewInput(InputEvent e)
     {
         if(e is InputEventMouseButton wheel&&wheel.ButtonIndex is MouseButton.WheelUp or MouseButton.WheelDown)
-        {_distance*=wheel.ButtonIndex==MouseButton.WheelUp?0.9f:1.1f;ApplyCamera();GetViewport().SetInputAsHandled();return;}
+        {_distanceTarget=Mathf.Clamp(_distanceTarget*(wheel.ButtonIndex==MouseButton.WheelUp?0.92f:1.08f),3,Mathf.Max(Draft.Width,Draft.Height)*4f);_distanceGlide=true;GetViewport().SetInputAsHandled();return;}
         if(e is InputEventMouseButton button&&button.ButtonIndex==MouseButton.Right){_orbiting=button.Pressed;GetViewport().SetInputAsHandled();return;}
         if(e is InputEventMouseButton middle&&middle.ButtonIndex==MouseButton.Middle){_sliding=middle.Pressed;GetViewport().SetInputAsHandled();return;}
         if(e is InputEventMouseMotion motion)

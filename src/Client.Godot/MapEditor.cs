@@ -37,7 +37,12 @@ public partial class MapEditor : Control
     private FileDialog _files=null!;
     private LineEdit _id=null!,_name=null!;
     private SpinBox _width=null!,_height=null!,_participants=null!;
-    private float _yaw,_pitch=Mathf.DegToRad(50),_distance=24;
+    private float _zoomTarget=18;
+    private Vector2 _zoomAnchorMap,_zoomAnchorScreen,_framedSize;
+    private bool _zooming;
+    private string? _pendingFix;
+    private float _yaw,_pitch=Mathf.DegToRad(50),_distance=24,_distanceTarget=24;
+    private bool _distanceGlide;
     private Vector3 _focus;
     private bool _orbiting,_sliding;
     public int ViewQuarter=>_quarter;
@@ -62,7 +67,7 @@ public partial class MapEditor : Control
             var embedded=Text("Play.compact-valley-i6c21-design.json");
             if(embedded is not null)LoadText(embedded);else{Draft=MapDraft.Create();FrameMap();}
         }
-        Resized+=()=>{if(!_painting)FrameMap();};
+        Resized+=()=>{if(_framedSize.DistanceTo(Size)>1){_framedSize=Size;if(!_painting&&!_zooming)FrameMap();}};
     }
     public void LoadText(string json){Draft=MapDraft.Parse(json);_selected=null;_selectedLot=null;SyncFields();FrameMap();Refresh();}
     public void SelectCell(int x,int z){_tool="select";FocusCell(x,z);}
@@ -79,14 +84,31 @@ public partial class MapEditor : Control
             if(key.Keycode==Key.Y){Draft.Redo();Refresh();GetViewport().SetInputAsHandled();}
         }
     }
+    public override void _Process(double delta)
+    {
+        if(_preview&&_distanceGlide)
+        {
+            _distance=Mathf.Lerp(_distance,_distanceTarget,1f-Mathf.Exp(-14f*(float)delta));
+            if(Mathf.Abs(_distance-_distanceTarget)<.05f){_distance=_distanceTarget;_distanceGlide=false;}
+            ApplyCamera();
+        }
+        if(_preview||!_zooming)return;
+        float next=Mathf.Lerp(_zoom,_zoomTarget,1f-Mathf.Exp(-16f*(float)delta));
+        if(Mathf.Abs(next-_zoomTarget)<.04f){next=_zoomTarget;_zooming=false;}
+        _zoom=next;var pan=MapView.ZoomOffset(_zoomAnchorScreen.X,_zoomAnchorScreen.Y,_zoomAnchorMap.X,_zoomAnchorMap.Y,next);_pan=new(pan.X,pan.Y);QueueRedraw();
+    }
     public override void _GuiInput(InputEvent e)
     {
         if(_preview){PreviewInput(e);return;}
+        if(_files is not null&&_files.Visible)return;
         if(e is InputEventMouseButton wheel&&wheel.ButtonIndex is MouseButton.WheelUp or MouseButton.WheelDown)
         {
-            float next=Mathf.Clamp(_zoom*(wheel.ButtonIndex==MouseButton.WheelUp?1.1f:.9f),8,48);
-            var world=_hover??new Cell(Draft.Width/2,Draft.Height/2);var screen=MapView.ToScreen(Draft.Width,Draft.Height,_quarter,world);
-            _zoom=next;_pan=GetLocalMousePosition()-new Vector2(screen.X+.5f,screen.Y+.5f)*_zoom;QueueRedraw();GetViewport().SetInputAsHandled();return;
+            var cursor=wheel.Position;
+            if(!MapRect().HasPoint(cursor)){ScrollAt(cursor,wheel.ButtonIndex==MouseButton.WheelUp);GetViewport().SetInputAsHandled();return;}
+            float factor=wheel.ButtonIndex==MouseButton.WheelUp?1.08f:1f/1.08f;
+            var anchor=MapView.MapPoint(_pan.X,_pan.Y,Mathf.Max(.01f,_zoom),cursor.X,cursor.Y);
+            _zoomTarget=Mathf.Clamp((_zooming?_zoomTarget:_zoom)*factor,6,72);
+            _zoomAnchorMap=new(anchor.X,anchor.Y);_zoomAnchorScreen=cursor;_zooming=true;GetViewport().SetInputAsHandled();return;
         }
         if(e is InputEventMouseButton pan&&pan.ButtonIndex is MouseButton.Right or MouseButton.Middle)
         {_panning=pan.Pressed;_panStart=pan.Position;_panOrigin=_pan;if(pan.Pressed)GetViewport().SetInputAsHandled();return;}
@@ -132,6 +154,7 @@ public partial class MapEditor : Control
         foreach(var cell in Draft.EquipmentParking){var tile=Tile(cell,zoom);DrawRect(new(tile.Position+tile.Size*.28f,tile.Size*.44f),new Color("5d6b66"));}
         foreach(var cell in Draft.Spawns){var tile=Tile(cell,zoom);DrawRect(new(tile.Position+tile.Size*.32f,tile.Size*.36f),new Color("e7d56a"));}
         foreach(var cell in Ghost()){var tile=Tile(cell,zoom);DrawRect(tile,new Color(1,1,1,.28f));DrawRect(tile,new Color("243127"),false,1);}
+        if(_pendingFix is not null)foreach(var cell in Draft.FixPreview(_pendingFix)){var tile=Tile(cell,zoom);DrawRect(tile,new Color("c9842a"),false,Mathf.Max(2,zoom*.1f));}
         if(_selected is{} selected){var mark=Tile(selected,zoom);DrawPolyline([mark.Position,mark.Position+new Vector2(mark.Size.X,0),mark.End,mark.Position+new Vector2(0,mark.Size.Y),mark.Position],new Color("243127"),2);}
         DrawSetTransform(Vector2.Zero);
     }
@@ -189,7 +212,7 @@ public partial class MapEditor : Control
         }
         var civic=Draft.Civics.FirstOrDefault(c=>c.Footprint.Contains(cell));
         if(civic is not null)lines.Add($"{CivicLabel(civic.Kind)} · {civic.Footprint.Count}");
-        if(Draft.EquipmentParking.Contains(cell))lines.Add(L("Стоянка техники.","Equipment parking."));
+        if(Draft.EquipmentParking.Contains(cell))lines.Add(L("Место техники автосалона.","Dealership machine bay."));
         if(Draft.Spawns.Contains(cell))lines.Add(L("Точка появления.","Spawn point."));
         lines.Add(L($"Дорог на карте: {Draft.Roads.Distinct().Count()}.",$"Roads on the map: {Draft.Roads.Distinct().Count()}."));
         _properties.Text=string.Join('\n',lines);
@@ -200,11 +223,21 @@ public partial class MapEditor : Control
         if(_id.Text!=Draft.Id)_id.Text=Draft.Id;if(_name.Text!=Draft.Name)_name.Text=Draft.Name;
         _width.SetValueNoSignal(Draft.Width);_height.SetValueNoSignal(Draft.Height);_participants.SetValueNoSignal(Draft.MaxParticipants);
     }
+    public void FitMap(){FrameMap();}
+    private void ScrollAt(Vector2 cursor,bool up)
+    {
+        foreach(var name in new[]{"ToolScroll","PropertyScroll","IssueScroll"})
+        {
+            if(FindChild(name,true,false) is not ScrollContainer scroll)continue;
+            if(!scroll.GetGlobalRect().HasPoint(GetGlobalTransformWithCanvas()*cursor))continue;
+            scroll.ScrollVertical+=up?-48:48;return;
+        }
+    }
     private void FrameMap()
     {
         var area=MapRect();var size=MapView.DisplaySize(Draft.Width,Draft.Height,_quarter);
-        _zoom=Mathf.Clamp(Mathf.Min((area.Size.X-16)/Math.Max(size.Width,1),(area.Size.Y-16)/Math.Max(size.Height,1)),8,36);
-        _pan=area.Position+(area.Size-new Vector2(size.Width,size.Height)*_zoom)/2;QueueRedraw();
+        _zooming=false;_zoom=_zoomTarget=Mathf.Clamp(Mathf.Min((area.Size.X-16)/Math.Max(size.Width,1),(area.Size.Y-16)/Math.Max(size.Height,1)),6,72);
+        _pan=area.Position+(area.Size-new Vector2(size.Width,size.Height)*_zoom)/2;_framedSize=Size;QueueRedraw();
     }
     private void FrameOn(Cell cell)
     {
