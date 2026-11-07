@@ -16,6 +16,8 @@ public partial class CityMapPanel : VBoxContainer
     private readonly Label _participantCaption=Wrap(),_legend=Wrap(),_details=Wrap(),_routeInfo=Wrap();
     private readonly HFlowContainer _owners=new();
     private readonly HBoxContainer _modes=new(),_body=new(){SizeFlagsVertical=SizeFlags.ExpandFill};
+    private readonly HFlowContainer _toolbar;
+    private HFlowContainer _layerRow=null!;
     private readonly VBoxContainer _side=new(){Name="MapDetails"},_filters=new(){Visible=false};
     private readonly Button _open=new(){Name="MapOpenObject"},_walk=new(){Name="MapNavigate"},_showRoute=new(){Name="MapShowRoute"},_detailsToggle=new(){Name="MapDetailsToggle"};
     private readonly Dictionary<CityLayer,CheckButton> _layers=new();
@@ -33,14 +35,14 @@ public partial class CityMapPanel : VBoxContainer
             choice.SetPressedNoSignal(focus==_state.Focus);choice.Toggled+=on=>{if(!on||_state.Focus==focus)return;_state.ApplyFocus(focus);SyncLayers();Canvas.QueueRedraw();UpdateDetails();};
             _focus[focus]=choice;_modes.AddChild(choice);
         }
-        var toolbar=TabletDesign.Flow();AddChild(toolbar);
-        toolbar.AddChild(Button("MapZoomIn","+",()=>Canvas.Zoom(1.25)));toolbar.AddChild(Button("MapZoomOut","−",()=>Canvas.Zoom(.8)));
-        toolbar.AddChild(Button("MapFit",L("Весь город","Fit city"),()=>Canvas.Fit()));
-        toolbar.AddChild(Button("MapMe",L("Ко мне","Find me"),()=>{if(_view is null)return;_state.Center(_view.Participant.Position.X+.5,_view.Participant.Position.Z+.5);Canvas.Zoom(2);}));
-        toolbar.AddChild(Button("MapFilters",L("Фильтры","Filters"),()=>_filters.Visible=!_filters.Visible));
-        _detailsToggle.Text=L("Сведения","Details");_detailsToggle.CustomMinimumSize=new(40,36);_detailsToggle.Pressed+=()=>{_detailsOpen=!_detailsOpen;ApplyLayout();};toolbar.AddChild(_detailsToggle);
+        _toolbar=TabletDesign.Flow();AddChild(_toolbar);
+        _toolbar.AddChild(Button("MapZoomIn","+",()=>Canvas.Zoom(1.25)));_toolbar.AddChild(Button("MapZoomOut","−",()=>Canvas.Zoom(.8)));
+        _toolbar.AddChild(Button("MapFit",L("Весь город","Fit city"),()=>Canvas.Fit()));
+        _toolbar.AddChild(Button("MapMe",L("Ко мне","Find me"),()=>{if(_view is null)return;_state.Center(_view.Participant.Position.X+.5,_view.Participant.Position.Z+.5);Canvas.Zoom(2);}));
+        _toolbar.AddChild(Button("MapFilters",L("Фильтры","Filters"),()=>_filters.Visible=!_filters.Visible));
+        _detailsToggle.Text=L("Сведения","Details");_detailsToggle.CustomMinimumSize=new(40,36);_detailsToggle.Pressed+=()=>{_detailsOpen=!_detailsOpen;ApplyLayout();};_toolbar.AddChild(_detailsToggle);
         _filters.AddChild(_participantCaption);_filters.AddChild(_participant);
-        var layers=TabletDesign.Flow();_filters.AddChild(layers);
+        var layers=TabletDesign.Flow();_filters.AddChild(layers);_layerRow=layers;
         foreach(var layer in new[]{CityLayer.Resources,CityLayer.Industry,CityLayer.Property,CityLayer.Roads,CityLayer.Services,CityLayer.Deliveries,CityLayer.People})
         {
             var toggle=new CheckButton{Name="MapLayer"+layer,Text=LayerTitle(layer),ButtonPressed=(_state.Layers&layer)!=0,CustomMinimumSize=new(0,36)};
@@ -69,11 +71,43 @@ public partial class CityMapPanel : VBoxContainer
     private string LayerTitle(CityLayer layer)=>layer switch{CityLayer.Resources=>L("Ресурсы","Resources"),CityLayer.Industry=>L("Объекты","Industry"),CityLayer.Property=>L("Собственность","Ownership"),CityLayer.Roads=>L("Дороги","Roads"),CityLayer.Services=>L("Услуги","Services"),CityLayer.Deliveries=>L("Поставки","Deliveries"),_=>L("Транспорт","Transport")};
     private string FocusTitle(CityMapFocus focus)=>focus switch{CityMapFocus.Production=>L("Производство","Production"),CityMapFocus.Transport=>L("Транспорт","Transport"),CityMapFocus.Orders=>L("Заказы","Orders"),CityMapFocus.Property=>L("Собственность","Property"),_=>L("Все объекты","All objects")};
     private bool Narrow(){if(!IsInsideTree())return false;var size=GetViewportRect().Size;return size.Y<520||size.X<1000;}
+    private float PageWidth()
+    {
+        for(Node? node=this;node is not null;node=node.GetParent())
+            if(node is ScrollContainer scroll&&scroll.Size.X>1)return scroll.Size.X;
+        return IsInsideTree()?GetViewportRect().Size.X:Size.X;
+    }
     private void ApplyLayout()
     {
         bool narrow=Narrow();_detailsToggle.Visible=narrow;_side.Visible=!narrow||_detailsOpen;
         _side.CustomMinimumSize=new(narrow?Mathf.Min(320,GetViewportRect().Size.X*.42f):280,0);
-        if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Size.X);
+        if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Mathf.Min(Size.X,PageWidth()));
+        // A row wider than the tablet scrolls the whole map sideways and a fitted cell
+        // lands outside the window. Keep every visible row inside the page.
+        float page=PageWidth();FitRow(_modes,page);FitRow(_toolbar,page);FitRow(_layerRow,page);FitRow(_participant,page);
+        for(Node? node=GetParent();node is not null;node=node.GetParent())
+            if(node is ScrollContainer scroll){scroll.ScrollHorizontal=0;break;}
+    }
+    private static void FitRow(Control? row,float width)
+    {
+        if(row is null||width<1)return;
+        var buttons=row.GetChildren().OfType<Button>().Where(b=>b.Visible).ToArray();
+        if(buttons.Length==0)return;
+        int separation=row.GetThemeConstant("separation");
+        float gap=separation*Mathf.Max(0,buttons.Length-1);
+        float available=Mathf.Max(1,width-gap);
+        float[] natural=buttons.Select(b=>b.GetThemeFont("font").GetStringSize(b.Text,fontSize:b.GetThemeFontSize("font_size")).X+20).ToArray();
+        float sum=natural.Sum();
+        if(sum<=available)return;
+        float scale=available/sum;
+        float[] widths=natural.Select(n=>Mathf.Max(28f,n*scale)).ToArray();
+        if(widths.Sum()>available){float each=available/buttons.Length;widths=Enumerable.Repeat(each,buttons.Length).ToArray();}
+        for(int i=0;i<buttons.Length;i++)
+        {
+            buttons[i].ClipText=true;
+            buttons[i].CustomMinimumSize=new(widths[i],Mathf.Max(36,buttons[i].CustomMinimumSize.Y));
+            buttons[i].SizeFlagsHorizontal=SizeFlags.ShrinkBegin;
+        }
     }
     private void SyncLayers(){foreach(var (layer,toggle) in _layers)toggle.SetPressedNoSignal((_state.Layers&layer)!=0);SyncFocus();}
     private void SyncFocus(){foreach(var (focus,button) in _focus)button.SetPressedNoSignal(focus==_state.Focus);}
@@ -160,7 +194,7 @@ public partial class CityMapPanel : VBoxContainer
             lines.Add(o.Owner==_map!.Viewer?L("Нет данных","No data"):L("Чужие рецепты, запасы и внутренние показатели скрыты.","Foreign recipes, stocks and internal figures are hidden."));
         if(o.Level>0&&o.Kind is "production" or "equipment")lines.Add(L("Уровень ","Level ")+o.Level);
         if(o.Holder>0)lines.Add(L(o.Layer==CityLayer.Resources?"Арендатор: ":"Бронь: ",o.Layer==CityLayer.Resources?"Tenant: ":"Reserved by: ")+OwnerCaption(o.Holder)+(o.Deadline>0?L(" · до t"," · through t")+o.Deadline:""));
-        if(o.Layer==CityLayer.Roads)lines.Add(string.Join("\n",(o.Contributions??[]).OrderBy(c=>c.Level).Select(c=>RoadTitle(c.Level)+" · "+OwnerCaption(c.Builder.Value))));
+        if(o.Layer==CityLayer.Roads)lines.Add(L("Вклады по ступеням и будущие права на доход:","Contributions by stage and future revenue rights:")+"\n"+string.Join("\n",(o.Contributions??[]).OrderBy(c=>c.Level).Select(c=>RoadTitle(c.Level)+" · "+OwnerCaption(c.Builder.Value)+" · t"+c.Tick+L(" · денежный вклад "," · cash contribution ")+PlayerText.Money(c.PriceMinor)+(c.Builder.Value==0?L(" · городу 100%"," · city 100%"):L(" · исполнителю 90%, городу 10%"," · builder 90%, city 10%")))));
         var reason=OwnReason(o);if(reason.Length>0&&(o.Facts?.Reason.Length??0)==0)lines.Add(reason);
         return string.Join("\n",lines.Where(l=>l.Length>0));
     }
