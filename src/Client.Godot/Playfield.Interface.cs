@@ -6,8 +6,21 @@ using Simulation.Hosting;
 public partial class Playfield
 {
     private HelpOverlay? _helpOverlay;
-    private Label? _gameClock;
+    private Button? _gameClock;
     private Button? _accountNotice;
+    private Button? _hudMenu;
+    private Button? _hudTablet;
+    private Button? _hudMap;
+    private Button? _hudPlots;
+    private Button? _hudHelp;
+    private Button? _hudNotices;
+    private PanelContainer? _goalBar;
+    private Label? _goalTitle;
+    private Label? _goalHint;
+    private Button? _goalWhere;
+    private bool _friendly = true;
+    private bool _guideVisible = true;
+    private bool _userPaused;
     private readonly System.Collections.Generic.List<ContextActionButton> _harvestButtons = [];
     private string _harvestCycle = "";
     private double _harvestVisual;
@@ -71,21 +84,26 @@ public partial class Playfield
         bar.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color("f3f3ed"),
             ContentMarginLeft = 12, ContentMarginRight = 12, ContentMarginTop = 6, ContentMarginBottom = 6 });
         _playChrome!.AddChild(bar);
-        UiSafeArea.Track(bar,()=>{var safe=UiSafeArea.Read(bar);bar.OffsetLeft=(float)safe.Left;bar.OffsetRight=-(float)safe.Right;bar.OffsetTop=(float)safe.Top;bar.OffsetBottom=54+(float)safe.Top;});
         bar.Resized+=()=>LayoutCityHud(bar);
-        var row = new HBoxContainer { Name="HudRow" };row.AddThemeConstantOverride("separation",6); bar.AddChild(row);
-        var menu = new Button { Name="HudMenu", Text = L("Меню", "Menu"), FocusMode = FocusModeEnum.None };
-        menu.Pressed += OpenMenu; row.AddChild(menu);
-        var tablet = new Button { Name="HudTablet", Text = L("Планшет", "Tablet"), FocusMode = FocusModeEnum.None };
-        tablet.Pressed += OpenPlayerTablet; row.AddChild(tablet);
-        var cityMap=new Button{Name="OpenCityMap",Text=L("Карта","Map"),TooltipText=L("Карта всего города · M","City map · M")};cityMap.Pressed+=OpenCityMap;row.AddChild(cityMap);
-        var plots=new Button{Name="HudPlots",Text=L("Участки","Plots"),ToggleMode=true,ButtonPressed=_showOwnership,TooltipText=L("Контуры собственности","Ownership outlines"),FocusMode=FocusModeEnum.None};
-        plots.Toggled+=on=>{_showOwnership=on;SaveCityExperience();Refresh();};row.AddChild(plots);
+        var row = new HFlowContainer { Name="HudRow" };row.AddThemeConstantOverride("h_separation",6);row.AddThemeConstantOverride("v_separation",4); bar.AddChild(row);
+        _hudMenu = new Button { Name="HudMenu", Text = L("Меню", "Menu"), FocusMode = FocusModeEnum.None };
+        _hudMenu.Pressed += OpenMenu; row.AddChild(_hudMenu);
+        _hudTablet = new Button { Name="HudTablet", Text = L("Планшет", "Tablet"), FocusMode = FocusModeEnum.None };
+        _hudTablet.Pressed += OpenPlayerTablet; row.AddChild(_hudTablet);
+        _hudMap=new Button{Name="OpenCityMap",Text=L("Карта","Map"),TooltipText=L("Карта всего города · M","City map · M"),FocusMode=FocusModeEnum.None};_hudMap.Pressed+=OpenCityMap;row.AddChild(_hudMap);
+        _hudPlots=new Button{Name="HudPlots",Text=L("Участки","Plots"),ToggleMode=true,ButtonPressed=_showOwnership,TooltipText=L("Контуры собственности","Ownership outlines"),FocusMode=FocusModeEnum.None};
+        _hudPlots.Toggled+=on=>{_showOwnership=on;_cityMapPanel?.SetWorldOwnership(on);SaveCityExperience();Refresh();};row.AddChild(_hudPlots);
         _accountNotice=new(){Name="AccountNotification",Text=L("Счёт","Account"),FocusMode=FocusModeEnum.None};
         _accountNotice.Pressed+=()=>{OpenPlayerTablet();_playerTablet?.OpenAccount();};row.AddChild(_accountNotice);
-        var help = new Button { Name="HudHelp", Text = "?", TooltipText = L("Справка", "Help"), FocusMode = FocusModeEnum.None, CustomMinimumSize = new Vector2(36, 36) };
-        help.Pressed += () => OpenHelp(); row.AddChild(help);
-        _gameClock = new Label { VerticalAlignment = VerticalAlignment.Center, Name="HudClock" }; row.AddChild(_gameClock);
+        _hudHelp = new Button { Name="HudHelp", Text = "?", TooltipText = L("Справка", "Help"), FocusMode = FocusModeEnum.None, CustomMinimumSize = new Vector2(36, 36) };
+        _hudHelp.Pressed += () => OpenHelp(); row.AddChild(_hudHelp);
+        _hudNotices=new Button{Name="HudNotices",FocusMode=FocusModeEnum.None,Visible=false,TooltipText=L("Важные события","Important notices")};
+        _hudNotices.Pressed+=OpenCityNotices;row.AddChild(_hudNotices);
+        foreach(string state in new[]{"font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"})
+            _hudNotices.AddThemeColorOverride(state,new Color("1b5c40"));
+        _gameClock = new Button { Name="HudClock", FocusMode = FocusModeEnum.None, TooltipText = L("Пауза","Pause") };
+        _gameClock.Pressed += () => { _userPaused = !_userPaused; ApplyPause(); Refresh(); };
+        row.AddChild(_gameClock);
         row.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill });
         _playInventory = new Label { Name="HudStock", VerticalAlignment = VerticalAlignment.Center }; row.AddChild(_playInventory);
         _hudGoods = new ResourceInventoryHud { Name = "InventoryHud", Alignment = FlowContainer.AlignmentMode.End, SizeFlagsHorizontal=SizeFlags.ShrinkEnd };
@@ -134,16 +152,52 @@ public partial class Playfield
                 if(mouse.Pressed&&!_contextDismissTouch)Callable.From(CloseContextActions).CallDeferred();
             }
         };
-        foreach(var button in row.GetChildren().OfType<Button>())button.CustomMinimumSize=new(40,40);
+        foreach(var button in row.GetChildren().OfType<Button>())
+        {
+            button.CustomMinimumSize=new(40,40);
+            button.SizeFlagsHorizontal=SizeFlags.ShrinkBegin;
+            button.TextOverrunBehavior=TextServer.OverrunBehavior.NoTrimming;
+        }
+        var goal=new VBoxContainer();
+        _goalTitle=new Label{Name="StarterGoalTitle",AutowrapMode=TextServer.AutowrapMode.WordSmart};_goalTitle.AddThemeColorOverride("font_color",new Color("24312d"));
+        _goalHint=new Label{Name="StarterGoalHint",AutowrapMode=TextServer.AutowrapMode.WordSmart};_goalHint.AddThemeColorOverride("font_color",new Color("24312d"));
+        _goalWhere=new Button{Name="StarterGoalWhere",Text=L("Показать где","Show where"),CustomMinimumSize=new(40,40)};
+        _goalWhere.Pressed+=()=>{if(_goalStep is {} step)ShowGuide(step);};
+        var hide=new Button{Name="StarterGoalHide",Text=L("Скрыть","Hide"),CustomMinimumSize=new(40,40)};
+        hide.Pressed+=()=>{_guideVisible=false;SaveInterface();Refresh();};
+        var goalActions=new HBoxContainer();goalActions.AddChild(_goalWhere);goalActions.AddChild(hide);
+        goal.AddChild(_goalTitle);goal.AddChild(_goalHint);goal.AddChild(goalActions);
+        _goalBar=new PanelContainer{Name="StarterGoal",MouseFilter=MouseFilterEnum.Stop,Visible=false};
+        _goalBar.AddThemeStyleboxOverride("panel",new StyleBoxFlat{BgColor=new Color("f7f4ea"),ContentMarginLeft=10,ContentMarginRight=10,ContentMarginTop=8,ContentMarginBottom=8,CornerRadiusTopLeft=8,CornerRadiusTopRight=8,CornerRadiusBottomRight=8,CornerRadiusBottomLeft=8});
+        _goalBar.AddChild(goal);_playChrome.AddChild(_goalBar);
         void FitHud()
         {
-            // Optional goods yield space to navigation and the two useful metrics.
+            // Значки рюкзака уступают место навигации. В простом режиме их нет совсем.
+            // Узкая ширина переносит ту же панель на вторую строку, не обрезая кнопки.
             if(_hudGoods is null)return;
-            float fixedWidth=row.GetChildren().OfType<Control>().Where(c=>c!=_hudGoods).Sum(c=>c.GetCombinedMinimumSize().X)+row.GetThemeConstant("separation")*(row.GetChildCount()-1);
-            _hudGoods.Visible=_hudGoods.GetChildCount()>0&&fixedWidth+_hudGoods.GetCombinedMinimumSize().X<=bar.Size.X-24;
+            bool room=bar.Size.X>=520;
+            if(_playInventory is not null)_playInventory.Visible=!_friendly||room;
+            if(_friendly)_hudGoods.Visible=false;
+            else
+            {
+                float fixedWidth=row.GetChildren().OfType<Control>().Where(c=>c.Visible&&c!=_hudGoods).Sum(c=>c.GetCombinedMinimumSize().X)+row.GetThemeConstant("h_separation")*Math.Max(0,row.GetChildCount()-1);
+                _hudGoods.Visible=_hudGoods.GetChildCount()>0&&fixedWidth+_hudGoods.GetCombinedMinimumSize().X<=bar.Size.X-24;
+            }
+            float width=Math.Max(1,bar.Size.X-24),x=0,y=0,rowH=0;
+            foreach(var child in row.GetChildren().OfType<Control>().Where(c=>c.Visible))
+            {
+                var size=child.GetCombinedMinimumSize();
+                if(x>0&&x+size.X>width){x=0;y+=rowH+4;rowH=0;}
+                x+=size.X+6;rowH=Math.Max(rowH,size.Y);
+            }
+            float height=Math.Max(54,y+rowH+12);
+            var safe=UiSafeArea.Read(bar);float next=height+(float)safe.Top;
+            if(Math.Abs(bar.OffsetBottom-next)>0.5f)bar.OffsetBottom=next;
         }
+        UiSafeArea.Track(bar,()=>{var safe=UiSafeArea.Read(bar);bar.OffsetLeft=(float)safe.Left;bar.OffsetRight=-(float)safe.Right;bar.OffsetTop=(float)safe.Top;FitHud();});
         row.Resized+=FitHud;row.MinimumSizeChanged+=()=>Callable.From(FitHud).CallDeferred();
-        _contextKey = ""; _choices = [];LayoutCityHud(bar);
+        _contextKey = ""; _choices = [];ApplyHudMode();LayoutCityHud(bar);
+        _playChrome.MoveChild(_goalBar,_playChrome.GetChildCount()-1);
     }
     private void LayoutCityHud(Control bar)
     {
@@ -151,7 +205,74 @@ public partial class Playfield
         _roadCardTop=top+12;LayoutRoadWork();
         if(_playNotice is not null){_playNotice.OffsetTop=top+8;_playNotice.OffsetBottom=top+42;_playNotice.OffsetLeft=16+(float)safe.Left;_playNotice.OffsetRight=-16-(float)safe.Right;}
         if(_storageWarning is not null){_storageWarning.OffsetTop=top+44;_storageWarning.OffsetBottom=top+100;_storageWarning.OffsetRight=-16-(float)safe.Right;}
-        if(_tooltip is not null)_tooltip.Position=new(16+(float)safe.Left,top+96);
+        if(_tooltip is not null)_tooltip.Position=new(16+(float)safe.Left,top+(_goalBar is {Visible:true}?128:96));
+        if(_goalBar is not null)
+        {
+            float width=Math.Min(420,Math.Max(180,GetViewportRect().Size.X-24-(float)safe.Left-(float)safe.Right));
+            _goalBar.Position=new(12+(float)safe.Left,top+8);
+            _goalBar.CustomMinimumSize=new(width,0);
+            _goalBar.Size=new(width,Math.Max(_goalBar.GetCombinedMinimumSize().Y,1));
+        }
+    }
+    private void LoadInterface()
+    {
+        var config=new ConfigFile();
+        if(config.Load("user://interface.cfg")!=Error.Ok)return;
+        _friendly=config.GetValue("ui","mode",FriendlyGuidance.Simple).AsString()!=FriendlyGuidance.Advanced;
+        _guideVisible=config.GetValue("ui","guide",true).AsBool();
+    }
+    private void SaveInterface()
+    {
+        var config=new ConfigFile();
+        config.SetValue("ui","mode",_friendly?FriendlyGuidance.Simple:FriendlyGuidance.Advanced);
+        config.SetValue("ui","guide",_guideVisible);
+        if(config.Save("user://interface.cfg")!=Error.Ok)_feedback=L("Не удалось сохранить вид интерфейса.","Could not save the interface preference.");
+    }
+    private void SetSimple(bool simple)
+    {
+        if(_friendly==simple)return;
+        _friendly=simple;SaveInterface();ApplyHudMode();
+        _playerTablet?.ApplyPresentation(simple);
+        if(_tabletPanel is not null&&_tabletState.Kind==TabletKind.Player)
+            _tabletPanel.SetTitle(simple?L("Хозяйство","Business"):L("Планшет игрока","Player tablet"));
+        if(_contextActions is not null)_contextActions.Friendly=simple;
+        Refresh();
+    }
+    private void ApplyHudMode()
+    {
+        if(_hudMenu is null||_hudTablet is null||_hudMap is null||_hudPlots is null||_hudHelp is null||_accountNotice is null||_gameClock is null)return;
+        var row=(Container)_hudMenu.GetParent();
+        _hudTablet.Text=_friendly?L("Хозяйство","Business"):L("Планшет","Tablet");
+        _hudMenu.Text=L("Меню","Menu");_hudMap.Text=L("Карта","Map");
+        _hudPlots.Visible=!_friendly;_hudHelp.Visible=!_friendly;
+        if(_hudGoods is not null&&_friendly)_hudGoods.Visible=false;
+        void Place(Control control,int index){if(control.GetParent()==row)row.MoveChild(control,index);}
+        if(_friendly)
+        {
+            Place(_hudMap,0);Place(_hudTablet,1);Place(_hudMenu,2);Place(_accountNotice,3);
+            if(_hudNotices is not null)Place(_hudNotices,4);Place(_gameClock,5);
+        }
+        else
+        {
+            Place(_hudMenu,0);Place(_hudTablet,1);Place(_hudMap,2);Place(_hudPlots,3);Place(_accountNotice,4);Place(_hudHelp,5);
+            if(_hudNotices is not null)Place(_hudNotices,6);Place(_gameClock,7);
+        }
+    }
+    private StarterStep? _goalStep;
+    private void UpdateGoal(PlayerView view)
+    {
+        if(_goalBar is null||_goalTitle is null||_goalHint is null||_goalWhere is null)return;
+        _goalStep=_session is null?null:FriendlyGuidance.Read(view,_scenario,_language);
+        bool show=_friendly&&_guideVisible&&_goalStep is not null&&_surface==Surface.Play&&!_tabletState.IsOpen&&_helpOverlay is null;
+        _goalBar.Visible=show;
+        if(_goalStep is not {} step)return;
+        string title=PlayerText.Local(_language,step.TitleRu,step.TitleEn);
+        if(step.Count&&step.Need>0)title+=" — "+step.Have+"/"+step.Need;
+        _goalTitle.Text=title;_goalHint.Text=PlayerText.Local(_language,step.DetailRu,step.DetailEn);
+        string gaps=FriendlyGuidance.Describe(step.Gaps,_language);
+        if(gaps.Length>0)_goalHint.Text+="\n"+gaps;
+        _goalWhere.Text=step.X<0&&step.TargetId>0?L("Открыть","Open"):L("Показать где","Show where");
+        _goalWhere.Disabled=step.X<0&&step.TargetId==0;
     }
     private void FillPlayContext(VBoxContainer host)
     {
@@ -165,6 +286,7 @@ public partial class Playfield
             {if(expanded){StopHeading();_waitRelease=true;}else _contextDismissTouch=false;if(_contextShield is not null)_contextShield.Visible=expanded;ApplyPause();};
             _contextActions.Resized+=LayoutContextDock;
         }
+        _contextActions.Friendly=_friendly;
         var response=_contextCommandId is {} id?_session.Engine.Result(id):null;
         string status=_contextCommandId is null?"":ContextActions.ResultText(_language,response);
         if(_contextMessage.Length>0)status=_contextMessage;

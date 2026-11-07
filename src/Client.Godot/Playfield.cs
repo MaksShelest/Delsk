@@ -95,6 +95,7 @@ public partial class Playfield : Control
         Input.MouseMode = Input.MouseModeEnum.Visible;
         Engine.MaxFps = 60;
         Theme = PresentationTheme.Create();
+        LoadInterface();
         CallDeferred(nameof(ConfigureDisplay));
         EnsureStage();
         if (OS.GetCmdlineUserArgs().Contains("--trip")) Start("trip", false);
@@ -403,7 +404,7 @@ public partial class Playfield : Control
     private void ApplyPause()
     {
         if (_session is null) return;
-        bool paused = _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots || ModelBarrier);
+        bool paused = _userPaused || _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots || ModelBarrier);
         if(_stick is not null)_stick.Visible=!paused&&_contextActions?.Expanded!=true&&_roadWorkCard is null&&!(_tabletState.Kind==TabletKind.Object&&_objectKind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2);
         if(paused&&!_session.Paused){StopHeading();_waitRelease=true;}
         if (_session.Paused != paused) _scheduler.SetPaused(paused);
@@ -591,7 +592,7 @@ public partial class Playfield : Control
             : string.Join(", ", pack.Stock.OrderBy(s => s.ItemId, StringComparer.Ordinal).Select(s => $"{PlayerText.Item(_language, s.ItemId)} ×{s.Quantity}"));
         string inventory = $"{T("inventory.title")}: {stock}\n{T("inventory.capacity")} {pack.OccupiedVolume}/{pack.Capacity}";
         if (_inventoryLabel is not null) _inventoryLabel.Text = inventory;
-        if (_playInventory is not null) _playInventory.Text = HudStock(view, pack);
+        if (_playInventory is not null) _playInventory.Text = _friendly ? L("Рюкзак ", "Pack ") + pack.OccupiedVolume + "/" + pack.Capacity : HudStock(view, pack);
         UpdateHudGoods(pack);
         var next = CurrentContext();
         _contextIndex = PlayContext.Keep(_contextIndex, _choices, next);
@@ -632,8 +633,26 @@ public partial class Playfield : Control
         _feedbackLabel.Text = _feedback;
         UpdatePlayNotice();
         StorageNotice(view);UpdateCityExperience(view);
-        if(_accountNotice is not null&&view.PersonalAccount is {} accountNotice){_accountNotice.Text=L("Счёт","Account")+(accountNotice.UnreadCount>0?" ●":"");_accountNotice.Modulate=accountNotice.UnreadCount>0?new Color("ff7777"):Colors.White;}
-        if (_gameClock is not null) _gameClock.Text = "◷ " + GameTime(view.Tick) + (_session.Paused ? "  Ⅱ" : "  ▸");
+        int unread=_cityNotices.Count(n=>n.Unread);
+        if(_hudNotices is not null){_hudNotices.Visible=unread>0;_hudNotices.Text="● "+unread;}
+        if(_accountNotice is not null)
+        {
+            long debt=view.PersonalAccount?.DebtMinor??0;
+            _accountNotice.Text=_friendly?PlayerText.Money(view.AvailableCashMinor):L("Счёт","Account")+(view.PersonalAccount?.UnreadCount>0?" ●":"");
+            _accountNotice.TooltipText=L("Свободно ","Available ")+PlayerText.Money(view.AvailableCashMinor)+L(" · баланс "," · balance ")+PlayerText.Money(view.CashMinor)+(debt>0?L(" · долг "," · debt ")+PlayerText.Money(debt):"");
+            var ink=debt>0?new Color("6a4a16"):new Color("24312d");
+            foreach(string state in new[]{"font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"})
+                _accountNotice.AddThemeColorOverride(state,ink);
+            _accountNotice.Modulate=Colors.White;
+        }
+        if (_gameClock is not null)
+        {
+            string time=GameTime(view.Tick);
+            bool narrowClock=GetViewportRect().Size.X<520&&_friendly;
+            _gameClock.Text=(narrowClock?time[..5]:"◷ "+time)+(_session.Paused?"  Ⅱ":"  ▸");
+            _gameClock.TooltipText=_userPaused?L("Продолжить","Resume"):L("Пауза","Pause");
+        }
+        UpdateGoal(view);
         if (_cellLabel is not null) _cellLabel.Text = CellText(frame);
         string signature = _selectedEnterprise + "|" + CardSignature(view);
         if (signature != _cardsSignature)
@@ -917,6 +936,12 @@ public partial class Playfield : Control
         appearance.Pressed += OpenAppearanceSettings; box.AddChild(appearance);
         var display = new Button { Text = L("Полный экран / окно", "Fullscreen / window"), FocusMode = FocusModeEnum.None };
         display.Pressed += ToggleFullscreen; box.AddChild(display);
+        var advanced=new CheckButton{Name="InterfaceAdvanced",Text=L("Расширенный интерфейс","Advanced interface"),ButtonPressed=!_friendly,FocusMode=FocusModeEnum.None};
+        advanced.Toggled+=on=>SetSimple(!on);box.AddChild(advanced);
+        var outlines=new CheckButton{Name="OwnershipOutlines",Text=L("Контуры участков на поле","Plot outlines in the world"),ButtonPressed=_showOwnership,FocusMode=FocusModeEnum.None};
+        outlines.Toggled+=on=>{_showOwnership=on;_hudPlots?.SetPressedNoSignal(on);_cityMapPanel?.SetWorldOwnership(on);SaveCityExperience();Refresh();};box.AddChild(outlines);
+        var guide=new CheckButton{Name="StarterGuide",Text=L("Подсказка текущей цели","Current-goal hint"),ButtonPressed=_guideVisible,FocusMode=FocusModeEnum.None};
+        guide.Toggled+=on=>{_guideVisible=on;SaveInterface();Refresh();};box.AddChild(guide);
         var handbook = new Button { Text = L("Справка", "Help"), FocusMode = FocusModeEnum.None };
         handbook.Pressed += () => OpenHelp(); box.AddChild(handbook);
         Button(box, "menu.exit", ExitGame);GameUi.FitControls(box,440);

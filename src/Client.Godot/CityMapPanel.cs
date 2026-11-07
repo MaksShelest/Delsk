@@ -21,6 +21,8 @@ public partial class CityMapPanel : VBoxContainer
     private readonly VBoxContainer _side=new(){Name="MapDetails"},_filters=new(){Visible=false};
     private readonly Button _open=new(){Name="MapOpenObject"},_walk=new(){Name="MapNavigate"},_showRoute=new(){Name="MapShowRoute"},_detailsToggle=new(){Name="MapDetailsToggle"};
     private readonly Dictionary<CityLayer,CheckButton> _layers=new();
+    private readonly CheckButton _worldOwnership;
+    public event Action<bool>? OwnershipChanged;
     private readonly Dictionary<CityMapFocus,Button> _focus=new();
     private CityMapFrame? _map;private PlayerView? _view;private MovementGuide? _guide;private string[] _keys=[];private long[] _participants=[];
     private bool _detailsOpen;
@@ -49,6 +51,8 @@ public partial class CityMapPanel : VBoxContainer
             toggle.Toggled+=on=>{_state.Focus=CityMapFocus.All;_state.Layers=on?_state.Layers|layer:_state.Layers&~layer;SyncFocus();Canvas.QueueRedraw();UpdateDetails();};
             _layers[layer]=toggle;layers.AddChild(toggle);
         }
+        _worldOwnership=new CheckButton{Name="MapWorldOwnership",Text=L("Контуры участков на поле","Plot outlines in the world"),CustomMinimumSize=new(0,36)};
+        _worldOwnership.Toggled+=on=>OwnershipChanged?.Invoke(on);layers.AddChild(_worldOwnership);
         AddChild(_filters);
         _body.AddChild(Canvas);
         _side.CustomMinimumSize=new(280,0);_side.SizeFlagsVertical=SizeFlags.ExpandFill;_side.AddThemeConstantOverride("separation",4);
@@ -109,6 +113,7 @@ public partial class CityMapPanel : VBoxContainer
         }
     }
     private void SyncLayers(){foreach(var (layer,toggle) in _layers)toggle.SetPressedNoSignal((_state.Layers&layer)!=0);SyncFocus();}
+    public void SetWorldOwnership(bool on)=>_worldOwnership.SetPressedNoSignal(on);
     private void SyncFocus(){foreach(var (focus,button) in _focus)button.SetPressedNoSignal(focus==_state.Focus);}
     public void ShowData(CityMapFrame map,PlayerView view,bool pending)
     {

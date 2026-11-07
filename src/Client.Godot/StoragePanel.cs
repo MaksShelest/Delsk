@@ -14,6 +14,7 @@ public partial class StoragePanel : VBoxContainer
     private readonly QuickStockTransfer _quickPut,_quickTake;private readonly TabletColumns _quick=new(){Name="StorageQuickTransfers",Breakpoint=700};
     private readonly List<(Button Button,Func<GameAction> Action,Func<PlayerView,bool> Allowed)> _buttons=[];
     private readonly Dictionary<long,Label> _deadlines=[];private readonly Dictionary<long,Button> _overflowAll=[];
+    private readonly Dictionary<string,Label> _buildGaps=[];
     private readonly DemolitionPanel? _demolitionPanel;private PlayerView? _view;private bool _pending;
     private readonly UiSections? _pages;private readonly InventoryTransferPanel? _manual;private readonly Button? _buildOpen;
     public StoragePanel(ScenarioDefinition scenario,string language,string kind,long id,Action<GameAction> submit,Func<GameAction,ActionAccess> access,bool overflowOnly=false,Func<long,bool,DemolitionQuote?>? demolitionQuote=null)
@@ -69,7 +70,7 @@ public partial class StoragePanel : VBoxContainer
         string signature=inventory+":"+building?.Level+":"+(work is not null)+":"+string.Join(',',stock.Stock.Select(s=>s.ItemId).Concat(pack.Stock.Select(s=>s.ItemId)).Distinct().Order())+":"+string.Join(',',overflow.Select(l=>l.Id));
         if(signature!=_signature)
         {
-            _signature=signature;foreach(var host in new[]{_actions,_legacyTransfers,_overflowRows})foreach(Node child in host.GetChildren()){host.RemoveChild(child);child.QueueFree();}_buttons.Clear();_deadlines.Clear();_overflowAll.Clear();
+            _signature=signature;foreach(var host in new[]{_actions,_legacyTransfers,_overflowRows})foreach(Node child in host.GetChildren()){host.RemoveChild(child);child.QueueFree();}_buttons.Clear();_deadlines.Clear();_overflowAll.Clear();_buildGaps.Clear();
             InventoryView Current(PlayerView v)=>v.Inventories.Single(i=>i.Id.Value==inventory);InventoryView Pack(PlayerView v)=>v.Inventories.Single(i=>i.Id==v.Participant.InventoryId);
             if(!_overflowOnly)foreach(string item in stock.Stock.Select(s=>s.ItemId).Concat(pack.Stock.Select(s=>s.ItemId)).Distinct().Order())
             {
@@ -92,12 +93,14 @@ public partial class StoragePanel : VBoxContainer
                 var initial=production.Levels.Single(l=>l.Level==1);bool anchor=_scenario.Layout is null||_scenario.Layout.IndustrialLots.Any(l=>l.Cells.OrderBy(c=>c.Z).ThenBy(c=>c.X).First()==stock.Position);if(!anchor)continue;
                 var box=new VBoxContainer();box.AddChild(GameUi.Intro(GameUi.Industry(_lang,production.Id),PlayerText.Money(initial.PriceMinor)+" + "+string.Join(", ",initial.Materials.Select(m=>PlayerText.Item(_lang,m.ItemId)+" ×"+m.Quantity))+" · "+GameDuration.Format(initial.ConstructionTicks,_lang),production.Id,80));_actions.AddChild(box);string typeId=production.Id;
                 Action(L("Построить","Build"),()=>new(ActionKind.Build,Target:stock.Position,BuildingTypeId:typeId),v=>work is null&&v.AvailableCashMinor>=initial.PriceMinor&&initial.Materials.All(m=>Free(Current(v),m.ItemId)>=m.Quantity),box);
+                var gap=new Label{Name="BuildGap_"+production.Id,AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(gap);_buildGaps[production.Id]=gap;
             }
             var type=_scenario.BuildingTypes!.Single(t=>t.Id=="warehouse");var next=type.Levels.SingleOrDefault(l=>l.Level==(building?.Level??0)+1);
             if(next is not null&&!_overflowOnly&&(building is null||building.Kind==BuildingKind.Warehouse)&&_scenario.Economy?.Storage is not null)
             {
                 var box=new VBoxContainer();box.AddChild(GameUi.Text(PlayerText.Money(next.PriceMinor)+" + "+string.Join(", ",next.Materials.Select(m=>PlayerText.Item(_lang,m.ItemId)+" ×"+m.Quantity))+" · "+GameDuration.Format(next.ConstructionTicks,_lang)));_actions.AddChild(GameUi.Card(box));
                 Action(building is null?L("Построить склад","Build warehouse"):L("Улучшить склад","Upgrade warehouse"),()=>building is null?new(ActionKind.Build,Target:stock.Position,BuildingTypeId:type.Id):new(ActionKind.UpgradeBuilding,Building:building.Id),v=>work is null&&(building is not null||plot?.ExpansionFor is null)&&v.AvailableCashMinor>=next.PriceMinor&&next.Materials.All(m=>Free(Current(v),m.ItemId)>=m.Quantity),box);
+                var warehouseGap=new Label{Name="BuildGap_warehouse",AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(warehouseGap);_buildGaps["warehouse:"+next.Level]=warehouseGap;
             }
         }
         foreach(var lot in overflow)
@@ -106,6 +109,16 @@ public partial class StoragePanel : VBoxContainer
             if(_overflowAll.TryGetValue(lot.Id,out var button))button.Text=L("Спасти всё (","Rescue all (")+Math.Min(lot.Quantity,Space(pack,lot.ItemId))+")";
         }
         foreach(var entry in _buttons){var action=entry.Action();var permission=_access(action);entry.Button.Disabled=pending||view.Participant.Busy||!entry.Allowed(view)||!permission.Allowed;entry.Button.TooltipText=!permission.Allowed?GameUi.Reason(_lang,permission.ReasonCode):entry.Button.Disabled?L("Проверьте количество, свободное место и нужные материалы.","Check quantity, available space and required materials."):"";}
+        foreach(var (key,label) in _buildGaps)
+        {
+            if(key.StartsWith("warehouse:",StringComparison.Ordinal))
+            {
+                var warehouse=_scenario.BuildingTypes!.Single(t=>t.Id=="warehouse");
+                var level=warehouse.Levels.Single(l=>l.Level==int.Parse(key.Split(':')[1],System.Globalization.CultureInfo.InvariantCulture));
+                label.Text=FriendlyGuidance.ConstructionText(view,_scenario,warehouse,level,stock,_lang);
+            }
+            else label.Text=FriendlyGuidance.ConstructionText(view,_scenario,_scenario.BuildingTypes!.Single(t=>t.Id==key),_scenario.BuildingTypes!.Single(t=>t.Id==key).Levels.Single(l=>l.Level==1),stock,_lang);
+        }
         if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Size.X);
     }
 }
