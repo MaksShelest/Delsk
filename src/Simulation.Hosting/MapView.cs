@@ -20,6 +20,12 @@ public static class MapView
         };
     }
 
+    public static (float X, float Y) MapPoint(float panX, float panY, float zoom, float cursorX, float cursorY)
+        => ((cursorX - panX) / zoom, (cursorY - panY) / zoom);
+
+    public static (float X, float Y) ZoomOffset(float cursorX, float cursorY, float anchorX, float anchorY, float zoom)
+        => (cursorX - anchorX * zoom, cursorY - anchorY * zoom);
+
     public static Cell ToWorld(int width, int height, int quarter, int screenX, int screenY)
     {
         quarter = ((quarter % 4) + 4) % 4;

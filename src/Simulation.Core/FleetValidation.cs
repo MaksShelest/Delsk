@@ -13,7 +13,10 @@ public static partial class ScenarioValidation
         var dealer = s.Layout!.CivicObjects.Single(c => c.Kind == "dealership");
         Require(dealer.Parking is { Length: 4 } && dealer.Parking.All(c => !s.BlockedCells.Contains(c)));
         var machines=f.Models.Where(m=>m.EquipmentTypeId is not null).ToArray();
-        Require(dealerVersion is 1 or 2 ? s.Economy!.VehicleControl is not null && machines.Length==(dealerVersion==2?4:16) && machines.All(m=>dealerVersion!=2||m.EquipmentLevel==1) && dealer.EquipmentParking is {Length:16} : machines.Length==0 && dealer.EquipmentParking is null);
+        // Версия 2 держит на стоянке не больше двух машин, каждая на своей клетке. Версия 1 по-прежнему требует ровно 16 мест; старые карты и сохранения не расширяются.
+        Require(dealerVersion==1 ? s.Economy!.VehicleControl is not null && machines.Length==16 && dealer.EquipmentParking is {Length:16}
+            : dealerVersion==2 ? s.Economy!.VehicleControl is not null && machines.Length==4 && machines.All(m=>m.EquipmentLevel==1) && dealer.EquipmentParking is {Length:>=2 and <=16}
+            : machines.Length==0 && dealer.EquipmentParking is null);
         foreach(var model in machines)
         {
             var level=s.EquipmentTypes?.SingleOrDefault(t=>t.Id==model.EquipmentTypeId)?.Levels.SingleOrDefault(l=>l.Level==model.EquipmentLevel);
