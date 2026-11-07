@@ -153,11 +153,70 @@ def woodland():
                   [(x,14) for x in range(4)], [(14,z) for z in (2,9,12,13)], bays)
 
 
+def woodland_i6c4():
+    """One-cell ring: forest and ore to the west, industry inside, town on the east."""
+    roads = {(4, z) for z in range(2, 14)}
+    roads |= {(x, 3) for x in range(4, 16)}
+    roads |= {(12, z) for z in range(3, 14)}
+    roads |= {(x, 13) for x in range(4, 13)}
+    roads |= {(2, 8), (3, 8), (13, 7), (14, 7), (15, 7), (12, 14)}
+    def lot(n, x, z, entry):
+        return dict(id=f'woodland_i6c4_lot_{n:02}', cells=rect(x, z, 2, 3), entry=entry)
+    lots = [
+        lot(1, 5, 4, (4, 5)), lot(2, 7, 4, (7, 3)), lot(3, 9, 4, (10, 3)),
+        lot(4, 5, 10, (4, 11)), lot(5, 7, 10, (7, 13)), lot(6, 9, 10, (10, 13)),
+    ]
+    def cells(*points):
+        return [list(p) for p in points]
+    resources = [
+        district('woodland_i6c4', 'wood', cells((0,0),(1,0),(2,0),(3,0),(0,1),(0,2),(3,2),(1,1),(2,1),(3,1),(1,2),(2,2),(1,3),(2,3),(3,3)), [(3,3)]),
+        district('woodland_i6c4_south', 'wood', cells((0,10),(1,10),(2,10),(0,11),(1,11),(2,11),(3,11),(0,12),(1,12),(2,12),(3,12)), [(3,11)]),
+        district('woodland_i6c4', 'grain', cells((5,0),(6,0),(7,0),(8,0),(6,1),(7,1),(8,1),(6,2),(7,2),(8,2)), [(7,2)]),
+        district('woodland_i6c4', 'beet', cells((9,0),(10,0),(11,0),(9,1),(10,1),(11,1),(10,2),(11,2)), [(10,2)]),
+        district('woodland_i6c4', 'milk', cells((0,6),(1,6),(2,6),(0,7),(1,7),(2,7),(3,7)), [(3,7)]),
+        district('woodland_i6c4', 'stone', cells((0,4),(1,4),(2,4),(3,4),(0,5),(1,5)), [(3,4)]),
+        district('woodland_i6c4', 'sand', cells((5,14),(6,14),(7,14)), [(6,14)]),
+        district('woodland_i6c4', 'iron_ore', cells((8,14),(9,14)), [(9,14)]),
+        district('woodland_i6c4', 'copper_ore', cells((10,14),(11,14)), [(11,14)]),
+    ]
+    parking = [(3, 5), (3, 9)]
+    city = [civic(14, 0, 'town_hall', 'woodland_i6c4'), civic(14, 4, 'terminal', 'woodland_i6c4'), civic(13, 8, 'dealership', 'woodland_i6c4')]
+    stalls = [(16, 6), (17, 6), (16, 7), (17, 7)]
+    spawns = [(4, 2), (2, 8), (12, 14), (15, 7)]
+    data = common('Лесной край', 'woodland_region_i6c4', 18, 15, 4, roads, lots, resources, city, stalls, spawns, parking)
+    data['compact_exhibition'] = True
+    data['assignment'] = 'startup-rotation-1; full six-cell industrial lots; eight public resources; no initial private ownership; compact-exhibition-1.'
+    data['turn_cells'] = [(4, 3), (12, 3), (4, 13), (12, 13), (12, 7), (4, 8)]
+    data['passing_bays'] = 'One-cell ring with short spurs. Showroom exit meets the east road; two extractor bays stand off the ring.'
+    road = set(map(tuple, data['road_center_cells']))
+    if len(road) != 46 or any((x + 1, z) in road and (x, z + 1) in road and (x + 1, z + 1) in road for x, z in road):
+        raise SystemExit(f'woodland i6c4 road geometry {len(road)}')
+    occupied = {}
+    def take(points, label):
+        for point in points:
+            cell = tuple(point)
+            if cell in occupied:
+                raise SystemExit(f'overlap {cell} {occupied[cell]} / {label}')
+            occupied[cell] = label
+    for lot in lots:
+        take(lot['cells'], lot['id'])
+    for group in resources:
+        take(group['cells'], group['id'])
+    for site in city:
+        take(site['footprint'], site['kind'])
+    take(stalls, 'stall')
+    take(parking, 'parking')
+    for cell in road:
+        if cell in occupied:
+            raise SystemExit(f'road overlap {cell} {occupied[cell]}')
+    return data
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--check', action='store_true')
     args = p.parse_args()
-    for file, data in [('compact_valley', valley()), ('woodland_region', woodland()), ('compact_valley_i6c21', valley_i6c21())]:
+    for file, data in [('compact_valley', valley()), ('woodland_region', woodland()), ('compact_valley_i6c21', valley_i6c21()), ('woodland_region_i6c4', woodland_i6c4())]:
         path = ROOT/'docs/vnext/maps'/f'{file}.json'
         content = json.dumps(data, ensure_ascii=False, indent=2)+'\n'
         if args.check:

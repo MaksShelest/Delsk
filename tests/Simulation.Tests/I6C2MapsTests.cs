@@ -9,11 +9,11 @@ namespace Simulation.Tests;
 
 public class I6C2MapsTests
 {
-    internal static EconomyProfile Economy(string key)=>key==PlayMaps.CompactValley?VNextEquipmentClassesProfile.Create(MobileEquipmentI4Tests.Profile()):MobileEquipmentI4Tests.Profile();
+    internal static EconomyProfile Economy(string key)=>key is PlayMaps.CompactValley or PlayMaps.Second?VNextEquipmentClassesProfile.Create(MobileEquipmentI4Tests.Profile()):MobileEquipmentI4Tests.Profile();
     internal static OrdinaryGameResolution Resolve(string key,int npcs=3)
     {
         var profile=Economy(key);
-        string file=key==PlayMaps.Second?"woodland_region.json":"compact_valley_i6c21.json";
+        string file=key==PlayMaps.Second?"woodland_region_i6c4.json":"compact_valley_i6c21.json";
         var template=MapDesignReader.Read(Encoding.UTF8.GetBytes(OrdinaryNewGameTests.Text(file)),profile);
         return OrdinaryNewGame.Resolve(template,profile,new(npcs),vnextBalance:MapDesignTests.Balance());
     }
@@ -35,7 +35,8 @@ public class I6C2MapsTests
         Assert.Equal(JsonSerializer.Serialize(d,SimulationJson.Options),JsonSerializer.Serialize(actual,SimulationJson.Options));
         Assert.Equal((width,height),(d.MapWidth,d.MapHeight));Assert.Equal(sites,l.IndustrialLots.Length);Assert.Equal(capacity,l.MaxParticipants);
         Assert.Equal(34,d.Items.Length);Assert.Equal(69,d.Recipes.Length);Assert.Equal(6,d.BuildingTypes!.Count(t=>t.Kind==BuildingKind.Production));
-        Assert.Equal(8,d.ResourceNodes.Select(n=>n.ItemId).Distinct().Count());Assert.Equal(16,l.CivicObjects.Single(c=>c.Kind=="dealership").EquipmentParking!.Length);
+        Assert.Equal(8,d.ResourceNodes.Select(n=>n.ItemId).Distinct().Count());Assert.Equal(key==PlayMaps.Second?2:16,l.CivicObjects.Single(c=>c.Kind=="dealership").EquipmentParking!.Length);
+        if(key==PlayMaps.Second){Assert.Equal(PlayMaps.WoodlandI6C4ScenarioId,d.Id);Assert.Equal(46,l.InitialCityDirtCells.Length);Assert.Equal(2,d.Economy!.Fleet!.EquipmentDealerVersion);}
         Assert.All(d.ResourceNodes.GroupBy(r=>r.ItemId),g=>{Assert.Contains(g,r=>r.Rules!.Public);Assert.Contains(g,r=>!r.Rules!.Public);});
         Assert.All(d.Participants,a=>Assert.Equal(20000,a.CashMinor));Assert.All(d.Plots!,p=>Assert.Null(p.OwnerId));
         Assert.Equal(3,Resolve(key).Controllers.Length);Assert.NotEqual(PlayMaps.CurrentSecondScenarioId,d.Id);
@@ -173,6 +174,17 @@ public class I6C2MapsTests
         Step(s,new(ActionKind.SellAvailableToCapital,OfferId:offer.Id,ItemId:recipe.OutputItem,Quantity:1));StorageC1Tests.Idle(s);
         Assert.Contains(s.Engine.Ledger(),l=>l.Reason=="CapitalSettlement");
         var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());Evidence(s,key+"-first-production");
+    }
+    [Fact]public void PreviousWoodlandSnapshotStaysOnI4AndIsNotTheNewStart()
+    {
+        var i4=MobileEquipmentI4Tests.Profile();
+        var design=MapDesignReader.Read(Encoding.UTF8.GetBytes(OrdinaryNewGameTests.Text("woodland_region.json")),i4);
+        var fromDesign=OrdinaryNewGame.Resolve(design,i4,new(),vnextBalance:MapDesignTests.Balance()).Scenario;
+        var snapshot=JsonSerializer.Deserialize<ScenarioDefinition>(OrdinaryNewGameTests.Text("woodland-region-i6c2.json"),SimulationJson.Options)!;
+        var fromSnapshot=OrdinaryNewGame.Resolve(snapshot,i4,new(),vnextBalance:MapDesignTests.Balance()).Scenario;
+        Assert.Equal(JsonSerializer.Serialize(fromDesign,SimulationJson.Options),JsonSerializer.Serialize(fromSnapshot,SimulationJson.Options));
+        Assert.Equal(PlayMaps.WoodlandScenarioId,fromSnapshot.Id);Assert.Equal(16,fromSnapshot.Layout!.CivicObjects.Single(c=>c.Kind=="dealership").EquipmentParking!.Length);
+        Assert.Equal(1,fromSnapshot.Economy!.Fleet!.EquipmentDealerVersion);Assert.NotEqual(PlayMaps.WoodlandI6C4ScenarioId,fromSnapshot.Id);
     }
     [Fact]public void OldValleyAndHistoricalSecondKeepGeometryRoutesIdsAndOwnershipOnLoad()
     {

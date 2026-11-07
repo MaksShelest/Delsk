@@ -315,7 +315,7 @@ public partial class PresentationStage : Node3D
         }
         if(frame.Layout is {} layout)
         {
-            if(layout.SourceId is PlayMaps.CompactValleyScenarioId or PlayMaps.CompactValleyI6C2ScenarioId or PlayMaps.WoodlandScenarioId)
+            if(layout.SourceId is PlayMaps.CompactValleyScenarioId or PlayMaps.CompactValleyI6C2ScenarioId or PlayMaps.WoodlandScenarioId or PlayMaps.WoodlandI6C4ScenarioId)
             {
                 // One cleared pad per real six-cell lot. The current valley also gets a flat survey grid.
                 if(layout.SourceId==PlayMaps.CompactValleyScenarioId)
