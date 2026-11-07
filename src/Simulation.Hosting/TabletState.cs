@@ -34,7 +34,9 @@ public sealed class TabletState
     public bool OpenObject(PlayerView view, string kind, long id)
     {
         _objectKind=kind;
-        bool valid = kind=="ground"?view.Storage?.Ground.Any(g=>g.PlotId==id&&view.Plots.Any(p=>p.Id.Value==id&&p.Position==view.Participant.Position))==true:kind == "equipment" ? view.Equipment?.Any(e => e.Id.Value == id && e.Position == view.Participant.Position) == true
+        // Свою технику можно посмотреть из автопарка. Команды по-прежнему разрешает только Core.
+        bool valid = kind=="ground"?view.Storage?.Ground.Any(g=>g.PlotId==id&&view.Plots.Any(p=>p.Id.Value==id&&p.Position==view.Participant.Position))==true
+            :kind=="equipment"?view.Equipment?.Any(e=>e.Id.Value==id)==true
             : view.Buildings.Any(b => b.Id.Value == id && b.Footprint.Contains(view.Participant.Position));
         if (!valid) return false;
         Open(TabletKind.Object, view.Participant.Position, id); return true;

@@ -32,9 +32,19 @@ public partial class QuickStockTransfer : VBoxContainer
             if(index<0)index=Array.FindIndex(ids,id=>view.Inventories.Single(i=>i.Id==source).Stock.Any(s=>s.ItemId==id&&s.Quantity>s.Reserved));
             if(ids.Length>0)_item.Select(Math.Max(0,index));
         }
+        PreferStocked();
         var inventory=view.Inventories.Single(i=>i.Id==(label=="input"||label=="storage"?destination:source));
         _stock.Text=PlayerText.Local(_language,label=="input"?"Вход":label=="storage"?"Хранилище":"Выход",label=="input"?"Input":label=="storage"?"Storage":"Output")+$" · {inventory.OccupiedVolume}+{inventory.ReservedCapacity}/{inventory.Capacity}";
         Render();
+    }
+    // Выбранный пустой ресурс не должен скрывать запас, который уже можно забрать.
+    private void PreferStocked()
+    {
+        if(_view is null||_items.Length==0||_item.Selected<0||_item.Selected>=_items.Length)return;
+        var inventory=_view.Inventories.SingleOrDefault(i=>i.Id==_source);if(inventory is null)return;
+        bool free(string id)=>inventory.Stock.Any(s=>s.ItemId==id&&s.Quantity>s.Reserved);
+        if(free(_items[_item.Selected]))return;
+        int better=Array.FindIndex(_items,free);if(better>=0)_item.Select(better);
     }
     private ManualTransferChoice? Choice()=>_view is null||_item.Selected<0||_item.Selected>=_items.Length?null:
         ManualTransferChoice.Read(_scenario,_view,_source,_destination,_items[_item.Selected],_access,_pending);

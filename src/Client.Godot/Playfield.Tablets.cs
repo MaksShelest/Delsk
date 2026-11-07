@@ -93,8 +93,12 @@ public partial class Playfield
         bool woodworking=_tabletState.Kind is TabletKind.Enterprise or TabletKind.Object&&
             (_tabletState.Kind!=TabletKind.Object||_objectKind=="building")&&view.Buildings.Any(b=>b.Id.Value==_tabletState.EnterpriseId&&b.Kind==BuildingKind.Production&&view.Enterprises.Any(e=>e.Id==new EnterpriseId(b.Id.Value)));
         if(woodworking){var b=view.Buildings.Single(b=>b.Id.Value==_tabletState.EnterpriseId);title=GameUi.Industry(_language,b.TypeId,b.Level);}
+        bool equipmentSide=_tabletState.Kind==TabletKind.Object&&_objectKind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2;
+        if(equipmentSide&&view.Equipment?.FirstOrDefault(e=>e.Id.Value==_tabletState.EnterpriseId) is {} shown)
+            title=ExtractionTabletPresenter.Title(_language,shown.TypeId,shown.Level);
         _tabletPanel = new TabletPanel(title,_language,_tabletState.Kind==TabletKind.Player?"home":_tabletState.Kind is TabletKind.Capital or TabletKind.Market?"market":"warehouse");
-        if(_tabletState.Kind==TabletKind.Player||woodworking)_tabletPanel.UseCompactFrame();
+        if(equipmentSide){_tabletPanel.UseSideDock();_tabletPanel.Resized+=SyncSideFrame;}
+        else if(_tabletState.Kind==TabletKind.Player||woodworking)_tabletPanel.UseCompactFrame();
         _tabletPanel.Closed += CloseTablet;
         _tabletPanel.HelpRequested += () => OpenHelp(_tabletState.Kind switch
         { TabletKind.CityMap=>"map",TabletKind.Notices or TabletKind.Tutorial=>"journey",TabletKind.Player => _playerTablet?.SelectedTab switch { 0 => _playerTablet.HelpTopic, 2 => "politics", _ => "city" },
@@ -112,14 +116,14 @@ public partial class Playfield
         else if(_tabletState.Kind==TabletKind.CityMap)
         {
             _cityMapPanel=new(_scenario,_language,_cityMapPreferences,Submit,c=>_session.Engine.PreviewMovement(_human,c));
-            _cityMapPanel.OpenObject+=(kind,id)=>{OpenPlayerTablet();_playerTablet?.OpenHolding(kind,id);};
+            _cityMapPanel.OpenObject+=(kind,id)=>{if(kind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2){OpenObjectTablet(kind,id);return;}OpenPlayerTablet();_playerTablet?.OpenHolding(kind,id);};
             _cityMapPanel.OpenSection+=OpenCitySection;_tabletPanel.Body.AddChild(_cityMapPanel);
         }
         else if (_tabletState.Kind == TabletKind.Player)
         {
             _playerTablet = new PlayerTablet(_scenario,_language,Submit,a => _session.Engine.AccessFor(_human,a),(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction),(offset,bills)=>_session.Engine.AccountOf(_human,offset,20,bills),terms=>_session.Engine.QuoteDeliveryService(_human,terms));
             _playerTablet.RoadWorkRequested+=OpenRoadWork;
-            _playerTablet.ObjectRequested+=OpenObjectTablet;
+            _playerTablet.ObjectRequested+=OpenObjectTablet;_playerTablet.LocationRequested+=ShowOnCityMap;
             _tabletPanel.AttachNavigation(_playerTablet.SectionPicker);
             _playerTablet.HelpRequested+=()=>OpenHelp(_playerTablet.HelpTopic);
             _playerTablet.MapRequested+=OpenCityMap;_playerTablet.NoticesRequested+=OpenCityNotices;_playerTablet.TutorialRequested+=OpenCityJourney;
@@ -138,11 +142,25 @@ public partial class Playfield
         {
             _enterpriseTablet = new HouseholdObjectCard(_scenario,_language,_tabletState.Kind == TabletKind.Object ? _objectKind : "building",_tabletState.EnterpriseId,Submit,a => _session.Engine.AccessFor(_human,a),(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction),woodworkingPrototype:woodworking,productionType:view.Buildings.FirstOrDefault(b=>b.Id.Value==_tabletState.EnterpriseId)?.TypeId??"woodworking");
             _enterpriseTablet.MapRequested+=OpenCityMap;_enterpriseTablet.FleetRequested+=()=>OpenCitySection("fleet");
+            _enterpriseTablet.EquipmentFocusRequested+=target=>OpenObjectTablet("equipment",target);
             _enterpriseTablet.ArtworkHeaderChanged+=_tabletPanel.UseArtworkHeader;
             _enterpriseTablet.HelpRequested+=_tabletPanel.RequestHelp;_enterpriseTablet.CloseRequested+=_tabletPanel.RequestClose;
             _tabletPanel.Body.AddChild(_enterpriseTablet);
         }
-        TabletDesign.CompactInputs(_tabletPanel);_playChrome.AddChild(_tabletPanel);
+        TabletDesign.CompactInputs(_tabletPanel);_playChrome.AddChild(_tabletPanel);Callable.From(SyncSideFrame).CallDeferred();
+    }
+    private void SyncSideFrame()
+    {
+        float covered=0;
+        if(_tabletPanel is {SideDock:true} panel&&GodotObject.IsInstanceValid(panel)&&panel.IsVisibleInTree())
+        {float width=GetViewportRect().Size.X;if(width>1&&panel.Size.X>1)covered=(panel.GlobalPosition.X+panel.Size.X)/width;}
+        _stage?.SetSidePanelInset(covered);
+    }
+    private void ShowOnCityMap(Cell cell)
+    {
+        _cityMapPreferences.Layers|=CityLayer.Industry|CityLayer.People;_cityMapPreferences.Participant=0;
+        _cityMapPreferences.SelectedKey=$"cell:{cell.X}:{cell.Z}";OpenCityMap();
+        _cityMapPreferences.Center(cell.X+.5,cell.Z+.5);_cityMapPanel?.Canvas.Zoom(4);
     }
     private void RefreshTablet(PlayerView view)
     {

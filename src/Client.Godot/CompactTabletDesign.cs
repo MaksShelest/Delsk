@@ -11,8 +11,11 @@ public static class CompactTabletDesign
         foreach(string type in new[]{"Label","Button","OptionButton","CheckButton","CheckBox","LineEdit","RichTextLabel"})
         {
             theme.SetColor("font_color",type,new("303a35"));theme.SetColor("font_hover_color",type,new("303a35"));
-            theme.SetColor("font_focus_color",type,new("303a35"));theme.SetColor("font_disabled_color",type,new("748077"));
+            theme.SetColor("font_focus_color",type,new("303a35"));theme.SetColor("font_disabled_color",type,new("556860"));
+            theme.SetColor("font_pressed_color",type,new("303a35"));theme.SetColor("font_hover_pressed_color",type,new("303a35"));
         }
+        foreach(string type in new[]{"Button","OptionButton"})
+        {theme.SetColor("font_pressed_color",type,new("f4f7f2"));theme.SetColor("font_hover_pressed_color",type,new("f4f7f2"));}
         foreach(string type in new[]{"Button","OptionButton"})
         {
             theme.SetStylebox("normal",type,Surface("f8f7f2",8));theme.SetStylebox("hover",type,Surface("e8eee6",8));

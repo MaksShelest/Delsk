@@ -9,6 +9,7 @@ public partial class HouseholdObjectCard : VBoxContainer
     public event System.Action? HelpRequested;
     public event System.Action? MapRequested;
     public event System.Action? FleetRequested;
+    public event System.Action<long>? EquipmentFocusRequested;
     public event System.Action? CloseRequested;
     private readonly ScenarioDefinition _scenario;
     private readonly string _language;
@@ -62,7 +63,6 @@ public partial class HouseholdObjectCard : VBoxContainer
         amount.AddChild(new Label { Text = L("Количество для переноса", "Transfer quantity") }); amount.AddChild(_quantity);
         _details.AddChild(_actions);
         var routeToggle=new Button{Name="HouseholdRoutes",Text=L("Маршруты ▸","Routes ▸"),FocusMode=FocusModeEnum.None};_details.AddChild(routeToggle);
-        routeToggle.Visible=!(kind=="equipment"&&scenario.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2);
         _routes=new(scenario,language,kind,id,submit){Visible=false};_routes.FleetRequested+=()=>FleetRequested?.Invoke();_details.AddChild(_routes);routeToggle.Pressed+=()=>_routes.Visible=!_routes.Visible;
         TabletDesign.CompactInputs(this);Resized+=LayoutCard;
         _quantity.ValueChanged += _ => { if (_lastView is not null) ShowData(_lastView,_pending,_paused); };
@@ -77,8 +77,9 @@ public partial class HouseholdObjectCard : VBoxContainer
         }
         else if(kind=="equipment"&&scenario.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2)
         {
-            RemoveChild(_details);_heading.Visible=_stock.Visible=_workers.Visible=_delivery.Visible=_progress.Visible=false;
-            _extraction=new(scenario,language,id,submit,access,_details);_extraction.MapRequested+=()=>MapRequested?.Invoke();AddChild(_extraction);
+            SizeFlagsVertical=SizeFlags.ExpandFill;RemoveChild(_details);_heading.Visible=_stock.Visible=_workers.Visible=_delivery.Visible=_progress.Visible=false;
+            _extraction=new(scenario,language,id,submit,access,_details){SizeFlagsVertical=SizeFlags.ExpandFill};_extraction.MapRequested+=()=>MapRequested?.Invoke();
+            _extraction.FocusRequested+=target=>EquipmentFocusRequested?.Invoke(target);AddChild(_extraction);
         }
     }
 
@@ -119,12 +120,18 @@ public partial class HouseholdObjectCard : VBoxContainer
                 var siteItem=_scenario.ResourceNodes.Where(n=>n.Position==machine.Position&&type.Accepts(n.ItemId)).Select(n=>n.ItemId).Distinct().ToArray();
                 if(machine.Deployed!=true)Add("place",L("Разместить","Place"),new(ActionKind.PlaceEquipment,Equipment:machine.Id,ItemId:siteItem.Length==1?siteItem[0]:machine.ResourceItem??""),siteItem.Length>0);
                 if(machine.Deployed==true)foreach(var item in siteItem.DefaultIfEmpty(current))
-                    Add("start:"+item,L("Начать добычу","Start harvest")+" · "+PlayerText.Item(_language,item),new(ActionKind.StartHarvesting,Equipment:machine.Id,ItemId:item,Quantity:level.CycleQuantity),machine.Mode!=EquipmentMode.Automatic&&machine.PersonalJobId==0&&machine.CycleId==0);
+                    Add("start:"+item,siteItem.Length>1?L("Начать: ","Start: ")+PlayerText.Item(_language,item):L("Начать добычу","Start harvest"),new(ActionKind.StartHarvesting,Equipment:machine.Id,ItemId:item,Quantity:level.CycleQuantity),machine.Mode!=EquipmentMode.Automatic&&machine.PersonalJobId==0&&machine.CycleId==0);
+                if(classes&&machine.Deployed==true)
+                {
+                    bool idle=machine.PersonalJobId==0&&machine.CycleId==0&&machine.Motion is null;
+                    Add("mode:Personal",L("Личный","Personal"),new(ActionKind.SetEquipmentMode,Equipment:machine.Id,Mode:EquipmentMode.Personal),idle&&machine.Mode!=EquipmentMode.Personal);
+                    Add("mode:Automatic",L("Авто","Automatic"),new(ActionKind.SetEquipmentMode,Equipment:machine.Id,Mode:EquipmentMode.Automatic),idle&&machine.Mode!=EquipmentMode.Automatic);
+                }
                 if(classes&&(machine.Mode!=EquipmentMode.Off||machine.PersonalJobId!=0||machine.CycleId!=0))Add("stop",L("Остановить","Stop"),new(ActionKind.SetEquipmentMode,Equipment:machine.Id,Mode:EquipmentMode.Off));
                 if(machine.Deployed==true)Add("pack",L("Забрать технику","Pick up equipment"),new(ActionKind.PackEquipment,Equipment:machine.Id),machine.Mode==EquipmentMode.Off&&machine.PersonalJobId==0&&machine.CycleId==0);
             }
             if ((classes||machine.Deployed is null) && type.Levels.FirstOrDefault(l => l.Level == machine.Level + 1) is { } next)
-                Add("upgrade", L("Улучшить до уровня ", "Upgrade to level ") + next.Level + " — " + PlayerText.Money(next.PriceMinor) + L(" · добыча ", " · output ") + level.CycleQuantity + "→" + next.CycleQuantity + L(", вместимость ", ", capacity ") + level.StorageCapacity + "→" + next.StorageCapacity, new(ActionKind.UpgradeEquipment, Equipment: machine.Id), machine.Mode == EquipmentMode.Off && machine.CycleId == 0 && machine.PersonalJobId == 0 && machine.Motion is null);
+                Add("upgrade", L("Улучшить", "Upgrade"), new(ActionKind.UpgradeEquipment, Equipment: machine.Id), machine.Mode == EquipmentMode.Off && machine.CycleId == 0 && machine.PersonalJobId == 0 && machine.Motion is null);
         }
         else
         {

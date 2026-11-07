@@ -3,7 +3,7 @@ using Godot;
 /// <summary>Scoped visual tokens from the supplied tablet kit. No game state or clock.</summary>
 public static class TabletDesign
 {
-    public static readonly Color Ink=new("303a35"),Muted=new("69766e"),Green=new("49735f");
+    public static readonly Color Ink=new("303a35"),Muted=new("556860"),Green=new("49735f");
     private static Theme? _theme;
     public static Theme Theme => _theme ??= Create();
     private static Theme Create()
@@ -13,9 +13,12 @@ public static class TabletDesign
         foreach(string type in new[]{"Label","Button","CheckButton","CheckBox","OptionButton","LineEdit","SpinBox","ItemList","RichTextLabel","TabContainer","TabBar"})
         {
             t.SetColor("font_color",type,Ink);t.SetColor("font_hover_color",type,Ink);t.SetColor("font_focus_color",type,Ink);
-            t.SetColor("font_pressed_color",type,new("fffbee"));t.SetColor("font_disabled_color",type,Muted);
+            t.SetColor("font_pressed_color",type,Ink);t.SetColor("font_hover_pressed_color",type,Ink);t.SetColor("font_disabled_color",type,Muted);
         }
+        foreach(string type in new[]{"Button","OptionButton"})
+        {t.SetColor("font_pressed_color",type,new("f4f7f2"));t.SetColor("font_hover_pressed_color",type,new("f4f7f2"));}
         t.SetColor("default_color","RichTextLabel",Ink);t.SetColor("font_pressed_color","CheckButton",Ink);t.SetColor("font_pressed_color","CheckBox",Ink);
+        t.SetColor("font_hover_pressed_color","CheckButton",Ink);t.SetColor("font_hover_pressed_color","CheckBox",Ink);
         t.SetColor("font_color","PopupMenu",Ink);t.SetColor("font_hover_color","PopupMenu",Ink);t.SetStylebox("panel","PopupMenu",Card());
         t.SetStylebox("panel","PanelContainer",Card());
         foreach(string type in new[]{"Button","OptionButton"})
@@ -48,7 +51,7 @@ public static class TabletDesign
     public static PanelContainer Wrap(Control content,bool soft=false)
     {var panel=new PanelContainer{SizeFlagsHorizontal=Control.SizeFlags.ExpandFill};panel.AddThemeStyleboxOverride("panel",Card(soft));panel.AddChild(content);return panel;}
     public static Label Heading(string text,int size=23)
-    {var l=new Label{Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart};l.AddThemeFontSizeOverride("font_size",size);l.AddThemeFontOverride("font",GD.Load<Font>("res://delsk_sawmill_ui/assets/fonts/Nunito-ExtraBold.ttf"));return l;}
+    {var l=new Label{Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart};l.AddThemeFontSizeOverride("font_size",size);l.AddThemeColorOverride("font_color",Ink);l.AddThemeFontOverride("font",GD.Load<Font>("res://delsk_sawmill_ui/assets/fonts/Nunito-ExtraBold.ttf"));return l;}
     public static TextureRect Art(string key,Vector2 size)
         =>new(){Texture=Texture(key),CustomMinimumSize=size,ExpandMode=TextureRect.ExpandModeEnum.IgnoreSize,StretchMode=TextureRect.StretchModeEnum.KeepAspectCentered,MouseFilter=Control.MouseFilterEnum.Ignore};
     public static Texture2D Texture(string key)
