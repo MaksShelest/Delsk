@@ -65,6 +65,72 @@ def valley():
                   [(x,24) for x in range(11)], [(12,z) for z in range(0,22,2)], bays)
 
 
+def valley_i6c21():
+    """Resources, fifteen lots, then the town. One-cell roads only."""
+    roads = {(x, 12) for x in range(32)}
+    roads |= {(10, z) for z in range(21)}
+    roads |= {(23, z) for z in range(22)}
+    def lot(n, x, z, entry):
+        return dict(id=f'valley_c21_lot_{n:02}', cells=rect(x, z, 2, 3), entry=entry)
+    lots = []
+    for i, z in enumerate((0, 4, 8, 14, 18)):
+        lots.append(lot(i * 3 + 1, 8, z, (10, z)))
+        lots.append(lot(i * 3 + 2, 11, z, (10, z + 2)))
+        lots.append(lot(i * 3 + 3, 21, z, (23, z + 1)))
+    def cells(*points):
+        return [list(p) for p in points]
+    resources = [
+        district('valley_c21', 'wood', cells((3,3),(3,2),(2,3),(2,4),(1,3),(2,2),(1,2),(0,2),(2,1),(1,1),(0,1)), [(2,4)]),
+        district('valley_c21_east', 'wood', cells((4,0),(5,0),(6,0),(4,1),(5,1),(6,1),(5,2),(6,2)), [(6,2)]),
+        district('valley_c21', 'grain', cells((1,6),(2,6),(3,6),(4,6),(0,7),(1,7),(2,7),(3,7),(4,7),(1,8),(2,8),(3,8),(4,8),(5,8),(2,9),(3,9)), [(5,8)]),
+        district('valley_c21', 'milk', cells((0,14),(1,14),(2,14),(0,15),(1,15),(2,15),(1,16)), [(1,16)]),
+        district('valley_c21', 'beet', cells((4,14),(5,14),(6,14),(5,15),(6,15),(6,16)), [(6,16)]),
+        district('valley_c21', 'stone', cells((0,18),(1,18),(0,19),(1,19),(2,19)), [(2,19)]),
+        district('valley_c21', 'sand', cells((4,18),(5,18),(3,19),(4,19)), [(3,19)]),
+        district('valley_c21', 'iron_ore', cells((6,18),(6,19),(5,20)), [(5,20)]),
+        district('valley_c21', 'copper_ore', cells((0,21),(1,21),(1,22)), [(1,22)]),
+    ]
+    # The first bays are the ones actually stocked. Keep them off the showroom exit.
+    # Stocked extractors stand on different branches so neither blocks the other's only exit.
+    parking = [(9, 17), (24, 18), (24, 21), (24, 15), (24, 13), (24, 10), (22, 17), (22, 13), (22, 3), (24, 16), (24, 17), (24, 19), (24, 20), (24, 14), (24, 11), (22, 7)]
+    city = [civic(24, 1, 'town_hall', 'valley_c21'), civic(28, 1, 'terminal', 'valley_c21'), civic(24, 5, 'dealership', 'valley_c21')]
+    stalls = [(30, 0), (31, 0), (30, 1), (31, 1), (30, 2), (31, 2), (30, 3), (31, 3), (27, 0), (26, 0), (31, 4)]
+    # Startup rotation can place any participant on any spawn. Keep every spawn off the
+    # one-cell roads the showroom and the two extractors use to reach the west branch.
+    spawns = [(0, 12), (1, 12), (2, 12), (3, 12), (4, 12), (5, 12), (28, 12), (29, 12), (30, 12), (31, 12), (10, 20)]
+    data = common('Малая долина', 'compact_valley_i6c21', 32, 25, 11, roads, lots, resources, city, stalls, spawns, parking)
+    data['compact_exhibition'] = True
+    data['assignment'] = 'startup-rotation-1; full six-cell industrial lots; eight public resources; no initial private ownership; compact-exhibition-1.'
+    data['turn_cells'] = [(10, 12), (23, 12), (0, 12)]
+    data['passing_bays'] = 'One central road and two single-cell branches. Showroom apron touches the city branch; equipment bays are a one-cell curb.'
+    road = set(map(tuple, data['road_center_cells']))
+    if not 60 <= len(road) <= 80 or any((x + 1, z) in road and (x, z + 1) in road and (x + 1, z + 1) in road for x, z in road):
+        raise SystemExit(f'valley i6c21 road geometry {len(road)}')
+    occupied = {}
+    def take(points, label):
+        for point in points:
+            cell = tuple(point)
+            if cell in occupied:
+                raise SystemExit(f'overlap {cell} {occupied[cell]} / {label}')
+            occupied[cell] = label
+    for lot in lots:
+        take(lot['cells'], lot['id'])
+    for group in resources:
+        take(group['cells'], group['id'])
+        if any(tuple(cell) not in {tuple(item) for item in group['cells']} for cell in group['public_cells']):
+            raise SystemExit('public cell outside '+group['id'])
+    for site in city:
+        take(site['footprint'], site['kind'])
+    take(stalls, 'stall')
+    take(parking, 'parking')
+    for cell in road:
+        if cell in occupied:
+            raise SystemExit(f'road overlap {cell} {occupied[cell]}')
+    if len(parking) != 16 or any(not any(abs(cell[0]-x)+abs(cell[1]-z)==1 for x, z in road) for cell in parking):
+        raise SystemExit('equipment curb is not one cell from a road')
+    return data
+
+
 def woodland():
     roads = set(rect(10,0,2,15)+rect(17,3,1,12)+rect(0,5,18,2)+rect(10,3,8,2)
                 +rect(10,10,8,1)+rect(10,14,8,1)+rect(4,6,2,8)+rect(0,13,12,1))
@@ -91,7 +157,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--check', action='store_true')
     args = p.parse_args()
-    for file, data in [('compact_valley', valley()), ('woodland_region', woodland())]:
+    for file, data in [('compact_valley', valley()), ('woodland_region', woodland()), ('compact_valley_i6c21', valley_i6c21())]:
         path = ROOT/'docs/vnext/maps'/f'{file}.json'
         content = json.dumps(data, ensure_ascii=False, indent=2)+'\n'
         if args.check:

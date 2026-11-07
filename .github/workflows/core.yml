@@ -3,7 +3,7 @@ on:
   # Feature branches are checked by their PR; do not create a second check suite
   # on the same SHA which the PR run would cancel.
   push:
-    branches: ['feat/economic-cycle-p00-p05']
+    branches: ['master', 'feat/economic-cycle-p00-p05']
     tags: ['**']
   pull_request:
 permissions:

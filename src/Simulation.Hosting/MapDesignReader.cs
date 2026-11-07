@@ -15,7 +15,7 @@ public static class MapDesignReader
     private sealed record Design([property:JsonRequired]string SchemaVersion,[property:JsonRequired]string Id,[property:JsonRequired]string Name,[property:JsonRequired]int Width,[property:JsonRequired]int Height,
         [property:JsonRequired]int MaxParticipants,[property:JsonRequired]int[][] RoadCenterCells,[property:JsonRequired]int[][] RoadCorridorCells,[property:JsonRequired]int[][] InitialCityDirtCells,
         [property:JsonRequired]Lot[] IndustrialLots,[property:JsonRequired]District[] ResourceDistricts,[property:JsonRequired]Civic[] CivicObjects,[property:JsonRequired]Stall[] MarketStalls,
-        [property:JsonRequired]int[][] SpawnCells,[property:JsonRequired]int[][] TurnCells,[property:JsonRequired]string PassingBays,[property:JsonRequired]string Assignment);
+        [property:JsonRequired]int[][] SpawnCells,[property:JsonRequired]int[][] TurnCells,[property:JsonRequired]string PassingBays,[property:JsonRequired]string Assignment,bool CompactExhibition=false);
     private static readonly JsonSerializerOptions Options=new(){PropertyNamingPolicy=JsonNamingPolicy.SnakeCaseLower,UnmappedMemberHandling=JsonUnmappedMemberHandling.Disallow,MaxDepth=16};
     public static bool IsDesign(ReadOnlyMemory<byte> json)
     {using var d=JsonDocument.Parse(json);return d.RootElement.TryGetProperty("schema_version",out _);}
@@ -44,10 +44,12 @@ public static class MapDesignReader
             var entry=c.Entry is not null?Point(c.Entry):(parking??footprint.Where(p=>p.Z==footprint.Max(q=>q.Z)).ToArray()).OrderBy(p=>p.X).ThenBy(p=>p.Z).First();
             return new CivicSite(c.Id,c.Kind,footprint,source,parking,body,entry,c.EquipmentParking is null?null:Cells(c.EquipmentParking));
         }).ToArray();
+        // The token stays inside the existing assignment string, so old scenario JSON does not gain a field.
+        string assignment=d.CompactExhibition && !d.Assignment.Contains("compact-exhibition-1",StringComparison.Ordinal)?d.Assignment+" compact-exhibition-1":d.Assignment;
         var layout=new MapLayout(d.SchemaVersion=="delsk-map-design-2"?"map-adapter-2":"map-adapter-1",d.Id,d.Name,VNextBalanceReader.Digest(bytes.Span),d.MaxParticipants,Cells(d.RoadCenterCells),Cells(d.RoadCorridorCells),Cells(d.InitialCityDirtCells),
             d.IndustrialLots.Select(l=>new IndustrialLot(l.Id,Cells(l.Cells),Point(l.Entry))).ToArray(),
             d.ResourceDistricts.Select(r=>new ResourceDistrict(r.Id,r.Item,r.Profile,Cells(r.Cells),Cells(r.PublicCells))).ToArray(),civic,
-            d.MarketStalls.Select(s=>new MarketStall(s.Id,Point(s.Cell))).ToArray(),Cells(d.SpawnCells),Cells(d.TurnCells),d.PassingBays,d.Assignment);
+            d.MarketStalls.Select(s=>new MarketStall(s.Id,Point(s.Cell))).ToArray(),Cells(d.SpawnCells),Cells(d.TurnCells),d.PassingBays,assignment);
         var resources=(economy.World.Resources??[]).ToDictionary(r=>r.ItemId,StringComparer.Ordinal);
         var nodes=layout.ResourceDistricts.SelectMany(r=>
         {

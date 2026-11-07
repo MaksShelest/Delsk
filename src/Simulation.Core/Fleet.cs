@@ -26,12 +26,16 @@ public sealed partial class SimulationEngine
         if (Fleet is null) return;
         _fleetRandom = new(unchecked(_config.Seed ^ 0xF1EE7123UL));
         _nextVehicleSupply = Fleet.SupplyTicks;
-        foreach (string id in new[] { "sputnik20", "muravey70", "muravey70", "eger70", "vector200", "trakt_d1" })
+        // New maps opt in through their assignment. Saved games restore the stock they already have.
+        bool compact=_config.Layout?.Assignment.Contains("compact-exhibition-1",StringComparison.Ordinal)==true;
+        foreach (string id in compact
+            ? new[]{"sputnik20","muravey70","eger70","trakt_d1","extractor_extract_wood_1","extractor_extract_grain_1"}
+            : new[] { "sputnik20", "muravey70", "muravey70", "eger70", "vector200", "trakt_d1" })
         {
             AddDealerVehicle(id);var listing=_dealerStock[^1];
             Emit("DealerInitialStock",entity:listing.Id,item:id,reason:$"{listing.Position.X},{listing.Position.Z}");
         }
-        if (UsesMobileEquipment)
+        if (!compact && UsesMobileEquipment)
             foreach (var model in Fleet.Models.Where(m=>m.EquipmentTypeId is not null))
             { AddDealerVehicle(model.Id);var listing=_dealerStock[^1];Emit("DealerInitialStock",entity:listing.Id,item:model.Id,reason:$"{listing.Position.X},{listing.Position.Z}"); }
     }

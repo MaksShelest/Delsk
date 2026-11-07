@@ -262,6 +262,7 @@ public partial class Playfield : Control
         _mapSelection.FeedbackSettingsRequested += OpenFeedbackSettings;
         _mapSelection.AppearanceSettingsRequested += OpenAppearanceSettings;
         _mapSelection.QuitRequested += ExitGame;
+        _mapSelection.MapEditorRequested += () => GetTree().ChangeSceneToFile("res://MapEditor.tscn");
         if(_session is not null)DeveloperMenu(_mapSelection.AdditionalSettings);
         AddChild(_mapSelection);
     }
