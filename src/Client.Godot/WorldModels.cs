@@ -144,16 +144,25 @@ public static partial class WorldModels
 
     public static Node3D Person(Color shirt, string caption)
     {
-        var root = new Node3D();
+        var root = new Node3D { Name = "Figure" };
         Part(root, new CapsuleMesh { Radius = 0.14f, Height = 0.43f }, shirt, new Vector3(0, 0.28f, 0));
         Round(root, 0.13f, new Color("ebcda4"), new Vector3(0, 0.58f, 0));
         Cylinder(root, 0.16f, 0.06f, shirt.Darkened(0.2f), new Vector3(0, 0.7f, 0));
-        foreach (float x in new[] { -0.065f, 0.065f })
-            Box(root, new Vector3(0.085f, 0.12f, 0.15f), new Color("414c58"), new Vector3(x, 0.07f, -0.02f));
+        Limb(root, "LegL", new Vector3(-0.06f, 0.16f, 0), new Vector3(0.07f, 0.15f, 0.09f), new Color("414c58"), new Vector3(0, -0.075f, 0.01f));
+        Limb(root, "LegR", new Vector3(0.06f, 0.16f, 0), new Vector3(0.07f, 0.15f, 0.09f), new Color("414c58"), new Vector3(0, -0.075f, 0.01f));
+        Limb(root, "ArmL", new Vector3(-0.155f, 0.4f, 0), new Vector3(0.04f, 0.15f, 0.04f), shirt.Darkened(0.12f), new Vector3(0, -0.075f, 0));
+        Limb(root, "ArmR", new Vector3(0.155f, 0.4f, 0), new Vector3(0.04f, 0.15f, 0.04f), shirt.Darkened(0.12f), new Vector3(0, -0.075f, 0));
         Round(root, 0.033f, new Color("d4ae85"), new Vector3(0, 0.58f, -0.13f));
         root.AddChild(new Label3D { Text = caption, FontSize = 22, PixelSize = 0.009f, Position = new Vector3(0, 1.01f, 0),
             Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, OutlineSize = 5, Modulate = Colors.White });
         return root;
+    }
+
+    private static void Limb(Node3D root, string name, Vector3 pivot, Vector3 size, Color color, Vector3 hang)
+    {
+        var joint = new Node3D { Name = name, Position = pivot };
+        Box(joint, size, color, hang);
+        root.AddChild(joint);
     }
 
     public static Node3D Cargo()

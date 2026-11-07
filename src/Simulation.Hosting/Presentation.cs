@@ -5,7 +5,10 @@ namespace Simulation.Hosting;
 public readonly record struct PresentationPoint(float X, float Z);
 public record PresentationActor(long Id, bool Human, int X, int Z, bool Busy,
     int OffsetX = SimulationEngine.TravelCenter, int OffsetZ = SimulationEngine.TravelCenter, int FacingX = 0, int FacingZ = -1)
-{ public long VehicleId {get;init;} }
+{
+    public long VehicleId {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore] public PedestrianMotion Motion {get;init;}
+}
 public record PresentationMarker(string Kind, int X, int Z, string Label, long EntityId, long OwnerId)
 {
     public int Level {get;init;}=1;
@@ -44,7 +47,7 @@ public static class Presentation
         {
             var travel = engine.TravelOf(p.Id);
             return new PresentationActor(p.Id.Value, p.Id.Value == humanId, p.Position.X, p.Position.Z, p.Busy,
-                travel.OffsetX, travel.OffsetZ, travel.FacingX, travel.FacingZ){VehicleId=fleet?.Vehicles.FirstOrDefault(v=>v.Driver==p.Id.Value)?.Id??0};
+                travel.OffsetX, travel.OffsetZ, travel.FacingX, travel.FacingZ){VehicleId=fleet?.Vehicles.FirstOrDefault(v=>v.Driver==p.Id.Value)?.Id??0,Motion=engine.PedestrianMotionOf(p.Id.Value)};
         }).ToArray();
         var markers = new List<PresentationMarker>();
         var blocked = new HashSet<Cell>(engine.BlockedCells());
@@ -86,6 +89,22 @@ public static class Presentation
             markers.Add(new(building.Kind.ToString().ToLowerInvariant(),building.Position.X,building.Position.Z,building.TypeId,building.Id.Value,building.OwnerId.Value)
                 {Level=building.Level,Footprint=[..building.Footprint.Select(c=>new Cell(c.X-building.Position.X,c.Z-building.Position.Z))],Walls=[..type.Walls??[]],Warehouse=warehouse});
         }
+        if(engine.HasGroundStorage)
+            foreach(var ground in engine.StorageOf(new(humanId)).Ground)
+            {
+                var stock=world.Inventories.Single(i=>i.Id.Value==ground.InventoryId);
+                var goods=new Dictionary<string,long>(StringComparer.Ordinal);
+                foreach(var item in stock.Stock.Where(s=>s.Quantity>0))
+                    goods[item.ItemId]=goods.GetValueOrDefault(item.ItemId)+checked(item.Quantity*scenario.Items.Single(i=>i.Id==item.ItemId).UnitVolume);
+                if(stock.Overflow is not null)
+                    foreach(var lot in stock.Overflow.Where(l=>l.Quantity>0))
+                        goods[lot.ItemId]=goods.GetValueOrDefault(lot.ItemId)+checked(lot.Quantity*scenario.Items.Single(i=>i.Id==lot.ItemId).UnitVolume);
+                if(goods.Count==0)continue;
+                var plot=world.Plots.Single(p=>p.Id.Value==ground.PlotId);
+                long volume=goods.Values.Aggregate(0L,(sum,part)=>checked(sum+part));
+                markers.Add(new("ground",plot.Position.X,plot.Position.Z,"",ground.PlotId,humanId)
+                    {Warehouse=new(true,Math.Max(stock.Capacity,volume),goods.OrderBy(p=>p.Key,StringComparer.Ordinal).Select(p=>new VisibleStock(p.Key,p.Value)).ToArray()),Footprint=[new(0,0)]});
+            }
         foreach (var group in world.CapitalOffers.Where(o => o.RemainingQuantity > 0).GroupBy(o => o.Position))
         {
             string label = string.Join(", ", group.OrderBy(o => o.ItemId, StringComparer.Ordinal).Select(o => $"{o.ItemId} {o.RemainingQuantity}"));

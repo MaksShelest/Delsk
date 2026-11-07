@@ -46,12 +46,15 @@ public static partial class WorldModels
             {float across=(slot%8-3.5f)*.1f;at=(slot/8) switch {0=>new Vector3(-.36f,.12f,across),1=>new Vector3(across,.12f,-.36f),_=>new Vector3(.36f,.12f,across)};}
             for(int layer=0;layer<pile.Layers;layer++)
             {
-                Color color=pile.ItemId switch {"wood"=>new("9e784e"),"plank"=>new("cb9d61"),"grain"=>new("d9bd62"),"bread"=>new("b97c45"),"milk"=>new("e8f0eb"),"beet"=>new("9c486d"),"cheese"=>new("e7c34c"),"sugar"=>new("ededde"),"pastry"=>new("d88d9e"),_=>new("8a9b96")};
+                Color color=pile.ItemId switch {"wood"=>new("9e784e"),"plank"=>new("cb9d61"),"grain"=>new("d9bd62"),"bread"=>new("b97c45"),"milk"=>new("e8f0eb"),"beet"=>new("9c486d"),"cheese"=>new("e7c34c"),"sugar"=>new("ededde"),"pastry"=>new("d88d9e"),"stone"=>new("8d8a84"),"sand"=>new("c2b280"),"steel"=>new("9aa3ad"),"iron"=>new("6e625c"),"copper"=>new("b87333"),"beam"=>new("8d949c"),_=>new("8a9b96")};
                 var point=at+new Vector3(0,layer*.075f,0);
                 if(pile.ItemId=="wood"){var log=Cylinder(root,.055f,.17f,color,point);log.RotationDegrees=new(0,0,90);}
                 else if(pile.ItemId is "grain" or "bread" or "beet")Part(root,new SphereMesh{Radius=.075f,Height=.1f,RadialSegments=6,Rings=3},color,point);
                 else if(pile.ItemId=="milk")Cylinder(root,.04f,.1f,color,point);
-                else Box(root,new(.17f,.055f,.1f),color,point);
+                else if(pile.ItemId=="stone"){Part(root,new SphereMesh{Radius=.07f,Height=.09f,RadialSegments=5,Rings=3},color,point);Part(root,new SphereMesh{Radius=.045f,Height=.06f,RadialSegments=5,Rings=3},color.Darkened(.08f),point+new Vector3(.05f,.02f,.03f));}
+                else if(pile.ItemId=="sand")Part(root,new SphereMesh{Radius=.1f,Height=.055f,RadialSegments=8,Rings=4},color,point);
+                else if(pile.ItemId is "steel" or "iron" or "copper" or "beam")Box(root,new(.12f,.08f,.1f),color,point);
+                else Box(root,new(.14f,.07f,.1f),color,point);
             }
         }
         return root;

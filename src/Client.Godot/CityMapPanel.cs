@@ -15,7 +15,7 @@ public partial class CityMapPanel : VBoxContainer
     private readonly HFlowContainer _participant=new(){Name="MapParticipants"};
     private readonly Label _participantCaption=Wrap(),_legend=Wrap(),_details=Wrap(),_routeInfo=Wrap();
     private readonly HFlowContainer _owners=new();
-    private readonly HBoxContainer _modes=new(),_body=new(){SizeFlagsVertical=SizeFlags.ExpandFill};
+    private readonly HBoxContainer _modes=new(){Name="MapFocusModes"},_body=new(){SizeFlagsVertical=SizeFlags.ExpandFill};
     private readonly HFlowContainer _toolbar;
     private HFlowContainer _layerRow=null!;
     private readonly VBoxContainer _side=new(){Name="MapDetails"},_filters=new(){Visible=false};
@@ -82,8 +82,7 @@ public partial class CityMapPanel : VBoxContainer
         bool narrow=Narrow();_detailsToggle.Visible=narrow;_side.Visible=!narrow||_detailsOpen;
         _side.CustomMinimumSize=new(narrow?Mathf.Min(320,GetViewportRect().Size.X*.42f):280,0);
         if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Mathf.Min(Size.X,PageWidth()));
-        // A row wider than the tablet scrolls the whole map sideways and a fitted cell
-        // lands outside the window. Keep every visible row inside the page.
+        // Ряд шире планшета сдвигает карту вбок, и подобранная клетка оказывается за окном.
         float page=PageWidth();FitRow(_modes,page);FitRow(_toolbar,page);FitRow(_layerRow,page);FitRow(_participant,page);
         for(Node? node=GetParent();node is not null;node=node.GetParent())
             if(node is ScrollContainer scroll){scroll.ScrollHorizontal=0;break;}
@@ -194,7 +193,11 @@ public partial class CityMapPanel : VBoxContainer
             lines.Add(o.Owner==_map!.Viewer?L("Нет данных","No data"):L("Чужие рецепты, запасы и внутренние показатели скрыты.","Foreign recipes, stocks and internal figures are hidden."));
         if(o.Level>0&&o.Kind is "production" or "equipment")lines.Add(L("Уровень ","Level ")+o.Level);
         if(o.Holder>0)lines.Add(L(o.Layer==CityLayer.Resources?"Арендатор: ":"Бронь: ",o.Layer==CityLayer.Resources?"Tenant: ":"Reserved by: ")+OwnerCaption(o.Holder)+(o.Deadline>0?L(" · до t"," · through t")+o.Deadline:""));
-        if(o.Layer==CityLayer.Roads)lines.Add(L("Вклады по ступеням и будущие права на доход:","Contributions by stage and future revenue rights:")+"\n"+string.Join("\n",(o.Contributions??[]).OrderBy(c=>c.Level).Select(c=>RoadTitle(c.Level)+" · "+OwnerCaption(c.Builder.Value)+" · t"+c.Tick+L(" · денежный вклад "," · cash contribution ")+PlayerText.Money(c.PriceMinor)+(c.Builder.Value==0?L(" · городу 100%"," · city 100%"):L(" · исполнителю 90%, городу 10%"," · builder 90%, city 10%")))));
+        if(o.Layer==CityLayer.Roads)
+        {
+            lines.Add(RoadCardText.Header(_language));
+            lines.Add(string.Join("\n",(o.Contributions??[]).OrderBy(c=>c.Level).Select(c=>RoadCardText.Line(_language,RoadTitle(c.Level),OwnerCaption(c.Builder.Value),c))));
+        }
         var reason=OwnReason(o);if(reason.Length>0&&(o.Facts?.Reason.Length??0)==0)lines.Add(reason);
         return string.Join("\n",lines.Where(l=>l.Length>0));
     }

@@ -34,6 +34,14 @@ public partial class PresentationStage : Node3D
         public float Duration = 0.1f;
         public bool Human;
         public bool Loaded;
+        public bool Walker;
+        public float TurnSeconds=0.1f;
+        public bool SnapWalk;
+        public Vector3 Last;
+        public bool LastSet;
+        public float Stride;
+        public Node3D? LegL,LegR,ArmL,ArmR,Bob;
+        public float BobRest;
         public float AngleFrom,AngleTo,AngleElapsed=1;
     }
     private readonly System.Collections.Generic.Dictionary<long, Mover> _actors = new();
@@ -42,7 +50,7 @@ public partial class PresentationStage : Node3D
     private readonly System.Collections.Generic.List<Node3D> _staticNodes = new();
     private string _staticKey = "";
     private int _appearanceRevision=-1;
-    private readonly Dictionary<long,(string Key,Node3D Node)> _stocks=[];
+    private readonly Dictionary<string,(string Key,Node3D Node)> _stocks=[];
     public int StaticBuildCount {get;private set;}
     public int StockBuildCount {get;private set;}
     private bool _frozen = true;
@@ -78,18 +86,25 @@ public partial class PresentationStage : Node3D
         _cameraDistance=Mathf.MoveToward(_cameraDistance,_cameraTarget,(float)delta*Mathf.Max(5,_cameraTarget*2));
         // Короткий шаг, чтобы редкий длинный кадр не перескакивал фокус.
         _frameInset=Mathf.MoveToward(_frameInset,_follow?_frameInsetTarget:0,Mathf.Min((float)delta,.05f)*1.8f);
-        FollowHuman();if (_frozen) return;
+        FollowHuman();
         foreach (var mover in _actors.Values.Concat(_trips.Values).Concat(_fleet.Values).Concat(_roadEquipment.Values.Select(e=>e.Mover)))
         {
-            mover.Elapsed = Mathf.Min(mover.Duration, mover.Elapsed + (float)delta);
-            mover.Node.Position = mover.From.Lerp(mover.To, Mathf.Clamp(mover.Elapsed / mover.Duration, 0, 1));
-            mover.AngleElapsed=Mathf.Min(.1f,mover.AngleElapsed+(float)delta);
-            mover.Node.Rotation=new(0,Mathf.LerpAngle(mover.AngleFrom,mover.AngleTo,mover.AngleElapsed/.1f),0);
+            if(!_frozen)
+            {
+                mover.Elapsed = Mathf.Min(mover.Duration, mover.Elapsed + (float)delta);
+                float span=mover.Duration<=0f?1f:mover.Elapsed/mover.Duration;
+                mover.Node.Position = mover.From.Lerp(mover.To, Mathf.Clamp(span, 0, 1));
+                float turn=Mathf.Max(.05f,mover.TurnSeconds);
+                mover.AngleElapsed=Mathf.Min(turn,mover.AngleElapsed+(float)delta);
+                mover.Node.Rotation=new(0,Mathf.LerpAngle(mover.AngleFrom,mover.AngleTo,mover.AngleElapsed/turn),0);
+            }
+            if(mover.Walker)StepWalk(mover,delta,!_frozen);
         }
+        StepMechanisms();
         FollowHuman();
     }
 
-    public void Show(PresentationFrame frame, bool frozen, long selectedBuilding, string you, bool followHuman, string language="ru")
+    public void Show(PresentationFrame frame, bool frozen, long selectedBuilding, string you, bool followHuman, string language="ru", int quantum=0, bool ownership=false, int selectedX=-1, int selectedZ=-1)
     {
         bool snap = frozen || _frozen || _follow != followHuman;
         _frozen = frozen;
@@ -97,14 +112,14 @@ public partial class PresentationStage : Node3D
         bool appearanceChanged=_appearanceRevision!=WorldSkins.Revision;
         _appearanceRevision=WorldSkins.Revision;
         WorldArt.MapKey=frame.Layout?.SourceId ?? frame.MapWidth+"x"+frame.MapHeight;
-        string staticKey = frame.Layout?.SourceSha256+"|"+WorldSkins.Revision+"|"+WorldArt.MapKey+"|"+frame.MapWidth + "x" + frame.MapHeight + "|" + string.Join(",", frame.Markers.Select(m =>
+        string staticKey = frame.Layout?.SourceSha256+"|"+WorldSkins.Revision+"|"+WorldArt.MapKey+"|"+frame.MapWidth + "x" + frame.MapHeight + "|" + string.Join(",", frame.Markers.Where(m=>m.Kind!="ground").Select(m =>
             $"{m.Kind}:{m.X}:{m.Z}:{(m.Kind == "capital" ? "" : m.Label)}:{(m.Kind == "capital" ? 0 : m.EntityId)}:{m.OwnerId}:{m.Level}:{(m.Kind.StartsWith("resource",StringComparison.Ordinal)?WorldArt.StateOf(m):"")}:{string.Join(";",m.Footprint)}:{string.Join(";",m.Walls)}"));
         if (_staticKey != staticKey)
         {
             _staticKey = staticKey;
             RebuildStatic(frame);
         }
-        ShowWarehouseStock(frame);ShowRoads(frame);ShowFleet(frame,snap,appearanceChanged);ShowRoadEquipment(frame,snap,appearanceChanged);
+        ShowWarehouseStock(frame);ShowLand(frame,ownership,selectedX,selectedZ);ShowRoads(frame);ShowFleet(frame,snap,appearanceChanged);ShowRoadEquipment(frame,snap,appearanceChanged);
         var liveActors = new System.Collections.Generic.HashSet<long>();
         foreach (var actor in frame.Actors)
         {
@@ -116,7 +131,8 @@ public partial class PresentationStage : Node3D
                 body.AddChild(WorldSkins.Person(actor.Id,actor.Human,you,language));
                 body.Position = at;
                 AddChild(body);
-                mover = new Mover(body, at) { Human = actor.Human };
+                mover = new Mover(body, at) { Human = actor.Human, Walker = true, TurnSeconds = 0.32f };
+                BindLimbs(mover);
                 _actors[actor.Id] = mover;
             }
             if(appearanceChanged)
@@ -124,10 +140,26 @@ public partial class PresentationStage : Node3D
                 var prior=mover.Node.GetNodeOrNull<Node3D>("Appearance");
                 if(prior is not null){mover.Node.RemoveChild(prior);prior.QueueFree();}
                 mover.Node.AddChild(WorldSkins.Person(actor.Id,actor.Human,you,language));
+                BindLimbs(mover);
             }
             mover.Node.Visible=actor.VehicleId==0;
+            if(!mover.Node.Visible)ResetLimbs(mover);
             if(actor.Human)_riddenVehicle=actor.VehicleId;
-            Target(mover, at, actor.Human ? 0.1f : 1, snap, !actor.Human);
+            if(actor.Motion.Active)
+            {
+                float shown=quantum/10f;
+                float toward=frozen?shown:Mathf.Min(1f,(quantum+1)/10f);
+                var pose=PedestrianPoseMath.At(actor.Motion,snap?shown:toward);
+                var step=new Vector3(pose.X,0f,pose.Z);
+                bool far=mover.Node.Position.DistanceTo(step)>1.35f;
+                Target(mover,step,0.1f,snap||far,false);
+                if(Mathf.Abs(pose.FaceX)+Mathf.Abs(pose.FaceZ)>0.01f)TargetRotation(mover,pose.FaceX,pose.FaceZ,snap||far);
+            }
+            else
+            {
+                Target(mover, at, actor.Human ? 0.1f : 0.2f, snap, false);
+                if (actor.FacingX != 0 || actor.FacingZ != 0) TargetRotation(mover, actor.FacingX, actor.FacingZ, snap);
+            }
             int labelRow = frame.Actors.Count(other => other.X == actor.X && other.Z == actor.Z && other.Id < actor.Id);
             var caption=mover.Node.GetNodeOrNull<Label3D>("Appearance/Caption");
             if(caption is not null)
@@ -136,8 +168,6 @@ public partial class PresentationStage : Node3D
                 caption.Visible=_cameraDistance<18 || actor.Human;
                 caption.Text=(actor.Human?you+" · ":"")+WorldSkins.ActorName(actor.Id,language);
             }
-            if (actor.FacingX != 0 || actor.FacingZ != 0)
-                TargetRotation(mover,actor.FacingX,actor.FacingZ,snap);
         }
         foreach (long id in _actors.Keys.Where(id => !liveActors.Contains(id)).ToArray())
         { _actors[id].Node.QueueFree(); _actors.Remove(id);_speechLabels.Remove(id); }
@@ -199,13 +229,18 @@ public partial class PresentationStage : Node3D
 
     private void ShowWarehouseStock(PresentationFrame frame)
     {
-        foreach(var marker in frame.Markers.Where(m=>m.Warehouse is not null))
+        var live=new HashSet<string>();
+        foreach(var marker in frame.Markers)
         {
-            var piles=WarehouseVisuals.Layout(marker.Warehouse!);string key=string.Join(";",piles.Select(p=>$"{p.ItemId}:{p.Slot}:{p.Layers}"));
-            if(_stocks.TryGetValue(marker.EntityId,out var old) && old.Key==key)continue;
+            if(marker.Warehouse is not {Known:true} visual||visual.Goods.All(g=>g.Volume<=0))continue;
+            var piles=WarehouseVisuals.Layout(visual);if(piles.Length==0)continue;
+            string id=marker.Kind+":"+marker.EntityId+":"+marker.X+":"+marker.Z;live.Add(id);
+            string key=string.Join(";",piles.Select(p=>$"{p.ItemId}:{p.Slot}:{p.Layers}"));
+            if(_stocks.TryGetValue(id,out var old)&&old.Key==key)continue;
             if(old.Node is not null){RemoveChild(old.Node);old.Node.QueueFree();}
-            var node=WorldModels.WarehouseStock(marker,piles);node.Position=new(marker.X,.045f,marker.Z);AddChild(node);_stocks[marker.EntityId]=(key,node);StockBuildCount++;
+            var node=WorldModels.WarehouseStock(marker,piles);node.Position=new(marker.X,.045f,marker.Z);AddChild(node);_stocks[id]=(key,node);StockBuildCount++;
         }
+        foreach(var id in _stocks.Keys.Where(k=>!live.Contains(k)).ToArray()){RemoveChild(_stocks[id].Node);_stocks[id].Node.QueueFree();_stocks.Remove(id);}
     }
 
     private static void Target(Mover mover, Vector3 at, float duration, bool snap, bool grid = false)
@@ -220,6 +255,7 @@ public partial class PresentationStage : Node3D
         {
             mover.From = mover.To = mover.Node.Position = at;
             mover.Elapsed = mover.Duration;
+            mover.SnapWalk=true;
             return;
         }
         if (mover.To.IsEqualApprox(at)) return;
@@ -250,8 +286,18 @@ public partial class PresentationStage : Node3D
         if(human is null)return _mapCenter;
         return _riddenVehicle!=0&&_fleet.TryGetValue(_riddenVehicle,out var ridden)?ridden.Node.Position:human.Node.Position;
     }
+    private Vector3? _aim;
+    private float _aimDistance=3.4f;
+    public void AimAt(Vector3 point,float distance=3.4f){_aim=point;_aimDistance=Mathf.Clamp(distance,1.6f,14f);}
+    public void ClearAim()=>_aim=null;
     private void FollowHuman()
     {
+        if(_aim is {} point)
+        {
+            _camera.Position=point+new Vector3(_aimDistance*.45f,_aimDistance,_aimDistance*.72f);
+            if(!_camera.IsPositionBehind(point))_camera.LookAt(point+Vector3.Up*.35f,Vector3.Up);
+            return;
+        }
         if (!_follow) return;
         var human = _actors.Values.FirstOrDefault(m => m.Human);
         if (human is null) return;
@@ -347,6 +393,7 @@ public partial class PresentationStage : Node3D
         var civicBodies=frame.Layout?.CivicObjects.SelectMany(s=>s.Body).ToHashSet();
         foreach (var marker in frame.Markers)
         {
+            if(marker.Kind=="ground")continue;
             if(frame.Layout is not null && (marker.Kind.StartsWith("plot",StringComparison.Ordinal) || marker.Kind is "shop-plot" or "capital" or "civic" || marker.Kind=="blocked" && civicBodies!.Contains(new(marker.X,marker.Z))))continue;
             if(marker.Kind=="blocked" && yardCells.Contains(new(marker.X,marker.Z)))continue;
             Node3D? node = null;

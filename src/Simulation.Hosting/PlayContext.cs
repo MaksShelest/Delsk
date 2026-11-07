@@ -235,10 +235,20 @@ public static class PlayContext
         if (plot is null) return PlayerText.Get(language, "plot.foreign");
         string state = plot.IsCorridor ? PlayerText.Get(language, "hover.corridor")
             : plot.OwnerId == view.Participant.Id ? PlayerText.Get(language, "plot.own")
-            : plot.OwnerId.HasValue ? PlayerText.Get(language, "plot.foreign")
+            : plot.OwnerId.HasValue ? PlayerText.Get(language, "plot.foreign") + " · #" + plot.OwnerId.Value.Value
             : plot.ReservedBy.HasValue ? string.Format(CultureInfo.InvariantCulture, PlayerText.Get(language, "plot.reserved"), plot.ReservationUntilTick)
+                + (plot.ReservedBy == view.Participant.Id ? "" : " · #" + plot.ReservedBy.Value.Value)
             : PlayerText.Get(language, "plot.free");
         if (plot.IsCorridor) return state;
+        if(plot.OwnerId==view.Participant.Id && view.Storage?.Ground.FirstOrDefault(g=>g.PlotId==plot.Id.Value) is {} ground
+            && view.Inventories.FirstOrDefault(i=>i.Id.Value==ground.InventoryId) is {} pile)
+        {
+            var names=pile.Stock.Where(s=>s.Quantity>0).Select(s=>PlayerText.Item(language,s.ItemId)+" ×"+s.Quantity)
+                .Concat((pile.Overflow??[]).Where(l=>l.Quantity>0).Select(l=>PlayerText.Item(language,l.ItemId)+" ×"+l.Quantity)).ToArray();
+            long free=Math.Max(0,pile.Capacity-pile.OccupiedVolume-pile.ReservedCapacity);
+            state+="\n"+L(language,"На земле: ","On the ground: ")+(names.Length==0?L(language,"пусто","empty"):string.Join(", ",names))
+                +" · "+pile.OccupiedVolume+"/"+pile.Capacity+L(language," · свободно "," · free ")+free;
+        }
         if (plot.IsShopSite) state = L(language, "Общее место лавочки. Максимум одно купленное или забронированное место. ", "Shared shop site. At most one owned or reserved site. ") + state;
         if (plot.ShopParticipantId is { } assigned)
             state = L(language, "Место лавочки участника ", "Shop site for participant ") + assigned.Value + ". " +
