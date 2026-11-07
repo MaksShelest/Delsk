@@ -98,7 +98,7 @@ public partial class Playfield
             title=ExtractionTabletPresenter.Title(_language,shown.TypeId,shown.Level);
         _tabletPanel = new TabletPanel(title,_language,_tabletState.Kind==TabletKind.Player?"home":_tabletState.Kind is TabletKind.Capital or TabletKind.Market?"market":"warehouse");
         if(equipmentSide){_tabletPanel.UseSideDock();_tabletPanel.Resized+=SyncSideFrame;}
-        else if(_tabletState.Kind==TabletKind.Player||woodworking)_tabletPanel.UseCompactFrame();
+        else if(_tabletState.Kind is TabletKind.Player or TabletKind.CityMap||woodworking)_tabletPanel.UseCompactFrame();
         _tabletPanel.Closed += CloseTablet;
         _tabletPanel.HelpRequested += () => OpenHelp(_tabletState.Kind switch
         { TabletKind.CityMap=>"map",TabletKind.Notices or TabletKind.Tutorial=>"journey",TabletKind.Player => _playerTablet?.SelectedTab switch { 0 => _playerTablet.HelpTopic, 2 => "politics", _ => "city" },

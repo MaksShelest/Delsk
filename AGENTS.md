@@ -1,3 +1,10 @@
+## I6-C5,07.11.2026 — экономическая карта города
+
+- Основа `93c4afe`, HEAD `feat/vnext-i6c3-world-art` после merge PR #95. PR #94 остаётся Draft в `master` и не слит. Ветка `feat/vnext-i6c5-economic-city-map`, зависимый Draft PR #96 в эту ветку. Не сливать. I7 и I8 не начинать.
+- Та же карта `CityMap` / `CityMapPanel` / `CityMapCanvas`. Новые сведения — read-only `CityMapFacts` из `PlayerView` и `PresentationFrame`. Core, цены, рецепты, скорости, NPC, собственность, заказы, сохранения и геометрия карт не менялись.
+- Фокусы: все объекты, производство, транспорт, заказы, собственность. Процент партии только при активной партии и положительной работе. Чужие рецепты, запасы, цены, escrow и закрытые договоры на карту не попадают.
+- Отчёт `docs/IMPLEMENTATION_REPORT_I6C5.md`, кадры `docs/verification/i6c5`. Автор — Шелестов Максим Евгеньевич, без Co-authored-by.
+
 ## I6-C2.3,07.11.2026 — боковой планшет техники и читаемый автосалон
 
 - Основа `8b1bc11`, merge PR #90 в `master`. Ветка `feat/vnext-i6c23-equipment-ux`, отдельный Draft PR в `master`. Не сливать. I6-C3, I7 и I8 не начинать.
