@@ -2,7 +2,7 @@
 
 Автор: Шелестов Максим Евгеньевич. 8 ноября 2026, Europe/Samara.
 
-Основа — `master` `a5d0f145ea6fe8c6dbbcaa2dffba4bada2f3e303`, merge PR #97. Ветка `feat/vnext-i6c7-friendly-ui`. Отдельный Draft PR в `master`. Слияние не выполняется: визуальную приёмку проводит владелец. I6-C8, I7 и I8 не начаты.
+Основа — `master` `a5d0f145ea6fe8c6dbbcaa2dffba4bada2f3e303`, merge PR #97. Ветка `feat/vnext-i6c7-friendly-ui`, Draft PR #98 в `master`. Слияние не выполняется: визуальную приёмку проводит владелец. I6-C8, I7 и I8 не начаты.
 
 Это два способа показать те же экраны, данные и команды. Экономические правила, цены, рецепты, NPC, сохранения, replay и исследовательский Runner не менялись. `Simulation.Core` не менялся.
 
