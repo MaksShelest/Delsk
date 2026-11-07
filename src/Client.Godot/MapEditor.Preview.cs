@@ -1,5 +1,6 @@
 using Godot;
 using Simulation.Core;
+using Simulation.Hosting;
 
 public partial class MapEditor
 {
@@ -61,6 +62,7 @@ public partial class MapEditor
     }
     private void RebuildWorld()
     {
+        WorldArt.MapKey=Draft.Id;
         foreach(Node child in _world.GetChildren())if(child!=_camera)child.Free();
         var ground=new Node3D{Name="Ground"};_world.AddChild(ground);
         WorldModels.Part(ground,new BoxMesh{Size=new(Draft.Width+2,.2f,Draft.Height+2)},new Color("7ea36d"),new(Draft.Width/2f-.5f,-.12f,Draft.Height/2f-.5f));
@@ -75,16 +77,21 @@ public partial class MapEditor
             WorldModels.Part(ground,new BoxMesh{Size=new(.98f,.012f,.98f)},new Color("5c5344"),new(cell.X,.008f,cell.Z));
             WorldModels.Part(ground,new BoxMesh{Size=new(.9f,.02f,.9f)},new Color("a8a386"),new(cell.X,.02f,cell.Z));
         }
-        foreach(var district in Draft.Districts)foreach(var cell in district.Cells){var node=WorldModels.Resource(district.Item);node.Position=new(cell.X,0,cell.Z);_world.AddChild(node);}
-        foreach(var civic in Draft.Civics)_world.AddChild(WorldModels.Civic(new(civic.Id,civic.Kind,civic.Footprint.ToArray(),civic.Building.ToArray(),civic.Kind=="dealership"?civic.Parking.ToArray():null,civic.Building.ToArray(),civic.Entry,civic.Kind=="dealership"?Draft.EquipmentParking.ToArray():null)));
+        foreach(var district in Draft.Districts)foreach(var cell in district.Cells)
+        {
+            var node=WorldSkins.Resource(new PresentationMarker("resource",cell.X,cell.Z,district.Item,0,0){ResourceStock=100,ResourceCapacity=100});
+            node.Position=new(cell.X,-.02f,cell.Z);_world.AddChild(node);
+        }
+        foreach(var civic in Draft.Civics)_world.AddChild(WorldSkins.Civic(new(civic.Id,civic.Kind,civic.Footprint.ToArray(),civic.Building.ToArray(),civic.Kind=="dealership"?civic.Parking.ToArray():null,civic.Building.ToArray(),civic.Entry,civic.Kind=="dealership"?Draft.EquipmentParking.ToArray():null)));
         foreach(var stall in Draft.Stalls)WorldModels.Part(ground,new BoxMesh{Size=new(.72f,.04f,.72f)},new Color("b5a3b1"),new(stall.Cell.X,.04f,stall.Cell.Z));
+        bool cozy=WorldSkins.Preferences.ForModel("truck")==AppearancePreferences.Cozy;
         var dealer=Draft.Civics.FirstOrDefault(c=>c.Kind=="dealership");
         if(dealer is{Parking.Count:>=4}&&Draft.CompactExhibition)
         {
             Place("sputnik20",dealer.Parking[0],-.15f);Place("muravey70",dealer.Parking[0],.15f);Place("eger70",dealer.Parking[1],0);Place("trakt_d1",dealer.Parking[3],0);
             if(Draft.EquipmentParking.Count>=2){Machine("wood",Draft.EquipmentParking[0]);Machine("grain",Draft.EquipmentParking[1]);}
         }
-        void Place(string model,Cell cell,float side){var node=WorldModels.Vehicle(model);node.Position=new(cell.X+side,0,cell.Z);_world.AddChild(node);}
-        void Machine(string item,Cell cell){var node=WorldModels.Equipment(item,1);node.Position=new(cell.X,0,cell.Z);_world.AddChild(node);}
+        void Place(string model,Cell cell,float side){var node=WorldModels.Vehicle(model,cozy);node.Position=new(cell.X+side,0,cell.Z);_world.AddChild(node);}
+        void Machine(string item,Cell cell){var node=WorldSkins.Equipment(item,1);node.Position=new(cell.X,0,cell.Z);_world.AddChild(node);}
     }
 }

@@ -64,7 +64,7 @@ public partial class I6C2Probe : Control
         Check(!Named<Button>("StartGame").Disabled,"Woodland ordinary start enabled");
         Check(Named<SpinBox>("NpcCount").MaxValue==3&&menu.NpcCount==3,"Woodland roster capped at three NPCs");
         await Click("StartGame");await Frames(8);_app.SetProcess(false);_session=Field<GameSession>(_app,"_session");_session.SetPaused(true);Refresh();
-        Check(_session.Engine.Configuration().Id==PlayMaps.WoodlandScenarioId,"ordinary start uses versioned Woodland world");
+        Check(_session.Engine.Configuration().Id==PlayMaps.WoodlandI6C4ScenarioId,"ordinary start uses versioned Woodland world");
         Check(_session.ControllerStates.Length==3,"ordinary start attaches three independent NPCs");
         Check(_session.Engine.Configuration().MapHeight==15,"no appended lower equipment corridor");
         Camera(new(8.5f,0,7),17.5f);await Shot("03-woodland-overview");
@@ -97,8 +97,8 @@ public partial class I6C2Probe : Control
         Tick(6);await Frames();Check(_session.Engine.InspectFleet()!.Purchases.Count(p=>p.VehicleId==listing.Id)==1,"one purchase receipt for the selected instance");
         Check(_session.Engine.Ledger().Count(l=>l.Reason=="VehiclePurchase")==1,"one actual vehicle charge");
         Check(!Panel.Selection.Choices.Any(c=>c.Command?.Kind==ActionKind.BuyVehicle&&c.Command.VehicleId==listing.Id),"sold listing disappears from local context");
-        Command(new(ActionKind.BoardVehicle,VehicleId:listing.Id));Command(new(ActionKind.MoveTo,Target:new(10,5)));
-        Check(View.Fleet!.Vehicles.Single(v=>v.Vehicle.Id==listing.Id).Position==new Cell(10,5),"purchased car physically leaves its parking place");
+        Command(new(ActionKind.BoardVehicle,VehicleId:listing.Id));Command(new(ActionKind.MoveTo,Target:new(12,5)));
+        Check(View.Fleet!.Vehicles.Single(v=>v.Vehicle.Id==listing.Id).Position==new Cell(12,5),"purchased car physically leaves its parking place");
         Command(new(ActionKind.LeaveVehicle));Move(View.Fleet.Dealer);
         Set(_app,"_language","en");Call(_app,"RebuildChrome");Refresh();await Frames();
         var english=Panel.Selection.Choices.First(c=>c.Command?.Kind==ActionKind.BuyVehicle);

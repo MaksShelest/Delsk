@@ -74,30 +74,56 @@ public partial class CityMapCanvas : Control
             for(int x=Math.Max(0,(int)start.X);x<=Math.Min(_map.Width,(int)end.X+1);x++)DrawLine(Point(x,0),Point(x,_map.Height),new Color(1,1,1,.08f));
             for(int z=Math.Max(0,(int)start.Z);z<=Math.Min(_map.Height,(int)end.Z+1);z++)DrawLine(Point(0,z),Point(_map.Width,z),new Color(1,1,1,.08f));
         }
-        foreach(var o in _map.Objects.Where(o=>CityMap.Visible(o,State.Layers,State.Participant)).OrderBy(o=>o.Layer==CityLayer.Property?0:o.Layer==CityLayer.Roads?1:2))
+        foreach(var o in _map.Objects.Where(o=>CityMap.Shown(o,State.Layers,State.Participant,State.Focus)).OrderBy(o=>o.Layer==CityLayer.Property?0:o.Layer==CityLayer.Roads?1:2))
         {
             var color=ColorFor(o,_map.Viewer);
-            if(o.Route is {Length:>1} route&&o.Layer is CityLayer.Deliveries or CityLayer.Roads)DrawRoute(route,color);
+            if(o.Route is {Length:>1} route&&o.Layer==CityLayer.Roads)DrawRoute(route,color,false);
+            else if(o.Route is {Length:>1} delivery&&o.Layer==CityLayer.Deliveries)DrawRoute(delivery,new("c47b2b"),true);
+            else if(o.Route is {Length:>1} travel&&o.Kind is "vehicle" or "equipment")DrawRoute(travel,new("8fd0c6"),true);
             foreach(var cell in o.Footprint)
             {
                 var rect=new Rect2(Point(cell.X,cell.Z),new(unit,unit));if(!rect.Intersects(new Rect2(Vector2.Zero,Size)))continue;
-                if(o.Layer==CityLayer.Property)DrawRect(rect.Grow(-unit*.08f),color,false,Math.Max(1,unit*.09f));
+                if(o.Layer==CityLayer.Property)DrawLand(rect,o,color,unit);
                 else if(o.Layer==CityLayer.Roads)DrawRect(rect.Grow(-unit*.12f),color);
                 else if(o.Kind=="actor")DrawCircle(Point(cell),Math.Max(2,unit*.19f),color);
                 else DrawRect(rect.Grow(-unit*.16f),color);
+                if(o.Facts?.Percent() is int pct&&unit>=8)
+                {
+                    var bar=new Rect2(rect.Position.X+2,rect.End.Y-Math.Max(3,unit*.16f),Math.Max(0,rect.Size.X-4),Math.Max(3,unit*.12f));
+                    DrawRect(bar,new Color(0,0,0,.45f));DrawRect(new Rect2(bar.Position,new Vector2(bar.Size.X*pct/100f,bar.Size.Y)),new Color("f4d35e"));
+                }
+                if(o.Facts is {Late:true})DrawCircle(rect.GetCenter(),Math.Max(3,unit*.16f),new Color("e15a4a"));
+                else if(o.Facts is {Soon:true})DrawArc(rect.GetCenter(),Math.Max(4,unit*.28f),0,Mathf.Tau,16,new Color("e39b2b"),Math.Max(2,unit*.08f));
             }
             if(unit>=16&&o.Layer!=CityLayer.Property&&o.Kind!="road"&&o.Footprint.Length>0)
             {
-                string symbol=o.Kind=="actor"?o.Id.ToString():o.Kind=="vehicle"?"V":o.Layer==CityLayer.Resources?"R":o.Layer==CityLayer.Deliveries?"→":o.Kind=="service"?"D":o.Level>0?"I"+o.Level:"◆";
+                string symbol=o.Kind=="actor"?o.Id.ToString():o.Kind is "vehicle" or "equipment"?"V":o.Layer==CityLayer.Resources?"R":o.Layer==CityLayer.Deliveries?"→":o.Kind=="service"?"D":o.Level>0?"I"+o.Level:"◆";
                 DrawString(ThemeDB.FallbackFont,Point(o.Entry)+new Vector2(-5,5),symbol,HorizontalAlignment.Left,-1,Math.Clamp((int)(unit*.55f),10,18),Colors.Black);
             }
         }
-        if(_preview.Length>1)DrawRoute(_preview,new Color("fff3a3"));
-        var selected=CityMap.Selected(_map,State.SelectedKey);if(selected is not null&&(selected.Layer==0||CityMap.Visible(selected,State.Layers,State.Participant)))
+        if(_preview.Length>1){DrawRoute(_preview,new Color("16343a"),false,7);DrawRoute(_preview,new Color("f4fbff"),false,3);}
+        var selected=CityMap.Selected(_map,State.SelectedKey);if(selected is not null&&(selected.Layer==0||CityMap.Shown(selected,State.Layers,State.Participant,State.Focus)))
         {DrawRect(new Rect2(Point(selected.Entry.X,selected.Entry.Z),new(unit,unit)).Grow(3),new Color("fff4b7"),false,3);DrawCircle(Point(selected.Entry),4,Colors.White);}
     }
-    private void DrawRoute(Cell[] route,Color color)
-    {for(int i=1;i<route.Length;i++)DrawLine(Point(route[i-1]),Point(route[i]),color,3,true);}
+    private void DrawLand(Rect2 rect,CityMapObject o,Color color,float unit)
+    {
+        float width=Math.Max(1,unit*(o.Facts?.State=="Own"?.16f:.09f));
+        if(o.Facts?.State=="Reserved"||o.Status=="Reserved")DashRect(rect.Grow(-unit*.08f),o.Holder>0?MapSymbols.ActorColor(o.Holder,o.Holder==(_map?.Viewer??0)):color,width);
+        else if(o.Facts?.State=="Free"||o.Owner<=0&&o.Holder<=0)DrawRect(rect.Grow(-unit*.1f),new Color("efe6cf"),false,width);
+        else DrawRect(rect.Grow(-unit*.08f),color,false,width);
+    }
+    private void DrawRoute(Cell[] route,Color color,bool dashed,float width=3)
+    {for(int i=1;i<route.Length;i++){if(dashed)Dash(Point(route[i-1]),Point(route[i]),color,width);else DrawLine(Point(route[i-1]),Point(route[i]),color,width,true);}}
+    private void Dash(Vector2 a,Vector2 b,Color color,float width)
+    {
+        var delta=b-a;float len=delta.Length();if(len<1)return;var step=delta/len;
+        for(float t=0;t<len;t+=10)DrawLine(a+step*t,a+step*Mathf.Min(t+6,len),color,width,true);
+    }
+    private void DashRect(Rect2 rect,Color color,float width)
+    {
+        Dash(rect.Position,new(rect.End.X,rect.Position.Y),color,width);Dash(new(rect.End.X,rect.Position.Y),rect.End,color,width);
+        Dash(rect.End,new(rect.Position.X,rect.End.Y),color,width);Dash(new(rect.Position.X,rect.End.Y),rect.Position,color,width);
+    }
     public static Color ColorFor(CityMapObject o,long viewer=1)=>o.Layer switch
-    {CityLayer.Property=>o.Owner>0?MapSymbols.ActorColor(o.Owner,o.Owner==viewer):new("d5c9a7"),CityLayer.Roads=>o.Kind=="bypass"?new("ffb859"):o.Level switch{1=>new("ae9874"),2=>new("c8ccd0"),_=>new("f2e7a5")},CityLayer.Resources=>new("72c6a0"),CityLayer.Deliveries=>new("ecb76c"),CityLayer.Services=>new("d798ef"),CityLayer.People=>MapSymbols.ActorColor(o.Owner,o.Owner==viewer),_=>o.Owner>0?MapSymbols.ActorColor(o.Owner,o.Owner==viewer):new("d5e2e3")};
+    {CityLayer.Property=>o.Owner>0?MapSymbols.ActorColor(o.Owner,o.Owner==viewer):o.Holder>0?MapSymbols.ActorColor(o.Holder,o.Holder==viewer):new("efe6cf"),CityLayer.Roads=>o.Kind=="bypass"?new("ffb859"):o.Level switch{1=>new("ae9874"),2=>new("c8ccd0"),_=>new("f2e7a5")},CityLayer.Resources=>new("72c6a0"),CityLayer.Deliveries=>o.Facts is {Late:true}?new("e15a4a"):o.Facts is {Soon:true}?new("e39b2b"):new("ecb76c"),CityLayer.Services=>new("d798ef"),CityLayer.People=>MapSymbols.ActorColor(o.Owner,o.Owner==viewer),_=>o.Owner>0?MapSymbols.ActorColor(o.Owner,o.Owner==viewer):new("d5e2e3")};
 }

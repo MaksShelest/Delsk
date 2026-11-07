@@ -9,6 +9,7 @@
     <EmbeddedResource Include="../../scenarios/vnext/compact-valley-i6c21.json" LogicalName="Fixture.compact-valley-i6c21.json" />
     <EmbeddedResource Include="../../scenarios/vnext/compact-valley-i6c2.json" LogicalName="Fixture.compact-valley-i6c2.json" />
     <EmbeddedResource Include="../../scenarios/vnext/woodland-region-i6c2.json" LogicalName="Fixture.woodland-region-i6c2.json" />
+    <EmbeddedResource Include="../../scenarios/vnext/woodland-region-i6c4.json" LogicalName="Fixture.woodland-region-i6c4.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../../config/vnext/economy.c1-storage.json" LogicalName="Fixture.economy.c1-storage.json" />
