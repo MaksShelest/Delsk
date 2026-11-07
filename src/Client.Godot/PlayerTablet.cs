@@ -259,7 +259,7 @@ public partial class EquipmentPurchasePanel : VBoxContainer
     public EquipmentPurchasePanel(ScenarioDefinition scenario, string language, System.Action<GameAction> submit, System.Func<GameAction, ActionAccess> access)
     {
         _access = access; _language = language;
-        if(scenario.Economy?.Fleet?.EquipmentDealerVersion==1)
+        if(scenario.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2)
         { _cityDealer=true;AddChild(new Label{Text=PlayerText.Local(language,"Мобильная техника продаётся в городском автосалоне.","Mobile equipment is sold at the city dealer."),AutowrapMode=TextServer.AutowrapMode.WordSmart});var button=new Button{Name="EquipmentOpenDealer",Text=PlayerText.Local(language,"Открыть автосалон","Open dealer"),SizeFlagsHorizontal=SizeFlags.ShrinkBegin};button.Pressed+=()=>DealerRequested?.Invoke();AddChild(button);return; }
         AddChild(new Label { Text = PlayerText.Local(language, "Купить технику у ресурсной точки", "Buy equipment at a resource node") });
         foreach (var type in scenario.EquipmentTypes ?? [])

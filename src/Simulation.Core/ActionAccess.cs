@@ -54,7 +54,7 @@ public sealed partial class SimulationEngine
         Cell[]? locations = action.Kind switch
         {
             ActionKind.PickupDeliveryService or ActionKind.UnloadDeliveryService=>ServiceExecution is not null&&_serviceOrders.TryGetValue(action.ServiceId,out var service)&&service.Carrier.Value==actor.Id&&service.State=="Accepted"?[action.Kind==ActionKind.PickupDeliveryService?service.Quote.SourcePosition:ServiceTarget(service,_serviceRuns[service.Id])]:null,
-            ActionKind.BuyVehicle=>VehiclePurchaseLocations(action.VehicleId),
+            ActionKind.BuyVehicle=>action.VehicleId==0?CatalogWaitLocations(action):VehiclePurchaseLocations(action.VehicleId),
             ActionKind.StartRoadCell=>_vehicles.TryGetValue(action.VehicleId,out var paver)&&paver.Owner.Value==actor.Id?
                 action.Mode==EquipmentMode.Automatic?[VehicleCargo(paver).Position,..RoadNeighbors(VehicleCargo(paver).Position).Where(_map.Walkable)]:[VehicleCargo(paver).Position]:null,
             ActionKind.SetRoadCellEnabled=>_vehicles.TryGetValue(action.VehicleId,out var controlled)&&controlled.Owner.Value==actor.Id&&_roadWorks.TryGetValue(controlled.Id,out var roadWork)?

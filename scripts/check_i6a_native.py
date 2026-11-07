@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--godot',required=True);p.add_argument('--xorg',default='/usr/lib/xorg/Xorg');p.add_argument('--prepared',type=Path,help='Reuse prior ordinary references and imported assets; only UI sources may differ');p.add_argument('--probe-only',action='store_true',help='Recompile only the isolated probe when all game sources match the prepared run');p.add_argument('--build-only',action='store_true');p.add_argument('--import-resources',action='store_true');p.add_argument('--probe-source',type=Path,default=ROOT/'tests/Client.Probes/I6ATabletProbe.cs');p.add_argument('--fixture',type=Path,help='Reuse one existing ordinary prepared world');p.add_argument('--case',default='all');a=p.parse_args()
 if a.probe_source.name=='I6ATabletProbe.cs' and a.case not in ['all','layout','production','secondary','remaining','demolition','remote']:p.error('Unknown I6-A phase')
 probe_name=a.probe_source.stem
-if probe_name not in ['I6ATabletProbe','I6BUnifiedProbe','I6C11Probe','I6C2Probe','I6C21Probe']:p.error('Unsupported isolated I6 probe')
+if probe_name not in ['I6ATabletProbe','I6BUnifiedProbe','I6C11Probe','I6C2Probe','I6C21Probe','I6C22Probe']:p.error('Unsupported isolated I6 probe')
 out=a.output.resolve();stage=out/'source';project=stage/'src/Client.Godot'
 if out.exists() and any(out.iterdir()):p.error('Use an empty output; retain earlier failures')
 out.mkdir(parents=True);inputs={};client_changed=False
@@ -21,7 +21,7 @@ if a.prepared:
     prior=json.loads(manifest.read_text()) if manifest.exists() else {'src/Client.Godot/'+f.relative_to(project).as_posix():None for f in project.rglob('*') if f.is_file() and not set(f.relative_to(project).parts)&{'.godot','obj','bin'}}
     for name in prior:
         if name.startswith('src/Client.Godot/') and not (ROOT/name).exists():(stage/name).unlink(missing_ok=True)
-    for name in ['I5ContextProbe','I6ATabletProbe','I6BUnifiedProbe','I6C11Probe','I6C2Probe','I6C21Probe']:
+    for name in ['I5ContextProbe','I6ATabletProbe','I6BUnifiedProbe','I6C11Probe','I6C2Probe','I6C21Probe','I6C22Probe']:
         for suffix in ['.cs','.tscn']:(project/(name+suffix)).unlink(missing_ok=True)
 for name in subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard','-z'],cwd=ROOT,text=True).split('\0'):
     source=ROOT/name

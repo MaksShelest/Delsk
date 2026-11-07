@@ -32,9 +32,9 @@ def verify():
     for name,h in inputs.items():
         assert digest(ROOT/name)==h,'Current source changed: '+name
         staged=original_project/'I2ControlProbe.cs' if name=='tests/Client.Probes/I2ControlProbe.cs' else prepared/'source'/name
-        if name.startswith(('src/','config/','scenarios/')) or name=='tests/Client.Probes/I2ControlProbe.cs':
+        if name.startswith(('src/','config/','scenarios/','docs/vnext/maps/')) or name=='tests/Client.Probes/I2ControlProbe.cs':
             assert digest(staged)==h,'Retained source changed: '+name
-        if project!=original_project and name.startswith(('src/','config/','scenarios/')):
+        if project!=original_project and name.startswith(('src/','config/','scenarios/','docs/vnext/maps/')):
             assert digest(out/'source'/name)==h,'Cloned gameplay source changed: '+name
     original_binary=original_project/'.godot/mono/temp/bin/Debug'
     assert original_binaries=={str(f.relative_to(original_binary)):digest(f) for f in original_binary.rglob('*') if f.is_file()},'Original prepared binaries changed'

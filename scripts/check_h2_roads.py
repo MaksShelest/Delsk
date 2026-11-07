@@ -8,7 +8,7 @@ p.add_argument('--maps',nargs='+',choices=['small-river','large-districts','comp
 a=p.parse_args();out=a.output.resolve()
 if out.exists() and any(out.iterdir()):p.error('Use a new/empty output')
 out.mkdir(parents=True,exist_ok=True);stage=out/'source';project=stage/'src/Client.Godot'
-for folder in ['src','config','scenarios']:
+for folder in ['src','config','scenarios','docs/vnext/maps']:
  shutil.copytree(ROOT/folder,stage/folder,ignore=shutil.ignore_patterns('bin','obj','.godot'))
 for name in ['global.json','Directory.Build.props','Directory.Build.targets']:
  shutil.copyfile(ROOT/name,stage/name)

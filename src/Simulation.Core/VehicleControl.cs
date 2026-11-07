@@ -56,7 +56,8 @@ public sealed partial class SimulationEngine
         (service.Quote.SourcePosition==cell||service.Quote.DestinationPosition==cell||service.Quote.ReturnPosition==cell)||
         VehicleLogistics(body.Id)?.Trip is {} trip&&(trip.Path[0]==cell||trip.Path[^1]==cell);
     private bool EquipmentStockAt(Cell cell)=>UsesMobileEquipment&&_dealerStock.Any(s=>s.Position==cell&&Model(s.ModelId).EquipmentTypeId is not null);
-    private bool ControlCellAllowed(RoadBody body,Cell cell)=>_map.Walkable(cell)&&!EquipmentStockAt(cell)&&
+    private bool StationaryExtractor(OwnedVehicle v)=>UsesEquipmentClasses&&Model(v.ModelId).EquipmentTypeId is not null&&v.Driver==0&&!RoadVehicleWorking(v.Id)&&(!_traffic.TryGetValue(v.Id,out var motion)||!HasRoadProgress(motion)&&!IsSteering(motion));
+    private bool ControlCellAllowed(RoadBody body,Cell cell)=>_map.Walkable(cell)&&!EquipmentStockAt(cell)&&!_vehicles.Values.Any(v=>v.Id!=body.Id&&StationaryExtractor(v)&&VehicleCargo(v).Position==cell)&&
         (!_plots.Values.Any(p=>p.Definition.Position==cell&&p.Owner is {} owner&&owner!=body.Owner.Value)||AuthorizedVehicleStop(body,cell))&&
         !_resources.Values.Any(r=>r.Definition.Position==cell&&!r.Rules.Public&&r.Owner!=body.Owner.Value&&!(r.Tenant==body.Owner.Value&&Tick<r.LeaseUntil));
     private bool PedestrianAt(Cell cell,long driver)=>_actors.Values.Any(a=>a.Id!=driver&&DrivenVehicle(a.Id) is null&&
@@ -155,10 +156,12 @@ public sealed partial class SimulationEngine
         }
         return true;
     }
-    private bool PedestrianTrafficBlocked(Cell cell,long actor=0)=>EquipmentStockAt(cell)||UsesFreeVehicleControl&&
+    private bool PedestrianExtractorPass(Cell cell)=>UsesEquipmentClasses&&(EquipmentStockAt(cell)||_vehicles.Values.Any(v=>StationaryExtractor(v)&&VehicleCargo(v).Position==cell));
+    private bool PedestrianTrafficBlocked(Cell cell,long actor=0)=>!PedestrianExtractorPass(cell)&&(EquipmentStockAt(cell)||UsesFreeVehicleControl&&
         (RoadBodies().Any(b=>VehicleCargo(b).Position==cell&&
             !(b.Owner.Value==actor&&b.Driver==0&&!RoadVehicleWorking(b.Id)&&(!_traffic.TryGetValue(b.Id,out var parked)||!HasRoadProgress(parked)&&!IsSteering(parked))))||_traffic.Values.Any(t=>
-            HasRoadProgress(t)&&t.Index<t.Path.Length-1&&t.Path[t.Index+1]==cell)||TurnReservedByOther(0,cell));
+            HasRoadProgress(t)&&t.Index<t.Path.Length-1&&t.Path[t.Index+1]==cell)||TurnReservedByOther(0,cell)))
+        ||PedestrianExtractorPass(cell)&&UsesFreeVehicleControl&&(_traffic.Values.Any(t=>HasRoadProgress(t)&&t.Index<t.Path.Length-1&&t.Path[t.Index+1]==cell)||TurnReservedByOther(0,cell));
 
     private static int IntegerDistance(int dx,int dz)
     {

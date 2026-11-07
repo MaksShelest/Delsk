@@ -42,10 +42,12 @@ public class I6C21MapTests
     public void NewGameShowsSixVehiclesAndLaterSupplyStillAddsOne()
     {
         var session=I6C2MapsTests.Session(PlayMaps.CompactValley);var fleet=session.Engine.InspectFleet()!;
-        Assert.Equal(6,fleet.Stock.Length);
-        Assert.Equal(new[]{"eger70","extractor_extract_grain_1","extractor_extract_wood_1","muravey70","sputnik20","trakt_d1"},fleet.Stock.Select(v=>v.ModelId).Order(StringComparer.Ordinal));
+        Assert.Equal(4,fleet.Stock.Length);
+        Assert.Equal(new[]{"extractor_field_1","extractor_forest_1","muravey70","sputnik20"},fleet.Stock.Select(v=>v.ModelId).Order(StringComparer.Ordinal));
         Assert.Equal(2,fleet.Stock.Select(v=>v.Position).Distinct().Count(c=>session.Engine.Configuration().Layout!.CivicObjects.Single(s=>s.Kind=="dealership").EquipmentParking!.Contains(c)));
-        session.AdvanceTo(fleet.NextSupplyTick);Assert.Equal(7,session.Engine.InspectFleet()!.Stock.Length);session.Engine.ValidateInvariants();
+        var models=session.Engine.Configuration().Economy!.Fleet!.Models;
+        Assert.Equal(2,fleet.Stock.Count(v=>models.Single(m=>m.Id==v.ModelId) is {EquipmentTypeId:null,MaterialsOnly:false}));
+        session.AdvanceTo(fleet.NextSupplyTick);Assert.Equal(5,session.Engine.InspectFleet()!.Stock.Length);session.Engine.ValidateInvariants();
     }
     [Fact]
     public void PreviousValleySaveKeepsItsRoadsAndFullExhibition()

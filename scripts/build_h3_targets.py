@@ -18,7 +18,7 @@ files=subprocess.check_output(['git','ls-files','--cached','--others','--exclude
 inputs={}
 for name in sorted(set(files)):
  source=ROOT/name
- if source.is_file() and (name.startswith(('src/','config/','scenarios/')) or name in ['Directory.Build.props','Directory.Build.targets','global.json']):
+ if source.is_file() and (name.startswith(('src/','config/','scenarios/','docs/vnext/maps/')) or name in ['Directory.Build.props','Directory.Build.targets','global.json']):
   target=stage/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target);inputs[name]=hashlib.sha256(source.read_bytes()).hexdigest()
 inputs['scripts/build_h3_targets.py']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 (out/'source-inputs.json').write_text(json.dumps(inputs,indent=2)+'\n')

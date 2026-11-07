@@ -13,7 +13,7 @@ if a.save and (len(a.maps)!=1 or a.legacy_save_dir or a.fleet_save_dir or a.moti
 if a.natural_save and not a.save:p.error('--natural-save requires --save')
 if out.exists() and any(out.iterdir()):p.error('Use a new/empty output')
 out.mkdir(parents=True,exist_ok=True);stage=out/'source';project=stage/'src/Client.Godot'
-for folder in ['src','config','scenarios']:
+for folder in ['src','config','scenarios','docs/vnext/maps']:
  shutil.copytree(ROOT/folder,stage/folder,ignore=shutil.ignore_patterns('bin','obj','.godot'))
 for name in ['global.json','Directory.Build.props','Directory.Build.targets']:
  shutil.copyfile(ROOT/name,stage/name)

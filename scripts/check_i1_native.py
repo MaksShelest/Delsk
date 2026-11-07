@@ -14,7 +14,7 @@ def check(name,timeout,cmd,env=None):
 names=subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard','-z'],cwd=ROOT,text=True).split('\0')
 for name in sorted(set(names)):
  source=ROOT/name
- if source.is_file() and (name.startswith(('src/','config/','scenarios/')) or name in ['Directory.Build.props','Directory.Build.targets','global.json']):
+ if source.is_file() and (name.startswith(('src/','config/','scenarios/','docs/vnext/maps/')) or name in ['Directory.Build.props','Directory.Build.targets','global.json']):
   dest=stage/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,dest);inputs[name]=hashlib.sha256(source.read_bytes()).hexdigest()
 for name in ['tests/Client.Probes/I1MovementProbe.cs','tools/AssemblyAudit/Program.cs','scripts/check_i1_native.py']:
  inputs[name]=hashlib.sha256((ROOT/name).read_bytes()).hexdigest()

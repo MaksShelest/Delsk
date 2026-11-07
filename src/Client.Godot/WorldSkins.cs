@@ -76,9 +76,10 @@ public static class WorldSkins
     }
     public static Node3D Equipment(string item,int level)
     {
-        if(Preferences.ForModel("equipment")==AppearancePreferences.Cozy && Model(item=="wood"?"ForestHarvester":"FieldHarvester",1,reverse:true) is {} model)
-        {AddLevel(model,level);return Fitted(model,new(.72f,.75f,.82f));}
-        return Classic(Fitted(WorldModels.Equipment(item,level),new(.72f,.75f,.82f)));
+        string mesh=item=="wood"?"ForestHarvester":item=="milk"?"FieldHarvester":item is "stone" or "sand" or "iron_ore" or "copper_ore"?"":"FieldHarvester";
+        if(mesh.Length>0&&Preferences.ForModel("equipment")==AppearancePreferences.Cozy && Model(mesh,1,reverse:true) is {} model)
+        {AddLevel(model,level);return Fitted(model,new(.56f,.58f,.64f));}
+        return Classic(Fitted(WorldModels.Equipment(item,level),new(.56f,.58f,.64f)));
     }
     private static Node3D Fitted(Node3D node,Vector3 size){var root=WorldProportions.Fit(node,size);root.Name="Appearance";root.SetMeta("skin_set",node.HasMeta("skin_set")?node.GetMeta("skin_set"):AppearancePreferences.Cozy);return root;}
     private static void AddLevel(Node3D root,int level)
