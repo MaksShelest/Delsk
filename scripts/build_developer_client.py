@@ -21,7 +21,7 @@ stage.mkdir(parents=True)
 names=set(subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard','-z'],cwd=root,text=True,encoding='utf-8').split('\0'))
 for name in sorted(names):
     src=root/name
-    if not src.is_file() or not (name.startswith(('src/','config/','scenarios/')) or name in ('Directory.Build.props','Directory.Build.targets','global.json')):continue
+    if not src.is_file() or not (name.startswith(('src/','config/','scenarios/','docs/vnext/maps/')) or name in ('Directory.Build.props','Directory.Build.targets','global.json')):continue
     dest=stage/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(src,dest)
 project=stage/'src/Client.Godot/Delsk.Client.csproj'
 # Godot invokes MSBuild again for ExportDebug without our command-line properties.

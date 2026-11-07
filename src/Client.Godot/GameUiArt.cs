@@ -32,7 +32,14 @@ public static class GameUiArt
         bool machine=model.EquipmentTypeId is not null,paver=model.MaterialsOnly,car=model.Id=="sputnik20";
         string color=paver?"d1ab58":machine?"a8b87d":car?"8aa9b7":"749e95";
         string cab=car?"<path d='m66 56 21-25h60l24 25' fill='#9fb8b8' stroke='#648b88' stroke-width='4'/><path d='m91 36-17 20h76l-15-20z' fill='#d3e4d8'/>":"<path d='M139 31h39l22 36v43h-61z' fill='#c7c99c'/><path d='M148 39h23l15 27h-38z' fill='#bfd9d4'/>";
-        string equipment=paver?"<path d='M14 108h40v15H8z' fill='#b28c4c'/><rect x='23' y='51' width='108' height='50' rx='7' fill='#cab477'/>":machine?"<path d='m52 72 20-45 28-13 6 12-24 12-14 45' fill='#d4b867' stroke='#a38f53' stroke-width='4'/><path d='m98 12 19 4 8 18-25 5z' fill='#7e9b83'/>":car?"":"<path d='M19 38h111v65H19z' fill='#a8bba4'/><path d='M24 46h101M24 68h101M24 89h101' stroke='#789b8d' stroke-width='3'/>";
+        string equipment=model.EquipmentTypeId switch
+        {
+            "extract_forest"=>"<path d='M118 18v78' stroke='#8d6a3d' stroke-width='8'/><path d='M78 28h62' stroke='#c49b43' stroke-width='8'/><rect x='58' y='22' width='22' height='14' rx='3' fill='#6d8a4e'/>",
+            "extract_dairy"=>"<rect x='48' y='48' width='78' height='42' rx='16' fill='#e7eef2' stroke='#8aa3ae' stroke-width='4'/><rect x='78' y='36' width='16' height='16' rx='4' fill='#d5e4ea'/>",
+            "extract_mine"=>"<path d='M70 78l28-34 18 8-16 28z' fill='#6e6258'/><rect x='96' y='70' width='22' height='16' fill='#b7a48a'/>",
+            "extract_field"=>"<path d='m40 78 18-28h70l16 28z' fill='#e2bf57' stroke='#a38f53' stroke-width='4'/>",
+            _=>paver?"<path d='M14 108h40v15H8z' fill='#b28c4c'/><rect x='23' y='51' width='108' height='50' rx='7' fill='#cab477'/>":machine?"<path d='m52 72 20-45 28-13 6 12-24 12-14 45' fill='#d4b867' stroke='#a38f53' stroke-width='4'/><path d='m98 12 19 4 8 18-25 5z' fill='#7e9b83'/>":car?"":"<path d='M19 38h111v65H19z' fill='#a8bba4'/><path d='M24 46h101M24 68h101M24 89h101' stroke='#789b8d' stroke-width='3'/>"
+        };
         string body="<ellipse cx='111' cy='132' rx='103' ry='12' fill='#d9e2cc'/>"+cab+$"<path d='M20 66h179l12 18v31H17V80z' fill='#{color}'/>"+equipment+"<path d='M21 115h183' stroke='#638175' stroke-width='7'/><circle cx='52' cy='119' r='17' fill='#526c67'/><circle cx='52' cy='119' r='8' fill='#c9d3c3'/><circle cx='172' cy='119' r='17' fill='#526c67'/><circle cx='172' cy='119' r='8' fill='#c9d3c3'/><path d='M204 86h8v13h-8' fill='#e8d087'/>";
         return new(){Texture=Svg("vehicle:"+model.Id,body,224,150),CustomMinimumSize=size,ExpandMode=TextureRect.ExpandModeEnum.IgnoreSize,StretchMode=TextureRect.StretchModeEnum.KeepAspectCentered,MouseFilter=Control.MouseFilterEnum.Ignore};
     }

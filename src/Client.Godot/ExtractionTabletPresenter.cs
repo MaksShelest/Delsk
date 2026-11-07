@@ -25,19 +25,30 @@ public partial class ExtractionTabletPresenter : VBoxContainer
         var more=sections.Add("more",L("Дополнительно","More"));more.AddChild(legacyDetails);more.AddChild(ExtraActions);
     }
     private string L(string ru,string en)=>GameUi.L(_language,ru,en);
+    private string ClassTitle(EquipmentTypeDefinition type)=>type.Id switch
+    {
+        "extract_field"=>L("Полевой комбайн","Field harvester"),
+        "extract_forest"=>L("Лесозаготовительная машина","Forestry machine"),
+        "extract_dairy"=>L("Молочная машина","Dairy machine"),
+        "extract_mine"=>L("Горная машина","Mining machine"),
+        _=>L("Добыча: ","Extracting: ")+PlayerText.Item(_language,type.ItemId)
+    };
     public void ShowData(PlayerView view,bool pending)
     {
         var machine=view.Equipment!.Single(e=>e.Id.Value==_id);var type=_scenario.EquipmentTypes!.Single(t=>t.Id==machine.TypeId);var definition=type.Levels.Single(l=>l.Level==machine.Level);
         var group=view.Employment.Single(g=>g.Id==machine.GroupId);var stock=view.Inventories.Single(i=>i.Id==machine.StorageId);var model=view.Fleet!.Vehicles.Single(v=>v.Vehicle.Id==_id).Model;
         if(_picture is null){_picture=GameUiArt.Vehicle(model,new(200,134));_art.AddChild(_picture);}
         _picture.CustomMinimumSize=GetViewportRect().Size.Y<540?new(140,94):new(200,134);
-        _title.Text=L("Добыча: ","Extracting: ")+PlayerText.Item(_language,type.ItemId);_site.Text=L("Уровень ","Level ")+machine.Level+$" · ({machine.Position.X},{machine.Position.Z})";
+        bool classes=type.Id is "extract_field" or "extract_forest" or "extract_dairy" or "extract_mine";
+        string current=machine.ResourceItem??type.ItemId;string supported=string.Join(", ",type.CompatibleItems().Select(item=>PlayerText.Item(_language,item)));
+        _title.Text=classes?ClassTitle(type)+L(" — уровень "," — level ")+machine.Level:L("Добыча: ","Extracting: ")+PlayerText.Item(_language,type.ItemId);
+        _site.Text=classes?L("Подходит для ","Works with ")+supported+"\n"+L("Сейчас: ","Current: ")+PlayerText.Item(_language,current)+$" · ({machine.Position.X},{machine.Position.Z})":L("Уровень ","Level ")+machine.Level+$" · ({machine.Position.X},{machine.Position.Z})";
         _state.Text=machine.Deployed!=true?L("Готова к перевозке","Packed for transport"):GameUi.Reason(_language,machine.ReasonCode);
         _hint.Text=pending?L("Действие запрошено. Включите время.","Action queued. Run time."):machine.Deployed!=true?L("Доставьте машину на свой участок с этим ресурсом, затем нажмите «Разместить».","Drive to your own site containing this resource, then choose Place."):machine.ReasonCode=="NoStaff"?L("Найм идёт постепенно. Проверьте ставку в разделе «Работники».","Hiring takes time. Review wages in Crew."):machine.Mode==EquipmentMode.Off?L("Выберите личный или автоматический режим, чтобы начать работу.","Choose personal or automatic mode to begin."):L("Завершённые циклы пополняют груз. Заберите ресурс ниже или откройте «Груз».","Completed cycles fill the cargo. Collect below or open Cargo.");
         _progress.MaxValue=Math.Max(1,machine.WorkRequired);_progress.Value=machine.WorkDone;
         _crew.Text=L("Команда ","Crew ")+group.Headcount+" / "+group.Capacity+" · "+definition.CycleQuantity+L(" за цикл"," per cycle");
         _team.Text=_crew.Text+"\n"+L("Текущая ставка: ","Current wage: ")+PlayerText.Money(group.WageMinor)+(group.PendingWageMinor is {} wage?L(" → объявлено "," → pending ")+PlayerText.Money(wage):"");
-        _stock.ShowStock(stock,_language,[type.ItemId]);_take.ShowData(view,stock.Id,view.Participant.InventoryId,[type.ItemId],pending,"output");
+        var items=type.CompatibleItems();_stock.ShowStock(stock,_language,items);_take.ShowData(view,stock.Id,view.Participant.InventoryId,items,pending,"output");
         if(!_focused){_focused=true;_transfer.FocusInventory(stock.Id.Value);}_transfer.ShowData(view,pending);
         if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Size.X);
     }

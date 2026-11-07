@@ -5,14 +5,18 @@ public sealed partial class AlgorithmicController
     private IEnumerable<Candidate> EconomicExtraction(ControllerObservation o)
     {
         if(!UsesEconomicPlanning||o.Enterprises.IsEmpty||_state.Settings.ExpansionWeight==0||HasObligations(o)||o.Unemployed<2)yield break;
-        foreach(var type in o.EquipmentTypes.Where(t=>o.Enterprises.SelectMany(ProductionWorkplaces).Any(l=>o.Map.Recipes.Single(r=>r.Id==l.Unit.RecipeId).Uses(t.ItemId))))
+        foreach(var type in o.EquipmentTypes.Where(t=>t.CompatibleItems().Any(item=>o.Enterprises.SelectMany(ProductionWorkplaces).Any(l=>o.Map.Recipes.Single(r=>r.Id==l.Unit.RecipeId).Uses(item)))))
         {
-            if(o.Equipment.Any(e=>e.TypeId==type.Id))continue;var level=type.Levels.OrderBy(l=>l.PriceMinor).First();
-            foreach(var site in o.Resources.Where(r=>r.ItemId==type.ItemId&&!r.Public&&r.Stock>r.Reserved&&(r.Owner is null||r.Owner==Actor)))
+            if(o.Equipment.Any(e=>e.TypeId==type.Id))continue;
+            var sold=type.Levels.Where(l=>o.Fleet?.Models.Any(m=>m.EquipmentTypeId==type.Id&&m.EquipmentLevel==l.Level)==true).OrderBy(l=>l.PriceMinor).ToArray();
+            if(MobileFleet(o)&&sold.Length==0)continue;
+            var level=sold.Length>0?sold[0]:type.Levels.OrderBy(l=>l.PriceMinor).First();
+            string item=type.CompatibleItems().First(candidate=>o.Enterprises.SelectMany(ProductionWorkplaces).Any(l=>o.Map.Recipes.Single(r=>r.Id==l.Unit.RecipeId).Uses(candidate)));
+            foreach(var site in o.Resources.Where(r=>r.ItemId==item&&!r.Public&&r.Stock>r.Reserved&&(r.Owner is null||r.Owner==Actor)))
             {
                 long land=site.Owner==Actor?0:site.PurchasePriceMinor;long cost=checked(land+level.PriceMinor+level.MinimumCrew*level.WageMinor*_state.Settings.WageReviewTicks+_state.Settings.CashReserveMinor);
                 if(o.Account.AvailableMinor<cost||!Reachable(o,site.Position))continue;
-                var demand=BestOffer(o,type.ItemId,level.CycleQuantity,site.Position);if(demand is null||level.CycleQuantity*demand.UnitPriceMinor<=level.CrewCapacity*level.WageMinor*level.CycleTicks)continue;
+                var demand=BestOffer(o,item,level.CycleQuantity,site.Position);if(demand is null||level.CycleQuantity*demand.UnitPriceMinor<=level.CrewCapacity*level.WageMinor*level.CycleTicks)continue;
                 if(MobileFleet(o))
                 {
                     if(o.Fleet!.OwnRequests.Length>0)continue;

@@ -27,7 +27,8 @@ internal record SavedEnterprise(EnterpriseDefinition Definition, long Input, lon
     bool Enabled, string Reason, SavedBatch? Batch, long Completed, long EnergyPaid, EmploymentView Group);
 internal record SavedEquipment(long Id, long Owner, Cell Position, long Storage, string TypeId, int Level,
     EquipmentMode Mode, string Reason, SavedBatch? Batch, long Completed, long PersonalJobId, EmploymentView Group, EquipmentMotion? Motion=null, ExtractionRoute? Route=null, long MovedAtTick=0,
-    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] bool? Deployed=null);
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] bool? Deployed=null,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? ResourceItem=null);
 internal record SavedSale(long ActorId, long InventoryId, long Quantity, string Reservation, string CommandId);
 internal record SavedOffer(long Id, long Remaining, long? Cutoff, SavedSale[] Requests, SupplyRequest[] SupplyRequests, int Window);
 internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, ScenarioDefinition Config, string ConfigHash,
@@ -54,7 +55,7 @@ public sealed partial class SimulationEngine
 {
     public const int CheckpointSchemaVersion = 28;
     public const int AcceleratedCheckpointSchemaVersion=29;
-    public int ActiveCheckpointSchemaVersion=>UsesMobileEquipment?31:UsesFreeVehicleControl?30:UsesAcceleratedMovement?AcceleratedCheckpointSchemaVersion:CheckpointSchemaVersion;
+    public int ActiveCheckpointSchemaVersion=>UsesEquipmentClasses?32:UsesMobileEquipment?31:UsesFreeVehicleControl?30:UsesAcceleratedMovement?AcceleratedCheckpointSchemaVersion:CheckpointSchemaVersion;
     public ScenarioDefinition Configuration() => JsonSerializer.Deserialize<ScenarioDefinition>(
         JsonSerializer.Serialize(_config, SimulationJson.Options), SimulationJson.Options)!;
 
@@ -81,7 +82,7 @@ public sealed partial class SimulationEngine
             _enterprises.Values.OrderBy(e => e.Definition.Id).Select(e => new SavedEnterprise(e.Definition, e.Input,
                 e.Output, e.Recipe.Id, e.Enabled, e.Reason, SaveBatch(e.Batch), e.Completed, e.EnergyPaid, e.Group.View())).ToArray(),
             _equipment.Values.OrderBy(e => e.Id).Select(e => new SavedEquipment(e.Id, e.Owner, e.Position, e.Storage,
-                e.Type.Id, e.Level, e.Mode, e.Reason, SaveBatch(e.Batch), e.Completed, e.PersonalJobId, e.Group.View(),e.Motion,e.Route,e.MovedAtTick,e.Deployed)).ToArray(),
+                e.Type.Id, e.Level, e.Mode, e.Reason, SaveBatch(e.Batch), e.Completed, e.PersonalJobId, e.Group.View(),e.Motion,e.Route,e.MovedAtTick,e.Deployed,e.ResourceItemId)).ToArray(),
             world.Plots, BuildingViews(true),
             _offers.Values.OrderBy(o => o.Definition.Id).Select(o => new SavedOffer(o.Definition.Id, o.Remaining, o.Cutoff,
                 o.Requests.Values.OrderBy(r => r.ActorId).Select(r => new SavedSale(r.ActorId, r.InventoryId, r.Quantity,
@@ -133,7 +134,7 @@ public sealed partial class SimulationEngine
             var s = JsonSerializer.Deserialize<WorldCheckpoint>(MigrateTravel(json), SimulationJson.Options)
                 ?? throw new CheckpointException("EmptyCheckpoint");
             if((s.SchemaVersion>=29)!=(s.Config.Economy?.Movement is not null))throw new CheckpointException("UnknownMovementSchema");
-            if((s.SchemaVersion==31)!=(s.Config.Economy?.Fleet?.EquipmentDealerVersion==1)||s.SchemaVersion<31&&s.Equipment.Any(e=>e.Deployed is not null))throw new CheckpointException("UnknownEquipmentDealerSchema");
+            if((s.SchemaVersion==32)!=(s.Config.Economy?.Fleet?.EquipmentDealerVersion==2)||(s.SchemaVersion==31)!=(s.Config.Economy?.Fleet?.EquipmentDealerVersion==1)||s.SchemaVersion<31&&s.Equipment.Any(e=>e.Deployed is not null))throw new CheckpointException("UnknownEquipmentDealerSchema");
             if((s.SchemaVersion>=30)!=(s.Config.Economy?.VehicleControl is not null)||s.SchemaVersion<30&&s.Roads?.Traffic.Any(t=>t.Steering is not null)==true)throw new CheckpointException("UnknownVehicleControlSchema");
             if(s.SchemaVersion<28&&(s.Services?.Execution is not null||s.Config.Economy?.ServiceExecution is not null))throw new CheckpointException("UnknownWorldSchema");
             if(s.SchemaVersion<27&&(s.Services is not null||s.Config.Economy?.Services is not null))throw new CheckpointException("UnknownWorldSchema");
@@ -143,7 +144,7 @@ public sealed partial class SimulationEngine
             if(s.SchemaVersion<23&&(s.ProductionContent is not null||s.Config.Economy?.ProductionContent is not null))throw new CheckpointException("UnknownWorldSchema");
             if(s.SchemaVersion<22 && (s.Development is not null||s.Config.Economy?.Development is not null||s.Config.BuildingTypes?.Any(t=>t.Levels.Any(l=>!l.Footprint.IsDefault))==true||s.Storage?.Construction.Any(c=>c.Development is not null)==true))throw new CheckpointException("UnknownWorldSchema");
             if (s.SchemaVersion < 21 && (s.Workshops is not null || s.Config.Economy?.Workshops is not null || s.Enterprises.Any(e=>e.Batch?.Terms is not null) || s.Equipment.Any(e=>e.Batch?.Terms is not null))) throw new CheckpointException("UnknownWorldSchema");
-            if (s.SchemaVersion!=31 && s.SchemaVersion!=30 && s.SchemaVersion!=29 && s.SchemaVersion != CheckpointSchemaVersion && s.SchemaVersion!=27 && s.SchemaVersion!=26 && s.SchemaVersion!=25 && s.SchemaVersion!=24 && s.SchemaVersion!=23 && s.SchemaVersion!=22 && s.SchemaVersion!=21 && s.SchemaVersion!=20 && !(s.SchemaVersion==19&&s.Demolition is null&&s.Config.Economy?.Demolition is null&&s.Flows.All(f=>f.ConstructionRecovered==0))&&!(s.SchemaVersion==18&&s.Demolition is null&&s.Config.Economy?.Storage is null&&s.Storage is null&&s.Inventories.All(i=>i.Overflow is null)&&s.Flows.All(f=>f.Lost==0&&f.ConstructionRecovered==0))) throw new CheckpointException("UnknownWorldSchema");
+            if (s.SchemaVersion!=32 && s.SchemaVersion!=31 && s.SchemaVersion!=30 && s.SchemaVersion!=29 && s.SchemaVersion != CheckpointSchemaVersion && s.SchemaVersion!=27 && s.SchemaVersion!=26 && s.SchemaVersion!=25 && s.SchemaVersion!=24 && s.SchemaVersion!=23 && s.SchemaVersion!=22 && s.SchemaVersion!=21 && s.SchemaVersion!=20 && !(s.SchemaVersion==19&&s.Demolition is null&&s.Config.Economy?.Demolition is null&&s.Flows.All(f=>f.ConstructionRecovered==0))&&!(s.SchemaVersion==18&&s.Demolition is null&&s.Config.Economy?.Storage is null&&s.Storage is null&&s.Inventories.All(i=>i.Overflow is null)&&s.Flows.All(f=>f.Lost==0&&f.ConstructionRecovered==0))) throw new CheckpointException("UnknownWorldSchema");
             if (s.RulesVersion != RulesVersion) throw new CheckpointException("UnknownRulesVersion");
             var e = new SimulationEngine(s.Config); // Only validates/configures a fresh, unpublished instance.
             if (e.ConfigHash != s.ConfigHash) throw new CheckpointException("ConfigurationHashMismatch");
@@ -216,7 +217,7 @@ public sealed partial class SimulationEngine
         {
             var type = (_config.EquipmentTypes ?? []).Single(t => t.Id == v.TypeId);
             var value = new EquipmentState(v.Id, v.Owner, v.Position, v.Storage, type, v.Level)
-                { Mode = v.Mode, Reason = v.Reason, Batch = LoadBatch(v.Batch), Completed = v.Completed, PersonalJobId = v.PersonalJobId, Motion=v.Motion, Route=v.Route,MovedAtTick=v.MovedAtTick,Deployed=v.Deployed };
+                { Mode = v.Mode, Reason = v.Reason, Batch = LoadBatch(v.Batch), Completed = v.Completed, PersonalJobId = v.PersonalJobId, Motion=v.Motion, Route=v.Route,MovedAtTick=v.MovedAtTick,Deployed=v.Deployed,ResourceItemId=v.ResourceItem };
             LoadGroup(value.Group, v.Group); _equipment.Add(v.Id, value);
         }
         if (s.Plots.Length != _plots.Count) throw new CheckpointException("InvalidPlotCount");

@@ -143,7 +143,7 @@ public sealed partial class SimulationEngine
             {
                 if (b.WorkRequired != checked(e.Characteristics.CycleTicks * e.Group.Capacity) || b.EnergyPaid != 0)
                     throw new CheckpointException("InvalidExtractionProgress");
-                expectedCapacity.Add((e.Storage, b.Hold), checked(e.Characteristics.CycleQuantity * _items[e.Type.ItemId].UnitVolume));
+                expectedCapacity.Add((e.Storage, b.Hold), checked(e.Characteristics.CycleQuantity * _items[EquipmentItem(e)].UnitVolume));
             }
         foreach (var o in _offers.Values)
         {

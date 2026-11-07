@@ -84,7 +84,12 @@ public record BuildingDefinition(long Id, long OwnerId, Cell Position, string Ty
 public enum EquipmentMode { Off, Personal, Automatic }
 public record EquipmentLevelDefinition(int Level, long PriceMinor, long CycleQuantity, long CycleTicks,
     long StorageCapacity, int MinimumCrew, int CrewCapacity, long WageMinor);
-public record EquipmentTypeDefinition(string Id, string ItemId, EquipmentLevelDefinition[] Levels);
+public record EquipmentTypeDefinition(string Id, string ItemId, EquipmentLevelDefinition[] Levels,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] System.Collections.Immutable.ImmutableArray<string> Items=default)
+{
+    public bool Accepts(string item) => Items.IsDefault || Items.IsEmpty ? item == ItemId : Items.Contains(item);
+    public string[] CompatibleItems() => Items.IsDefault || Items.IsEmpty ? [ItemId] : Items.ToArray();
+}
 public record CapitalOfferDefinition(long Id, string ItemId, long Quantity, long UnitPriceMinor, Cell Position);
 public record LaborSettings(int StepTicks = 10, int SalaryChangeDelayTicks = 20,
     int MobilityNumerator = 1, int MobilityDenominator = 10,
@@ -155,6 +160,8 @@ public record EquipmentView(EquipmentId Id, ParticipantId OwnerId, string TypeId
 {
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public bool? Deployed { get; init; }
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public string? ResourceItem { get; init; }
     public EquipmentMotion? Motion { get; init; }
     public ExtractionRoute? Route { get; init; }
 }

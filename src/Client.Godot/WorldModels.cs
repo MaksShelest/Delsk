@@ -221,19 +221,25 @@ public static partial class WorldModels
     public static Node3D Equipment(string item,int level=1)
     {
         var root=Truck(false);
-        Box(root,new Vector3(0.36f,0.19f,0.4f),new Color("d4af4d"),new Vector3(0,0.42f,0.08f));
         if(item=="wood")
         {
-            Box(root,new Vector3(0.06f,0.65f,0.06f),new Color("c49b43"),new Vector3(0.13f,0.68f,0.15f));
-            Box(root,new Vector3(0.46f,0.06f,0.06f),new Color("c49b43"),new Vector3(-0.06f,0.99f,0.15f));
+            Box(root,new Vector3(0.08f,0.42f,0.08f),new Color("8d6a3d"),new Vector3(0.12f,0.52f,0.12f));
+            Box(root,new Vector3(0.34f,0.05f,0.05f),new Color("c49b43"),new Vector3(-0.02f,0.72f,0.12f));
+            Box(root,new Vector3(0.22f,0.08f,0.08f),new Color("6d8a4e"),new Vector3(-0.16f,0.7f,0.12f));
         }
-        else Box(root,new Vector3(0.68f,0.12f,0.2f),new Color("e2bf57"),new Vector3(0,0.16f,-0.42f));
-        if(level>1)
+        else if(item=="milk")
         {
-            Box(root,new(.46f,.2f,.52f),new("cf8a46"),new(0,.66f,.04f));
-            Box(root,new(.12f,.13f,.2f),new("5a6b72"),new(-.3f,.35f,.04f));
-            Box(root,new(.12f,.13f,.2f),new("5a6b72"),new(.3f,.35f,.04f));
+            Box(root,new Vector3(0.28f,0.16f,0.42f),new Color("e7eef2"),new Vector3(0,0.36f,0.08f));
+            Box(root,new Vector3(0.08f,0.1f,0.08f),new Color("d5e4ea"),new Vector3(0,0.48f,-0.08f));
         }
+        else if(item is "stone" or "sand" or "iron_ore" or "copper_ore")
+        {
+            Box(root,new Vector3(0.16f,0.1f,0.16f),new Color("8d8072"),new Vector3(0.02f,0.38f,0.16f));
+            Box(root,new Vector3(0.22f,0.06f,0.1f),new Color("6e6258"),new Vector3(0.16f,0.28f,0.28f));
+            Box(root,new Vector3(0.08f,0.08f,0.08f),new Color("b7a48a"),new Vector3(0.2f,0.22f,0.34f));
+        }
+        else Box(root,new Vector3(0.46f,0.08f,0.14f),new Color("e2bf57"),new Vector3(0,0.16f,-0.36f));
+        if(level>1)Box(root,new(.16f,.06f,.08f),new("cf8a46"),new(0,.48f,-0.16f));
         return root;
     }
 }

@@ -37,7 +37,7 @@ public static partial class ScenarioValidation
         var bodies=new HashSet<Cell>();
         foreach(var site in l.CivicObjects)
         {Id(site.Id);var c=Cells(site.Footprint);var body=Cells(site.Body);
-            Require(site.EquipmentParking is null || site.Kind=="dealership"&&s.Economy?.Fleet?.EquipmentDealerVersion==1);
+            Require(site.EquipmentParking is null || site.Kind=="dealership"&&s.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2);
             if(site.Kind=="town_hall")Require(body.Count==4 && body.Max(p=>p.X)-body.Min(p=>p.X)==1 && body.Max(p=>p.Z)-body.Min(p=>p.Z)==1);
             var shape=site.Kind switch{"town_hall"=>(3,3),"terminal"=>(2,3),"dealership"=>(5,5),_=>(0,0)};Require(c.Count==shape.Item1*shape.Item2 && c.Max(p=>p.X)-c.Min(p=>p.X)+1==shape.Item1 && c.Max(p=>p.Z)-c.Min(p=>p.Z)+1==shape.Item2);
             Require(body.IsSubsetOf(c)&&c.Contains(site.Entry)&&!body.Contains(site.Entry)&&body.Any(p=>Math.Abs(p.X-site.Entry.X)+Math.Abs(p.Z-site.Entry.Z)==1));if(site.SourceBuilding is {} source)Require(Cells(source).SetEquals(body));if(site.Parking is {} parking)Require(Cells(parking).IsSubsetOf(c));if(l.Version=="map-adapter-2")

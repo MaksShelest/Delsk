@@ -9,7 +9,7 @@ public sealed partial class SimulationEngine
 {
     private bool EquipmentFull(EquipmentState e) =>
         _economy.Inventories[e.Storage].Capacity - _economy.Inventories[e.Storage].Occupied(_items) -
-        _economy.Inventories[e.Storage].Incoming < _items[e.Type.ItemId].UnitVolume * e.Characteristics.CycleQuantity;
+        _economy.Inventories[e.Storage].Incoming < _items[EquipmentItem(e)].UnitVolume * e.Characteristics.CycleQuantity;
     private bool EquipmentTransferBusy(EquipmentState e) => _transfers.Values.Any(t => t.Source == e.Storage || t.Destination == e.Storage) ||
         _logistics.Values.Any(l=>l.Trip?.Freight?.GoodsSource.Value==e.Storage);
     private void SetExtractionRoute(ActorState actor, CommandEnvelope c)
@@ -19,7 +19,7 @@ public sealed partial class SimulationEngine
         var stops = c.Action.Stops ?? [];
         if (stops.IsDefault || stops.Length > 32 || c.Action.Enabled && stops.Length == 0) throw new RuleViolation("InvalidRoute");
         foreach (var cell in stops)
-            if (!_resources.TryGetValue((cell,e.Type.ItemId), out var site) || site.Owner != actor.Id || site.Definition.ItemId != e.Type.ItemId)
+            if (!_resources.TryGetValue((cell,EquipmentItem(e)), out var site) || site.Owner != actor.Id || site.Definition.ItemId != EquipmentItem(e))
                 throw new RuleViolation("NoResourceRights");
         e.Route = new(stops, c.Action.Repeat, c.Action.Enabled);
         // The current leg and its goods survive edits; the next choice uses the new route.
@@ -38,7 +38,7 @@ public sealed partial class SimulationEngine
     private void BeginEquipmentMotion(EquipmentState e, Cell destination)
     {
         if(ServicePointBusy(e.Storage))throw new RuleViolation("DeliveryServiceCommitment");
-        if (!_resources.TryGetValue((destination,e.Type.ItemId), out var site) || site.Owner != e.Owner || site.Definition.ItemId != e.Type.ItemId)
+        if (!_resources.TryGetValue((destination,EquipmentItem(e)), out var site) || site.Owner != e.Owner || site.Definition.ItemId != EquipmentItem(e))
             throw new RuleViolation("NoResourceRights");
         var path = _map.FindPath(e.Position, destination);
         if (path.Length == 1) return;
@@ -59,9 +59,9 @@ public sealed partial class SimulationEngine
             }
             var stop = route.Stops[cursor];
             route = route with { Cursor = cursor + 1 }; e.Route = route;
-            if (!_resources.TryGetValue((stop,e.Type.ItemId), out var site) || site.Owner != e.Owner || site.Definition.ItemId != e.Type.ItemId)
+            if (!_resources.TryGetValue((stop,EquipmentItem(e)), out var site) || site.Owner != e.Owner || site.Definition.ItemId != EquipmentItem(e))
             { e.Reason = "NoResourceRights"; continue; }
-            if (site.Stock - ResourceReserved(stop,e.Type.ItemId) < e.Characteristics.CycleQuantity) { e.Reason = "ResourceDepleted"; continue; }
+            if (site.Stock - ResourceReserved(stop,EquipmentItem(e)) < e.Characteristics.CycleQuantity) { e.Reason = "ResourceDepleted"; continue; }
             try { BeginEquipmentMotion(e, stop); return; }
             catch (RuleViolation ex) { e.Reason = ex.ReasonCode; }
         }
@@ -97,13 +97,13 @@ public sealed partial class SimulationEngine
         foreach (var e in _equipment.Values)
         {
             if (e.Route is { } r && (r.Stops.IsDefault || r.Stops.Length > 32 || r.Cursor < 0 || r.Cursor > r.Stops.Length ||
-                r.Stops.Any(c => !_resources.TryGetValue((c,e.Type.ItemId), out var s) || s.Owner != e.Owner || s.Definition.ItemId != e.Type.ItemId)))
+                r.Stops.Any(c => !_resources.TryGetValue((c,EquipmentItem(e)), out var s) || s.Owner != e.Owner || s.Definition.ItemId != EquipmentItem(e))))
                 throw new InvalidOperationException("Invalid extraction route");
             if (e.Motion is { } m && (e.Batch is not null || e.PersonalJobId != 0 || m.Path.IsDefaultOrEmpty ||
                 m.Index < 0 || m.Index >= m.Path.Length - 1 || (Roads is null && m.Path[m.Index] != e.Position) || m.Path.Any(c => !_map.Walkable(c)) ||
                 m.SegmentTicks < 0 || m.SegmentTicks >= (UsesAcceleratedMovement?EquipmentEdgeTime(m.Path[m.Index],m.Path[m.Index+1]):_config.MoveTicksPerCell) || m.StartedTick < 1 || m.StartedTick > Tick ||
                 m.Path.Zip(m.Path.Skip(1)).Any(p => Math.Abs(p.First.X-p.Second.X)+Math.Abs(p.First.Z-p.Second.Z)!=1) ||
-                !_resources.TryGetValue((m.Path[^1],e.Type.ItemId), out var target) || target.Owner != e.Owner || target.Definition.ItemId != e.Type.ItemId))
+                !_resources.TryGetValue((m.Path[^1],EquipmentItem(e)), out var target) || target.Owner != e.Owner || target.Definition.ItemId != EquipmentItem(e)))
                 throw new InvalidOperationException("Invalid equipment movement");
             if (e.MovedAtTick < 0 || e.MovedAtTick > Tick) throw new InvalidOperationException("Invalid equipment interval");
         }

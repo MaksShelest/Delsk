@@ -51,7 +51,7 @@ public partial class I6C21Probe : Control
             string save=typeof(Playfield).GetProperty("SavePath",Flags)!.GetValue(app)!.ToString()!;
             CheckpointStore.Save(session,save);Call(app,"Load");Call(app,"ContinueGame");await Frames(8);
             app.SetProcess(false);session=Field<GameSession>(app,"_session");session.SetPaused(true);Call(app,"Refresh");
-            Check(session.Engine.InspectFleet()!.Stock.Length==6,"new exhibition is six vehicles");
+            Check(session.Engine.InspectFleet()!.Stock.Length==4,"new exhibition is four vehicles");
             Camera(app,new(15.5f,0,12),36);await Shot("03-valley-3d");
             Camera(app,new(24,0,8),16);await Shot("04-city-lots");
             var entry=session.Engine.Configuration().Layout!.CivicObjects.Single(c=>c.Kind=="dealership").Entry;

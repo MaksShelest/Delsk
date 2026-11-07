@@ -2,7 +2,9 @@ namespace Simulation.Core;
 
 public sealed partial class SimulationEngine
 {
-    public bool UsesMobileEquipment => Fleet?.EquipmentDealerVersion == 1;
+    public bool UsesMobileEquipment => Fleet?.EquipmentDealerVersion is 1 or 2;
+    public bool UsesEquipmentClasses => Fleet?.EquipmentDealerVersion == 2;
+    private string EquipmentItem(EquipmentState e) => e.ResourceItemId ?? e.Type.ItemId;
     private bool MobileMachine(long id) => UsesMobileEquipment && _equipment.ContainsKey(id);
     private bool MobileMachineWorking(long id) => MobileMachine(id) && _equipment[id] is { } e &&
         (e.Deployed == true || e.Batch is not null || e.PersonalJobId != 0 || e.Motion is not null);
@@ -12,7 +14,7 @@ public sealed partial class SimulationEngine
         long id=action.Kind==ActionKind.BoardVehicle?action.VehicleId:action.Equipment.Value;
         if (!UsesMobileEquipment || !_equipment.TryGetValue(id,out var e)) return "Allowed";
         if(e.Owner!=actor.Id)return "NotAvailable";
-        if(action.Kind==ActionKind.PlaceEquipment)return EquipmentPlacementReason(new(actor.Id),new(id));
+        if(action.Kind==ActionKind.PlaceEquipment)return EquipmentPlacementReason(new(actor.Id),new(id),action.ItemId);
         if(action.Kind==ActionKind.PackEquipment)
             return e.Deployed!=true?"EquipmentNotPlaced":e.Mode!=EquipmentMode.Off||e.PersonalJobId!=0||e.Motion is not null||EquipmentTransferBusy(e)||ServicePointBusy(e.Storage)?"EquipmentBusy":"Allowed";
         if(action.Kind==ActionKind.BoardVehicle && e.Deployed==true)return "EquipmentAlreadyPlaced";
@@ -23,14 +25,16 @@ public sealed partial class SimulationEngine
     }
 
     /// <summary>A pure participant-safe explanation; the command repeats these checks.</summary>
-    public string EquipmentPlacementReason(ParticipantId owner, EquipmentId id)
+    public string EquipmentPlacementReason(ParticipantId owner, EquipmentId id, string? item = null)
     {
         if (!UsesMobileEquipment || !_equipment.TryGetValue(id.Value, out var e) || e.Owner != owner.Value)
             return "NotAvailable";
         if (e.Deployed == true) return "EquipmentAlreadyPlaced";
         if (e.Motion is not null || e.Batch is not null || e.PersonalJobId != 0 || EquipmentTransferBusy(e) ||
             RoadVehicleBusy(e.Id) || _actors[e.Owner].Job is not null || ServicePointBusy(e.Storage)) return "EquipmentBusy";
-        if (!_resources.TryGetValue((e.Position,e.Type.ItemId), out var site)) return "WrongResourceSite";
+        string resource = SelectedResource(e, item);
+        if (resource.Length == 0) return "WrongItem";
+        if (!_resources.TryGetValue((e.Position, resource), out var site)) return "WrongResourceSite";
         if (site.Owner != e.Owner || site.Rules.Public) return "NoResourceRights";
         if (_equipment.Values.Any(other => other.Id != e.Id && other.Position == e.Position) ||
             RoadBodies().Any(body => body.Id != e.Id && VehicleCargo(body).Position == e.Position) ||
@@ -44,12 +48,14 @@ public sealed partial class SimulationEngine
     {
         var e = OwnEquipment(actor,c.Action.Equipment);
         RequireIdle(actor); RequireActionLocation(actor,c.Action);
-        string reason = EquipmentPlacementReason(new(actor.Id),new(e.Id));
+        string reason = EquipmentPlacementReason(new(actor.Id),new(e.Id),c.Action.ItemId);
         if (reason != "Allowed") throw new RuleViolation(reason);
         var v = _vehicles[e.Id];
         if (v.Driver != 0 && v.Driver != actor.Id) throw new RuleViolation("VehicleBusy");
+        string resource = SelectedResource(e, c.Action.ItemId);
         actor.HeadingX = actor.HeadingZ = 0;
         _vehicles[e.Id] = v with { Driver=0 };
+        e.ResourceItemId = resource == e.Type.ItemId ? null : resource;
         e.Deployed = true; e.Mode = EquipmentMode.Off; e.Reason = "UserPaused";
         Emit("EquipmentPlaced",actor.Id,e.Id,reason:e.Position.X+","+e.Position.Z,command:c.CommandId);
     }
@@ -75,4 +81,13 @@ public sealed partial class SimulationEngine
 
     private long PersonalHarvestInventory(ActorState actor,PersonalJob job) =>
         job.EquipmentId!=0 && MobileMachine(job.EquipmentId) ? _equipment[job.EquipmentId].Storage : actor.Inventory;
+
+    private string SelectedResource(EquipmentState e, string? requested)
+    {
+        if (!UsesEquipmentClasses)
+            return string.IsNullOrEmpty(requested) || requested == e.Type.ItemId ? e.Type.ItemId : "";
+        if (!string.IsNullOrEmpty(requested)) return e.Type.Accepts(requested) ? requested : "";
+        var found = _resources.Keys.Where(k => k.Position == e.Position && e.Type.Accepts(k.Item)).Select(k => k.Item).Distinct(StringComparer.Ordinal).ToArray();
+        return found.Length == 1 ? found[0] : "";
+    }
 }

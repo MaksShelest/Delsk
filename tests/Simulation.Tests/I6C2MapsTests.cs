@@ -9,9 +9,10 @@ namespace Simulation.Tests;
 
 public class I6C2MapsTests
 {
+    internal static EconomyProfile Economy(string key)=>key==PlayMaps.CompactValley?VNextEquipmentClassesProfile.Create(MobileEquipmentI4Tests.Profile()):MobileEquipmentI4Tests.Profile();
     internal static OrdinaryGameResolution Resolve(string key,int npcs=3)
     {
-        var profile=MobileEquipmentI4Tests.Profile();
+        var profile=Economy(key);
         string file=key==PlayMaps.Second?"woodland_region.json":"compact_valley_i6c21.json";
         var template=MapDesignReader.Read(Encoding.UTF8.GetBytes(OrdinaryNewGameTests.Text(file)),profile);
         return OrdinaryNewGame.Resolve(template,profile,new(npcs),vnextBalance:MapDesignTests.Balance());
@@ -30,7 +31,7 @@ public class I6C2MapsTests
     {
         var d=Resolve(key).Scenario;var l=d.Layout!;
         var snapshot=JsonSerializer.Deserialize<ScenarioDefinition>(OrdinaryNewGameTests.Text(PlayMaps.NewGameResource(key).Replace("Play.","")),SimulationJson.Options)!;
-        var actual=OrdinaryNewGame.Resolve(snapshot,MobileEquipmentI4Tests.Profile(),new(),vnextBalance:MapDesignTests.Balance()).Scenario;
+        var actual=OrdinaryNewGame.Resolve(snapshot,Economy(key),new(),vnextBalance:MapDesignTests.Balance()).Scenario;
         Assert.Equal(JsonSerializer.Serialize(d,SimulationJson.Options),JsonSerializer.Serialize(actual,SimulationJson.Options));
         Assert.Equal((width,height),(d.MapWidth,d.MapHeight));Assert.Equal(sites,l.IndustrialLots.Length);Assert.Equal(capacity,l.MaxParticipants);
         Assert.Equal(34,d.Items.Length);Assert.Equal(69,d.Recipes.Length);Assert.Equal(6,d.BuildingTypes!.Count(t=>t.Kind==BuildingKind.Production));
@@ -40,7 +41,7 @@ public class I6C2MapsTests
         Assert.Equal(3,Resolve(key).Controllers.Length);Assert.NotEqual(PlayMaps.CurrentSecondScenarioId,d.Id);
         Assert.Throws<ArgumentException>(()=>Resolve(key,capacity));
         var maximum=Resolve(key,capacity-1).Scenario;Assert.Equal(capacity,maximum.Participants.Length);
-        var w=MobileEquipmentI4Tests.Profile().World;
+        var w=Economy(key).World;
         Assert.Equal(JsonSerializer.Serialize(w.Rules.Fleet),JsonSerializer.Serialize(d.Economy!.Fleet));Assert.Equal(w.PlotPriceMinor,d.Plots!.First(p=>!p.IsShopSite).PriceMinor);
     }
     [Theory][InlineData(PlayMaps.CompactValley)][InlineData(PlayMaps.Second)]
@@ -64,7 +65,7 @@ public class I6C2MapsTests
     [Theory][InlineData(PlayMaps.CompactValley)][InlineData(PlayMaps.Second)]
     public void ThreeIndependentOrdinaryNpcsHarvestTradeAndRestoreWithoutPreparedAssets(string key)
     {
-        var r=Resolve(key);var d=r.Scenario;var p=MobileEquipmentI4Tests.Profile();
+        var r=Resolve(key);var d=r.Scenario;var p=Economy(key);
         var config=OrdinaryNewGameTests.Config().ForOrdinary(d,1,r.Controllers);
         var policies=config.Npcs.Select(n=>(IController)new AlgorithmicController(AlgorithmicController.WithEconomy(n,p.Npc),AlgorithmicController.RuntimeSeed(d.Seed,n.ActorId),d.Participants.Select(a=>a.Id))).ToArray();
         var s=new GameSession(new(d));s.AttachControllers(policies);s.AdvanceTo(240);
@@ -85,9 +86,10 @@ public class I6C2MapsTests
         var d=Resolve(key).Scenario;d=d with{Participants=d.Participants.Select(p=>p with{CashMinor=10000000}).ToArray()};
         var exit=d.Layout!.InitialCityDirtCells.OrderBy(c=>Math.Abs(c.X-11)+Math.Abs(c.Z-5)).First(c=>!d.Participants.Any(p=>p.Position==c));
         var shown=new HashSet<string>(StringComparer.Ordinal){"sputnik20","muravey70","eger70","trakt_d1","extractor_extract_wood_1","extractor_extract_grain_1"};
-        foreach(var model in d.Economy!.Fleet!.Models.Where(m=>!d.Layout!.Assignment.Contains("compact-exhibition-1",StringComparison.Ordinal)||shown.Contains(m.Id)))
+        var classes=new HashSet<string>(StringComparer.Ordinal){"sputnik20","muravey70","extractor_field_1","extractor_forest_1"};
+        foreach(var model in d.Economy!.Fleet!.Models.Where(m=>d.Economy.Fleet.EquipmentDealerVersion==2?classes.Contains(m.Id):!d.Layout!.Assignment.Contains("compact-exhibition-1",StringComparison.Ordinal)||shown.Contains(m.Id)))
         {
-            var s=new GameSession(new(d));var v=model.EquipmentTypeId is null?FleetE1Tests.Buy(s,model.Id):MobileEquipmentI4Tests.Buy(s,d.EquipmentTypes!.Single(t=>t.Id==model.EquipmentTypeId).ItemId,model.EquipmentLevel);
+            var s=new GameSession(new(d));var v=model.EquipmentTypeId is null?FleetE1Tests.Buy(s,model.Id):d.Economy.Fleet.EquipmentDealerVersion==2?EquipmentClassesI6C22Tests.BuyModel(s,model.Id):MobileEquipmentI4Tests.Buy(s,d.EquipmentTypes!.Single(t=>t.Id==model.EquipmentTypeId).ItemId,model.EquipmentLevel);
             // Одна дорога от города до ресурсного ответвления длиннее прежних широких улиц. Прибытие на ту же клетку обязательно.
             FleetE1Tests.Board(s,v);Step(s,new(ActionKind.MoveTo,Target:exit));int bound=800;
             while(s.Engine.Observe(Human).Participant.Busy&&bound-->0)s.Step();
@@ -123,7 +125,7 @@ public class I6C2MapsTests
         Assert.True(earningBudget>0,"bounded manual income must finance actual resource land and machine prices");
         var resource=d.ResourceNodes.First(r=>r.ItemId=="wood"&&!r.Rules!.Public&&r.Position.X>0&&r.Position.Z>0);
         Move(machineSession,resource.Position);Step(machineSession,new(ActionKind.BuyResource,Target:resource.Position));
-        var v=MobileEquipmentI4Tests.Buy(machineSession);FleetE1Tests.Board(machineSession,v);
+        var v=d.Economy!.Fleet!.EquipmentDealerVersion==2?EquipmentClassesI6C22Tests.Buy(machineSession,"wood"):MobileEquipmentI4Tests.Buy(machineSession);FleetE1Tests.Board(machineSession,v);
         Step(machineSession,new(ActionKind.MoveTo,Target:resource.Position));StorageC1Tests.Idle(machineSession);
         Step(machineSession,new(ActionKind.PlaceEquipment,Equipment:new(v.Id)));
         Step(machineSession,new(ActionKind.StartHarvesting,Equipment:new(v.Id),ItemId:"wood",Quantity:2));StorageC1Tests.Idle(machineSession);

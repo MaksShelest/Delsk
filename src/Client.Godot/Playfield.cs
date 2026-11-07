@@ -225,7 +225,7 @@ public partial class Playfield : Control
     {
         // An explicit pre-I4 research profile retains its historical map snapshot.
         // Ordinary starts without an override always use the current versioned worlds.
-        bool legacy=key==PlayMaps.CompactValley&&OS.GetCmdlineUserArgs().Contains("--economy")&&ReadEconomy(key).Id!=VNextMobileEquipmentProfile.ProfileId;
+        bool legacy=key==PlayMaps.CompactValley&&OS.GetCmdlineUserArgs().Contains("--economy")&&ReadEconomy(key).Id is not (VNextMobileEquipmentProfile.ProfileId or VNextEquipmentClassesProfile.ProfileId);
         return JsonSerializer.Deserialize<ScenarioDefinition>(Text(legacy?PlayMaps.Resource(key):PlayMaps.NewGameResource(key)),SimulationJson.Options)??throw new InvalidOperationException(key);
     }
 
@@ -352,7 +352,7 @@ public partial class Playfield : Control
     {
         if (_session is null) return;
         bool paused = _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots || ModelBarrier);
-        if(_stick is not null)_stick.Visible=!paused&&_contextActions?.Expanded!=true&&_roadWorkCard is null&&!(_tabletState.Kind==TabletKind.Object&&_objectKind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion==1);
+        if(_stick is not null)_stick.Visible=!paused&&_contextActions?.Expanded!=true&&_roadWorkCard is null&&!(_tabletState.Kind==TabletKind.Object&&_objectKind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2);
         if(paused&&!_session.Paused){StopHeading();_waitRelease=true;}
         if (_session.Paused != paused) _scheduler.SetPaused(paused);
         FeedbackPause();

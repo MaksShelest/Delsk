@@ -59,7 +59,7 @@ public sealed partial class SimulationEngine
         Emit(lease ? "ResourceLeased" : "ResourcePurchased", actor.Id, item: site.Definition.ItemId,
             money: price, reason: $"{command.Action.Target.X},{command.Action.Target.Z}", command: command.CommandId);
     }
-    private void ClaimResource(long job, Cell cell, long quantity) => _resourceClaims.Add(job, new(job, cell, _actors.Values.FirstOrDefault(a=>a.Job?.Id==job)?.Job?.Item ?? _equipment.Values.Single(e=>e.Batch?.Id==job || e.PersonalJobId==job).Type.ItemId, quantity));
+    private void ClaimResource(long job, Cell cell, long quantity) => _resourceClaims.Add(job, new(job, cell, _actors.Values.FirstOrDefault(a=>a.Job?.Id==job)?.Job?.Item ?? EquipmentItem(_equipment.Values.Single(e=>e.Batch?.Id==job || e.PersonalJobId==job)), quantity));
     private void ConsumeResource(long job)
     {
         var claim = _resourceClaims[job];

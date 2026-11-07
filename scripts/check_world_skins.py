@@ -17,7 +17,7 @@ out = a.output.resolve()
 out.mkdir(parents=True, exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='delsk-skins-qa-') as temporary:
     stage = Path(temporary)
-    for folder in ['src', 'config', 'scenarios']:
+    for folder in ['src', 'config', 'scenarios', 'docs/vnext/maps']:
         shutil.copytree(root / folder, stage / folder,
                         ignore=shutil.ignore_patterns('bin', 'obj', '.godot'))
     for name in ['global.json', 'Directory.Build.props', 'Directory.Build.targets', 'NuGet.Config', 'nuget.config']:

@@ -20,7 +20,12 @@ public record ControllerBuildingLevel(int Level, string RecipeId, long PriceMino
 public record ControllerBuildingType(string Id, BuildingKind Kind, ImmutableArray<Cell> Footprint,
     ImmutableArray<ControllerBuildingLevel> Levels,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] WorkshopOutfit? WorkshopOutfit=null);
-public record ControllerEquipmentType(string Id, string ItemId, ImmutableArray<EquipmentLevelDefinition> Levels);
+public record ControllerEquipmentType(string Id, string ItemId, ImmutableArray<EquipmentLevelDefinition> Levels,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] ImmutableArray<string> Items = default)
+{
+    public bool Accepts(string item) => Items.IsDefault || Items.IsEmpty ? item == ItemId : Items.Contains(item);
+    public string[] CompatibleItems() => Items.IsDefault || Items.IsEmpty ? [ItemId] : Items.ToArray();
+}
 public record ControllerMap(int Width, int Height, ImmutableArray<Cell> BlockedCells,
     ImmutableArray<ResourceNodeDefinition> ResourceNodes, ImmutableArray<ItemDefinition> Items,
     ImmutableArray<RecipeDefinition> Recipes, int MoveTicksPerCell, int HarvestTicksPerUnit, int TradeWindowTicks,
@@ -112,7 +117,7 @@ public sealed partial class SimulationEngine
                     [.. l.Materials], l.InputCapacity, l.OutputCapacity, l.StaffCapacity,
                     l.WageMinor, l.WorkRateMultiplier, l.AdditionalRecipeIds,l.WorkshopSlots,l.Footprint,Development is null?0:l.ConstructionTicks)).ToImmutableArray(),t.WorkshopOutfit)).ToImmutableArray(),
             [.. o.OwnEmploymentGroups], [.. o.LaborMarket], o.Population, o.Unemployed, [.. o.OwnEquipment],
-            o.EquipmentTypes.Select(t => new ControllerEquipmentType(t.Id, t.ItemId, [.. t.Levels])).ToImmutableArray(),
+            o.EquipmentTypes.Select(t => new ControllerEquipmentType(t.Id, t.ItemId, [.. t.Levels], t.Items)).ToImmutableArray(),
             new(_config.MapWidth, _config.MapHeight, BlockedCells(), [.. _config.ResourceNodes],
                 [.. _config.Items], [.. _config.Recipes], moveTicks,
                 _config.HarvestTicksPerUnit, _config.TradeWindowTicks,UsesAcceleratedMovement?Movement.SpeedDivisor:0,navigation?.Corridor??default,navigation?.Public??default,navigation?.Restricted??default,Movement.Version==2?Movement:null,_config.Economy?.VehicleControl), [.. o.MarketOffers], [.. o.OwnMarketBids], [.. o.OwnMarketAllocations], o.MarketRules, [.. o.BuyOffers], [.. o.OwnSupplyRequests], [.. o.OwnDeliveryContracts], o.DeliveryRules, [.. o.OwnLogistics], o.LogisticsRules, o.CapitalPrices, o.CapitalPriceHistory, o.Elections, o.Support, o.City) { EconomicOpportunities=economicPlanning?EconomicOpportunitiesOf(actor):null,Services=ServicesOf(actor),PersonalAccount=Billing is null?null:AccountOf(actor),Roads=RoadsOf(actor),Fleet=FleetOf(actor),ProductionContent=ProductionContentOf(actor),Development=DevelopmentOf(actor),Economics=new(Labor,EconomyRules.Handling??new(),EconomyRules.WageAttractionExponent,_config.Economy?.Workshops),Resources = o.Resources,Negotiations=o.Negotiations,NegotiationRules=o.NegotiationRules,TradingParticipants=o.TradingParticipants };

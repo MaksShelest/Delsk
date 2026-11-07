@@ -16,7 +16,7 @@ if a.prepared:
 def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 for name in subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard','-z'],cwd=ROOT,text=True).split('\0'):
     source=ROOT/name
-    if source.is_file() and (name.startswith(('src/','config/','scenarios/')) or name in ['Directory.Build.props','Directory.Build.targets','global.json']):
+    if source.is_file() and (name.startswith(('src/','config/','scenarios/','docs/vnext/maps/')) or name in ['Directory.Build.props','Directory.Build.targets','global.json']):
         destination=stage/name;destination.parent.mkdir(parents=True,exist_ok=True);
         if a.prepared:
             if digest(destination)!=digest(source):

@@ -16,14 +16,14 @@ def check(name,timeout,cmd,env=None):
 names=subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard','-z'],cwd=ROOT,text=True).split('\0')
 for name in sorted(set(names)):
  source=ROOT/name
- if source.is_file() and (name.startswith(('src/','config/','scenarios/')) or name in ['Directory.Build.props','Directory.Build.targets','global.json']):
+ if source.is_file() and (name.startswith(('src/','config/','scenarios/','docs/vnext/maps/')) or name in ['Directory.Build.props','Directory.Build.targets','global.json']):
   dest=stage/name;dest.parent.mkdir(parents=True,exist_ok=True);digest=hashlib.sha256(source.read_bytes()).hexdigest()
   if not dest.exists() or hashlib.sha256(dest.read_bytes()).hexdigest()!=digest:shutil.copyfile(source,dest)
   inputs[name]=digest
 for name in ['tests/Client.Probes/I2ControlProbe.cs','tools/AssemblyAudit/Program.cs','scripts/check_i2_native.py']:
  inputs[name]=hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
 (out/'inputs.json').write_text(json.dumps(inputs,indent=2)+'\n')
-runtime_inputs={n:h for n,h in inputs.items() if n.startswith(('src/','config/','scenarios/')) or n in ['Directory.Build.props','Directory.Build.targets','global.json']}
+runtime_inputs={n:h for n,h in inputs.items() if n.startswith(('src/','config/','scenarios/','docs/vnext/maps/')) or n in ['Directory.Build.props','Directory.Build.targets','global.json']}
 ordinary=project/'.godot/mono/temp/bin/Debug'
 if previous:
  cached=json.loads((previous/'ordinary-cache.json').read_text())

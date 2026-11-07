@@ -62,7 +62,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         amount.AddChild(new Label { Text = L("Количество для переноса", "Transfer quantity") }); amount.AddChild(_quantity);
         _details.AddChild(_actions);
         var routeToggle=new Button{Name="HouseholdRoutes",Text=L("Маршруты ▸","Routes ▸"),FocusMode=FocusModeEnum.None};_details.AddChild(routeToggle);
-        routeToggle.Visible=!(kind=="equipment"&&scenario.Economy?.Fleet?.EquipmentDealerVersion==1);
+        routeToggle.Visible=!(kind=="equipment"&&scenario.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2);
         _routes=new(scenario,language,kind,id,submit){Visible=false};_routes.FleetRequested+=()=>FleetRequested?.Invoke();_details.AddChild(_routes);routeToggle.Pressed+=()=>_routes.Visible=!_routes.Visible;
         TabletDesign.CompactInputs(this);Resized+=LayoutCard;
         _quantity.ValueChanged += _ => { if (_lastView is not null) ShowData(_lastView,_pending,_paused); };
@@ -75,7 +75,7 @@ public partial class HouseholdObjectCard : VBoxContainer
             if(_demolitionPanel is not null){RemoveChild(_demolitionPanel);_woodworking.Management.AddChild(_demolitionPanel);}
             _recipeCards.Visible=false;AddChild(_woodworking);
         }
-        else if(kind=="equipment"&&scenario.Economy?.Fleet?.EquipmentDealerVersion==1)
+        else if(kind=="equipment"&&scenario.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2)
         {
             RemoveChild(_details);_heading.Visible=_stock.Visible=_workers.Visible=_delivery.Visible=_progress.Visible=false;
             _extraction=new(scenario,language,id,submit,access,_details);_extraction.MapRequested+=()=>MapRequested?.Invoke();AddChild(_extraction);
@@ -101,22 +101,30 @@ public partial class HouseholdObjectCard : VBoxContainer
             var type = _scenario.EquipmentTypes!.Single(t => t.Id == machine.TypeId);
             var level = type.Levels.Single(l => l.Level == machine.Level);
             stocks = [view.Inventories.Single(i => i.Id == machine.StorageId)];
-            _heading.Text = L("Добывающая техника", "Extraction equipment") + " #" + _id + L(" · уровень ", " · level ") + machine.Level + "\n" +
-                PlayerText.Item(_language, type.ItemId) + $" ×{level.CycleQuantity} / {level.CycleTicks}" + L(" рабочих тиков · ", " working ticks · ") + TabletText.Reason(_language, machine.ReasonCode);
+            bool classes=_scenario.Economy?.Fleet?.EquipmentDealerVersion==2;
+            string resources=string.Join(", ",type.CompatibleItems().Select(item=>PlayerText.Item(_language,item)));
+            string current=machine.ResourceItem??type.ItemId;
+            _heading.Text = (classes?ClassTitle(type):L("Добывающая техника", "Extraction equipment") + " #" + _id) + L(" — уровень ", " — level ") + machine.Level + "\n" +
+                (classes?L("Подходит для ","Works with ")+resources+"\n"+L("Сейчас: ","Current: ")+PlayerText.Item(_language,current):PlayerText.Item(_language, type.ItemId)) + $" ×{level.CycleQuantity} / {level.CycleTicks}" + L(" рабочих тиков · ", " working ticks · ") + TabletText.Reason(_language, machine.ReasonCode);
             _progress.MaxValue = Math.Max(1, machine.WorkRequired); _progress.Value = machine.WorkDone;
-            foreach (var mode in Enum.GetValues<EquipmentMode>())
+            if(!classes)foreach (var mode in Enum.GetValues<EquipmentMode>())
                 Add("mode:" + mode, mode switch { EquipmentMode.Off => L("Остановить", "Stop"), EquipmentMode.Personal => L("Личный режим", "Personal mode"), _ => L("Автоматическая добыча", "Automatic extraction") },
                     new(ActionKind.SetEquipmentMode, Equipment: machine.Id, Mode: mode), mode != machine.Mode);
             if(machine.Deployed is null)Add("harvest", L("Добыть лично ×", "Harvest personally ×") + quantity, new(ActionKind.Harvest, ItemId: type.ItemId, Quantity: quantity, Equipment: machine.Id), machine.Mode == EquipmentMode.Personal);
             if(machine.Deployed is not null)
             {
                 _heading.Text+="\n"+(machine.Deployed==true?L("Рабочий участок","Work site"):L("Готова к перевозке","Packed for transport"))+$" · ({machine.Position.X},{machine.Position.Z})";
-                Add("place",L("Разместить технику","Place equipment"),new(ActionKind.PlaceEquipment,Equipment:machine.Id));
-                Add("start",L("Начать добычу","Start mining"),new(ActionKind.StartHarvesting,Equipment:machine.Id,ItemId:type.ItemId,Quantity:level.CycleQuantity));
-                Add("pack",L("Забрать технику","Pick up equipment"),new(ActionKind.PackEquipment,Equipment:machine.Id));
+                var owned=view.Fleet?.Vehicles.SingleOrDefault(v=>v.Vehicle.Id==machine.Id.Value);
+                if(classes&&machine.Deployed!=true&&owned?.Vehicle.Driver==0)Add("board",L("Сесть","Sit"),new(ActionKind.BoardVehicle,VehicleId:machine.Id.Value));
+                var siteItem=_scenario.ResourceNodes.Where(n=>n.Position==machine.Position&&type.Accepts(n.ItemId)).Select(n=>n.ItemId).Distinct().ToArray();
+                if(machine.Deployed!=true)Add("place",L("Разместить","Place"),new(ActionKind.PlaceEquipment,Equipment:machine.Id,ItemId:siteItem.Length==1?siteItem[0]:machine.ResourceItem??""),siteItem.Length>0);
+                if(machine.Deployed==true)foreach(var item in siteItem.DefaultIfEmpty(current))
+                    Add("start:"+item,L("Начать добычу","Start harvest")+" · "+PlayerText.Item(_language,item),new(ActionKind.StartHarvesting,Equipment:machine.Id,ItemId:item,Quantity:level.CycleQuantity),machine.Mode!=EquipmentMode.Automatic&&machine.PersonalJobId==0&&machine.CycleId==0);
+                if(classes&&(machine.Mode!=EquipmentMode.Off||machine.PersonalJobId!=0||machine.CycleId!=0))Add("stop",L("Остановить","Stop"),new(ActionKind.SetEquipmentMode,Equipment:machine.Id,Mode:EquipmentMode.Off));
+                if(machine.Deployed==true)Add("pack",L("Забрать технику","Pick up equipment"),new(ActionKind.PackEquipment,Equipment:machine.Id),machine.Mode==EquipmentMode.Off&&machine.PersonalJobId==0&&machine.CycleId==0);
             }
-            if (machine.Deployed is null && type.Levels.FirstOrDefault(l => l.Level == machine.Level + 1) is { } next)
-                Add("upgrade", L("Улучшить технику — ", "Upgrade equipment — ") + PlayerText.Money(next.PriceMinor), new(ActionKind.UpgradeEquipment, Equipment: machine.Id), machine.Mode == EquipmentMode.Off && machine.CycleId == 0);
+            if ((classes||machine.Deployed is null) && type.Levels.FirstOrDefault(l => l.Level == machine.Level + 1) is { } next)
+                Add("upgrade", L("Улучшить до уровня ", "Upgrade to level ") + next.Level + " — " + PlayerText.Money(next.PriceMinor) + L(" · добыча ", " · output ") + level.CycleQuantity + "→" + next.CycleQuantity + L(", вместимость ", ", capacity ") + level.StorageCapacity + "→" + next.StorageCapacity, new(ActionKind.UpgradeEquipment, Equipment: machine.Id), machine.Mode == EquipmentMode.Off && machine.CycleId == 0 && machine.PersonalJobId == 0 && machine.Motion is null);
         }
         else
         {
@@ -299,7 +307,7 @@ public partial class HouseholdObjectCard : VBoxContainer
             {
                 Button button = row.Action.Kind==ActionKind.Transfer ? new ContextActionButton(row.Text) : new Button { FocusMode = FocusModeEnum.None, Alignment = HorizontalAlignment.Left, AutowrapMode = TextServer.AutowrapMode.WordSmart };
                 if(row.Action.Kind==ActionKind.Transfer)button.Name="HouseholdTransfer_"+row.Key.Replace(':','_');
-                if(_kind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion==1)
+                if(_kind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2)
                 {
                     if(row.Action.Kind!=ActionKind.Transfer){button.AutowrapMode=TextServer.AutowrapMode.Off;button.SizeFlagsHorizontal=SizeFlags.ShrinkBegin;}
                     button.Name="I4Object_"+row.Key.Replace(':','_')+"_"+_id;
@@ -316,7 +324,7 @@ public partial class HouseholdObjectCard : VBoxContainer
                 {
                     var toggle = new Button {Name="HouseholdGroup_"+(row.Action.Kind==ActionKind.Transfer?"Transfer":row.Action.Kind.ToString()),Text = section + " ▸",FocusMode=FocusModeEnum.None,Alignment=HorizontalAlignment.Left};
                     var host=_extraction is null?_actions:section==L("Работа и улучшения","Work and upgrades")?_extraction.WorkActions:section==L("Работники и зарплата","Workers and wages")?_extraction.TeamActions:_extraction.ExtraActions;
-                    group=_kind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion==1&&row.Action.Kind!=ActionKind.Transfer?TabletDesign.Flow():new VBoxContainer();
+                    group=_kind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2&&row.Action.Kind!=ActionKind.Transfer?TabletDesign.Flow():new VBoxContainer();
                     bool primary=_extraction is not null&&row.Action.Kind!=ActionKind.Transfer;group.Visible=primary||section==L("Работа и улучшения","Work and upgrades");
                     if(!primary)host.AddChild(toggle);else toggle.QueueFree();host.AddChild(group);
                     var target=group;if(!primary)toggle.Pressed+=()=>{target.Visible=!target.Visible;toggle.Text=section+(target.Visible?" ▾":" ▸");};_actionGroups.Add(section,group);
@@ -342,5 +350,13 @@ public partial class HouseholdObjectCard : VBoxContainer
     private string Role(EmploymentRole role) => role switch { EmploymentRole.Production => L("Производство", "Production"), EmploymentRole.Extraction => L("Добыча", "Extraction"), _ => L("Доставка", "Logistics") };
     private static long Free(InventoryView stock, string item) => stock.Stock.Where(s => s.ItemId == item).Sum(s => s.Quantity - s.Reserved);
     private static bool Room(InventoryView stock, ItemDefinition item, long q) => (Int128)stock.OccupiedVolume + stock.ReservedCapacity + (Int128)q * item.UnitVolume <= stock.Capacity;
+    private string ClassTitle(EquipmentTypeDefinition type) => type.Id switch
+    {
+        "extract_field" => L("Полевой комбайн", "Field harvester"),
+        "extract_forest" => L("Лесозаготовительная машина", "Forestry machine"),
+        "extract_dairy" => L("Молочная машина", "Dairy machine"),
+        "extract_mine" => L("Горная машина", "Mining machine"),
+        _ => type.Id
+    };
     private string L(string ru, string en) => PlayerText.Local(_language, ru, en);
 }

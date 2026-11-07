@@ -19,6 +19,11 @@ public sealed record VehiclePurchaseRequest(long VehicleId, ParticipantId Actor,
 {
     public string MoneyHold => "vehicle-purchase:" + CommandId;
 }
+/// <summary>A paid request for a model that has no free physical bay yet. Version 2 dealer only.</summary>
+public sealed record VehicleCatalogWait(ParticipantId Actor, string ModelId, string CommandId)
+{
+    public string MoneyHold => "vehicle-purchase:" + CommandId;
+}
 public sealed record HandlingInstallation(int Level, long StartedTick, long CompletionTick);
 // Position belongs solely to CargoInventory; neither an actor nor logistics owns a copy of the vehicle.
 public sealed record OwnedVehicle(long Id, ParticipantId Owner, string ModelId, InventoryId CargoInventory,
@@ -29,11 +34,17 @@ public sealed record VehicleView(OwnedVehicle Vehicle, VehicleModel Model, Cell 
 public sealed record LoadingPlatform(long Id, long Building, int Level, HandlingInstallation? Installation, long LastWorkedTick, EmploymentView Group);
 public sealed record FleetState(ulong RandomState, long NextSupplyTick, ImmutableArray<DealerVehicle> Stock,
     ImmutableArray<OwnedVehicle> Vehicles, ImmutableArray<VehiclePurchaseRequest> Requests,
-    ImmutableArray<VehiclePurchase> Purchases, ImmutableArray<LoadingPlatform> Platforms);
+    ImmutableArray<VehiclePurchase> Purchases, ImmutableArray<LoadingPlatform> Platforms)
+{
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)]
+    public ImmutableArray<VehicleCatalogWait> CatalogWaits { get; init; }
+}
 public sealed record FleetObservation(Cell Dealer, ImmutableArray<VehicleModel> Models, ImmutableArray<DealerVehicle> Stock,
     ImmutableArray<VehicleView> Vehicles, ImmutableArray<VehiclePurchaseRequest> OwnRequests,
     ImmutableArray<LoadingPlatform> Platforms, ImmutableArray<HandlingUpgrade> Kits, ImmutableArray<HandlingUpgrade> PlatformUpgrades,
-    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] ImmutableArray<EquipmentTypeDefinition> EquipmentTypes=default);
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] ImmutableArray<EquipmentTypeDefinition> EquipmentTypes=default,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] long NextSupplyTick=0,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] ImmutableArray<VehicleCatalogWait> CatalogWaits=default);
 internal sealed class PlatformState(long id, long building, long owner, long wage)
 {
     public long Id { get; } = id;

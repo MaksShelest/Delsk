@@ -11,7 +11,11 @@ public partial class Playfield
             if (option + 1 >= args.Length) throw new System.ArgumentException("--economy requires a JSON path");
             return EconomyProfile.Load(args[option + 1]);
         }
-        if(PlayMaps.IsDesigned(mapKey??_mapKey))return EconomyProfile.Read(Text("Play.i4-mobile-equipment.json"));
+        if(PlayMaps.IsDesigned(mapKey??_mapKey))
+        {
+            var mobile=EconomyProfile.Read(Text("Play.i4-mobile-equipment.json"));
+            return (mapKey??_mapKey)==PlayMaps.CompactValley?VNextEquipmentClassesProfile.Create(mobile):mobile;
+        }
         string project = ProjectSettings.GlobalizePath("res://");
         string path = System.IO.Path.GetFullPath(System.IO.Path.Combine(project, "../../config/economy.json"));
         return System.IO.File.Exists(System.IO.Path.Combine(project,"project.godot")) && System.IO.File.Exists(path)

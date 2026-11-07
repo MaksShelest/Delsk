@@ -6,13 +6,14 @@ public static partial class ScenarioValidation
     {
         if (s.Economy?.Fleet is not { } f) return;
         void Require(bool value) { if (!value) throw new ArgumentException("Invalid fleet rules"); }
-        Require(s.Layout is not null && !f.Models.IsDefaultOrEmpty && f.EquipmentDealerVersion is 0 or 1 && f.Models.Length == (f.EquipmentDealerVersion==1?21:5) && f.Models.Select(m => m.Id).Distinct(StringComparer.Ordinal).Count() == f.Models.Length);
+        int dealerVersion=f.EquipmentDealerVersion;
+        Require(s.Layout is not null && !f.Models.IsDefaultOrEmpty && dealerVersion is 0 or 1 or 2 && f.Models.Length == (dealerVersion==2?9:dealerVersion==1?21:5) && f.Models.Select(m => m.Id).Distinct(StringComparer.Ordinal).Count() == f.Models.Length);
         Require(f.Models.Where(m=>m.EquipmentTypeId is null).Select(m => m.Id).Order(StringComparer.Ordinal).SequenceEqual(new[] { "eger70", "muravey70", "sputnik20", "trakt_d1", "vector200" }));
         Require(f.SupplyTicks is >=1 and <=100000 && f.MinimumStockTicks>=f.SupplyTicks && f.MinimumStockTicks<=1000000 && f.PurchaseWindowTicks is >=1 and <=100 && f.WageMinor is >=1 and <=100000);
         var dealer = s.Layout!.CivicObjects.Single(c => c.Kind == "dealership");
         Require(dealer.Parking is { Length: 4 } && dealer.Parking.All(c => !s.BlockedCells.Contains(c)));
         var machines=f.Models.Where(m=>m.EquipmentTypeId is not null).ToArray();
-        Require(f.EquipmentDealerVersion==1 ? s.Economy!.VehicleControl is not null && machines.Length==16 && dealer.EquipmentParking is {Length:16} : machines.Length==0 && dealer.EquipmentParking is null);
+        Require(dealerVersion is 1 or 2 ? s.Economy!.VehicleControl is not null && machines.Length==(dealerVersion==2?4:16) && machines.All(m=>dealerVersion!=2||m.EquipmentLevel==1) && dealer.EquipmentParking is {Length:16} : machines.Length==0 && dealer.EquipmentParking is null);
         foreach(var model in machines)
         {
             var level=s.EquipmentTypes?.SingleOrDefault(t=>t.Id==model.EquipmentTypeId)?.Levels.SingleOrDefault(l=>l.Level==model.EquipmentLevel);
@@ -47,9 +48,11 @@ public sealed partial class SimulationEngine
         foreach (var v in _vehicles.Values)
         {
             Require(ids.Add(v.Id) && v.Id>=1000 && v.Id<_nextId && _actors.ContainsKey(v.Owner.Value) && cargos.Add(v.CargoInventory.Value));
-            Require(_economy.Inventories.TryGetValue(v.CargoInventory.Value,out var cargo) && cargo.Owner==v.Owner.Value && cargo.Capacity==Model(v.ModelId).CapacityVolume && _map.Walkable(cargo.Position));
+            long expectedCapacity=Model(v.ModelId).CapacityVolume; int expectedLevel=Model(v.ModelId).EquipmentLevel;
+            if(UsesEquipmentClasses && _equipment.TryGetValue(v.Id,out var ownedMachine)){expectedCapacity=ownedMachine.Characteristics.StorageCapacity;expectedLevel=ownedMachine.Level;}
+            Require(_economy.Inventories.TryGetValue(v.CargoInventory.Value,out var cargo) && cargo.Owner==v.Owner.Value && cargo.Capacity==expectedCapacity && _map.Walkable(cargo.Position));
             if(Model(v.ModelId).EquipmentTypeId is {} type)
-                Require(_equipment.TryGetValue(v.Id,out var machine)&&machine.Type.Id==type&&machine.Level==Model(v.ModelId).EquipmentLevel&&machine.Storage==cargo!.Id&&machine.Owner==v.Owner.Value&&machine.Deployed is not null&&machine.Position==cargo.Position&&v.HandlingLevel==0&&v.Installation is null&&VehicleLogistics(v.Id) is null);
+                Require(_equipment.TryGetValue(v.Id,out var machine)&&machine.Type.Id==type&&machine.Level==expectedLevel&&machine.Storage==cargo!.Id&&machine.Owner==v.Owner.Value&&machine.Deployed is not null&&machine.Position==cargo.Position&&v.HandlingLevel==0&&v.Installation is null&&VehicleLogistics(v.Id) is null);
             Require(v.HandlingLevel is >=0 and <=2 && (v.HandlingLevel==0||CompatibleVehicleKit(v,v.HandlingLevel)&&Fleet.Kits.Single(k=>k.Level==v.HandlingLevel).Throughput<=Model(v.ModelId).HandlingMax));
             Require(cargo!.Stock.Keys.All(i=>MaterialAllowed(v,i)) && v.OffsetX is >=0 and <TravelUnitsPerCell && v.OffsetZ is >=0 and <TravelUnitsPerCell && v.FacingX is >=-1 and <=1 && v.FacingZ is >=-1 and <=1 && (v.FacingX!=0||v.FacingZ!=0));
             if (v.Driver!=0) Require(v.Driver==v.Owner.Value && drivers.Add(v.Driver) && _actors[v.Driver].Position==cargo.Position && _actors[v.Driver].OffsetX==v.OffsetX && _actors[v.Driver].OffsetZ==v.OffsetZ && _actors[v.Driver].FacingX==v.FacingX && _actors[v.Driver].FacingZ==v.FacingZ && VehicleLogistics(v.Id)?.Trip is null);
@@ -57,7 +60,14 @@ public sealed partial class SimulationEngine
             var receipt=_vehiclePurchases.SingleOrDefault(p=>p.VehicleId==v.Id);
             Require(receipt is not null && receipt.Owner==v.Owner && receipt.ModelId==v.ModelId && receipt.PriceMinor==Model(v.ModelId).PriceMinor && receipt.Tick>=1 && receipt.Tick<=Tick && _events.Any(e=>e.Type=="VehiclePurchased"&&e.EntityId==v.Id&&e.ActorId==v.Owner&&e.CommandId==receipt.CommandId));
         }
-        Require(_vehiclePurchases.Count==_vehicles.Count && _vehicleRequests.Select(r=>r.Actor).Distinct().Count()==_vehicleRequests.Count);
+        Require(_vehiclePurchases.Count==_vehicles.Count && _vehicleRequests.Select(r=>r.Actor).Distinct().Count()==_vehicleRequests.Count && _catalogWaits.Select(w=>w.Actor).Distinct().Count()==_catalogWaits.Count);
+        foreach(var w in _catalogWaits)
+        {
+            var model=Model(w.ModelId);
+            Require(UsesEquipmentClasses && model.EquipmentLevel<=1 && !_dealerStock.Any(s=>s.ModelId==w.ModelId) && _actors.ContainsKey(w.Actor.Value));
+            Require(_seenCommands.TryGetValue(w.CommandId,out var command) && command.ActorId==w.Actor && command.Action.Kind==ActionKind.BuyVehicle && command.Action.VehicleId==0 && command.Action.EquipmentTypeId==w.ModelId);
+            Require(_economy.Accounts[_actors[w.Actor.Value].Account].Holds.GetValueOrDefault(w.MoneyHold)==model.PriceMinor);
+        }
         foreach (var r in _vehicleRequests)
         {
             Require(_dealerStock.Any(s=>s.Id==r.VehicleId) && _actors.ContainsKey(r.Actor.Value) && r.CutoffTick>Tick && r.CutoffTick<=Tick+Fleet.PurchaseWindowTicks && _seenCommands.TryGetValue(r.CommandId,out var c) && c.ActorId==r.Actor && c.Action.Kind==ActionKind.BuyVehicle && c.Action.VehicleId==r.VehicleId);
@@ -73,5 +83,8 @@ public sealed partial class SimulationEngine
         }
     }
     private void AddExpectedFleetHolds(Dictionary<(long Account,string Hold),long> money)
-    { foreach(var r in _vehicleRequests)money.Add((_actors[r.Actor.Value].Account,r.MoneyHold),Model(_dealerStock.Single(s=>s.Id==r.VehicleId).ModelId).PriceMinor); }
+    {
+        foreach(var r in _vehicleRequests)money.Add((_actors[r.Actor.Value].Account,r.MoneyHold),Model(_dealerStock.Single(s=>s.Id==r.VehicleId).ModelId).PriceMinor);
+        foreach(var w in _catalogWaits)money.Add((_actors[w.Actor.Value].Account,w.MoneyHold),Model(w.ModelId).PriceMinor);
+    }
 }
