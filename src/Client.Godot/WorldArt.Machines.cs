@@ -41,15 +41,19 @@ public static partial class WorldArt
         return root;
     }
 
-    public static void MarkLevel(Node3D fitted, string cls)
+    public static void MarkLevel(Node3D model, string cls)
     {
+        var mesh = model.GetChildren().OfType<MeshInstance3D>().FirstOrDefault();
+        var box = mesh?.Mesh?.GetAabb() ?? new Aabb(new(-0.4f, 0, -0.4f), new(0.8f, 0.6f, 0.8f));
+        Vector3 roof = box.GetCenter() + new Vector3(0, box.Size.Y * 0.5f, 0);
+        float span = Mathf.Min(box.Size.X, box.Size.Z) * 0.62f;
+        float thick = Mathf.Max(0.08f, box.Size.Y * 0.07f);
         var pen = new Pen();
-        Color mark = cls == "extract_forest" ? new Color("6d8a4e") : new Color("e2bf57");
-        pen.Box(new(0, 0.5f, 0), new(0.08f, 0.06f, 0.08f), mark);
-        pen.Cylinder(new(0, 0.56f, 0), 0.025f, 0.04f, new Color("f2e2a8"), Vector3.Up, 6);
-        if (cls == "extract_forest") pen.Box(new(0.16f, 0.34f, 0.05f), new(0.08f, 0.05f, 0.12f), new Color("8d6a3d"));
-        else pen.Box(new(0, 0.2f, -0.28f), new(0.36f, 0.035f, 0.05f), mark);
-        fitted.AddChild(Instance(pen.Build(), "Upgrade"));
+        Color mark = cls == "extract_forest" ? new Color("e0b15a") : new Color("f2d56a");
+        pen.Box(roof + new Vector3(0, thick * 0.35f, 0), new(span, thick, span * 0.42f), mark);
+        pen.Box(roof + new Vector3(0, thick * 1.3f, -span * 0.12f), new(span * 0.24f, thick * 1.4f, span * 0.24f), new Color("e0703a"));
+        if (cls == "extract_forest") pen.Box(roof + new Vector3(span * 0.28f, thick * 0.2f, span * 0.2f), new(span * 0.22f, thick * 0.7f, span * 0.16f), new Color("8d6a3d"));
+        model.AddChild(Instance(pen.Build(), "Upgrade"));
     }
 
     private static void Wheel(Pen pen, Vector3 at, float radius, bool knobby)
@@ -155,8 +159,9 @@ public static partial class WorldArt
         Wheel(body, new(0.28f, 0.12f, -0.38f), 0.11f, false);
         if (level > 1)
         {
-            extra.Box(new(0, 0.28f, -0.64f), new(0.7f, 0.05f, 0.06f), new Color("f4e7b0"));
-            extra.Cylinder(new(0.2f, 0.58f, 0.22f), 0.07f, 0.16f, yellow, Vector3.Up, 6);
+            extra.Box(new(0, 0.34f, 0.02f), new(0.6f, 0.05f, 0.74f), new Color("f4e27a"));
+            extra.Box(new(0, 0.22f, -0.62f), new(0.95f, 0.08f, 0.1f), new Color("f4e7b0"));
+            extra.Cylinder(new(0.18f, 0.52f, 0.2f), 0.09f, 0.16f, yellow, Vector3.Up, 6);
         }
     }
 
@@ -173,8 +178,9 @@ public static partial class WorldArt
             body.Box(new(x * 0.36f, 0.14f, 0), new(0.14f, 0.2f, 0.72f), new Color("323834"));
         if (level > 1)
         {
-            extra.Cylinder(new(0.18f, 0.4f, 0.2f), 0.06f, 0.08f, new Color("6d5a48"), Vector3.Right, 6);
-            extra.Box(new(-0.34f, 0.5f, -0.22f), new(0.05f, 0.08f, 0.05f), new Color("d7c08a"));
+            extra.Box(new(0, 0.34f, 0), new(0.68f, 0.05f, 0.9f), new Color("e0b15a"));
+            extra.Box(new(-0.32f, 0.58f, -0.2f), new(0.1f, 0.16f, 0.12f), new Color("e0703a"));
+            extra.Cylinder(new(0.18f, 0.42f, 0.18f), 0.07f, 0.1f, new Color("6d5a48"), Vector3.Right, 6);
         }
     }
 
@@ -193,8 +199,9 @@ public static partial class WorldArt
         Wheel(body, new(0.28f, 0.12f, 0.32f), 0.12f, false);
         if (level > 1)
         {
-            extra.Cylinder(new(-0.2f, 0.3f, 0.12f), 0.05f, 0.18f, blue.Lightened(0.1f), Vector3.Up, 6);
-            extra.Box(new(-0.2f, 0.22f, 0.22f), new(0.03f, 0.08f, 0.1f), new Color("d7e4ea"));
+            extra.Box(new(0, 0.38f, 0.05f), new(0.52f, 0.045f, 0.7f), new Color("f2d56a"));
+            extra.Cylinder(new(-0.2f, 0.5f, 0.12f), 0.09f, 0.28f, blue.Lightened(0.12f), Vector3.Up, 8);
+            extra.Box(new(-0.2f, 0.2f, 0.24f), new(0.05f, 0.1f, 0.14f), new Color("d7e4ea"));
         }
     }
 
@@ -213,8 +220,9 @@ public static partial class WorldArt
             body.Box(new(x * 0.34f, 0.14f, 0.02f), new(0.14f, 0.2f, 0.62f), new Color("343834"));
         if (level > 1)
         {
-            extra.Box(new(0.05f, 0.16f, -0.6f), new(0.18f, 0.035f, 0.05f), new Color("c9b49a"));
-            extra.Cylinder(new(0, 0.58f, 0.12f), 0.035f, 0.08f, new Color("f0d78a"), Vector3.Up, 6);
+            extra.Box(new(0, 0.32f, 0.04f), new(0.6f, 0.05f, 0.74f), new Color("f2d56a"));
+            extra.Box(new(0.05f, 0.16f, -0.62f), new(0.32f, 0.07f, 0.1f), new Color("e0703a"));
+            extra.Cylinder(new(0, 0.56f, 0.1f), 0.055f, 0.12f, new Color("f0d78a"), Vector3.Up, 6);
         }
     }
 }

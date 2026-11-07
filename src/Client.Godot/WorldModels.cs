@@ -22,9 +22,51 @@ public static partial class WorldModels
     private static MeshInstance3D Cylinder(Node3D root, float radius, float height, Color color, Vector3 at, float? top = null) => Part(root,
         new CylinderMesh { TopRadius = top ?? radius, BottomRadius = radius, Height = height, RadialSegments = 8 }, color, at);
 
-    public static Node3D Resource(string item) => WorldArt.Resource(new PresentationMarker("resource", 0, 0, item, 0, 0) { ResourceStock = 100, ResourceCapacity = 100 }, false);
+    public static Node3D Resource(string item) => item is "grain" or "beet" or "milk"
+        ? Crop(item)
+        : WorldArt.Resource(new PresentationMarker("resource", 0, 0, item, 0, 0) { ResourceStock = 100, ResourceCapacity = 100 }, false);
 
-    public static Node3D DepletedResource(string item) => WorldArt.Resource(new PresentationMarker("resource-depleted", 0, 0, item, 0, 0) { ResourceStock = 0, ResourceCapacity = 100 }, false);
+    public static Node3D DepletedResource(string item) => item is "grain" or "beet" or "milk"
+        ? DepletedCrop(item)
+        : WorldArt.Resource(new PresentationMarker("resource-depleted", 0, 0, item, 0, 0) { ResourceStock = 0, ResourceCapacity = 100 }, false);
+
+    // Прежний Classic до I6-C3. Зерно, свёкла и пастбище не заменяются новыми колосьями и коровами.
+    private static Node3D Crop(string item)
+    {
+        var root = new Node3D();
+        if(item=="milk")
+        {
+            Box(root,new(.88f,.08f,.8f),new("879d9d"),new(0,.04f,0));
+            foreach(float x in new[]{-.34f,.34f})Box(root,new(.045f,.7f,.045f),new("6298ab"),new(x,.4f,0));
+            Box(root,new(.9f,.06f,.8f),new("70b4c9"),new(0,.78f,0));
+            foreach(float x in new[]{-.2f,0,.2f}){Cylinder(root,.08f,.3f,new("e5f0ed"),new(x,.23f,.12f));Cylinder(root,.06f,.035f,new("6799ad"),new(x,.4f,.12f));}
+        }
+        else if(item=="beet")
+        {
+            Box(root,new(.85f,.045f,.85f),new("8d6852"),new(0,.02f,0));
+            foreach(float x in new[]{-.25f,0,.25f})foreach(float z in new[]{-.25f,0,.25f})
+            {Round(root,.075f,new("9c486d"),new(x,.08f,z));Cylinder(root,.025f,.2f,new("5b9f48"),new(x,.22f,z),.06f);}
+        }
+        else
+        {
+            Box(root, new Vector3(0.85f, 0.045f, 0.85f), new Color("a77b48"), new Vector3(0, 0.02f, 0));
+            for (int x = -1; x <= 1; x++) for (int z = -1; z <= 1; z++)
+            {
+                var at = new Vector3(x * 0.23f, 0, z * 0.23f);
+                Cylinder(root, 0.012f, 0.38f, new Color("c1a64f"), at + new Vector3(0, 0.21f, 0));
+                Part(root, new SphereMesh { Radius = 0.045f, Height = 0.19f, RadialSegments = 6, Rings = 4 },
+                    new Color("edcd68"), at + new Vector3(0, 0.43f, 0));
+            }
+        }
+        return root;
+    }
+    private static Node3D DepletedCrop(string item)
+    {
+        var root=new Node3D();
+        if(item=="milk")Box(root,new(.88f,.08f,.8f),new("879d9d"),new(0,.04f,0));
+        else Box(root,new Vector3(.85f,.04f,.85f),new Color("98714b"),new Vector3(0,.02f,0));
+        return root;
+    }
 
     public static Node3D Building(string kind,string type,int level=1)
     {

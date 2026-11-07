@@ -6,6 +6,12 @@ namespace Simulation.Hosting;
 /// </summary>
 public static class WorldArtScatter
 {
+    /// <summary>
+    /// Экспериментальные колосья, свёкла и коровы I6-C3. По умолчанию выключено:
+    /// обычная игра берёт прежние WheatField, BeetField и Pasture.
+    /// </summary>
+    public static bool ExperimentalCrops { get; set; }
+
     public readonly record struct Mark(float X, float Z, float Yaw, float Scale, float Lean, int Variant, int Tint);
 
     public static string EquipmentClass(string? item) => item switch

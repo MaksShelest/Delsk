@@ -39,6 +39,19 @@ public class WorldArtScatterTests
     }
 
     [Fact]
+    public void ApprovedCropsStayTheDefaultCatalog()
+    {
+        Assert.False(WorldArtScatter.ExperimentalCrops);
+        Assert.Equal("WheatField", AppearanceCatalog.ResourceModel("grain", 80, 100, false));
+        Assert.Equal("BeetField", AppearanceCatalog.ResourceModel("beet", 40, 100, false));
+        Assert.Equal("Pasture_2Cow", AppearanceCatalog.ResourceModel("milk", 80, 100, false));
+        Assert.Equal("Pasture_1Cow", AppearanceCatalog.ResourceModel("milk", 80, 100, true));
+        Assert.Equal("EmptyField", AppearanceCatalog.ResourceModel("grain", 0, 100, false));
+        Assert.Equal("Forest_Rich_Full", AppearanceCatalog.ResourceModel("wood", 80, 100, false));
+        Assert.Equal("", AppearanceCatalog.ResourceModel("stone", 80, 100, false));
+    }
+
+    [Fact]
     public void CropsAreUnevenAndBeetsAreFewer()
     {
         var wheat = WorldArtScatter.Layout("valley", 5, 6, "grain", "WheatField");

@@ -9,6 +9,9 @@ public static partial class WorldArt
     {
         bool empty = marker.Kind == "resource-depleted" || marker.ResourceStock <= 0;
         long capacity = Math.Max(1, marker.ResourceCapacity);
+        long stock = empty ? 0 : marker.ResourceStock;
+        if (marker.Label is "grain" or "beet" or "milk" && !WorldArtScatter.ExperimentalCrops)
+            return AppearanceCatalog.ResourceModel(marker.Label, stock, capacity, marker.ResourceSparse);
         if (marker.Label == "wood") return AppearanceCatalog.ResourceModel("wood", empty ? 0 : marker.ResourceStock, capacity, marker.ResourceSparse);
         if (marker.Label == "milk") return empty ? "Pasture_Empty" : AppearanceCatalog.ResourceModel("milk", marker.ResourceStock, capacity, marker.ResourceSparse);
         if (marker.Label is "grain" or "beet") return empty ? "EmptyField" : AppearanceCatalog.ResourceModel(marker.Label, marker.ResourceStock, capacity, marker.ResourceSparse);
@@ -24,9 +27,9 @@ public static partial class WorldArt
         var marks = WorldArtScatter.Layout(MapKey, marker.X, marker.Z, marker.Label, state);
         var pen = new Pen();
         if (marker.Label == "wood") Forest(pen, marks, state, cozy);
-        else if (marker.Label == "grain") Grain(pen, marks, state, cozy);
-        else if (marker.Label == "beet") Beet(pen, marks, state, cozy);
-        else if (marker.Label == "milk") Pasture(pen, marks, cozy);
+        else if (marker.Label == "grain" && WorldArtScatter.ExperimentalCrops) Grain(pen, marks, state, cozy);
+        else if (marker.Label == "beet" && WorldArtScatter.ExperimentalCrops) Beet(pen, marks, state, cozy);
+        else if (marker.Label == "milk" && WorldArtScatter.ExperimentalCrops) Pasture(pen, marks, cozy);
         else if (marker.Label is "stone" or "sand" or "iron_ore" or "copper_ore") Deposit(pen, marks, marker.Label, state, cozy);
         var root = new Node3D { Name = "ResourceArt" };
         root.SetMeta("skin_set", cozy ? "cozy" : "classic");
@@ -73,6 +76,7 @@ public static partial class WorldArt
         }
     }
 
+    // Экспериментальный вид I6-C3. В обычной партии его не выбирают.
     private static void Grain(Pen pen, WorldArtScatter.Mark[] marks, string state, bool cozy)
     {
         pen.Cylinder(new(0, 0.012f, 0), 0.42f, 0.022f, Soil(cozy).Lerp(new Color(cozy ? "c6a15a" : "b1843e"), 0.4f), Vector3.Up, 10);

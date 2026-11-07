@@ -109,14 +109,20 @@ public partial class I6C3Probe : Control
             var wood = Of("wood"); var grain = Of("grain"); var beet = Of("beet"); var milk = Of("milk");
             var stone = Of("stone"); var sand = Of("sand"); var iron = Of("iron_ore"); var copper = Of("copper_ore");
             var costs = new Dictionary<string, int>();
+            var chosen = new Dictionary<string, string>();
             foreach (var item in new[] { "wood", "grain", "beet", "milk", "stone", "sand", "iron_ore", "copper_ore" })
             {
                 var cell = Of(item);
                 var node = ResourceAt(stage, item, cell.X, cell.Z);
                 costs[item] = Triangles(node);
-                Check(node.GetMeta("skin_set").AsString() == "cozy", item + " uses the cozy nature factory");
-                Check(costs[item] > 20 && costs[item] < 4000, item + " cell stays a small mesh, triangles " + costs[item]);
+                chosen[item] = SkinId(node) ?? node.GetMeta("resource_state").AsString();
+                Check(node.GetMeta("skin_set").AsString() == "cozy", item + " is drawn with the cozy choice");
             }
+            Check(chosen["grain"] == "WheatField" && chosen["beet"] == "BeetField", "grain and beet use the approved fields");
+            Check(chosen["milk"] is "Pasture_1Cow" or "Pasture_2Cow", "milk uses the approved pasture");
+            Check(costs["wood"] > 20 && costs["wood"] < 4000 && costs["stone"] < 4000 && costs["sand"] < 4000 && costs["iron_ore"] < 4000 && costs["copper_ore"] < 4000, "forest and deposits stay the new small meshes");
+            var grainNodes = stage.GetChildren().OfType<Node3D>().Where(node => node.HasMeta("resource_item") && node.GetMeta("resource_item").AsString() == "grain").Take(2).ToArray();
+            Check(grainNodes.Length == 2 && ReferenceEquals(Walk(grainNodes[0]).OfType<MeshInstance3D>().First().Mesh, Walk(grainNodes[1]).OfType<MeshInstance3D>().First().Mesh), "grain cells share one mesh");
             int forestCells = stage.GetChildren().OfType<Node3D>().Count(node => node.HasMeta("resource_item") && node.GetMeta("resource_item").AsString() == "wood");
             Check(forestCells == layout.ResourceDistricts.Where(d => d.Item == "wood").Sum(d => d.Cells.Length), "trees stay on the real wood cells");
             var baked = new Dictionary<string, int>
@@ -126,7 +132,7 @@ public partial class I6C3Probe : Control
                 ["BeetField"] = Baked("BeetField"),
                 ["Pasture_2Cow"] = Baked("Pasture_2Cow")
             };
-            Check(baked["WheatField"] > costs["grain"] && baked["BeetField"] > costs["beet"], "grain and beet cells are lighter than the old stamped fields");
+            Check(costs["grain"] == baked["WheatField"] && costs["beet"] == baked["BeetField"], "the live fields are the approved meshes, not a replacement");
             Frame(stage, camera, new(scenario.MapWidth / 2f, 0, scenario.MapHeight / 2f), 18f);
             await Shot("01-valley-cozy");
             Frame(stage, camera, new(wood.X, 0.4f, wood.Z), 4.2f);
@@ -170,8 +176,14 @@ public partial class I6C3Probe : Control
             body = Bounds(person);
             Check(body.Size.Y >= 0.18f && body.Size.Y <= 0.34f && person.GetMeta("skin_set").AsString() == "classic", "classic person uses the same smaller proportions");
             Check(ResourceAt(stage, "wood", wood.X, wood.Z).GetMeta("skin_set").AsString() == "classic", "classic forest uses the shared factory");
+            Check(SkinId(ResourceAt(stage, "grain", grain.X, grain.Z)) is null && ResourceAt(stage, "grain", grain.X, grain.Z).GetMeta("skin_set").AsString() == "classic", "classic grain is the previous crop, not the cozy field");
+            Check(ResourceAt(stage, "stone", stone.X, stone.Z).GetMeta("resource_state").AsString() is "full" or "thin" or "spent", "classic stone stays the new deposit");
             Frame(stage, camera, new(wood.X, 0.4f, wood.Z), 4.2f);
             await Shot("11-forest-classic");
+            Frame(stage, camera, new(grain.X, 0.2f, grain.Z), 3.4f);
+            await Shot("20-grain-classic");
+            Frame(stage, camera, new(milk.X, 0.3f, milk.Z), 3.6f);
+            await Shot("21-pasture-classic");
             Set(stage, "_follow", true);
             Set(stage, "_cameraDistance", PresentationStage.CloseView);
             Set(stage, "_cameraTarget", PresentationStage.CloseView);
@@ -212,25 +224,42 @@ public partial class I6C3Probe : Control
             var lineup = new Node3D { Name = "I6C3Lineup" };
             stage.AddChild(lineup);
             string[] models = ["sputnik20", "muravey70", "eger70", "vector200", "trakt_d1"];
-            var origin = new Vector3(dealer.Entry.X - 3.2f, 0, dealer.Entry.Z + 3.2f);
+            var cars = new Vector3(14f, 0, 16.2f);
             for (int i = 0; i < models.Length; i++)
             {
                 var node = WorldModels.Vehicle(models[i], true);
-                node.Position = origin + new Vector3(i * 1.35f, 0, 0);
+                node.Name = "Car" + i;
+                node.Position = cars + new Vector3(i * 1.45f, 0, 0);
                 lineup.AddChild(node);
             }
             string[] machines = ["grain", "wood", "milk", "stone"];
+            var yard = new Vector3(14f, 0, 19.2f);
             for (int i = 0; i < machines.Length; i++)
             {
                 var node = WorldSkins.Equipment(machines[i], 1);
-                node.Position = origin + new Vector3(i * 1.7f, 0, 2.2f);
+                node.Name = "Class" + i;
+                node.Position = yard + new Vector3(i * 1.7f, 0, 0);
                 lineup.AddChild(node);
                 var upgraded = WorldSkins.Equipment(machines[i], 2);
-                upgraded.Position = origin + new Vector3(i * 1.7f, 0, 3.6f);
+                upgraded.Name = "Level" + i;
+                upgraded.Position = yard + new Vector3(i * 1.7f, 0, 1.55f);
                 lineup.AddChild(upgraded);
             }
-            Frame(stage, camera, origin + new Vector3(2.6f, 0.3f, 1.6f), 7.5f);
+            void Show(string prefix)
+            {
+                foreach (var node in lineup.GetChildren().OfType<Node3D>())
+                    node.Visible = node.Name.ToString().StartsWith(prefix);
+            }
+            Show("Car");
+            Frame(stage, camera, cars + new Vector3(2.9f, 0.3f, 0), 5.2f);
             await Shot("14-vehicles");
+            Show("Class");
+            Frame(stage, camera, yard + new Vector3(2.55f, 0.35f, 0), 5.4f);
+            await Shot("19-equipment-classes");
+            Show("Class");
+            foreach (var node in lineup.GetChildren().OfType<Node3D>())
+                if (node.Name.ToString().StartsWith("Level")) node.Visible = true;
+            Frame(stage, camera, yard + new Vector3(2.55f, 0.4f, 0.75f), 6.2f);
             await Shot("15-equipment-levels");
             lineup.QueueFree();
             string same = session.Engine.ComputeStateHash();
@@ -258,6 +287,8 @@ public partial class I6C3Probe : Control
                 map = layout.SourceId,
                 participants = scenario.Participants.Length,
                 triangles = costs,
+                chosen,
+                fieldLod = WorldSkins.FieldLodReady,
                 baked,
                 forestCells,
                 personHeight = body.Size.Y,
