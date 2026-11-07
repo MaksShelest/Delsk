@@ -84,7 +84,8 @@ public sealed partial class SimulationEngine
     }
     private bool DevelopmentGroundBusy(Cell cell)
     {
-        if(!_groundStorage.TryGetValue(_plotsByCell[cell].Definition.Id,out var ground))return false;
+        // Клетки за пределами участка нет в реестре: это не занятый склад, а недостающая земля.
+        if(!_plotsByCell.TryGetValue(cell,out var plot)||!_groundStorage.TryGetValue(plot.Definition.Id,out var ground))return false;
         var i=_economy.Inventories[ground];return i.Stock.Any(s=>s.Value>0)||i.Overflow.Count>0||i.Incoming>0||i.Reservations.Count>0||_transfers.Values.Any(t=>t.Source==ground||t.Destination==ground);
     }
     private void StartDevelopmentConstruction(ActorState actor,CommandEnvelope command,BuildingState? building=null)

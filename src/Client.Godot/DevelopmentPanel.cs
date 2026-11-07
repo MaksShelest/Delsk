@@ -57,12 +57,24 @@ public partial class DevelopmentPanel : VBoxContainer
             if(next is not null&&project is null)
             {
                 Button("prepare",preparing?L("Отменить подготовку (цеха останутся выключены)","Cancel preparation (workshops stay off)"):L("Подготовить к расширению","Prepare expansion"),new(preparing?ActionKind.CancelExpansionPreparation:ActionKind.PrepareEnterpriseExpansion,Building:b.Id));
-                var cells=next.Footprint.Select(c=>new Cell(b.Position.X+c.X,b.Position.Z+c.Z)).ToArray();
-                var plots=cells.Select(c=>view.Plots.Single(p=>p.Position==c)).ToArray();
-                foreach(var plot in plots.Where(p=>p.OwnerId is null))Button("land:"+plot.Id.Value,L("Купить землю ","Buy land ")+$"({plot.Position.X},{plot.Position.Z}) · "+PlayerText.Money(plot.PriceMinor),new(ActionKind.BuyExpansionLand,Building:b.Id,Plot:plot.Id),view.AvailableCashMinor>=plot.PriceMinor);
-                var input=view.Inventories.Single(i=>i.Id==b.InputId);
-                bool ready=xp.TechnologyLevel>=next.Level&&plots.All(p=>p.OwnerId==view.Participant.Id)&&view.AvailableCashMinor>=next.PriceMinor&&next.Materials.All(m=>input.Stock.Where(s=>s.ItemId==m.ItemId).Sum(s=>s.Quantity-s.Reserved)>=m.Quantity)&&e.Workshops.All(w=>!w.Enabled&&w.BatchId==0)&&e.Installations.Length==0;
-                Button("expand",L("Оплатить расширение до ","Pay for expansion to ")+next.Level,new(ActionKind.UpgradeBuilding,Building:b.Id,Quantity:next.Level),ready);
+                var offsets=MapLots.Offsets(type,next.Level);
+                var owned=_scenario.Layout?.IndustrialLots.FirstOrDefault(l=>l.Cells.Contains(b.Position));
+                if(owned is not null && !MapLots.Covers(owned.Cells,b.Position,offsets))
+                    _status.Text+="\n"+MapLots.TooSmall(_language,PlayerText.Building(_language,type.Id),offsets.Length,owned.Cells.Length);
+                else
+                {
+                    var cells=offsets.Select(c=>new Cell(b.Position.X+c.X,b.Position.Z+c.Z)).ToArray();
+                    var plots=cells.Select(c=>view.Plots.FirstOrDefault(p=>p.Position==c)).ToArray();
+                    if(plots.Any(p=>p is null))
+                        _status.Text+="\n"+MapLots.TooSmall(_language,PlayerText.Building(_language,type.Id),offsets.Length,owned?.Cells.Length??0);
+                    else
+                    {
+                        foreach(var plot in plots.Where(p=>p!.OwnerId is null))Button("land:"+plot!.Id.Value,L("Купить землю ","Buy land ")+$"({plot.Position.X},{plot.Position.Z}) · "+PlayerText.Money(plot.PriceMinor),new(ActionKind.BuyExpansionLand,Building:b.Id,Plot:plot.Id),view.AvailableCashMinor>=plot.PriceMinor);
+                        var input=view.Inventories.Single(i=>i.Id==b.InputId);
+                        bool ready=xp.TechnologyLevel>=next.Level&&plots.All(p=>p!.OwnerId==view.Participant.Id)&&view.AvailableCashMinor>=next.PriceMinor&&next.Materials.All(m=>input.Stock.Where(s=>s.ItemId==m.ItemId).Sum(s=>s.Quantity-s.Reserved)>=m.Quantity)&&e.Workshops.All(w=>!w.Enabled&&w.BatchId==0)&&e.Installations.Length==0;
+                        Button("expand",L("Оплатить расширение до ","Pay for expansion to ")+next.Level,new(ActionKind.UpgradeBuilding,Building:b.Id,Quantity:next.Level),ready);
+                    }
+                }
             }
         }
         foreach(string key in _buttons.Keys.Where(k=>!_shown.Contains(k)).ToArray()){var button=_buttons[key].Button;_actions.RemoveChild(button);button.QueueFree();_buttons.Remove(key);}

@@ -5,10 +5,12 @@ using Simulation.Core;
 
 namespace Simulation.Hosting;
 
-/// <summary>Editable delsk-map-design-2 document. Drafts may be incomplete; ordinary play uses a checked export.</summary>
+/// <summary>Черновик карты. Незаконченный файл можно сохранить; обычная партия требует проверку без ошибок.</summary>
 public sealed class MapDraft
 {
     public const string ExhibitionToken="compact-exhibition-1";
+    public const string FlexibleSchema="delsk-map-design-3";
+    public const int MaxLotCells=MapLots.MaximumCells;
     public static readonly string[] ResourceItems=["wood","grain","milk","beet","stone","sand","iron_ore","copper_ore"];
     private static readonly JsonSerializerOptions Json=new()
     {
@@ -37,6 +39,7 @@ public sealed class MapDraft
     public List<Cell> Turns{get;}=[];
     public List<Cell> EquipmentParking{get;}=[];
     public string? ActiveDistrictId{get;private set;}
+    public bool Flexible=>SchemaVersion==FlexibleSchema;
     public bool CanUndo=>_undo.Count>0;
     public bool CanRedo=>_redo.Count>0;
     public static MapDraft Create(int width=32,int height=25)
@@ -117,6 +120,62 @@ public sealed class MapDraft
         Record();var entry=Inside(new(origin.X,origin.Z+3))?new Cell(origin.X,origin.Z+3):new Cell(origin.X,origin.Z-1);
         Lots.Add(new("lot_"+(Lots.Count+1).ToString("00"),cells,entry));
     }
+    public void UseFlexible(){if(!Flexible)SchemaVersion=FlexibleSchema;}
+    public string? AddLotCell(Cell cell,string? preferredId=null)
+    {
+        if(!Inside(cell)||Lots.Any(l=>l.Cells.Contains(cell))||Occupied(cell))return null;
+        var lot=Lots.FirstOrDefault(l=>l.Id==preferredId&&l.Cells.Any(c=>Adjacent(c,cell)))??Lots.FirstOrDefault(l=>l.Cells.Any(c=>Adjacent(c,cell)));
+        Record();
+        if(lot is null)
+        {
+            lot=new("lot_"+(Lots.Count+1).ToString("00"),[cell],EntryNear([cell]));
+            Lots.Add(lot);
+        }
+        else lot.Cells.Add(cell);
+        if(!MapLots.LegacyRectangle(lot.Cells))UseFlexible();
+        return lot.Id;
+    }
+    public void RemoveLotCell(Cell cell)
+    {
+        var lot=Lots.FirstOrDefault(l=>l.Cells.Contains(cell));if(lot is null)return;
+        Record();lot.Cells.Remove(cell);
+        if(lot.Cells.Count==0)Lots.Remove(lot);
+        else if(!MapLots.LegacyRectangle(lot.Cells))UseFlexible();
+    }
+    public string? PlaceLotRectangle(Cell a,Cell b)
+    {
+        int x0=Math.Min(a.X,b.X),x1=Math.Max(a.X,b.X),z0=Math.Min(a.Z,b.Z),z1=Math.Max(a.Z,b.Z);
+        var cells=Rect(x0,z0,x1-x0+1,z1-z0+1);
+        if(cells.Count is <1 or >MaxLotCells||cells.Any(c=>!Inside(c)||Occupied(c)))return null;
+        Record();
+        var lot=new DraftLot("lot_"+(Lots.Count+1).ToString("00"),cells,EntryNear(cells));
+        Lots.Add(lot);
+        if(!MapLots.LegacyRectangle(cells))UseFlexible();
+        return lot.Id;
+    }
+    public void SetEntry(string id,Cell cell)
+    {
+        var lot=Lots.FirstOrDefault(l=>l.Id==id);if(lot is null||lot.Entry==cell)return;
+        Record();lot.Entry=cell;
+    }
+    public void SetParticipants(int count)
+    {
+        count=Math.Clamp(count,4,64);if(count==MaxParticipants)return;
+        Record();MaxParticipants=count;while(Spawns.Count>count)Spawns.RemoveAt(Spawns.Count-1);
+    }
+    public void ToggleTurn(Cell cell)
+    {
+        if(!Roads.Contains(cell))return;Record();if(!Turns.Remove(cell))Turns.Add(cell);
+    }
+    /// <summary>Один шаг истории поворачивает всю схему на 90° по часовой стрелке и переводит её на design-3.</summary>
+    public void RotateContent(int quarter=1)
+    {
+        quarter=((quarter%4)+4)%4;if(quarter==0)return;
+        Record();
+        for(int step=0;step<quarter;step++)TurnClockwise();
+        UseFlexible();
+    }
+    public bool Reaches(Cell cell)=>Spawns.Count>0&&Path(Roads.ToHashSet(),Spawns[0],cell);
     public void MoveLot(string id,Cell origin)
     {
         var lot=Lots.FirstOrDefault(l=>l.Id==id);if(lot is null)return;
@@ -156,7 +215,15 @@ public sealed class MapDraft
     {
         Record();
         Roads.Remove(cell);Turns.Remove(cell);EquipmentParking.Remove(cell);Spawns.Remove(cell);
-        Stalls.RemoveAll(s=>s.Cell==cell);Lots.RemoveAll(l=>l.Cells.Contains(cell)||l.Entry==cell);Civics.RemoveAll(c=>c.Footprint.Contains(cell));
+        Stalls.RemoveAll(s=>s.Cell==cell);
+        var lot=Lots.FirstOrDefault(l=>l.Cells.Contains(cell));
+        if(lot is not null)
+        {
+            lot.Cells.Remove(cell);
+            if(lot.Cells.Count==0)Lots.Remove(lot);
+            else if(!MapLots.LegacyRectangle(lot.Cells))UseFlexible();
+        }
+        Civics.RemoveAll(c=>c.Footprint.Contains(cell));
         foreach(var d in Districts){d.Cells.Remove(cell);d.PublicCells.Remove(cell);}Districts.RemoveAll(d=>d.Cells.Count==0);
     }
     public void SetPublic(Cell cell,bool Public)
@@ -167,68 +234,92 @@ public sealed class MapDraft
         else district.PublicCells.Remove(cell);
         if(district.PublicCells.Count==0&&district.Cells.Count>0)district.PublicCells.Add(district.Cells[0]);
     }
-    public IReadOnlyList<string> Problems()
+    public IReadOnlyList<string> Problems()=>Notes().Where(n=>!n.Warning).Select(n=>n.Text).ToArray();
+    public IReadOnlyList<MapNote> Notes(string language="ru")
     {
-        var notes=new List<string>();
-        void Add(string text){if(notes.Count<40)notes.Add(text);}
-        if(Width is <4 or >128||Height is <4 or >128)Add($"Размер {Width}×{Height} вне 4…128.");
-        if(string.IsNullOrWhiteSpace(Id)||Id.Length>60)Add("Нужен короткий латинский идентификатор карты.");
+        string T(string ru,string en)=>language=="ru"?ru:en;
+        var notes=new List<MapNote>();
+        void Add(string text,Cell? at=null,bool warning=false)=>notes.Add(new(text,at,warning));
+        if(Width is <4 or >128||Height is <4 or >128)Add(T($"Размер {Width}×{Height} вне 4…128.",$"Size {Width}×{Height} is outside 4…128."));
+        if(string.IsNullOrWhiteSpace(Id)||Id.Length>60||!System.Text.RegularExpressions.Regex.IsMatch(Id,"\\A[a-z0-9_]{1,60}\\z"))
+            Add(T("Нужен короткий латинский идентификатор карты.","The map needs a short latin identifier."));
         var occupied=new Dictionary<Cell,string>();
-        void Take(IEnumerable<Cell> cells,string label){foreach(var c in cells){if(!Inside(c))Add($"{label} выходит за карту: ({c.X}, {c.Z}).");else if(!occupied.TryAdd(c,label))Add($"Пересечение ({c.X}, {c.Z}): {occupied[c]} и {label}.");}}
+        void Take(IEnumerable<Cell> cells,string label){foreach(var c in cells){if(!Inside(c))Add(T($"{label} выходит за карту: ({c.X}, {c.Z}).",$"{label} is outside the map: ({c.X}, {c.Z})."),c);else if(!occupied.TryAdd(c,label))Add(T($"Пересечение ({c.X}, {c.Z}): {occupied[c]} и {label}.",$"Overlap ({c.X}, {c.Z}): {occupied[c]} and {label}."),c);}}
         foreach(var lot in Lots)
         {
-            Take(lot.Cells,$"участок {lot.Id}");
-            int dx=lot.Cells.Count==0?0:lot.Cells.Max(c=>c.X)-lot.Cells.Min(c=>c.X),dz=lot.Cells.Count==0?0:lot.Cells.Max(c=>c.Z)-lot.Cells.Min(c=>c.Z);
-            if(lot.Cells.Distinct().Count()!=6||dx!=1||dz!=2)Add($"Участок {lot.Id} должен быть 2×3, сейчас {lot.Cells.Count} клеток.");
-            if(!Roads.Contains(lot.Entry))Add($"Въезд участка {lot.Id} ({lot.Entry.X}, {lot.Entry.Z}) не на дороге.");
-            else if(!lot.Cells.Any(c=>Math.Abs(c.X-lot.Entry.X)+Math.Abs(c.Z-lot.Entry.Z)==1))Add($"Въезд участка {lot.Id} не примыкает к площадке.");
+            Take(lot.Cells,T($"участок {lot.Id}",$"lot {lot.Id}"));
+            if(!Flexible&&!MapLots.LegacyRectangle(lot.Cells))Add(T($"Участок {lot.Id} должен быть 2×3, сейчас {lot.Cells.Count} клеток.",$"Lot {lot.Id} must be 2×3, it has {lot.Cells.Count} cells."),lot.Cells.FirstOrDefault());
+            else if(lot.Cells.Count is <1 or >MaxLotCells)Add(T($"Участок {lot.Id} должен занимать от 1 до {MaxLotCells} клеток.",$"Lot {lot.Id} must cover 1 to {MaxLotCells} cells."),lot.Cells.FirstOrDefault());
+            else if(!MapLots.Connected(lot.Cells))Add(T($"Участок {lot.Id} разорван: клетки должны соприкасаться сторонами.",$"Lot {lot.Id} is disconnected: cells must share a side."),lot.Cells.FirstOrDefault());
+            else if(Flexible&&lot.Cells.Count<6)Add(T($"Участок {lot.Id} занимает {MapLots.Cells(lot.Cells.Count,true)}. Крупное предприятие может не поместиться.",$"Lot {lot.Id} has {lot.Cells.Count} cells. A large building may not fit."),lot.Cells[0],true);
+            bool beside=lot.Cells.Any(c=>Math.Abs(c.X-lot.Entry.X)+Math.Abs(c.Z-lot.Entry.Z)==1);
+            if(!Roads.Contains(lot.Entry)||!beside)Add(T($"Промышленный участок {lot.Id} не имеет подъезда.",$"Industrial lot {lot.Id} has no entrance."),lot.Entry);
         }
         foreach(var d in Districts)
         {
-            Take(d.Cells,$"ресурс {d.Item}");
-            if(!ResourceItems.Contains(d.Item))Add($"Неизвестный ресурс {d.Item}.");
-            if(d.PublicCells.Any(c=>!d.Cells.Contains(c)))Add($"Публичная клетка ресурса {d.Id} не входит в группу.");
+            Take(d.Cells,T($"ресурс {ResourceTitle(d.Item,language)}",$"resource {ResourceTitle(d.Item,language)}"));
+            if(!ResourceItems.Contains(d.Item))Add(T($"Неизвестный ресурс {d.Item}.",$"Unknown resource {d.Item}."));
+            if(d.PublicCells.Any(c=>!d.Cells.Contains(c)))Add(T($"Публичная клетка ресурса {d.Id} не входит в группу.",$"A public cell of {d.Id} is outside its group."));
         }
         foreach(var item in ResourceItems)
         {
             var cells=Districts.Where(d=>d.Item==item).SelectMany(d=>d.Cells).Distinct().ToArray();
             int open=Districts.Where(d=>d.Item==item).SelectMany(d=>d.PublicCells).Distinct().Count(cells.Contains);
-            if(cells.Length>0&&(open==0||open==cells.Length))Add($"Ресурсу {item} нужны и общая, и покупаемая клетки.");
+            if(cells.Length==0)Add(T($"Не размещено месторождение {Deposit(item)}.",$"No {ResourceTitle(item,"en")} deposit is placed."));
+            else if(open==0||open==cells.Length)Add(T($"Ресурсу {ResourceTitle(item,language)} нужны и общая, и покупаемая клетки.",$"{ResourceTitle(item,"en")} needs both a public and a purchasable cell."));
         }
-        if(Districts.Select(d=>d.Item).Distinct().Count()<ResourceItems.Length)Add("Нужны все восемь видов ресурсов.");
-        foreach(var c in Civics)Take(c.Footprint,$"{c.Kind}");
-        foreach(var kind in new[]{"town_hall","terminal","dealership"})if(Civics.All(c=>c.Kind!=kind))Add($"Нет объекта: {kind}.");
-        Take(Stalls.Select(s=>s.Cell), "лавка");
-        if(Stalls.Count<MaxParticipants)Add($"Лавок {Stalls.Count}, нужно не меньше участников ({MaxParticipants}).");
-        Take(EquipmentParking,"стоянка");
+        foreach(var c in Civics)Take(c.Footprint,CivicTitle(c.Kind,language));
+        if(Civics.All(c=>c.Kind!="town_hall"))Add(T("Нет ратуши.","No town hall."));
+        if(Civics.All(c=>c.Kind!="terminal"))Add(T("Нет биржи.","No exchange."));
+        if(Civics.All(c=>c.Kind!="dealership"))Add(T("Нет автосалона.","No dealership."));
+        Take(Stalls.Select(s=>s.Cell),T("лавка","stall"));
+        if(Stalls.Count<MaxParticipants)Add(T($"Лавок {Stalls.Count}, нужно не меньше участников ({MaxParticipants}).",$"Stalls: {Stalls.Count}, participants need {MaxParticipants}."));
+        Take(EquipmentParking,T("стоянка","parking"));
         var road=Roads.ToHashSet();
-        foreach(var c in road)if(occupied.TryGetValue(c,out var label))Add($"Дорога пересекает {label}: ({c.X}, {c.Z}).");
+        foreach(var c in road)if(occupied.TryGetValue(c,out var label))Add(T($"Дорога пересекает {label}: ({c.X}, {c.Z}).",$"A road overlaps {label}: ({c.X}, {c.Z})."),c);
         foreach(var c in road)if(road.Contains(new(c.X+1,c.Z))&&road.Contains(new(c.X,c.Z+1))&&road.Contains(new(c.X+1,c.Z+1)))
-            Add($"Дорога шире одной клетки около ({c.X}, {c.Z}).");
+            Add(T($"Дорога шире одной клетки около ({c.X}, {c.Z}).",$"The road is wider than one cell near ({c.X}, {c.Z})."),c);
         if(road.Count>0)
         {
             var seen=new HashSet<Cell>();var queue=new Queue<Cell>();queue.Enqueue(road.First());seen.Add(road.First());
             while(queue.TryDequeue(out var c))foreach(var n in new[]{new Cell(c.X-1,c.Z),new(c.X+1,c.Z),new(c.X,c.Z-1),new(c.X,c.Z+1)})if(road.Contains(n)&&seen.Add(n))queue.Enqueue(n);
-            if(seen.Count!=road.Count)Add("Дороги не связаны между собой.");
+            if(seen.Count!=road.Count)Add(T("Дороги не связаны между собой.","The roads are not connected."));
         }
-        else Add("Нет ни одной дороги.");
-        foreach(var c in Spawns)if(!road.Contains(c))Add($"Точка появления ({c.X}, {c.Z}) не стоит на дороге.");
-        if(Spawns.Distinct().Count()!=MaxParticipants)Add($"Точек появления {Spawns.Distinct().Count()}, а участников {MaxParticipants}.");
-        if(EquipmentParking.Distinct().Count()!=16)Add($"Стоянок техники {EquipmentParking.Distinct().Count()}. Для обычной партии нужно ровно 16, иначе появится внешний двор.");
-        foreach(var c in EquipmentParking.Distinct())if(!road.Any(r=>Math.Abs(r.X-c.X)+Math.Abs(r.Z-c.Z)==1))Add($"Стоянка ({c.X}, {c.Z}) не примыкает к дороге.");
-        if(Spawns.Count>0)foreach(var lot in Lots)if(!road.Contains(lot.Entry)||!Path(road,Spawns[0],lot.Entry))Add($"Участок {lot.Id} недостижим по дороге.");
-        return notes;
+        else Add(T("Нет ни одной дороги.","There is no road."));
+        foreach(var c in Spawns)if(!road.Contains(c))Add(T($"Точка появления ({c.X}, {c.Z}) не стоит на дороге.",$"Spawn ({c.X}, {c.Z}) is not on a road."),c);
+        int spawns=Spawns.Distinct().Count();
+        if(spawns<MaxParticipants)Add(T($"Недостаточно мест появления для {MaxParticipants} участников.",$"Not enough spawn points for {MaxParticipants} participants."),Spawns.FirstOrDefault());
+        else if(spawns!=MaxParticipants)Add(T($"Точек появления {spawns}, а участников {MaxParticipants}.",$"Spawn points: {spawns}, participants: {MaxParticipants}."));
+        if(EquipmentParking.Distinct().Count()!=16)Add(T($"Стоянок техники {EquipmentParking.Distinct().Count()}. Для обычной партии нужно ровно 16, иначе появится внешний двор.",$"Equipment parking cells: {EquipmentParking.Distinct().Count()}. An ordinary game needs exactly 16, otherwise an outside yard is added."));
+        foreach(var c in EquipmentParking.Distinct())
+        {
+            if(road.Contains(c))Add(T($"Парковка перекрывает дорогу: ({c.X}, {c.Z}).",$"Parking overlaps a road: ({c.X}, {c.Z})."),c);
+            else if(!road.Any(r=>Math.Abs(r.X-c.X)+Math.Abs(r.Z-c.Z)==1))Add(T($"Стоянка ({c.X}, {c.Z}) не примыкает к дороге.",$"Parking ({c.X}, {c.Z}) does not touch a road."),c);
+        }
+        if(Spawns.Count>0)foreach(var lot in Lots)if(!road.Contains(lot.Entry)||!Path(road,Spawns[0],lot.Entry))Add(T($"Участок {lot.Id} недостижим по дороге.",$"Lot {lot.Id} is not reachable by road."),lot.Entry);
+        return notes.Where(n=>!n.Warning).Take(40).Concat(notes.Where(n=>n.Warning).Take(12)).ToArray();
     }
-    public string Check(EconomyProfile economy)
+    public string Check(EconomyProfile economy,string language="ru")
     {
-        var notes=Problems().ToList();
+        var notes=Notes(language).Where(n=>!n.Warning).Select(n=>n.Text).Distinct().ToList();
+        if(notes.Count>0)return string.Join('\n',notes);
         try
         {
             var scenario=economy.Apply(MapDesignReader.Read(System.Text.Encoding.UTF8.GetBytes(ToJson()),economy));
-            if(scenario.MapWidth!=Width||scenario.MapHeight!=Height)notes.Add($"Профиль расширил карту до {scenario.MapWidth}×{scenario.MapHeight}.");
+            if(scenario.MapWidth!=Width||scenario.MapHeight!=Height)notes.Add(language=="ru"?$"Профиль расширил карту до {scenario.MapWidth}×{scenario.MapHeight}.":$"The profile expanded the map to {scenario.MapWidth}×{scenario.MapHeight}.");
         }
-        catch(Exception error){notes.Add(error.Message);}
+        catch(Exception error){notes.Add(Explain(error,language));}
         return string.Join('\n',notes.Distinct());
+    }
+    public static string Explain(Exception error,string language="ru")
+    {
+        string message=error.Message;
+        if(message.Contains("Invalid resolved map layout",StringComparison.Ordinal))return PlayerText.Local(language,"Карта не проходит проверку геометрии. Проверьте участки, въезды и городские здания.","The map geometry did not pass. Check lots, entrances and civic buildings.");
+        if(message.Contains("Missing map geometry",StringComparison.Ordinal))return PlayerText.Local(language,"Для обычной партии не хватает дорог, участков, ресурсов или городских зданий.","An ordinary game still needs roads, lots, resources or civic buildings.");
+        if(message.Contains("Map design too large",StringComparison.Ordinal))return PlayerText.Local(language,"Файл карты больше допустимых 2 МБ.","The map file is larger than the 2 MB limit.");
+        if(message.Contains("Designed maps require",StringComparison.Ordinal))return PlayerText.Local(language,"Карта требует современный экономический профиль.","The map requires the current economy profile.");
+        if(message.Contains("Map participant capacity",StringComparison.Ordinal))return PlayerText.Local(language,"Участников больше, чем мест на карте.","There are more participants than places on the map.");
+        return PlayerText.Local(language,"Карту нельзя запустить. ","The map cannot be started. ")+message;
     }
     private void Copy(MapDraft other)
     {
@@ -242,7 +333,40 @@ public sealed class MapDraft
         var text=Assignment.Replace(" "+ExhibitionToken,"").Replace(ExhibitionToken,"").Trim();
         return CompactExhibition?text+" "+ExhibitionToken:text;
     }
+    private void TurnClockwise()
+    {
+        int height=Height;
+        Cell Map(Cell cell)=>new(height-1-cell.Z,cell.X);
+        void MapList(List<Cell> cells){var next=cells.Select(Map).ToList();cells.Clear();cells.AddRange(next);}
+        MapList(Roads);MapList(Spawns);MapList(Turns);MapList(EquipmentParking);
+        foreach(var lot in Lots){MapList(lot.Cells);lot.Entry=Map(lot.Entry);}
+        foreach(var district in Districts){MapList(district.Cells);MapList(district.PublicCells);}
+        foreach(var civic in Civics){MapList(civic.Footprint);MapList(civic.Building);MapList(civic.Parking);civic.Entry=Map(civic.Entry);}
+        foreach(var stall in Stalls)stall.Cell=Map(stall.Cell);
+        (Width,Height)=(Height,Width);
+    }
+    private bool Occupied(Cell cell)=>Roads.Contains(cell)||Spawns.Contains(cell)||EquipmentParking.Contains(cell)||Turns.Contains(cell)||Stalls.Any(s=>s.Cell==cell)||Civics.Any(c=>c.Footprint.Contains(cell))||Districts.Any(d=>d.Cells.Contains(cell))||Lots.Any(l=>l.Cells.Contains(cell));
+    private Cell EntryNear(IReadOnlyList<Cell> cells)
+    {
+        foreach(var cell in cells)foreach(var next in new[]{new Cell(cell.X,cell.Z+1),new(cell.X,cell.Z-1),new(cell.X+1,cell.Z),new(cell.X-1,cell.Z)})if(Inside(next)&&Roads.Contains(next)&&!cells.Contains(next))return next;
+        var origin=cells[0];var south=new Cell(origin.X,origin.Z+1);return Inside(south)?south:origin;
+    }
+    private static bool Adjacent(Cell a,Cell b)=>Math.Abs(a.X-b.X)+Math.Abs(a.Z-b.Z)==1;
     private bool Inside(Cell c)=>c.X>=0&&c.Z>=0&&c.X<Width&&c.Z<Height;
+    private static string ResourceTitle(string item,string language)=>item switch
+    {
+        "wood"=>PlayerText.Local(language,"лес","wood"),
+        "grain"=>PlayerText.Local(language,"зерно","grain"),
+        "milk"=>PlayerText.Local(language,"молоко","milk"),
+        "beet"=>PlayerText.Local(language,"свёкла","beet"),
+        "stone"=>PlayerText.Local(language,"камень","stone"),
+        "sand"=>PlayerText.Local(language,"песок","sand"),
+        "iron_ore"=>PlayerText.Local(language,"железная руда","iron ore"),
+        "copper_ore"=>PlayerText.Local(language,"медная руда","copper ore"),
+        _=>item
+    };
+    private static string Deposit(string item)=>item switch{"wood"=>"леса","grain"=>"зерна","milk"=>"молока","beet"=>"свёклы","stone"=>"камня","sand"=>"песка","iron_ore"=>"железной руды","copper_ore"=>"медной руды",_=>item};
+    private static string CivicTitle(string kind,string language)=>kind switch{"town_hall"=>PlayerText.Local(language,"ратуша","town hall"),"terminal"=>PlayerText.Local(language,"биржа","exchange"),"dealership"=>PlayerText.Local(language,"автосалон","dealership"),_=>kind};
     private static bool Path(HashSet<Cell> road,Cell from,Cell to)
     {
         if(!road.Contains(from)||!road.Contains(to))return false;
@@ -278,5 +402,6 @@ public sealed class MapDraft
 public sealed class DraftLot(string id,List<Cell> cells,Cell entry){public string Id{get;}=id;public List<Cell> Cells{get;}=cells;public Cell Entry{get;set;}=entry;}
 public sealed class DraftDistrict(string id,string item,List<Cell> cells,List<Cell> Public){public string Id{get;}=id;public string Item{get;}=item;public List<Cell> Cells{get;}=cells;public List<Cell> PublicCells{get;}=Public;}
 public sealed class DraftCivic(string id,string kind,List<Cell> footprint,Cell entry,List<Cell> parking,List<Cell> building)
-{public string Id{get;}=id;public string Kind{get;}=kind;public List<Cell> Footprint{get;}=footprint;public Cell Entry{get;}=entry;public List<Cell> Parking{get;}=parking;public List<Cell> Building{get;}=building;}
-public sealed class DraftStall(string id,Cell cell){public string Id{get;}=id;public Cell Cell{get;}=cell;}
+{public string Id{get;}=id;public string Kind{get;}=kind;public List<Cell> Footprint{get;}=footprint;public Cell Entry{get;set;}=entry;public List<Cell> Parking{get;}=parking;public List<Cell> Building{get;}=building;}
+public sealed class DraftStall(string id,Cell cell){public string Id{get;}=id;public Cell Cell{get;set;}=cell;}
+public readonly record struct MapNote(string Text,Cell? At,bool Warning);

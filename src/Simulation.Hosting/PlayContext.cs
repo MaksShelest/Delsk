@@ -91,7 +91,11 @@ public static class PlayContext
             foreach (var cost in level.Materials)
                 if (Free(materialInventory, cost.ItemId) < cost.Quantity)
                     issues.Add(PlayerText.Item(language, cost.ItemId) + $": {Free(materialInventory, cost.ItemId)}/{cost.Quantity}");
-            if (type.Footprint.Any(offset => !view.Plots.Any(p => p.Position == new Cell(cell.X + offset.X, cell.Z + offset.Z) &&
+            var offsets=MapLots.Offsets(type,1);
+            var lot=scenario.Layout?.IndustrialLots.FirstOrDefault(l=>l.Cells.Contains(cell));
+            if(lot is not null && !MapLots.Covers(lot.Cells, cell, offsets))
+                issues.Add(MapLots.TooSmall(language, PlayerText.Building(language, type.Id), offsets.Length, lot.Cells.Length));
+            else if (offsets.Any(offset => !view.Plots.Any(p => p.Position == new Cell(cell.X + offset.X, cell.Z + offset.Z) &&
                 p.OwnerId == view.Participant.Id && !p.IsCorridor && p.BuildingId is null &&
                 (!p.IsShopSite && p.ShopParticipantId is null || (p.IsShopSite || p.ShopParticipantId == view.Participant.Id) && type.Kind == BuildingKind.Shop))))
                 issues.Add(L(language, "Нет свободной собственной площади под всё здание.", "The full footprint must be free and owned."));

@@ -12,6 +12,8 @@ public partial class MapSelectionScreen : ColorRect
     public event System.Action? LanguageChanged;
     public event System.Action? QuitRequested;
     public event System.Action? MapEditorRequested;
+    public event System.Action<string>? UserMapChosen;
+    public event System.Action<string>? UserMapEdit;
     public event System.Action? DisplaySettingsRequested;
     public event System.Action? FeedbackSettingsRequested;
     public event System.Action? AppearanceSettingsRequested;
@@ -62,6 +64,7 @@ public partial class MapSelectionScreen : ColorRect
         resume.TooltipText=canContinue?"":L("Пока нет сохранённой партии","No saved game yet");
         AddButton(controls,L("Выбрать карту","Choose map"),ShowCatalog).Name="ChooseMap";
         AddButton(controls,L("Редактор карт","Map editor"),()=>MapEditorRequested?.Invoke()).Name="OpenMapEditor";
+        AddButton(controls,L("Мои карты","My maps"),ShowUserMaps).Name="OpenMyMaps";
         var options=new HFlowContainer();_preferences.AddChild(options);
         AddButton(options,L("Экран","Display"),()=>DisplaySettingsRequested?.Invoke());AddButton(options,L("Звук","Audio"),()=>FeedbackSettingsRequested?.Invoke());
         AddButton(options,L("Оформление","Appearance"),()=>AppearanceSettingsRequested?.Invoke());AddButton(options,L("English","Русский"),()=>LanguageChanged?.Invoke());
@@ -158,9 +161,58 @@ public partial class MapSelectionScreen : ColorRect
         }
         close.GrabFocus();
     }
+    private void ShowUserMaps()
+    {
+        var overlay=new ColorRect{Name="UserMapCatalog",Color=new Color(0.08f,.13f,.11f,.65f),MouseFilter=MouseFilterEnum.Stop};overlay.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);CloseCatalog();AddChild(overlay);_catalog=overlay;
+        var panel=new PanelContainer{Theme=CompactTabletDesign.Theme};panel.AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("e8eee5",12));
+        panel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);overlay.AddChild(panel);UiSafeArea.Panel(panel,12,12,12,100);
+        var body=new VBoxContainer();panel.AddChild(body);var header=new HBoxContainer();body.AddChild(header);
+        header.AddChild(new Label{Text=L("Мои карты","My maps"),SizeFlagsHorizontal=SizeFlags.ExpandFill});
+        var close=AddButton(header,L("Закрыть","Close"),CloseCatalog);close.Name="CloseUserMaps";
+        var scroll=new ScrollContainer{HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled,SizeFlagsVertical=SizeFlags.ExpandFill};body.AddChild(scroll);
+        var list=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};list.AddThemeConstantOverride("separation",8);scroll.AddChild(list);
+        string directory=ProjectSettings.GlobalizePath("user://maps");
+        var files=System.IO.Directory.Exists(directory)?System.IO.Directory.EnumerateFiles(directory,"*.json").OrderBy(System.IO.Path.GetFileName).ToArray():[];
+        if(files.Length==0)list.AddChild(new Label{Text=L("Пока нет сохранённых карт. Создайте карту в редакторе и нажмите «Сохранить».","No saved maps yet. Create one in the editor and press Save."),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        foreach(var file in files)
+        {
+            MapDraft? draft=null;try{draft=MapDraft.Parse(System.IO.File.ReadAllText(file));}catch(Exception){continue;}
+            if(draft is null)continue;
+            var notes=draft.Notes(_language);int errors=notes.Count(n=>!n.Warning);string id=draft.Id;string path=file;
+            var card=new PanelContainer{Name="UserMap_"+id};card.AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("f7f8f1",10));list.AddChild(card);
+            var row=new HBoxContainer();row.AddThemeConstantOverride("separation",12);card.AddChild(row);
+            var text=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};row.AddChild(text);
+            text.AddChild(TabletDesign.Heading(draft.Name,20));
+            text.AddChild(new Label{Text=$"{draft.Width} × {draft.Height}"+L(" клеток · участников: "," cells · participants: ")+draft.MaxParticipants,AutowrapMode=TextServer.AutowrapMode.WordSmart});
+            var status=new Label{Name="UserMapStatus_"+id,Text=errors==0?L("Проверена","Checked"):L("Ошибок: ","Errors: ")+errors,AutowrapMode=TextServer.AutowrapMode.WordSmart};
+            status.AddThemeColorOverride("font_color",new Color(errors==0?"38633d":"83552c"));text.AddChild(status);
+            var actions=new HBoxContainer();text.AddChild(actions);
+            var play=AddButton(actions,L("Играть","Play"),()=>UserMapChosen?.Invoke(path));play.Name="PlayUser_"+id;play.Disabled=errors>0;if(errors==0)GameUi.Primary(play);
+            var edit=AddButton(actions,L("Редактировать","Edit"),()=>UserMapEdit?.Invoke(path));edit.Name="EditUser_"+id;
+            row.AddChild(new UserMapSketch(draft){Name="UserMapSketch_"+id,CustomMinimumSize=new(180,110)});
+        }
+        close.GrabFocus();
+    }
     private static Button AddButton(Container parent, string text, System.Action action)
     { var button = new Button { Text = text, FocusMode = FocusModeEnum.All, CustomMinimumSize=new(80,40),AutowrapMode=TextServer.AutowrapMode.Off }; button.Pressed += action; parent.AddChild(button);return button; }
     private string L(string ru, string en) => PlayerText.Local(_language, ru, en);
+}
+
+public partial class UserMapSketch(MapDraft draft) : Control
+{
+    public override void _Ready(){MouseFilter=MouseFilterEnum.Ignore;Resized+=QueueRedraw;}
+    public override void _Draw()
+    {
+        float cell=Mathf.Min(Size.X/Math.Max(1,draft.Width),Size.Y/Math.Max(1,draft.Height));
+        var offset=(Size-new Vector2(draft.Width,draft.Height)*cell)/2;
+        Rect2 Area(Cell c)=>new(offset+new Vector2(c.X,c.Z)*cell,Vector2.One*Mathf.Max(1,cell-1));
+        DrawRect(new Rect2(offset,new Vector2(draft.Width,draft.Height)*cell),new Color("729365"));
+        foreach(var c in draft.Roads)DrawRect(Area(c),new Color("a39578"));
+        foreach(var district in draft.Districts)foreach(var c in district.Cells)DrawRect(Area(c),new Color("3f7950"));
+        foreach(var lot in draft.Lots)foreach(var c in lot.Cells){var area=Area(c);DrawRect(area,new Color("d9d3b2"));DrawRect(area,new Color("5c5344"),false,Mathf.Max(1,cell*.08f));}
+        foreach(var civic in draft.Civics)foreach(var c in civic.Footprint)DrawRect(Area(c),new Color("c6bda2"));
+        foreach(var stall in draft.Stalls)DrawRect(Area(stall.Cell),new Color("c7a3b4"));
+    }
 }
 
 public partial class MapPreview(ScenarioDefinition scenario) : Control

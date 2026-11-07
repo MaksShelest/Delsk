@@ -212,6 +212,7 @@ public partial class Playfield : Control
     }
 
     private int _newNpcCount=3;
+    private string? _userMapPath;
     private OrdinaryGameResolution ResolveNewGame(string key,int count)
     {
         var map=ReadMap(key);
@@ -220,6 +221,17 @@ public partial class Playfield : Control
         if(economy.VNext is {} provenance)
         {var read=VNextBalanceReader.Read(System.Text.Encoding.UTF8.GetBytes(Text("Play.vnext-balance.json")));if(!read.IsValid || read.Sha256!=provenance.FullBalanceSha256)throw new InvalidOperationException("Full balance/profile mismatch");full=read.Balance;}
         return OrdinaryNewGame.Resolve(map,economy,new(count,_newDifficulty.ToString()),vnextBalance:full);
+    }
+    private OrdinaryGameResolution ResolveUserMap(string path,EconomyProfile economy)
+    {
+        var draft=MapDraft.Parse(System.IO.File.ReadAllText(path));
+        var problems=draft.Problems();
+        if(problems.Count>0)throw new InvalidOperationException(string.Join('\n',problems));
+        int npcs=Math.Clamp(_newNpcCount,3,Math.Max(3,Math.Min(10,draft.MaxParticipants-1)));
+        VNextBalance? full=null;
+        if(economy.VNext is {} provenance)
+        {var read=VNextBalanceReader.Read(System.Text.Encoding.UTF8.GetBytes(Text("Play.vnext-balance.json")));if(!read.IsValid || read.Sha256!=provenance.FullBalanceSha256)throw new InvalidOperationException("Full balance/profile mismatch");full=read.Balance;}
+        return UserMaps.Start(draft,economy,new(npcs,_newDifficulty.ToString()),full);
     }
     private ScenarioDefinition ReadMap(string key)
     {
@@ -263,8 +275,39 @@ public partial class Playfield : Control
         _mapSelection.AppearanceSettingsRequested += OpenAppearanceSettings;
         _mapSelection.QuitRequested += ExitGame;
         _mapSelection.MapEditorRequested += () => GetTree().ChangeSceneToFile("res://MapEditor.tscn");
+        _mapSelection.UserMapEdit += path => { MapHandoff.QueueEdit(path); GetTree().ChangeSceneToFile("res://MapEditor.tscn"); };
+        _mapSelection.UserMapChosen += path => { _userMapPath=path;_newNpcCount=_mapSelection.NpcCount;_newDifficulty=_mapSelection.Difficulty;OfferPendingUserPlay(); };
         if(_session is not null)DeveloperMenu(_mapSelection.AdditionalSettings);
         AddChild(_mapSelection);
+        if(MapHandoff.Play is {} pending)
+        {
+            _userMapPath=pending;_newNpcCount=MapHandoff.Npcs;_newDifficulty=MapHandoff.Difficulty;
+            CallDeferred(nameof(OfferPendingUserPlay));
+        }
+    }
+
+    private void OfferPendingUserPlay()
+    {
+        if(_userMapPath is not {} path)return;
+        if(_session is null && !System.IO.File.Exists(SavePath)){BeginUserMap(path);return;}
+        var confirm=new ConfirmationDialog{DialogText=PlayerText.Local(_language,
+            "Начать новую партию на своей карте? Текущая партия будет заменена.","Start a new game on your map? The current game will be replaced.")};
+        AddChild(confirm);
+        confirm.Confirmed += () => { confirm.QueueFree(); BeginUserMap(path); };
+        confirm.Canceled += () => { _userMapPath=null; MapHandoff.ClearPlay(); confirm.QueueFree(); };
+        UiSafeArea.Popup(confirm,this,new(580,170));
+    }
+
+    private void BeginUserMap(string path)
+    {
+        _userMapPath=path;_mapKey=PlayMaps.CompactValley;
+        _stage?.ResetMotion();
+        DismissMaps();
+        MapHandoff.ClearPlay();
+        Start("economy", false);
+        try { CheckpointStore.Save(_session, SavePath); }
+        catch (Exception failure) { _feedback = failure.Message; }
+        _userMapPath=null;
     }
 
     private void BeginMap(string key)
@@ -322,7 +365,9 @@ public partial class Playfield : Control
             ?? throw new InvalidOperationException(controllerName);
         if (mode == "economy")
         {
-            var economy = ReadEconomy();var resolved=ResolveNewGame(_mapKey,_newNpcCount);_scenario=resolved.Scenario;
+            var economy = ReadEconomy(_userMapPath is null?_mapKey:PlayMaps.CompactValley);
+            var resolved=_userMapPath is {} userPath?ResolveUserMap(userPath,economy):ResolveNewGame(_mapKey,_newNpcCount);
+            _scenario=resolved.Scenario;
             config=config.ForOrdinary(_scenario,resolved.HumanActorId,resolved.Controllers);
             config = config with { Npcs = config.Npcs.Select(n => AlgorithmicController.WithEconomy(n, economy.Npc)).ToArray() };
         }

@@ -24,7 +24,7 @@ public static class MapDesignReader
         if(bytes.Length>MaximumBytes)throw new ArgumentException("Map design too large");
         using(var document=JsonDocument.Parse(bytes,new JsonDocumentOptions{MaxDepth=16}))CheckFields(document.RootElement);
         var d=JsonSerializer.Deserialize<Design>(bytes.Span,Options)??throw new ArgumentException("Empty map design");
-        if(d.SchemaVersion is not ("delsk-map-design-1" or "delsk-map-design-2") || d.Width is <1 or >128 || d.Height is <1 or >128 || d.MaxParticipants is <4 or >64 ||
+        if(d.SchemaVersion is not ("delsk-map-design-1" or "delsk-map-design-2" or "delsk-map-design-3") || d.Width is <1 or >128 || d.Height is <1 or >128 || d.MaxParticipants is <4 or >64 ||
             !System.Text.RegularExpressions.Regex.IsMatch(d.Id,"\\A[a-z0-9_]{1,60}\\z") || string.IsNullOrWhiteSpace(d.Name))throw new ArgumentException("Invalid map version/id/dimensions");
         if(d.IndustrialLots.Length==0 || d.ResourceDistricts.Length==0 || d.MarketStalls.Length<d.MaxParticipants || d.SpawnCells.Length!=d.MaxParticipants || d.CivicObjects.Length!=3 || !d.CivicObjects.Select(c=>c.Kind).Order(StringComparer.Ordinal).SequenceEqual(new[]{"dealership","terminal","town_hall"}))throw new ArgumentException("Missing map geometry or civic objects");
         if(!VNextStorageProfile.MapCompatible(economy))throw new ArgumentException("Designed maps require the explicit A2 supported profile");
@@ -34,7 +34,7 @@ public static class MapDesignReader
         {
             var footprint=Cells(c.Footprint);if(footprint.Length==0)throw new ArgumentException("Empty civic footprint");
             if(c.Kind=="town_hall"&&c.Building is null || c.Parking is {Length:0})throw new ArgumentException("Missing civic body/parking");
-            if(d.SchemaVersion=="delsk-map-design-2" && (c.Building is null || c.Entry is null))throw new ArgumentException("Explicit civic geometry required");
+            if(d.SchemaVersion is "delsk-map-design-2" or "delsk-map-design-3" && (c.Building is null || c.Entry is null))throw new ArgumentException("Explicit civic geometry required");
             if(d.SchemaVersion=="delsk-map-design-1" && c.Entry is not null)throw new ArgumentException("Entry requires map design 2");
             var source=c.Building is null?null:Cells(c.Building);var parking=c.Parking is null?null:Cells(c.Parking);
             // Source has no entry/terminal/dealer body. Versioned interpretation keeps their exact platforms;
@@ -46,7 +46,8 @@ public static class MapDesignReader
         }).ToArray();
         // The token stays inside the existing assignment string, so old scenario JSON does not gain a field.
         string assignment=d.CompactExhibition && !d.Assignment.Contains("compact-exhibition-1",StringComparison.Ordinal)?d.Assignment+" compact-exhibition-1":d.Assignment;
-        var layout=new MapLayout(d.SchemaVersion=="delsk-map-design-2"?"map-adapter-2":"map-adapter-1",d.Id,d.Name,VNextBalanceReader.Digest(bytes.Span),d.MaxParticipants,Cells(d.RoadCenterCells),Cells(d.RoadCorridorCells),Cells(d.InitialCityDirtCells),
+        string adapter=d.SchemaVersion switch{"delsk-map-design-3"=>"map-adapter-3","delsk-map-design-2"=>"map-adapter-2",_=>"map-adapter-1"};
+        var layout=new MapLayout(adapter,d.Id,d.Name,VNextBalanceReader.Digest(bytes.Span),d.MaxParticipants,Cells(d.RoadCenterCells),Cells(d.RoadCorridorCells),Cells(d.InitialCityDirtCells),
             d.IndustrialLots.Select(l=>new IndustrialLot(l.Id,Cells(l.Cells),Point(l.Entry))).ToArray(),
             d.ResourceDistricts.Select(r=>new ResourceDistrict(r.Id,r.Item,r.Profile,Cells(r.Cells),Cells(r.PublicCells))).ToArray(),civic,
             d.MarketStalls.Select(s=>new MarketStall(s.Id,Point(s.Cell))).ToArray(),Cells(d.SpawnCells),Cells(d.TurnCells),d.PassingBays,assignment);

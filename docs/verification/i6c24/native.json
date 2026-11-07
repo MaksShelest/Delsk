@@ -1,0 +1,32 @@
+{
+  "status": "succeeded",
+  "map": "user_malaya_dolina",
+  "roads": 73,
+  "checks": [
+    "editor opens the current valley",
+    "tools are grouped",
+    "capture 01-editor-tools",
+    "one-cell lot grows by one cell",
+    "selected lot shows its id and area",
+    "capture 02-irregular-lot",
+    "view rotation keeps the JSON",
+    "content rotation swaps the map",
+    "undo restores the rotated map",
+    "preview starts south of the map, north up",
+    "orbit moves the camera",
+    "capture 03-preview-orbit",
+    "reset restores the opening view",
+    "top view is steeper",
+    "camera stays above the ground",
+    "quick save writes the user catalog",
+    "file dialog text is dark on the light dialog",
+    "capture 04-file-dialog",
+    "saved map is listed",
+    "saved map is checked",
+    "capture 05-my-maps",
+    "ordinary game starts on the saved map",
+    "reopened game keeps the map id",
+    "later edits do not change the saved geometry"
+  ],
+  "scope": "Linux software GL and synthetic input. Editor, one user map, one ordinary start and one reload. Not a physical Windows, Android or FPS claim."
+}
