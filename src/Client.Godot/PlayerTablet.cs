@@ -7,6 +7,7 @@ public partial class PlayerTablet : VBoxContainer
 {
     public event System.Action? HelpRequested;
     public event Action<string,long>? ObjectRequested;
+    public event Action<Cell>? LocationRequested;
     public OptionButton SectionPicker=>_mobile;
     public event Action<long>? RoadWorkRequested;
     public event System.Action? MapRequested;
@@ -105,7 +106,7 @@ public partial class PlayerTablet : VBoxContainer
         _backpack=new(scenario,language,submit,access);Page("inventory").AddChild(_backpack);
         _account=new(language,submit,accountQuery);Page("account").AddChild(_account);
         if(scenario.Economy?.Services is not null){_services=new(scenario,language,submit,serviceQuery,access);Page("services").AddChild(_services);}
-        if(scenario.Economy?.Fleet is not null){_fleet=new(language,submit,access,scenario);_fleet.RoadWorkRequested+=id=>RoadWorkRequested?.Invoke(id);Page("fleet").AddChild(_fleet);Page("fleet").AddChild(_parked);}
+        if(scenario.Economy?.Fleet is not null){_fleet=new(language,submit,access,scenario);_fleet.RoadWorkRequested+=id=>RoadWorkRequested?.Invoke(id);_fleet.EquipmentRequested+=id=>ObjectRequested?.Invoke("equipment",id);_fleet.ShowOnMap+=cell=>LocationRequested?.Invoke(cell);Page("fleet").AddChild(_fleet);Page("fleet").AddChild(_parked);}
         if(scenario.Economy?.Fleet is null)Page("holdings").AddChild(_parked);
         if(scenario.Economy?.Roads is not null){_roads=new(language,submit,access);Page("roads").AddChild(_roads);}
         _development=new(scenario,language,0,submit,access);Page("quests").AddChild(_development);
@@ -140,6 +141,7 @@ public partial class PlayerTablet : VBoxContainer
     private void Back(){_cardHost.Visible=false;_back.Visible=false;SelectSection("holdings");}
     private void Open(string kind,long id)
     {
+        if(kind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2&&ObjectRequested is not null){ObjectRequested.Invoke(kind,id);return;}
         if(kind=="building"&&_view.Buildings.Any(b=>b.Id.Value==id&&b.Kind==BuildingKind.Production&&b.Footprint.Contains(_view.Participant.Position))&&ObjectRequested is not null){ObjectRequested.Invoke(kind,id);return;}
         foreach(Node child in _cardHost.GetChildren()){_cardHost.RemoveChild(child);child.QueueFree();}
         _cardObject=(kind,id);_card=null;_groundCard=null;

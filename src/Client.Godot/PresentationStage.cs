@@ -46,6 +46,9 @@ public partial class PresentationStage : Node3D
     public int StockBuildCount {get;private set;}
     private bool _frozen = true;
     private bool _follow;
+    private long _riddenVehicle;
+    private float _frameInset;
+    private float _frameInsetTarget;
     private readonly System.Collections.Generic.Dictionary<long, Node3D> _parked = new();
 
     public override void _Ready()
@@ -61,9 +64,19 @@ public partial class PresentationStage : Node3D
         AddChild(_selection);
     }
 
+    /// <summary>Доля ширины окна, которую закрывает боковая панель. Ноль возвращает обычный кадр.</summary>
+    public void SetSidePanelInset(float coveredFraction)=>_frameInsetTarget=Mathf.Clamp(coveredFraction,0,.8f);
+    public Vector2? FocusScreenPosition()
+    {
+        if(_camera is null)return null;
+        var point=FocusPoint()+Vector3.Up*.5f;
+        return _camera.IsPositionBehind(point)?null:_camera.UnprojectPosition(point);
+    }
     public override void _Process(double delta)
     {
         _cameraDistance=Mathf.MoveToward(_cameraDistance,_cameraTarget,(float)delta*Mathf.Max(5,_cameraTarget*2));
+        // Короткий шаг, чтобы редкий длинный кадр не перескакивал фокус.
+        _frameInset=Mathf.MoveToward(_frameInset,_follow?_frameInsetTarget:0,Mathf.Min((float)delta,.05f)*1.8f);
         FollowHuman();if (_frozen) return;
         foreach (var mover in _actors.Values.Concat(_trips.Values).Concat(_fleet.Values).Concat(_roadEquipment.Values.Select(e=>e.Mover)))
         {
@@ -111,6 +124,7 @@ public partial class PresentationStage : Node3D
                 mover.Node.AddChild(WorldSkins.Person(actor.Id,actor.Human,you,language));
             }
             mover.Node.Visible=actor.VehicleId==0;
+            if(actor.Human)_riddenVehicle=actor.VehicleId;
             Target(mover, at, actor.Human ? 0.1f : 1, snap, !actor.Human);
             int labelRow = frame.Actors.Count(other => other.X == actor.X && other.Z == actor.Z && other.Id < actor.Id);
             var caption=mover.Node.GetNodeOrNull<Label3D>("Appearance/Caption");
@@ -228,6 +242,12 @@ public partial class PresentationStage : Node3D
         _frozen = true;
     }
 
+    private Vector3 FocusPoint()
+    {
+        var human=_actors.Values.FirstOrDefault(m=>m.Human);
+        if(human is null)return _mapCenter;
+        return _riddenVehicle!=0&&_fleet.TryGetValue(_riddenVehicle,out var ridden)?ridden.Node.Position:human.Node.Position;
+    }
     private void FollowHuman()
     {
         if (!_follow) return;
@@ -235,8 +255,29 @@ public partial class PresentationStage : Node3D
         if (human is null) return;
         _camera.Rotation = new Vector3(Mathf.DegToRad(-55), 0, 0);
         float overview=Mathf.Clamp((_cameraDistance-_mapSpan*.45f)/Mathf.Max(1,_mapSpan*.85f),0,1);
-        var center=human.Node.Position.Lerp(_mapCenter,overview);
-        _camera.Position = center + new Vector3(0, _cameraDistance, _cameraDistance*.7f);
+        var center=FocusPoint().Lerp(_mapCenter,overview);
+        var rest=center + new Vector3(0, _cameraDistance, _cameraDistance*.7f);
+        _camera.Position = rest;
+        if(_frameInset<=.001f)return;
+        var viewport=_camera.GetViewport();if(viewport is null)return;
+        float width=viewport.GetVisibleRect().Size.X;
+        var subject=FocusPoint()+Vector3.Up*.5f;
+        if(width<2||_camera.IsPositionBehind(subject))return;
+        // Сдвиг той же камеры: персонаж или управляемая машина оказывается в центре свободной правой области.
+        float desired=width*(.5f+_frameInset*.5f);
+        var offset=Vector3.Zero;
+        for(int pass=0;pass<2;pass++)
+        {
+            _camera.Position=rest+offset;
+            float origin=_camera.UnprojectPosition(subject).X;
+            float error=desired-origin;
+            if(Mathf.Abs(error)<4f)break;
+            _camera.Position=rest+offset+new Vector3(-.25f,0,0);
+            float pixelsPerWorld=(_camera.UnprojectPosition(subject).X-origin)/.25f;
+            if(Mathf.Abs(pixelsPerWorld)<.01f)break;
+            offset.X=Mathf.Clamp(offset.X-error/pixelsPerWorld,-_cameraDistance*4,_cameraDistance*4);
+        }
+        _camera.Position=rest+offset;
     }
 
     public void Pick(Vector2 viewportPosition)

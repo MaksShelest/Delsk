@@ -13,6 +13,15 @@ public partial class TabletPanel : PanelContainer
     private readonly VBoxContainer _column;
     private readonly Label _title;
     private bool _compactFrame;
+    public bool SideDock{get;private set;}
+    public void SetTitle(string title)=>_title.Text=title;
+    /// <summary>Левая панель под верхним HUD: заголовок и закрытие фиксированы, мир остаётся справа.</summary>
+    public void UseSideDock()
+    {
+        SideDock=true;UseCompactFrame();
+        _scroll.VerticalScrollMode=ScrollContainer.ScrollMode.Disabled;_scroll.HorizontalScrollMode=ScrollContainer.ScrollMode.ShowNever;
+        if(IsInsideTree())LayoutFrame();
+    }
     private bool ShortLandscape=>_compactFrame&&GetViewportRect().Size.Y<540;
     public void AttachNavigation(OptionButton picker)
     {
@@ -21,13 +30,25 @@ public partial class TabletPanel : PanelContainer
     }
     private void LayoutFrame()
     {
+        if(SideDock)
+        {
+            var dockSafe=UiSafeArea.Read(this);var size=GetViewportRect().Size;bool dockShort=size.Y<540;bool phone=size.X<1000;bool tiny=phone&&size.X<=820&&dockShort;
+            float fraction=!phone?.38f:tiny?.62f:.56f;float left=(float)dockSafe.Left+(dockShort?4:8);float right=(float)dockSafe.Right+8;
+            float minWorld=size.X*(phone?.28f:.55f);float width=Mathf.Min(size.X*fraction,size.X-left-right-minWorld);width=Mathf.Max(width,Mathf.Min(260,size.X*.5f));
+            OffsetLeft=left;OffsetRight=-(size.X-left-width);OffsetTop=(dockShort?46:62)+(float)dockSafe.Top;OffsetBottom=-(dockShort?4:8)-(float)dockSafe.Bottom;
+            AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("f1f2ec",dockShort?6:8));
+            _column.AddThemeConstantOverride("separation",dockShort?3:5);_title.AddThemeFontSizeOverride("font_size",dockShort?16:18);
+            _header.GetChild<Control>(0).Visible=false;
+            foreach(var button in _header.GetChildren().OfType<Button>().Where(b=>b is not OptionButton)){button.CustomMinimumSize=new(dockShort?40:44,dockShort?40:44);button.SizeFlagsVertical=SizeFlags.ShrinkCenter;}
+            _status.MaxLinesVisible=dockShort?1:2;return;
+        }
         var safe=UiSafeArea.Read(this);bool shortScreen=ShortLandscape;float side=shortScreen?6:GetViewportRect().Size.X>=1360?64:12;
         OffsetLeft=side+(float)safe.Left;OffsetRight=-side-(float)safe.Right;OffsetTop=(shortScreen?46:66)+(float)safe.Top;OffsetBottom=-(shortScreen?6:18)-(float)safe.Bottom;
         if(!_compactFrame)return;
         AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("f1f2ec",shortScreen?8:12));
         _column.AddThemeConstantOverride("separation",shortScreen?3:5);
         _title.AddThemeFontSizeOverride("font_size",shortScreen?18:20);
-        _header.GetChild<Control>(0).CustomMinimumSize=new(shortScreen?20:28,shortScreen?20:28);
+        _header.GetChild<Control>(0).Visible=true;_header.GetChild<Control>(0).CustomMinimumSize=new(shortScreen?20:28,shortScreen?20:28);
         foreach(var button in _header.GetChildren().OfType<Button>().Where(b=>b is not OptionButton)){button.CustomMinimumSize=new(shortScreen?40:44,shortScreen?40:44);button.SizeFlagsVertical=SizeFlags.ShrinkCenter;}
         _status.MaxLinesVisible=shortScreen?1:3;
     }

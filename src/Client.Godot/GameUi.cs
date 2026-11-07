@@ -7,9 +7,10 @@ public static class GameUi
 {
     public static string L(string language,string ru,string en)=>PlayerText.Local(language,ru,en);
     public static Label Text(string text="",int size=16)
-    {var label=new Label{Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart,SizeFlagsHorizontal=Control.SizeFlags.ExpandFill};label.AddThemeFontSizeOverride("font_size",size);return label;}
+    {var label=new Label{Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart,SizeFlagsHorizontal=Control.SizeFlags.ExpandFill};label.AddThemeFontSizeOverride("font_size",size);label.AddThemeColorOverride("font_color",TabletDesign.Ink);return label;}
     public static Label Hint(string text)
-    {var label=Text(text,14);label.AddThemeColorOverride("font_color",new("69766e"));return label;}
+    {var label=Text(text,14);label.AddThemeColorOverride("font_color",new("556860"));return label;}
+    public static void Price(Label label){label.AddThemeColorOverride("font_color",new("1b5c40"));label.AddThemeFontSizeOverride("font_size",18);}
     public static PanelContainer Card(Control content)=>CompactTabletDesign.Card(content);
     public static string Reason(string language,string reason)
     {
@@ -43,7 +44,8 @@ public static class GameUi
     {
         foreach(var pair in new[]{("normal","49735f"),("hover","3d6552"),("pressed","315441")})
             button.AddThemeStyleboxOverride(pair.Item1,CompactTabletDesign.Surface(pair.Item2,9));
-        foreach(string state in new[]{"font_color","font_hover_color","font_pressed_color","font_focus_color"})button.AddThemeColorOverride(state,Colors.White);
+        foreach(string state in new[]{"font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"})button.AddThemeColorOverride(state,new Color("f4f7f2"));
+        button.AddThemeColorOverride("font_disabled_color",new("556860"));
     }
     public static Button Button(string name,string caption,Action action,bool primary=false)
     {var button=CompactTabletDesign.Button(name,caption,action);if(primary)Primary(button);return button;}

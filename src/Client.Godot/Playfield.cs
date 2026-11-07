@@ -580,7 +580,7 @@ public partial class Playfield : Control
             if (_tabletPolitics is not null)
             { FillPolitics(view,_tabletPolitics); }
         }
-        RefreshTablet(view);
+        RefreshTablet(view);SyncSideFrame();
     }
 
     private string HudStock(PlayerView view, InventoryView pack) =>
