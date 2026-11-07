@@ -63,4 +63,4 @@ Linux/Xorg/llvmpipe и синтетический ввод не являются
 
 Аппаратная проверка Windows, Android и частоты кадров не выполнялась. I6-C3 не начата.
 
-Draft PR в `master`. Слияние не выполняется.
+Draft PR: https://github.com/MaksShelest/Delsk/pull/93 в `master`. Слияние не выполняется.
