@@ -9,6 +9,13 @@ namespace Simulation.Hosting;
 public static class PlayerDesk
 {
     public const long WageStepMinor = 5;
+
+    /// <summary>Сотые доли монеты в minor. Исторический запасной шаг кнопок без экономики остаётся 5.</summary>
+    public static long MinorFromCoins(double coins)
+    {
+        if (!double.IsFinite(coins) || coins < 0 || coins > 1_000_000_000d) throw new ArgumentOutOfRangeException(nameof(coins));
+        return checked((long)(decimal.Round((decimal)coins, 2, MidpointRounding.AwayFromZero) * 100m));
+    }
     // SetTravelHeading uses the existing authenticated travel-input path, not the command inbox.
     public static readonly ActionKind[] Allowed = Enum.GetValues<ActionKind>().Where(k => k != ActionKind.SetTravelHeading).ToArray();
 

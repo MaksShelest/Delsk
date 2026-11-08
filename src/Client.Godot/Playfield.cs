@@ -245,7 +245,7 @@ public partial class Playfield : Control
     {
         // An explicit pre-I4 research profile retains its historical map snapshot.
         // Ordinary starts without an override always use the current versioned worlds.
-        bool legacy=key==PlayMaps.CompactValley&&OS.GetCmdlineUserArgs().Contains("--economy")&&ReadEconomy(key).Id is not (VNextMobileEquipmentProfile.ProfileId or VNextEquipmentClassesProfile.ProfileId);
+        bool legacy=key==PlayMaps.CompactValley&&OS.GetCmdlineUserArgs().Contains("--economy")&&ReadEconomy(key).Id is not (VNextMobileEquipmentProfile.ProfileId or VNextEquipmentClassesProfile.ProfileId or VNextWageScheduleProfile.ProfileId);
         return JsonSerializer.Deserialize<ScenarioDefinition>(Text(legacy?PlayMaps.Resource(key):PlayMaps.NewGameResource(key)),SimulationJson.Options)??throw new InvalidOperationException(key);
     }
 

@@ -4,7 +4,7 @@ using Simulation.Hosting;
 public partial class ServicePanel
 {
     private readonly Dictionary<long,(Label Label,ProgressBar Bar)> _runDisplays=[];
-    private readonly Dictionary<long,double> _wageDrafts=[];
+    private readonly Dictionary<long,long> _wageDrafts=[];
     private void UpdateRunDisplay(ServiceOrder order,ServiceRunView run)
     {
         if(!_runDisplays.TryGetValue(order.Id,out var display))return;var r=run.Run;display.Bar.Value=r.Delivered;display.Label.Text=
@@ -38,8 +38,8 @@ public partial class ServicePanel
                 row.AddChild(new Label{Text=L("Зарплата за рабочий тик: ","Wage per working tick: ")+PlayerText.Money(crew.Group.WageMinor)+" · "+TabletText.Reason(_language,crew.Group.ReadinessReason)});
                 long actual=crew.Group.PendingWageMinor??crew.Group.WageMinor;
                 if(_wageDrafts.TryGetValue(order.Id,out var saved)&&saved==actual)_wageDrafts.Remove(order.Id);
-                var wage=new SpinBox{Name="ServiceWage_"+order.Id,UpdateOnTextChanged=true,MinValue=.01,MaxValue=10000,Value=_wageDrafts.GetValueOrDefault(order.Id,actual)/100d,Step=.01,Suffix=L(" монет"," coins"),TooltipText=L("Ставка за рабочий тик","Wage per working tick")};wage.ValueChanged+=value=>_wageDrafts[order.Id]=Math.Round(value*100);row.AddChild(wage);
-                var change=new Button{Name="ServiceSetWage_"+order.Id,Text=L("Изменить зарплату у машины","Set wage at vehicle")};change.Pressed+=()=>_submit(new(ActionKind.SetWage,Group:crew.Group.Id,WageMinor:(long)Math.Round(wage.Value*100)));row.AddChild(change);_buttons.Add((change,new(ActionKind.SetWage,Group:crew.Group.Id)));
+                var wage=new SpinBox{Name="ServiceWage_"+order.Id,UpdateOnTextChanged=true,MinValue=.01,MaxValue=10000,Value=_wageDrafts.GetValueOrDefault(order.Id,actual)/100d,Step=.01,Suffix=L(" монет"," coins"),TooltipText=L("Ставка за рабочий тик","Wage per working tick")};wage.ValueChanged+=value=>_wageDrafts[order.Id]=PlayerDesk.MinorFromCoins(value);row.AddChild(wage);
+                var change=new Button{Name="ServiceSetWage_"+order.Id,Text=L("Изменить зарплату у машины","Set wage at vehicle")};change.Pressed+=()=>_submit(new(ActionKind.SetWage,Group:crew.Group.Id,WageMinor:PlayerDesk.MinorFromCoins(wage.Value)));row.AddChild(change);_buttons.Add((change,new(ActionKind.SetWage,Group:crew.Group.Id)));
             }
             if(!run.Automatic&&car.Vehicle.Driver==view.Participant.Id.Value&&!view.Participant.Busy)
             {
