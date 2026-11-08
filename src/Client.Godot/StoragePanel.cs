@@ -17,6 +17,7 @@ public partial class StoragePanel : VBoxContainer
     private readonly Dictionary<string,Label> _buildGaps=[];
     private readonly DemolitionPanel? _demolitionPanel;private PlayerView? _view;private bool _pending;
     private readonly UiSections? _pages;private readonly InventoryTransferPanel? _manual;private readonly Button? _buildOpen;
+    public event Action<StarterStep>? GuideRequested;
     public StoragePanel(ScenarioDefinition scenario,string language,string kind,long id,Action<GameAction> submit,Func<GameAction,ActionAccess> access,bool overflowOnly=false,Func<long,bool,DemolitionQuote?>? demolitionQuote=null)
     {
         _overflowOnly=overflowOnly;_scenario=scenario;_lang=language;_kind=kind;_id=id;_submit=submit;_access=access;Name="StoragePanel";_status.Name="StorageStatus";_progress.Name="ConstructionProgress";Theme=CompactTabletDesign.Theme;
@@ -67,7 +68,7 @@ public partial class StoragePanel : VBoxContainer
         _fill.MaxValue=Math.Max(1,stock.Capacity);_fill.Value=stock.OccupiedVolume+stock.ReservedCapacity;
         _progress.Text=work is null?"":L("Строительство: осталось ","Construction: remaining ")+GameDuration.Format(work.CompletesTick-view.Tick,_lang)+L(". Материалы и оплата уже внесены.",". Materials and payment already committed.");_progress.Visible=_progress.Text.Length>0;
         _demolitionPanel?.ShowData(view,pending,work?.Id??building?.Id.Value??0,work is not null);
-        string signature=inventory+":"+building?.Level+":"+(work is not null)+":"+string.Join(',',stock.Stock.Select(s=>s.ItemId).Concat(pack.Stock.Select(s=>s.ItemId)).Distinct().Order())+":"+string.Join(',',overflow.Select(l=>l.Id));
+        string signature=inventory+":"+building?.Level+":"+(work is not null)+":"+view.AvailableCashMinor+":"+string.Join(',',stock.Stock.Select(s=>s.ItemId).Concat(pack.Stock.Select(s=>s.ItemId)).Distinct().Order())+":"+string.Join(',',overflow.Select(l=>l.Id));
         if(signature!=_signature)
         {
             _signature=signature;foreach(var host in new[]{_actions,_legacyTransfers,_overflowRows})foreach(Node child in host.GetChildren()){host.RemoveChild(child);child.QueueFree();}_buttons.Clear();_deadlines.Clear();_overflowAll.Clear();_buildGaps.Clear();
@@ -94,6 +95,15 @@ public partial class StoragePanel : VBoxContainer
                 var box=new VBoxContainer();box.AddChild(GameUi.Intro(GameUi.Industry(_lang,production.Id),PlayerText.Money(initial.PriceMinor)+" + "+string.Join(", ",initial.Materials.Select(m=>PlayerText.Item(_lang,m.ItemId)+" ×"+m.Quantity))+" · "+GameDuration.Format(initial.ConstructionTicks,_lang),production.Id,80));_actions.AddChild(box);string typeId=production.Id;
                 Action(L("Построить","Build"),()=>new(ActionKind.Build,Target:stock.Position,BuildingTypeId:typeId),v=>work is null&&v.AvailableCashMinor>=initial.PriceMinor&&initial.Materials.All(m=>Free(Current(v),m.ItemId)>=m.Quantity),box);
                 var gap=new Label{Name="BuildGap_"+production.Id,AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(gap);_buildGaps[production.Id]=gap;
+                if(view.AvailableCashMinor<initial.PriceMinor&&FriendlyGuidance.MoneySource(view,_lang) is {} money)
+                    box.AddChild(GameUi.Button("BuildMoney_"+typeId,money.Id=="sell"?L("Продать товар из рюкзака","Sell goods from the backpack"):L("Где добыть товар для продажи","Where to gather goods to sell"),()=>GuideRequested?.Invoke(money)));
+                foreach(var cost in initial.Materials)
+                {
+                    if(Free(stock,cost.ItemId)>=cost.Quantity)continue;
+                    if(FriendlyGuidance.GatherSite(view,_lang,cost.ItemId) is not {} source)continue;
+                    string itemId=cost.ItemId;
+                    box.AddChild(GameUi.Button("BuildSource_"+typeId+"_"+itemId,L("Где добыть: ","Where to gather: ")+PlayerText.Item(_lang,itemId),()=>GuideRequested?.Invoke(source)));
+                }
             }
             var type=_scenario.BuildingTypes!.Single(t=>t.Id=="warehouse");var next=type.Levels.SingleOrDefault(l=>l.Level==(building?.Level??0)+1);
             if(next is not null&&!_overflowOnly&&(building is null||building.Kind==BuildingKind.Warehouse)&&_scenario.Economy?.Storage is not null)

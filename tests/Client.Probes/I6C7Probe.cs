@@ -13,6 +13,7 @@ public partial class I6C7Probe : Control
     private Playfield _app = null!;
     private GameSession _session = null!;
     private string _shots = "";
+    private string _album = "";
     private string _output = "";
     private readonly List<string> _checks = [];
     private readonly Dictionary<string, string> _notes = [];
@@ -29,6 +30,13 @@ public partial class I6C7Probe : Control
         await Frames();
         await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
         Check(GetViewport().GetTexture().GetImage().SavePng(_shots + "/" + name + ".png") == Error.Ok, "capture " + name);
+    }
+    private async Task Album(string name)
+    {
+        Directory.CreateDirectory(_album);
+        await Frames();
+        await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+        Check(GetViewport().GetTexture().GetImage().SavePng(_album + "/" + name + ".png") == Error.Ok, "album " + name);
     }
     private void Refresh() => Call(_app, "Refresh");
     private async Task Press(Control control)
@@ -98,6 +106,7 @@ public partial class I6C7Probe : Control
             string root = args[Array.IndexOf(args, "--repository") + 1];
             _output = args[Array.IndexOf(args, "--output") + 1];
             _shots = root + "/docs/verification/i6c7/after";
+            _album = root + "/docs/verification/i6c71";
             Directory.CreateDirectory(_shots); Directory.CreateDirectory(_output);
             string staleFailure = Path.Combine(_shots, "failure.png");
             if (File.Exists(staleFailure)) File.Delete(staleFailure);
@@ -136,12 +145,30 @@ public partial class I6C7Probe : Control
         Check(!All(_app).OfType<Button>().Any(b => b.Name == "HudPlots" && b.IsVisibleInTree()), "plot outlines left the simple HUD");
         Check(!All(_app).OfType<Button>().Any(b => b.Name == "HudHelp" && b.IsVisibleInTree()), "help left the simple HUD and stays in the menu");
         Check(Named<Label>("StarterGoalTitle").Text.Length > 0, "the current goal is visible");
+        var goalBar = Named<Control>("StarterGoal");
+        Check(goalBar.Size.Y is > 0 and <= 72, "compact goal stays within one row " + (int)goalBar.Size.Y);
         await Shot("01-hud-simple-1100");
         await Shot("02-goal");
+        await Album("goal-1100");
+        Label GoalHint() => All(_app).OfType<Label>().First(n => n.Name == "StarterGoalHint");
+        await Press(Named<Button>("StarterGoalMore")); await Frames(2);
+        Check(GoalHint().Visible, "the explanation opens");
+        await Album("goal-expanded");
+        await Press(Named<Button>("StarterGoalMore")); await Frames(2);
+        Check(!GoalHint().Visible, "the explanation folds");
+        Check(!Field<bool>(_app, "_goalOpen"), "folded goal is remembered as closed");
         await Press(Named<Button>("StarterGoalWhere")); await Frames(4);
         Check(Field<TabletState>(_app, "_tabletState").Kind == TabletKind.CityMap, "show-where opens the existing city map");
+        var selected = Field<CityMapPreferences>(_app, "_cityMapPreferences").SelectedKey;
+        Check(selected.StartsWith("resource:", StringComparison.Ordinal), "map selects the resource " + selected);
+        var details = Named<Label>("CityMapDetails").Text;
+        Check(!details.Contains("Пустая клетка", StringComparison.Ordinal), "a harvest target is not an empty cell");
+        var step = Field<StarterStep>(_app, "_goalStep");
+        Check(step is not null && details.Contains(PlayerText.Item("ru", step.ItemId), StringComparison.Ordinal), "map names the resource");
         await Shot("03-show-where");
+        await Album("map-resource");
         Call(_app, "CloseTablet"); await Frames(2);
+        Check(!Field<bool>(_app, "_goalOpen"), "opening the tablet does not reopen the explanation");
         Inside("OpenCityMap"); Inside("HudTablet"); Inside("HudMenu"); Inside("AccountNotification"); Inside("HudClock");
     }
 
@@ -150,8 +177,12 @@ public partial class I6C7Probe : Control
         await Press(Named<Button>("HudTablet")); await Frames(3);
         var tablet = Field<PlayerTablet>(_app, "_playerTablet");
         Check(Named<Button>("PlayerSell").IsVisibleInTree(), "sell stays on the actions path");
+        Check(!All(_app).OfType<Label>().Any(l => l.IsVisibleInTree() && l.Text == "Срочных проблем нет."), "a calm household does not announce that nothing is wrong");
         await Shot("04-household");
+        await Album("household-empty");
         tablet.OpenSection("quests"); await Frames(2); await Shot("05-actions");
+        Check(!Named<Label>("DevelopmentStatus").Text.Contains("выпуск/задания", StringComparison.Ordinal), "simple quests are not an XP table");
+        await Album("quests-simple");
         tablet.OpenSection("negotiations"); await Frames(2);
         Check(Named<Button>("PlayerNav_negotiations").ButtonPressed, "negotiations remain reachable");
         await Shot("06-more-negotiations");
@@ -176,6 +207,10 @@ public partial class I6C7Probe : Control
         await Shot("08-hud-advanced-1100");
         await Press(Named<Button>("HudTablet")); await Frames(2);
         Check(Named<Button>("PlayerGroup_economy").IsVisibleInTree() && Named<Button>("PlayerNav_negotiations").IsVisibleInTree(), "advanced groups keep the old sections");
+        var advanced = Field<PlayerTablet>(_app, "_playerTablet");
+        advanced.OpenSection("quests"); await Frames(2);
+        Check(Named<Label>("DevelopmentStatus").Text.Contains("технология", StringComparison.Ordinal), "advanced quests keep the industry figures");
+        await Album("quests-advanced");
         await Shot("09-advanced-tablet");
         Call(_app, "CloseTablet"); await Frames();
         await Press(Named<Button>("HudMenu")); await Frames();
@@ -201,6 +236,12 @@ public partial class I6C7Probe : Control
         {
             await Resize(w, h);
             Inside("OpenCityMap"); Inside("HudTablet"); Inside("HudMenu"); Inside("AccountNotification"); Inside("HudClock");
+            if (name is "640" or "landscape" or "360")
+            {
+                var compact = Named<Control>("StarterGoal");
+                Check(compact.Visible && compact.Size.Y is > 0 and <= 72, name + " goal stays compact " + (int)compact.Size.Y);
+                if (name == "640") await Album("goal-640");
+            }
             await Shot("11-hud-" + name);
         }
         await Resize(1100, 720);
@@ -224,8 +265,9 @@ public partial class I6C7Probe : Control
         var site = view.Resources.Where(r => r.Public && r.Stock > r.Reserved).OrderBy(r => Math.Abs(r.Position.X - view.Participant.Position.X) + Math.Abs(r.Position.Z - view.Participant.Position.Z)).First();
         Command(new(ActionKind.MoveTo, Target: site.Position));
         Refresh(); await Frames(2);
-        var harvest = All(_app).OfType<Button>().First(b => b.IsVisibleInTree() && b.Text.Contains("Добыть", StringComparison.Ordinal));
-        Check(harvest.Text.Contains(PlayerText.Item("ru", site.ItemId), StringComparison.Ordinal), "context names the real resource");
+        string phrase = PlayerText.ActionPhrase("ru", site.ItemId is "wood" or "iron_ore" or "copper_ore" or "stone" or "sand" ? "extract" : "gather", site.ItemId, 0);
+        var harvest = All(_app).OfType<Button>().First(b => b.IsVisibleInTree() && b.Text == phrase);
+        Check(harvest.Text.Contains(PlayerText.Accusative("ru", site.ItemId), StringComparison.Ordinal), "context names the real resource");
         await Shot("12-harvest-context");
         Command(PlayerDesk.Harvest(site.ItemId, 1));
         Check(View.Inventories.Single(i => i.Id == View.Participant.InventoryId).Stock.Any(s => s.ItemId == site.ItemId && s.Quantity > 0), "harvest put a real unit in the backpack");
@@ -239,6 +281,12 @@ public partial class I6C7Probe : Control
                 ? TryCommand(new(ActionKind.SellAvailableToCapital, OfferId: offer.Id, ItemId: site.ItemId, Quantity: 1))
                 : "not attempted after " + moved;
             _notes["sell"] = sold;
+            Refresh(); await Frames(2);
+            bool settled = _session.Engine.PublicEventsSince(0).Any(e => e.Type == "CapitalSaleSettled" && e.ActorId?.Value == View.Participant.Id.Value);
+            string afterSale = Named<Label>("StarterGoalTitle").Text;
+            _notes["goalAfterSale"] = afterSale;
+            if (settled) Check(afterSale.Contains("Купите участок", StringComparison.Ordinal), "a confirmed sale advances the goal " + afterSale);
+            await Album("goal-after-sale");
             await Shot("14-sell");
         }
         var plot = view.AvailableCashMinor >= anchor.PriceMinor ? anchor : cheapest;
@@ -251,12 +299,17 @@ public partial class I6C7Probe : Control
         pages.OpenSection("overview"); await Frames(2);
         var goal = Named<Label>("OverviewGoalTitle").Text;
         _notes["goalAfterPlot"] = goal;
+        Check(goal.Contains("Лесопилка", StringComparison.Ordinal) && !goal.Contains("Пищевое", StringComparison.Ordinal), "the catalog factory keeps its own name " + goal);
         await Shot("15-goal-after-plot");
+        await Album("household-with-goal");
         pages.OpenHolding("ground", plot.Id.Value); await Frames(3);
+        var buildTab = All(_app).OfType<Button>().FirstOrDefault(b => b.Name == "StorageNav_build" && b.IsVisibleInTree());
+        if (buildTab is not null) { await Press(buildTab); await Frames(3); }
         var gap = All(_app).OfType<Label>().FirstOrDefault(l => l.Name.ToString().StartsWith("BuildGap_", StringComparison.Ordinal) && l.IsVisibleInTree());
         _notes["buildGap"] = gap?.Text ?? "no production build control on this cell";
         _notes["buildCompleted"] = "false";
         await Shot("16-shortage");
+        await Album("materials");
         Call(_app, "CloseTablet"); await Frames();
         _notes["fullPlaythrough"] = "not confirmed: prepared commands, one harvest, plot purchase, build left at the catalog shortage";
     }

@@ -134,7 +134,7 @@ public partial class Playfield
             if(_scenario.Layout is not null){_tabletPolitics=_playerTablet.PoliticsHost;FillPolitics(view,_tabletPolitics);}
         }
         else if(_tabletState.Kind==TabletKind.Object&&_objectKind=="ground")
-        {_groundPanel=new(_scenario,_language,"ground",_tabletState.EnterpriseId,Submit,a=>_session.Engine.AccessFor(_human,a),demolitionQuote:(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction));_tabletPanel.Body.AddChild(_groundPanel);}
+        {_groundPanel=new(_scenario,_language,"ground",_tabletState.EnterpriseId,Submit,a=>_session.Engine.AccessFor(_human,a),demolitionQuote:(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction));_groundPanel.GuideRequested+=ShowGuide;_tabletPanel.Body.AddChild(_groundPanel);}
         else if (_tabletState.Kind is TabletKind.Market or TabletKind.Capital)
         {
             long shop=view.Buildings.FirstOrDefault(b=>b.Kind==BuildingKind.Shop)?.Id.Value??0;
@@ -163,7 +163,7 @@ public partial class Playfield
     {
         var view=PlayerDesk.Read(_session.Engine,_human);
         if(_surface==Surface.Play&&_tabletState.OpenCapital(view,_scenario)){PrepareTablet();return;}
-        var step=FriendlyGuidance.Read(view,_scenario,_language);
+        var step=FriendlyGuidance.Read(view,_scenario,_language,_cityRead.Noted("sale"));
         if(step.X>=0&&step.Focus=="orders"){ShowGuide(step);return;}
         _feedback=L("Подойдите к терминалу столицы, чтобы открыть продажу.","Walk to the capital terminal to open the sale.");
         Refresh();
@@ -172,12 +172,13 @@ public partial class Playfield
     {
         if(step.X<0&&step.TargetId>0&&step.TargetKind is "building" or "ground" or "equipment")
         {OpenPlayerTablet();_playerTablet?.OpenHolding(step.TargetKind=="ground"?"ground":step.TargetKind,step.TargetId);return;}
-        if(step.Focus=="orders")_cityMapPreferences.ApplyFocus(CityMapFocus.Orders);
-        else if(step.Focus is "production" or "industry")_cityMapPreferences.ApplyFocus(CityMapFocus.Production);
+        if(step.Focus is "production" or "industry")_cityMapPreferences.ApplyFocus(CityMapFocus.Production);
         else if(step.Focus=="property")_cityMapPreferences.ApplyFocus(CityMapFocus.Property);
         else _cityMapPreferences.ApplyFocus(CityMapFocus.All);
-        if(step.X>=0){_cityMapPreferences.SelectedKey=$"cell:{step.X}:{step.Z}";_cityMapPreferences.Center(step.X+.5,step.Z+.5);}
+        _cityMapPreferences.SelectedKey=FriendlyGuidance.PredictedKey(step);
+        if(step.X>=0)_cityMapPreferences.Center(step.X+.5,step.Z+.5);
         OpenCityMap();
+        _cityMapPanel?.SelectGoal(step);
         if(step.X>=0)_cityMapPanel?.Canvas.Zoom(3);
     }
     private void ShowOnCityMap(Cell cell)
@@ -196,6 +197,7 @@ public partial class Playfield
         _marketTablet?.ShowData(view,WaitingCommand);
         _enterpriseTablet?.ShowData(view,WaitingCommand,_session.Paused);
         _groundPanel?.ShowData(view,WaitingCommand);
+        if(_playerTablet is not null)_playerTablet.ConfirmedSale=_cityRead.Noted("sale");
         _playerTablet?.ShowData(view,WaitingCommand,_session.Paused);
         string status = WaitingCommand && _tabletState.BlocksTime
             ? PlayerText.Local(_language,"Действие подготовлено — включите время.","Action queued — run time to continue.") : _tabletError;

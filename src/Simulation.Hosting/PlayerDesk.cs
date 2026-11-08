@@ -682,6 +682,50 @@ public static class PlayerText
 
     public static string Local(string language, string ru, string en) => language == "ru" ? ru : en;
     public static string Money(long minor) => (minor / 100m).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+    /// <summary>Именительный падеж. Для фраз «добудьте/продайте» есть <see cref="ActionPhrase"/>.</summary>
+    public static string Accusative(string language, string itemId)
+    {
+        if (language != "ru") return Item(language, itemId);
+        return itemId switch
+        {
+            "wood" => "древесину", "beet" => "свёклу", "grain" => "зерно", "stone" => "камень", "sand" => "песок",
+            "iron_ore" => "железную руду", "copper_ore" => "медную руду", "milk" => "молочное сырьё",
+            "plank" => "доски", "bread" => "хлеб", "cheese" => "сыр", "sugar" => "сахар", "pastry" => "выпечку",
+            "steel" => "сталь", _ => ""
+        };
+    }
+
+    /// <summary>
+    /// Короткая фраза с известной формой. Неизвестный товар не склоняется: «Начать добычу: кокс».
+    /// </summary>
+    public static string ActionPhrase(string language, string kind, string itemId, long count)
+    {
+        string noun = Item(language, itemId);
+        string amount = count > 0 ? " " + count.ToString(System.Globalization.CultureInfo.InvariantCulture) : "";
+        if (language != "ru")
+        {
+            if (Accusative("ru", itemId).Length == 0 && kind != "sell") return "Start harvesting: " + noun;
+            string verb = kind switch { "sell" => "Sell", "extract" => "Harvest", "deliver" => "Deliver", _ => "Gather" };
+            return verb + amount + " " + noun;
+        }
+        string form = Accusative(language, itemId);
+        if (form.Length == 0) return (kind == "sell" ? "Продать: " : kind == "deliver" ? "Доставить: " : "Начать добычу: ") + noun;
+        string ru = kind switch { "sell" => "Продайте", "extract" => "Добудьте", "deliver" => "Доставьте", _ => "Соберите" };
+        return ru + amount + " " + form;
+    }
+
+    /// <summary>Имя предприятия для игрока. Совпадает с прежним Industry и не меняет экономический тип.</summary>
+    public static string Enterprise(string language, string type, int level = 1) => type switch
+    {
+        "woodworking" => Local(language, level == 1 ? "Лесопилка" : "Деревообрабатывающий комбинат", level == 1 ? "Sawmill" : "Woodworks"),
+        "food" => Local(language, level == 1 ? "Пекарня" : "Пищевой комбинат", level == 1 ? "Bakery" : "Food works"),
+        "metallurgy" => Local(language, "Металлургический цех", "Metal works"),
+        "materials" => Local(language, "Стройматериалы", "Building materials"),
+        "dairy" => Local(language, "Молочное производство", "Dairy"),
+        "machinery" => Local(language, "Механическая мастерская", "Machine workshop"),
+        _ => Building(language, type)
+    };
+
     public static string Building(string language, string type) => type switch
     {
         "sawmill" => Local(language, "Лесопилка", "Sawmill"),

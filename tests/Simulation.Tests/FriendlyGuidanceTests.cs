@@ -64,8 +64,12 @@ public class FriendlyGuidanceTests
         var site = view.Resources.Single(r => r.Position.X == step.X && r.Position.Z == step.Z);
         Assert.True(site.Public);
         Assert.True(site.Stock > 0);
+        string title = PlayerText.Local("ru", step.TitleRu, step.TitleEn);
+        Assert.Contains(PlayerText.Accusative("ru", site.ItemId), title);
+        Assert.DoesNotContain("Добудьте " + PlayerText.Item("ru", site.ItemId), title);
         long price = view.Plots.Where(p => p.OwnerId is null && !p.IsCorridor && !p.IsShopSite && p.ExpansionFor is null).Min(p => p.PriceMinor);
-        Assert.Contains(PlayerText.Money(price), PlayerText.Local("ru", step.DetailRu, step.DetailEn));
+        Assert.DoesNotContain(PlayerText.Money(price), PlayerText.Local("ru", step.DetailRu, step.DetailEn));
+        Assert.Equal($"resource:{step.X}:{step.Z}:{site.ItemId}", FriendlyGuidance.PredictedKey(step));
         var en = FriendlyGuidance.Read(view, scenario, "en");
         Assert.Equal(step.Id, en.Id);
         Assert.Equal(step.X, en.X);
@@ -101,6 +105,51 @@ public class FriendlyGuidanceTests
             Assert.Contains(PlayerText.Item("ru", material.ItemId), text);
         }
         Assert.Contains("не хватает", text);
+        Assert.Contains(" / ", text);
+    }
+
+    [Fact]
+    public void PhrasesUseTheResourceFormAndTheFactoryKeepsItsOwnName()
+    {
+        Assert.Equal("Соберите 1 свёклу", PlayerText.ActionPhrase("ru", "gather", "beet", 1));
+        Assert.Equal("Соберите зерно", PlayerText.ActionPhrase("ru", "gather", "grain", 0));
+        Assert.Equal("Добудьте 1 древесину", PlayerText.ActionPhrase("ru", "extract", "wood", 1));
+        Assert.Equal("Добудьте 1 железную руду", PlayerText.ActionPhrase("ru", "extract", "iron_ore", 1));
+        Assert.Equal("Продайте 1 свёклу", PlayerText.ActionPhrase("ru", "sell", "beet", 1));
+        Assert.Equal("Продайте древесину", PlayerText.ActionPhrase("ru", "sell", "wood", 0));
+        Assert.Equal("Начать добычу: Кокс", PlayerText.ActionPhrase("ru", "gather", "coke", 1));
+        Assert.Equal("Gather 1 beet", PlayerText.ActionPhrase("en", "gather", "beet", 1));
+        Assert.Equal("Harvest 1 wood", PlayerText.ActionPhrase("en", "extract", "wood", 1));
+        Assert.Equal("Sell beet", PlayerText.ActionPhrase("en", "sell", "beet", 0));
+        Assert.Equal("Лесопилка", PlayerText.Enterprise("ru", "woodworking", 1));
+        Assert.Equal("Sawmill", PlayerText.Enterprise("en", "woodworking", 1));
+        Assert.Equal("Пекарня", PlayerText.Enterprise("ru", "food", 1));
+        Assert.NotEqual(PlayerText.Enterprise("ru", "food", 1), PlayerText.Enterprise("ru", "woodworking", 1));
+    }
+
+    [Fact]
+    public void AConfirmedSaleMovesToAPlotAndAnUnobservedSaleDoesNot()
+    {
+        var (scenario, _, view) = World();
+        var before = FriendlyGuidance.Read(view, scenario, "ru");
+        Assert.Contains(before.Id, new[] { "find", "harvest" });
+        var after = FriendlyGuidance.Read(view, scenario, "ru", sold: true);
+        Assert.Equal("plot", after.Id);
+        Assert.StartsWith("plot:", FriendlyGuidance.PredictedKey(after));
+        Assert.DoesNotContain(PlayerText.Money(view.AvailableCashMinor), after.TitleRu);
+        var plot = view.Plots.First(p => p.OwnerId is null && !p.IsCorridor && !p.IsShopSite && p.ExpansionFor is null);
+        var owned = view with { Plots = view.Plots.Select(p => p.Id == plot.Id ? p with { OwnerId = view.Participant.Id } : p).ToArray() };
+        var building = FriendlyGuidance.Read(owned, scenario, "ru", sold: true);
+        Assert.Equal("materials", building.Id);
+        Assert.Equal("woodworking", building.ItemId);
+        Assert.Contains("Лесопилка", building.TitleRu);
+        Assert.DoesNotContain("Пищевое", building.TitleRu);
+        var memory = new CityReadState();
+        Assert.False(memory.Note("harvest"));
+        Assert.True(memory.Note("sale"));
+        var restored = CityReadState.Restore(System.Text.Json.JsonSerializer.Deserialize<CityReadMemory>(System.Text.Json.JsonSerializer.Serialize(memory.Capture()))!);
+        Assert.True(restored.Noted("sale"));
+        Assert.False(CityReadState.Restore(new(["seen"], 0)).Noted("sale"));
     }
 
     private static ContextChoice Choice(string key, ActionKind kind) => new(key, key, new(kind));

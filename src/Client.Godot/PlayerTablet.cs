@@ -48,7 +48,16 @@ public partial class PlayerTablet : VBoxContainer
     private readonly Label _goalBody;
     private readonly Label _goalGaps;
     private readonly Button _goalGo;
+    private readonly Button _goalMore;
+    private readonly VBoxContainer _goalSources=new();
     private readonly Label _problems;
+    private readonly Label _summaryLine=Wrapped();
+    private Container _stats=null!;
+    private Container _quick=null!;
+    private Control _problemsCard=null!;
+    private Control _noticesCard=null!;
+    private string _goalSourcesKey="";
+    public bool ConfirmedSale{get;set;}
     private StarterStep? _step;
     public string CurrentSection=>_section;
     public string HelpTopic=>_section switch{"account"=>"account","services"=>"services","fleet"=>"dealership","roads"=>"map",_=>"holdings"};
@@ -101,18 +110,20 @@ public partial class PlayerTablet : VBoxContainer
         Group("information","ИНФОРМАЦИЯ","INFORMATION");Nav("map","Карта","Map");Nav("notices","События","Notices");Nav("tutorial","Обучение","Guide");
         _mobile.ItemSelected+=index=>{if((int)index>=0&&(int)index<_pickerKeys.Count)OpenSection(_pickerKeys[(int)index]);};
         var overview=Page("overview");overview.AddChild(_overview);_overview.AddChild(TabletDesign.Heading(L("Обзор хозяйства","Holdings overview"),21));
-        var stats=new TabletColumns{Breakpoint=560};_overview.AddChild(stats);
-        Stat(stats,"coin",_capital,L("Капитал","Capital"));Stat(stats,"people",_employed,L("Занятые работники","Employed staff"));Stat(stats,"bag",_room,L("Свободно в рюкзаке","Backpack room"));
-        _goalTitle=TabletDesign.Heading("",20);_goalTitle.Name="OverviewGoalTitle";_goalBody=Wrapped();_goalBody.Name="OverviewGoalBody";_goalGaps=Wrapped();_goalGaps.Name="OverviewGoalGaps";
-        _goalGo=CompactTabletDesign.Button("OverviewGoal",L("Показать где","Show where"),()=>{if(_step is not null)GuideRequested?.Invoke(_step);});GameUi.Primary(_goalGo);
-        var goal=new VBoxContainer();goal.AddChild(_goalTitle);goal.AddChild(_goalBody);goal.AddChild(_goalGaps);goal.AddChild(_goalGo);_overview.AddChild(CompactTabletDesign.Card(goal));
-        _problems=Wrapped();_overview.AddChild(CompactTabletDesign.Card(_problems));
-        var quick=TabletDesign.Flow();_overview.AddChild(quick);
-        quick.AddChild(CompactTabletDesign.Button("OverviewObjects",L("Мои объекты","My objects"),()=>OpenSection("holdings")));
-        if(scenario.Economy?.Fleet is not null)quick.AddChild(CompactTabletDesign.Button("OverviewFleet",L("Транспорт","Vehicles"),()=>OpenSection("fleet")));
-        quick.AddChild(CompactTabletDesign.Button("OverviewAccount",L("Счёт","Account"),()=>OpenAccount()));
-        quick.AddChild(CompactTabletDesign.Button("OverviewNotices",L("События","Notices"),()=>NoticesRequested?.Invoke()));
-        _overview.AddChild(CompactTabletDesign.Card(_notices));_overview.AddChild(_summaryObjects);
+        _summaryLine.Name="OverviewSummary";_overview.AddChild(_summaryLine);
+        _stats=new TabletColumns{Breakpoint=560};_overview.AddChild(_stats);
+        Stat(_stats,"coin",_capital,L("Капитал","Capital"));Stat(_stats,"people",_employed,L("Занятые работники","Employed staff"));Stat(_stats,"bag",_room,L("Свободно в рюкзаке","Backpack room"));
+        _goalTitle=TabletDesign.Heading("",20);_goalTitle.Name="OverviewGoalTitle";_goalBody=Wrapped();_goalBody.Name="OverviewGoalBody";_goalBody.Visible=!friendly;_goalGaps=Wrapped();_goalGaps.Name="OverviewGoalGaps";
+        _goalGo=CompactTabletDesign.Button("OverviewGoal",L("К цели","Go"),()=>{if(_step is not null)GuideRequested?.Invoke(_step);});GameUi.Primary(_goalGo);
+        Button goalMore=null!;goalMore=CompactTabletDesign.Button("OverviewGoalMore",L("Подробнее","Details"),()=>{_goalBody.Visible=!_goalBody.Visible;goalMore.Text=_goalBody.Visible?L("Свернуть","Fold"):L("Подробнее","Details");});_goalMore=goalMore;
+        var goal=new VBoxContainer();goal.AddChild(_goalTitle);goal.AddChild(_goalGaps);goal.AddChild(_goalSources);goal.AddChild(_goalGo);goal.AddChild(_goalMore);goal.AddChild(_goalBody);_overview.AddChild(CompactTabletDesign.Card(goal));
+        _problems=Wrapped();_problemsCard=CompactTabletDesign.Card(_problems);_overview.AddChild(_problemsCard);
+        _quick=TabletDesign.Flow();_overview.AddChild(_quick);
+        _quick.AddChild(CompactTabletDesign.Button("OverviewObjects",L("Мои объекты","My objects"),()=>OpenSection("holdings")));
+        if(scenario.Economy?.Fleet is not null)_quick.AddChild(CompactTabletDesign.Button("OverviewFleet",L("Транспорт","Vehicles"),()=>OpenSection("fleet")));
+        _quick.AddChild(CompactTabletDesign.Button("OverviewAccount",L("Счёт","Account"),()=>OpenAccount()));
+        _quick.AddChild(CompactTabletDesign.Button("OverviewNotices",L("События","Notices"),()=>NoticesRequested?.Invoke()));
+        _noticesCard=CompactTabletDesign.Card(_notices);_overview.AddChild(_noticesCard);_overview.AddChild(_summaryObjects);
         var farm=Page("holdings");farm.AddChild(_empty);_empty.Text=L("Своих объектов пока нет. Добывайте сырьё, продавайте столице, покупайте участок и стройте.","No holdings yet. Harvest inputs, sell to the capital, buy a plot and build.");
         var holdingPages=TabletDesign.Flow();_previousHoldings.Text=L("‹ Назад","‹ Previous");_nextHoldings.Text=L("Далее ›","Next ›");holdingPages.AddChild(_previousHoldings);holdingPages.AddChild(_holdingPage);holdingPages.AddChild(_nextHoldings);farm.AddChild(holdingPages);farm.AddChild(_holdings);
         void HoldingsPage(int delta){_holdingOffset=Math.Max(0,_holdingOffset+delta);_signature="";if(_view is not null)ShowData(_view,_pending,_paused);}
@@ -138,7 +149,7 @@ public partial class PlayerTablet : VBoxContainer
     }
     public void ApplyPresentation(bool friendly)
     {
-        _friendly=friendly;
+        _friendly=friendly;_development.UsePlain(friendly);
         foreach(var page in FriendlyGuidance.Navigation(friendly))
             foreach(string key in page.Keys)Place(key,page.Group);
         _sell.GetParent()?.RemoveChild(_sell);
@@ -171,13 +182,38 @@ public partial class PlayerTablet : VBoxContainer
     private void UpdateGuide()
     {
         if(_view is null)return;
-        _step=FriendlyGuidance.Read(_view,_scenario,_language);
+        _step=FriendlyGuidance.Read(_view,_scenario,_language,ConfirmedSale);
         _goalTitle.Text=PlayerText.Local(_language,_step.TitleRu,_step.TitleEn)+(_step.Count&&_step.Need>0?" — "+_step.Have+"/"+_step.Need:"");
         _goalBody.Text=PlayerText.Local(_language,_step.DetailRu,_step.DetailEn);
-        _goalGaps.Text=FriendlyGuidance.Describe(_step.Gaps,_language);_goalGaps.Visible=_goalGaps.Text.Length>0;
-        _goalGo.Text=_step.X<0&&_step.TargetId>0?L("Открыть","Open"):L("Показать где","Show where");
+        if(!_friendly)_goalBody.Visible=true;
+        _goalMore.Visible=_friendly;
+        _goalMore.Text=L("Подробнее","Details");
+        _goalGaps.Text=FriendlyGuidance.Describe(_step.Gaps,_language,_friendly);_goalGaps.Visible=_goalGaps.Text.Length>0;
+        _goalGo.Text=_step.X<0&&_step.TargetId>0?L("Открыть","Open"):L("К цели","Go");
         _goalGo.Disabled=_step.X<0&&_step.TargetId==0;
         _problems.Text=FriendlyGuidance.Attention(_view,_language);
+        bool calm=_problems.Text is "Срочных проблем нет." or "No urgent problems.";
+        _problemsCard.Visible=!_friendly||!calm;
+        _stats.Visible=!_friendly;_quick.Visible=!_friendly;_noticesCard.Visible=!_friendly;_summaryLine.Visible=_friendly;
+        var pack= _view.Inventories.Single(i=>i.Id==_view.Participant.InventoryId);
+        var city=_view.City!.Participants.Single(p=>p.Actor==_view.Participant.Id);
+        _summaryLine.Text=L("Капитал ","Capital ")+PlayerText.Money(city.CapitalMinor)+L(" · свободно "," · available ")+PlayerText.Money(_view.AvailableCashMinor)+L(" · рюкзак "," · pack ")+Math.Max(0,pack.Capacity-pack.OccupiedVolume-pack.ReservedCapacity)+"/"+pack.Capacity;
+        string sources=_step.Id+":"+string.Join(",",_step.Gaps.Select(g=>g.Kind+g.ItemId+g.Have+"/"+g.Need));
+        if(sources!=_goalSourcesKey)
+        {
+            _goalSourcesKey=sources;foreach(Node child in _goalSources.GetChildren()){_goalSources.RemoveChild(child);child.QueueFree();}
+            if(_friendly&&_step.Id is "materials" or "build")
+            {
+                foreach(var gap in _step.Gaps.Where(g=>g.Kind=="material"&&g.Have<g.Need))
+                {
+                    if(FriendlyGuidance.GatherSite(_view,_language,gap.ItemId) is not {} site)continue;
+                    string item=gap.ItemId;
+                    _goalSources.AddChild(CompactTabletDesign.Button("GoalSource_"+item,L("Где добыть: ","Where to gather: ")+PlayerText.Item(_language,item),()=>{if(FriendlyGuidance.GatherSite(_view,_language,item) is {} live)GuideRequested?.Invoke(live);}));
+                }
+                if(_step.Gaps.Any(g=>g.Kind=="money"&&g.ItemId.Length==0&&g.Have<g.Need)&&FriendlyGuidance.MoneySource(_view,_language) is {} money)
+                    _goalSources.AddChild(CompactTabletDesign.Button("GoalMoney",money.Id=="sell"?L("Продать товар из рюкзака","Sell goods from the backpack"):L("Где добыть товар для продажи","Where to gather goods to sell"),()=>{if(FriendlyGuidance.MoneySource(_view,_language) is {} live)GuideRequested?.Invoke(live);}));
+            }
+        }
     }
     private void LayoutNavigation(){_back.Visible=_cardObject is not null&&GetViewportRect().Size.Y>=540;bool narrow=Size.X<700||GetViewportRect().Size.Y<540;_navScroll.Visible=!narrow;_mobile.Visible=narrow;GameUi.FitControls(_tabs,Size.X-(narrow?36:274));}
     private VBoxContainer Page(string key)
@@ -210,7 +246,7 @@ public partial class PlayerTablet : VBoxContainer
         var objectPage=Page("object");objectPage.SizeFlagsVertical=woodworking?SizeFlags.ExpandFill:SizeFlags.Fill;
         _cardHost.SizeFlagsVertical=woodworking?SizeFlags.ExpandFill:SizeFlags.Fill;
         ((ScrollContainer)objectPage.GetParent()).VerticalScrollMode=woodworking?ScrollContainer.ScrollMode.Disabled:ScrollContainer.ScrollMode.Auto;
-        if(kind=="ground"){_groundCard=new(_scenario,_language,kind,id,_submit,_access,demolitionQuote:_demolitionQuote);_cardHost.AddChild(_groundCard);_groundCard.ShowData(_view,_pending);}
+        if(kind=="ground"){_groundCard=new(_scenario,_language,kind,id,_submit,_access,demolitionQuote:_demolitionQuote);_groundCard.GuideRequested+=step=>GuideRequested?.Invoke(step);_cardHost.AddChild(_groundCard);_groundCard.ShowData(_view,_pending);}
         else{_card=new(_scenario,_language,kind,id,_submit,_access,_demolitionQuote,woodworkingPrototype:woodworking,productionType:_view.Buildings.FirstOrDefault(b=>b.Id.Value==id)?.TypeId??"woodworking"){Theme=TabletDesign.Theme};_card.CloseRequested+=Back;_card.HelpRequested+=()=>HelpRequested?.Invoke();_card.MapRequested+=()=>MapRequested?.Invoke();_card.FleetRequested+=()=>OpenSection("fleet");_cardHost.AddChild(_card);_card.ShowData(_view,_pending,_paused);}
         _cardHost.Visible=true;_back.Visible=true;SelectSection("object");
     }
@@ -273,17 +309,33 @@ public partial class PlayerTablet : VBoxContainer
             (view.PersonalAccount is {} bill?L("Непрочитанных счетов: ","Unread invoices: ")+bill.UnreadCount+L(" · долг: "," · debt: ")+PlayerText.Money(bill.DebtMinor)+"\n":"")+
             L("Производств в работе: ","Productions enabled: ")+view.Enterprises.Count(e=>e.Enabled)+" / "+view.Enterprises.Length+
             L(" · активных передач: "," · active transfers: ")+view.Transfers.Length;
-        string summarySignature=(view.Fleet?.Vehicles.Length??0)+":"+string.Join(';',view.Buildings.Select(b=>"b"+b.Id.Value).Concat((view.Equipment??[]).Select(e=>"e"+e.Id.Value)));
+        string summarySignature=(_friendly?"s":"a")+":"+(view.Fleet?.Vehicles.Length??0)+":"+string.Join(';',view.Buildings.Select(b=>"b"+b.Id.Value).Concat((view.Equipment??[]).Select(e=>"e"+e.Id.Value)));
         if(summarySignature!=_summarySignature)
         {
             _summarySignature=summarySignature;foreach(Node child in _summaryObjects.GetChildren()){_summaryObjects.RemoveChild(child);child.QueueFree();}
-            var columns=new TabletColumns{Breakpoint=600};_summaryObjects.AddChild(columns);
-            var objects=new VBoxContainer();columns.AddChild(CompactTabletDesign.Card(objects));objects.AddChild(TabletDesign.Heading(L("Предприятия и объекты","Enterprises and objects"),18));
-            foreach(var b in view.Buildings.Take(3))
-            {var line=new VBoxContainer();line.AddChild(new Label{Text=PlayerText.Building(_language,b.TypeId)+" #"+b.Id.Value,AutowrapMode=TextServer.AutowrapMode.WordSmart});line.AddChild(CompactTabletDesign.Button("OverviewOpen_"+b.Id.Value,L("Открыть","Open"),()=>Open("building",b.Id.Value)));objects.AddChild(line);}
-            if(view.Buildings.Length==0)objects.AddChild(new Label{Text=L("Собственных предприятий пока нет.","No enterprises owned yet."),AutowrapMode=TextServer.AutowrapMode.WordSmart});
-            var fleet=new VBoxContainer();columns.AddChild(CompactTabletDesign.Card(fleet));fleet.AddChild(TabletDesign.Heading(L("Собственная техника","Your equipment"),18));_summaryFleet=Wrapped();fleet.AddChild(_summaryFleet);
-            if(_fleet is not null)fleet.AddChild(CompactTabletDesign.Button("OverviewOpenFleet",L("Автопарк","Fleet"),()=>OpenSection("fleet")));
+            int vehicles=view.Fleet?.Vehicles.Length??0;int extractors=view.Equipment?.Length??0;
+            if(_friendly&&view.Buildings.Length==0&&vehicles==0&&extractors==0)
+            {
+                _summaryFleet=null;
+                _summaryObjects.AddChild(new Label{Name="OverviewNextHint",AutowrapMode=TextServer.AutowrapMode.WordSmart,Text=L("Своих предприятий и техники пока нет. Следующий шаг — в цели выше.","No enterprises or vehicles yet. The next step is the goal above.")});
+            }
+            else
+            {
+                var columns=new TabletColumns{Breakpoint=600};_summaryObjects.AddChild(columns);
+                if(!_friendly||view.Buildings.Length>0)
+                {
+                    var objects=new VBoxContainer();columns.AddChild(CompactTabletDesign.Card(objects));objects.AddChild(TabletDesign.Heading(L("Предприятия и объекты","Enterprises and objects"),18));
+                    foreach(var b in view.Buildings.Take(3))
+                    {var line=new VBoxContainer();line.AddChild(new Label{Text=PlayerText.Enterprise(_language,b.TypeId,b.Level)+" #"+b.Id.Value,AutowrapMode=TextServer.AutowrapMode.WordSmart});line.AddChild(CompactTabletDesign.Button("OverviewOpen_"+b.Id.Value,L("Открыть","Open"),()=>Open("building",b.Id.Value)));objects.AddChild(line);}
+                    if(view.Buildings.Length==0)objects.AddChild(new Label{Text=L("Собственных предприятий пока нет.","No enterprises owned yet."),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+                }
+                if(!_friendly||vehicles>0||extractors>0)
+                {
+                    var fleet=new VBoxContainer();columns.AddChild(CompactTabletDesign.Card(fleet));fleet.AddChild(TabletDesign.Heading(L("Собственная техника","Your equipment"),18));_summaryFleet=Wrapped();fleet.AddChild(_summaryFleet);
+                    if(_fleet is not null)fleet.AddChild(CompactTabletDesign.Button("OverviewOpenFleet",L("Автопарк","Fleet"),()=>OpenSection("fleet")));
+                }
+                else _summaryFleet=null;
+            }
         }
         if(_summaryFleet is not null)_summaryFleet.Text=L("Машин: ","Vehicles: ")+(view.Fleet?.Vehicles.Length??0)+L(" · добывающих: "," · extractors: ")+(view.Equipment?.Length??0)+"\n"+
             string.Join("\n",(view.Fleet?.Vehicles??[]).Take(2).Select(v=>(v.Model.EquipmentTypeId is null?v.Model.Name:L("Добыча: ","Extract: ")+PlayerText.Item(_language,view.Fleet!.EquipmentTypes.Single(t=>t.Id==v.Model.EquipmentTypeId).ItemId))+" #"+v.Vehicle.Id));

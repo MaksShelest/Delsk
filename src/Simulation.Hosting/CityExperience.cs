@@ -1,18 +1,30 @@
 using Simulation.Core;
 namespace Simulation.Hosting;
 
-public sealed record CityReadMemory(string[] Seen,int TutorialPage=0);
+public sealed record CityReadMemory(string[] Seen,int TutorialPage=0,string[]? Steps=null);
 public sealed class CityReadState
 {
     private readonly List<string> _seen=[];
+    private readonly List<string> _steps=[];
     public int TutorialPage {get;set;}
     public bool Seen(string key)=>_seen.Contains(key,StringComparer.Ordinal);
     public void MarkSeen(string key){if(Seen(key))return;_seen.Add(key);if(_seen.Count>512)_seen.RemoveAt(0);}
-    public CityReadMemory Capture()=>new([.._seen],Math.Clamp(TutorialPage,0,4));
+    public bool Noted(string step)=>_steps.Contains(step,StringComparer.Ordinal);
+    /// <summary>Только подтверждённый клиентом шаг. Неизвестные имена не записываются.</summary>
+    public bool Note(string step)
+    {
+        if(step!="sale"||Noted(step))return false;
+        _steps.Add(step);return true;
+    }
+    public CityReadMemory Capture()=>new([.._seen],Math.Clamp(TutorialPage,0,4),_steps.Count==0?null:[.._steps]);
     public static CityReadState Restore(CityReadMemory memory)
     {
         if(memory.Seen is null||memory.Seen.Length>512||memory.Seen.Any(s=>s is null||s.Length>160)||memory.TutorialPage is <0 or >4)throw new ArgumentException("Invalid city UI memory");
-        var state=new CityReadState{TutorialPage=memory.TutorialPage};foreach(var k in memory.Seen)state.MarkSeen(k);return state;
+        if(memory.Steps is not null&&(memory.Steps.Length>16||memory.Steps.Any(s=>s is null||s.Length>32)))throw new ArgumentException("Invalid city UI memory");
+        var state=new CityReadState{TutorialPage=memory.TutorialPage};
+        foreach(var k in memory.Seen)state.MarkSeen(k);
+        foreach(var step in memory.Steps??[])if(step=="sale")state.Note(step);
+        return state;
     }
 }
 public sealed record CityNotice(string Key,string Category,string Target,long Id,string Item,long Quantity,long Deadline,

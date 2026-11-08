@@ -1,0 +1,25 @@
+{
+  "status": "succeeded",
+  "finishedAtUtc": "2026-11-08T12:13:15Z",
+  "godotExit": 0,
+  "assemblyAuditExit": 0,
+  "map": "compact-valley",
+  "scenario": "compact_valley_i6c21",
+  "goalHeightPx": 44,
+  "mapKey": "resource:6:16:beet",
+  "notes": {
+    "cashMinor": 20000,
+    "cheapestPlotMinor": 10000,
+    "anchorPlotMinor": 10000,
+    "catalogBuilding": "woodworking",
+    "catalogPriceMinor": 17000,
+    "catalogMaterials": "steelx3, woodx30",
+    "sell": "Accepted",
+    "goalAfterSale": "Купите участок",
+    "goalAfterPlot": "Лесопилка",
+    "shortage": "money 103.27/170.00 short 66.73; steel 0/3; wood 0/30",
+    "buildCompleted": false,
+    "householdWithEnterprise": "not captured: the factory was not built"
+  },
+  "scope": "Linux software GL and synthetic input. One ordinary compact valley. Not a physical Windows or Android device and not a completed factory."
+}

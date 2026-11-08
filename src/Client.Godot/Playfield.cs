@@ -1055,6 +1055,7 @@ public partial class Playfield : Control
     private void CatchPublicCursor()
     {
         var events = _session.Engine.PublicEventsSince(0);
+        NoteMilestones(events);
         _publicCursor = events.Length == 0 ? 0 : events[^1].Sequence;
         _effects.Reset(_publicCursor);_effects.Advance(0,true);
     }
@@ -1065,6 +1066,7 @@ public partial class Playfield : Control
         _effects.ObserveLabor(view.LaborMarket,_human.Value,_feedbackPreferences);
         _effects.Consume(events,_human.Value,_feedbackPreferences);
         if (events.Length == 0) return;
+        NoteMilestones(events);
         _publicCursor = events[^1].Sequence;
         if (PlayerText.OwnHarvest(events, _human.Value, _language) is { } gain) _gain = gain;
         foreach (var done in events.Where(e => e.ActorId?.Value == _human.Value))
@@ -1083,6 +1085,17 @@ public partial class Playfield : Control
                     (materials is null ? "" : " · " + string.Join(", ", materials.Select(m => "-" + PlayerText.Item(_language, m.ItemId) + " ×" + m.Quantity)));
             }
         }
+    }
+
+    private void NoteMilestones(IEnumerable<PublicSimulationEvent> events)
+    {
+        bool changed = false;
+        foreach (var done in events)
+        {
+            if (done.ActorId?.Value != _human.Value || done.Type != "CapitalSaleSettled") continue;
+            if (_cityRead.Note("sale")) changed = true;
+        }
+        if (changed) SaveCityExperience();
     }
 
     private string Describe(PlayerView view)
