@@ -35,8 +35,20 @@ public partial class CityExperienceProbe : Control
     private async Task OpenPlayerSection(string key,string ru,string en)
     {
         await Click(Named<Button>("HudTablet"));
-        var navigation=All(_app).OfType<Button>().FirstOrDefault(b=>b.Name=="PlayerNav_"+key&&b.IsVisibleInTree());
-        if(navigation is not null){await Click(navigation);return;}
+        var navigation=All(_app).OfType<Button>().FirstOrDefault(b=>b.Name=="PlayerNav_"+key);
+        if(navigation is not null)
+        {
+            // В основном режиме редкий раздел лежит в свёрнутой группе «Дополнительно».
+            // Сначала раскрываем её, затем нажимаем ту же прежнюю кнопку.
+            var body=navigation.GetParent();
+            if(body is not null&&!navigation.IsVisibleInTree())
+            {
+                int bodyIndex=body.GetIndex();
+                if(bodyIndex>0&&body.GetParent()?.GetChild(bodyIndex-1) is Button header&&header.Name.ToString().StartsWith("PlayerGroup_")&&header.IsVisibleInTree())
+                    await Click(header);
+            }
+            if(navigation.IsVisibleInTree()){await Click(navigation);return;}
+        }
         var picker=Named<OptionButton>("PlayerSectionPicker");string caption=_language=="ru"?ru:en;
         int index=Enumerable.Range(0,picker.ItemCount).Single(i=>picker.GetItemText(i)==caption);
         await Click(picker);picker.GetPopup().SetFocusedItem(index);await Press(Key.Enter);await Frames();

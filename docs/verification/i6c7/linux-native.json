@@ -1,0 +1,26 @@
+{
+  "status": "succeeded",
+  "finishedAtUtc": "2026-11-07T22:51:32Z",
+  "godotExit": 0,
+  "elapsedSeconds": 20.776,
+  "assemblyAuditExit": 0,
+  "map": "compact-valley",
+  "scenario": "compact_valley_i6c21",
+  "notes": {
+    "cashMinor": 20000,
+    "cheapestPlotMinor": 10000,
+    "anchorPlotMinor": 10000,
+    "catalogBuilding": "woodworking",
+    "catalogPriceMinor": 17000,
+    "catalogMaterials": "steelx3, woodx30",
+    "sell": "Accepted",
+    "saleNotice": "Продано: свёкла ×1 · +3.27",
+    "cashAfterSaleMinor": 20327,
+    "cashAfterPlotMinor": 10327,
+    "goalAfterPlot": "Соберите материалы для Пищевое предприятие",
+    "shortage": "money 103.27/170.00 short 66.73; steel 0/3; wood 0/30",
+    "buildCompleted": false,
+    "fullPlaythrough": "not confirmed"
+  },
+  "scope": "Linux software GL and synthetic input on Xorg. One ordinary compact valley. Not a physical Windows or Android device and not a full unassisted factory playthrough."
+}

@@ -18,16 +18,7 @@ public static class GameUi
         if(text==reason)text=TabletText.Reason(language,reason);
         return text==reason?L(language,"Проверьте условия действия и доступность ресурсов.","Check the action's conditions and available resources."):text;
     }
-    public static string Industry(string language,string type,int level=1)=>type switch
-    {
-        "woodworking"=>L(language,level==1?"Лесопилка":"Деревообрабатывающий комбинат",level==1?"Sawmill":"Woodworks"),
-        "food"=>L(language,level==1?"Пекарня":"Пищевой комбинат",level==1?"Bakery":"Food works"),
-        "metallurgy"=>L(language,"Металлургический цех","Metal works"),
-        "materials"=>L(language,"Стройматериалы","Building materials"),
-        "dairy"=>L(language,"Молочное производство","Dairy"),
-        "machinery"=>L(language,"Механическая мастерская","Machine workshop"),
-        _=>PlayerText.Building(language,type)
-    };
+    public static string Industry(string language,string type,int level=1)=>PlayerText.Enterprise(language,type,level);
     public static string InventoryName(PlayerView view,long id,string language)
     {
         if(view.Participant.InventoryId.Value==id)return L(language,"Рюкзак","Backpack");

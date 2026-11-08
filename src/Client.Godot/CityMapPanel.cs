@@ -21,12 +21,14 @@ public partial class CityMapPanel : VBoxContainer
     private readonly VBoxContainer _side=new(){Name="MapDetails"},_filters=new(){Visible=false};
     private readonly Button _open=new(){Name="MapOpenObject"},_walk=new(){Name="MapNavigate"},_showRoute=new(){Name="MapShowRoute"},_detailsToggle=new(){Name="MapDetailsToggle"};
     private readonly Dictionary<CityLayer,CheckButton> _layers=new();
+    private readonly CheckButton _worldOwnership;
+    public event Action<bool>? OwnershipChanged;
     private readonly Dictionary<CityMapFocus,Button> _focus=new();
     private CityMapFrame? _map;private PlayerView? _view;private MovementGuide? _guide;private string[] _keys=[];private long[] _participants=[];
     private bool _detailsOpen;
     public CityMapPanel(ScenarioDefinition scenario,string language,CityMapPreferences state,Action<GameAction> submit,Func<Cell,MovementGuide> route)
     {
-        Name="FullCityMap";_language=language;_state=state;_submit=submit;_route=route;SizeFlagsVertical=SizeFlags.ExpandFill;
+        Name="FullCityMap";_language=language;_state=state;_submit=submit;_route=route;SizeFlagsVertical=SizeFlags.ExpandFill;_details.Name="CityMapDetails";
         Canvas=new(state);Canvas.CellChosen+=Choose;Canvas.SizeFlagsVertical=SizeFlags.ExpandFill;
         _modes.AddThemeConstantOverride("separation",4);AddChild(_modes);
         foreach(var focus in new[]{CityMapFocus.All,CityMapFocus.Production,CityMapFocus.Transport,CityMapFocus.Orders,CityMapFocus.Property})
@@ -49,6 +51,8 @@ public partial class CityMapPanel : VBoxContainer
             toggle.Toggled+=on=>{_state.Focus=CityMapFocus.All;_state.Layers=on?_state.Layers|layer:_state.Layers&~layer;SyncFocus();Canvas.QueueRedraw();UpdateDetails();};
             _layers[layer]=toggle;layers.AddChild(toggle);
         }
+        _worldOwnership=new CheckButton{Name="MapWorldOwnership",Text=L("Контуры участков на поле","Plot outlines in the world"),CustomMinimumSize=new(0,36)};
+        _worldOwnership.Toggled+=on=>OwnershipChanged?.Invoke(on);layers.AddChild(_worldOwnership);
         AddChild(_filters);
         _body.AddChild(Canvas);
         _side.CustomMinimumSize=new(280,0);_side.SizeFlagsVertical=SizeFlags.ExpandFill;_side.AddThemeConstantOverride("separation",4);
@@ -109,6 +113,7 @@ public partial class CityMapPanel : VBoxContainer
         }
     }
     private void SyncLayers(){foreach(var (layer,toggle) in _layers)toggle.SetPressedNoSignal((_state.Layers&layer)!=0);SyncFocus();}
+    public void SetWorldOwnership(bool on)=>_worldOwnership.SetPressedNoSignal(on);
     private void SyncFocus(){foreach(var (focus,button) in _focus)button.SetPressedNoSignal(focus==_state.Focus);}
     public void ShowData(CityMapFrame map,PlayerView view,bool pending)
     {
@@ -134,6 +139,20 @@ public partial class CityMapPanel : VBoxContainer
         _legend.Text=L("Свободная земля — светлый контур, своя и чужая — цвет участника из мира, бронь — пунктир. Жёлтая полоса — готовность партии, заполнение или доставленная доля. Голубая линия — путь персонажа, пунктир — поставка.","Free land is a light outline. Own and other property use the same participant colours as the world. A reservation is dashed. The yellow bar is batch progress, cargo fill or the delivered share. The blue line is the person's route; a dashed line is a delivery.");
     }
     private string OwnerCaption(long id)=>id==0?L("Город / общее","City / public"):L("Участник #","Participant #")+id+" · "+WorldSkins.ActorName(id,_language);
+    public void SelectGoal(StarterStep step)
+    {
+        if(_map is null)return;
+        string key=FriendlyGuidance.Marker(step,_map);
+        if(key.Length==0)
+        {
+            _state.SelectedKey="";
+            _details.Text=L("На карте нет этого объекта. Маршрут не выдумывается.","That object is not on the map. No route is invented.");
+            _routeInfo.Text="";_open.Disabled=_walk.Disabled=_showRoute.Disabled=true;Canvas.QueueRedraw();return;
+        }
+        _state.SelectedKey=key;
+        if(Selected is {} selected)_state.Center(selected.Entry.X+.5,selected.Entry.Z+.5);
+        UpdateDetails();
+    }
     private void Choose(Cell cell)
     {
         if(_map is null)return;var choices=CityMap.At(_map,cell,_state.Layers,_state.Participant,_state.Focus);SetChoices(choices);

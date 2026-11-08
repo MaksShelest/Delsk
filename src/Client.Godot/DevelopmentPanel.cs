@@ -11,15 +11,20 @@ public partial class DevelopmentPanel : VBoxContainer
     private readonly Action<GameAction> _submit;
     private readonly Func<GameAction,ActionAccess> _access;
     private readonly Label _status=new(){Name="DevelopmentStatus",AutowrapMode=TextServer.AutowrapMode.WordSmart};
+    private readonly Label _technical=new(){Name="DevelopmentTechnical",AutowrapMode=TextServer.AutowrapMode.WordSmart};
     private readonly VBoxContainer _actions=new();
     private readonly Dictionary<string,(Button Button,GameAction Action)> _buttons=[];
     private readonly HashSet<string> _shown=[];
-    private bool _pending;
+    private UiDisclosure? _more;
+    private bool _pending,_plain;
+    public void UsePlain(bool plain)=>_plain=plain;
     public DevelopmentPanel(ScenarioDefinition scenario,string language,long building,Action<GameAction> submit,Func<GameAction,ActionAccess> access)
     {
         Name=building==0?"IndustryQuests":"EnterpriseDevelopment";_scenario=scenario;_language=language;_building=building;_submit=submit;_access=access;
-        AddChild(TabletDesign.Heading(L(building==0?"Опыт и задания":"Развитие предприятия",building==0?"Experience and quests":"Enterprise development")));
-        AddChild(_status);AddChild(_actions);
+        AddChild(TabletDesign.Heading(L(building==0?"Задания":"Развитие предприятия",building==0?"Quests":"Enterprise development")));
+        AddChild(_status);
+        if(building==0){_more=new(L("Подробные показатели","Detailed figures"),_technical);AddChild(_more);}
+        AddChild(_actions);
     }
     private string L(string ru,string en)=>_language=="ru"?ru:en;
     private void Button(string key,string text,GameAction action,bool enabled=true)
@@ -38,12 +43,23 @@ public partial class DevelopmentPanel : VBoxContainer
         if(_building==0)
         {
             int active=d.Quests.Count(q=>q.Status=="Active");
-            _status.Text=string.Join("\n",d.Experience.Select(e=>PlayerText.Building(_language,e.Industry)+$": {e.Total} XP · "+L("технология ","technology ")+e.TechnologyLevel+L(" · выпуск/задания "," · production/quests ")+$"{e.ProductionXp}/{e.QuestXp}"))+"\n\n"+
+            var current=d.Quests.Where(q=>q.Status=="Active").ToArray();
+            string technical=string.Join("\n",d.Experience.Select(e=>PlayerText.Enterprise(_language,e.Industry)+$": {e.Total} XP · "+L("технология ","technology ")+e.TechnologyLevel+L(" · выпуск/задания "," · production/quests ")+$"{e.ProductionXp}/{e.QuestXp}"))+"\n\n"+
                 L("Задания по подписанным договорам с реальным спросом. Покупные товары подходят. Награда — после фактической поставки; исходный договор остаётся обязательным.","Quests follow signed contracts with real demand. Purchased goods qualify. Rewards require actual delivery; the source contract remains binding.")+"\n"+
                 L("Занято заданий: ","Active quests: ")+$"{active}/{d.Rules.QuestSlots}"+L(" · обновление через "," · review in ")+(d.NextReviewTick-view.Tick)+L(" активных тиков."," active ticks.")+"\n"+
-                string.Join("\n",d.Quests.Where(q=>q.Status=="Active").Concat(d.Quests.Where(q=>q.Status!="Active").TakeLast(10)).Select(q=>$"#{q.Id} · {PlayerText.Item(_language,q.ItemId)} {q.Delivered}/{q.Quantity} · {q.Reward} XP · "+State(q.Status)+L(" · срок "," · deadline ")+q.DeadlineTick));
-            foreach(var q in d.Quests.Where(q=>q.Status=="Active"))Button("abandon:"+q.Id,L("Отказаться от задания #","Abandon quest #")+q.Id+L(" (договор сохраняется)"," (contract remains)"),new(ActionKind.AbandonIndustryQuest,OfferId:q.Id));
-            foreach(var c in d.Choices)Button($"quest:{c.ContractId}:{c.Industry}:{c.Batches}",PlayerText.Building(_language,c.Industry)+$" · #{c.ContractId} · {PlayerText.Item(_language,c.ItemId)} ×{c.Quantity} → {c.Reward} XP"+L(" · срок "," · deadline ")+c.DeadlineTick,
+                string.Join("\n",current.Concat(d.Quests.Where(q=>q.Status!="Active").TakeLast(10)).Select(q=>$"#{q.Id} · {PlayerText.Item(_language,q.ItemId)} {q.Delivered}/{q.Quantity} · {q.Reward} XP · "+State(q.Status)+L(" · срок "," · deadline ")+q.DeadlineTick));
+            if(_plain)
+            {
+                _status.Text=current.Length==0&&d.Choices.Length==0
+                    ?L("Сейчас нет задания. Новое появится по договору столицы с реальным спросом.","There is no quest right now. A new one appears from a capital contract with real demand.")
+                    :string.Join("\n",current.Select(q=>PlayerText.ActionPhrase(_language,"deliver",q.ItemId,0)+" — "+q.Delivered+"/"+q.Quantity+L(". Награда: ",". Reward: ")+q.Reward+" XP"));
+                _technical.Text=technical;_more!.Visible=true;
+            }
+            else{_status.Text=technical;if(_more is not null)_more.Visible=false;}
+            foreach(var q in current)Button("abandon:"+q.Id,_plain?L("Отказаться","Abandon"):L("Отказаться от задания #","Abandon quest #")+q.Id+L(" (договор сохраняется)"," (contract remains)"),new(ActionKind.AbandonIndustryQuest,OfferId:q.Id));
+            foreach(var c in d.Choices)Button($"quest:{c.ContractId}:{c.Industry}:{c.Batches}",_plain
+                ?PlayerText.ActionPhrase(_language,"deliver",c.ItemId,0)+" ×"+c.Quantity+L(". Награда: ",". Reward: ")+c.Reward+" XP"
+                :PlayerText.Enterprise(_language,c.Industry)+$" · #{c.ContractId} · {PlayerText.Item(_language,c.ItemId)} ×{c.Quantity} → {c.Reward} XP"+L(" · срок "," · deadline ")+c.DeadlineTick,
                 new(ActionKind.AcceptIndustryQuest,ContractId:c.ContractId,BuildingTypeId:c.Industry,Quantity:c.Batches,OfferWindow:c.ReviewWindow),active<d.Rules.QuestSlots);
         }
         else

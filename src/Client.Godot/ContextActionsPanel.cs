@@ -10,6 +10,7 @@ public partial class ContextActionsPanel : PanelContainer
     public readonly ContextSelection Selection=new();
     public bool Expanded=>Selection.Expanded;
     public bool Dismissed {get;private set;}
+    public bool Friendly {get;set;}
     public event Action<bool>? CollapsedChanged;
     public int ActiveCount=>Selection.Choices.Count(c=>c.Enabled&&(!Selection.Pending||c.Command is null));
     private readonly VBoxContainer _body=new();
@@ -57,7 +58,7 @@ public partial class ContextActionsPanel : PanelContainer
     {
         if(Dismissed)return _reopen.GetCombinedMinimumSize().X;
         float natural=40+44+(_more.Visible?52:0)+8;
-        foreach(string key in Selection.PrimaryKeys())if(_rows.TryGetValue(key,out var row))
+        foreach(string key in Selection.PrimaryKeys(Friendly))if(_rows.TryGetValue(key,out var row))
             natural+=Math.Clamp(row.Button.GetThemeFont("font").GetStringSize(row.Button.Text,fontSize:row.Button.GetThemeFontSize("font_size")).X+28,90,280)+8;
         return Math.Min(maximum,Expanded?Math.Max(natural,560):natural);
     }
@@ -95,7 +96,7 @@ public partial class ContextActionsPanel : PanelContainer
     {
         bool was=Expanded;_language=language;Selection.Update(scope,choices);if(choices.Length==0)Selection.Expanded=false;Selection.Pending=pending;
         if(was!=Expanded){_touchIndex=-1;_touchDragged=false;ExpansionChanged?.Invoke(Expanded);}
-        var primary=Selection.PrimaryKeys();
+        var primary=Selection.PrimaryKeys(Friendly);
         foreach(string key in _rows.Keys.Except(choices.Select(c=>c.Key)).ToArray())
         {var row=_rows[key].Row;row.GetParent()?.RemoveChild(row);row.QueueFree();_rows.Remove(key);}
         var positions=new Dictionary<Container,int>();
@@ -121,14 +122,15 @@ public partial class ContextActionsPanel : PanelContainer
             if(item.Row.GetParent()!=host){item.Row.GetParent()?.RemoveChild(item.Row);host.AddChild(item.Row);}
             int position=positions.GetValueOrDefault(host,0);positions[host]=position+1;
             if(!Pressing&&item.Row.GetIndex()!=position)host.MoveChild(item.Row,position);
-            item.Button.Text=choice.Command?.Kind switch
-            {ActionKind.BuyVehicle=>choice.Label.Replace(" · ","\n",StringComparison.Ordinal),ActionKind.BoardVehicle=>PlayerText.Local(language,"Сесть","Board"),ActionKind.LeaveVehicle=>PlayerText.Local(language,"Выйти","Leave"),_=>choice.Label};item.Button.Disabled=!choice.Enabled||pending&&choice.Command is not null;
+            string? friendly=Friendly?FriendlyGuidance.Caption(choice,language):null;
+            item.Button.Text=friendly??(choice.Command?.Kind switch
+            {ActionKind.BuyVehicle=>choice.Label.Replace(" · ","\n",StringComparison.Ordinal),ActionKind.BoardVehicle=>PlayerText.Local(language,"Сесть","Board"),ActionKind.LeaveVehicle=>PlayerText.Local(language,"Выйти","Leave"),_=>choice.Label});item.Button.Disabled=!choice.Enabled||pending&&choice.Command is not null;
             item.Button.TooltipText=choice.Label+"\n"+choice.Details;
             item.Reason.Text=!choice.Enabled?choice.Details:"";item.Reason.Visible=item.Reason.Text.Length>0;
             item.Progress.Visible=choice.Command?.Kind==ActionKind.StopHarvest;
         }
         _more.Visible=choices.Length>primary.Length;
-        _more.Text="⋯";_more.TooltipText=MoreHint();_dismiss.TooltipText=PlayerText.Local(language,"Свернуть действия","Collapse actions");
+        _more.Text=Friendly&&!Expanded?PlayerText.Local(language,"Ещё","More"):"⋯";_more.TooltipText=MoreHint();_dismiss.TooltipText=PlayerText.Local(language,"Свернуть действия","Collapse actions");
         string feedback=string.Join(" · ",new[]{status}.Concat(choices.Where(c=>primary.Contains(c.Key)&&!c.Enabled).Select(c=>c.Details)).Where(t=>t.Length>0).Distinct());
         _scroll.Visible=Expanded;_status.Text=feedback;_status.TooltipText=feedback;_status.Visible=feedback.Length>0;
         _heightTop=top;
@@ -168,7 +170,7 @@ public partial class ContextActionsPanel : PanelContainer
         }
         finally{_fittingHeight=false;}
     }
-    private string MoreHint()=>PlayerText.Local(_language,Expanded?"Свернуть действия":"Все действия",Expanded?"Collapse actions":"All actions")+" · "+Math.Max(0,Selection.Choices.Length-Selection.PrimaryKeys().Length);
+    private string MoreHint()=>PlayerText.Local(_language,Expanded?"Свернуть действия":"Ещё",Expanded?"Collapse actions":"More")+" · "+Math.Max(0,Selection.Choices.Length-Selection.PrimaryKeys(Friendly).Length);
     public void Navigate(int delta)
     {
         Reopen();

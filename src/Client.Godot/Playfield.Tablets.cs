@@ -88,7 +88,7 @@ public partial class Playfield
         DropTabletPanel();
         if (!_tabletState.IsOpen || _surface != Surface.Play || _playChrome is null) return;
         var view = PlayerDesk.Read(_session.Engine,_human);
-        string title = _tabletState.Kind==TabletKind.Notices?L("События хозяйства","Business notices"):_tabletState.Kind==TabletKind.Tutorial?L("Короткое обучение","Quick guide"):_tabletState.Kind == TabletKind.CityMap ? L("Карта всего города","City map") : _tabletState.Kind == TabletKind.Player ? L("Планшет игрока", "Player tablet") : _tabletState.Kind == TabletKind.Object ? L("Карточка хозяйства", "Holdings card") : _tabletState.Kind == TabletKind.Market ? PlayerText.Local(_language,"Рынок участников · лавки","Participant market · shops") : _tabletState.Kind == TabletKind.Capital ? PlayerText.Local(_language,"Биржа · столичные заказы","Exchange · capital orders")
+        string title = _tabletState.Kind==TabletKind.Notices?L("События хозяйства","Business notices"):_tabletState.Kind==TabletKind.Tutorial?L("Короткое обучение","Quick guide"):_tabletState.Kind == TabletKind.CityMap ? L("Карта всего города","City map") : _tabletState.Kind == TabletKind.Player ? (_friendly?L("Хозяйство","Business"):L("Планшет игрока", "Player tablet")) : _tabletState.Kind == TabletKind.Object ? L("Карточка хозяйства", "Holdings card") : _tabletState.Kind == TabletKind.Market ? PlayerText.Local(_language,"Рынок участников · лавки","Participant market · shops") : _tabletState.Kind == TabletKind.Capital ? PlayerText.Local(_language,"Биржа · столичные заказы","Exchange · capital orders")
             : PlayerText.Building(_language,view.Buildings.Single(b => b.Id.Value == _tabletState.EnterpriseId).TypeId) + " #" + _tabletState.EnterpriseId;
         bool woodworking=_tabletState.Kind is TabletKind.Enterprise or TabletKind.Object&&
             (_tabletState.Kind!=TabletKind.Object||_objectKind=="building")&&view.Buildings.Any(b=>b.Id.Value==_tabletState.EnterpriseId&&b.Kind==BuildingKind.Production&&view.Enterprises.Any(e=>e.Id==new EnterpriseId(b.Id.Value)));
@@ -116,12 +116,15 @@ public partial class Playfield
         else if(_tabletState.Kind==TabletKind.CityMap)
         {
             _cityMapPanel=new(_scenario,_language,_cityMapPreferences,Submit,c=>_session.Engine.PreviewMovement(_human,c));
+            _cityMapPanel.SetWorldOwnership(_showOwnership);
+            _cityMapPanel.OwnershipChanged+=on=>{_showOwnership=on;_hudPlots?.SetPressedNoSignal(on);SaveCityExperience();Refresh();};
             _cityMapPanel.OpenObject+=(kind,id)=>{if(kind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2){OpenObjectTablet(kind,id);return;}OpenPlayerTablet();_playerTablet?.OpenHolding(kind,id);};
             _cityMapPanel.OpenSection+=OpenCitySection;_tabletPanel.Body.AddChild(_cityMapPanel);
         }
         else if (_tabletState.Kind == TabletKind.Player)
         {
-            _playerTablet = new PlayerTablet(_scenario,_language,Submit,a => _session.Engine.AccessFor(_human,a),(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction),(offset,bills)=>_session.Engine.AccountOf(_human,offset,20,bills),terms=>_session.Engine.QuoteDeliveryService(_human,terms));
+            _playerTablet = new PlayerTablet(_scenario,_language,Submit,a => _session.Engine.AccessFor(_human,a),(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction),(offset,bills)=>_session.Engine.AccountOf(_human,offset,20,bills),terms=>_session.Engine.QuoteDeliveryService(_human,terms),_friendly);
+            _playerTablet.GuideRequested+=ShowGuide;_playerTablet.ExchangeRequested+=OpenExchangeOrMap;
             _playerTablet.RoadWorkRequested+=OpenRoadWork;
             _playerTablet.ObjectRequested+=OpenObjectTablet;_playerTablet.LocationRequested+=ShowOnCityMap;
             _tabletPanel.AttachNavigation(_playerTablet.SectionPicker);
@@ -131,7 +134,7 @@ public partial class Playfield
             if(_scenario.Layout is not null){_tabletPolitics=_playerTablet.PoliticsHost;FillPolitics(view,_tabletPolitics);}
         }
         else if(_tabletState.Kind==TabletKind.Object&&_objectKind=="ground")
-        {_groundPanel=new(_scenario,_language,"ground",_tabletState.EnterpriseId,Submit,a=>_session.Engine.AccessFor(_human,a),demolitionQuote:(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction));_tabletPanel.Body.AddChild(_groundPanel);}
+        {_groundPanel=new(_scenario,_language,"ground",_tabletState.EnterpriseId,Submit,a=>_session.Engine.AccessFor(_human,a),demolitionQuote:(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction));_groundPanel.GuideRequested+=ShowGuide;_tabletPanel.Body.AddChild(_groundPanel);}
         else if (_tabletState.Kind is TabletKind.Market or TabletKind.Capital)
         {
             long shop=view.Buildings.FirstOrDefault(b=>b.Kind==BuildingKind.Shop)?.Id.Value??0;
@@ -156,6 +159,28 @@ public partial class Playfield
         {float width=GetViewportRect().Size.X;if(width>1&&panel.Size.X>1)covered=(panel.GlobalPosition.X+panel.Size.X)/width;}
         _stage?.SetSidePanelInset(covered);
     }
+    private void OpenExchangeOrMap()
+    {
+        var view=PlayerDesk.Read(_session.Engine,_human);
+        if(_surface==Surface.Play&&_tabletState.OpenCapital(view,_scenario)){PrepareTablet();return;}
+        var step=FriendlyGuidance.Read(view,_scenario,_language,_cityRead.Noted("sale"));
+        if(step.X>=0&&step.Focus=="orders"){ShowGuide(step);return;}
+        _feedback=L("Подойдите к терминалу столицы, чтобы открыть продажу.","Walk to the capital terminal to open the sale.");
+        Refresh();
+    }
+    private void ShowGuide(StarterStep step)
+    {
+        if(step.X<0&&step.TargetId>0&&step.TargetKind is "building" or "ground" or "equipment")
+        {OpenPlayerTablet();_playerTablet?.OpenHolding(step.TargetKind=="ground"?"ground":step.TargetKind,step.TargetId);return;}
+        if(step.Focus is "production" or "industry")_cityMapPreferences.ApplyFocus(CityMapFocus.Production);
+        else if(step.Focus=="property")_cityMapPreferences.ApplyFocus(CityMapFocus.Property);
+        else _cityMapPreferences.ApplyFocus(CityMapFocus.All);
+        _cityMapPreferences.SelectedKey=FriendlyGuidance.PredictedKey(step);
+        if(step.X>=0)_cityMapPreferences.Center(step.X+.5,step.Z+.5);
+        OpenCityMap();
+        _cityMapPanel?.SelectGoal(step);
+        if(step.X>=0)_cityMapPanel?.Canvas.Zoom(3);
+    }
     private void ShowOnCityMap(Cell cell)
     {
         _cityMapPreferences.Layers|=CityLayer.Industry|CityLayer.People;_cityMapPreferences.Participant=0;
@@ -172,6 +197,7 @@ public partial class Playfield
         _marketTablet?.ShowData(view,WaitingCommand);
         _enterpriseTablet?.ShowData(view,WaitingCommand,_session.Paused);
         _groundPanel?.ShowData(view,WaitingCommand);
+        if(_playerTablet is not null)_playerTablet.ConfirmedSale=_cityRead.Noted("sale");
         _playerTablet?.ShowData(view,WaitingCommand,_session.Paused);
         string status = WaitingCommand && _tabletState.BlocksTime
             ? PlayerText.Local(_language,"Действие подготовлено — включите время.","Action queued — run time to continue.") : _tabletError;

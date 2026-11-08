@@ -160,9 +160,15 @@ public sealed class ContextSelection
         if(current is not {Enabled:true}||Pending&&current.Command is not null||current.Command!=pressed.Command)return false;
         SelectedKey=current.Key;if(current.Command is not null)Pending=true;return true;
     }
-    public string[] PrimaryKeys()
+    public string[] PrimaryKeys(bool friendly = false)
     {
-        var local=Choices.Where(c=>ContextActions.Priority(c)<80).OrderBy(c=>!c.Enabled).Take(3).Select(c=>c.Key).ToArray();
-        return local.Length>0?local:Choices.Take(1).Select(c=>c.Key).ToArray();
+        if (!friendly)
+        {
+            var local = Choices.Where(c => ContextActions.Priority(c) < 80).OrderBy(c => !c.Enabled).Take(3).Select(c => c.Key).ToArray();
+            return local.Length > 0 ? local : Choices.Take(1).Select(c => c.Key).ToArray();
+        }
+        var ranked = Choices.OrderBy(c => c.Enabled ? 0 : 1).ThenBy(FriendlyGuidance.Rank).ThenBy(c => c.Key, StringComparer.Ordinal);
+        var picked = ranked.Where(c => FriendlyGuidance.Rank(c) < 70 && (c.Enabled || FriendlyGuidance.ShowDisabled(c))).Take(3).Select(c => c.Key).ToArray();
+        return picked.Length > 0 ? picked : Choices.Take(1).Select(c => c.Key).ToArray();
     }
 }
