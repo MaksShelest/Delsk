@@ -5,7 +5,7 @@ const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const labels={queued:'В очереди',running:'Выполняется',succeeded:'Готово',failed:'Ошибка',interrupted:'Прерван',cancelled:'Остановлен',paused:'Пауза',completed:'Готово',exporting:'Сохранение файлов','waiting-model':'Ожидание модели',voting:'Голосование'};
 const money=n=>Number(n/100).toLocaleString('ru-RU',{maximumFractionDigits:2});
 const bytes=n=>n>1048576?(n/1048576).toFixed(1)+' МБ':n>1024?(n/1024).toFixed(1)+' КБ':n+' Б';
-let catalog,state={series:[]},draft,economy,scenario,profiles=[],members=[],customMembers=false,page='catalog',selectedId=null,selected=new Set(),detailTab='runs',runsPage=0,worldPlayback=null,filePath='',fileCursor=0,journalCursor=0;
+let catalog,state={series:[]},draft,economy,scenario,profiles=[],members=[],customMembers=false,page='catalog',selectedId=null,selected=new Set(),detailTab='runs',runsPage=0,worldPlayback=null,filePath='',fileCursor=0,journalCursor=0,diagAt=0,economyKey='',lastReport=null;
 function alertError(e){$('error').textContent=String(e.message??e);$('error').hidden=false;}
 function notice(text){$('notice').textContent=text;$('notice').hidden=false;setTimeout(()=>$('notice').hidden=true,7000);}
 async function api(path,data){
@@ -80,7 +80,8 @@ function formPlan(){
  result.ticks=integer($('ticks').value,1,10000,'Тики');result.repetitions=integer($('repetitions').value,1,500,'Повторы');
  const seeds=$('seeds').value.split(',').map(s=>s.trim());if(seeds.some(s=>!s))throw Error('Укажите каждый seed без пустых значений');
  result.seeds=seeds.map(s=>integer(s,0,Number.MAX_SAFE_INTEGER,'Seed'));
- result.timeoutSeconds=integer($('timeout').value,1,900,'Лимит времени');result.mode=$('mode').value;
+ result.timeoutSeconds=integer($('timeout').value,1,14400,'Лимит времени');result.mode=$('mode').value;
+ const recording=$('recording').value;if(recording)result.recording=recording;else delete result.recording;
  if(economy)result.economyData=clone(economy);
  if(customMembers)result.participants=clone(members);
  else delete result.participants;
@@ -98,7 +99,7 @@ function formPlan(){
 }
 function syncPlan(){try{const p=formPlan();$('plan').value=JSON.stringify(p,null,2);let count=p.seeds.length*p.repetitions;for(const f of p.factors)count*=f.values?.length??1;$('estimate').textContent='Запланировано прогонов: '+count+' · '+p.ticks+' тиков · '+(p.mode==='algorithmic'?'алгоритмы':'гибрид');}catch(e){$('estimate').textContent=e.message;}}
 async function setPlan(plan){
- draft=clone(plan);$('experiment-name').value=plan.id;$('map').value=plan.scenario;$('ticks').value=plan.ticks;$('seeds').value=plan.seeds.join(', ');$('repetitions').value=plan.repetitions;$('timeout').value=plan.timeoutSeconds??180;$('mode').value=plan.mode;
+ draft=clone(plan);$('experiment-name').value=plan.id;$('map').value=plan.scenario;$('ticks').value=plan.ticks;$('seeds').value=plan.seeds.join(', ');$('repetitions').value=plan.repetitions;$('timeout').value=plan.timeoutSeconds??180;$('mode').value=plan.mode;$('recording').value=['brief','normal','detailed'].includes(plan.recording)?plan.recording:'';
  const c=await api(query('/api/config',{map:plan.scenario}));scenario=c.scenario;economy=clone(plan.economyData??c.economy);if(!plan.economyData)draft.economy=c.economyPath;
  customMembers=!!plan.participants;members=plan.participants?clone(plan.participants):scenario.participants.map((m,i)=>({id:m.id,cashMinor:economy.world.startingCashMinor,inventoryCapacity:economy.world.personalInventoryCapacity,position:m.position,preferredInput:m.publicPreferenceItem||(['grain','wood'][i%2]),difficulty:'Medium'}));
  $('npc-count').value=members.length-1;renderMembers();renderEconomy();renderFactors();syncPlan();
@@ -158,34 +159,46 @@ bind('add-factor',()=>{
  const values=$('factor-values').value.split(',').map(s=>{s=s.trim();if(kind==='boolean'){if(!['true','false'].includes(s))throw Error('Используйте true или false');return s==='true';}return kind==='number'?integer(s,0,1000000000,'Фактор'):s;});
  draft.factors=draft.factors.filter(f=>f.path!==path);draft.factors.push({path,values});renderFactors();syncPlan();
 });
-['experiment-name','ticks','seeds','repetitions','timeout','mode'].forEach(id=>$(id).addEventListener('input',syncPlan));
+['experiment-name','ticks','seeds','repetitions','timeout','mode','recording'].forEach(id=>$(id).addEventListener('input',syncPlan));
 $('map').addEventListener('change',()=>{const p=formPlan();delete p.participants;delete p.economyData;setPlan(p).catch(alertError);});
 $('preset').addEventListener('change',()=>{const p=catalog.presets.find(p=>p.id===$('preset').value);$('preset-description').textContent=p.description;setPlan(p.plan).catch(alertError);});
 bind('apply-json',()=>setPlan(parsePlan($('plan').value)));
-async function queue(run){const plan=formPlan();$('run').disabled=$('queue').disabled=true;try{
+async function queue(run){const plan=formPlan();
+ if(plan.recording==='detailed'&&plan.ticks>=1000&&!confirm('Подробная запись хранит кадр мира на каждый тик. При '+plan.ticks+' тиках это может занять сотни мегабайт. Продолжить?'))return;
+ $('run').disabled=$('queue').disabled=true;try{
  const r=await api('/api/queue',plan);if(run)await api('/api/start',{});await refresh();selectedId=r.id;runsPage=0;await showPage('detail');
  }finally{$('run').disabled=$('queue').disabled=false;}}
 bind('run',()=>queue(true));bind('queue',()=>queue(false));
+function renderActive(){
+ const hits=[];for(const s of state.series)for(const j of s.jobs)if(j.status==='running')hits.push([s,j]);
+ if(!hits.length){$('active-run').innerHTML='';return;}
+ const [s,j]=hits[0],p=j.progress;
+ $('active-run').innerHTML='<article class="card"><span class="pill running">Сейчас идёт</span><h2><button type="button" data-open="'+esc(s.id)+'">'+esc(s.name||s.plan.id)+'</button></h2><p>'+(p?esc(p.tick+' / '+p.target+' · '+Math.round(p.percent)+'% · '+(labels[p.status]||'выполняется')):'Runner запускается')+'</p></article>';
+}
 function renderCatalog(){
+ renderActive();
  const needle=$('search').value.toLowerCase(),archive=$('show-archive').checked;
  const rows=state.series.filter(s=>!!s.archived===archive&&((s.name??s.plan.id)+' '+s.id).toLowerCase().includes(needle)).slice().reverse();
  $('catalog').innerHTML=rows.length?rows.map(s=>{
  const completed=s.jobs.filter(j=>j.status==='succeeded').length,active=s.jobs.find(j=>j.status==='running'),status=active?'running':completed===s.jobs.length?'succeeded':s.jobs.find(j=>['failed','cancelled','interrupted'].includes(j.status))?.status??'queued';
- const map=catalog.maps.find(m=>m.path===s.plan.scenario)?.label??s.plan.scenario;
+ const map=(catalog.maps.find(m=>m.path===s.plan.scenario)||catalog.city?.maps?.find(m=>m.path===s.plan.scenario))?.label??s.plan.scenario;
  return '<article class="card"><div class="card-top"><input type="checkbox" name="series" value="'+esc(s.id)+'" '+(selected.has(s.id)?'checked':'')+' aria-label="Выбрать '+esc(s.name??s.plan.id)+'"><span class="pill '+status+'">'+labels[status]+'</span></div><h2><button data-open="'+esc(s.id)+'">'+esc(s.name??s.plan.id)+'</button></h2><p>'+esc(map)+'</p><p>'+s.plan.ticks+' тиков · '+s.plan.seeds.length+' seed · '+esc(s.plan.mode)+'</p><progress max="'+s.jobs.length+'" value="'+completed+'"></progress><p>'+bytes(s.bytes??0)+' · Готово: '+completed+' / '+s.jobs.length+(active?.progress?' · шаг '+active.progress.tick+' / '+active.progress.target:'')+'</p></article>';
  }).join(''):'<div class="empty"><h2>'+(archive?'Архив пуст':'Первое исследование начинается здесь')+'</h2><p class="muted">Выберите готовую проверку или настройте свой опыт.</p><button class="primary" data-page="new">Создать исследование</button></div>';
 }
 $('catalog').addEventListener('change',e=>{if(e.target.name==='series'){if(e.target.checked)selected.add(e.target.value);else selected.delete(e.target.value);}});
 $('catalog').addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b){selectedId=b.dataset.open;runsPage=0;showPage('detail').catch(alertError);}});
 $('search').addEventListener('input',renderCatalog);$('show-archive').addEventListener('change',renderCatalog);
-async function refresh(){state=await api('/api/state');$('queue-status').textContent=state.paused?'Очередь на паузе':state.running?'Очередь работает':'Очередь завершена';if(page==='catalog')renderCatalog();if(page==='detail')renderDetail();}
+async function refresh(){state=await api('/api/state');$('queue-status').textContent=state.paused?'Очередь на паузе':state.running?'Очередь работает':'Очередь завершена';renderActive();if(page==='catalog')renderCatalog();if(page==='detail')renderDetail();}
 function renderDetail(){
  const s=currentSeries();if(!s){showPage('catalog');return;}
- $('detail-name').textContent=s.name??s.plan.id;$('detail-id').textContent=s.id;$('archive').textContent=s.archived?'Вернуть из архива':'В архив';
+ $('detail-name').textContent=s.name??s.plan.id;$('detail-id').textContent=s.id+' · '+(/^[0-9a-f]{40}$/.test(s.commit||'')?(s.commitVerified?'Git '+s.commit.slice(0,12):'Git '+s.commit.slice(0,12)+' · есть незафиксированные изменения'):'коммит Git не подтверждён');$('archive').textContent=s.archived?'Вернуть из архива':'В архив';
  const active=s.jobs.find(j=>j.status==='running'),p=active?.progress,completed=s.jobs.filter(j=>j.status==='succeeded').length;
- $('live-progress').innerHTML='<div class="metric-grid"><div class="metric"><span>ЗАВЕРШЕНО ПРОГОНОВ</span><strong>'+completed+' / '+s.jobs.length+'</strong></div><div class="metric"><span>ТЕКУЩИЙ ШАГ</span><strong>'+(p?p.tick+' / '+p.target:'—')+'</strong></div><div class="metric"><span>СОСТОЯНИЕ</span><strong style="font-size:18px">'+esc(active?(labels[p?.status]??'Запуск runner'):'Нет активного прогона')+'</strong></div><div class="metric"><span>СКОРОСТЬ / ВРЕМЯ</span><strong style="font-size:18px">'+(p?Number(p.ticksPerSecond).toFixed(1)+' тик/с · '+Math.round(p.elapsedSeconds)+' с · '+(p.modelRequests??0)+' запр.':'—')+'</strong></div></div><progress max="100" value="'+(p?.percent??100*completed/s.jobs.length)+'"></progress>'+(p?'<p>Последний шаг: '+esc(p.lastAdvancedAt)+' · связь: '+esc(p.heartbeatAt)+'</p>':'')+(active&&!p?'<p>Runner готовит исходный мир. Если статус долго не меняется, откройте файлы и журналы попытки.</p>':'');
+ const limit=s.plan.timeoutSeconds??180;
+ $('live-progress').innerHTML='<div class="metric-grid"><div class="metric"><span>ТИК</span><strong>'+(p?p.tick+' / '+p.target:'—')+'</strong></div><div class="metric"><span>ХОД</span><strong>'+(p?Math.round(p.percent)+' %':'—')+'</strong></div><div class="metric"><span>СОСТОЯНИЕ</span><strong style="font-size:18px">'+esc(active?(labels[p?.status]??'Запуск runner'):'Нет активного прогона')+'</strong></div><div class="metric"><span>СКОРОСТЬ</span><strong style="font-size:18px">'+(p?Number(p.ticksPerSecond).toFixed(1)+' тик/с':'—')+'</strong></div></div><progress max="100" value="'+(p?.percent??(s.jobs.length?100*completed/s.jobs.length:0))+'"></progress><p>Прошло '+(p?Math.round(p.elapsedSeconds)+' с':'—')+' · осталось '+esc(etaText(p))+' · предохранитель '+limit+' с. '+esc(diagnosis(p,active))+(state.paused&&active?' Очередь на паузе, этот прогон сам не останавливается.':'')+'</p><p class="muted">'+esc((catalog.maps.find(m=>m.path===s.plan.scenario)||catalog.city?.maps?.find(m=>m.path===s.plan.scenario))?.label||s.plan.scenario)+' · seed '+(s.plan.seeds||[]).join(', ')+' · '+(s.plan.recording||(s.plan.recordWorld===false?'без кадров мира':'кадры мира'))+' · предохранитель '+limit+' с</p>';
  const old=$('job').value,html=s.jobs.map(j=>'<option value="'+esc(j.id)+'">'+esc(j.id)+' · '+labels[j.status]+'</option>').join('');
  if($('job').innerHTML!==html){$('job').innerHTML=html;if(s.jobs.some(j=>j.id===old))$('job').value=old;else $('job').value=(active??s.jobs[0]).id;updateAttempts();}
+ if((detailTab==='analysis'||detailTab==='npc')&&$('attempt').value)loadEconomy().catch(alertError);
+ if(detailTab==='diagnostics'&&Date.now()-diagAt>3000){diagAt=Date.now();loadDiagnostics().catch(alertError);}
  const jobs=s.jobs.slice(runsPage*50,runsPage*50+50);
  $('runs').innerHTML=table(['Прогон','Seed','Факторы','Состояние','Попыток','Результат'],jobs.map(j=>[
  '<button data-select-job="'+esc(j.id)+'">'+esc(j.id)+'</button>',esc(j.seed),esc(JSON.stringify(j.factors)), '<span data-status="'+j.status+'" class="pill '+j.status+'">'+labels[j.status]+'</span>',j.attempt,esc(j.error??(j.metrics?'Капитал '+money(j.metrics.capitalMinor)+' мон.':'—'))]));
@@ -211,7 +224,9 @@ async function loadDetailTab(){
  if(detailTab==='world')await openWorld();
  if(detailTab==='files')await loadFiles();
  if(detailTab==='journal'){journalCursor=0;await loadJournal();}
- if(detailTab==='analysis'){renderMetrics();await chart();}
+ if(detailTab==='analysis'){renderMetrics();await chart();await loadEconomy();}
+ if(detailTab==='npc')await loadEconomy();
+ if(detailTab==='diagnostics')await loadDiagnostics();
 }
 function renderMetrics(){const m=currentJob()?.metrics;if(!m){$('metrics').textContent='Результаты появятся после успешного завершения.';return;}
  $('metrics').innerHTML='<div class="metric-grid">'+[['Оценка капитала',money(m.capitalMinor)+' мон.'],['Стоимость выпуска',money(m.outputBaseMinor)+' мон.'],['Занятость',m.employment+' чел.'],['Просрочки',m.lateDeliveries+m.latePickups]].map(([a,b])=>'<div class="metric"><span>'+a+'</span><strong>'+b+'</strong></div>').join('')+'</div><p>'+esc(m.profitDefinition)+'</p>';
@@ -265,5 +280,121 @@ bind('scan-models',async()=>{const r=await api('/api/models',{endpoint:$('model-
 bind('save-model',async()=>{const value={ollama:{endpoint:$('model-endpoint').value,model:$('model-tag').value,contextTokens:4096,maximumOutputTokens:512,seed:42},runtime:{queueCapacity:3,timeoutMilliseconds:integer($('model-timeout').value,1,120,'Таймаут')*1000}};
  await api('/api/profiles',{kind:'model',name:$('model-name').value,value});await loadProfiles();renderMembers();notice('Профиль модели доступен участникам нового опыта');});
 bind('shutdown',async()=>{if(confirm('Завершить лабораторию после окончания активного прогона?')){await api('/api/shutdown',{});notice('Лаборатория завершает работу');clearInterval(poll);}});
-async function init(){catalog=await api('/api/catalog');$('preset').innerHTML=catalog.presets.map(p=>'<option value="'+p.id+'">'+esc(p.label)+'</option>').join('');$('map').innerHTML=catalog.maps.map(m=>'<option value="'+esc(m.path)+'">'+esc(m.label)+'</option>').join('');$('factor').innerHTML=Object.keys(catalog.factors).map(k=>'<option value="'+k+'">'+esc(catalog.factorLabels[k]??k)+'</option>').join('');await loadProfiles();await setPlan(catalog.presets[0].plan);$('preset-description').textContent=catalog.presets[0].description;await refresh();}
+function etaText(p){
+ if(!p||!(p.ticksPerSecond>0.05)||p.tick<=(p.startTick||0)||p.percent>=100)return 'оценка появится после устойчивой скорости';
+ const left=(p.target-p.tick)/p.ticksPerSecond;if(!Number.isFinite(left)||left<0)return 'нет оценки';
+ return left>=60?'примерно '+Math.round(left/60)+' мин по текущей скорости':'примерно '+Math.max(1,Math.round(left))+' с по текущей скорости';
+}
+function diagnosis(p){
+ if(!p)return 'Процесс запускается. Тик ещё не записан; долгая подготовка мира не считается зависанием.';
+ const beat=Date.parse(p.heartbeatAt),age=Number.isFinite(beat)?(Date.now()-beat)/1000:null,status=p.status||p.phase;
+ if(status==='paused')return 'Пауза прогона. Это не пауза очереди.';
+ if(status==='waiting-model'||p.waitingForModel)return 'Ожидание модели. Экономические тики в это время не идут.';
+ if(status==='voting'||p.waitingForBallots)return 'Голосование.';
+ if(status==='exporting')return 'Сохранение результатов.';
+ if(status==='failed')return 'Аварийное завершение. Журнал попытки на вкладке «Диагностика».';
+ if(status==='cancelled')return 'Остановлено между тиками. Неполный прогон не входит в статистику.';
+ if(age!=null&&age>45)return 'Heartbeat старше 45 с. Возможна блокировка: откройте журнал процесса.';
+ return 'Последний завершённый тик '+p.tick+'. Свежий heartbeat значит, что долгий тик ещё считается.';
+}
+function coins(n){return n==null||n===''?'—':money(n)+' мон.';}
+function drawLines(canvas,lines,xTitle,yTitle){
+ const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#171a21';ctx.fillRect(0,0,w,h);
+ const pts=lines.flatMap(l=>l.points);if(!pts.length){ctx.fillStyle='#a39e94';ctx.font='14px sans-serif';ctx.fillText('Нет точек для графика',24,40);return;}
+ const minX=Math.min(...pts.map(p=>p.x)),maxX=Math.max(minX+1,...pts.map(p=>p.x)),maxY=Math.max(1,...pts.map(p=>p.y));
+ ctx.font='12px sans-serif';ctx.fillStyle='#a39e94';ctx.strokeStyle='#343844';
+ for(let i=0;i<=4;i++){const y=28+i*((h-70)/4);ctx.beginPath();ctx.moveTo(58,y);ctx.lineTo(w-16,y);ctx.stroke();ctx.fillText(String(Math.round(maxY*(1-i/4))),8,y+4);}
+ lines.forEach(line=>{ctx.strokeStyle=line.color;ctx.beginPath();line.points.forEach((p,n)=>{const x=58+(p.x-minX)/(maxX-minX)*(w-80),y=28+(1-p.y/maxY)*(h-70);n?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();});
+ ctx.fillStyle='#ebe7df';lines.forEach((line,i)=>{ctx.fillStyle=line.color;ctx.fillText(line.name,70+i*180,h-14);});
+ ctx.fillStyle='#a39e94';ctx.fillText(xTitle+'  '+minX+'–'+maxX,58,16);ctx.fillText(yTitle,w-220,16);
+}
+function paintEconomy(){
+ const data=lastReport;if(!data)return;
+ const samples=data.samples||[],live=samples.length?samples[samples.length-1]:{},pick=(a,b)=>a!=null?a:b;
+ const treasuryNow=pick(data.treasuryBalanceMinor,live.treasuryBalanceMinor),municipalNow=pick(data.municipalMinor,live.municipalMinor),budgetNow=pick(data.orderBudgetMinor,live.orderBudgetMinor);
+ const populationNow=pick(data.population,live.population),employedNow=pick(data.employed,live.employed),unemployedNow=pick(data.unemployed,live.unemployed);
+ const builtNow=pick(data.buildings?.constructed,live.constructedBuildings),existingNow=pick(data.buildings?.existing,live.existingBuildings),activeNow=pick(data.activeProductions,live.activeProductions);
+ const harvestedNow=pick(data.flows?.harvested,live.harvested),producedNow=pick(data.flows?.produced,live.produced);
+ const cards=[['Касса казны',coins(treasuryNow)],['Муниципальный капитал',coins(municipalNow)],['Бюджет заказов',coins(budgetNow)],['Население',populationNow==null?'—':populationNow+' чел.'],['Заняты',employedNow==null?'—':employedNow+' чел.'],['Без работы',unemployedNow==null?'—':unemployedNow+' чел.'],['Построено',builtNow??'—'],['Существует зданий',existingNow??'—'],['Действующие производства',activeNow??'—'],['Добыто',harvestedNow??'—'],['Произведено',producedNow??'—']];
+ const people=(data.participants&&data.participants.length?data.participants:(live.participants||[])).map(p=>({...p,human:p.human||p.actor===1}));
+ const npc=table(['Участник','Деньги','Капитал','Здания','Производства','Действующие','Занят'],people.map(p=>[p.human?'Человек, пассивный':'NPC '+p.actor,coins(p.cashMinor),coins(p.capitalMinor),p.buildings??'—',p.productionBuildings??'—',p.staffedProductions??'—',p.busy?'Да':'Нет']));
+ const contractSource=Object.keys(data.contracts||{}).length?data.contracts:(live.contracts||{});
+ const contracts=Object.entries(contractSource).map(([k,v])=>k+': '+v).join(', ')||'нет';
+ const limits=(data.limitations||[]).map(x=>'<li>'+esc(x)+'</li>').join('');
+ const body='<div class="metric-grid">'+cards.map(([a,b])=>'<div class="metric"><span>'+esc(a)+'</span><strong style="font-size:18px">'+esc(b)+'</strong></div>').join('')+'</div><p>Договоры поставки: '+esc(contracts)+'. Статус прогона: '+esc(labels[data.status]||data.status||'идёт')+(data.elapsedMilliseconds==null?'':', '+Math.round(data.elapsedMilliseconds/1000)+' с')+'.</p>'+(data.identity?.economyProfileId?'<p>Профиль '+esc(data.identity.economyProfileId)+' · карта '+esc(data.identity.scenarioId||'')+' · seed '+esc(data.identity.seed??'')+(data.identity.commit?' · Git '+esc(data.identity.commit.slice(0,12)):'')+'</p>':'')+(data.identity?.commitNote?'<p>'+esc(data.identity.commitNote)+'</p>':'')+'<ul>'+limits+'</ul><canvas id="chart-treasury" width="1050" height="280" aria-label="Казна по тикам"></canvas><canvas id="chart-people" width="1050" height="280" aria-label="Население по тикам"></canvas><canvas id="chart-output" width="1050" height="280" aria-label="Добыча и производство"></canvas>';
+ const recent=data.events?.recent?.length?data.events.recent:(live.recentEvents||[]);
+ $('economy-report').innerHTML=body;$('npc-report').innerHTML=npc+(recent.length?'<h3>Последние события</h3>'+recent.map(e=>'<p>Тик '+esc(e.tick)+' · '+esc(e.type)+' · участник '+esc(e.actor??'—')+' · '+esc(e.reason||e.item||'')+'</p>').join(''):'');
+ const treasury=[],municipal=[],population=[],employed=[],unemployed=[],harvested=[],produced=[];
+ const source=data.metrics?.kind==='treasury'?data.metrics.rows:samples;
+ for(const row of source){
+  const tick=Number(row.tick);if(!Number.isFinite(tick))continue;
+  const cash=row.treasuryMinor??row.treasuryBalanceMinor;if(cash!=null)treasury.push({x:tick,y:cash/100});
+  if(row.population!=null)population.push({x:tick,y:Number(row.population)});
+  if(row.unemployed!=null)unemployed.push({x:tick,y:Number(row.unemployed)});
+  if(row.harvested!=null)harvested.push({x:tick,y:Number(row.harvested)});
+  if(row.produced!=null)produced.push({x:tick,y:Number(row.produced)});
+ }
+ for(const row of data.samples||[]){
+  const tick=Number(row.tick);if(!Number.isFinite(tick))continue;
+  if(row.municipalMinor!=null)municipal.push({x:tick,y:row.municipalMinor/100});
+  if(row.employed!=null)employed.push({x:tick,y:Number(row.employed)});
+ }
+ drawLines($('chart-treasury'),[{name:'Касса казны, монеты',color:'#d4b483',points:treasury},{name:'Муниципальный капитал, монеты',color:'#8fb9c9',points:municipal}],'Тик','Монеты');
+ drawLines($('chart-people'),[{name:'Население',color:'#d4b483',points:population},{name:'Занятые',color:'#9cba8a',points:employed},{name:'Безработные',color:'#d0897a',points:unemployed}],'Тик','Человек');
+ drawLines($('chart-output'),[{name:'Добыто, накоплено',color:'#d4b483',points:harvested},{name:'Произведено, накоплено',color:'#8fb9c9',points:produced}],'Тик','Единицы');
+}
+async function loadEconomy(){
+ if(!$('attempt').value)return;
+ const job=currentJob();if(!job)return;
+ const key=job.id+'/'+$('attempt').value+'/'+(job.progress?.tick??'')+'/'+job.status;
+ if(key===economyKey&&lastReport){paintEconomy();return;}
+ lastReport=await api(query('/api/economy',attemptParams()));economyKey=key;paintEconomy();
+}
+async function loadDiagnostics(){
+ const job=currentJob();if(!job||!$('attempt').value){$('diagnostics').textContent='Прогон ещё не начат.';return;}
+ const names=[...new Set(['checks/'+job.id+'-a'+$('attempt').value+'.stdout.log','checks/'+job.id+'-a'+$('attempt').value+'.stderr.log',...(job.logs||[])])];
+ const blocks=[];
+ for(const path of names){
+  try{const r=await api(query('/api/preview',{id:selectedId,path,tail:'1'}));blocks.push('<h3>'+esc(path)+'</h3><p class="muted">'+bytes(r.size)+(r.cursor?' · показан конец, не весь файл':'')+'</p><pre>'+esc(r.text||'Журнал пуст')+'</pre>');}
+  catch(e){blocks.push('<p class="muted">'+esc(path)+': '+esc(e.message)+'</p>');}
+ }
+ $('diagnostics').innerHTML=blocks.join('')||'<p>Журналов попытки пока нет.</p>';
+}
+function refreshCity(){
+ if(!catalog?.city)return;
+ const map=catalog.city.maps.find(m=>m.path===$('city-map').value)||catalog.city.maps[0];
+ const ticks=Number($('city-ticks').value)||0,recording=$('city-recording').value;
+ const timeout=Math.min(catalog.limits.timeoutSeconds,Math.max(300,ticks*4));
+ $('city-note').textContent=(map?.note||'')+' Вместе с NPC в мире есть один пассивный человек: он не ведёт хозяйство и голосует за себя. Профиль '+map.profile+'.';
+ let text='Предохранитель '+timeout+' с. Это предел процесса, не прогноз времени. ';
+ if(ticks>5000)text+='Горизонт больше 5000 тиков может идти часами, предел не длиннее 4 часов. ';
+ if(recording==='detailed'&&ticks>=1000)text+='Подробная запись может занять сотни мегабайт. ';
+ if(recording==='normal')text+='Обычная запись добавляет короткий срез каждые 30 тиков и не хранит кадр мира на каждый тик. Журнал решений NPC всё равно пишется: на Малой долине 1000 тиков заняли около 45 МБ.';
+ if(recording==='brief')text+='Краткая запись не делает промежуточных срезов. Итоговый экспорт Core сохраняется.';
+ $('city-timeout').textContent=text;
+ document.querySelectorAll('#city-chips button').forEach(b=>b.classList.toggle('active',Number(b.dataset.ticks)===ticks));
+}
+async function init(){catalog=await api('/api/catalog');$('preset').innerHTML=catalog.presets.map(p=>'<option value="'+p.id+'">'+esc(p.label)+'</option>').join('');$('map').innerHTML=catalog.maps.map(m=>'<option value="'+esc(m.path)+'">'+esc(m.label)+'</option>').join('');$('factor').innerHTML=Object.keys(catalog.factors).map(k=>'<option value="'+k+'">'+esc(catalog.factorLabels[k]??k)+'</option>').join('');
+ $('city-map').innerHTML=catalog.city.maps.map(m=>'<option value="'+esc(m.path)+'">'+esc(m.label)+'</option>').join('');
+ $('city-chips').innerHTML=catalog.city.ticks.map(n=>'<button type="button" data-ticks="'+n+'">'+n+'</button>').join('');
+ refreshCity();await loadProfiles();await setPlan(catalog.presets[0].plan);$('preset-description').textContent=catalog.presets[0].description;await refresh();}
+$('show-advanced').addEventListener('click',()=>{const box=$('advanced-setup');box.hidden=!box.hidden;$('show-advanced').textContent=box.hidden?'Расширенные настройки, серии и JSON':'Скрыть расширенные настройки';if(!box.hidden)syncPlan();});
+$('city-chips').addEventListener('click',e=>{const n=e.target.dataset.ticks;if(!n)return;$('city-ticks').value=n;refreshCity();});
+['city-ticks','city-map','city-recording'].forEach(id=>$(id).addEventListener('input',refreshCity));
+$('active-run').addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b){selectedId=b.dataset.open;runsPage=0;showPage('detail').catch(alertError);}});
+$('nav-active').addEventListener('click',()=>{const hit=state.series.find(s=>s.jobs.some(j=>j.status==='running'))||state.series[state.series.length-1];if(!hit){notice('Активного исследования нет. Его можно начать на странице «Новое исследование».');return;}selectedId=hit.id;showPage('detail').catch(alertError);});
+bind('start-city',async()=>{
+ const ticks=integer($('city-ticks').value,1,catalog.limits.ordinaryTicks,'Тики');
+ const npcs=integer($('city-npcs').value,3,10,'NPC');
+ const seed=integer($('city-seed').value,0,Number.MAX_SAFE_INTEGER,'Seed');
+ const recording=$('city-recording').value,title=($('city-title').value||'Экономика города').trim();
+ if(!title||title.length>80)throw Error('Название исследования: от 1 до 80 символов');
+ if(recording==='detailed'&&ticks>=1000&&!confirm('Подробная запись хранит кадр мира на каждый тик. При '+ticks+' тиках это может занять сотни мегабайт. Продолжить?'))return;
+ const choice=catalog.city.maps.find(m=>m.path===$('city-map').value);
+ const plan={version:1,id:'city-economy',title,scenario:choice.path,economy:choice.economy,ordinaryNpcCount:npcs,ticks,seeds:[seed],repetitions:1,mode:'algorithmic',factors:[],recording,timeoutSeconds:Math.min(catalog.limits.timeoutSeconds,Math.max(300,ticks*4))};
+ const difficulty=$('city-difficulty').value;if(difficulty)plan.factors=[{path:'npc.difficulty',values:[difficulty]}];
+ $('start-city').disabled=true;
+ try{const r=await api('/api/queue',plan);await api('/api/start',{});await refresh();selectedId=r.id;runsPage=0;await showPage('detail');}
+ finally{$('start-city').disabled=false;}
+});
 let refreshing=false;const poll=setInterval(async()=>{if(refreshing)return;refreshing=true;try{await refresh();}catch(e){alertError(e);}finally{refreshing=false;}},1000);init().catch(alertError);

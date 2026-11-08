@@ -72,15 +72,23 @@ def make_server(lab, port=8765):
                     profile=choice.get('economy','config/economy.json')
                     return self.send(200,dict(economy=read(ROOT/profile),economyPath=profile,scenario=read(source(map_path,lab.workspace))))
                 if path=='/api/describe':return self.send(200,lab.views.describe(q['id']))
-                if path=='/api/preview':return self.send(200,lab.views.preview(q['id'],q['path'],q.get('cursor',0)))
+                if path=='/api/preview':return self.send(200,lab.views.preview(q['id'],q['path'],q.get('cursor',0),q.get('tail','0')))
+                if path=='/api/economy':
+                    from research_city_report import report
+                    folder=(lab.views.folder(q['id'])/lab.views.attempt(q['id'],q['job'],q['attempt'])).resolve()
+                    if not folder.is_relative_to(lab.views.folder(q['id']).resolve()):raise ValueError('Недопустимый путь')
+                    return self.send(200,report(folder))
                 if path=='/api/world':return self.send(200,lab.views.world(q['id'],q['job'],q['attempt'],q['tick']))
                 if path=='/api/chart':return self.send(200,lab.views.chart(q['id'],q['job'],q['attempt']))
                 if path=='/api/journal':return self.send(200,lab.views.journal(q['id'],q['job'],q['attempt'],q['kind'],q.get('cursor',0),q.get('actor',''),q.get('search',''),q.get('important','false')))
                 if path == '/api/state':
                     return self.send(200, lab.snapshot())
                 if path == '/api/catalog':
-                    from research_lab_presets import MAPS, FACTOR_LABELS, presets
+                    from research_lab import MAX_TIMEOUT, ORDINARY_TICKS
+                    from research_lab_presets import MAPS, FACTOR_LABELS, presets, CITY_MAPS, city_plan
                     return self.send(200, dict(default=DEFAULT, factors=FACTORS, presets=presets(), maps=MAPS, factorLabels=FACTOR_LABELS,
+                        city=dict(maps=CITY_MAPS, plan=city_plan(), ticks=[120,500,1000,2000,2500,5000]),
+                        limits=dict(ticks=10000, ordinaryTicks=ORDINARY_TICKS, timeoutSeconds=MAX_TIMEOUT, recording=['brief','normal','detailed']),
                         scenarios=[str(p.relative_to(ROOT)) for p in sorted((ROOT/'scenarios').glob('*.json')) if 'controllers' not in p.name]))
                 if path.startswith('/archives/') and path.endswith('.zip'):
                     key = unquote(path[len('/archives/'):-4])
