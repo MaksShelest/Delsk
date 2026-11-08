@@ -105,8 +105,20 @@ public static class RunArtifacts
         csv.WriteLine("tick,participant_cash_minor,wages_minor,treasury_minor,harvested,produced,exported,state_hash,population,unemployed");
         foreach (var sample in session.Samples)
             csv.WriteLine(string.Join(',', new[] { sample.Tick, sample.ParticipantCashMinor, sample.WageExpenseMinor,
-                sample.EnergyExpenseMinor, sample.Harvested, sample.Produced, sample.Exported }.Select(x => x.ToString(CultureInfo.InvariantCulture)))
+                sample.TreasuryBalanceMinor, sample.Harvested, sample.Produced, sample.Exported }.Select(x => x.ToString(CultureInfo.InvariantCulture)))
                 + "," + sample.StateHash + "," + sample.Population.ToString(CultureInfo.InvariantCulture) + "," + sample.Unemployed.ToString(CultureInfo.InvariantCulture));
+        // Колонки не переставляются. Файл объясняет смысл treasury_minor новым читателям и графикам.
+        WriteJson("metrics-format.json", new
+        {
+            Version = 1, File = "metrics.csv", TreasuryColumn = "treasury_minor",
+            TreasuryMeaning = "Balance of the Treasury account in minor units. Not an energy expense, not municipal capital (treasury plus road receivables), and not the capital-order budget.",
+            WageColumn = "wages_minor",
+            WageMeaning = "Balance of the WagesSink account: wages already paid, not the current wage rate.",
+            ParticipantCashColumn = "participant_cash_minor",
+            ParticipantCashMeaning = "Cash of the first participant. In an ordinary headless study that slot is the passive human, not an NPC.",
+            Flows = "harvested, produced and exported are cumulative totals, not the tick delta.",
+            CheckpointField = "Saved TickSample JSON keeps the historical name energyExpenseMinor. The value is the same Treasury balance."
+        });
         using var labor = new StreamWriter(Path.Combine(directory, "labor.csv"), false, new UTF8Encoding(false));
         labor.WriteLine("tick,group_id,owner_id,headcount,capacity,wage_minor,attraction_wage_minor,target,ready,reason,credit");
         foreach (var sample in session.LaborSamples)

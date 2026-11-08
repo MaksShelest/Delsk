@@ -5,7 +5,12 @@ namespace Simulation.Hosting;
 
 public record RecordedCommand(long SubmittedAtTick, ParticipantId AuthenticatedActor, CommandEnvelope Command,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] int TravelQuantum = 0);
-public record TickSample(long Tick, long ParticipantCashMinor, long WageExpenseMinor, long EnergyExpenseMinor,
+/// <summary>
+/// Срез тика. Четвёртое поле — баланс счёта Treasury в minor, не расход энергии.
+/// В checkpoint имя JSON остаётся energyExpenseMinor: старые сохранения читаются без миграции.
+/// </summary>
+public record TickSample(long Tick, long ParticipantCashMinor, long WageExpenseMinor,
+    [property: JsonPropertyName("energyExpenseMinor")] long TreasuryBalanceMinor,
     long Harvested, long Produced, long Exported, string StateHash, long Population, long Unemployed);
 public record LaborSample(long Tick, EmploymentView[] EmploymentGroups);
 
@@ -54,7 +59,7 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
                 var state=Engine.Inspect();sample=sample with{
                     ParticipantCashMinor=state.Accounts.Single(a=>a.Id==state.Participants[0].AccountId).BalanceMinor,
                     WageExpenseMinor=state.Accounts.Single(a=>a.Kind=="WagesSink").BalanceMinor,
-                    EnergyExpenseMinor=state.Accounts.Single(a=>a.Kind=="Treasury").BalanceMinor};
+                    TreasuryBalanceMinor=state.Accounts.Single(a=>a.Kind=="Treasury").BalanceMinor};
             }
             _samples[^1]=sample;
         }
