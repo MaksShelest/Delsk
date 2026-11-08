@@ -13,7 +13,7 @@ public partial class RoadPanel : VBoxContainer
     private readonly LineEdit _route=new(){Name="RoadRoute",PlaceholderText="10,1; 11,1",SizeFlagsHorizontal=SizeFlags.ExpandFill};
     private readonly Label _state=Wrap(),_cost=Wrap(),_contributions=Wrap(),_error=Wrap(),_exit=Wrap();
     private readonly Button _start=new(){Name="RoadStart"},_stop=new(){Name="RoadStop"},_turn=new(){Name="RoadTurn"};
-    private readonly SpinBox _wage=new(){Name="RoadWage",MinValue=0,MaxValue=1000,Step=.05,Value=.20};
+    private readonly SpinBox _wage=new(){Name="RoadWage",MinValue=0,MaxValue=1000,Step=.02,Value=0};
     private readonly Button _pay=new(){Name="RoadSetWage"};
     private readonly VBoxContainer _orders=new();private readonly List<(Button Button,GameAction Action)> _orderButtons=[];
     private bool _pending;private long _selectedState;private long[] _ids=[];private string _key="",_orderKey="";private PlayerView? _view;
@@ -29,7 +29,7 @@ public partial class RoadPanel : VBoxContainer
         var buttons=TabletDesign.Flow();_start.Text=L("Начать / продолжить","Start / resume");_stop.Text=L("Остановить работы","Pause work");_turn.Text=L("Развернуться","Turn around");
         GameUi.Primary(_start);foreach(var b in new[]{_start,_stop,_turn})buttons.AddChild(b);AddChild(buttons);
         var wages=TabletDesign.Flow();_pay.Text=L("Зарплата группы · монет/тик","Crew wage · coins/tick");wages.AddChild(_wage);wages.AddChild(_pay);AddChild(wages);
-        _pay.Pressed+=()=>{if(Selected>0)Submit(new(ActionKind.SetWage,Group:new(Selected),WageMinor:(long)Math.Round(_wage.Value*100)));};
+        _pay.Pressed+=()=>{if(Selected>0)Submit(new(ActionKind.SetWage,Group:new(Selected),WageMinor:PlayerDesk.MinorFromCoins(_wage.Value)));};
         _start.Pressed+=()=>Send(true);_stop.Pressed+=()=>Send(false);_turn.Pressed+=()=>{if(Selected>0)Submit(new(ActionKind.TurnVehicle,VehicleId:Selected));};
         AddChild(new UiDisclosure(L("Управление машиной","Vehicle controls"),_exit));
         AddChild(_orders);
@@ -71,6 +71,13 @@ public partial class RoadPanel : VBoxContainer
             _level.Select(work is null?Math.Clamp(roads.Cells.FirstOrDefault(c=>c.Cell==selectedVehicle.Position)?.Level??0,0,2):work.Level-1);
             _mode.Select(work?.Mode==EquipmentMode.Automatic?1:0);
         }
+        long step=view.Economy?.PlayerWageStepMinor??PlayerDesk.WageStepMinor;
+        _wage.Step=step/100d;
+        if(!_wage.HasFocus())
+        {
+            long desired=work?.Group.PendingWageMinor??work?.Group.WageMinor??roads.Rules.WageMinor;
+            if(PlayerDesk.MinorFromCoins(_wage.Value)!=desired)_wage.SetValueNoSignal(desired/100d);
+        }
         var rule=roads.Rules.Stages[_level.Selected];
         _cost.Text=L("На клетку: ","Per cell: ")+rule.PriceMinor/100m+L(" монет · "," coins · ")+string.Join(", ",rule.Materials.Select(m=>m.Quantity+" "+PlayerText.Item(_language,m.ItemId)))+" · "+rule.Ticks+L(" тиков при 2 рабочих; ×2 лично/при одном."," ticks with 2 workers; ×2 personal/with one.");
         var traffic=roads.OwnTraffic.FirstOrDefault(t=>t.VehicleId==Selected);
@@ -79,7 +86,7 @@ public partial class RoadPanel : VBoxContainer
             (work is null?"":$" · {work.Cursor}/{work.Route.Length} · "+L("работники ","workers ")+work.Group.Headcount+"/2"+(work.Batch is {} batch?$" · {batch.Work}/{2*roads.Rules.Stages[batch.Level-1].Ticks}":""));
         try{var cell=Route()[0];var road=roads.Cells.FirstOrDefault(c=>c.Cell==cell);_contributions.Text=L("Ступени / будущие права: ","Stages / future rights: ")+(road is null?L("нет покрытия","no surface"):string.Join(" → ",road.Contributions.Select(c=>c.Level+": "+(c.Builder.Value==0?L("город","city"):"#"+c.Builder.Value))));}catch(FormatException){_contributions.Text="";}
         _start.Disabled=_stop.Disabled=pending||Selected==0;
-        _pay.Disabled=pending||work is null||!_access(new(ActionKind.SetWage,Group:new(Selected),WageMinor:(long)Math.Round(_wage.Value*100))).Allowed;
+        _pay.Disabled=pending||work is null||!_access(new(ActionKind.SetWage,Group:new(Selected),WageMinor:PlayerDesk.MinorFromCoins(_wage.Value))).Allowed;
         _turn.Disabled=pending||Selected==0||!_access(new(ActionKind.TurnVehicle,VehicleId:Selected)).Allowed;
         string orderKey=string.Join(';',roads.Orders.Select(o=>$"{o.Id}/{o.Assignee}/{o.PaidTick}"));
         foreach(var entry in _orderButtons){var permission=_access(entry.Action);entry.Button.Disabled=pending||!permission.Allowed;entry.Button.TooltipText=permission.Allowed?"":GameUi.Reason(_language,permission.ReasonCode);}
