@@ -116,7 +116,9 @@ Linux, Малая долина, seed 42, 3 алгоритмических NPC и
 
 Отдельный тест повторяет упавшие случаи при `PYTHONUTF8=0` и `PYTHONIOENCODING=cp1252:strict`.
 
-Повторный прогон GitHub `42671868818` и `42671868852` начался 9 ноября 2026 в 22:11 по Самаре. Большинство job не получили runner: `needs.result` равен `abandoned`. `core` из-за этого пропущен, `research-lab-windows` не создан. `verify` и `city-ux-ui` упали на этой отметке, не на тестах лаборатории. Job, которым runner достался, завершились успешно: `billing-developer`, `i4-equipment (developer)`, `services-developer`, `i2-control (developer)`, `npc-natural (small-river, 10)`, `windows-core-replay`. Это не отказ кода R1. Следующий push запускает тот же набор заново.
+Повторный прогон GitHub `42671868818` и `42671868852` начался 9 ноября 2026 в 22:11 по Самаре. Большинство job не получили runner: `needs.result` равен `abandoned`. `core` из-за этого пропущен, `research-lab-windows` не создан. `verify` и `city-ux-ui` упали на этой отметке, не на тестах лаборатории. Job, которым runner достался, завершились успешно: `billing-developer`, `i4-equipment (developer)`, `services-developer`, `i2-control (developer)`, `npc-natural (small-river, 10)`, `windows-core-replay`.
+
+Следующий прогон `42673350038` и `42673349305` начался в 22:21 по Самаре, внутри инцидента GitHub Actions и Checks API (22:12–22:59 по Самаре, https://www.githubstatus.com, critical, resolved 22:59). Снова `abandoned`: `core`, `research-lab-windows`, часть matrix, из-за этого `verify` и `city-ux-ui`. `i1-movement (developer)` runner получил и вышел с кодом 124 на прежнем пределе 1000 с. Разделы 0–8 прошли; `I1HighwayTractorTests` был прерван внешним пределом, свой предел раздела 300 с не исчерпан. 8 ноября тот же job прошёл за 13 мин 44 с. Предел не повышался. После закрытия инцидента тот же набор запускается снова.
 
 ## 8. Windows
 
