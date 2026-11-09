@@ -116,6 +116,8 @@ Linux, Малая долина, seed 42, 3 алгоритмических NPC и
 
 Отдельный тест повторяет упавшие случаи при `PYTHONUTF8=0` и `PYTHONIOENCODING=cp1252:strict`.
 
+Повторный прогон GitHub `42671868818` и `42671868852` начался 9 ноября 2026 в 22:11 по Самаре. Большинство job не получили runner: `needs.result` равен `abandoned`. `core` из-за этого пропущен, `research-lab-windows` не создан. `verify` и `city-ux-ui` упали на этой отметке, не на тестах лаборатории. Job, которым runner достался, завершились успешно: `billing-developer`, `i4-equipment (developer)`, `services-developer`, `i2-control (developer)`, `npc-natural (small-river, 10)`, `windows-core-replay`. Это не отказ кода R1. Следующий push запускает тот же набор заново.
+
 ## 8. Windows
 
 Физический двойной щелчок `ResearchLab.cmd` этой средой не проверялся. В `core.yml` добавлена отдельная job `research-lab-windows` на `windows-2025`: тесты `tests/Research.Lab`, сборка runner и городской прогон 120 тиков с паузой и отменой. Существующие job и сроки не ослаблялись. Рядом с прежней проверкой профиля I4 ordinary-сборка сравнивает заново сгенерированный `economy.i6c72-wages.json` с файлом в репозитории. Job выполнится после push. До её зелёного результата Windows-запуск не считается проверенным.
