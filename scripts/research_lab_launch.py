@@ -27,13 +27,52 @@ def expected_sdk():
     return json.loads((ROOT/'global.json').read_text(encoding='utf-8'))['sdk']['version']
 
 
+def configure_text_io():
+    """Русский текст не должен ронять запуск на кодовой странице Windows."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, 'reconfigure', None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding='utf-8', errors='replace')
+        except (OSError, ValueError):
+            continue
+
+
+def say(text, stream=None):
+    """Сообщение в консоль. Ошибка кодировки не прерывает лабораторию."""
+    line = str(text) + '\n'
+    stream = sys.stdout if stream is None else stream
+    buffer = getattr(stream, 'buffer', None)
+    if buffer is not None:
+        try:
+            stream.flush()
+            buffer.write(line.encode('utf-8', errors='replace'))
+            buffer.flush()
+            return
+        except (OSError, ValueError):
+            pass
+    try:
+        stream.write(line)
+        stream.flush()
+    except (OSError, ValueError):
+        try:
+            stream.write(line.encode('utf-8', errors='replace').decode('ascii', errors='replace'))
+            stream.flush()
+        except (OSError, ValueError):
+            return
+
+
 def open_browser(url):
     try:
         if webbrowser.open(url, new=2):
             return
     except (webbrowser.Error, OSError):
         pass
-    print('Браузер не открылся. Откройте адрес вручную: ' + url, flush=True)
+    say('Браузер не открылся. Откройте адрес вручную: ' + url)
+
+
+configure_text_io()
 
 
 def git_head():
@@ -126,7 +165,7 @@ def reopen(workspace):
             health = json.loads(response.read(1024))
         if health != dict(application='Delsk Research Lab', instance=record['instance']):
             return False
-        print('Лаборатория уже работает. Открываю существующую очередь: '+record['url'], flush=True)
+        say('Лаборатория уже работает. Открываю существующую очередь: '+record['url'])
         open_browser(record['url'])
         return True
     except (OSError, ValueError, KeyError, TypeError):
@@ -141,7 +180,7 @@ def prepare(workspace):
         raise ValueError('Нет права записи в ' + str(logs) + '. Лаборатория хранит там журналы запуска и не трогает старые опыты.')
     if fresh(workspace):
         diagnose(workspace, 'skip')
-        print('Runner уже собран и соответствует исходникам. Повторная сборка не нужна.', flush=True)
+        say('Runner уже собран и соответствует исходникам. Повторная сборка не нужна.')
         return
     if not shutil.which('dotnet'):
         prepare_dotnet()
@@ -168,8 +207,8 @@ def prepare(workspace):
         ('restore', 180, ['dotnet', 'restore', 'src/Research.Runner/Research.Runner.csproj', '--locked-mode', '--disable-build-servers', '--disable-parallel', '-m:1']),
         ('build', 180, ['dotnet', 'build', 'src/Research.Runner/Research.Runner.csproj', '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1']),
     ]:
-        print(('1/2 · Подготовка зависимостей' if name == 'restore' else '2/2 · Сборка исследовательского runner') +
-              '… Первый запуск может занять несколько минут.', flush=True)
+        say(('1/2 · Подготовка зависимостей' if name == 'restore' else '2/2 · Сборка исследовательского runner') +
+            '… Первый запуск может занять несколько минут.')
         try:
             code, _ = run_checked('lab-' + name, timeout, logs, command)
         except subprocess.TimeoutExpired as error:

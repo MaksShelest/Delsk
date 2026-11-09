@@ -352,7 +352,7 @@ async function loadEconomy(){
 }
 async function loadDiagnostics(){
  const job=currentJob();if(!job||!$('attempt').value){$('diagnostics').textContent='Прогон ещё не начат.';return;}
- const names=[...new Set(['checks/'+job.id+'-a'+$('attempt').value+'.stdout.log','checks/'+job.id+'-a'+$('attempt').value+'.stderr.log',...(job.logs||[])])];
+ const names=[...new Set(['checks/'+job.id+'-a'+$('attempt').value+'.stdout.log','checks/'+job.id+'-a'+$('attempt').value+'.stderr.log',...(job.logs||[]).map(path=>String(path).replace(/\\/g,'/').replace(selectedId+'/',''))])];
  const blocks=[];
  for(const path of names){
   try{const r=await api(query('/api/preview',{id:selectedId,path,tail:'1'}));blocks.push('<h3>'+esc(path)+'</h3><p class="muted">'+bytes(r.size)+(r.cursor?' · показан конец, не весь файл':'')+'</p><pre>'+esc(r.text||'Журнал пуст')+'</pre>');}

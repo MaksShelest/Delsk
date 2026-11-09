@@ -17,7 +17,9 @@ import threading
 import uuid
 
 from analyze_paired_series import spread
+from research_lab_launch import configure_text_io, say
 from run_research_series import runner_command, run_checked, commit
+configure_text_io()
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_TIMEOUT = 14400
@@ -325,7 +327,7 @@ class Lab:
                 for arm in arms for seed in plan['seeds'] for repeat in range(plan['repetitions'])]
         from research_workspace import binary_hashes
         s = dict(id=key,name=plan['title'].strip() if isinstance(plan.get('title'), str) else plan['id'],archived=False, plan=copy.deepcopy(plan), jobs=jobs, commit=self.commit,commitVerified=self.commit_verified,commitDirty=self.commit_dirty,binaries=binary_hashes(),
-                 inputs={str(p.relative_to(folder)): digest(p) for p in sorted((folder/'inputs').rglob('*.json'))})
+                 inputs={p.relative_to(folder).as_posix(): digest(p) for p in sorted((folder/'inputs').rglob('*.json'))})
         with self.lock:
             self.series.append(s)
             self.save()
@@ -371,20 +373,20 @@ class Lab:
                 cmd = command(folder, job, out)
                 code, meta = self.executor(job['id']+'-a'+str(job['attempt']), s['plan'].get('timeoutSeconds', 180), folder/'checks', cmd)
                 if code==2 and (out/'summary.json').exists() and read(out/'summary.json').get('status')=='cancelled':
-                    with self.lock:j.update(status='cancelled',result=str(out.relative_to(self.workspace)),command=cmd)
+                    with self.lock:j.update(status='cancelled',result=out.relative_to(self.workspace).as_posix(),command=cmd)
                     raise InterruptedError('Researcher cancelled')
                 if code:
                     raise ValueError(f'Runner exit {code}; see checks/{job["id"]}-a{job["attempt"]} logs')
                 if job.get('recordWorld'):validate_recording(out)
                 metrics = measure(out)
                 with self.lock:
-                    j.update(status='succeeded', metrics=metrics, result=str(out.relative_to(self.workspace)), check=meta, command=cmd, artifacts=[p.name for p in sorted(out.iterdir()) if p.suffix in ('.json','.jsonl','.csv')])
+                    j.update(status='succeeded', metrics=metrics, result=out.relative_to(self.workspace).as_posix(), check=meta, command=cmd, artifacts=[p.name for p in sorted(out.iterdir()) if p.suffix in ('.json','.jsonl','.csv')])
                     j.pop('error', None)
             except Exception as error:
                 with self.lock:
-                    j.update(status='cancelled' if isinstance(error,InterruptedError) else 'failed', error=str(error),result=str(out.relative_to(self.workspace)),command=cmd)
+                    j.update(status='cancelled' if isinstance(error,InterruptedError) else 'failed', error=str(error),result=out.relative_to(self.workspace).as_posix(),command=cmd)
             with self.lock:
-                j['logs'] = [str(p.relative_to(self.workspace)) for p in
+                j['logs'] = [p.relative_to(self.workspace).as_posix() for p in
                              sorted((folder/'checks').glob(job['id']+'-a'+str(job['attempt'])+'.*')) if p.is_file()]
                 s['bytes']=sum(p.stat().st_size for p in folder.rglob('*') if p.is_file() and not p.is_symlink())
                 write(folder/'series.json', s)
@@ -443,7 +445,7 @@ def main(argv=None):
     p.add_argument('--open-browser', action='store_true', help='Open this laboratory, or reopen the already running host')
     a = p.parse_args(argv)
     if sys.version_info < (3, 10):
-        print('Нужен Python 3.10 или новее. Сейчас ' + '.'.join(map(str, sys.version_info[:3])) + '. Установите его с https://www.python.org/downloads/ . Экономику считает .NET.', file=sys.stderr)
+        say('Нужен Python 3.10 или новее. Сейчас ' + '.'.join(map(str, sys.version_info[:3])) + '. Установите его с https://www.python.org/downloads/ . Экономику считает .NET.', sys.stderr)
         return 1
     if not 0 <= a.port <= 65535:
         p.error('Port must be 0..65535 (0 selects an available port)')
@@ -466,7 +468,8 @@ def main(argv=None):
         from research_lab_launch import reopen
         if a.open_browser and not a.run and not a.plan and reopen(a.output.resolve()):
             return 0
-        p.error('Лаборатория уже использует эту папку. Дождитесь подготовки или закройте прежнее окно запуска.')
+        say('Лаборатория уже использует эту папку. Дождитесь подготовки или закройте прежнее окно запуска.', sys.stderr)
+        return 2
     lab = None
     try:
         from research_lab_launch import prepare, require_runner
@@ -489,7 +492,7 @@ def main(argv=None):
         serve(lab, a.port, a.open_browser)
         return 0
     except (ValueError, OSError, subprocess.SubprocessError) as error:
-        print('Не удалось запустить лабораторию: '+str(error), file=sys.stderr, flush=True)
+        say('Не удалось запустить лабораторию: '+str(error), sys.stderr)
         return 1
     finally:
         if lab is not None:

@@ -88,6 +88,24 @@ class LaunchTests(unittest.TestCase):
         run.assert_not_called()
         self.assertEqual('skip', json.loads((self.root/'startup'/'environment.json').read_text(encoding='utf-8'))['action'])
 
+    def test_cp1252_console_still_reads_utf8_json_and_prints_russian(self):
+        env = os.environ.copy()
+        env['PYTHONUTF8'] = '0'
+        env['PYTHONIOENCODING'] = 'cp1252:strict'
+        names = [
+            'test_launch.StartupTests.test_preparation_uses_locked_restore_and_stops_on_failure',
+            'test_launch.HttpTests.test_reopen_verifies_live_instance',
+            'test_launch.HttpTests.test_failed_runner_logs_remain_downloadable_for_diagnosis',
+            'test_full_metrics.FullMetricsTests.test_b1_import_is_paid_at_terminal_and_uncollected_stock_is_separate',
+            'test_postg2_h1.PostG2StudyTests.test_checkpoint_path_escape_is_rejected',
+            'test_r1.LaunchTests.test_fresh_runner_skips_restore_and_build',
+        ]
+        completed = subprocess.run([sys.executable, '-m', 'unittest', *names], cwd=Path(__file__).resolve().parent,
+                                   env=env, capture_output=True, timeout=90)
+        if completed.returncode:
+            detail = (completed.stdout + completed.stderr).decode('utf-8', 'replace')
+            self.fail(detail[-4000:])
+
     def test_browser_failure_prints_the_manual_address(self):
         with patch('research_lab_launch.webbrowser.open', side_effect=OSError('нет браузера')), patch('sys.stdout', new_callable=StringIO) as out:
             open_browser('http://127.0.0.1:9/')

@@ -89,7 +89,7 @@ def make_server(lab, port=8765):
                     return self.send(200, dict(default=DEFAULT, factors=FACTORS, presets=presets(), maps=MAPS, factorLabels=FACTOR_LABELS,
                         city=dict(maps=CITY_MAPS, plan=city_plan(), ticks=[120,500,1000,2000,2500,5000]),
                         limits=dict(ticks=10000, ordinaryTicks=ORDINARY_TICKS, timeoutSeconds=MAX_TIMEOUT, recording=['brief','normal','detailed']),
-                        scenarios=[str(p.relative_to(ROOT)) for p in sorted((ROOT/'scenarios').glob('*.json')) if 'controllers' not in p.name]))
+                        scenarios=[p.relative_to(ROOT).as_posix() for p in sorted((ROOT/'scenarios').glob('*.json')) if 'controllers' not in p.name]))
                 if path.startswith('/archives/') and path.endswith('.zip'):
                     key = unquote(path[len('/archives/'):-4])
                     # Only a known series can be archived; no filesystem path is accepted.
@@ -121,7 +121,8 @@ def make_server(lab, port=8765):
                         shutil.copyfileobj(stream, self.wfile)
                         return
                 if path.startswith('/files/'):
-                    parts=unquote(path[7:]).split('/',1)
+                    raw=unquote(path[7:]).replace('\\','/').lstrip('/')
+                    parts=raw.split('/',1)
                     if len(parts)!=2:raise ValueError('Unknown result file')
                     target=lab.views.file(parts[0],parts[1])
                     self.send_response(200)

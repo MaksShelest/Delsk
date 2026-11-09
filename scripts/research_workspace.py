@@ -144,7 +144,11 @@ class Workspace:
 
     def file(self,key,relative):
         base=self.folder(key)
-        path=base/relative
+        relative=str(relative).replace('\\','/').lstrip('/')
+        parts=relative.split('/')
+        if not parts or any(part in ('', '..') or part.endswith(':') for part in parts):
+            raise ValueError('Неизвестный файл опыта')
+        path=base.joinpath(*parts)
         if not path.resolve().is_relative_to(base) or path.is_symlink() or not path.is_file() or path.suffix not in ('.json','.jsonl','.csv','.log'):
             raise ValueError('Неизвестный файл опыта')
         return path

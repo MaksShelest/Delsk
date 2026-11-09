@@ -960,6 +960,10 @@ jobs:
   research-lab-windows:
     runs-on: windows-2025
     timeout-minutes: 25
+    env:
+      # ResearchLab.cmd задаёт тот же контракт. Тест cp1252 проверяет запуск и без этой переменной.
+      PYTHONUTF8: '1'
+      PYTHONIOENCODING: utf-8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4

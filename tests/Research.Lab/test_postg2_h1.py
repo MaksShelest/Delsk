@@ -7,7 +7,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'scripts'))
 from study_postg2_h1 import PLAN,cases,boundaries,valid_checkpoint,classify_failure,digest
 from analyze_postg2_h1 import summarize,load_observations
 class PostG2StudyTests(unittest.TestCase):
- def setUp(self):self.plan=json.loads(PLAN.read_text())
+ def setUp(self):self.plan=json.loads(PLAN.read_text(encoding='utf-8'))
  def test_preregistered_independent_worlds_and_horizons(self):
   ordinary=cases(self.plan,'ordinary');long=cases(self.plan,'long')
   self.assertEqual(120,len(ordinary));self.assertEqual(8,len(long));self.assertEqual(128,len({c['id'] for c in ordinary+long}))
