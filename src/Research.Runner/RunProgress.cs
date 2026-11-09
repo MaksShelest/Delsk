@@ -19,6 +19,8 @@ internal sealed class RunProgress : IDisposable
     private double _lastSeconds = -2;
     private string _status = "running";
     private bool _closed;
+    private DateTimeOffset? _lastAdvancedAt;
+    private double? _exportMilliseconds;
     public RunProgress(string directory, GameSession session, long target)
     {
         Directory.CreateDirectory(directory);
@@ -48,17 +50,27 @@ internal sealed class RunProgress : IDisposable
             _lastSeconds = seconds;
         }
     }
+    public void NoteExport(double milliseconds)
+    {
+        lock (_gate) { if (!_closed) _exportMilliseconds = milliseconds; }
+    }
     private void Persist(long tick, double seconds)
     {
         using var process = Process.GetCurrentProcess();
+        if (tick != _last) _lastAdvancedAt = DateTimeOffset.UtcNow;
+        double progressed = tick - _start;
+        double speed = seconds > 0 ? progressed / seconds : 0;
         var value = new
         {
             Version = 1, Status = _status, Phase = _status, Tick = tick, LastCompletedTick = tick, Target = _target, StartTick = _start,
-            Percent = 100d * (tick - _start) / Math.Max(1, _target - _start), ElapsedSeconds = seconds,
-            TicksPerSecond = seconds > 0 ? (tick - _start) / seconds : 0,
+            Percent = 100d * progressed / Math.Max(1, _target - _start), ElapsedSeconds = seconds,
+            TicksPerSecond = speed,
+            AverageTickMilliseconds = progressed > 0 && seconds > 0 ? Math.Round(seconds * 1000d / progressed, 3) : (double?)null,
+            EstimatedRemainingSeconds = speed > 0.05 && tick < _target ? Math.Round((_target - tick) / speed, 1) : (double?)null,
+            LastAdvancedAt = _lastAdvancedAt, ExportMilliseconds = _exportMilliseconds,
             WorkingSetBytes = process.WorkingSet64, PeakWorkingSetBytes = process.PeakWorkingSet64,
             _session.WaitingForModel, _session.Engine.WaitingForBallots, HeartbeatAt = DateTimeOffset.UtcNow,
-            Scope = "Runner process memory; host elapsed time, not a device benchmark"
+            Scope = "Runner process memory and host elapsed time. EstimatedRemainingSeconds follows the current speed and is not a promise."
         };
         File.WriteAllText(_path + ".tmp", JsonSerializer.Serialize(value, SimulationJson.Options));
         File.Move(_path + ".tmp", _path, true);

@@ -350,15 +350,34 @@ async function loadEconomy(){
  if(key===economyKey&&lastReport){paintEconomy();return;}
  lastReport=await api(query('/api/economy',attemptParams()));economyKey=key;paintEconomy();
 }
+function samaraClock(iso){
+ const t=Date.parse(iso);if(!Number.isFinite(t))return '—';
+ return new Date(t).toLocaleString('ru-RU',{timeZone:'Europe/Samara',hour:'2-digit',minute:'2-digit',second:'2-digit'})+' (Самара)';
+}
+function performanceFacts(p,series){
+ if(!p)return '<p>Цифр хода ещё нет: runner не записал первый heartbeat.</p>';
+ const done=Math.max(0,Number(p.tick)||0)-(Number(p.startTick)||0);
+ const avg=p.averageTickMilliseconds!=null?Number(p.averageTickMilliseconds).toFixed(2)+' мс':(p.ticksPerSecond>0?(1000/Number(p.ticksPerSecond)).toFixed(2)+' мс':'—');
+ const doneRun=p.status==='completed'||p.status==='succeeded'||Number(p.percent)>=100;
+ const eta=doneRun?'прогон завершён':(p.estimatedRemainingSeconds==null?'нет оценки':(Number(p.estimatedRemainingSeconds)>=60?'примерно '+Math.round(p.estimatedRemainingSeconds/60)+' мин':'примерно '+Math.max(1,Math.round(p.estimatedRemainingSeconds))+' с'));
+ const exported=p.exportMilliseconds==null?'ещё не измерен':(Number(p.exportMilliseconds)/1000).toFixed(2)+' с';
+ return '<div class="metric-grid"><div class="metric"><span>СКОРОСТЬ</span><strong>'+(p.ticksPerSecond>0?Number(p.ticksPerSecond).toFixed(1)+' тик/с':'—')+'</strong></div><div class="metric"><span>СРЕДНИЙ ТИК</span><strong>'+avg+'</strong></div><div class="metric"><span>ФАЗА</span><strong style="font-size:18px">'+esc(labels[p.status]||p.status||'—')+'</strong></div><div class="metric"><span>ПАМЯТЬ</span><strong style="font-size:18px">'+bytes(p.peakWorkingSetBytes||p.workingSetBytes||0)+'</strong></div></div><p>Прошло тиков: '+done+'. Последнее продвижение: '+esc(samaraClock(p.lastAdvancedAt))+'. Heartbeat: '+esc(samaraClock(p.heartbeatAt))+'. Экспорт: '+exported+'. Записано в опыте: '+bytes(series?.bytes||0)+'.</p><p class="muted">Осталось: '+esc(eta)+'. Пока прогон идёт, это оценка по текущей скорости, не срок. Память — пик рабочего набора процесса runner. Размер включает служебные файлы опыта.</p>';
+}
 async function loadDiagnostics(){
  const job=currentJob();if(!job||!$('attempt').value){$('diagnostics').textContent='Прогон ещё не начат.';return;}
+ let progress=job.progress||null;
+ if(!progress){
+  try{const file=await api(query('/api/preview',{id:selectedId,path:'runs/'+job.id+'/'+$('attempt').value+'/run-progress.json'}));progress=JSON.parse(file.text);}
+  catch(e){progress=null;}
+ }
+ const facts=performanceFacts(progress,currentSeries());
  const names=[...new Set(['checks/'+job.id+'-a'+$('attempt').value+'.stdout.log','checks/'+job.id+'-a'+$('attempt').value+'.stderr.log',...(job.logs||[]).map(path=>String(path).replace(/\\/g,'/').replace(selectedId+'/',''))])];
  const blocks=[];
  for(const path of names){
   try{const r=await api(query('/api/preview',{id:selectedId,path,tail:'1'}));blocks.push('<h3>'+esc(path)+'</h3><p class="muted">'+bytes(r.size)+(r.cursor?' · показан конец, не весь файл':'')+'</p><pre>'+esc(r.text||'Журнал пуст')+'</pre>');}
   catch(e){blocks.push('<p class="muted">'+esc(path)+': '+esc(e.message)+'</p>');}
  }
- $('diagnostics').innerHTML=blocks.join('')||'<p>Журналов попытки пока нет.</p>';
+ $('diagnostics').innerHTML=facts+(blocks.join('')||'<p>Журналов попытки пока нет.</p>');
 }
 function refreshCity(){
  if(!catalog?.city)return;

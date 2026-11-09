@@ -82,7 +82,9 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
         Measurements?.End("core-step",coreMark);
         long sampleStart = measured ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
         var sampleMark=Measurements?.Start()??default;
+        var inspectMark=Measurements?.Start()??default;
         var state = Engine.Inspect();
+        Measurements?.End("inspect-sample",inspectMark);
         var actor = state.Participants[0];
         _samples.Add(new(state.Tick, state.Accounts.Single(a => a.Id == actor.AccountId).BalanceMinor,
             state.Accounts.Single(a => a.Kind == "WagesSink").BalanceMinor,
