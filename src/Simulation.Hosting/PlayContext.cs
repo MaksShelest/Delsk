@@ -21,17 +21,17 @@ public static class PlayContext
             choices.Add(new("transfer:stop",L(language,"Остановить передачу","Stop transfer"),new(ActionKind.StopTransfer)));
         foreach(var site in view.Resources.Where(r=>r.Position==cell))
         {
-            string status=$"{site.Stock-site.Reserved}/{site.Capacity}" + (site.Public?L(language," · общая добыча"," · public resource"):
-                site.Owner is {} owner?L(language," · владелец #"," · owner #")+owner.Value:site.Tenant is {} tenant?L(language," · аренда #"," · tenant #")+tenant.Value+" → "+site.LeaseUntil:L(language," · свободно"," · available"));
-            choices.Add(new("resource:info:"+site.ItemId,PlayerText.Item(language,site.ItemId)+" · "+status,null,
-                Details:L(language,"Восстановление +","Regeneration +")+site.RegenerationQuantity+" / "+site.RegenerationTicks+L(language," тиков."," ticks.")));
-            if(!site.Public && site.Owner is null && site.Tenant is null)
+            choices.Add(new("resource:info:"+site.ItemId,ResourceLine(view,site,language),null,Details:ResourceRestriction(view,site,language)));
+            bool open=ResourceRightsRules.Applies(view.Economy);
+            if(ResourceRightsRules.Purchasable(open,site.Public,site.Owner?.Value,site.Tenant?.Value))
             {
-                choices.Add(new("resource:buy:"+site.ItemId,L(language,"Купить ресурсную клетку — ","Buy resource site — ")+PlayerText.Money(site.PurchasePriceMinor),
-                    new(ActionKind.BuyResource,Target:cell,ItemId:site.ItemId),view.AvailableCashMinor>=site.PurchasePriceMinor));
+                string block=site.Reserved>0?PlayerText.Reason(language,"ResourceBusy"):view.AvailableCashMinor<site.PurchasePriceMinor?PlayerText.Reason(language,"NoMoney"):"";
+                choices.Add(new("resource:buy:"+site.ItemId,L(language,"Купить ресурсную клетку — ","Buy resource cell — ")+PlayerText.Item(language,site.ItemId)+" · "+PlayerText.Money(site.PurchasePriceMinor),
+                    new(ActionKind.BuyResource,Target:cell,ItemId:site.ItemId),block.Length==0,block));
+            }
+            if(ResourceRightsRules.Leasable(open,site.Public,site.Owner?.Value,site.Tenant?.Value))
                 choices.Add(new("resource:lease:"+site.ItemId,L(language,"Арендовать на ","Lease for ")+site.LeaseTicks+L(language," тиков — "," ticks — ")+PlayerText.Money(site.LeasePriceMinor),
                     new(ActionKind.LeaseResource,Target:cell,ItemId:site.ItemId),view.AvailableCashMinor>=site.LeasePriceMinor));
-            }
         }
         if (view.Harvest is { } harvest)
             choices.Add(new("harvest:stop", L(language, "Остановить добычу: ", "Stop harvesting: ") + PlayerText.Item(language, harvest.ItemId),
@@ -165,8 +165,8 @@ public static class PlayContext
             if(choice.Command?.Kind is ActionKind.Harvest or ActionKind.StartHarvesting)
             {
                 var resource=view.Resources.FirstOrDefault(r=>r.Position==cell && r.ItemId==choice.Command.ItemId);
-                if(resource is not null && (!resource.Public && resource.Owner!=view.Participant.Id && resource.Tenant!=view.Participant.Id || resource.Stock<=resource.Reserved))
-                {enabled=false;reason=PlayerText.Reason(language,resource.Stock<=resource.Reserved?"ResourceDepleted":"NoResourceRights");}
+                if(resource is not null && (!ResourceRightsRules.Manual(ResourceRightsRules.Applies(view.Economy),resource.Public,resource.Owner?.Value,resource.Tenant?.Value,resource.LeaseUntil,view.Participant.Id.Value,view.Tick) || resource.Stock<=resource.Reserved))
+                {enabled=false;reason=resource.Stock<=resource.Reserved?PlayerText.Reason(language,"ResourceDepleted"):HarvestDenied(view,resource,language);}
             }
             return choice with { Enabled = enabled, Details = reason };
         }).ToArray();
@@ -178,6 +178,37 @@ public static class PlayContext
         int found = Array.FindIndex(next, choice => choice.Key == previous[index].Key);
         return found >= 0 ? found : 0;
     }
+
+    public static string ResourceLine(PlayerView view, ResourceSiteView site, string language)
+    {
+        long free = site.Stock - site.Reserved;
+        return PlayerText.Item(language, site.ItemId) + " · " + L(language, "остаток ", "stock ") + free + "/" + site.Capacity
+            + " · " + RightsPhrase(view, site, language) + " · " + L(language, "восстановление +", "regeneration +") + site.RegenerationQuantity + "/" + site.RegenerationTicks;
+    }
+
+    public static string RightsPhrase(PlayerView view, ResourceSiteView site, string language)
+    {
+        if (site.Owner == view.Participant.Id) return L(language, "ваш ресурс", "your resource");
+        if (site.Owner is { } owner) return L(language, "владелец #", "owner #") + owner.Value + L(language, " · добыча недоступна", " · harvesting unavailable");
+        if (site.Tenant is { } tenant && view.Tick < site.LeaseUntil)
+            return tenant == view.Participant.Id ? L(language, "ваша аренда до ", "your lease until ") + site.LeaseUntil : L(language, "аренда #", "lease #") + tenant.Value;
+        if (ResourceRightsRules.Applies(view.Economy)) return L(language, "ничейный · можно добывать", "unowned · manual harvesting is open");
+        return site.Public ? L(language, "общая добыча", "public resource") : L(language, "нужна покупка или аренда", "purchase or lease required");
+    }
+
+    private static string ResourceRestriction(PlayerView view, ResourceSiteView site, string language)
+    {
+        if (ResourceRightsRules.Manual(ResourceRightsRules.Applies(view.Economy), site.Public, site.Owner?.Value, site.Tenant?.Value, site.LeaseUntil, view.Participant.Id.Value, view.Tick))
+            return "";
+        return HarvestDenied(view, site, language);
+    }
+
+    private static string HarvestDenied(PlayerView view, ResourceSiteView site, string language) =>
+        site.Owner is { } owner && owner != view.Participant.Id
+            ? L(language, "Добыча недоступна: клетка принадлежит участнику #", "Harvesting is unavailable: participant #") + owner.Value + "."
+            : ResourceRightsRules.Applies(view.Economy)
+                ? L(language, "Добыча недоступна.", "Harvesting is unavailable.")
+                : PlayerText.Reason(language, "NoResourceRights");
 
     public static string Hover(PresentationFrame frame, PlayerView view, int x, int z, string language)
     {

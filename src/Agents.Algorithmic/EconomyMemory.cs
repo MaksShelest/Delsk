@@ -37,7 +37,7 @@ public sealed partial class AlgorithmicController
             var transfer=c.Steps.LastOrDefault(s=>s.Action.Kind==ActionKind.Transfer)?.Action;
             if(transfer is not null&&services.OwnOrders.Any(order=>order.Customer==Actor&&order.Active&&order.Quote.Terms.Destination==transfer.Destination&&order.Quote.Terms.ItemId==transfer.ItemId))return false;
         }
-        if(c.Steps.Any(step=>step.Action.Kind==ActionKind.BuyEquipment&&!o.Resources.Any(r=>r.Position==step.Action.Target&&r.Owner==Actor&&!r.Public)))return false;
+        if(c.Steps.Any(step=>step.Action.Kind==ActionKind.BuyEquipment&&!o.Resources.Any(r=>r.Position==step.Action.Target&&OwnedMachineLand(o,r))))return false;
         if(c.Goal=="ResumeProduction")
         {
             var action=c.Steps.Last().Action;var parent=o.Enterprises.SingleOrDefault(e=>e.Id==action.Enterprise);

@@ -9,7 +9,7 @@ namespace Simulation.Tests;
 
 public class I6C2MapsTests
 {
-    internal static EconomyProfile Economy(string key)=>key is PlayMaps.CompactValley or PlayMaps.Second?VNextWageScheduleProfile.Create(VNextEquipmentClassesProfile.Create(MobileEquipmentI4Tests.Profile())):MobileEquipmentI4Tests.Profile();
+    internal static EconomyProfile Economy(string key)=>key is PlayMaps.CompactValley or PlayMaps.Second?VNextResourceRightsProfile.Create(VNextWageScheduleProfile.Create(VNextEquipmentClassesProfile.Create(MobileEquipmentI4Tests.Profile()))):MobileEquipmentI4Tests.Profile();
     internal static OrdinaryGameResolution Resolve(string key,int npcs=3)
     {
         var profile=Economy(key);

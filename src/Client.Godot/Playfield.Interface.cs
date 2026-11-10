@@ -342,7 +342,7 @@ public partial class Playfield
         string status=_contextCommandId is null?"":ContextActions.ResultText(_language,response);
         if(_contextMessage.Length>0)status=_contextMessage;
         var contextView=PlayerDesk.Read(_session.Engine,_human);
-        _contextActions.ShowSummary(string.Join(" · ",contextView.Resources.Where(r=>r.Position==contextView.Participant.Position).Select(r=>PlayerText.Item(_language,r.ItemId)+$" · {r.Stock-r.Reserved}/{r.Capacity}")));
+        _contextActions.ShowSummary(string.Join(" | ",contextView.Resources.Where(r=>r.Position==contextView.Participant.Position).Select(r=>PlayContext.ResourceLine(contextView,r,_language))));
         _contextActions.ShowData(ContextActions.Scope(contextView),_choices,_language,WaitingCommand,status,_roadCardTop);
         LayoutContextDock();
     }

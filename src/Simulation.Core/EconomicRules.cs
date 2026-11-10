@@ -17,11 +17,13 @@ public sealed record EconomicRules(long PlayerWageStepMinor = 100, int Reservati
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ServiceRules? Services=null,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ServiceExecutionRules? ServiceExecution=null,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] MovementRules? Movement=null,
-    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] VehicleControlRules? VehicleControl=null)
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] VehicleControlRules? VehicleControl=null,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ResourceRightsRules? ResourceRights=null)
 {
     public long ReservationFee(long price) => checked((long)(((Int128)price * ReservationFeeBasisPoints + 9999) / 10000));
     public void Validate()
     {
+        ResourceRights?.Validate();
         Movement?.Validate();
         VehicleControl?.Validate();if(VehicleControl is not null&&(Movement!=MovementRules.I1||Roads is null||Fleet is null))throw new ArgumentException("Vehicle control requires Movement2 and roads");
         ServiceExecution?.Validate();if(ServiceExecution is not null&&Services is null)throw new ArgumentException("Service execution requires offers");

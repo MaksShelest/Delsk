@@ -8,7 +8,7 @@ namespace Simulation.Tests;
 
 public class I6C24MapEditorTests
 {
-    private static EconomyProfile Economy()=>VNextWageScheduleProfile.Create(VNextEquipmentClassesProfile.Create(MobileEquipmentI4Tests.Profile()));
+    private static EconomyProfile Economy()=>VNextResourceRightsProfile.Create(VNextWageScheduleProfile.Create(VNextEquipmentClassesProfile.Create(MobileEquipmentI4Tests.Profile())));
     private static MapDraft Valley()=>MapDraft.Parse(OrdinaryNewGameTests.Text("compact_valley_i6c21.json"));
     [Fact]
     public void ViewRotationKeepsWorldCoordinates()
@@ -38,7 +38,7 @@ public class I6C24MapEditorTests
         Assert.Equal(6,draft.Lots[0].Cells.Count);
         Assert.Empty(draft.Problems());
         var resolved=UserMaps.Start(draft,Economy(),new(3),MapDesignTests.Balance());
-        Assert.Equal(VNextWageScheduleProfile.ProfileId,resolved.Scenario.EconomyProfileId);
+        Assert.Equal(VNextResourceRightsProfile.ProfileId,resolved.Scenario.EconomyProfileId);
         Assert.Equal("map-adapter-3",resolved.Scenario.Layout!.Version);
         draft.Undo();Assert.Equal(before,draft.ToJson());
         draft.Redo();Assert.Equal(MapDraft.FlexibleSchema,draft.SchemaVersion);Assert.Equal(height,draft.Width);

@@ -12,7 +12,7 @@ public sealed partial class AlgorithmicController
             if(MobileFleet(o)&&sold.Length==0)continue;
             var level=sold.Length>0?sold[0]:type.Levels.OrderBy(l=>l.PriceMinor).First();
             string item=type.CompatibleItems().First(candidate=>o.Enterprises.SelectMany(ProductionWorkplaces).Any(l=>o.Map.Recipes.Single(r=>r.Id==l.Unit.RecipeId).Uses(candidate)));
-            foreach(var site in o.Resources.Where(r=>r.ItemId==item&&!r.Public&&r.Stock>r.Reserved&&(r.Owner is null||r.Owner==Actor)))
+            foreach(var site in o.Resources.Where(r=>r.ItemId==item&&r.Stock>r.Reserved&&MachineSite(o,r)))
             {
                 long land=site.Owner==Actor?0:site.PurchasePriceMinor;long cost=checked(land+level.PriceMinor+level.MinimumCrew*level.WageMinor*_state.Settings.WageReviewTicks+_state.Settings.CashReserveMinor);
                 if(o.Account.AvailableMinor<cost||!Reachable(o,site.Position))continue;

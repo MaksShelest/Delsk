@@ -34,7 +34,7 @@ public sealed partial class SimulationEngine
     private long ResourceReserved(Cell cell,string item) => _resourceClaims.Values.Where(c => c.Position == cell && c.ItemId==item).Sum(c => c.Quantity);
     private bool ResourceAccess(long actor, ResourceSite site, bool machine = false) => machine
         ? site.Owner == actor
-        : site.Rules.Public || site.Owner == actor || site.Tenant == actor && Tick < site.LeaseUntil;
+        : ResourceRightsRules.Manual(ResourceRightsRules.Applies(EconomyRules), site.Rules.Public, site.Owner, site.Tenant, site.LeaseUntil, actor, Tick);
     private ResourceSite RequireResource(long actor, Cell cell, string item, long quantity, bool machine = false)
     {
         if (!_resources.TryGetValue((cell,item), out var site) || site.Definition.ItemId != item) throw new RuleViolation("NoResourceNode");
@@ -49,8 +49,15 @@ public sealed partial class SimulationEngine
         if(candidates.Length!=1)throw new RuleViolation("NoResourceNode");
         var site=candidates[0];
         if (site is null) throw new RuleViolation("NoResourceNode");
-        if (site.Rules.Public || site.Owner.HasValue || site.Tenant.HasValue) throw new RuleViolation("ResourceUnavailable");
-        // Outstanding public work cannot be invalidated by a competing acquisition.
+        bool open = ResourceRightsRules.Applies(EconomyRules);
+        if (lease)
+        {
+            if (!ResourceRightsRules.Leasable(open, site.Rules.Public, site.Owner, site.Tenant))
+                throw new RuleViolation(open ? "ResourceLeaseDisabled" : "ResourceUnavailable");
+        }
+        else if (!ResourceRightsRules.Purchasable(open, site.Rules.Public, site.Owner, site.Tenant))
+            throw new RuleViolation("ResourceUnavailable");
+        // Незавершённая добыча не отменяется покупкой: деньги и резерв остаются на месте.
         if (ResourceReserved(command.Action.Target,site.Definition.ItemId) != 0) throw new RuleViolation("ResourceBusy");
         long until = checked(Tick + site.Rules.LeaseTicks);
         long price = lease ? site.Rules.LeasePriceMinor : site.Rules.PurchasePriceMinor;
@@ -104,10 +111,11 @@ public sealed partial class SimulationEngine
     }
     private void ValidateResources()
     {
+        bool open = ResourceRightsRules.Applies(EconomyRules);
         foreach (var r in _resources.Values)
             if (r.Stock < 0 || r.Stock > r.Rules.Capacity || ResourceReserved(r.Definition.Position,r.Definition.ItemId) > r.Stock ||
-                r.Owner.HasValue && (!_actors.ContainsKey(r.Owner.Value) || r.Rules.Public || r.Tenant.HasValue) ||
-                r.Tenant.HasValue && (!_actors.ContainsKey(r.Tenant.Value) || r.Rules.Public || r.LeaseUntil <= Tick) ||
+                r.Owner.HasValue && (!_actors.ContainsKey(r.Owner.Value) || r.Rules.Public && !open || r.Tenant.HasValue) ||
+                r.Tenant.HasValue && (!_actors.ContainsKey(r.Tenant.Value) || r.Rules.Public || open || r.LeaseUntil <= Tick) ||
                 r.Tenant.HasValue != r.LeaseUntil.HasValue)
                 throw new InvalidOperationException("Resource stock or rights invariant");
         foreach (var c in _resourceClaims.Values)
