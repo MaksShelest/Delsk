@@ -216,8 +216,7 @@ public sealed partial class AlgorithmicController
         {
             var type = o.EquipmentTypes.FirstOrDefault(t => t.ItemId == settings.PreferredInput);
             var level = type?.Levels.Single(l => l.Level == 1);
-            var site = o.Resources.Where(r=>r.ItemId==settings.PreferredInput && !r.Public &&
-                (r.Owner==Actor || r.Owner is null && r.Tenant is null) && Reachable(o,r.Position))
+            var site = o.Resources.Where(r=>r.ItemId==settings.PreferredInput && MachineSite(o, r) && Reachable(o,r.Position))
                 .OrderBy(r=>r.Owner==Actor?0:1).ThenBy(r=>Distance(o.Map,o.Participant.Position,r.Position)).FirstOrDefault();
             var node = site is null ? null : o.Map.ResourceNodes.Single(n=>n.Position==site.Position);
             long landCost=site is { Owner:null }?site.PurchasePriceMinor:0;

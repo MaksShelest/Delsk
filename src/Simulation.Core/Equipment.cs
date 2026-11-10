@@ -214,7 +214,7 @@ public sealed partial class SimulationEngine
     {
         foreach (var e in _equipment.Values)
         {
-            if(UsesMobileEquipment && (!_vehicles.TryGetValue(e.Id,out var vehicle) || e.Deployed is null || e.Deployed==false&&(e.Batch is not null||e.PersonalJobId!=0||e.Motion is not null||e.Mode!=EquipmentMode.Off) || e.Deployed==true&&(!_resources.TryGetValue((e.Position,EquipmentItem(e)),out var site)||site.Owner!=e.Owner||site.Rules.Public||vehicle.Driver!=0)))throw new InvalidOperationException("Invalid mobile equipment link");
+            if(UsesMobileEquipment && (!_vehicles.TryGetValue(e.Id,out var vehicle) || e.Deployed is null || e.Deployed==false&&(e.Batch is not null||e.PersonalJobId!=0||e.Motion is not null||e.Mode!=EquipmentMode.Off) || e.Deployed==true&&(!_resources.TryGetValue((e.Position,EquipmentItem(e)),out var site)||site.Owner!=e.Owner||site.Rules.Public && !ResourceRightsRules.Applies(EconomyRules)||vehicle.Driver!=0)))throw new InvalidOperationException("Invalid mobile equipment link");
             if(!UsesMobileEquipment && e.Deployed is not null)throw new InvalidOperationException("Unexpected mobile equipment state");
             if ((e.Motion is null && e.Deployed!=false && !_config.ResourceNodes.Any(n => n.Position == e.Position && n.ItemId == EquipmentItem(e))) ||
                 _economy.Inventories[e.Storage].Position != e.Position || _economy.Inventories[e.Storage].Owner != e.Owner ||

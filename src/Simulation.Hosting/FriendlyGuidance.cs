@@ -47,6 +47,7 @@ public static class FriendlyGuidance
         if (choice.Key.StartsWith("machine:stop:", StringComparison.Ordinal)) return 1;
         if (choice.Command?.Kind is ActionKind.StartHarvesting or ActionKind.Harvest) return 2;
         if (choice.Command?.Kind is ActionKind.BuyPlot) return 3;
+        if (choice.Command?.Kind is ActionKind.BuyResource) return 4;
         if (choice.Key == "exchange") return 4;
         if (choice.Key.StartsWith("market:", StringComparison.Ordinal)) return 5;
         if (choice.Key.StartsWith("object:equipment:", StringComparison.Ordinal) || choice.Command?.Kind is ActionKind.BoardVehicle or ActionKind.LeaveVehicle) return 6;
@@ -231,11 +232,15 @@ public static class FriendlyGuidance
     private static StarterStep Find(PlayerView view, ScenarioDefinition scenario, string language, InventoryView pack)
     {
         string L(string ru, string en) => PlayerText.Local(language, ru, en);
-        var site = view.Resources.Where(r => r.Public && r.Stock > r.Reserved).OrderBy(r => Distance(view.Participant.Position, r.Position)).ThenBy(r => r.ItemId, StringComparer.Ordinal).FirstOrDefault();
+        var site = NearestOpen(view);
         if (site is null)
-            return Step("find", L("Найдите доступный ресурс", "Find an available resource"), L("Сейчас нет видимого общего ресурса с запасом.", "No visible public resource currently has stock."), -1, -1, "resources", 0, 1, "", true, "", 0, []);
+            return Step("find", L("Найдите доступный ресурс", "Find an available resource"), ResourceRightsRules.Applies(view.Economy) ? L("Сейчас нет ничейного ресурса с запасом.", "No unowned resource currently has stock.") : L("Сейчас нет видимого общего ресурса с запасом.", "No visible public resource currently has stock."), -1, -1, "resources", 0, 1, "", true, "", 0, []);
         long have = Free(pack, site.ItemId);
-        string found = L("Общий ресурс на карте. Единица появится в рюкзаке только после завершения цикла.", "A public resource on the map. The unit reaches your backpack only when the cycle finishes.");
+        string found = site.Owner == view.Participant.Id
+            ? L("Ваш ресурс. Единица появится в рюкзаке только после завершения цикла.", "Your resource. The unit reaches your backpack only when the cycle finishes.")
+            : ResourceRightsRules.Applies(view.Economy) && !site.Public
+                ? L("Ничейный ресурс. Единица появится в рюкзаке только после завершения цикла.", "An unowned resource. The unit reaches your backpack only when the cycle finishes.")
+                : L("Общий ресурс на карте. Единица появится в рюкзаке только после завершения цикла.", "A public resource on the map. The unit reaches your backpack only when the cycle finishes.");
         if (have > 0) found += L($" В рюкзаке остаток {have}.", $" Backpack remainder {have}.");
         return Step("find", PlayerText.ActionPhrase(language, Verb(site.ItemId), site.ItemId, 1), found, site.Position.X, site.Position.Z, "resources", 0, 1, site.ItemId, true, "", 0, []);
     }
@@ -268,7 +273,7 @@ public static class FriendlyGuidance
 
     public static StarterStep? GatherSite(PlayerView view, string language, string item)
     {
-        var site = view.Resources.Where(r => r.Public && r.ItemId == item && r.Stock > r.Reserved).OrderBy(r => Distance(view.Participant.Position, r.Position)).ThenBy(r => r.Position.X).ThenBy(r => r.Position.Z).FirstOrDefault();
+        var site = NearestOpen(view, r => r.ItemId == item);
         if (site is null) return null;
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
         return Step("find", PlayerText.ActionPhrase(language, Verb(item), item, 1), PlayerText.Local(language, "Открытый ресурс с запасом.", "An open resource that still has stock."), site.Position.X, site.Position.Z, "resources", Free(pack, item), 1, item, true, "", 0, []);
@@ -279,7 +284,7 @@ public static class FriendlyGuidance
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
         var goods = Sellable(view, pack).FirstOrDefault();
         if (goods.Offer is not null) return Sell(language, goods.Item, goods.Have, goods.Offer, "sell");
-        var site = view.Resources.Where(r => r.Public && r.Stock > r.Reserved && Live(view, r.ItemId).Any()).OrderBy(r => Distance(view.Participant.Position, r.Position)).ThenBy(r => r.ItemId, StringComparer.Ordinal).FirstOrDefault();
+        var site = NearestOpen(view, r => Live(view, r.ItemId).Any());
         return site is null ? null : GatherSite(view, language, site.ItemId);
     }
 
@@ -359,6 +364,22 @@ public static class FriendlyGuidance
     private static long Free(InventoryView inventory, string item) => inventory.Stock.Where(s => s.ItemId == item).Sum(s => s.Quantity - s.Reserved);
 
     private static int Distance(Cell a, Cell b) => Math.Abs(a.X - b.X) + Math.Abs(a.Z - b.Z);
+
+    /// <summary>Источник для новичка: при новой политике любой доступный ничейный ресурс, иначе только Public.</summary>
+    private static bool OpenToStarter(PlayerView view, ResourceSiteView site)
+    {
+        if (site.Stock <= site.Reserved) return false;
+        if (!ResourceRightsRules.Applies(view.Economy)) return site.Public;
+        return site.Owner is null && site.Tenant is null || site.Owner == view.Participant.Id;
+    }
+
+    private static ResourceSiteView? NearestOpen(PlayerView view, Func<ResourceSiteView, bool>? extra = null) =>
+        view.Resources.Where(site => OpenToStarter(view, site) && (extra is null || extra(site)))
+            .OrderBy(site => site.Owner is null ? 0 : 1)
+            .ThenBy(site => Distance(view.Participant.Position, site.Position))
+            .ThenBy(site => site.ItemId, StringComparer.Ordinal)
+            .ThenBy(site => site.Position.X).ThenBy(site => site.Position.Z)
+            .FirstOrDefault();
 
     public static Cell[] Cells(GameAction? action, ScenarioDefinition scenario)
     {

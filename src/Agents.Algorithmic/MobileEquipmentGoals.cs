@@ -12,7 +12,7 @@ public sealed partial class AlgorithmicController
         foreach (var machine in o.Equipment.Where(e=>e.Deployed==false))
         {
             var type=o.EquipmentTypes.Single(t=>t.Id==machine.TypeId);
-            var site=o.Resources.Where(r=>type.Accepts(r.ItemId)&&!r.Public&&(r.Owner==Actor||r.Owner is null&&r.Tenant is null))
+            var site=o.Resources.Where(r=>type.Accepts(r.ItemId)&&MachineSite(o,r))
                 .OrderBy(r=>r.Owner==Actor?0:1).ThenBy(r=>Distance(o.Map,machine.Position,r.Position)).FirstOrDefault();
             if (site is null) continue;
             var steps=new List<PlanStep>();

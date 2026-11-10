@@ -63,13 +63,17 @@ public class WageScheduleI6C72Tests
     public void CurrentOrdinaryMapsResolveTheNewScheduleAndKeepHundredCoinPlots(string key)
     {
         var scenario = I6C2MapsTests.Resolve(key).Scenario;
-        Assert.Equal(VNextWageScheduleProfile.ProfileId, scenario.EconomyProfileId);
-        Assert.Equal(2, scenario.Economy!.PlayerWageStepMinor);
+        Assert.Equal(VNextResourceRightsProfile.ProfileId, scenario.EconomyProfileId);
+        Assert.Equal(1, scenario.Economy!.ResourceRights!.Version);
+        Assert.Equal(2, scenario.Economy.PlayerWageStepMinor);
         Assert.Equal(15, scenario.Logistics!.WageMinor);
         Assert.Equal(15, scenario.Economy.Fleet!.WageMinor);
         Assert.Equal(15, scenario.Economy.Roads!.WageMinor);
         Assert.Equal(20, scenario.Economy.Services!.DriverWageMinor);
         Assert.All(scenario.Plots!.Where(p => !p.IsCorridor), plot => Assert.Equal(10_000, plot.PriceMinor));
+        Assert.Contains(scenario.ResourceNodes, node => node.Rules!.Public);
+        Assert.Contains(scenario.ResourceNodes, node => !node.Rules!.Public);
+        Assert.All(scenario.ResourceNodes, node => Assert.Equal(15_000, node.Rules!.PurchasePriceMinor));
         Assert.All(scenario.BuildingTypes!.SelectMany(t => t.Levels), level => Assert.True(level.WageMinor is 0 or 15));
     }
 

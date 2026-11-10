@@ -35,7 +35,7 @@ public sealed partial class SimulationEngine
         string resource = SelectedResource(e, item);
         if (resource.Length == 0) return "WrongItem";
         if (!_resources.TryGetValue((e.Position, resource), out var site)) return "WrongResourceSite";
-        if (site.Owner != e.Owner || site.Rules.Public) return "NoResourceRights";
+        if (site.Owner != e.Owner || site.Rules.Public && !ResourceRightsRules.Applies(EconomyRules)) return "NoResourceRights";
         if (_equipment.Values.Any(other => other.Id != e.Id && other.Position == e.Position) ||
             RoadBodies().Any(body => body.Id != e.Id && VehicleCargo(body).Position == e.Position) ||
             PedestrianAt(e.Position,e.Owner) || WorkBlocks(e.Id,e.Position) || TurnReservedByOther(e.Id,e.Position)) return "EquipmentSpaceBlocked";

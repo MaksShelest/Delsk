@@ -6,7 +6,7 @@ namespace Simulation.Tests;
 
 public class I6C25MapEditorTests
 {
-    private static EconomyProfile Current()=>VNextWageScheduleProfile.Create(VNextEquipmentClassesProfile.Create(MobileEquipmentI4Tests.Profile()));
+    private static EconomyProfile Current()=>VNextResourceRightsProfile.Create(VNextWageScheduleProfile.Create(VNextEquipmentClassesProfile.Create(MobileEquipmentI4Tests.Profile())));
     private static EconomyProfile Historical()=>MobileEquipmentI4Tests.Profile();
     /// <summary>Воспроизводимый аналог 35×20. Исходный файл пользователя в задании не был приложен.</summary>
     private static MapDraft Sample()
