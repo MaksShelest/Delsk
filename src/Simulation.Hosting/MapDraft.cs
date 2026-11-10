@@ -10,6 +10,7 @@ public sealed class MapDraft
 {
     public const string ExhibitionToken="compact-exhibition-1";
     public const string FlexibleSchema="delsk-map-design-3";
+    public const string ParcelSchema="delsk-map-design-4";
     public const int MaxLotCells=MapLots.MaximumCells;
     public static readonly string[] ResourceItems=["wood","grain","milk","beet","stone","sand","iron_ore","copper_ore"];
     private static readonly JsonSerializerOptions Json=new()
@@ -40,6 +41,7 @@ public sealed class MapDraft
     public List<Cell> EquipmentParking{get;}=[];
     public string? ActiveDistrictId{get;private set;}
     public bool Flexible=>SchemaVersion==FlexibleSchema;
+    public bool StandardParcels=>SchemaVersion==ParcelSchema;
     public bool CanUndo=>_undo.Count>0;
     public bool CanRedo=>_redo.Count>0;
     public static MapDraft Create(int width=32,int height=25)
@@ -114,6 +116,18 @@ public sealed class MapDraft
         else Record();
         district.Cells.Add(cell);if(district.PublicCells.Count==0)district.PublicCells.Add(cell);
     }
+    public bool PlaceStandardDistrict(Cell origin,string roads)
+    {
+        IndustrialLot[] lots;Cell[] extra;
+        try{lots=IndustrialParcels.District(origin,roads);extra=IndustrialParcels.DistrictRoads(origin,roads);}
+        catch(ArgumentException){return false;}
+        if(lots.SelectMany(l=>l.Cells).Any(c=>!Inside(c)||Occupied(c)))return false;
+        if(extra.Any(c=>!Inside(c)||Occupied(c)&&!Roads.Contains(c)))return false;
+        Record();SchemaVersion=ParcelSchema;
+        foreach(var cell in extra)if(!Roads.Contains(cell))Roads.Add(cell);
+        foreach(var lot in lots)Lots.Add(new(NextId("parcel"),lot.Cells.ToList(),lot.Entry));
+        return true;
+    }
     public void PlaceLot(Cell origin)
     {
         var cells=Rect(origin.X,origin.Z,2,3).Where(Inside).ToList();if(cells.Count!=6)return;
@@ -132,7 +146,7 @@ public sealed class MapDraft
             Lots.Add(lot);
         }
         else lot.Cells.Add(cell);
-        if(!MapLots.LegacyRectangle(lot.Cells))UseFlexible();
+        if(!MapLots.LegacyRectangle(lot.Cells)&&!StandardParcels)UseFlexible();
         return lot.Id;
     }
     public void RemoveLotCell(Cell cell)
@@ -282,7 +296,8 @@ public sealed class MapDraft
         foreach(var lot in Lots)
         {
             Take(lot.Cells,T($"участок {lot.Id}",$"lot {lot.Id}"));
-            if(!Flexible&&!MapLots.LegacyRectangle(lot.Cells))Add(T($"Участок {lot.Id} должен быть 2×3, сейчас {lot.Cells.Count} клеток.",$"Lot {lot.Id} must be 2×3, it has {lot.Cells.Count} cells."),lot.Cells.FirstOrDefault());
+            if(StandardParcels&&IndustrialParcels.TryFrame(new(lot.Id,lot.Cells.ToArray(),lot.Entry)) is null)Add(T($"Участок {lot.Id} должен быть целым 2×3 или 3×2 с подъездом с короткой стороны. Сейчас {lot.Cells.Count} клеток.",$"Lot {lot.Id} must be a whole 2×3 or 3×2 with the entrance on the short side. It has {lot.Cells.Count} cells."),lot.Cells.FirstOrDefault());
+            else if(!Flexible&&!StandardParcels&&!MapLots.LegacyRectangle(lot.Cells))Add(T($"Участок {lot.Id} должен быть 2×3, сейчас {lot.Cells.Count} клеток.",$"Lot {lot.Id} must be 2×3, it has {lot.Cells.Count} cells."),lot.Cells.FirstOrDefault());
             else if(lot.Cells.Count is <1 or >MaxLotCells)Add(T($"Участок {lot.Id} должен занимать от 1 до {MaxLotCells} клеток.",$"Lot {lot.Id} must cover 1 to {MaxLotCells} cells."),lot.Cells.FirstOrDefault());
             else if(!MapLots.Connected(lot.Cells))Add(T($"Участок {lot.Id} разорван: клетки должны соприкасаться сторонами.",$"Lot {lot.Id} is disconnected: cells must share a side."),lot.Cells.FirstOrDefault());
             else if(Flexible&&lot.Cells.Count<6)Add(T($"Участок {lot.Id} занимает {MapLots.Cells(lot.Cells.Count,true)}. Крупное предприятие может не поместиться.",$"Lot {lot.Id} has {lot.Cells.Count} cells. A large building may not fit."),lot.Cells[0],true);
@@ -329,6 +344,7 @@ public sealed class MapDraft
             var seen=new HashSet<Cell>();var queue=new Queue<Cell>();queue.Enqueue(road.First());seen.Add(road.First());
             while(queue.TryDequeue(out var c))foreach(var n in new[]{new Cell(c.X-1,c.Z),new(c.X+1,c.Z),new(c.X,c.Z-1),new(c.X,c.Z+1)})if(road.Contains(n)&&seen.Add(n))queue.Enqueue(n);
             if(seen.Count!=road.Count)Add(T("Дороги не связаны между собой.","The roads are not connected."));
+            if(StandardParcels&&Spawns.Count>0&&road.Any(c=>!Path(road,Spawns[0],c)))Add(T("Изолированная дорога не входит в городскую сеть.","An isolated road is outside the city network."),warning:true);
         }
         else Add(T("Нет ни одной дороги.","There is no road."));
         foreach(var c in Spawns)if(!road.Contains(c))Add(T($"Точка появления ({c.X}, {c.Z}) не стоит на дороге.",$"Spawn ({c.X}, {c.Z}) is not on a road."),c);

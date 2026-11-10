@@ -27,4 +27,5 @@ public sealed record DevelopmentProject(ImmutableArray<Cell> Contour,ImmutableAr
 public sealed record DevelopmentState(ImmutableArray<ExperienceGrant> Grants,ImmutableArray<IndustryQuest> Quests,ImmutableArray<DevelopmentBuilding> Buildings,ImmutableArray<long> Preparing=default);
 public sealed record DevelopmentProjectView(long Id,long BuildingId,Cell Position,string TypeId,int Level,long InventoryId,long StartedTick,long CompletesTick,long PaidMinor,ImmutableArray<MaterialCost> Materials,DevelopmentProject Plan);
 public sealed record DevelopmentObservation(ImmutableArray<IndustryExperience> Experience,ImmutableArray<IndustryQuest> Quests,ImmutableArray<IndustryQuestChoice> Choices,
-    ImmutableArray<DevelopmentBuilding> Buildings,ImmutableArray<DevelopmentProjectView> Projects,DevelopmentRules Rules,long ReviewTick,long NextReviewTick,ImmutableArray<long> Preparing,ImmutableArray<Cell> BuildAnchors);
+    ImmutableArray<DevelopmentBuilding> Buildings,ImmutableArray<DevelopmentProjectView> Projects,DevelopmentRules Rules,long ReviewTick,long NextReviewTick,ImmutableArray<long> Preparing,ImmutableArray<Cell> BuildAnchors,
+    [property:JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingDefault)] ImmutableArray<Cell> BuildFacing=default);

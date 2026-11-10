@@ -330,7 +330,7 @@ public partial class Playfield
         {
             _contextActions=new ContextActionsPanel();host.AddChild(_contextActions);
             _contextActions.Requested+=ConfirmContextChoice;
-            _contextActions.Preview+=choice=>{_previewKey=choice?.Key??"";_stage?.SetPreview(choice is null?[]:FriendlyGuidance.Cells(choice.Command,_scenario));};
+            _contextActions.Preview+=choice=>{_previewKey=choice?.Key??"";var preview=FriendlyGuidance.Preview(choice?.Command,_scenario);_stage?.SetPreview(preview.Cells,preview.Entry,preview.Anchor,choice is {Enabled:false});};
             _contextActions.CollapsedChanged+=collapsed=>{_contextCollapsed=collapsed;LayoutContextDock();};
             if(_contextCollapsed)_contextActions.Dismiss();
             _contextActions.ExpansionChanged+=expanded=>

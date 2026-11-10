@@ -45,7 +45,25 @@ public static class PlayContext
                 Details: tablets ? L(language, "Повторяется по одной единице до остановки, ухода или заполнения инвентаря.",
                     "Repeats one unit at a time until stopped, leaving the area or inventory full.") : ""));
         var plot = view.Plots.SingleOrDefault(p => p.Position == cell);
-        if (plot is { IsCorridor: false, OwnerId: null, ExpansionFor: null } &&
+        var parcelLot = scenario.Layout?.IndustrialLots.FirstOrDefault(l => l.Cells.Contains(cell));
+        bool wholeParcel = plot is { IsShopSite: false, ShopParticipantId: null } && IndustrialParcelRules.Applies(view.Economy) && parcelLot is not null && IndustrialParcels.TryFrame(parcelLot) is not null;
+        if (wholeParcel && plot is { IsCorridor: false, OwnerId: null, ExpansionFor: null })
+        {
+            var owned = view.Plots.Where(p => parcelLot!.Cells.Contains(p.Position)).ToArray();
+            bool free = owned.Length == IndustrialParcelRules.Cells && owned.All(p => p.OwnerId is null && p.ReservedBy is null && p.BuildingId is null && p.ExpansionFor is null);
+            bool entry = scenario.Layout is { } layout && IndustrialParcels.ReachesNetwork(layout, parcelLot!.Entry);
+            bool money = view.AvailableCashMinor >= IndustrialParcelRules.PriceMinor;
+            string caption = L(language, "6 клеток · подъезд к дороге · место для полного развития", "6 cells · road entrance · room to develop fully");
+            var reasons = new List<string>();
+            if (!free) reasons.Add(L(language, "Участок уже занят.", "The parcel is already taken."));
+            if (!entry) reasons.Add(L(language, "Нет подъезда к городской дороге.", "No entrance to the city road."));
+            if (!money) reasons.Add(L(language, "Нужно 600 монет.", "600 coins are required."));
+            choices.Add(new("buy:" + plot.Id.Value,
+                L(language, "Купить участок — 600 монет", "Buy parcel — 600 coins"),
+                PlayerDesk.BuyPlot(plot.Id.Value), free && entry && money,
+                reasons.Count == 0 ? caption : caption + " " + string.Join(" ", reasons)));
+        }
+        else if (plot is { IsCorridor: false, OwnerId: null, ExpansionFor: null } &&
             (plot.ShopParticipantId is null || plot.ShopParticipantId == view.Participant.Id) &&
             (plot.ReservedBy is null || plot.ReservedBy == view.Participant.Id))
         {
@@ -93,7 +111,15 @@ public static class PlayContext
                     issues.Add(PlayerText.Item(language, cost.ItemId) + $": {Free(materialInventory, cost.ItemId)}/{cost.Quantity}");
             var offsets=MapLots.Offsets(type,1);
             var lot=scenario.Layout?.IndustrialLots.FirstOrDefault(l=>l.Cells.Contains(cell));
-            if(lot is not null && !MapLots.Covers(lot.Cells, cell, offsets))
+            var frame=lot is null||!IndustrialParcelRules.Applies(view.Economy)?null:IndustrialParcels.TryFrame(lot);
+            if(frame is {} oriented && oriented.Anchor==cell)
+            {
+                if(offsets.Any(offset=>!lot!.Cells.Contains(oriented.Map(offset.X,offset.Z))))
+                    issues.Add(MapLots.TooSmall(language, PlayerText.Building(language, type.Id), offsets.Length, lot!.Cells.Length));
+                else if(offsets.Any(offset=>!view.Plots.Any(p=>p.Position==oriented.Map(offset.X,offset.Z)&&p.OwnerId==view.Participant.Id&&!p.IsCorridor&&p.BuildingId is null)))
+                    issues.Add(L(language, "Нет свободной собственной площади под всё здание.", "The full footprint must be free and owned."));
+            }
+            else if(lot is not null && !MapLots.Covers(lot.Cells, cell, offsets))
                 issues.Add(MapLots.TooSmall(language, PlayerText.Building(language, type.Id), offsets.Length, lot.Cells.Length));
             else if (offsets.Any(offset => !view.Plots.Any(p => p.Position == new Cell(cell.X + offset.X, cell.Z + offset.Z) &&
                 p.OwnerId == view.Participant.Id && !p.IsCorridor && p.BuildingId is null &&
@@ -155,8 +181,10 @@ public static class PlayContext
             bool enabled = choice.Enabled && (!busy || choice.Command is null);
             if (choice.Command?.Kind is ActionKind.BuyPlot or ActionKind.ReservePlot)
             {
-                long cost = choice.Command.Kind == ActionKind.BuyPlot ? plot!.PriceMinor : ReservationFee(plot!.PriceMinor, view.Economy);
-                if (view.AvailableCashMinor < cost) { enabled = false; reason = L(language, "Недостаточно денег.", "Not enough money."); }
+                long cost = choice.Command.Kind == ActionKind.BuyPlot
+                    ? wholeParcel ? IndustrialParcelRules.PriceMinor : plot!.PriceMinor
+                    : ReservationFee(plot!.PriceMinor, view.Economy);
+                if (view.AvailableCashMinor < cost) { enabled = false; reason = wholeParcel ? choice.Details : L(language, "Недостаточно денег.", "Not enough money."); }
                 if (plot!.IsShopSite && view.Plots.Any(p => p.IsShopSite && p.Id != plot.Id && (p.OwnerId == view.Participant.Id || p.ReservedBy == view.Participant.Id)))
                 { enabled = false; reason = PlayerText.Reason(language,"ShopSiteLimit"); }
             }

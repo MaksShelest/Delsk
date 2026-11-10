@@ -19,7 +19,7 @@ public static partial class ScenarioValidation
         if(s.Layout is not {} l)return;
         void Require([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool valid,string because){if(!valid)throw new ArgumentException("Invalid resolved map layout: "+because);}
         static string At(Cell cell)=>FormattableString.Invariant($"at {cell.X},{cell.Z}");
-        Require((l.Version is "map-adapter-1" or "map-adapter-2" or "map-adapter-3") && !string.IsNullOrWhiteSpace(l.SourceId) && l.SourceName is {Length:>0 and <=180} &&
+        Require((l.Version is "map-adapter-1" or "map-adapter-2" or "map-adapter-3" or "map-adapter-4") && !string.IsNullOrWhiteSpace(l.SourceId) && l.SourceName is {Length:>0 and <=180} &&
             System.Text.RegularExpressions.Regex.IsMatch(l.SourceSha256??"","\\A[0-9a-f]{64}\\z") && l.MaxParticipants is >=4 and <=64 && s.Participants.Length<=l.MaxParticipants,"map header "+l.SourceId);
         HashSet<Cell> Cells(Cell[] cells,string what,bool nonempty=true)
         {
@@ -54,6 +54,17 @@ public static partial class ScenarioValidation
             Id(lot.Id);var c=Cells(lot.Cells,"lot "+lot.Id);
             bool entry=corridor.Contains(lot.Entry) && c.Any(p=>Math.Abs(p.X-lot.Entry.X)+Math.Abs(p.Z-lot.Entry.Z)==1);
             if(l.Version=="map-adapter-3")Require(c.Count is >=1 and <=64 && Linked(c) && entry,"lot "+lot.Id+" "+At(lot.Entry));
+            else if(l.Version=="map-adapter-4")
+            {
+                var frame=IndustrialParcels.TryFrame(lot);
+                Require(frame is not null && entry && IndustrialParcels.ReachesNetwork(l,lot.Entry),"lot "+lot.Id+" standard parcel "+At(lot.Entry));
+                foreach(var type in (s.BuildingTypes??[]).Where(t=>t.Kind==BuildingKind.Production))
+                {
+                    var top=type.Levels.MaxBy(level=>level.Level);
+                    var local=top is null||top.Footprint.IsDefault?type.Footprint:top.Footprint.ToArray();
+                    Require(local.All(offset=>c.Contains(frame.Value.Map(offset.X,offset.Z))),"lot "+lot.Id+" footprint "+type.Id);
+                }
+            }
             else Require(c.Count==6 && c.Max(p=>p.X)-c.Min(p=>p.X)==1 && c.Max(p=>p.Z)-c.Min(p=>p.Z)==2 && entry,"lot "+lot.Id+" must be 2x3 "+At(lot.Entry));
             Reserve(c,"lot "+lot.Id);
         }
@@ -69,7 +80,7 @@ public static partial class ScenarioValidation
             var shape=site.Kind switch{"town_hall"=>(3,3),"terminal"=>(2,3),"dealership"=>(5,5),_=>(0,0)};
             bool upright=c.Count==shape.Item1*shape.Item2 && spanX==shape.Item1 && spanZ==shape.Item2;
             // Поворот содержимого меняет терминал 2×3 на 3×2. Квадратные ратуша и автосалон не меняют габарит.
-            bool turned=l.Version=="map-adapter-3" && site.Kind=="terminal" && c.Count==6 && spanX==3 && spanZ==2;
+            bool turned=l.Version is "map-adapter-3" or "map-adapter-4" && site.Kind=="terminal" && c.Count==6 && spanX==3 && spanZ==2;
             Require(upright||turned,site.Kind+" "+site.Id+" footprint "+spanX+"x"+spanZ+" "+At(site.Entry));
             Require(body.IsSubsetOf(c)&&c.Contains(site.Entry)&&!body.Contains(site.Entry)&&body.Any(p=>Math.Abs(p.X-site.Entry.X)+Math.Abs(p.Z-site.Entry.Z)==1),site.Kind+" entry "+site.Id+" "+At(site.Entry));if(site.SourceBuilding is {} source)Require(Cells(source,site.Kind+" source "+site.Id).SetEquals(body),site.Kind+" source "+site.Id);if(site.Parking is {} parking)Require(Cells(parking,site.Kind+" apron "+site.Id).IsSubsetOf(c),site.Kind+" apron "+site.Id+" "+At(site.Entry));if(l.Version=="map-adapter-2")
             {
@@ -80,7 +91,7 @@ public static partial class ScenarioValidation
                 if(site.Kind=="dealership")Require(site.Parking is {Length:4} && site.Parking.SequenceEqual(Enumerable.Range(0,4).Select(i=>new Cell(c.Min(p=>p.X)+i,c.Min(p=>p.Z)+3))),"dealership apron "+site.Id+" "+At(site.Entry));
                 Require(site.Parking is null || !site.Parking.Any(body.Contains),site.Kind+" apron overlaps body "+site.Id);
             }
-            if(l.Version=="map-adapter-3")
+            if(l.Version is "map-adapter-3" or "map-adapter-4")
             {
                 Require(site.SourceBuilding is not null && body.Count==4 && body.Max(p=>p.X)-body.Min(p=>p.X)==1 && body.Max(p=>p.Z)-body.Min(p=>p.Z)==1,site.Kind+" body "+site.Id+" "+At(site.Entry));
                 Require(site.Parking is null || !site.Parking.Any(body.Contains),site.Kind+" apron overlaps body "+site.Id);
