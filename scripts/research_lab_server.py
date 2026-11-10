@@ -50,7 +50,7 @@ def make_server(lab, port=8765):
                     return self.send(403, {'error':'Use the printed loopback URL'})
                 html = (ROOT/'scripts/research_lab.html').read_text(encoding='utf-8').replace('__TOKEN__', token)
                 return self.send(200, html.encode('utf-8'), 'text/html; charset=utf-8')
-            if path in ('/research_lab.css','/research_lab.js'):
+            if path in ('/research_lab.css','/research_lab.js','/research_lab_science.js'):
                 if self.headers.get('Host')!=f'127.0.0.1:{self.server.server_port}':return self.send(403,{'error':'Use loopback'})
                 return self.send(200,(ROOT/'scripts'/path[1:]).read_bytes(),'text/css; charset=utf-8' if path.endswith('.css') else 'text/javascript; charset=utf-8')
             if not self.authorized():
@@ -83,6 +83,37 @@ def make_server(lab, port=8765):
                 if path=='/api/journal':return self.send(200,lab.views.journal(q['id'],q['job'],q['attempt'],q['kind'],q.get('cursor',0),q.get('actor',''),q.get('search',''),q.get('important','false')))
                 if path == '/api/state':
                     return self.send(200, lab.snapshot())
+                if path == '/api/science/catalog':
+                    from research_experiment import catalog
+                    return self.send(200, catalog())
+                if path == '/api/science/study':
+                    from research_experiment import load_study
+                    return self.send(200, load_study(lab, q['id']))
+                if path == '/api/science/chart':
+                    from research_experiment import chart
+                    return self.send(200, chart(lab, q['id'], q['metric']))
+                if path == '/api/science/report':
+                    folder = (lab.workspace/q['id']).resolve()
+                    target = (folder/'analysis'/'report.html').resolve()
+                    if not folder.is_dir() or not folder.is_relative_to(lab.workspace.resolve()) or not target.is_file() or not target.is_relative_to(folder):
+                        raise ValueError('Отчёт ещё не сформирован')
+                    return self.send(200, target.read_bytes(), 'text/html; charset=utf-8')
+                if path.startswith('/science-zip/') and path.endswith('.zip'):
+                    key = unquote(path[len('/science-zip/'):-4])
+                    folder = (lab.workspace/key).resolve()
+                    target = (folder/'analysis'/'results.zip').resolve()
+                    if not folder.is_relative_to(lab.workspace.resolve()) or not target.is_file() or not target.is_relative_to(folder):
+                        raise ValueError('Архив отчёта ещё не сформирован')
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'application/zip')
+                    self.send_header('Content-Length', str(target.stat().st_size))
+                    self.send_header('Content-Disposition', 'attachment; filename="results.zip"')
+                    self.send_header('Cache-Control', 'no-store')
+                    self.send_header('X-Content-Type-Options', 'nosniff')
+                    self.end_headers()
+                    with target.open('rb') as stream:
+                        shutil.copyfileobj(stream, self.wfile)
+                    return
                 if path == '/api/catalog':
                     from research_lab import MAX_TIMEOUT, ORDINARY_TICKS
                     from research_lab_presets import MAPS, FACTOR_LABELS, presets, CITY_MAPS, city_plan
@@ -153,6 +184,33 @@ def make_server(lab, port=8765):
                 if self.path=='/api/models':
                     from research_workspace import model_tags
                     return self.send(200,model_tags(data['endpoint']))
+                if self.path == '/api/science/preview':
+                    from research_experiment import build_plan
+                    return self.send(200, build_plan(data))
+                if self.path == '/api/science/start':
+                    from research_experiment import build_plan
+                    plan = build_plan(data)['plan']
+                    key = lab.enqueue(plan)
+                    lab.start()
+                    return self.send(200, dict(id=key))
+                if self.path == '/api/science/analyze':
+                    import copy
+                    from research_experiment import analyze_snapshot
+                    with lab.lock:
+                        series = next((item for item in lab.series if item['id']==data['id']), None)
+                        if series is None:
+                            raise ValueError('Исследование не найдено')
+                        snapshot = copy.deepcopy(series)
+                    study = analyze_snapshot(lab.workspace, snapshot, force=bool(data.get('force')))
+                    if study is None:
+                        raise ValueError('У этой серии нет описания научного исследования')
+                    return self.send(200, study)
+                if self.path == '/api/science/retry':
+                    lab.retry_jobs(data['id'], data.get('job'))
+                    return self.send(200, lab.snapshot())
+                if self.path == '/api/science/open':
+                    from research_experiment import open_folder
+                    return self.send(200, open_folder(lab, data['id']))
                 if self.path == '/api/queue':
                     return self.send(200, dict(id=lab.enqueue(data)))
                 if self.path == '/api/pause':

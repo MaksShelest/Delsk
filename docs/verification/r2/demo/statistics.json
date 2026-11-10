@@ -1,0 +1,1487 @@
+{
+  "version": 1,
+  "method": "r2-paired-t-1",
+  "methodNotes": [
+    "Независимая единица — один успешный прогон одного seed. Повтор того же seed исключается.",
+    "Тики внутри партии не являются отдельными наблюдениями.",
+    "Пропуск и неуспешный прогон не заменяются нулём.",
+    "Для пар используется разность «группа минус первая группа» на том же seed.",
+    "Среднее — арифметическое. Медиана — среднее двух центральных значений при чётном числе.",
+    "Стандартное отклонение — выборочное, делитель n−1. При n<2 оно не определено.",
+    "95% интервал среднего парного различия: среднее ± t(n−1, 0,975) · s / √n.",
+    "Двусторонний p считается тем же критерием Стьюдента для парных различий. Он не выбирается после просмотра нескольких тестов.",
+    "Величина эффекта — d = среднее парное различие / выборочное стандартное отклонение этих различий.",
+    "Относительное изменение — разность средних, делённая на среднее первой группы. Это не среднее попарных процентов.",
+    "Основная метрика — заранее выбранный показатель. Остальные метрики разведочные и не поправляются на число сравнений.",
+    "Интервал и p описывают эту выборку модели Delsk. Они не доказывают поведение реальной экономики."
+  ],
+  "status": "complete",
+  "generatedAt": "2026-11-10T10:56:41+04:00",
+  "fingerprint": "238e7a71a269c500ba48ff884d552d884fd83aa18c933b795be25a3a8e7d2d66",
+  "experiment": {
+    "title": "Демонстрация: целевая ставка NPC 0,15 и 0,25",
+    "goal": "Сравнить две целевые ставки политики NPC при одинаковых карте, seed и остальных настройках.",
+    "hypothesis": "Различие целевой ставки NPC может сопровождаться различием занятости. Направление заранее не утверждается.",
+    "comparison": "Группы отличаются только целевой ставкой политики NPC.",
+    "primaryMetric": "employed",
+    "groups": [
+      {
+        "arm": "arm-0",
+        "label": "A",
+        "value": 15,
+        "valueLabel": "0,15 монеты",
+        "factorLabel": "Целевая ставка NPC"
+      },
+      {
+        "arm": "arm-1",
+        "label": "B",
+        "value": 25,
+        "valueLabel": "0,25 монеты",
+        "factorLabel": "Целевая ставка NPC"
+      }
+    ],
+    "fixed": [
+      "Шкала мира остаётся 0,15 монеты, ручной шаг 0,02. Меняется целевая ставка NPC, а не ставка зданий и не цена участка.",
+      "Профиль vnext-i6c72-wages-1.",
+      "Карта: Малая долина · текущие правила.",
+      "Тиков в прогоне: 120. Seeds: 42, 43. Повторов seed: 1.",
+      "Режим алгоритмический, без языковой модели.",
+      "Алгоритмических NPC: 3."
+    ],
+    "mapLabel": "Малая долина · текущие правила",
+    "profileId": "vnext-i6c72-wages-1",
+    "profileNote": "Хеш проекции пересчитывается только у группы, где изменено поле vNext-профиля. Контрольная группа копируется побайтно.",
+    "ticks": 120,
+    "seeds": [
+      42,
+      43
+    ],
+    "repetitions": 1,
+    "recording": "normal"
+  },
+  "runs": [
+    {
+      "id": "arm-0-s42-r0",
+      "arm": "arm-0",
+      "group": "A",
+      "seed": 42,
+      "repeat": 0,
+      "status": "succeeded",
+      "attempt": 1,
+      "included": true,
+      "exclusion": null,
+      "metrics": {
+        "employed": 0,
+        "treasuryMinor": 500000,
+        "producedUnits": 0,
+        "harvestedUnits": 9,
+        "npcCashMinor": 60000
+      },
+      "error": null
+    },
+    {
+      "id": "arm-0-s43-r0",
+      "arm": "arm-0",
+      "group": "A",
+      "seed": 43,
+      "repeat": 0,
+      "status": "succeeded",
+      "attempt": 1,
+      "included": true,
+      "exclusion": null,
+      "metrics": {
+        "employed": 0,
+        "treasuryMinor": 500000,
+        "producedUnits": 0,
+        "harvestedUnits": 6,
+        "npcCashMinor": 62436
+      },
+      "error": null
+    },
+    {
+      "id": "arm-1-s42-r0",
+      "arm": "arm-1",
+      "group": "B",
+      "seed": 42,
+      "repeat": 0,
+      "status": "succeeded",
+      "attempt": 1,
+      "included": true,
+      "exclusion": null,
+      "metrics": {
+        "employed": 0,
+        "treasuryMinor": 500000,
+        "producedUnits": 0,
+        "harvestedUnits": 9,
+        "npcCashMinor": 60000
+      },
+      "error": null
+    },
+    {
+      "id": "arm-1-s43-r0",
+      "arm": "arm-1",
+      "group": "B",
+      "seed": 43,
+      "repeat": 0,
+      "status": "succeeded",
+      "attempt": 1,
+      "included": true,
+      "exclusion": null,
+      "metrics": {
+        "employed": 0,
+        "treasuryMinor": 500000,
+        "producedUnits": 0,
+        "harvestedUnits": 6,
+        "npcCashMinor": 62436
+      },
+      "error": null
+    }
+  ],
+  "metrics": {
+    "employed": {
+      "id": "employed",
+      "title": "Занятость",
+      "category": "Население",
+      "unit": "count",
+      "unitLabel": "жители",
+      "money": false,
+      "trajectory": true,
+      "sample": "employed",
+      "definition": "Численность занятых на конец прогона: население минус безработные по PublicEconomy.",
+      "source": "public-economy.json, поле employed",
+      "role": "primary",
+      "groups": [
+        {
+          "n": 2,
+          "missing": 0,
+          "mean": 0,
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0,
+          "standardDeviation": 0,
+          "range": 0,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна."
+          ],
+          "interval": [
+            0,
+            0
+          ],
+          "arm": "arm-0",
+          "label": "A"
+        },
+        {
+          "n": 2,
+          "missing": 0,
+          "mean": 0,
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0,
+          "standardDeviation": 0,
+          "range": 0,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна."
+          ],
+          "interval": [
+            0,
+            0
+          ],
+          "arm": "arm-1",
+          "label": "B"
+        }
+      ],
+      "paired": [
+        {
+          "method": "r2-paired-t-1",
+          "pairs": 2,
+          "seeds": [
+            42,
+            43
+          ],
+          "unpairedSeeds": {
+            "leftOnly": [],
+            "rightOnly": []
+          },
+          "mean": 0,
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0,
+          "standardDeviation": 0,
+          "range": 0,
+          "absoluteChange": 0,
+          "relativeChangePercent": null,
+          "confidenceInterval": [
+            0,
+            0
+          ],
+          "effectSize": null,
+          "pValue": null,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна.",
+            "Относительное изменение не определено: среднее первой группы равно нулю.",
+            "Все парные различия равны нулю. Дисперсия не оценивается, p-значение не приводится."
+          ],
+          "arm": "arm-1",
+          "label": "B − A"
+        }
+      ],
+      "trajectories": [
+        {
+          "group": "A",
+          "seed": 42,
+          "points": [
+            {
+              "tick": 0,
+              "value": 0
+            },
+            {
+              "tick": 1,
+              "value": 0
+            },
+            {
+              "tick": 30,
+              "value": 0
+            },
+            {
+              "tick": 60,
+              "value": 0
+            },
+            {
+              "tick": 90,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            }
+          ]
+        },
+        {
+          "group": "A",
+          "seed": 43,
+          "points": [
+            {
+              "tick": 0,
+              "value": 0
+            },
+            {
+              "tick": 1,
+              "value": 0
+            },
+            {
+              "tick": 30,
+              "value": 0
+            },
+            {
+              "tick": 60,
+              "value": 0
+            },
+            {
+              "tick": 90,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            }
+          ]
+        },
+        {
+          "group": "B",
+          "seed": 42,
+          "points": [
+            {
+              "tick": 0,
+              "value": 0
+            },
+            {
+              "tick": 1,
+              "value": 0
+            },
+            {
+              "tick": 30,
+              "value": 0
+            },
+            {
+              "tick": 60,
+              "value": 0
+            },
+            {
+              "tick": 90,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            }
+          ]
+        },
+        {
+          "group": "B",
+          "seed": 43,
+          "points": [
+            {
+              "tick": 0,
+              "value": 0
+            },
+            {
+              "tick": 1,
+              "value": 0
+            },
+            {
+              "tick": 30,
+              "value": 0
+            },
+            {
+              "tick": 60,
+              "value": 0
+            },
+            {
+              "tick": 90,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            }
+          ]
+        }
+      ]
+    },
+    "treasuryMinor": {
+      "id": "treasuryMinor",
+      "title": "Казна города",
+      "category": "Экономика",
+      "unit": "minor",
+      "unitLabel": "монеты",
+      "money": true,
+      "trajectory": true,
+      "sample": "treasuryBalanceMinor",
+      "definition": "Денежные средства счёта Treasury. Не являются суммой денег всех NPC и не включают дорожную дебиторку.",
+      "source": "summary.json, счёт Treasury",
+      "role": "exploratory",
+      "groups": [
+        {
+          "n": 2,
+          "missing": 0,
+          "mean": 500000,
+          "median": 500000,
+          "minimum": 500000,
+          "maximum": 500000,
+          "standardDeviation": 0,
+          "range": 0,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна."
+          ],
+          "interval": [
+            500000,
+            500000
+          ],
+          "arm": "arm-0",
+          "label": "A"
+        },
+        {
+          "n": 2,
+          "missing": 0,
+          "mean": 500000,
+          "median": 500000,
+          "minimum": 500000,
+          "maximum": 500000,
+          "standardDeviation": 0,
+          "range": 0,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна."
+          ],
+          "interval": [
+            500000,
+            500000
+          ],
+          "arm": "arm-1",
+          "label": "B"
+        }
+      ],
+      "paired": [
+        {
+          "method": "r2-paired-t-1",
+          "pairs": 2,
+          "seeds": [
+            42,
+            43
+          ],
+          "unpairedSeeds": {
+            "leftOnly": [],
+            "rightOnly": []
+          },
+          "mean": 0,
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0,
+          "standardDeviation": 0,
+          "range": 0,
+          "absoluteChange": 0,
+          "relativeChangePercent": 0,
+          "confidenceInterval": [
+            0,
+            0
+          ],
+          "effectSize": null,
+          "pValue": null,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна.",
+            "Все парные различия равны нулю. Дисперсия не оценивается, p-значение не приводится."
+          ],
+          "arm": "arm-1",
+          "label": "B − A"
+        }
+      ],
+      "trajectories": [
+        {
+          "group": "A",
+          "seed": 42,
+          "points": [
+            {
+              "tick": 0,
+              "value": 500000
+            },
+            {
+              "tick": 1,
+              "value": 500000
+            },
+            {
+              "tick": 30,
+              "value": 500000
+            },
+            {
+              "tick": 60,
+              "value": 500000
+            },
+            {
+              "tick": 90,
+              "value": 500000
+            },
+            {
+              "tick": 120,
+              "value": 500000
+            },
+            {
+              "tick": 120,
+              "value": 500000
+            }
+          ]
+        },
+        {
+          "group": "A",
+          "seed": 43,
+          "points": [
+            {
+              "tick": 0,
+              "value": 500000
+            },
+            {
+              "tick": 1,
+              "value": 500000
+            },
+            {
+              "tick": 30,
+              "value": 500000
+            },
+            {
+              "tick": 60,
+              "value": 500000
+            },
+            {
+              "tick": 90,
+              "value": 500000
+            },
+            {
+              "tick": 120,
+              "value": 500000
+            },
+            {
+              "tick": 120,
+              "value": 500000
+            }
+          ]
+        },
+        {
+          "group": "B",
+          "seed": 42,
+          "points": [
+            {
+              "tick": 0,
+              "value": 500000
+            },
+            {
+              "tick": 1,
+              "value": 500000
+            },
+            {
+              "tick": 30,
+              "value": 500000
+            },
+            {
+              "tick": 60,
+              "value": 500000
+            },
+            {
+              "tick": 90,
+              "value": 500000
+            },
+            {
+              "tick": 120,
+              "value": 500000
+            },
+            {
+              "tick": 120,
+              "value": 500000
+            }
+          ]
+        },
+        {
+          "group": "B",
+          "seed": 43,
+          "points": [
+            {
+              "tick": 0,
+              "value": 500000
+            },
+            {
+              "tick": 1,
+              "value": 500000
+            },
+            {
+              "tick": 30,
+              "value": 500000
+            },
+            {
+              "tick": 60,
+              "value": 500000
+            },
+            {
+              "tick": 90,
+              "value": 500000
+            },
+            {
+              "tick": 120,
+              "value": 500000
+            },
+            {
+              "tick": 120,
+              "value": 500000
+            }
+          ]
+        }
+      ]
+    },
+    "producedUnits": {
+      "id": "producedUnits",
+      "title": "Производственный выпуск",
+      "category": "Экономика",
+      "unit": "count",
+      "unitLabel": "единицы",
+      "money": false,
+      "trajectory": true,
+      "sample": "produced",
+      "definition": "Накопленное число произведённых единиц с начала партии. Не денежная оценка и не прирост последнего тика.",
+      "source": "summary.json, сумма flows.produced",
+      "role": "exploratory",
+      "groups": [
+        {
+          "n": 2,
+          "missing": 0,
+          "mean": 0,
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0,
+          "standardDeviation": 0,
+          "range": 0,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна."
+          ],
+          "interval": [
+            0,
+            0
+          ],
+          "arm": "arm-0",
+          "label": "A"
+        },
+        {
+          "n": 2,
+          "missing": 0,
+          "mean": 0,
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0,
+          "standardDeviation": 0,
+          "range": 0,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна."
+          ],
+          "interval": [
+            0,
+            0
+          ],
+          "arm": "arm-1",
+          "label": "B"
+        }
+      ],
+      "paired": [
+        {
+          "method": "r2-paired-t-1",
+          "pairs": 2,
+          "seeds": [
+            42,
+            43
+          ],
+          "unpairedSeeds": {
+            "leftOnly": [],
+            "rightOnly": []
+          },
+          "mean": 0,
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0,
+          "standardDeviation": 0,
+          "range": 0,
+          "absoluteChange": 0,
+          "relativeChangePercent": null,
+          "confidenceInterval": [
+            0,
+            0
+          ],
+          "effectSize": null,
+          "pValue": null,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна.",
+            "Относительное изменение не определено: среднее первой группы равно нулю.",
+            "Все парные различия равны нулю. Дисперсия не оценивается, p-значение не приводится."
+          ],
+          "arm": "arm-1",
+          "label": "B − A"
+        }
+      ],
+      "trajectories": [
+        {
+          "group": "A",
+          "seed": 42,
+          "points": [
+            {
+              "tick": 0,
+              "value": 0
+            },
+            {
+              "tick": 1,
+              "value": 0
+            },
+            {
+              "tick": 30,
+              "value": 0
+            },
+            {
+              "tick": 60,
+              "value": 0
+            },
+            {
+              "tick": 90,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            }
+          ]
+        },
+        {
+          "group": "A",
+          "seed": 43,
+          "points": [
+            {
+              "tick": 0,
+              "value": 0
+            },
+            {
+              "tick": 1,
+              "value": 0
+            },
+            {
+              "tick": 30,
+              "value": 0
+            },
+            {
+              "tick": 60,
+              "value": 0
+            },
+            {
+              "tick": 90,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            }
+          ]
+        },
+        {
+          "group": "B",
+          "seed": 42,
+          "points": [
+            {
+              "tick": 0,
+              "value": 0
+            },
+            {
+              "tick": 1,
+              "value": 0
+            },
+            {
+              "tick": 30,
+              "value": 0
+            },
+            {
+              "tick": 60,
+              "value": 0
+            },
+            {
+              "tick": 90,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            }
+          ]
+        },
+        {
+          "group": "B",
+          "seed": 43,
+          "points": [
+            {
+              "tick": 0,
+              "value": 0
+            },
+            {
+              "tick": 1,
+              "value": 0
+            },
+            {
+              "tick": 30,
+              "value": 0
+            },
+            {
+              "tick": 60,
+              "value": 0
+            },
+            {
+              "tick": 90,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            },
+            {
+              "tick": 120,
+              "value": 0
+            }
+          ]
+        }
+      ]
+    },
+    "harvestedUnits": {
+      "id": "harvestedUnits",
+      "title": "Добыча ресурсов",
+      "category": "Экономика",
+      "unit": "count",
+      "unitLabel": "единицы",
+      "money": false,
+      "trajectory": true,
+      "sample": "harvested",
+      "definition": "Накопленное число добытых единиц с начала партии.",
+      "source": "summary.json, сумма flows.harvested",
+      "role": "exploratory",
+      "groups": [
+        {
+          "n": 2,
+          "missing": 0,
+          "mean": "7.5",
+          "median": "7.5",
+          "minimum": 6,
+          "maximum": 9,
+          "standardDeviation": "2.1213203435596425732025330863145471178545078130654",
+          "range": 3,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна."
+          ],
+          "interval": [
+            "-11.559307104262030500000000000000000000000000000000",
+            "26.559307104262030500000000000000000000000000000000"
+          ],
+          "arm": "arm-0",
+          "label": "A"
+        },
+        {
+          "n": 2,
+          "missing": 0,
+          "mean": "7.5",
+          "median": "7.5",
+          "minimum": 6,
+          "maximum": 9,
+          "standardDeviation": "2.1213203435596425732025330863145471178545078130654",
+          "range": 3,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна."
+          ],
+          "interval": [
+            "-11.559307104262030500000000000000000000000000000000",
+            "26.559307104262030500000000000000000000000000000000"
+          ],
+          "arm": "arm-1",
+          "label": "B"
+        }
+      ],
+      "paired": [
+        {
+          "method": "r2-paired-t-1",
+          "pairs": 2,
+          "seeds": [
+            42,
+            43
+          ],
+          "unpairedSeeds": {
+            "leftOnly": [],
+            "rightOnly": []
+          },
+          "mean": 0,
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0,
+          "standardDeviation": 0,
+          "range": 0,
+          "absoluteChange": 0,
+          "relativeChangePercent": 0,
+          "confidenceInterval": [
+            0,
+            0
+          ],
+          "effectSize": null,
+          "pValue": null,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна.",
+            "Все парные различия равны нулю. Дисперсия не оценивается, p-значение не приводится."
+          ],
+          "arm": "arm-1",
+          "label": "B − A"
+        }
+      ],
+      "trajectories": [
+        {
+          "group": "A",
+          "seed": 42,
+          "points": [
+            {
+              "tick": 0,
+              "value": 0
+            },
+            {
+              "tick": 1,
+              "value": 0
+            },
+            {
+              "tick": 30,
+              "value": 0
+            },
+            {
+              "tick": 60,
+              "value": 3
+            },
+            {
+              "tick": 90,
+              "value": 9
+            },
+            {
+              "tick": 120,
+              "value": 9
+            },
+            {
+              "tick": 120,
+              "value": 9
+            }
+          ]
+        },
+        {
+          "group": "A",
+          "seed": 43,
+          "points": [
+            {
+              "tick": 0,
+              "value": 0
+            },
+            {
+              "tick": 1,
+              "value": 0
+            },
+            {
+              "tick": 30,
+              "value": 2
+            },
+            {
+              "tick": 60,
+              "value": 6
+            },
+            {
+              "tick": 90,
+              "value": 6
+            },
+            {
+              "tick": 120,
+              "value": 6
+            },
+            {
+              "tick": 120,
+              "value": 6
+            }
+          ]
+        },
+        {
+          "group": "B",
+          "seed": 42,
+          "points": [
+            {
+              "tick": 0,
+              "value": 0
+            },
+            {
+              "tick": 1,
+              "value": 0
+            },
+            {
+              "tick": 30,
+              "value": 0
+            },
+            {
+              "tick": 60,
+              "value": 3
+            },
+            {
+              "tick": 90,
+              "value": 9
+            },
+            {
+              "tick": 120,
+              "value": 9
+            },
+            {
+              "tick": 120,
+              "value": 9
+            }
+          ]
+        },
+        {
+          "group": "B",
+          "seed": 43,
+          "points": [
+            {
+              "tick": 0,
+              "value": 0
+            },
+            {
+              "tick": 1,
+              "value": 0
+            },
+            {
+              "tick": 30,
+              "value": 2
+            },
+            {
+              "tick": 60,
+              "value": 6
+            },
+            {
+              "tick": 90,
+              "value": 6
+            },
+            {
+              "tick": 120,
+              "value": 6
+            },
+            {
+              "tick": 120,
+              "value": 6
+            }
+          ]
+        }
+      ]
+    },
+    "npcCashMinor": {
+      "id": "npcCashMinor",
+      "title": "Деньги NPC",
+      "category": "NPC",
+      "unit": "minor",
+      "unitLabel": "монеты",
+      "money": true,
+      "trajectory": true,
+      "sample": "npcCashMinor",
+      "definition": "Сумма остатков счетов NPC в последнем срезе. Пассивный человек обычной партии не входит. В краткой записи срезов нет, поэтому показатель отсутствует.",
+      "source": "economy-samples.jsonl, сумма cashMinor участников кроме человека",
+      "role": "exploratory",
+      "groups": [
+        {
+          "n": 2,
+          "missing": 0,
+          "mean": 61218,
+          "median": 61218,
+          "minimum": 60000,
+          "maximum": 62436,
+          "standardDeviation": "1722.5121189704297694404568660874122596978603442091",
+          "range": 2436,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна."
+          ],
+          "interval": [
+            "45741.842631339231234000000000000000000000000000000",
+            "76694.157368660768766000000000000000000000000000000"
+          ],
+          "arm": "arm-0",
+          "label": "A"
+        },
+        {
+          "n": 2,
+          "missing": 0,
+          "mean": 61218,
+          "median": 61218,
+          "minimum": 60000,
+          "maximum": 62436,
+          "standardDeviation": "1722.5121189704297694404568660874122596978603442091",
+          "range": 2436,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна."
+          ],
+          "interval": [
+            "45741.842631339231234000000000000000000000000000000",
+            "76694.157368660768766000000000000000000000000000000"
+          ],
+          "arm": "arm-1",
+          "label": "B"
+        }
+      ],
+      "paired": [
+        {
+          "method": "r2-paired-t-1",
+          "pairs": 2,
+          "seeds": [
+            42,
+            43
+          ],
+          "unpairedSeeds": {
+            "leftOnly": [],
+            "rightOnly": []
+          },
+          "mean": 0,
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0,
+          "standardDeviation": 0,
+          "range": 0,
+          "absoluteChange": 0,
+          "relativeChangePercent": 0,
+          "confidenceInterval": [
+            0,
+            0
+          ],
+          "effectSize": null,
+          "pValue": null,
+          "warnings": [
+            "Независимых наблюдений меньше 8: оценка этой группы ненадёжна.",
+            "Все парные различия равны нулю. Дисперсия не оценивается, p-значение не приводится."
+          ],
+          "arm": "arm-1",
+          "label": "B − A"
+        }
+      ],
+      "trajectories": [
+        {
+          "group": "A",
+          "seed": 42,
+          "points": [
+            {
+              "tick": 0,
+              "value": 60000
+            },
+            {
+              "tick": 1,
+              "value": 60000
+            },
+            {
+              "tick": 30,
+              "value": 60000
+            },
+            {
+              "tick": 60,
+              "value": 60000
+            },
+            {
+              "tick": 90,
+              "value": 60000
+            },
+            {
+              "tick": 120,
+              "value": 60000
+            },
+            {
+              "tick": 120,
+              "value": 60000
+            }
+          ]
+        },
+        {
+          "group": "A",
+          "seed": 43,
+          "points": [
+            {
+              "tick": 0,
+              "value": 60000
+            },
+            {
+              "tick": 1,
+              "value": 60000
+            },
+            {
+              "tick": 30,
+              "value": 60000
+            },
+            {
+              "tick": 60,
+              "value": 60000
+            },
+            {
+              "tick": 90,
+              "value": 60834
+            },
+            {
+              "tick": 120,
+              "value": 62436
+            },
+            {
+              "tick": 120,
+              "value": 62436
+            }
+          ]
+        },
+        {
+          "group": "B",
+          "seed": 42,
+          "points": [
+            {
+              "tick": 0,
+              "value": 60000
+            },
+            {
+              "tick": 1,
+              "value": 60000
+            },
+            {
+              "tick": 30,
+              "value": 60000
+            },
+            {
+              "tick": 60,
+              "value": 60000
+            },
+            {
+              "tick": 90,
+              "value": 60000
+            },
+            {
+              "tick": 120,
+              "value": 60000
+            },
+            {
+              "tick": 120,
+              "value": 60000
+            }
+          ]
+        },
+        {
+          "group": "B",
+          "seed": 43,
+          "points": [
+            {
+              "tick": 0,
+              "value": 60000
+            },
+            {
+              "tick": 1,
+              "value": 60000
+            },
+            {
+              "tick": 30,
+              "value": 60000
+            },
+            {
+              "tick": 60,
+              "value": 60000
+            },
+            {
+              "tick": 90,
+              "value": 60834
+            },
+            {
+              "tick": 120,
+              "value": 62436
+            },
+            {
+              "tick": 120,
+              "value": 62436
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "findings": [
+    {
+      "kind": "fact",
+      "metricId": "employed",
+      "text": "«Занятость»: среднее группы B — 0, группы A — 0. Парных seeds: 2."
+    },
+    {
+      "kind": "comparison",
+      "metricId": "employed",
+      "text": "Среднее парное различие B − A по «Занятость» равно 0. Это описание выборки, а не доказанная причина."
+    },
+    {
+      "kind": "limitation",
+      "metricId": "employed",
+      "text": "Независимых пар меньше 8. Интервал и критерий по «Занятость» описывают маленькую выборку и не дают уверенного вывода о превосходстве группы."
+    },
+    {
+      "kind": "limitation",
+      "metricId": null,
+      "text": "Кроме основного показателя посчитаны разведочные метрики. Их интервалы не поправлялись на число сравнений и не заменяют основную гипотезу."
+    },
+    {
+      "kind": "limitation",
+      "metricId": null,
+      "text": "Опыты выполнены в модели Delsk и сами по себе не доказывают такое же поведение реальной экономики."
+    }
+  ],
+  "files": [
+    {
+      "name": "analysis/report.html",
+      "role": "Основной отчёт. Открывается браузером без лаборатории.",
+      "bytes": 27122
+    },
+    {
+      "name": "analysis/report.md",
+      "role": "Текстовый отчёт для редактора и дальнейшей работы.",
+      "bytes": 11511
+    },
+    {
+      "name": "analysis/summary.csv",
+      "role": "Сводная таблица для Excel: UTF-8 с BOM, точка с запятой, десятичная запятая.",
+      "bytes": 5110
+    },
+    {
+      "name": "analysis/runs.csv",
+      "role": "Все прогоны, включая ошибки и причины исключения из статистики.",
+      "bytes": 563
+    },
+    {
+      "name": "analysis/experiment.json",
+      "role": "Снимок плана: гипотеза, группы, seeds, метрики и версии.",
+      "bytes": 5498
+    },
+    {
+      "name": "analysis/statistics.json",
+      "role": "Рассчитанные показатели, методика и правила пропусков.",
+      "bytes": 46203
+    },
+    {
+      "name": "analysis/results.zip",
+      "role": "Отчёты, план и исходные итоги без огромных журналов.",
+      "bytes": 124111
+    }
+  ],
+  "paths": {
+    "absolute": "/agent/repos/delsk/artifacts/lab-r2-demo/r2-wages-30a27b76d1",
+    "relative": "artifacts/lab-r2-demo/r2-wages-30a27b76d1",
+    "report": "/agent/repos/delsk/artifacts/lab-r2-demo/r2-wages-30a27b76d1/analysis/report.html",
+    "reportRelative": "artifacts/lab-r2-demo/r2-wages-30a27b76d1/analysis/report.html",
+    "windowsNote": "Это абсолютный путь компьютера, где сформирован отчёт. На Windows у такого пути есть буква диска."
+  },
+  "limitations": [
+    "Опыты проведены в модели Delsk. Они не доказывают такое же поведение реальной экономики.",
+    "Основной показатель выбран до просмотра как гипотеза мастера. Остальные выбранные показатели разведочные.",
+    "Отсутствие значимости не считается доказательством отсутствия эффекта."
+  ],
+  "reproduction": {
+    "commit": null,
+    "commitVerified": false,
+    "versionNote": "Git commit не подтверждён: репозитория не было, дерево было грязным либо версия не записана. Сравнивать этот опыт с другим по номеру commit нельзя.",
+    "binaries": {
+      "Agents.Algorithmic.dll": "7b982ad615f402a38a9e93f45b34d5273317bd42746728e85dcfa83e7d2fe471",
+      "Agents.Llm.dll": "e6c6cc42e1175bfdb5851734ec63121a5c82f033ca51e61739c66330c0d1b985",
+      "Research.Runner.dll": "88abc156b758ff9096c1cf34aaab410787bd7825f11a57e29f6273b9f8a08ed1",
+      "Simulation.Core.dll": "c842c1711ec4e6c73f82c890c6d65b09e1062f20b3fa48cc2726144a72f21c75",
+      "Simulation.Hosting.dll": "03a4774e85219b9f375eb60590df6bc377341197629ca80ad68ebc40350377e7"
+    },
+    "profileIds": [
+      "vnext-i6c72-wages-1",
+      "vnext-i6c72-wages-1"
+    ],
+    "economySha256": {
+      "arm-0": "a402b25b3bb8c00d6d444181f592d99c8e7df4589427b8e2ee11177afac642ad",
+      "arm-1": "68f5d510b49653a72319a73bc201448c74a91555564864135656cfbaef0de0cc"
+    },
+    "map": "scenarios/vnext/compact-valley-i6c21.json",
+    "seeds": [
+      42,
+      43
+    ],
+    "ticks": 120,
+    "method": "r2-paired-t-1",
+    "definitions": {
+      "employed": "Численность занятых на конец прогона: население минус безработные по PublicEconomy.",
+      "treasuryMinor": "Денежные средства счёта Treasury. Не являются суммой денег всех NPC и не включают дорожную дебиторку.",
+      "producedUnits": "Накопленное число произведённых единиц с начала партии. Не денежная оценка и не прирост последнего тика.",
+      "harvestedUnits": "Накопленное число добытых единиц с начала партии.",
+      "npcCashMinor": "Сумма остатков счетов NPC в последнем срезе. Пассивный человек обычной партии не входит. В краткой записи срезов нет, поэтому показатель отсутствует."
+    },
+    "detail": "Git commit не подтверждён: репозитория не было, дерево было грязным либо версия не записана. Сравнивать этот опыт с другим по номеру commit нельзя. Хеши профилей рук и сборки записаны в statistics.json."
+  },
+  "experimentPlan": {
+    "plan": {
+      "version": 1,
+      "id": "r2-wages",
+      "title": "Демонстрация: целевая ставка NPC 0,15 и 0,25",
+      "scenario": "scenarios/vnext/compact-valley-i6c21.json",
+      "economy": "config/vnext/economy.i6c72-wages.json",
+      "ticks": 120,
+      "seeds": [
+        42,
+        43
+      ],
+      "repetitions": 1,
+      "mode": "algorithmic",
+      "recording": "normal",
+      "factors": [
+        {
+          "path": "npc.baseWageMinor",
+          "values": [
+            15,
+            25
+          ]
+        }
+      ],
+      "timeoutSeconds": 480,
+      "ordinaryNpcCount": 3,
+      "science": {
+        "version": 1,
+        "template": "wages",
+        "title": "Демонстрация: целевая ставка NPC 0,15 и 0,25",
+        "goal": "Сравнить две целевые ставки политики NPC при одинаковых карте, seed и остальных настройках.",
+        "hypothesis": "Различие целевой ставки NPC может сопровождаться различием занятости. Направление заранее не утверждается.",
+        "comparison": "Группы отличаются только целевой ставкой политики NPC.",
+        "primaryMetric": "employed",
+        "metrics": [
+          "employed",
+          "treasuryMinor",
+          "producedUnits",
+          "harvestedUnits",
+          "npcCashMinor"
+        ],
+        "groups": [
+          {
+            "label": "A",
+            "value": 15,
+            "valueLabel": "0,15 монеты",
+            "factorLabel": "Целевая ставка NPC"
+          },
+          {
+            "label": "B",
+            "value": 25,
+            "valueLabel": "0,25 монеты",
+            "factorLabel": "Целевая ставка NPC"
+          }
+        ],
+        "fixed": [
+          "Шкала мира остаётся 0,15 монеты, ручной шаг 0,02. Меняется целевая ставка NPC, а не ставка зданий и не цена участка.",
+          "Профиль vnext-i6c72-wages-1.",
+          "Карта: Малая долина · текущие правила.",
+          "Тиков в прогоне: 120. Seeds: 42, 43. Повторов seed: 1.",
+          "Режим алгоритмический, без языковой модели.",
+          "Алгоритмических NPC: 3."
+        ],
+        "factor": "npc.baseWageMinor",
+        "kind": "minor",
+        "mapLabel": "Малая долина · текущие правила",
+        "profileId": "vnext-i6c72-wages-1",
+        "profileNote": "Хеш проекции пересчитывается только у группы, где изменено поле vNext-профиля. Контрольная группа копируется побайтно."
+      }
+    },
+    "reproduction": {
+      "commit": null,
+      "commitVerified": false,
+      "versionNote": "Git commit не подтверждён: репозитория не было, дерево было грязным либо версия не записана. Сравнивать этот опыт с другим по номеру commit нельзя.",
+      "binaries": {
+        "Agents.Algorithmic.dll": "7b982ad615f402a38a9e93f45b34d5273317bd42746728e85dcfa83e7d2fe471",
+        "Agents.Llm.dll": "e6c6cc42e1175bfdb5851734ec63121a5c82f033ca51e61739c66330c0d1b985",
+        "Research.Runner.dll": "88abc156b758ff9096c1cf34aaab410787bd7825f11a57e29f6273b9f8a08ed1",
+        "Simulation.Core.dll": "c842c1711ec4e6c73f82c890c6d65b09e1062f20b3fa48cc2726144a72f21c75",
+        "Simulation.Hosting.dll": "03a4774e85219b9f375eb60590df6bc377341197629ca80ad68ebc40350377e7"
+      },
+      "profileIds": [
+        "vnext-i6c72-wages-1",
+        "vnext-i6c72-wages-1"
+      ],
+      "economySha256": {
+        "arm-0": "a402b25b3bb8c00d6d444181f592d99c8e7df4589427b8e2ee11177afac642ad",
+        "arm-1": "68f5d510b49653a72319a73bc201448c74a91555564864135656cfbaef0de0cc"
+      },
+      "map": "scenarios/vnext/compact-valley-i6c21.json",
+      "seeds": [
+        42,
+        43
+      ],
+      "ticks": 120,
+      "method": "r2-paired-t-1",
+      "definitions": {
+        "employed": "Численность занятых на конец прогона: население минус безработные по PublicEconomy.",
+        "treasuryMinor": "Денежные средства счёта Treasury. Не являются суммой денег всех NPC и не включают дорожную дебиторку.",
+        "producedUnits": "Накопленное число произведённых единиц с начала партии. Не денежная оценка и не прирост последнего тика.",
+        "harvestedUnits": "Накопленное число добытых единиц с начала партии.",
+        "npcCashMinor": "Сумма остатков счетов NPC в последнем срезе. Пассивный человек обычной партии не входит. В краткой записи срезов нет, поэтому показатель отсутствует."
+      },
+      "detail": "Git commit не подтверждён: репозитория не было, дерево было грязным либо версия не записана. Сравнивать этот опыт с другим по номеру commit нельзя. Хеши профилей рук и сборки записаны в statistics.json."
+    }
+  },
+  "omittedNote": "В архив не входят decisions.jsonl, events.jsonl, кадры мира и ledger.jsonl: они нужны для подробного просмотра прогона, но многократно повторили бы огромные журналы. Итоги, срезы экономики и методика в архиве есть.\n"
+}

@@ -85,7 +85,7 @@ class LabTests(unittest.TestCase):
             return 124,{'timed_out':True}
         lab=Lab(self.root,execute);lab.enqueue(self.plan|dict(seeds=[42]));lab.start()
         self.assertTrue(entered.wait(2));lab.pause();release.set();self.wait(lab)
-        self.assertEqual(['failed','queued'],[j['status'] for j in lab.series[0]['jobs']])
+        self.assertEqual(['timeout','queued'],[j['status'] for j in lab.series[0]['jobs']])
         restored=Lab(self.root,self.executor)
         self.assertTrue(restored.paused)
         self.assertEqual(1,restored.series[0]['jobs'][0]['attempt'])
@@ -118,7 +118,7 @@ class LabTests(unittest.TestCase):
         lab=Lab(self.root,execute);lab.enqueue(self.plan|dict(seeds=[42]))
         with patch('research_lab.measure',return_value=dict(capitalMinor=100)):
             lab.start();self.wait(lab)
-            self.assertEqual(['failed','succeeded'],[j['status'] for j in lab.series[0]['jobs']])
+            self.assertEqual(['timeout','succeeded'],[j['status'] for j in lab.series[0]['jobs']])
             lab.start(retry=True);self.wait(lab)
         self.assertEqual([2,1],[j['attempt'] for j in lab.series[0]['jobs']])
         self.assertEqual(3,len(calls));self.assertIn('-a2',calls[-1])

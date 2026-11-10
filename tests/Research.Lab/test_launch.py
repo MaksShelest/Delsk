@@ -157,7 +157,7 @@ class HttpTests(unittest.TestCase):
         if worker:
             worker.join(5)
         job = self.lab.series[0]['jobs'][0]
-        self.assertEqual('failed', job['status'])
+        self.assertEqual('timeout', job['status'])
         self.assertEqual(1, len(job['logs']))
         self.assertEqual(b'deliberate runner failure', self.get('files/'+job['logs'][0]))
         self.assertNotIn('\\', job['logs'][0])

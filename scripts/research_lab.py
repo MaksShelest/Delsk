@@ -40,6 +40,11 @@ FACTORS = {
     'world.capitalDemand.bootstrapBaseBudgetMinor': [30000, 60000],
     'world.capitalDemand.demandNumerator': [10, 11],
 }
+# Не попадают в общий каталог расширенного режима: мастер научных опытов проверяет их сам.
+EXTRA_FACTORS = {
+    'npc.baseWageMinor': [15],
+    'ordinary.npcCount': [3],
+}
 DEFAULT = dict(version=1, id='negotiations-paired', scenario='scenarios/presentation-map-one-v3.json',
                economy='config/economy.json', controllers='scenarios/baseline-controllers.json',
                ticks=600, seeds=[42, 43, 44], repetitions=1, mode='algorithmic',
@@ -89,7 +94,8 @@ def fields(value, allowed, required=()):
 def values(factor):
     fields(factor, ['path', 'values', 'range'], ['path'])
     key = factor['path']
-    if key not in FACTORS or ('values' in factor) == ('range' in factor):
+    catalog = FACTORS.get(key) or EXTRA_FACTORS.get(key)
+    if catalog is None or ('values' in factor) == ('range' in factor):
         raise ValueError('Use one supported factor and exactly one of values/range')
     if 'range' in factor:
         r = factor['range']
@@ -103,7 +109,7 @@ def values(factor):
         result = factor['values']
     if not isinstance(result, list) or not 1 <= len(result) <= 32 or len({json.dumps(v) for v in result}) != len(result):
         raise ValueError('Use 1..32 distinct scalar values')
-    exemplar = FACTORS[key][0]
+    exemplar = catalog[0]
     if any(type(v) is not type(exemplar) or isinstance(v, str) and v not in FACTORS[key] or
            type(v) is int and not integer(v, 0, 10**9) for v in result):
         raise ValueError('Invalid factor value type/range: ' + key)
@@ -147,7 +153,7 @@ def recording_of(plan):
 def expand(plan, workspace):
     if not isinstance(plan,dict):raise ValueError("Plan must be an object")
     fields(plan, ['version', 'id', 'scenario', 'economy', 'controllers', 'ticks', 'seeds',
-                  'repetitions', 'mode', 'modelConfig', 'factors', 'composition', 'timeoutSeconds', 'profile', 'economyData', 'modelData', 'participants', 'recordWorld', 'ordinaryNpcCount', 'title', 'recording'],
+                  'repetitions', 'mode', 'modelConfig', 'factors', 'composition', 'timeoutSeconds', 'profile', 'economyData', 'modelData', 'participants', 'recordWorld', 'ordinaryNpcCount', 'title', 'recording', 'science'],
            ['version', 'id', 'scenario', 'economy', 'ticks', 'seeds', 'repetitions', 'mode', 'factors'] + ([] if 'ordinaryNpcCount' in plan else ['controllers']))
     if type(plan['version']) is not int or plan['version'] != 1 or not isinstance(plan['id'],str) or not re.fullmatch(r'[a-zA-Z0-9_-]{1,64}', str(plan['id'])):
         raise ValueError('Invalid plan version/id')
@@ -169,6 +175,9 @@ def expand(plan, workspace):
     recording_of(plan)
     if not isinstance(plan['factors'], list) or len(plan['factors']) > 6:
         raise ValueError('At most 6 factors')
+    if 'science' in plan:
+        from research_experiment import validate_science
+        validate_science(plan)
     if ordinary and (not integer(plan['ordinaryNpcCount'],3,10) or plan['mode']!='algorithmic' or any(k in plan for k in ('controllers','participants','composition'))):
         raise ValueError('Ordinary setup requires 3..10 NPC, algorithmic mode and no controllers/participants/composition override')
     if ordinary and any(f.get('path')=='npc.negotiationsEnabled' for f in plan['factors']):
@@ -207,9 +216,19 @@ def expand(plan, workspace):
         e, c = copy.deepcopy(economy), copy.deepcopy(controllers)
         c['finalTick'] = plan['ticks']
         ordinary_difficulty='Medium'
+        ordinary_count=plan['ordinaryNpcCount'] if ordinary else None
         for path, value in zip(paths, combination):
-            if ordinary and path=='npc.difficulty':
+            if path=='ordinary.npcCount':
+                if not ordinary or not integer(value,3,10):
+                    raise ValueError('Количество NPC задаётся только для обычной партии и только в диапазоне 3..10')
+                ordinary_count=value
+            elif ordinary and path=='npc.difficulty':
                 ordinary_difficulty=value
+            elif path=='npc.baseWageMinor':
+                scalar(e, path, value)
+                maximum=e.get('npc',{}).get('maximumWageMinor')
+                if not integer(value,1,10000) or not isinstance(maximum,int) or value>maximum:
+                    raise ValueError('Целевая ставка NPC должна быть от 1 до maximumWageMinor и не выше 10000 сотых монеты')
             elif path in ('npc.difficulty', 'npc.negotiationsEnabled'):
                 for n in c['npcs']:
                     n[path.split('.')[1]] = value
@@ -217,8 +236,24 @@ def expand(plan, workspace):
                         n.pop('planning', None)
             else:
                 scalar(e, path, value)
-        arms.append(dict(id=f'arm-{index}', factors=dict(zip(paths, combination)), economy=e, controllers=c, setup=setup,ordinary=dict(npcCount=plan['ordinaryNpcCount'],difficulty=ordinary_difficulty) if ordinary else None))
+        if 'npc' in e and isinstance(e['npc'].get('baseWageMinor'),int) and isinstance(e['npc'].get('maximumWageMinor'),int) and e['npc']['baseWageMinor']>e['npc']['maximumWageMinor']:
+            raise ValueError('Целевая ставка NPC выше записанного в профиле предела')
+        arms.append(dict(id=f'arm-{index}', factors=dict(zip(paths, combination)), economy=e, controllers=c, setup=setup,ordinary=dict(npcCount=ordinary_count,difficulty=ordinary_difficulty) if ordinary else None))
     return scenario, model, arms
+
+
+def refresh_projection(path):
+    """Подтверждает хеш уже существующего vNext-профиля после правки поддержанного поля."""
+    dll = ROOT/'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll'
+    if not dll.is_file():
+        raise ValueError('Нет сборки Research.Runner. Откройте ResearchLab.cmd, чтобы подготовить лабораторию, и повторите исследование.')
+    temporary = Path(str(path)+'.hash.tmp')
+    completed = subprocess.run(['dotnet', str(dll), '--refresh-projection-hash', str(path), str(temporary)], timeout=60, check=False, capture_output=True, text=True)
+    if completed.returncode != 0 or not temporary.is_file():
+        temporary.unlink(missing_ok=True)
+        detail=(completed.stderr or completed.stdout or str(completed.returncode)).strip()
+        raise ValueError('Не удалось подтвердить хеш профиля: '+detail[-500:])
+    os.replace(temporary, path)
 
 
 def command(folder, job, output):
@@ -298,10 +333,20 @@ class Lab:
             write(stage/'inputs/scenario.json', scenario)
             if model is not None:
                 write(stage/'inputs/model.json', model)
+            source_economy = None if 'economyData' in plan else source(plan['economy'], self.workspace)
+            baseline = copy.deepcopy(plan['economyData']) if 'economyData' in plan else read(source_economy)
             for arm in arms:
-                for name in ('economy', 'controllers', 'setup', 'ordinary'):
+                for name in ('controllers', 'setup', 'ordinary'):
                     if arm.get(name) is None:continue
                     write(stage/f"inputs/{arm['id']}/{name}.json", arm[name])
+                economy_path = stage/f"inputs/{arm['id']}/economy.json"
+                if source_economy is not None and arm['economy']==baseline:
+                    economy_path.parent.mkdir(parents=True, exist_ok=True)
+                    economy_path.write_bytes(source_economy.read_bytes())
+                else:
+                    write(economy_path, arm['economy'])
+                    if isinstance(arm['economy'].get('vNext'), dict) and arm['economy']!=baseline:
+                        refresh_projection(economy_path)
                 if arm.get('ordinary') is not None and arm['economy'].get('vNext'):
                     full=source(plan['economy'],self.workspace).parent/'balance.b1.json'
                     if not full.is_file() or digest(full)!=arm['economy']['vNext']['fullBalanceSha256']:
@@ -342,7 +387,7 @@ class Lab:
             if retry:
                 for s in self.series:
                     for j in s['jobs']:
-                        if not s.get('archived') and j['status'] in ('failed', 'interrupted','cancelled'):
+                        if not s.get('archived') and j['status'] in ('failed', 'interrupted','cancelled','timeout'):
                             j['status'] = 'queued'
             self.paused = False
             self.save()
@@ -372,6 +417,8 @@ class Lab:
                     raise ValueError('Validated input snapshot was changed')
                 cmd = command(folder, job, out)
                 code, meta = self.executor(job['id']+'-a'+str(job['attempt']), s['plan'].get('timeoutSeconds', 180), folder/'checks', cmd)
+                if code==124:
+                    raise TimeoutError(f'Предохранитель {s["plan"].get("timeoutSeconds", 180)} с. Прогон не заменён нулём.')
                 if code==2 and (out/'summary.json').exists() and read(out/'summary.json').get('status')=='cancelled':
                     with self.lock:j.update(status='cancelled',result=out.relative_to(self.workspace).as_posix(),command=cmd)
                     raise InterruptedError('Researcher cancelled')
@@ -383,8 +430,9 @@ class Lab:
                     j.update(status='succeeded', metrics=metrics, result=out.relative_to(self.workspace).as_posix(), check=meta, command=cmd, artifacts=[p.name for p in sorted(out.iterdir()) if p.suffix in ('.json','.jsonl','.csv')])
                     j.pop('error', None)
             except Exception as error:
+                status='cancelled' if isinstance(error,InterruptedError) else 'timeout' if isinstance(error,TimeoutError) else 'failed'
                 with self.lock:
-                    j.update(status='cancelled' if isinstance(error,InterruptedError) else 'failed', error=str(error),result=out.relative_to(self.workspace).as_posix(),command=cmd)
+                    j.update(status=status, error=str(error),result=out.relative_to(self.workspace).as_posix(),command=cmd)
             with self.lock:
                 j['logs'] = [p.relative_to(self.workspace).as_posix() for p in
                              sorted((folder/'checks').glob(job['id']+'-a'+str(job['attempt'])+'.*')) if p.is_file()]
@@ -392,6 +440,30 @@ class Lab:
                 write(folder/'series.json', s)
                 self.export_summary(folder, self.compare([s['id']]))
                 self.save()
+                series_id=s['id']
+            self.publish_science(series_id)
+
+    def retry_jobs(self, series_id, job_id=None):
+        with self.lock:
+            series=next((item for item in self.series if item['id']==series_id), None)
+            if series is None or series.get('archived'):
+                raise ValueError('Исследование не найдено или находится в архиве')
+            found=False
+            for job in series['jobs']:
+                if job_id is not None and job['id']!=job_id:
+                    continue
+                if job['status'] in ('failed','interrupted','cancelled','timeout'):
+                    job['status']='queued'
+                    job.pop('error', None)
+                    found=True
+            if not found:
+                raise ValueError('Нет прогона, который можно повторить')
+            self.save()
+        self.start()
+
+    def publish_science(self, series_id):
+        from research_experiment import publish
+        publish(self, series_id)
 
     def export_summary(self, folder, summary):
         import csv

@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using Simulation.Core;
 
@@ -86,5 +87,28 @@ public sealed record EconomyProfile(int Version, string Id, WorldEconomy World, 
         }
         resolved=MobileEquipmentYard.Prepare(resolved);
         ScenarioValidation.Validate(resolved); return resolved;
+    }
+
+    /// <summary>
+    /// Пересчитывает projectionPayloadSha256 уже разобранного профиля.
+    /// Игровые правила не меняет: runner по-прежнему отвергает чужой id и несовместимые поля.
+    /// Нужен исследовательской копии, где изменён существующий параметр, например npc.baseWageMinor.
+    /// </summary>
+    public static string RefreshProjectionPayload(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json) || json.Length > 1024 * 1024)
+            throw new ArgumentException("Economy profile too large");
+        var profile = JsonSerializer.Deserialize<EconomyProfile>(json, SimulationJson.Options)
+            ?? throw new ArgumentException("Empty economy profile");
+        if (profile.VNext is null)
+            return json.EndsWith('\n') ? json : json + "\n";
+        string hash = VNextBalanceReader.Digest(VNextSupportedProfile.Serialize(profile with { VNext = null }));
+        var updated = profile with { VNext = profile.VNext with { ProjectionPayloadSha256 = hash } };
+        string text = Encoding.UTF8.GetString(VNextSupportedProfile.Serialize(updated));
+        if (!text.EndsWith('\n')) text += "\n";
+        var check = Read(text);
+        if (check.VNext is null || check.VNext.ProjectionPayloadSha256 != hash)
+            throw new ArgumentException("Projection hash did not round-trip");
+        return text;
     }
 }

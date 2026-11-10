@@ -89,6 +89,9 @@ def compatible(lab,left,right,left_arm,right_arm):
         setup=read(folder/arm/'setup.json') if (folder/arm/'setup.json').exists() else None
         ordinary=read(folder/arm/'ordinary.json') if (folder/arm/'ordinary.json').exists() else None
         for path in factors:
+            if ordinary is not None and path=='ordinary.npcCount':
+                ordinary.pop('npcCount', None)
+                continue
             if ordinary is not None and path=='npc.difficulty':ordinary.pop('difficulty',None)
             if path in ('npc.difficulty','npc.negotiationsEnabled'):
                 for npc in controllers['npcs']:
