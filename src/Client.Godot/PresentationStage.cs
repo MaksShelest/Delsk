@@ -40,8 +40,8 @@ public partial class PresentationStage : Node3D
         public Vector3 Last;
         public bool LastSet;
         public float Stride;
-        public Node3D? LegL,LegR,ArmL,ArmR,Bob;
-        public float BobRest;
+        public Node3D? LegL,LegR,ArmL,ArmR,Hips,Bob;
+        public Vector3 LegLRest,LegRRest,ArmLRest,ArmRRest,HipsRest,HipsRestPos;
         public float AngleFrom,AngleTo,AngleElapsed=1;
         public bool Faced;
     }
@@ -279,11 +279,10 @@ public partial class PresentationStage : Node3D
 
     private void ApplyYaw(Mover mover,float angle)
     {
-        // Ровно ±π в Euler Y не меняет базис. Чуть сдвигаем и записываем весь Transform сразу.
-        float turned=Mathf.Abs(Mathf.Abs(angle)-Mathf.Pi)<0.0005f?(angle<0?-1f:1f)*(Mathf.Pi-0.02f):angle;
-        float s=Mathf.Sin(turned),c=Mathf.Cos(turned);
-        var origin=mover.Node.Position;
-        mover.Node.Transform=new Transform3D(new Basis(new Vector3(c,0,-s),Vector3.Up,new Vector3(s,0,c)),origin);
+        // Базис записывается столбцами. Ровно ±π остаётся настоящим разворотом и не требует сдвига Эйлера.
+        float s=Mathf.Sin(angle),c=Mathf.Cos(angle);
+        var basis=new Basis(new Vector3(c,0,-s),Vector3.Up,new Vector3(s,0,c)).Orthonormalized();
+        mover.Node.Transform=new Transform3D(basis,mover.Node.Position);
     }
     private static float YawOf(Mover mover){var forward=-mover.Node.Basis.Z;return Mathf.Atan2(-forward.X,-forward.Z);}
     private void TargetRotation(Mover mover,float x,float z,bool snap)

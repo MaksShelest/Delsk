@@ -152,7 +152,7 @@ public static partial class WorldModels
         Limb(root, "LegR", new Vector3(0.06f, 0.16f, 0), new Vector3(0.07f, 0.15f, 0.09f), new Color("414c58"), new Vector3(0, -0.075f, 0.01f));
         Limb(root, "ArmL", new Vector3(-0.155f, 0.4f, 0), new Vector3(0.04f, 0.15f, 0.04f), shirt.Darkened(0.12f), new Vector3(0, -0.075f, 0));
         Limb(root, "ArmR", new Vector3(0.155f, 0.4f, 0), new Vector3(0.04f, 0.15f, 0.04f), shirt.Darkened(0.12f), new Vector3(0, -0.075f, 0));
-        Round(root, 0.033f, new Color("d4ae85"), new Vector3(0, 0.58f, -0.13f));
+        Part(root, new SphereMesh { Radius = 0.033f, Height = 0.066f, RadialSegments = 8, Rings = 4 }, new Color("d4ae85"), new Vector3(0, 0.58f, -0.13f)).Name = "Nose";
         root.AddChild(new Label3D { Text = caption, FontSize = 22, PixelSize = 0.009f, Position = new Vector3(0, 1.01f, 0),
             Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, OutlineSize = 5, Modulate = Colors.White });
         return root;
