@@ -49,6 +49,22 @@ public class I6C21MapTests
         Assert.Equal(2,fleet.Stock.Count(v=>models.Single(m=>m.Id==v.ModelId) is {EquipmentTypeId:null,MaterialsOnly:false}));
         session.AdvanceTo(fleet.NextSupplyTick);Assert.Equal(5,session.Engine.InspectFleet()!.Stock.Length);session.Engine.ValidateInvariants();
     }
+    [Theory][InlineData(PlayMaps.CompactValley)][InlineData(PlayMaps.Second)]
+    public void StockedExtractorsStandBesideTheDealership(string key)
+    {
+        var session=I6C2MapsTests.Session(key);
+        var dealer=session.Engine.Configuration().Layout!.CivicObjects.Single(c=>c.Kind=="dealership");
+        var foot=dealer.Footprint.ToHashSet();
+        var models=session.Engine.Configuration().Economy!.Fleet!.Models;
+        var machines=session.Engine.InspectFleet()!.Stock.Where(v=>models.Single(m=>m.Id==v.ModelId).EquipmentTypeId is not null).ToArray();
+        Assert.Equal(2,machines.Length);
+        Assert.Equal(2,machines.Select(v=>v.Position).Distinct().Count());
+        Assert.All(machines,v=>
+        {
+            Assert.Contains(v.Position,dealer.EquipmentParking!);
+            Assert.Contains(foot,cell=>Math.Abs(cell.X-v.Position.X)+Math.Abs(cell.Z-v.Position.Z)==1);
+        });
+    }
     [Fact]
     public void PreviousValleySaveKeepsItsRoadsAndFullExhibition()
     {

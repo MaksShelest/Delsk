@@ -375,6 +375,10 @@
     [
       15,
       7
+    ],
+    [
+      17,
+      4
     ]
   ],
   "initial_city_dirt_cells": [
@@ -1402,12 +1406,12 @@
       ],
       "equipment_parking": [
         [
-          3,
-          5
+          13,
+          13
         ],
         [
-          3,
-          9
+          16,
+          7
         ]
       ]
     }
@@ -1430,8 +1434,8 @@
     {
       "id": "woodland_region_i6c4_stall_03",
       "cell": [
-        16,
-        7
+        17,
+        5
       ]
     },
     {
@@ -1456,8 +1460,8 @@
       14
     ],
     [
-      15,
-      7
+      17,
+      4
     ]
   ],
   "turn_cells": [
@@ -1486,7 +1490,7 @@
       8
     ]
   ],
-  "passing_bays": "One-cell ring with short spurs. Showroom exit meets the east road; two extractor bays stand off the ring.",
+  "passing_bays": "One-cell ring with short spurs. Showroom exit meets the east road; two extractor bays stand on the dealership curb.",
   "assignment": "startup-rotation-1; full six-cell industrial lots; eight public resources; no initial private ownership; compact-exhibition-1.",
   "compact_exhibition": true
 }

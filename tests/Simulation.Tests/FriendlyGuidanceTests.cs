@@ -152,5 +152,49 @@ public class FriendlyGuidanceTests
         Assert.False(CityReadState.Restore(new(["seen"], 0)).Noted("sale"));
     }
 
+    [Fact]
+    public void SaleProgressCountsAConfirmedSaleNotTheBackpack()
+    {
+        var (scenario, _, view) = World();
+        var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
+        var offer = new CapitalOfferView(1, "grain", 3, 100, view.Participant.Position, null, 3);
+        PlayerView With(StockView stock) => view with
+        {
+            Inventories = view.Inventories.Select(i => i.Id == pack.Id ? i with { Stock = [stock] } : i).ToArray(),
+            CapitalOffers = [offer]
+        };
+        var step = FriendlyGuidance.Read(With(new("grain", 7, 0)), scenario, "ru");
+        Assert.Equal("sell", step.Id);
+        Assert.Equal(0, step.Have);
+        Assert.Equal(1, step.Need);
+        Assert.Contains("Остаток 7", step.DetailRu);
+        Assert.Contains("3", step.DetailRu);
+        Assert.DoesNotContain("7/3", step.TitleRu + step.DetailRu);
+        var waiting = FriendlyGuidance.Read(With(new("grain", 7, 7)), scenario, "ru");
+        Assert.Equal("sell", waiting.Id);
+        Assert.Equal(0, waiting.Have);
+        Assert.Equal(1, waiting.Need);
+        Assert.Contains("не подтверждена", waiting.DetailRu);
+        var done = FriendlyGuidance.Read(With(new("grain", 7, 0)), scenario, "ru", sold: true);
+        Assert.Equal("plot", done.Id);
+        var english = FriendlyGuidance.Read(With(new("grain", 7, 0)), scenario, "en");
+        Assert.Contains("Remainder 7", english.DetailEn);
+        Assert.Equal(1, english.Need);
+    }
+
+    [Fact]
+    public void BuyPlotHighlightsTheWholeLotAndAResourceStaysOneCell()
+    {
+        var (scenario, _, _) = World();
+        var lot = scenario.Layout!.IndustrialLots[0];
+        var plot = new GameAction(ActionKind.BuyPlot, lot.Cells[0]);
+        Assert.Equal(lot.Cells.OrderBy(c => c.X).ThenBy(c => c.Z), FriendlyGuidance.Cells(plot, scenario).OrderBy(c => c.X).ThenBy(c => c.Z));
+        var byId = scenario.Plots!.First(p => lot.Cells.Contains(p.Position));
+        Assert.Equal(lot.Cells.OrderBy(c => c.X).ThenBy(c => c.Z), FriendlyGuidance.Cells(new(ActionKind.BuyPlot, Plot: new(byId.Id)), scenario).OrderBy(c => c.X).ThenBy(c => c.Z));
+        var resource = new GameAction(ActionKind.BuyResource, new Cell(2, 2));
+        Assert.Equal([new Cell(2, 2)], FriendlyGuidance.Cells(resource, scenario));
+        Assert.Empty(FriendlyGuidance.Cells(new GameAction(ActionKind.SellAvailableToCapital), scenario));
+    }
+
     private static ContextChoice Choice(string key, ActionKind kind) => new(key, key, new(kind));
 }

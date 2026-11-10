@@ -6,6 +6,7 @@ using Simulation.Hosting;
 public partial class ContextActionsPanel : PanelContainer
 {
     public event Action<ContextChoice>? Requested;
+    public event Action<ContextChoice?>? Preview;
     public event Action<bool>? ExpansionChanged;
     public readonly ContextSelection Selection=new();
     public bool Expanded=>Selection.Expanded;
@@ -92,6 +93,8 @@ public partial class ContextActionsPanel : PanelContainer
         else if(_touchDragged&&@event is InputEventMouseButton or InputEventMouseMotion)GetViewport().SetInputAsHandled();
     }
     public void ShowSummary(string text){_summary.Text=text;_summary.Visible=text.Length>0;}
+    private void EmitPreview(string? key)=>Preview?.Invoke(key is null?null:Selection.Choices.FirstOrDefault(c=>c.Key==key));
+    private string? FocusedKey(){foreach(var (key,item) in _rows)if(GodotObject.IsInstanceValid(item.Button)&&item.Button.HasFocus())return key;return null;}
     public void ShowData(string scope,ContextChoice[] choices,string language,bool pending,string status,float top)
     {
         bool was=Expanded;_language=language;Selection.Update(scope,choices);if(choices.Length==0)Selection.Expanded=false;Selection.Pending=pending;
@@ -109,8 +112,11 @@ public partial class ContextActionsPanel : PanelContainer
                 var reason=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart,MouseFilter=MouseFilterEnum.Ignore};row.AddChild(button);row.AddChild(reason);
                 var progress=new ProgressBar{ShowPercentage=false,MaxValue=100,CustomMinimumSize=new(0,8),MouseFilter=MouseFilterEnum.Ignore};row.AddChild(progress);
                 string key=choice.Key;ContextChoice? pressed=null;string pressedScope="";bool additionalPress=false;
-                button.ButtonDown+=()=>{pressed=Selection.Choices.FirstOrDefault(c=>c.Key==key);pressedScope=Selection.Scope;additionalPress=row.GetParent()!=_primary;};
-                button.FocusEntered+=()=>Selection.Select(key);
+                button.ButtonDown+=()=>{pressed=Selection.Choices.FirstOrDefault(c=>c.Key==key);pressedScope=Selection.Scope;additionalPress=row.GetParent()!=_primary;EmitPreview(key);};
+                button.MouseEntered+=()=>EmitPreview(key);
+                button.MouseExited+=()=>{if(_rows.Values.Any(r=>r.Button!=button&&r.Button.IsHovered()))return;EmitPreview(FocusedKey());};
+                button.FocusEntered+=()=>{Selection.Select(key);EmitPreview(key);};
+                button.FocusExited+=()=>{if(_rows.Values.Any(r=>r.Button!=button&&(r.Button.IsHovered()||r.Button.HasFocus())))return;EmitPreview(null);};
                 button.Pressed+=()=>{var snapshot=pressed;pressed=null;if(!_touchDragged&&snapshot is not null&&pressedScope==Selection.Scope&&(!additionalPress||Expanded))Requested?.Invoke(snapshot);};
                 item=(row,button,reason,progress);_rows.Add(key,item);
             }

@@ -582,7 +582,7 @@ public partial class Playfield : Control
         { DropTabletPanel(); ApplyPause(); ApplySurface(); }
         bool paused = _session.Paused;
         var frame = Presentation.Read(_scenario, _session.Engine, _human.Value);
-        if (_surface == Surface.Play || paused) _stage?.Show(frame, paused, _selectedEnterprise, T("you"), _surface == Surface.Play, _language, _session.Engine.TravelQuantum, _showOwnership, _hoverX??-1, _hoverZ??-1);
+        if (_surface == Surface.Play || paused) _stage?.Show(frame, paused, _selectedEnterprise, T("you"), _surface == Surface.Play, _language, _session.Engine.TravelQuantum, _showOwnership);
         _stage?.ShowBuildingStates(view,_language);
         _stage?.ShowActivity(view);
         _stage?.ShowRoadWorkEffects(view);
@@ -600,6 +600,7 @@ public partial class Playfield : Control
             next = next.Select(c => c.Command is not null
                 ? c with { Enabled = false, Details = T("command.sent") } : c).ToArray();
         _choices = next;
+        if(_previewKey.Length>0&&next.All(c=>c.Key!=_previewKey)){_previewKey="";_stage?.SetPreview([]);}
         string contextKey = _contextIndex.ToString(CultureInfo.InvariantCulture) + "|" + string.Join(",", next.Select(c => $"{c.Key}:{c.Label}:{c.Enabled}:{c.Details}"));
         if(_surface==Surface.Play&&_contextHost is not null)FillPlayContext(_contextHost);
         if (contextKey != _contextKey) { _contextKey = contextKey; if(_debugContext is not null)FillContext(_debugContext); }
@@ -653,6 +654,7 @@ public partial class Playfield : Control
             _gameClock.TooltipText=_userPaused?L("Продолжить","Resume"):L("Пауза","Pause");
         }
         UpdateGoal(view);
+        SyncGuide(actor.Position);
         if (_cellLabel is not null) _cellLabel.Text = CellText(frame);
         string signature = _selectedEnterprise + "|" + CardSignature(view);
         if (signature != _cardsSignature)

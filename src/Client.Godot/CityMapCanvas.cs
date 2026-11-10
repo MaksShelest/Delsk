@@ -12,6 +12,7 @@ public partial class CityMapCanvas : Control
     private readonly Dictionary<int,Vector2> _touches=[];
     private Vector2 _press,_last;
     private bool _pressed,_dragged,_pinched;
+    public string Language {get;set;}="ru";
     public CityMapCanvas(CityMapPreferences state)
     {Name="CityMapCanvas";State=state;ClipContents=true;MouseFilter=MouseFilterEnum.Stop;FocusMode=FocusModeEnum.All;CustomMinimumSize=new(220,260);SizeFlagsVertical=SizeFlags.ExpandFill;SizeFlagsHorizontal=SizeFlags.ExpandFill;}
     public void ShowData(CityMapFrame frame,Cell[]? preview=null)
@@ -84,7 +85,7 @@ public partial class CityMapCanvas : Control
             {
                 var rect=new Rect2(Point(cell.X,cell.Z),new(unit,unit));if(!rect.Intersects(new Rect2(Vector2.Zero,Size)))continue;
                 if(o.Layer==CityLayer.Property)DrawLand(rect,o,color,unit);
-                else if(o.Layer==CityLayer.Roads)DrawRect(rect.Grow(-unit*.12f),color);
+                else if(o.Layer==CityLayer.Roads){DrawRect(rect,color);DrawRect(rect,color.Darkened(0.28f),false,Math.Max(1f,unit*.05f));}
                 else if(o.Kind=="actor")DrawCircle(Point(cell),Math.Max(2,unit*.19f),color);
                 else DrawRect(rect.Grow(-unit*.16f),color);
                 if(o.Facts?.Percent() is int pct&&unit>=8)
@@ -95,15 +96,69 @@ public partial class CityMapCanvas : Control
                 if(o.Facts is {Late:true})DrawCircle(rect.GetCenter(),Math.Max(3,unit*.16f),new Color("e15a4a"));
                 else if(o.Facts is {Soon:true})DrawArc(rect.GetCenter(),Math.Max(4,unit*.28f),0,Mathf.Tau,16,new Color("e39b2b"),Math.Max(2,unit*.08f));
             }
-            if(unit>=16&&o.Layer!=CityLayer.Property&&o.Kind!="road"&&o.Footprint.Length>0)
-            {
-                string symbol=o.Kind=="actor"?o.Id.ToString():o.Kind is "vehicle" or "equipment"?"V":o.Layer==CityLayer.Resources?"R":o.Layer==CityLayer.Deliveries?"→":o.Kind=="service"?"D":o.Level>0?"I"+o.Level:"◆";
-                DrawString(ThemeDB.FallbackFont,Point(o.Entry)+new Vector2(-5,5),symbol,HorizontalAlignment.Left,-1,Math.Clamp((int)(unit*.55f),10,18),Colors.Black);
-            }
+            if(o.Footprint.Length>0&&o.Layer!=CityLayer.Property&&o.Kind!="road")
+                Mark(o,unit,o.Key==State.SelectedKey);
         }
         if(_preview.Length>1){DrawRoute(_preview,new Color("16343a"),false,7);DrawRoute(_preview,new Color("f4fbff"),false,3);}
         var selected=CityMap.Selected(_map,State.SelectedKey);if(selected is not null&&(selected.Layer==0||CityMap.Shown(selected,State.Layers,State.Participant,State.Focus)))
         {DrawRect(new Rect2(Point(selected.Entry.X,selected.Entry.Z),new(unit,unit)).Grow(3),new Color("fff4b7"),false,3);DrawCircle(Point(selected.Entry),4,Colors.White);}
+    }
+    private void Mark(CityMapObject o,float unit,bool selected)
+    {
+        var center=Point(o.Entry);
+        bool named=selected||unit>=20;
+        if(o.Layer==CityLayer.Resources||o.Kind is "resource" or "resource-depleted")
+        {
+            float side=Mathf.Max(8,unit*.62f);
+            ResourceIcon.Paint(this,o.Label,new Rect2(center-new Vector2(side,side)/2,new Vector2(side,side)));
+            if(named)Caption(center+new Vector2(0,side*.55f),PlayerText.Item(Language,o.Label),unit);
+            return;
+        }
+        if(o.Kind is "vehicle" or "equipment")
+        {
+            var body=new Rect2(center-new Vector2(unit*.2f,unit*.12f),new Vector2(unit*.4f,unit*.24f));
+            DrawRect(body,new Color("24312d"));
+            DrawRect(body.Grow(-1),o.Kind=="equipment"?new Color("d7c27a"):new Color("f4f7f2"));
+            return;
+        }
+        if(o.Layer==CityLayer.Deliveries)
+        {
+            DrawLine(center+new Vector2(-unit*.18f,0),center+new Vector2(unit*.16f,0),new Color("24312d"),Math.Max(1,unit*.08f));
+            DrawLine(center+new Vector2(unit*.16f,0),center+new Vector2(0,-unit*.12f),new Color("24312d"),Math.Max(1,unit*.08f));
+            DrawLine(center+new Vector2(unit*.16f,0),center+new Vector2(0,unit*.12f),new Color("24312d"),Math.Max(1,unit*.08f));
+            return;
+        }
+        if(o.Kind is "civic" or "capital" or "production" or "warehouse" or "shop" or "project")
+        {
+            float w=Mathf.Max(6,unit*.34f),h=Mathf.Max(5,unit*.26f);
+            DrawColoredPolygon([center+new Vector2(-w*.55f,h*.15f),center+new Vector2(0,-h*.55f),center+new Vector2(w*.55f,h*.15f)],new Color("24312d"));
+            DrawRect(new Rect2(center+new Vector2(-w*.35f,-h*.05f),new Vector2(w*.7f,h*.55f)),new Color("f7f4ea"));
+            if(named)Caption(center+new Vector2(0,h*.85f),PlaceName(o),unit);
+            return;
+        }
+        if(o.Kind=="actor"&&named)Caption(center+new Vector2(0,unit*.28f),o.Id.ToString(),unit);
+        else if(o.Kind=="service"&&named)Caption(center,PlayerText.Local(Language,"Услуга","Service"),unit);
+    }
+    private void Caption(Vector2 at,string text,float unit)
+    {
+        if(text.Length==0)return;
+        int size=Math.Clamp((int)(unit*.42f),9,14);
+        DrawString(ThemeDB.FallbackFont,at+new Vector2(0,size*.35f),text,HorizontalAlignment.Center,unit*2.2f,size,new Color("17211e"));
+    }
+    private string PlaceName(CityMapObject o)
+    {
+        string L(string ru,string en)=>Language.StartsWith("en",StringComparison.Ordinal)?en:ru;
+        string name=o.Kind switch
+        {
+            "civic"=>o.Label switch{"cityhall" or "town_hall"=>L("Ратуша","Hall"),"capital_terminal" or "terminal"=>L("Терминал","Terminal"),"dealership"=>L("Автосалон","Dealer"),"bank"=>L("Банк","Bank"),_=>L("Город","City")},
+            "capital"=>L("Ратуша","Hall"),
+            "production"=>PlayerText.Building(Language,o.Label),
+            "warehouse"=>L("Склад","Store"),
+            "shop"=>L("Лавка","Shop"),
+            "project"=>L("Стройка","Site"),
+            _=>""
+        };
+        return o.Level>1?name+" "+o.Level:name;
     }
     private void DrawLand(Rect2 rect,CityMapObject o,Color color,float unit)
     {

@@ -1663,8 +1663,8 @@
       "id": 4,
       "cashMinor": 20000,
       "position": {
-        "x": 15,
-        "z": 7
+        "x": 17,
+        "z": 4
       },
       "inventoryCapacity": 20,
       "publicPreferenceItem": "grain"
@@ -3192,8 +3192,8 @@
     {
       "id": 39,
       "position": {
-        "x": 16,
-        "z": 7
+        "x": 17,
+        "z": 5
       },
       "priceMinor": 10000,
       "isCorridor": false,
@@ -6487,7 +6487,7 @@
     "version": "map-adapter-2",
     "sourceId": "woodland_region_i6c4",
     "sourceName": "\u041B\u0435\u0441\u043D\u043E\u0439 \u043A\u0440\u0430\u0439",
-    "sourceSha256": "fd7da3746617d12376aa3b1b05a58a57b770232f7c82650db18b70fc998eb7b1",
+    "sourceSha256": "65721833926ea638e8805fd2114c016c9443061aef6e13f75404731d956ecaef",
     "maxParticipants": 4,
     "roadCenterCells": [
       {
@@ -6859,6 +6859,10 @@
       {
         "x": 15,
         "z": 7
+      },
+      {
+        "x": 17,
+        "z": 4
       }
     ],
     "initialCityDirtCells": [
@@ -7942,12 +7946,12 @@
         },
         "equipmentParking": [
           {
-            "x": 3,
-            "z": 5
+            "x": 13,
+            "z": 13
           },
           {
-            "x": 3,
-            "z": 9
+            "x": 16,
+            "z": 7
           }
         ]
       }
@@ -7970,8 +7974,8 @@
       {
         "id": "woodland_region_i6c4_stall_03",
         "cell": {
-          "x": 16,
-          "z": 7
+          "x": 17,
+          "z": 5
         }
       },
       {
@@ -7996,8 +8000,8 @@
         "z": 14
       },
       {
-        "x": 15,
-        "z": 7
+        "x": 17,
+        "z": 4
       }
     ],
     "turnCells": [
@@ -8026,7 +8030,7 @@
         "z": 8
       }
     ],
-    "passingBays": "One-cell ring with short spurs. Showroom exit meets the east road; two extractor bays stand off the ring.",
+    "passingBays": "One-cell ring with short spurs. Showroom exit meets the east road; two extractor bays stand on the dealership curb.",
     "assignment": "startup-rotation-1; full six-cell industrial lots; eight public resources; no initial private ownership; compact-exhibition-1."
   }
 }

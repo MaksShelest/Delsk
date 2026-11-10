@@ -43,6 +43,7 @@ public partial class PresentationStage : Node3D
         public Node3D? LegL,LegR,ArmL,ArmR,Bob;
         public float BobRest;
         public float AngleFrom,AngleTo,AngleElapsed=1;
+        public bool Faced;
     }
     private readonly System.Collections.Generic.Dictionary<long, Mover> _actors = new();
     private readonly Dictionary<long,Label3D> _speechLabels=[];
@@ -96,7 +97,8 @@ public partial class PresentationStage : Node3D
                 mover.Node.Position = mover.From.Lerp(mover.To, Mathf.Clamp(span, 0, 1));
                 float turn=Mathf.Max(.05f,mover.TurnSeconds);
                 mover.AngleElapsed=Mathf.Min(turn,mover.AngleElapsed+(float)delta);
-                mover.Node.Rotation=new(0,Mathf.LerpAngle(mover.AngleFrom,mover.AngleTo,mover.AngleElapsed/turn),0);
+                // Угол ±π через Euler Y не меняет базис. Поворот задаётся базисом.
+                ApplyYaw(mover,Mathf.LerpAngle(mover.AngleFrom,mover.AngleTo,mover.AngleElapsed/turn));
             }
             if(mover.Walker)StepWalk(mover,delta,!_frozen);
         }
@@ -104,7 +106,7 @@ public partial class PresentationStage : Node3D
         FollowHuman();
     }
 
-    public void Show(PresentationFrame frame, bool frozen, long selectedBuilding, string you, bool followHuman, string language="ru", int quantum=0, bool ownership=false, int selectedX=-1, int selectedZ=-1)
+    public void Show(PresentationFrame frame, bool frozen, long selectedBuilding, string you, bool followHuman, string language="ru", int quantum=0, bool ownership=false)
     {
         bool snap = frozen || _frozen || _follow != followHuman;
         _frozen = frozen;
@@ -119,7 +121,8 @@ public partial class PresentationStage : Node3D
             _staticKey = staticKey;
             RebuildStatic(frame);
         }
-        ShowWarehouseStock(frame);ShowLand(frame,ownership,selectedX,selectedZ);ShowRoads(frame);ShowFleet(frame,snap,appearanceChanged);ShowRoadEquipment(frame,snap,appearanceChanged);
+        _shown=frame;_ownership=ownership;
+        ShowWarehouseStock(frame);ShowLand(frame,ownership);ShowRoads(frame);ShowFleet(frame,snap,appearanceChanged);ShowRoadEquipment(frame,snap,appearanceChanged);
         var liveActors = new System.Collections.Generic.HashSet<long>();
         foreach (var actor in frame.Actors)
         {
@@ -153,12 +156,21 @@ public partial class PresentationStage : Node3D
                 var step=new Vector3(pose.X,0f,pose.Z);
                 bool far=mover.Node.Position.DistanceTo(step)>1.35f;
                 Target(mover,step,0.1f,snap||far,false);
-                if(Mathf.Abs(pose.FaceX)+Mathf.Abs(pose.FaceZ)>0.01f)TargetRotation(mover,pose.FaceX,pose.FaceZ,snap||far);
+                if(Mathf.Abs(pose.FaceX)+Mathf.Abs(pose.FaceZ)>0.01f)
+                {
+                    TargetRotation(mover,pose.FaceX,pose.FaceZ,snap||far);
+                    mover.Faced=true;
+                }
             }
             else
             {
                 Target(mover, at, actor.Human ? 0.1f : 0.2f, snap, false);
-                if (actor.FacingX != 0 || actor.FacingZ != 0) TargetRotation(mover, actor.FacingX, actor.FacingZ, snap);
+                // После шага остаётся последний угол. Начальный курс Core не разворачивает фигуру на 180° в конце пути.
+                if(!mover.Faced && (actor.FacingX != 0 || actor.FacingZ != 0))
+                {
+                    TargetRotation(mover, actor.FacingX, actor.FacingZ, snap);
+                    mover.Faced=true;
+                }
             }
             int labelRow = frame.Actors.Count(other => other.X == actor.X && other.Z == actor.Z && other.Id < actor.Id);
             var caption=mover.Node.GetNodeOrNull<Label3D>("Appearance/Caption");
@@ -265,12 +277,21 @@ public partial class PresentationStage : Node3D
         mover.Duration = duration;
     }
 
-    private static void TargetRotation(Mover mover,float x,float z,bool snap)
+    private void ApplyYaw(Mover mover,float angle)
+    {
+        // Ровно ±π в Euler Y не меняет базис. Чуть сдвигаем и записываем весь Transform сразу.
+        float turned=Mathf.Abs(Mathf.Abs(angle)-Mathf.Pi)<0.0005f?(angle<0?-1f:1f)*(Mathf.Pi-0.02f):angle;
+        float s=Mathf.Sin(turned),c=Mathf.Cos(turned);
+        var origin=mover.Node.Position;
+        mover.Node.Transform=new Transform3D(new Basis(new Vector3(c,0,-s),Vector3.Up,new Vector3(s,0,c)),origin);
+    }
+    private static float YawOf(Mover mover){var forward=-mover.Node.Basis.Z;return Mathf.Atan2(-forward.X,-forward.Z);}
+    private void TargetRotation(Mover mover,float x,float z,bool snap)
     {
         float angle=Mathf.Atan2(-x,-z);
-        if(snap){mover.AngleFrom=mover.AngleTo=angle;mover.AngleElapsed=1;mover.Node.Rotation=new(0,angle,0);return;}
-        if(Mathf.IsEqualApprox(mover.AngleTo,angle))return;
-        mover.AngleFrom=mover.Node.Rotation.Y;mover.AngleTo=angle;mover.AngleElapsed=0;
+        if(snap){mover.AngleFrom=mover.AngleTo=angle;mover.AngleElapsed=1;ApplyYaw(mover,angle);return;}
+        if(Mathf.Abs(Mathf.AngleDifference(mover.AngleTo,angle))<0.001f)return;
+        mover.AngleFrom=YawOf(mover);mover.AngleTo=angle;mover.AngleElapsed=0;
     }
 
     public void ResetMotion()
@@ -363,13 +384,7 @@ public partial class PresentationStage : Node3D
         {
             if(layout.SourceId is PlayMaps.CompactValleyScenarioId or PlayMaps.CompactValleyI6C2ScenarioId or PlayMaps.WoodlandScenarioId or PlayMaps.WoodlandI6C4ScenarioId)
             {
-                // One cleared pad per real six-cell lot. The current valley also gets a flat survey grid.
-                if(layout.SourceId==PlayMaps.CompactValleyScenarioId)
-                {
-                    var ink=new Color("5e6b58");
-                    for(int x=0;x<=frame.MapWidth;x++)WorldModels.Part(ground,new BoxMesh{Size=new(.02f,.012f,frame.MapHeight)},ink,new(x-.5f,.02f,frame.MapHeight/2f-.5f));
-                    for(int z=0;z<=frame.MapHeight;z++)WorldModels.Part(ground,new BoxMesh{Size=new(frame.MapWidth,.012f,.02f)},ink,new(frame.MapWidth/2f-.5f,.02f,z-.5f));
-                }
+                // Трава остаётся цельной. Границы участка и контур действия появляются отдельно, не как постоянная сетка.
                 foreach(var lot in layout.IndustrialLots)
                 {
                     float x=lot.Cells.Min(c=>c.X)+.5f,z=lot.Cells.Min(c=>c.Z)+1;
