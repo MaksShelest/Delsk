@@ -17,9 +17,13 @@ import threading
 import uuid
 
 from analyze_paired_series import spread
+from research_lab_launch import configure_text_io, say
 from run_research_series import runner_command, run_checked, commit
+configure_text_io()
 
 ROOT = Path(__file__).resolve().parents[1]
+MAX_TIMEOUT = 14400
+ORDINARY_TICKS = 1_000_000
 # Deliberately narrow scalar surface; catalogues/geometry stay in source profiles.
 FACTORS = {
     'npc.difficulty': ['Easy', 'Medium', 'Hard'],
@@ -127,15 +131,32 @@ def scalar(document, path, value):
     node[parts[-1]] = value
 
 
+def recording_of(plan):
+    """brief — без кадров и срезов; normal — срезы экономики; detailed — ещё и кадры мира."""
+    recording = plan.get('recording')
+    if recording is not None and recording not in ('brief', 'normal', 'detailed'):
+        raise ValueError('Режим записи: brief, normal или detailed')
+    if recording == 'detailed' and plan.get('profile'):
+        raise ValueError('Профиль шагов не пишет полную историю мира')
+    if recording is not None and 'recordWorld' in plan and bool(plan['recordWorld']) != (recording == 'detailed'):
+        raise ValueError('recordWorld не совпадает с режимом записи')
+    record_world = (recording == 'detailed') if recording is not None else bool(plan.get('recordWorld', True)) and not plan.get('profile', False)
+    return record_world, recording in ('normal', 'detailed')
+
+
 def expand(plan, workspace):
     if not isinstance(plan,dict):raise ValueError("Plan must be an object")
     fields(plan, ['version', 'id', 'scenario', 'economy', 'controllers', 'ticks', 'seeds',
-                  'repetitions', 'mode', 'modelConfig', 'factors', 'composition', 'timeoutSeconds', 'profile', 'economyData', 'modelData', 'participants', 'recordWorld', 'ordinaryNpcCount'],
+                  'repetitions', 'mode', 'modelConfig', 'factors', 'composition', 'timeoutSeconds', 'profile', 'economyData', 'modelData', 'participants', 'recordWorld', 'ordinaryNpcCount', 'title', 'recording'],
            ['version', 'id', 'scenario', 'economy', 'ticks', 'seeds', 'repetitions', 'mode', 'factors'] + ([] if 'ordinaryNpcCount' in plan else ['controllers']))
     if type(plan['version']) is not int or plan['version'] != 1 or not isinstance(plan['id'],str) or not re.fullmatch(r'[a-zA-Z0-9_-]{1,64}', str(plan['id'])):
         raise ValueError('Invalid plan version/id')
-    if not integer(plan['ticks'], 1, 10000) or not integer(plan['repetitions'], 1, 500):
-        raise ValueError('Use ticks1..10000, repetitions1..500')
+    if 'title' in plan and (not isinstance(plan['title'], str) or not plan['title'].strip() or len(plan['title']) > 80):
+        raise ValueError('Название исследования: от 1 до 80 символов')
+    ordinary = 'ordinaryNpcCount' in plan
+    tick_limit = ORDINARY_TICKS if ordinary else 10_000
+    if not integer(plan['ticks'], 1, tick_limit) or not integer(plan['repetitions'], 1, 500):
+        raise ValueError('Обычная партия: тики 1..1000000, повторы 1..500' if ordinary else 'Use ticks1..10000, repetitions1..500')
     seeds = plan['seeds']
     if not isinstance(seeds, list) or not seeds or len(seeds) != len(set(seeds)) or any(not integer(s, 0, 2**64-1) for s in seeds):
         raise ValueError('Use distinct uint64 seeds')
@@ -143,11 +164,11 @@ def expand(plan, workspace):
         raise ValueError('Hybrid requires explicit real modelConfig; algorithmic forbids it')
     if type(plan.get('profile',False)) is not bool or plan.get('profile',False) and plan['mode']!='algorithmic':
         raise ValueError('Step profiling requires an algorithmic run')
-    if not integer(plan.get('timeoutSeconds', 180), 1, 900):
-        raise ValueError('Use timeoutSeconds1..900')
+    if not integer(plan.get('timeoutSeconds', 180), 1, MAX_TIMEOUT):
+        raise ValueError('Лимит времени: 1..14400 секунд')
+    recording_of(plan)
     if not isinstance(plan['factors'], list) or len(plan['factors']) > 6:
         raise ValueError('At most 6 factors')
-    ordinary='ordinaryNpcCount' in plan
     if ordinary and (not integer(plan['ordinaryNpcCount'],3,10) or plan['mode']!='algorithmic' or any(k in plan for k in ('controllers','participants','composition'))):
         raise ValueError('Ordinary setup requires 3..10 NPC, algorithmic mode and no controllers/participants/composition override')
     if ordinary and any(f.get('path')=='npc.negotiationsEnabled' for f in plan['factors']):
@@ -168,7 +189,8 @@ def expand(plan, workspace):
     if not isinstance(economy,dict) or type(plan.get('recordWorld',True)) is not bool:raise ValueError('Invalid economy/recording options')
     from research_workspace import prepare_participants
     setup=prepare_participants(plan,scenario,controllers,economy)
-    if plan['ticks'] > economy['world']['maxTicks']:
+    # Обычная партия сама ставит горизонт 1000000. maxTicks профиля — исторический предел старых опытов.
+    if not ordinary and plan['ticks'] > economy['world']['maxTicks']:
         raise ValueError('Ticks exceed profile maximum')
     if 'composition' in plan:
         composition = plan['composition']
@@ -216,6 +238,7 @@ def command(folder, job, output):
         if not job.get('profile'):cmd+=['--progress','true']
     if job.get('profile'):cmd += ['--profile','true']
     if job.get('recordWorld',False):cmd += ['--research','true']
+    if job.get('economySample'):cmd += ['--economy-sample','true']
     if job.get('modelWait',False):cmd += ['--model-wait','true']
     if (path/'setup.json').exists():cmd += ['--research-setup',str(path/'setup.json')]
     return [*cmd, '--economy', str(path/'economy.json'), '--human-ballot', 'self']
@@ -232,8 +255,12 @@ class Lab:
         self.workspace = Path(workspace).resolve()
         self.workspace.mkdir(parents=True, exist_ok=True)
         self.executor = executor
-        os.environ.setdefault('DELSK_COMMIT', commit() or 'unknown')
-        self.commit = subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True,timeout=10).strip()
+        from research_lab_launch import git_dirty, git_head
+        self.commit = git_head()
+        self.commit_dirty = git_dirty()
+        self.commit_verified = self.commit is not None and not self.commit_dirty
+        # SHA попадает в манифест только вместе с чистым деревом. Иначе это не версия сборки.
+        os.environ['DELSK_COMMIT'] = self.commit if self.commit_verified else 'unverified'
         self.lock = threading.RLock()
         self.thread = None
         self.paused = True
@@ -294,12 +321,13 @@ class Lab:
             shutil.copytree(stage/'inputs', folder/'inputs')
             shutil.copytree(stage/'checks', folder/'validation') if (stage/'checks').exists() else None
         write(folder/'plan.json', plan)
+        record_world, economy_sample = recording_of(plan)
         jobs = [dict(id=f"{arm['id']}-s{seed}-r{repeat}", arm=arm['id'], factors=arm['factors'],
-                     seed=seed, repeat=repeat, ticks=plan['ticks'], mode=plan['mode'], profile=plan.get('profile',False),recordWorld=plan.get('recordWorld',True) and not plan.get('profile',False),modelWait=not plan.get('profile',False) and 'ordinaryNpcCount' not in plan, status='queued', attempt=0)
+                     seed=seed, repeat=repeat, ticks=plan['ticks'], mode=plan['mode'], profile=plan.get('profile',False),recordWorld=record_world,economySample=economy_sample,recording=plan.get('recording'),modelWait=not plan.get('profile',False) and 'ordinaryNpcCount' not in plan, status='queued', attempt=0)
                 for arm in arms for seed in plan['seeds'] for repeat in range(plan['repetitions'])]
         from research_workspace import binary_hashes
-        s = dict(id=key,name=plan['id'],archived=False, plan=copy.deepcopy(plan), jobs=jobs, commit=self.commit,binaries=binary_hashes(),
-                 inputs={str(p.relative_to(folder)): digest(p) for p in sorted((folder/'inputs').rglob('*.json'))})
+        s = dict(id=key,name=plan['title'].strip() if isinstance(plan.get('title'), str) else plan['id'],archived=False, plan=copy.deepcopy(plan), jobs=jobs, commit=self.commit,commitVerified=self.commit_verified,commitDirty=self.commit_dirty,binaries=binary_hashes(),
+                 inputs={p.relative_to(folder).as_posix(): digest(p) for p in sorted((folder/'inputs').rglob('*.json'))})
         with self.lock:
             self.series.append(s)
             self.save()
@@ -345,20 +373,20 @@ class Lab:
                 cmd = command(folder, job, out)
                 code, meta = self.executor(job['id']+'-a'+str(job['attempt']), s['plan'].get('timeoutSeconds', 180), folder/'checks', cmd)
                 if code==2 and (out/'summary.json').exists() and read(out/'summary.json').get('status')=='cancelled':
-                    with self.lock:j.update(status='cancelled',result=str(out.relative_to(self.workspace)),command=cmd)
+                    with self.lock:j.update(status='cancelled',result=out.relative_to(self.workspace).as_posix(),command=cmd)
                     raise InterruptedError('Researcher cancelled')
                 if code:
                     raise ValueError(f'Runner exit {code}; see checks/{job["id"]}-a{job["attempt"]} logs')
                 if job.get('recordWorld'):validate_recording(out)
                 metrics = measure(out)
                 with self.lock:
-                    j.update(status='succeeded', metrics=metrics, result=str(out.relative_to(self.workspace)), check=meta, command=cmd, artifacts=[p.name for p in sorted(out.iterdir()) if p.suffix in ('.json','.jsonl','.csv')])
+                    j.update(status='succeeded', metrics=metrics, result=out.relative_to(self.workspace).as_posix(), check=meta, command=cmd, artifacts=[p.name for p in sorted(out.iterdir()) if p.suffix in ('.json','.jsonl','.csv')])
                     j.pop('error', None)
             except Exception as error:
                 with self.lock:
-                    j.update(status='cancelled' if isinstance(error,InterruptedError) else 'failed', error=str(error),result=str(out.relative_to(self.workspace)),command=cmd)
+                    j.update(status='cancelled' if isinstance(error,InterruptedError) else 'failed', error=str(error),result=out.relative_to(self.workspace).as_posix(),command=cmd)
             with self.lock:
-                j['logs'] = [str(p.relative_to(self.workspace)) for p in
+                j['logs'] = [p.relative_to(self.workspace).as_posix() for p in
                              sorted((folder/'checks').glob(job['id']+'-a'+str(job['attempt'])+'.*')) if p.is_file()]
                 s['bytes']=sum(p.stat().st_size for p in folder.rglob('*') if p.is_file() and not p.is_symlink())
                 write(folder/'series.json', s)
@@ -417,7 +445,8 @@ def main(argv=None):
     p.add_argument('--open-browser', action='store_true', help='Open this laboratory, or reopen the already running host')
     a = p.parse_args(argv)
     if sys.version_info < (3, 10):
-        p.error('Python 3.10+ is required')
+        say('Нужен Python 3.10 или новее. Сейчас ' + '.'.join(map(str, sys.version_info[:3])) + '. Установите его с https://www.python.org/downloads/ . Экономику считает .NET.', sys.stderr)
+        return 1
     if not 0 <= a.port <= 65535:
         p.error('Port must be 0..65535 (0 selects an available port)')
     os.chdir(ROOT)
@@ -439,7 +468,8 @@ def main(argv=None):
         from research_lab_launch import reopen
         if a.open_browser and not a.run and not a.plan and reopen(a.output.resolve()):
             return 0
-        p.error('Лаборатория уже использует эту папку. Дождитесь подготовки или закройте прежнее окно запуска.')
+        say('Лаборатория уже использует эту папку. Дождитесь подготовки или закройте прежнее окно запуска.', sys.stderr)
+        return 2
     lab = None
     try:
         from research_lab_launch import prepare, require_runner
@@ -461,8 +491,8 @@ def main(argv=None):
         from research_lab_server import serve
         serve(lab, a.port, a.open_browser)
         return 0
-    except (ValueError, OSError) as error:
-        print('Не удалось запустить лабораторию: '+str(error), file=sys.stderr, flush=True)
+    except (ValueError, OSError, subprocess.SubprocessError) as error:
+        say('Не удалось запустить лабораторию: '+str(error), sys.stderr)
         return 1
     finally:
         if lab is not None:

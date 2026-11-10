@@ -14,6 +14,31 @@ MAPS = [
     dict(label='Карта 2 · другой маршрут', path='scenarios/presentation-map-two-v3.json'),
     dict(label='Карта 3 · пищевые цепочки', path='scenarios/presentation-map-three-v2.json'),
 ]
+# Текущие обычные партии. Исторические MAPS остаются отдельным списком: их профили другие.
+CITY_MAPS = [
+    dict(label='Малая долина · текущие правила', path='scenarios/vnext/compact-valley-i6c21.json',
+         economy='config/vnext/economy.i6c72-wages.json', profile='vnext-i6c72-wages-1',
+         note='Ставка 0,15 монеты, ручной шаг 0,02. Цена участка не менялась. Профили до классов техники и старые сохранения остаются на ставке 0,20.'),
+    dict(label='Лесной край · текущие правила', path='scenarios/vnext/woodland-region-i6c4.json',
+         economy='config/vnext/economy.i6c72-wages.json', profile='vnext-i6c72-wages-1',
+         note='Та же текущая шкала зарплат, что у Малой долины. Это не профиль I4.'),
+]
+
+
+def city_timeout(ticks):
+    return min(14400, max(300, int(ticks) * 4))
+
+
+def city_plan(name='city-economy', title='Экономика города', ticks=120, seed=42, npcs=3, map_path=None, recording='normal', difficulty=None):
+    choice = next(item for item in CITY_MAPS if item['path'] == map_path) if map_path else CITY_MAPS[0]
+    plan = dict(version=1, id=name, title=title, scenario=choice['path'], economy=choice['economy'],
+                ordinaryNpcCount=int(npcs), ticks=int(ticks), seeds=[int(seed)], repetitions=1, mode='algorithmic',
+                factors=[], recording=recording, timeoutSeconds=city_timeout(ticks))
+    if difficulty:
+        plan['factors'] = [dict(path='npc.difficulty', values=[difficulty])]
+    return plan
+
+
 FACTOR_LABELS = {
     'npc.difficulty': 'Сложность NPC', 'npc.negotiationsEnabled': 'Переговоры NPC',
     'npc.tradeEnabled': 'Торговля NPC', 'npc.politicsEnabled': 'Политика NPC',

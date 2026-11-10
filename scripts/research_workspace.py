@@ -144,7 +144,11 @@ class Workspace:
 
     def file(self,key,relative):
         base=self.folder(key)
-        path=base/relative
+        relative=str(relative).replace('\\','/').lstrip('/')
+        parts=relative.split('/')
+        if not parts or any(part in ('', '..') or part.endswith(':') for part in parts):
+            raise ValueError('Неизвестный файл опыта')
+        path=base.joinpath(*parts)
         if not path.resolve().is_relative_to(base) or path.is_symlink() or not path.is_file() or path.suffix not in ('.json','.jsonl','.csv','.log'):
             raise ValueError('Неизвестный файл опыта')
         return path
@@ -198,9 +202,13 @@ class Workspace:
             write(out/'control.json',dict(action=action))
         return dict(action=action)
 
-    def preview(self,key,relative,cursor=0):
+    def preview(self,key,relative,cursor=0,tail=False):
         path=self.file(key,relative)
+        size=path.stat().st_size
         cursor=max(0,int(cursor))
+        # Конец журнала, а не весь файл: большой stdout не должен подвешивать страницу.
+        if str(tail).lower() in ('1','true','yes') or tail is True:
+            cursor=max(0,size-64*1024)
         with path.open('rb') as stream:
             stream.seek(cursor)
             raw=stream.read(64*1024)
@@ -249,11 +257,16 @@ class Workspace:
         return dict(rows=selected,sourceRows=len(rows),stride=stride)
 
     def journal(self,key,job,attempt,kind,cursor=0,actor='',search='',important='false'):
-        names={'events':'live-events.jsonl','decisions':'live-decisions.jsonl','models':'model-transcripts.jsonl'}
+        # live-* пишет наблюдатель с кадрами мира. Обычная запись оставляет итоговые events/decisions.
+        names={'events':('live-events.jsonl','events.jsonl'),'decisions':('live-decisions.jsonl','decisions.jsonl'),'models':('model-transcripts.jsonl',)}
         if kind not in names:raise ValueError('Неизвестный журнал')
         prefix=self.attempt(key,job,attempt)
-        try:path=self.file(key,prefix+'/'+names[kind])
-        except ValueError:return dict(rows=[],nextCursor=0,hasMore=False)
+        path=None
+        for name in names[kind]:
+            try:path=self.file(key,prefix+'/'+name)
+            except ValueError:continue
+            else:break
+        if path is None:return dict(rows=[],nextCursor=0,hasMore=False)
         rows=[]
         with path.open('rb') as stream:
             stream.seek(max(0,int(cursor)))
@@ -262,6 +275,13 @@ class Workspace:
                 if not raw:break
                 if not raw.endswith(b'\n'):break
                 row=json.loads(raw)
+                if len(raw) > 8192:
+                    decision=row.get('decision') if isinstance(row.get('decision'), dict) else {}
+                    actions=decision.get('actions') if isinstance(decision.get('actions'), list) else []
+                    row=dict(tick=row.get('tick'), actor=row.get('actor', row.get('actorId')),
+                             decision=dict(goal=decision.get('goal'), reason=decision.get('reason'),
+                                           actions=[item.get('kind') for item in actions if isinstance(item, dict)]),
+                             omitted='Полное наблюдение не отправлено в браузер. Файл журнала на диске сохранён.')
                 actor_id=row.get('actorId',row.get('actor',{}))
                 actor_id=actor_id.get('value','') if isinstance(actor_id,dict) else actor_id
                 if actor and str(actor_id)!=actor:continue

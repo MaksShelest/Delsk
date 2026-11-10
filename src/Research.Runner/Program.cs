@@ -5,7 +5,7 @@ using Simulation.Core;
 using Agents.Algorithmic;
 using Simulation.Hosting;
 
-if(args.Contains("--export-mobile-equipment-profile",StringComparer.Ordinal)||args.Contains("--export-npc-economy-profile",StringComparer.Ordinal)||args.Contains("--export-service-runs-profile",StringComparer.Ordinal)||args.Contains("--export-service-profile",StringComparer.Ordinal)||args.Contains("--export-billing-profile",StringComparer.Ordinal)||args.Contains("--export-road-profile",StringComparer.Ordinal)||args.Contains("--export-fleet-profile",StringComparer.Ordinal)||args.Contains("--export-production-profile",StringComparer.Ordinal)||args.Contains("--export-storage-profile",StringComparer.Ordinal)||args.Contains("--export-workshop-profile",StringComparer.Ordinal)||args.Contains("--export-development-profile",StringComparer.Ordinal))return StorageProfileCommand.Run(args);
+if(args.Contains("--export-wage-schedule-profile",StringComparer.Ordinal)||args.Contains("--export-mobile-equipment-profile",StringComparer.Ordinal)||args.Contains("--export-npc-economy-profile",StringComparer.Ordinal)||args.Contains("--export-service-runs-profile",StringComparer.Ordinal)||args.Contains("--export-service-profile",StringComparer.Ordinal)||args.Contains("--export-billing-profile",StringComparer.Ordinal)||args.Contains("--export-road-profile",StringComparer.Ordinal)||args.Contains("--export-fleet-profile",StringComparer.Ordinal)||args.Contains("--export-production-profile",StringComparer.Ordinal)||args.Contains("--export-storage-profile",StringComparer.Ordinal)||args.Contains("--export-workshop-profile",StringComparer.Ordinal)||args.Contains("--export-development-profile",StringComparer.Ordinal))return StorageProfileCommand.Run(args);
 if(args.Contains("--export-map-design",StringComparer.Ordinal))return MapDesignCommand.Run(args);
 
 if(args.Contains("--measure-session",StringComparer.Ordinal))return H2PerformanceCommand.Run(args);
@@ -21,7 +21,7 @@ try
     for (int i = 0; i < args.Length; i += 2)
     {
         if (i + 1 >= args.Length || args[i] is not ("--scenario" or "--output" or "--script" or "--mode" or "--seed" or
-            "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers" or "--model-mode" or "--model-config" or "--economy" or "--new-game" or "--validate-only" or "--profile" or "--human-ballot" or "--research" or "--research-setup" or "--model-wait" or "--progress" or "--compress-controller-turns"
+            "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers" or "--model-mode" or "--model-config" or "--economy" or "--new-game" or "--validate-only" or "--profile" or "--human-ballot" or "--research" or "--research-setup" or "--model-wait" or "--progress" or "--economy-sample" or "--compress-controller-turns" or "--host-profile"
 #if DELSK_DEVELOPER
             or "--research-modifications"
 #endif
@@ -29,15 +29,16 @@ try
             throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--economy config/economy.json] [--new-game OPTIONS_JSON (new baseline/hybrid only)] [--validate-only true] [--profile true] [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|stopped-elections|physical-automation|participant-trade|food-chain|support|baseline|hybrid|model-safety] [--mode headless|paced] [--model-mode off|ollama --model-config PATH] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true] [--compress-controller-turns true]");
         if (!options.TryAdd(args[i], args[i + 1])) throw new ArgumentException("Duplicate argument");
     }
-    foreach (string flag in new[] { "--profile", "--validate-only", "--research", "--model-wait", "--recover-backup", "--progress", "--compress-controller-turns" })
+    foreach (string flag in new[] { "--profile", "--validate-only", "--research", "--model-wait", "--recover-backup", "--progress", "--economy-sample", "--compress-controller-turns", "--host-profile" })
         if (options.TryGetValue(flag,out var value) && !bool.TryParse(value,out _)) throw new ArgumentException(flag + " requires true or false");
-    foreach(string flag in new[]{"--profile","--validate-only","--research","--model-wait","--recover-backup","--progress","--compress-controller-turns"})
+    foreach(string flag in new[]{"--profile","--validate-only","--research","--model-wait","--recover-backup","--progress","--economy-sample","--compress-controller-turns","--host-profile"})
         if(options.ContainsKey(flag))options[flag]=bool.Parse(options[flag]).ToString().ToLowerInvariant();
     if ((options.ContainsKey("--load") || options.ContainsKey("--replay")) &&
         (options.GetValueOrDefault("--profile","false") == "true" || options.GetValueOrDefault("--validate-only","false") == "true"))
         throw new ArgumentException("Profile/validate-only require a new run");
     if(options.ContainsKey("--research-setup") && (options.ContainsKey("--load") || options.ContainsKey("--replay")))throw new ArgumentException("Research setup applies only to new runs");
     bool compressControllerTurns=options.GetValueOrDefault("--compress-controller-turns")=="true";
+    bool hostProfile=options.GetValueOrDefault("--host-profile")=="true";
     byte[]? economyBytes = options.TryGetValue("--economy", out var economyPath) ? VNextBalanceReader.ReadBounded(economyPath) : null;
     EconomyProfile? economics = economyBytes is null ? null : EconomyProfile.Read(System.Text.Encoding.UTF8.GetString(economyBytes));
     if (economics is not null && (options.ContainsKey("--load") || options.ContainsKey("--replay")))
@@ -154,11 +155,29 @@ try
     }
 #endif
     double startupMilliseconds=watch.Elapsed.TotalMilliseconds;
+    if(hostProfile)
+    {
+        session.Measurements=new SessionMeasurements();
+        var invariantMark=session.Measurements.Start();var invariantOpen=false;
+        session.Engine.InvariantBoundary+=name=>
+        {
+            if(name=="$begin")
+            {
+                if(invariantOpen)session.Measurements.End("invariant-remainder",invariantMark);
+                invariantMark=session.Measurements.Start();invariantOpen=true;return;
+            }
+            if(!invariantOpen)return;
+            session.Measurements.End("invariant-"+name,invariantMark);
+            invariantMark=session.Measurements.Start();
+        };
+    }
     bool observe=options.GetValueOrDefault("--research")=="true";
     bool waitForModel=options.GetValueOrDefault("--model-wait")=="true";
-    if(observe && (target is null || options.GetValueOrDefault("--profile")=="true"))throw new ArgumentException("Research recording requires --ticks and no --profile");
+    bool economySample=options.GetValueOrDefault("--economy-sample")=="true";
+    if((observe || economySample) && (target is null || options.GetValueOrDefault("--profile")=="true"))throw new ArgumentException("Research recording requires --ticks and no --profile");
     using var observer=observe?new ResearchObservation(directory,session,definition,target!.Value):null;
-    var progress=options.GetValueOrDefault("--progress")=="true"?new RunProgress(directory,session,target??definition.MaxTicks):null;
+    using var progress=options.GetValueOrDefault("--progress")=="true"?new RunProgress(directory,session,target??definition.MaxTicks):null;
+    var samples=economySample?new EconomySamples(directory,session):null;
     if(waitForModel)mode="ResearchWaitAtDecision-v1";
     try
     {
@@ -181,17 +200,24 @@ try
         {
             while(session.Engine.Tick<target.Value)
             {
-                observer?.Boundary();
+                if(observer is not null)observer.Boundary();
+                else HostControl.Boundary(directory,()=>progress?.Write(true,"paused"));
                 while(waitForModel && session.WaitingForModel)
-                {observer?.Boundary();models.ProgressWaiting();observer?.Progress("waiting-model");Thread.Sleep(50);}
-                long prior=session.Engine.Tick;session.Step();progress?.Write();
+                {
+                    if(observer is not null)observer.Boundary();
+                    else HostControl.Boundary(directory,()=>progress?.Write(true,"paused"));
+                    models.ProgressWaiting();observer?.Progress("waiting-model");progress?.Write(true,"waiting-model");Thread.Sleep(50);
+                }
+                long prior=session.Engine.Tick;session.Step();samples?.Maybe();
+                progress?.Write(false,session.Engine.WaitingForBallots?"voting":"running");
                 if(session.Engine.WaitingForBallots)
                 {
                     if(!session.HasControllers && (session.PlaybackFinalTick is null || prior==session.Engine.Tick))throw new InvalidOperationException("ElectionWaitingForBallots");
                     if(session.HasControllers) {session.PumpVoting();if(session.Engine.WaitingForBallots)Thread.Sleep(1);}
                 }
                 if(!session.Engine.WaitingForBallots && session.Engine.Tick<target.Value)observer?.Capture();
-                observer?.Progress(session.Engine.WaitingForBallots?"voting":"running");
+                string phase=session.Engine.WaitingForBallots?"voting":"running";
+                observer?.Progress(phase);progress?.Write(false,phase);
             }
             session.AdvanceTo(target.Value); // Submit replay inputs at the final voting boundary first.
             while(session.Engine.WaitingForBallots)
@@ -202,7 +228,7 @@ try
             observer?.Capture(); // Include recorded inputs at the final barrier.
         }
         else RunScript(session, definition, script);
-        progress?.Write(true,"exporting");
+        samples?.Maybe(true);progress?.Write(true,"exporting");
         // Research profiles may deliberately eliminate profitable production. Fixed fixture targets are not economic rules.
         if (definition.EconomyProfileId is null) BaselineValidation.Check(session,definition);
         if (saveTick.HasValue && !saved) throw new ArgumentException("Checkpoint tick was not reached");
@@ -210,25 +236,42 @@ try
     }
     catch (ResearchCancelledException)
     {
-        watch.Stop();observer?.Capture();observer?.Progress("exporting");
+        watch.Stop();samples?.Maybe(true);observer?.Capture();observer?.Progress("exporting");progress?.Write(true,"exporting");
+        WriteHostProfile();
         RunArtifacts.Export(session,definition,directory,mode,script,watch.Elapsed.TotalMilliseconds,"cancelled","Researcher cancelled between steps",models.Metadata,compressControllerTurns:compressControllerTurns);
-        observer?.Progress("cancelled");return 2;
+        observer?.Progress("cancelled");progress?.Write(true,"cancelled");return 2;
     }
     catch (Exception ex)
     {
         observer?.Progress("failed");progress?.Write(true,"failed");
-        watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, "failed", ex.Message, models.Metadata,compressControllerTurns:compressControllerTurns);
+        watch.Stop(); WriteHostProfile(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, "failed", ex.Message, models.Metadata,compressControllerTurns:compressControllerTurns);
         throw;
     }
     observer?.Progress("exporting");
-    watch.Stop(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, modelMetadata: models.Metadata, economyProvenance: economics?.VNext is { } provenance ? new { Metadata=provenance, ProfileFileSha256=VNextBalanceReader.Digest(economyBytes!), ResolvedConfigHash=session.Engine.ConfigHash } : null,startupMilliseconds:startupMilliseconds,compressControllerTurns:compressControllerTurns);
+    watch.Stop(); var exportWatch=Stopwatch.StartNew(); RunArtifacts.Export(session, definition, directory, mode, script, watch.Elapsed.TotalMilliseconds, modelMetadata: models.Metadata, economyProvenance: economics?.VNext is { } provenance ? new { Metadata=provenance, ProfileFileSha256=VNextBalanceReader.Digest(economyBytes!), ResolvedConfigHash=session.Engine.ConfigHash } : null,startupMilliseconds:startupMilliseconds,compressControllerTurns:compressControllerTurns);
+    exportWatch.Stop(); progress?.NoteExport(exportWatch.Elapsed.TotalMilliseconds); WriteHostProfile(exportWatch.Elapsed.TotalMilliseconds);
     if (economics is not null)
         File.WriteAllText(Path.Combine(directory,"economy-profile.json"),JsonSerializer.Serialize(economics,new JsonSerializerOptions(SimulationJson.Options) {WriteIndented=true}));
     observer?.Progress("completed");progress?.Write(true,"completed");
+    progress?.Close();
     Console.WriteLine(JsonSerializer.Serialize(new { Status = "succeeded", Tick = session.Engine.Tick,
         StateHash = session.Engine.ComputeStateHash(), Output = Path.GetFullPath(directory), CheckpointSaved = saved }, SimulationJson.Options));
     return 0;
     void Save(GameSession s) { CheckpointStore.Save(s, options["--checkpoint"]); saved = true; }
+    void WriteHostProfile(double? exportMilliseconds=null)
+    {
+        if(!hostProfile || session.Measurements is not {} measured)return;
+        var phases=measured.Capture().OrderByDescending(pair=>pair.Value.Milliseconds).Select(pair=>new
+        {
+            Phase=pair.Key,pair.Value.Calls,Milliseconds=Math.Round(pair.Value.Milliseconds,3),pair.Value.AllocatedBytes
+        });
+        Directory.CreateDirectory(directory);
+        File.WriteAllText(Path.Combine(directory,"host-profile.json"),JsonSerializer.Serialize(new
+        {
+            Scope="Host timings around Step and invariant sections. Absent from the world hash and from economic totals.",
+            Tick=session.Engine.Tick,ExportMilliseconds=exportMilliseconds,Phases=phases
+        },new JsonSerializerOptions(SimulationJson.Options){WriteIndented=true}));
+    }
     static void RunScript(GameSession s, ScenarioDefinition d, string script)
     {
         if(script=="workshops-d1") ScriptedScenarios.WorkshopsD1(s,d);

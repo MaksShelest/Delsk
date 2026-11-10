@@ -34,6 +34,7 @@ try:
         assert 'МБ' in page.locator('#catalog').inner_text()
         page.screenshot(path=str(out/'catalog.png'),full_page=True)
         page.locator('nav [data-page=new]').click()
+        page.locator('#show-advanced').click()
         page.locator('#mode').select_option('hybrid');page.locator('#run').click()
         page.wait_for_function("()=>document.getElementById('error').textContent.includes('Выберите профиль')")
         page.locator('#mode').select_option('algorithmic')

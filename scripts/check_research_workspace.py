@@ -38,6 +38,7 @@ try:
         page.goto(f'http://127.0.0.1:{server.server_port}/')
         page.wait_for_function("() => document.getElementById('plan').value.length>0")
         page.locator('[data-page=new]').first.click()
+        page.locator('#show-advanced').click()
         page.locator('#map').select_option('scenarios/city-corridor-v1.json')
         page.wait_for_function("() => JSON.parse(document.getElementById('plan').value).scenario==='scenarios/city-corridor-v1.json'")
         assert page.locator('#map option').count()==7

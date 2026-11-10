@@ -1,5 +1,8 @@
 using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 using Simulation.Core;
+
+[assembly: InternalsVisibleTo("Simulation.Tests")]
 
 namespace Agents.Algorithmic;
 
@@ -309,17 +312,33 @@ public sealed partial class AlgorithmicController
     internal static int Distance(ControllerMap map, Cell from, Cell to)
     {
         if (from == to) return 0;
-        if (to.X < 0 || to.Z < 0 || to.X >= map.Width || to.Z >= map.Height || map.BlockedCells.Contains(to)) return -1;
-        var blocked = map.BlockedCells.ToHashSet(); var visited = new HashSet<Cell> { from };
-        var queue = new Queue<(Cell Cell, int Distance)>(); queue.Enqueue((from, 0));
-        while (queue.TryDequeue(out var entry))
-        foreach (var next in new[] { new Cell(entry.Cell.X + 1, entry.Cell.Z), new(entry.Cell.X, entry.Cell.Z + 1),
-            new(entry.Cell.X - 1, entry.Cell.Z), new(entry.Cell.X, entry.Cell.Z - 1) })
+        if (to.X < 0 || to.Z < 0 || to.X >= map.Width || to.Z >= map.Height) return -1;
+        // One search per origin on this map instance. The neighbor order matches the previous walk,
+        // so the length is the same; only repeated searches of the same map are skipped.
+        var field = Routes.GetValue(map, static item => new RouteField(item.BlockedCells.ToHashSet()));
+        if (field.Blocked.Contains(to)) return -1;
+        if (!field.From.TryGetValue(from, out var known))
         {
-            if (next.X < 0 || next.Z < 0 || next.X >= map.Width || next.Z >= map.Height || blocked.Contains(next) || !visited.Add(next)) continue;
-            if (next == to) return entry.Distance + 1;
-            queue.Enqueue((next, entry.Distance + 1));
+            known = new Dictionary<Cell, int>();
+            field.From.Add(from, known);
+            var visited = new HashSet<Cell> { from };
+            var queue = new Queue<(Cell Cell, int Distance)>();
+            queue.Enqueue((from, 0));
+            while (queue.TryDequeue(out var entry))
+            foreach (var next in new[] { new Cell(entry.Cell.X + 1, entry.Cell.Z), new(entry.Cell.X, entry.Cell.Z + 1),
+                new(entry.Cell.X - 1, entry.Cell.Z), new(entry.Cell.X, entry.Cell.Z - 1) })
+            {
+                if (next.X < 0 || next.Z < 0 || next.X >= map.Width || next.Z >= map.Height || field.Blocked.Contains(next) || !visited.Add(next)) continue;
+                known[next] = entry.Distance + 1;
+                queue.Enqueue((next, entry.Distance + 1));
+            }
         }
-        return -1;
+        return known.TryGetValue(to, out int distance) ? distance : -1;
     }
+    private sealed class RouteField(HashSet<Cell> blocked)
+    {
+        public HashSet<Cell> Blocked { get; } = blocked;
+        public Dictionary<Cell, Dictionary<Cell, int>> From { get; } = new();
+    }
+    private static readonly ConditionalWeakTable<ControllerMap, RouteField> Routes = new();
 }

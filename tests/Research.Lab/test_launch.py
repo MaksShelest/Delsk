@@ -29,9 +29,11 @@ class StartupTests(unittest.TestCase):
         self.root = Path(self.temp.name)
 
     def test_preparation_uses_locked_restore_and_stops_on_failure(self):
-        version = json.loads((Path(__file__).resolve().parents[2]/'global.json').read_text())['sdk']['version']
+        version = json.loads((Path(__file__).resolve().parents[2]/'global.json').read_text(encoding='utf-8'))['sdk']['version']
+        runner = self.root/'Research.Runner.dll'
         with patch('research_lab_launch.prepare_dotnet'), patch('research_lab_launch.shutil.which', return_value='dotnet'), \
-             patch('research_lab_launch.subprocess.run') as sdk, patch('research_lab_launch.run_checked') as run:
+             patch('research_lab_launch.subprocess.run') as sdk, patch('research_lab_launch.run_checked') as run, \
+             patch('research_lab_launch.RUNNER', runner):
             sdk.return_value.returncode = 0
             sdk.return_value.stdout = version+'\n'
             run.return_value = (124, {})
@@ -39,10 +41,16 @@ class StartupTests(unittest.TestCase):
                 prepare(self.root)
             self.assertEqual(1, run.call_count)
             self.assertIn('--locked-mode', run.call_args.args[3])
-            run.reset_mock(); run.return_value = (0, {})
+            self.assertFalse(runner.is_file())
+            run.reset_mock()
+            def built(*args):
+                runner.write_bytes(b'runner')
+                return 0, {}
+            run.side_effect = built
             prepare(self.root)
             self.assertEqual(2, run.call_count)
             self.assertIn('--no-restore', run.call_args.args[3])
+            self.assertTrue((self.root/'startup'/'runner-stamp.json').is_file())
 
     def test_missing_or_wrong_sdk_has_actionable_message(self):
         with patch('research_lab_launch.prepare_dotnet'), patch('research_lab_launch.shutil.which', return_value=None):
@@ -152,6 +160,11 @@ class HttpTests(unittest.TestCase):
         self.assertEqual('failed', job['status'])
         self.assertEqual(1, len(job['logs']))
         self.assertEqual(b'deliberate runner failure', self.get('files/'+job['logs'][0]))
+        self.assertNotIn('\\', job['logs'][0])
+        self.assertEqual(b'deliberate runner failure', self.get('files/'+job['logs'][0].replace('/', '\\')))
+        with self.assertRaises(urllib.error.HTTPError) as escaped:
+            self.get('files/'+self.lab.series[0]['id']+'\\..\\..\\host.lock')
+        self.assertEqual(400, escaped.exception.code)
 
     def test_shutdown_requires_token_and_foreign_origin_is_rejected(self):
         for headers in [{}, {'X-Lab-Token':self.token, 'Origin':'https://outside.invalid'}]:

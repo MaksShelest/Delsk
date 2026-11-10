@@ -130,7 +130,7 @@ def measure(folder):
         m['physicalLevels'][str(level)]=m['physicalLevels'][str(level)] or e['tick']
         if level==1:m['firstProductionTick']=m['firstProductionTick'] or e['tick']
     development=load('development.json',{}) or {};xp=collections.defaultdict(collections.Counter);unlock={}
-    thresholds=json.loads((Path(__file__).resolve().parents[1]/'docs/vnext/data/BALANCE_VNEXT.json').read_text())['enterprise_tiers']
+    thresholds=json.loads((Path(__file__).resolve().parents[1]/'docs/vnext/data/BALANCE_VNEXT.json').read_text(encoding='utf-8'))['enterprise_tiers']
     for grant in sorted(development.get('grants',[]),key=lambda g:g['tick']):
         key=str(grant['owner'])+':'+grant['industry'];xp[key][grant['source']]+=grant['xp'];total=sum(xp[key].values())
         levels=unlock.setdefault(key,{str(t['level']):0 if t['xp']==0 else None for t in thresholds})

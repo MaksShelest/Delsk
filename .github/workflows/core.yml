@@ -946,6 +946,8 @@ jobs:
             python scripts/run_check.py --name i4-independent-audits --timeout 60 --log-directory artifacts/gate-checks -- python scripts/verify_results.py artifacts/i4-walkthrough/export
             python scripts/run_check.py --name i4-profile-generation --timeout 60 --log-directory artifacts/gate-checks -- dotnet src/Research.Runner/bin/Release/net10.0/Research.Runner.dll --export-mobile-equipment-profile config/vnext/economy.b1-supported.json --balance config/vnext/balance.b1.json --output artifacts/i4-regenerated
             cmp config/vnext/economy.i4-mobile-equipment.json artifacts/i4-regenerated/economy.i4-mobile-equipment.json
+            python scripts/run_check.py --name i6c72-profile-generation --timeout 60 --log-directory artifacts/gate-checks -- dotnet src/Research.Runner/bin/Release/net10.0/Research.Runner.dll --export-wage-schedule-profile config/vnext/economy.b1-supported.json --balance config/vnext/balance.b1.json --output artifacts/i6c72-regenerated
+            cmp config/vnext/economy.i6c72-wages.json artifacts/i6c72-regenerated/economy.i6c72-wages.json
           else
             python scripts/run_check.py --name i4-developer --timeout 780 --log-directory artifacts/gate-checks -- python scripts/check_developer.py --suite i4 --output artifacts/i4-developer
           fi
@@ -954,3 +956,30 @@ jobs:
         with:
           name: i4-${{ matrix.flavour }}
           path: artifacts/
+
+  research-lab-windows:
+    runs-on: windows-2025
+    timeout-minutes: 25
+    env:
+      # ResearchLab.cmd задаёт тот же контракт. Тест cp1252 проверяет запуск и без этой переменной.
+      PYTHONUTF8: '1'
+      PYTHONIOENCODING: utf-8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.401'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Research laboratory unit tests
+        run: python -m unittest discover -s tests/Research.Lab -v
+      - name: Build research runner
+        run: dotnet build src/Research.Runner/Research.Runner.csproj -c Release --disable-build-servers
+      - name: City economy 120 ticks, pause and cancel
+        run: python scripts/check_research_lab_city.py --ticks 120 --pause --output artifacts/r1-city
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: research-lab-windows
+          path: artifacts/r1-city/
