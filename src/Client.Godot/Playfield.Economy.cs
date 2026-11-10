@@ -15,7 +15,7 @@ public partial class Playfield
         {
             var mobile=EconomyProfile.Read(Text("Play.i4-mobile-equipment.json"));
             return (mapKey??_mapKey) is PlayMaps.CompactValley or PlayMaps.Second
-                ? VNextResourceRightsProfile.Create(VNextWageScheduleProfile.Create(VNextEquipmentClassesProfile.Create(mobile))) : mobile;
+                ? VNextStartingSpecializationProfile.ForOrdinaryMap(mobile) : mobile;
         }
         string project = ProjectSettings.GlobalizePath("res://");
         string path = System.IO.Path.GetFullPath(System.IO.Path.Combine(project, "../../config/economy.json"));

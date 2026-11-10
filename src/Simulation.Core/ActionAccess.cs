@@ -24,7 +24,7 @@ public static class ActionPolicy
         ActionKind.CreateBuyOffer or ActionKind.AcceptDeliveryQuantity or ActionKind.WithdrawSupplyRequest or ActionKind.CancelBuyOffer or
         ActionKind.SetLogisticsContract or ActionKind.SetLogisticsStorage or ActionKind.SetLogisticsInbound or ActionKind.SetLogisticsProduction or
         ActionKind.QueueLogisticsJob or ActionKind.SetLogisticsEnabled or ActionKind.SetVoteChoice or ActionKind.ContinueAfterVictory or
-        ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport => ActionReach.Remote,
+        ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.ChooseStartingSpecialization => ActionReach.Remote,
         _ => throw new ArgumentOutOfRangeException(nameof(kind))
     };
 }
