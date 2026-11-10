@@ -1,0 +1,106 @@
+{
+  "plan": {
+    "version": 1,
+    "id": "r2-wages",
+    "title": "Демонстрация: целевая ставка NPC 0,15 и 0,25",
+    "scenario": "scenarios/vnext/compact-valley-i6c21.json",
+    "economy": "config/vnext/economy.i6c72-wages.json",
+    "ticks": 120,
+    "seeds": [
+      42,
+      43
+    ],
+    "repetitions": 1,
+    "mode": "algorithmic",
+    "recording": "normal",
+    "factors": [
+      {
+        "path": "npc.baseWageMinor",
+        "values": [
+          15,
+          25
+        ]
+      }
+    ],
+    "timeoutSeconds": 480,
+    "ordinaryNpcCount": 3,
+    "science": {
+      "version": 1,
+      "template": "wages",
+      "title": "Демонстрация: целевая ставка NPC 0,15 и 0,25",
+      "goal": "Сравнить две целевые ставки политики NPC при одинаковых карте, seed и остальных настройках.",
+      "hypothesis": "Различие целевой ставки NPC может сопровождаться различием занятости. Направление заранее не утверждается.",
+      "comparison": "Группы отличаются только целевой ставкой политики NPC.",
+      "primaryMetric": "employed",
+      "metrics": [
+        "employed",
+        "treasuryMinor",
+        "producedUnits",
+        "harvestedUnits",
+        "npcCashMinor"
+      ],
+      "groups": [
+        {
+          "label": "A",
+          "value": 15,
+          "valueLabel": "0,15 монеты",
+          "factorLabel": "Целевая ставка NPC"
+        },
+        {
+          "label": "B",
+          "value": 25,
+          "valueLabel": "0,25 монеты",
+          "factorLabel": "Целевая ставка NPC"
+        }
+      ],
+      "fixed": [
+        "Шкала мира остаётся 0,15 монеты, ручной шаг 0,02. Меняется целевая ставка NPC, а не ставка зданий и не цена участка.",
+        "Профиль vnext-i6c72-wages-1.",
+        "Карта: Малая долина · текущие правила.",
+        "Тиков в прогоне: 120. Seeds: 42, 43. Повторов seed: 1.",
+        "Режим алгоритмический, без языковой модели.",
+        "Алгоритмических NPC: 3."
+      ],
+      "factor": "npc.baseWageMinor",
+      "kind": "minor",
+      "mapLabel": "Малая долина · текущие правила",
+      "profileId": "vnext-i6c72-wages-1",
+      "profileNote": "Хеш проекции пересчитывается только у группы, где изменено поле vNext-профиля. Контрольная группа копируется побайтно."
+    }
+  },
+  "reproduction": {
+    "commit": null,
+    "commitVerified": false,
+    "versionNote": "Git commit не подтверждён: репозитория не было, дерево было грязным либо версия не записана. Сравнивать этот опыт с другим по номеру commit нельзя.",
+    "binaries": {
+      "Agents.Algorithmic.dll": "7b982ad615f402a38a9e93f45b34d5273317bd42746728e85dcfa83e7d2fe471",
+      "Agents.Llm.dll": "e6c6cc42e1175bfdb5851734ec63121a5c82f033ca51e61739c66330c0d1b985",
+      "Research.Runner.dll": "88abc156b758ff9096c1cf34aaab410787bd7825f11a57e29f6273b9f8a08ed1",
+      "Simulation.Core.dll": "c842c1711ec4e6c73f82c890c6d65b09e1062f20b3fa48cc2726144a72f21c75",
+      "Simulation.Hosting.dll": "03a4774e85219b9f375eb60590df6bc377341197629ca80ad68ebc40350377e7"
+    },
+    "profileIds": [
+      "vnext-i6c72-wages-1",
+      "vnext-i6c72-wages-1"
+    ],
+    "economySha256": {
+      "arm-0": "a402b25b3bb8c00d6d444181f592d99c8e7df4589427b8e2ee11177afac642ad",
+      "arm-1": "68f5d510b49653a72319a73bc201448c74a91555564864135656cfbaef0de0cc"
+    },
+    "map": "scenarios/vnext/compact-valley-i6c21.json",
+    "seeds": [
+      42,
+      43
+    ],
+    "ticks": 120,
+    "method": "r2-paired-t-1",
+    "definitions": {
+      "employed": "Численность занятых на конец прогона: население минус безработные по PublicEconomy.",
+      "treasuryMinor": "Денежные средства счёта Treasury. Не являются суммой денег всех NPC и не включают дорожную дебиторку.",
+      "producedUnits": "Накопленное число произведённых единиц с начала партии. Не денежная оценка и не прирост последнего тика.",
+      "harvestedUnits": "Накопленное число добытых единиц с начала партии.",
+      "npcCashMinor": "Сумма остатков счетов NPC в последнем срезе. Пассивный человек обычной партии не входит. В краткой записи срезов нет, поэтому показатель отсутствует."
+    },
+    "detail": "Git commit не подтверждён: репозитория не было, дерево было грязным либо версия не записана. Сравнивать этот опыт с другим по номеру commit нельзя. Хеши профилей рук и сборки записаны в statistics.json."
+  }
+}

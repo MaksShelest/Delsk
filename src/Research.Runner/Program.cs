@@ -11,6 +11,7 @@ if(args.Contains("--export-map-design",StringComparer.Ordinal))return MapDesignC
 if(args.Contains("--measure-session",StringComparer.Ordinal))return H2PerformanceCommand.Run(args);
 
 // Catalog-only commands must return before any model runtime, controller or world exists.
+if (args.Contains("--refresh-projection-hash", StringComparer.Ordinal)) return ProjectionHashCommand.Run(args);
 if (args.Contains("--validate-vnext-catalog", StringComparer.Ordinal)) return VNextCatalogCommand.Run(args);
 if (args.Contains("--validate-vnext-balance", StringComparer.Ordinal)) return VNextBalanceCommand.Run(args);
 

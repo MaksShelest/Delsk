@@ -2,7 +2,7 @@
 'use strict';
 const $=id=>document.getElementById(id), clone=x=>JSON.parse(JSON.stringify(x));
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const labels={queued:'В очереди',running:'Выполняется',succeeded:'Готово',failed:'Ошибка',interrupted:'Прерван',cancelled:'Остановлен',paused:'Пауза',completed:'Готово',exporting:'Сохранение файлов','waiting-model':'Ожидание модели',voting:'Голосование'};
+const labels={queued:'Ожидает',running:'Выполняется',succeeded:'Успешно завершён',failed:'Ошибка',interrupted:'Прерван',cancelled:'Прерван пользователем',timeout:'Таймаут',paused:'Пауза',completed:'Готово',exporting:'Сохранение файлов','waiting-model':'Ожидание модели',voting:'Голосование'};
 const money=n=>Number(n/100).toLocaleString('ru-RU',{maximumFractionDigits:2});
 const bytes=n=>n>1048576?(n/1048576).toFixed(1)+' МБ':n>1024?(n/1024).toFixed(1)+' КБ':n+' Б';
 let catalog,state={series:[]},draft,economy,scenario,profiles=[],members=[],customMembers=false,page='catalog',selectedId=null,selected=new Set(),detailTab='runs',runsPage=0,worldPlayback=null,filePath='',fileCursor=0,journalCursor=0,diagAt=0,economyKey='',lastReport=null;
@@ -22,12 +22,13 @@ function table(headers,rows){return '<div class="table-wrap"><table><thead><tr>'
 async function showPage(name){
  page=name;document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!=='page-'+name);
  document.querySelectorAll('nav [data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===name));
- $('breadcrumb').textContent='Рабочее пространство / '+({catalog:'Исследования',new:'Новый опыт',detail:'Результаты',profiles:'Профили экономики',models:'Модели'}[name]??name);
+ $('breadcrumb').textContent='Рабочее пространство / '+({catalog:'Исследования',new:'Новый опыт',detail:'Результаты',science:'Научные эксперименты',profiles:'Профили экономики',models:'Модели'}[name]??name);
  if(name!=='detail')stopPlayback();
  if(name==='catalog')renderCatalog();
  if(name==='new')syncPlan();
  if(name==='models'||name==='profiles')await loadProfiles();
  if(name==='detail')renderDetail();
+ if(name==='science'&&window.scienceShow)window.scienceShow();
 }
 document.addEventListener('click',e=>{
  const nav=e.target.closest('[data-page]');if(nav){e.preventDefault();showPage(nav.dataset.page).catch(alertError);}
@@ -188,7 +189,7 @@ function renderCatalog(){
 $('catalog').addEventListener('change',e=>{if(e.target.name==='series'){if(e.target.checked)selected.add(e.target.value);else selected.delete(e.target.value);}});
 $('catalog').addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b){selectedId=b.dataset.open;runsPage=0;showPage('detail').catch(alertError);}});
 $('search').addEventListener('input',renderCatalog);$('show-archive').addEventListener('change',renderCatalog);
-async function refresh(){state=await api('/api/state');$('queue-status').textContent=state.paused?'Очередь на паузе':state.running?'Очередь работает':'Очередь завершена';renderActive();if(page==='catalog')renderCatalog();if(page==='detail')renderDetail();}
+async function refresh(){state=await api('/api/state');$('queue-status').textContent=state.paused?'Очередь на паузе':state.running?'Очередь работает':'Очередь завершена';renderActive();if(page==='catalog')renderCatalog();if(page==='detail')renderDetail();if(page==='science'&&window.scienceTick)await window.scienceTick();}
 function renderDetail(){
  const s=currentSeries();if(!s){showPage('catalog');return;}
  $('detail-name').textContent=s.name??s.plan.id;$('detail-id').textContent=s.id+' · '+(/^[0-9a-f]{40}$/.test(s.commit||'')?(s.commitVerified?'Git '+s.commit.slice(0,12):'Git '+s.commit.slice(0,12)+' · есть незафиксированные изменения'):'коммит Git не подтверждён');$('archive').textContent=s.archived?'Вернуть из архива':'В архив';
@@ -416,4 +417,6 @@ bind('start-city',async()=>{
  try{const r=await api('/api/queue',plan);await api('/api/start',{});await refresh();selectedId=r.id;runsPage=0;await showPage('detail');}
  finally{$('start-city').disabled=false;}
 });
+window.openStudy=async function(id,job){selectedId=id;runsPage=0;detailTab='analysis';await showPage('detail');if(job&&[...$('job').options].some(option=>option.value===job))$('job').value=job;tab('detail-tabs','detail-','detail-panel','analysis');await loadDetailTab();};
+window.labLabels=labels;window.labEsc=esc;window.labBytes=bytes;window.labPage=()=>page;window.labState=()=>state;window.labCatalog=()=>catalog;
 let refreshing=false;const poll=setInterval(async()=>{if(refreshing)return;refreshing=true;try{await refresh();}catch(e){alertError(e);}finally{refreshing=false;}},1000);init().catch(alertError);
