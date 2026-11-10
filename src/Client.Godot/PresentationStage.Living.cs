@@ -9,6 +9,9 @@ public partial class PresentationStage
     private PresentationFrame? _shown;
     private bool _ownership;
     private Cell[] _preview=[];
+    private Cell? _previewEntry;
+    private Cell? _previewAnchor;
+    private bool _previewBlocked;
     private MeshInstance3D? _route;
     private string _routeKey="";
     private readonly Dictionary<long,MeshInstance3D> _activity=[];
@@ -107,9 +110,10 @@ public partial class PresentationStage
         }
     }
 
-    public void SetPreview(IReadOnlyList<Cell> cells)
+    public void SetPreview(IReadOnlyList<Cell> cells,Cell? entry=null,Cell? anchor=null,bool blocked=false)
     {
         _preview=cells.Count==0?[]:cells.ToArray();
+        _previewEntry=entry;_previewAnchor=anchor;_previewBlocked=blocked;
         if(_shown is {} frame)ShowLand(frame,_ownership);
     }
 
@@ -141,7 +145,7 @@ public partial class PresentationStage
         var parcels=frame.Markers.Where(m=>m.Kind is "plot-own" or "plot-foreign" or "plot-reserved" or "plot-free" or "shop-plot")
             .Select(m=>new LandParcel(m.X,m.Z,m.OwnerId,m.Kind)).ToArray();
         var borders=LandOutline.Borders(parcels,ownership);
-        string key=ownership+"|"+string.Join(",",_preview.Select(c=>$"{c.X}:{c.Z}"))+"|"+string.Join(";",borders.Select(b=>$"{b.State}:{b.Owner}:{b.X1:0.00}:{b.Z1:0.00}:{b.X2:0.00}:{b.Z2:0.00}"));
+        string key=ownership+"|"+_previewBlocked+"|"+_previewEntry+"|"+_previewAnchor+"|"+string.Join(",",_preview.Select(c=>$"{c.X}:{c.Z}"))+"|"+string.Join(";",borders.Select(b=>$"{b.State}:{b.Owner}:{b.X1:0.00}:{b.Z1:0.00}:{b.X2:0.00}:{b.Z2:0.00}"));
         if(key==_landKey&&_land is not null)return;
         _landKey=key;
         if(_land is not null){_land.QueueFree();_land=null;}
@@ -149,15 +153,21 @@ public partial class PresentationStage
         var tool=new SurfaceTool();tool.Begin(Mesh.PrimitiveType.Triangles);
         foreach(var edge in borders)AddEdge(tool,edge.X1,edge.Z1,edge.X2,edge.Z2,BorderColor(edge,frame),edge.State=="plot-own"?0.045f:0.028f,0.09f);
         var chosen=_preview.ToHashSet();
-        var fill=new Color(0.86f,0.91f,0.78f,0.22f);
-        var line=new Color(0.96f,0.93f,0.82f,0.9f);
+        var fill=_previewBlocked?new Color(0.72f,0.34f,0.30f,0.20f):new Color(0.86f,0.91f,0.78f,0.22f);
+        var line=_previewBlocked?new Color(0.75f,0.28f,0.24f,0.9f):new Color(0.96f,0.93f,0.82f,0.9f);
         foreach(var cell in _preview)
         {
             AddFill(tool,cell.X,cell.Z,fill,0.025f);
-            if(!chosen.Contains(new(cell.X,cell.Z-1)))AddEdge(tool,cell.X-.5f,cell.Z-.5f,cell.X+.5f,cell.Z-.5f,line,0.016f,0.04f);
-            if(!chosen.Contains(new(cell.X+1,cell.Z)))AddEdge(tool,cell.X+.5f,cell.Z-.5f,cell.X+.5f,cell.Z+.5f,line,0.016f,0.04f);
-            if(!chosen.Contains(new(cell.X,cell.Z+1)))AddEdge(tool,cell.X+.5f,cell.Z+.5f,cell.X-.5f,cell.Z+.5f,line,0.016f,0.04f);
-            if(!chosen.Contains(new(cell.X-1,cell.Z)))AddEdge(tool,cell.X-.5f,cell.Z+.5f,cell.X-.5f,cell.Z-.5f,line,0.016f,0.04f);
+            float width=_previewAnchor is {} anchor&&anchor==cell?0.03f:0.016f;
+            if(!chosen.Contains(new(cell.X,cell.Z-1)))AddEdge(tool,cell.X-.5f,cell.Z-.5f,cell.X+.5f,cell.Z-.5f,line,width,0.04f);
+            if(!chosen.Contains(new(cell.X+1,cell.Z)))AddEdge(tool,cell.X+.5f,cell.Z-.5f,cell.X+.5f,cell.Z+.5f,line,width,0.04f);
+            if(!chosen.Contains(new(cell.X,cell.Z+1)))AddEdge(tool,cell.X+.5f,cell.Z+.5f,cell.X-.5f,cell.Z+.5f,line,width,0.04f);
+            if(!chosen.Contains(new(cell.X-1,cell.Z)))AddEdge(tool,cell.X-.5f,cell.Z+.5f,cell.X-.5f,cell.Z-.5f,line,width,0.04f);
+        }
+        if(_previewEntry is {} entry&&_preview.Length>0)
+        {
+            var toward=_preview.OrderBy(c=>Math.Abs(c.X-entry.X)+Math.Abs(c.Z-entry.Z)).ThenBy(c=>c.X).ThenBy(c=>c.Z).First();
+            AddChevron(tool,entry,toward,_previewBlocked?line:new Color(0.86f,0.74f,0.38f,0.95f),0.05f);
         }
         tool.GenerateNormals();
         _land=new MeshInstance3D{Name="LandOutline",Mesh=tool.Commit(),CastShadow=GeometryInstance3D.ShadowCastingSetting.Off};

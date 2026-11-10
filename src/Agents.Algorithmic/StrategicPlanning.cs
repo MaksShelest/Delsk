@@ -77,7 +77,7 @@ public sealed partial class AlgorithmicController
                 value+=(Int128)q*offer.UnitPriceMinor-(Int128)Math.Max(0,q-fresh)*BasePrice(o,a.ItemId);
                 if(offer.ExpiresAtTick<=o.Tick+eta)risk+=(Int128)q*offer.UnitPriceMinor;
             }
-            if(a.Kind==ActionKind.BuyPlot)capital+=o.Plots.Single(x=>x.Id==a.Plot).PriceMinor;
+            if(a.Kind==ActionKind.BuyPlot){var plot=o.Plots.Single(x=>x.Id==a.Plot);capital+=ParcelPrice(o,plot);}
             if(a.Kind==ActionKind.BuyResource)capital+=o.Resources.Single(x=>x.Position==a.Target).PurchasePriceMinor;
             if(a.Kind==ActionKind.Build)
             {

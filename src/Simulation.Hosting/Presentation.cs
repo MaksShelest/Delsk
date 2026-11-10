@@ -18,6 +18,8 @@ public record PresentationMarker(string Kind, int X, int Z, string Label, long E
     public long ResourceStock {get;init;}=1;
     public long ResourceCapacity {get;init;}=1;
     public bool ResourceSparse {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] public int FacingX {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] public int FacingZ {get;init;}
 }
 public record PresentationTrip(long LogisticsId, long OwnerId, string ItemId, string State, int X, int Z, bool Loaded = false);
 public record PresentationFrame(long Tick, int MapWidth, int MapHeight, PresentationActor[] Actors,
@@ -86,8 +88,9 @@ public static class Presentation
                 var stock=known?world.Inventories.Single(i=>i.Id==building.InputId):null;
                 warehouse=new(known,stock?.Capacity??0,stock is null?[]:stock.Stock.Where(s=>s.Quantity>0).Select(s=>new VisibleStock(s.ItemId,checked(s.Quantity*scenario.Items.Single(i=>i.Id==s.ItemId).UnitVolume))).ToArray());
             }
+            var facing=IndustrialParcels.FacingOf(scenario,building.Position);
             markers.Add(new(building.Kind.ToString().ToLowerInvariant(),building.Position.X,building.Position.Z,building.TypeId,building.Id.Value,building.OwnerId.Value)
-                {Level=building.Level,Footprint=[..building.Footprint.Select(c=>new Cell(c.X-building.Position.X,c.Z-building.Position.Z))],Walls=[..type.Walls??[]],Warehouse=warehouse});
+                {Level=building.Level,Footprint=[..building.Footprint.Select(c=>new Cell(c.X-building.Position.X,c.Z-building.Position.Z))],Walls=[..type.Walls??[]],Warehouse=warehouse,FacingX=facing.X,FacingZ=facing.Z});
         }
         if(engine.HasGroundStorage)
             foreach(var ground in engine.StorageOf(new(humanId)).Ground)

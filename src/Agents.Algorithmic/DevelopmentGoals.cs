@@ -33,9 +33,11 @@ public sealed partial class AlgorithmicController
             if(d.Projects.Any(p=>p.BuildingId==b.Id.Value)||o.Enterprises.Single(e=>e.Id.Value==b.Id.Value).ReasonCode=="PreparingDemolition")continue;
             var type=o.BuildingTypes.Single(t=>t.Id==b.TypeId);var next=type.Levels.SingleOrDefault(l=>l.Level==b.Level+1);if(next is null||d.Experience.Single(x=>x.Industry==b.TypeId).TechnologyLevel<next.Level)continue;
             var input=Inventory(o,b.InputId);var enterprise=o.Enterprises.Single(e=>e.Id.Value==b.Id.Value);
-            var cells=next.Footprint.Select(c=>new Cell(b.Position.X+c.X,b.Position.Z+c.Z)).ToArray();var plots=cells.Select(c=>o.Plots.SingleOrDefault(p=>p.Position==c)).ToArray();
+            var face=FacingOf(d,b.Position);
+            var cells=next.Footprint.Select(c=>IndustrialParcels.Place(b.Position,face.X,face.Z,c.X,c.Z)).ToArray();var plots=cells.Select(c=>o.Plots.SingleOrDefault(p=>p.Position==c)).ToArray();
             if(plots.Any(p=>p is null||p.OwnerId is {} owner&&owner!=Actor||p.ReservedBy is {} reservation&&reservation!=Actor||p.BuildingId is {} occupied&&occupied!=b.Id))continue;
-            long land=plots.Where(p=>p!.OwnerId is null).Sum(p=>p!.PriceMinor);
+            if(o.Economics?.IndustrialParcels is { Version: 1 } && plots.Any(p=>p!.OwnerId is null))continue;
+            long land=plots.Where(p=>p!.OwnerId is null).Sum(p=>ParcelPrice(o,p!));
             if(o.Account.AvailableMinor<next.PriceMinor+land+settings.CashReserveMinor)continue;
             // Require a reachable source before stopping a working business.
             bool materialsPossible=next.Materials.All(m=>Free(input,m.ItemId)+Free(carrier,m.ItemId)>=m.Quantity||o.Inventories.Any(i=>i.Id!=input.Id&&Free(i,m.ItemId)>0)||o.Map.ResourceNodes.Any(n=>n.ItemId==m.ItemId&&AvailableResource(o,n))||o.ProductionContent?.Imports.Any(i=>i.ItemId==m.ItemId&&i.Remaining>0)==true);
@@ -57,9 +59,10 @@ public sealed partial class AlgorithmicController
             foreach(var plot in o.Plots.Where(p=>p.BuildingId is null&&p.ExpansionFor is null&&!p.IsCorridor&&!p.IsShopSite&&p.ShopParticipantId is null&&(p.OwnerId is null||p.OwnerId==Actor)&&(p.ReservedBy is null||p.ReservedBy==Actor)&&
                 (d.BuildAnchors.IsEmpty||d.BuildAnchors.Contains(p.Position))).OrderBy(p=>p.OwnerId==Actor?0:1).ThenBy(p=>p.Id.Value))
             {
-                var contour=type.Levels.MaxBy(l=>l.Level)!.Footprint.Select(c=>new Cell(plot.Position.X+c.X,plot.Position.Z+c.Z));
+                var face=FacingOf(d,plot.Position);
+                var contour=type.Levels.MaxBy(l=>l.Level)!.Footprint.Select(c=>IndustrialParcels.Place(plot.Position,face.X,face.Z,c.X,c.Z));
                 if(contour.Any(c=>!o.Plots.Any(p=>p.Position==c&&p.BuildingId is null&&p.ExpansionFor is null&&(p.OwnerId is null||p.OwnerId==Actor)&&(p.ReservedBy is null||p.ReservedBy==Actor))))continue;
-                if(o.Account.AvailableMinor<level.PriceMinor+(plot.OwnerId is null?plot.PriceMinor:0)+settings.CashReserveMinor)continue;
+                if(o.Account.AvailableMinor<level.PriceMinor+ParcelPrice(o,plot)+settings.CashReserveMinor)continue;
                 if(plot.OwnerId is null){var steps=new List<PlanStep>();Move(steps,o.Participant.Position,plot.Position);steps.Add(new(new(ActionKind.BuyPlot,Plot:plot.Id)));yield return new("BuildProduction","Anchor:"+plot.Id.Value,145000,steps.ToArray());break;}
                 var ground=o.Inventories.SingleOrDefault(i=>i.Id!=carrier.Id&&i.Position==plot.Position&&!o.Buildings.Any(b=>b.InputId==i.Id||b.OutputId==i.Id));if(ground is null)continue;
                 if(Supply(ground,level.Materials.ToArray(),"BuildProduction","Stage:"+plot.Id.Value) is {} supply){yield return supply;break;}
@@ -68,4 +71,15 @@ public sealed partial class AlgorithmicController
             }
         }
     }
+
+    private static Cell FacingOf(DevelopmentObservation development, Cell anchor)
+    {
+        if (development.BuildFacing.IsDefaultOrEmpty) return default;
+        int index = development.BuildAnchors.IndexOf(anchor);
+        return index < 0 || index >= development.BuildFacing.Length ? default : development.BuildFacing[index];
+    }
+
+    internal static long ParcelPrice(ControllerObservation observation, PlotView plot) =>
+        IndustrialParcels.QuotedMinor(observation.Economics?.IndustrialParcels is { } rules ? new EconomicRules(IndustrialParcels: rules) : null,
+            plot.IsShopSite, plot.ShopParticipantId is not null, plot.PriceMinor, plot.OwnerId is not null);
 }

@@ -440,7 +440,8 @@ public partial class PresentationStage : Node3D
             }
             if(node is not null&&marker.Kind is "production" or "warehouse" or "shop")
             {
-                WorldModels.Part(node,new BoxMesh{Size=new(.38f,.015f,.12f)},MapSymbols.ActorColor(marker.OwnerId,frame.Actors.Any(a=>a.Human&&a.Id==marker.OwnerId)),new(0,.04f,-.36f));
+                var front=marker.FacingX!=0||marker.FacingZ!=0?new Vector3(marker.FacingX*.36f,.04f,marker.FacingZ*.36f):new Vector3(0,.04f,-.36f);
+                WorldModels.Part(node,new BoxMesh{Size=new(.38f,.015f,.12f)},MapSymbols.ActorColor(marker.OwnerId,frame.Actors.Any(a=>a.Human&&a.Id==marker.OwnerId)),front);
                 var gate=new Label3D{Text="▽ #"+marker.EntityId+" · "+marker.Level,FontSize=22,PixelSize=.0035f,Position=new(0,.46f,-.32f),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,OutlineSize=4,Modulate=new("fff7df")};node.AddChild(gate);
                 var state=new Label3D{FontSize=18,PixelSize=.0035f,Position=new(0,1.25f,0),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,OutlineSize=3,Visible=false};node.AddChild(state);_buildingStates[marker.EntityId]=state;
             }

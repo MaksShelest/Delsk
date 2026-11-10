@@ -31,11 +31,10 @@ public sealed partial class SimulationEngine
         if(_config.Layout is {} layout)
         {
             var lot=layout.IndustrialLots.SingleOrDefault(l=>l.Cells.Contains(anchor))??throw new RuleViolation("IndustrialContourRequired");
-            var first=lot.Cells.OrderBy(c=>c.Z).ThenBy(c=>c.X).First();
-            if(anchor!=first)throw new RuleViolation("BuildAtContourAnchor");
+            if(anchor!=AnchorOf(lot))throw new RuleViolation("BuildAtContourAnchor");
             return [..lot.Cells.OrderBy(c=>c.Z).ThenBy(c=>c.X)];
         }
-        return [..ScenarioValidation.FootprintCells(anchor,type,type.Levels.Max(l=>l.Level)).OrderBy(c=>c.Z).ThenBy(c=>c.X)];
+        return [..BuildingFootprint(anchor,type,type.Levels.Max(l=>l.Level)).OrderBy(c=>c.Z).ThenBy(c=>c.X)];
     }
     private void RequireDevelopmentContour(ImmutableArray<Cell> contour,long owner,long building=0)
     {
@@ -72,7 +71,7 @@ public sealed partial class SimulationEngine
         if(StorageWorkAt(b.Position))blockers.Add("ConstructionInProgress");if(PreparingDemolition(b.Id))blockers.Add("PreparingDemolition");
         var contour=_developmentBuildings[b.Id].Contour;
         try{RequireDevelopmentContour(contour,b.Owner,b.Id);}catch(RuleViolation e){blockers.Add(e.ReasonCode);}
-        var cells=ScenarioValidation.FootprintCells(b.Position,b.Type,level.Level);
+        var cells=BuildingFootprint(b.Position,b.Type,level.Level);
         var land=cells.Select(c=>_plotsByCell.GetValueOrDefault(c)).Where(p=>p is not null).Select(p=>new ExpansionLand(new(p!.Definition.Id),p.Definition.Position,p.Definition.PriceMinor,p.Owner is {} owner?new ParticipantId(owner):null)).ToImmutableArray();
         if(cells.Any(c=>!contour.Contains(c)||!_plotsByCell.TryGetValue(c,out var p)||p.Owner!=b.Owner))blockers.Add("LandNotOwned");
         if(cells.Where(c=>!b.Footprint.Contains(c)).Any(DevelopmentGroundBusy))blockers.Add("GroundNotEmpty");
@@ -100,7 +99,7 @@ public sealed partial class SimulationEngine
         if(Experience(actor.Id,type.Id).TechnologyLevel<level.Level)throw new RuleViolation("IndustryTechnologyRequired");
         var contour=building is null?DevelopmentContour(anchor,type):_developmentBuildings[building.Id].Contour;
         RequireDevelopmentContour(contour,actor.Id,building?.Id??0);
-        var cells=ScenarioValidation.FootprintCells(anchor,type,level.Level);
+        var cells=BuildingFootprint(anchor,type,level.Level);
         foreach(var cell in cells)
         {
             if(!contour.Contains(cell)||!_plotsByCell.TryGetValue(cell,out var p)||p.Owner!=actor.Id)throw new RuleViolation("LandNotOwned");
@@ -178,7 +177,7 @@ public sealed partial class SimulationEngine
         foreach(var b in _buildings.Values.Where(b=>b.Type.Kind==BuildingKind.Production))
         {
             if(!_developmentBuildings.TryGetValue(b.Id,out var d)||d.Owner!=b.Owner||d.Industry!=b.Type.Id||d.Contour.IsDefaultOrEmpty||d.Cells.IsDefaultOrEmpty||
-                d.Cells.Select(c=>c.Position).Distinct().Count()!=d.Cells.Length||!d.Contour.ToHashSet().SetEquals(DevelopmentContour(b.Position,b.Type))||!d.Cells.Select(c=>c.Position).ToHashSet().SetEquals(b.Footprint)||d.Cells.Any(c=>c.Level!=b.Level)||!b.Footprint.ToHashSet().SetEquals(ScenarioValidation.FootprintCells(b.Position,b.Type,b.Level))||d.Cells.Any(c=>!d.Contour.Contains(c.Position))||Demolished(b.Id)&&d.Claimed)
+                d.Cells.Select(c=>c.Position).Distinct().Count()!=d.Cells.Length||!d.Contour.ToHashSet().SetEquals(DevelopmentContour(b.Position,b.Type))||!d.Cells.Select(c=>c.Position).ToHashSet().SetEquals(b.Footprint)||d.Cells.Any(c=>c.Level!=b.Level)||!b.Footprint.ToHashSet().SetEquals(BuildingFootprint(b.Position,b.Type,b.Level))||d.Cells.Any(c=>!d.Contour.Contains(c.Position))||Demolished(b.Id)&&d.Claimed)
                 throw new CheckpointException("InvalidDevelopmentBuilding");
             if(d.Claimed)RequireDevelopmentContour(d.Contour,b.Owner,b.Id);
         }
@@ -186,7 +185,7 @@ public sealed partial class SimulationEngine
         foreach(var c in _storageConstruction.Values.Where(c=>c.Development is not null))
         {
             var plan=c.Development!;
-            if(!plan.Cells.Select(x=>x.Position).ToHashSet().SetEquals(ScenarioValidation.FootprintCells(c.Position,_buildingTypes[c.TypeId],c.Level))||plan.Cells.Any(x=>x.Level!=c.Level||!plan.Contour.Contains(x.Position))||plan.Cells.Any(x=>!_plotsByCell.TryGetValue(x.Position,out var p)||p.Owner!=c.Owner))throw new CheckpointException("InvalidDevelopmentProject");
+            if(!plan.Cells.Select(x=>x.Position).ToHashSet().SetEquals(BuildingFootprint(c.Position,_buildingTypes[c.TypeId],c.Level))||plan.Cells.Any(x=>x.Level!=c.Level||!plan.Contour.Contains(x.Position))||plan.Cells.Any(x=>!_plotsByCell.TryGetValue(x.Position,out var p)||p.Owner!=c.Owner))throw new CheckpointException("InvalidDevelopmentProject");
             RequireDevelopmentContour(plan.Contour,c.Owner,c.BuildingId==0?c.Id:c.BuildingId);
         }
     }

@@ -133,9 +133,17 @@ public static class WorldSkins
             float sourceWidth=id=="capital"?15:5;
             float scale=Mathf.Min(width/sourceWidth,depth/5f);
             if(Model(key,scale,new((minX+cells.Max(c=>c.X))/2f,0,(minZ+cells.Max(c=>c.Z))/2f)) is {} visual)
-            {AddBuildingLevel(visual,marker.Level);return WorldModels.EnterpriseExtent(marker,visual);}
+            {AddBuildingLevel(visual,marker.Level);FaceRoad(marker,visual);return WorldModels.EnterpriseExtent(marker,visual);}
         }
-        return WorldModels.EnterpriseExtent(marker,Classic(WorldModels.Building(marker.Kind,marker.Label,marker.Level)));
+        var classic=Classic(WorldModels.Building(marker.Kind,marker.Label,marker.Level));
+        FaceRoad(marker,classic);
+        return WorldModels.EnterpriseExtent(marker,classic);
+    }
+    private static void FaceRoad(PresentationMarker marker,Node3D model)
+    {
+        // Дверь классической модели смотрит на +Z. Нулевой подъезд оставляет прежний вид.
+        if(marker.FacingX==0&&marker.FacingZ==0)return;
+        model.RotateY(Mathf.Atan2(marker.FacingX,marker.FacingZ));
     }
     public static Node3D Truck(bool loaded)
     {

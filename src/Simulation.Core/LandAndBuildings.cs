@@ -50,7 +50,7 @@ public sealed partial class SimulationEngine
             tx.CreateInventory(input, definition.OwnerId, definition.Position, level.InputCapacity);
             if (output.HasValue) tx.CreateInventory(output.Value, definition.OwnerId, definition.Position, level.OutputCapacity);
             tx.Commit();
-            var footprint = ScenarioValidation.FootprintCells(definition.Position, type,definition.Level);
+            var footprint = BuildingFootprint(definition.Position, type,definition.Level);
             var building = new BuildingState(definition.Id, definition.OwnerId, definition.Position, type,
                 definition.Level, input, output, footprint);
             _buildings.Add(building.Id, building);
@@ -85,6 +85,9 @@ public sealed partial class SimulationEngine
     private void ReservePlot(ActorState actor, CommandEnvelope c)
     {
         var plot = AccessiblePlot(actor, c.Action.Plot,c.Action.Kind==ActionKind.BuyExpansionLand?c.Action:null);
+        if (ParcelPolicy && _config.Layout?.IndustrialLots.FirstOrDefault(l => l.Cells.Contains(plot.Definition.Position)) is { } reservedLot
+            && !plot.Definition.IsShopSite && plot.Definition.ShopParticipantId is null)
+            throw new RuleViolation("ParcelNotReservable");
         if (plot.Owner.HasValue) throw new RuleViolation("PlotOwned");
         if (plot.ReservedBy.HasValue) throw new RuleViolation("PlotReserved");
         if (_plots.Values.Count(p => p.ReservedBy == actor.Id) >= _config.MaxActivePlotReservations)
@@ -100,6 +103,9 @@ public sealed partial class SimulationEngine
     private void BuyPlot(ActorState actor, CommandEnvelope c)
     {
         var plot = AccessiblePlot(actor, c.Action.Plot,c.Action.Kind==ActionKind.BuyExpansionLand?c.Action:null);
+        if (ParcelPolicy && _config.Layout?.IndustrialLots.FirstOrDefault(l => l.Cells.Contains(plot.Definition.Position)) is { } parcel
+            && !plot.Definition.IsShopSite && plot.Definition.ShopParticipantId is null)
+        { BuyParcel(actor, c, parcel); return; }
         if (plot.Owner.HasValue) throw new RuleViolation("PlotOwned");
         if (plot.ReservedBy.HasValue && plot.ReservedBy != actor.Id) throw new RuleViolation("PlotReserved");
         long groundId=_nextId,next=!HasGroundStorage?_nextId:checked(_nextId+1);
@@ -139,7 +145,7 @@ public sealed partial class SimulationEngine
         if(Development is not null&&type.Kind==BuildingKind.Production){StartDevelopmentConstruction(actor,c);return;}
         if(Storage is not null&&type.Kind==BuildingKind.Warehouse){StartWarehouseConstruction(actor,c);return;}
         if(StorageWorkAt(c.Action.Target))throw new RuleViolation("ConstructionInProgress");
-        var footprint = ScenarioValidation.FootprintCells(c.Action.Target, type);
+        var footprint = BuildingFootprint(c.Action.Target, type);
         foreach (var cell in footprint)
         {
             if (!_plotsByCell.TryGetValue(cell, out var plot) || plot.Definition.IsCorridor) throw new RuleViolation("InvalidFootprint");

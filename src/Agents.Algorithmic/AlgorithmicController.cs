@@ -188,7 +188,8 @@ public sealed partial class AlgorithmicController
                     !p.IsCorridor && !p.IsShopSite && p.ShopParticipantId is null && (p.OwnerId is null || p.OwnerId == Actor) &&
                     (p.ReservedBy is null || p.ReservedBy == Actor))).ToArray();
                 if (plots.Any(p => p is null)) continue;
-                long cost = checked(level.PriceMinor + plots.Sum(p => p!.OwnerId is null ? p.PriceMinor : 0));
+                bool parcel = o.Economics?.IndustrialParcels is { Version: 1 };
+                long cost = parcel ? checked(level.PriceMinor + ParcelPrice(o, plot)) : checked(level.PriceMinor + plots.Sum(p => p!.OwnerId is null ? p.PriceMinor : 0));
                 if (cash < checked(cost + settings.CashReserveMinor) ||
                     level.Materials.Sum(m => checked(m.Quantity * Volume(o, m.ItemId))) > freeVolume) continue;
                 var steps = new List<PlanStep>(); Cell current = o.Participant.Position; bool feasible = true;
@@ -199,7 +200,7 @@ public sealed partial class AlgorithmicController
                     Move(steps, current, node.Position); steps.Add(new(new(ActionKind.Harvest, ItemId: material.ItemId, Quantity: material.Quantity)));
                     current = node.Position;
                 }
-                foreach (var part in plots.Select(p => p!).Where(p => p.OwnerId is null))
+                foreach (var part in parcel ? plot.OwnerId is null ? [plot] : [] : plots.Select(p => p!).Where(p => p.OwnerId is null))
                 {
                     if (Distance(o.Map, current, part.Position) < 0) { feasible = false; break; }
                     Move(steps, current, part.Position); steps.Add(new(new(ActionKind.BuyPlot, Plot: part.Id))); current = part.Position;

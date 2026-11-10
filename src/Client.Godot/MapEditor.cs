@@ -11,6 +11,7 @@ public partial class MapEditor : Control
     public MapDraft Draft{get;private set;}=MapDraft.Create();
     private string _tool="road";
     private string _lotMode="cell";
+    private string _districtRoads="north";
     private string _item="wood";
     private string _language="ru";
     private string? _selectedLot;
@@ -168,6 +169,7 @@ public partial class MapEditor : Control
             case "resource":Draft.PaintResource(cell,_item);break;
             case "lot" when _lotMode=="cell":_selectedLot=Draft.AddLotCell(cell,_selectedLot)??_selectedLot;break;
             case "lot" when _lotMode=="template":Draft.PlaceLot(cell);_selectedLot=Draft.Lots.LastOrDefault()?.Id;break;
+            case "lot" when _lotMode=="district":Draft.PlaceStandardDistrict(cell,_districtRoads);_selectedLot=Draft.Lots.LastOrDefault()?.Id;break;
             case "town_hall" or "terminal" or "dealership":Draft.PlaceCivic(_tool,cell);break;
             case "stall":Draft.ToggleStall(cell);break;
             case "parking":Draft.ToggleParking(cell);break;
@@ -184,6 +186,11 @@ public partial class MapEditor : Control
         if(_hover is not {} hover)return [];
         if(_tool=="lot"&&_lotMode=="cell")return [hover];
         if(_tool=="lot"&&_lotMode=="template")return InsideRect(hover,2,3);
+        if(_tool=="lot"&&_lotMode=="district")
+        {
+            try{return IndustrialParcels.District(hover,_districtRoads).SelectMany(l=>l.Cells).Where(c=>c.X>=0&&c.Z>=0&&c.X<Draft.Width&&c.Z<Draft.Height).ToList();}
+            catch(ArgumentException){return [];}
+        }
         if(_tool=="lot"&&_lotMode=="rect"&&_dragFrom is{} from)return InsideRect(new(Math.Min(from.X,hover.X),Math.Min(from.Z,hover.Z)),Math.Abs(hover.X-from.X)+1,Math.Abs(hover.Z-from.Z)+1);
         if(_tool is "town_hall" or "terminal" or "dealership"){var size=_tool switch{"town_hall"=>(3,3),"terminal"=>(2,3),_=>(5,5)};return InsideRect(hover,size.Item1,size.Item2);}
         if(_tool=="move"&&_selectedLot is{} id)return Moved(id,hover);

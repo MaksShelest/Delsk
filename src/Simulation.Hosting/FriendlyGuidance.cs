@@ -225,8 +225,12 @@ public static class FriendlyGuidance
     {
         string L(string ru, string en) => PlayerText.Local(language, ru, en);
         string name = CheapestFactory(scenario) is { } type ? PlayerText.Enterprise(language, type.Id, 1) : L("предприятия", "a factory");
-        string detail = L("Первая продажа уже подтверждена. Следующий шаг — свой участок под ", "The first sale is confirmed. The next step is your own plot for ") + name + L(". Цена участка ", ". Plot price ") + PlayerText.Money(plot.PriceMinor) + L(". Это цена земли, не цена здания.", ". This is the land price, not the building price.");
-        return Step("plot", L("Купите участок", "Buy a plot"), detail, plot.Position.X, plot.Position.Z, "property", view.AvailableCashMinor, plot.PriceMinor, "", false, "ground", plot.Id.Value, []);
+        bool parcel = IndustrialParcelRules.Applies(view.Economy);
+        long price = parcel ? IndustrialParcelRules.PriceMinor : plot.PriceMinor;
+        string detail = parcel
+            ? L("Первая продажа уже подтверждена. Следующий шаг — весь участок 2×3 под ", "The first sale is confirmed. The next step is the whole 2×3 parcel for ") + name + L(". Шесть клеток, подъезд и место для полного развития стоят ", ". Six cells, the entrance and room to develop fully cost ") + PlayerText.Money(price) + L(".", ".")
+            : L("Первая продажа уже подтверждена. Следующий шаг — свой участок под ", "The first sale is confirmed. The next step is your own plot for ") + name + L(". Цена участка ", ". Plot price ") + PlayerText.Money(plot.PriceMinor) + L(". Это цена земли, не цена здания.", ". This is the land price, not the building price.");
+        return Step("plot", parcel ? L("Купите участок — 600 монет", "Buy the parcel — 600 coins") : L("Купите участок", "Buy a plot"), detail, plot.Position.X, plot.Position.Z, "property", view.AvailableCashMinor, price, "", false, "ground", plot.Id.Value, []);
     }
 
     private static StarterStep Find(PlayerView view, ScenarioDefinition scenario, string language, InventoryView pack)
@@ -338,7 +342,7 @@ public static class FriendlyGuidance
     {
         var free = view.Plots.Where(p => p.OwnerId is null && p.ReservedBy is null && !p.IsCorridor && !p.IsShopSite && p.ShopParticipantId is null && p.ExpansionFor is null).ToArray();
         if (free.Length == 0) return null;
-        var anchors = (scenario.Layout?.IndustrialLots ?? []).Select(l => l.Cells.OrderBy(c => c.Z).ThenBy(c => c.X).First()).ToHashSet();
+        var anchors = (scenario.Layout?.IndustrialLots ?? []).Select(l => IndustrialParcelRules.Applies(view.Economy) && IndustrialParcels.TryFrame(l) is { } frame ? frame.Anchor : l.Cells.OrderBy(c => c.Z).ThenBy(c => c.X).First()).ToHashSet();
         return free.Where(p => anchors.Contains(p.Position)).OrderBy(p => p.PriceMinor).ThenBy(p => p.Id.Value).FirstOrDefault()
             ?? free.OrderBy(p => p.PriceMinor).ThenBy(p => p.Id.Value).First();
     }
@@ -396,6 +400,19 @@ public static class FriendlyGuidance
             or ActionKind.BuyVehicle or ActionKind.PlaceEquipment or ActionKind.PackEquipment or ActionKind.BoardVehicle)
             return [action.Target];
         return [];
+    }
+
+    public readonly record struct LandPreview(Cell[] Cells, Cell? Entry, Cell? Anchor);
+
+    public static LandPreview Preview(GameAction? action, ScenarioDefinition scenario)
+    {
+        var cells = Cells(action, scenario);
+        if (action is null || cells.Length == 0 || scenario.Layout is not { } layout) return new(cells, null, null);
+        Cell at = action.Target;
+        if (action.Plot is { } plot && scenario.Plots?.FirstOrDefault(p => p.Id == plot.Value) is { } defined) at = defined.Position;
+        var lot = layout.IndustrialLots.FirstOrDefault(l => l.Cells.Contains(at));
+        var frame = lot is null ? null : IndustrialParcels.TryFrame(lot);
+        return new(cells, lot?.Entry, frame?.Anchor);
     }
 
     private static string Reason(string language, string code)

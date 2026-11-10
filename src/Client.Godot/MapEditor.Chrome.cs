@@ -58,7 +58,10 @@ public partial class MapEditor
             ("entry","entry","Въезд","Entrance","Выделите участок и щёлкните соседнюю клетку дороги.","Select a lot, then click a neighboring road cell."),
             ("turn","turn","Разворот","Turn","Точка разворота на уже нарисованной дороге.","A turn marker on an existing road."));
         _lotModes=new HBoxContainer{Visible=_tool=="lot"};_lotModes.AddThemeConstantOverride("separation",3);
-        var lotGroup=new ButtonGroup();LotMode("cell",L("Клетка","Cell"),lotGroup);LotMode("rect",L("Прямоугольник","Rectangle"),lotGroup);LotMode("template",L("2×3","2×3"),lotGroup);
+        var lotGroup=new ButtonGroup();LotMode("cell",L("Клетка","Cell"),lotGroup);LotMode("rect",L("Прямоугольник","Rectangle"),lotGroup);LotMode("template",L("2×3","2×3"),lotGroup);LotMode("district",L("6×8","6×8"),lotGroup);
+        var facing=new Button{Name="DistrictFacing",Text=L("Дороги сверху и снизу","Roads above and below"),CustomMinimumSize=new(0,28)};facing.AddThemeFontSizeOverride("font_size",12);
+        facing.TooltipText=L("Сторона подъезда стандартного района. Повтор включает дороги слева и справа.","Entrance side of a standard district. Press again for roads on the left and right.");
+        facing.Pressed+=()=>{_districtRoads=_districtRoads=="north"?"west":"north";facing.Text=_districtRoads=="north"?L("Дороги сверху и снизу","Roads above and below"):L("Дороги слева и справа","Roads on the sides");};_lotModes.AddChild(facing);
         tools.AddChild(_lotModes);
         _resourceList=new VBoxContainer{Visible=_tool=="resource",SizeFlagsHorizontal=SizeFlags.ExpandFill};_resourceList.AddThemeConstantOverride("separation",2);
         var resources=new ButtonGroup();
@@ -111,7 +114,7 @@ public partial class MapEditor
     private void LotMode(string id,string text,ButtonGroup group)
     {
         var button=new Button{Name="LotMode_"+id,Text=text,ToggleMode=true,ButtonGroup=group,ButtonPressed=id==_lotMode,CustomMinimumSize=new(0,28)};button.AddThemeFontSizeOverride("font_size",12);
-        button.TooltipText=id switch{"cell"=>L("Одна клетка, затем кисть по соседним.","One cell, then paint neighbors."),"rect"=>L("Протяните прямоугольник.","Drag a rectangle."),_=>L("Готовый участок 2×3.","Ready-made 2×3 lot.")};
+        button.TooltipText=id switch{"cell"=>L("Одна клетка, затем кисть по соседним.","One cell, then paint neighbors."),"rect"=>L("Протяните прямоугольник.","Drag a rectangle."),"district"=>L("Восемь целых участков 2×3 и дороги снаружи.","Eight whole 2×3 parcels and the roads outside them."),_=>L("Готовый участок 2×3.","Ready-made 2×3 lot.")};
         button.Toggled+=on=>{if(on)_lotMode=id;};_lotModes.AddChild(button);
     }
     private void BuildPreviewOverlay()
