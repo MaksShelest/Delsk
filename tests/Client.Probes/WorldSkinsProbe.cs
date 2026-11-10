@@ -22,7 +22,17 @@ public partial class WorldSkinsProbe : Control
             await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);game.SetProcess(false);
             Check(WorldSkins.Preferences.WorldSet=="cozy","First-run default must be additional");
             foreach(string file in DirAccess.GetFilesAt("res://skins/cozy"))
-                if(file.EndsWith(".res",StringComparison.Ordinal))Check(GD.Load<Mesh>("res://skins/cozy/"+file).GetSurfaceCount()>0,"Empty baked mesh: "+file);
+            {
+                if(!file.EndsWith(".res",StringComparison.Ordinal))continue;
+                string path="res://skins/cozy/"+file;
+                if(file.StartsWith("NPC_",StringComparison.Ordinal))
+                {
+                    var person=GD.Load<PackedScene>(path).Instantiate();
+                    Check(person.FindChild("LeftLeg",true,false) is not null&&person.FindChild("RightLeg",true,false) is not null&&person.FindChild("LeftArm",true,false) is not null&&person.FindChild("RightArm",true,false) is not null,"Character rig is incomplete: "+file);
+                    person.Free();
+                }
+                else Check(GD.Load<Mesh>(path).GetSurfaceCount()>0,"Empty baked mesh: "+file);
+            }
             foreach(string key in AppearancePreferences.ModelKeys){var model=WorldSkins.Preview(key);Check(model.GetMeta("skin_set").AsString()=="cozy","Missing additional model: "+key);model.Free();}
             for(int i=0;i<10;i++){var model=WorldSkins.Person(i+1,false,"You","ru");Check(model.GetMeta("skin_id").AsString()==AppearanceCatalog.People[i].Asset,"Missing character");model.Free();}
             Call(game,"DismissMaps");Call(game,"Start","economy",true);

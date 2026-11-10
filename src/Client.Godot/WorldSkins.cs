@@ -8,6 +8,7 @@ public static class WorldSkins
     public static AppearancePreferences Preferences { get; private set; } = new();
     public static int Revision { get; private set; }
     private static readonly Dictionary<string,Mesh> Meshes = new(StringComparer.Ordinal);
+    private static readonly Dictionary<string,PackedScene> PeopleRigs = new(StringComparer.Ordinal);
     private static readonly HashSet<string> Missing = new(StringComparer.Ordinal);
     public static bool FieldLodReady { get; private set; }
     public static void Configure(AppearancePreferences preferences) { Preferences=preferences.Normalize(); Revision++; }
@@ -58,13 +59,31 @@ public static class WorldSkins
         body.SetMeta("skin_id",key);root.SetMeta("skin_set",AppearancePreferences.Cozy);root.SetMeta("skin_id",key);root.AddChild(body);
         return root;
     }
+    private static Node3D? PersonRig(string key)
+    {
+        string path="res://skins/cozy/"+key+".res";
+        if(!ResourceLoader.Exists(path)) return null;
+        if(!PeopleRigs.TryGetValue(key,out var packed))
+        {
+            packed=GD.Load<PackedScene>(path);
+            if(packed is null) return null;
+            PeopleRigs[key]=packed;
+        }
+        var rig=packed.Instantiate<Node3D>();
+        if(rig.FindChild("LeftLeg",true,false) is null||rig.FindChild("RightLeg",true,false) is null||rig.FindChild("LeftArm",true,false) is null||rig.FindChild("RightArm",true,false) is null)
+        {rig.Free();return null;}
+        rig.Name="Rig";
+        return rig;
+    }
     private static Node3D Classic(Node3D node){node.Name="Appearance";node.SetMeta("skin_set",AppearancePreferences.Classic);return node;}
     public static Node3D Person(long actor,bool human,string you,string language)
     {
         string name=ActorName(actor,language),caption=human?you+" · "+name:name;
         Node3D geometry;
-        // Classic смотрит в −Z, и поворот сцены тоже ведёт −Z вперёд. Cozy с разворотом на 180° шёл задом.
-        if(Preferences.PeopleSet==AppearancePreferences.Cozy && Model(AppearanceCatalog.People[Preferences.ForActor(actor)].Asset,1) is {} model)geometry=model;
+        // Classic уже смотрит в −Z. У Cozy лицо исходной модели на +Z, а запечённый риг локально разворачивает его на −Z.
+        string asset=AppearanceCatalog.People[Preferences.ForActor(actor)].Asset;
+        if(Preferences.PeopleSet==AppearancePreferences.Cozy && PersonRig(asset) is {} rig)geometry=rig;
+        else if(Preferences.PeopleSet==AppearancePreferences.Cozy && Model(asset,1) is {} model)geometry=model;
         else
         {
             geometry=WorldModels.Person(human?new("eef0dc"):MapSymbols.ActorColor(actor,false),caption);

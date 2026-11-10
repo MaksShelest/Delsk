@@ -14,61 +14,87 @@ public partial class PresentationStage
     private readonly Dictionary<long,MeshInstance3D> _activity=[];
     private string _activityKey="";
 
+    private static Node3D? Joint(Node root,params string[] names)
+    {
+        foreach(var name in names)
+            if(root.FindChild(name,true,false) is Node3D node)return node;
+        return null;
+    }
+
     private static void BindLimbs(Mover mover)
     {
-        mover.LegL=mover.Node.FindChild("LegL",true,false) as Node3D;
-        mover.LegR=mover.Node.FindChild("LegR",true,false) as Node3D;
-        mover.ArmL=mover.Node.FindChild("ArmL",true,false) as Node3D;
-        mover.ArmR=mover.Node.FindChild("ArmR",true,false) as Node3D;
-        mover.Bob=mover.Node.FindChild("Model",true,false) as Node3D;
-        if(mover.Bob is not null)mover.BobRest=mover.Bob.Position.Y;
+        mover.LegL=Joint(mover.Node,"LegL","LeftLeg");
+        mover.LegR=Joint(mover.Node,"LegR","RightLeg");
+        mover.ArmL=Joint(mover.Node,"ArmL","LeftArm");
+        mover.ArmR=Joint(mover.Node,"ArmR","RightArm");
+        mover.Hips=Joint(mover.Node,"Hips");
+        mover.Bob=mover.Hips is null?(Joint(mover.Node,"Figure")??(mover.LegL is null?Joint(mover.Node,"Model"):null)):null;
+        mover.LegLRest=mover.LegL?.Rotation??default;
+        mover.LegRRest=mover.LegR?.Rotation??default;
+        mover.ArmLRest=mover.ArmL?.Rotation??default;
+        mover.ArmRRest=mover.ArmR?.Rotation??default;
+        var body=mover.Hips??mover.Bob;
+        mover.HipsRest=body?.Rotation??default;
+        mover.HipsRestPos=body?.Position??default;
         ResetLimbs(mover);
     }
 
     private static void ResetLimbs(Mover mover)
     {
-        if(mover.LegL is not null)mover.LegL.Rotation=Vector3.Zero;
-        if(mover.LegR is not null)mover.LegR.Rotation=Vector3.Zero;
-        if(mover.ArmL is not null)mover.ArmL.Rotation=Vector3.Zero;
-        if(mover.ArmR is not null)mover.ArmR.Rotation=Vector3.Zero;
-        if(mover.Bob is not null){mover.Bob.Position=new(mover.Bob.Position.X,mover.BobRest,mover.Bob.Position.Z);mover.Bob.Rotation=Vector3.Zero;}
+        Pose(mover.LegL,mover.LegLRest);Pose(mover.LegR,mover.LegRRest);
+        Pose(mover.ArmL,mover.ArmLRest);Pose(mover.ArmR,mover.ArmRRest);
+        var body=mover.Hips??mover.Bob;
+        if(body is not null){body.Position=mover.HipsRestPos;body.Rotation=mover.HipsRest;}
     }
+
+    private static void Pose(Node3D? joint,Vector3 rest){if(joint is not null)joint.Rotation=rest;}
 
     private static void StepWalk(Mover mover,double delta,bool live)
     {
-        if(!mover.Node.Visible||!live){EaseLimbs(mover,0,(float)delta);return;}
+        if(!mover.Node.Visible){ResetLimbs(mover);mover.LastSet=false;return;}
+        if(!live){mover.Last=mover.Node.Position;mover.LastSet=true;return;}
         var now=mover.Node.Position;
         float speed=0;
         if(mover.SnapWalk){mover.SnapWalk=false;mover.Last=now;mover.LastSet=true;}
         else if(mover.LastSet)speed=now.DistanceTo(mover.Last)/Mathf.Max((float)delta,0.001f);
         mover.Last=now;mover.LastSet=true;
-        float swing=speed<0.05f?0:Mathf.Clamp(speed*0.18f,0.08f,0.34f);
-        if(swing>0)mover.Stride+=(float)delta*Mathf.Clamp(speed*5.2f,1.8f,7.2f);
+        float swing=speed<0.05f?0:Mathf.Clamp(0.42f+speed*0.06f,0.42f,0.72f);
+        if(swing>0)mover.Stride+=(float)delta*Mathf.Clamp(speed*7.5f,3.4f,11f);
         float angle=Mathf.Sin(mover.Stride)*swing;
         if(mover.LegL is null)
         {
             if(mover.Bob is null)return;
-            float bob=swing>0?Mathf.Sin(mover.Stride*2f)*0.016f:0;
-            float sway=swing>0?Mathf.Sin(mover.Stride)*0.045f:0;
+            float bob=swing>0?Mathf.Sin(mover.Stride*2f)*0.04f:0;
+            float sway=swing>0?Mathf.Sin(mover.Stride)*0.05f:0;
             var place=mover.Bob.Position;
-            mover.Bob.Position=new(place.X,Mathf.Lerp(place.Y,mover.BobRest+bob,0.35f),place.Z);
-            mover.Bob.Rotation=new(0,0,Mathf.Lerp(mover.Bob.Rotation.Z,sway,0.35f));
+            mover.Bob.Position=new(place.X,Mathf.Lerp(place.Y,mover.HipsRestPos.Y+bob,0.35f),place.Z);
+            mover.Bob.Rotation=new(mover.HipsRest.X,mover.HipsRest.Y,Mathf.Lerp(mover.Bob.Rotation.Z,mover.HipsRest.Z+sway,0.35f));
             return;
         }
-        EaseLimbs(mover,angle,(float)delta);
+        EaseLimbs(mover,angle,swing,(float)delta);
     }
 
-    private static void EaseLimbs(Mover mover,float angle,float delta)
+    private static void EaseLimbs(Mover mover,float angle,float swing,float delta)
     {
-        Ease(mover.LegL,angle,delta);Ease(mover.LegR,-angle,delta);
-        Ease(mover.ArmL,-angle*0.65f,delta);Ease(mover.ArmR,angle*0.65f,delta);
+        Ease(mover.LegL,mover.LegLRest,angle,delta);
+        Ease(mover.LegR,mover.LegRRest,-angle,delta);
+        Ease(mover.ArmL,mover.ArmLRest,-angle*0.72f,delta);
+        Ease(mover.ArmR,mover.ArmRRest,angle*0.72f,delta);
+        var body=mover.Hips??mover.Bob;
+        if(body is null)return;
+        float k=1f-Mathf.Exp(-delta*12f);
+        float lift=swing>0?(1f-Mathf.Cos(mover.Stride*2f))*0.055f:0f;
+        float shift=swing>0?Mathf.Sin(mover.Stride)*0.03f:0f;
+        var pos=body.Position;
+        body.Position=new(Mathf.Lerp(pos.X,mover.HipsRestPos.X+shift,k),Mathf.Lerp(pos.Y,mover.HipsRestPos.Y+lift,k),Mathf.Lerp(pos.Z,mover.HipsRestPos.Z,k));
+        body.Rotation=new(mover.HipsRest.X,mover.HipsRest.Y,Mathf.Lerp(body.Rotation.Z,mover.HipsRest.Z+shift,k));
     }
 
-    private static void Ease(Node3D? joint,float target,float delta)
+    private static void Ease(Node3D? joint,Vector3 rest,float swing,float delta)
     {
         if(joint is null)return;
-        float next=Mathf.Lerp(joint.Rotation.X,target,1f-Mathf.Exp(-delta*12f));
-        joint.Rotation=new(next,0,0);
+        float next=Mathf.Lerp(joint.Rotation.X,rest.X+swing,1f-Mathf.Exp(-delta*12f));
+        joint.Rotation=new(next,rest.Y,rest.Z);
     }
 
     private void StepMechanisms()
