@@ -90,9 +90,9 @@ def valley_i6c21():
         district('valley_c21', 'iron_ore', cells((6,18),(6,19),(5,20)), [(5,20)]),
         district('valley_c21', 'copper_ore', cells((0,21),(1,21),(1,22)), [(1,22)]),
     ]
-    # The first bays are the ones actually stocked. Keep them off the showroom exit.
-    # Stocked extractors stand on different branches so neither blocks the other's only exit.
-    parking = [(9, 17), (24, 18), (24, 21), (24, 15), (24, 13), (24, 10), (22, 17), (22, 13), (22, 3), (24, 16), (24, 17), (24, 19), (24, 20), (24, 14), (24, 11), (22, 7)]
+    # The first two bays are the ones actually stocked. They touch the dealership, not the far curb.
+    # Each has its own exit onto the city road, so one machine does not seal the other in.
+    parking = [(24, 4), (24, 10), (24, 18), (24, 21), (24, 15), (24, 13), (22, 17), (22, 13), (22, 3), (24, 16), (24, 17), (24, 19), (24, 20), (24, 14), (24, 11), (22, 7)]
     city = [civic(24, 1, 'town_hall', 'valley_c21'), civic(28, 1, 'terminal', 'valley_c21'), civic(24, 5, 'dealership', 'valley_c21')]
     stalls = [(30, 0), (31, 0), (30, 1), (31, 1), (30, 2), (31, 2), (30, 3), (31, 3), (27, 0), (26, 0), (31, 4)]
     # Startup rotation can place any participant on any spawn. Keep every spawn off the
@@ -179,15 +179,18 @@ def woodland_i6c4():
         district('woodland_i6c4', 'iron_ore', cells((8,14),(9,14)), [(9,14)]),
         district('woodland_i6c4', 'copper_ore', cells((10,14),(11,14)), [(11,14)]),
     ]
-    parking = [(3, 5), (3, 9)]
+    # South of the showroom, and on the north curb. Each joins a straight road, so one wide machine does not seal the other.
+    parking = [(13, 13), (16, 7)]
     city = [civic(14, 0, 'town_hall', 'woodland_i6c4'), civic(14, 4, 'terminal', 'woodland_i6c4'), civic(13, 8, 'dealership', 'woodland_i6c4')]
-    stalls = [(16, 6), (17, 6), (16, 7), (17, 7)]
-    spawns = [(4, 2), (2, 8), (12, 14), (15, 7)]
+    stalls = [(16, 6), (17, 6), (17, 5), (17, 7)]
+    # (15, 7) is the north bay's only exit. (8, 3) is the single north road: a person there deadlocks a wide extractor.
+    # (17, 4) stands beside the terminal, off the ring and off that exit.
+    spawns = [(4, 2), (2, 8), (12, 14), (17, 4)]
     data = common('Лесной край', 'woodland_region_i6c4', 18, 15, 4, roads, lots, resources, city, stalls, spawns, parking)
     data['compact_exhibition'] = True
     data['assignment'] = 'startup-rotation-1; full six-cell industrial lots; eight public resources; no initial private ownership; compact-exhibition-1.'
     data['turn_cells'] = [(4, 3), (12, 3), (4, 13), (12, 13), (12, 7), (4, 8)]
-    data['passing_bays'] = 'One-cell ring with short spurs. Showroom exit meets the east road; two extractor bays stand off the ring.'
+    data['passing_bays'] = 'One-cell ring with short spurs. Showroom exit meets the east road; two extractor bays stand on the dealership curb.'
     road = set(map(tuple, data['road_center_cells']))
     if len(road) != 46 or any((x + 1, z) in road and (x, z + 1) in road and (x + 1, z + 1) in road for x, z in road):
         raise SystemExit(f'woodland i6c4 road geometry {len(road)}')

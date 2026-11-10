@@ -80,12 +80,17 @@ public static class FriendlyGuidance
         var owned = view.Plots.Where(p => p.OwnerId == me.Id && p.BuildingId is null && !p.IsCorridor && !p.IsShopSite && p.ShopParticipantId is null && p.ExpansionFor is null)
             .OrderBy(p => Distance(me.Position, p.Position)).ThenBy(p => p.Id.Value).FirstOrDefault();
         if (owned is not null) return Build(view, scenario, language, owned, pack);
+        // Подтверждённая продажа двигает шаг даже если в рюкзаке ещё лежит товар. Одна кнопка «продать» этого не делает.
+        if (sold && PreferredPlot(view, scenario) is { } plot) return BuyPlot(view, scenario, language, plot);
         var goods = Sellable(view, pack).FirstOrDefault();
         if (goods.Offer is not null) return Sell(language, goods.Item, goods.Have, goods.Offer, "sell");
+        var pending = pack.Stock.Where(s => s.Reserved > 0 && s.Quantity <= s.Reserved)
+            .Select(s => (s.ItemId, s.Reserved, Offer: Live(view, s.ItemId).OrderBy(o => Distance(me.Position, o.Position)).ThenBy(o => o.Id).FirstOrDefault()))
+            .Where(s => s.Offer is not null).OrderByDescending(s => s.Reserved).ThenBy(s => s.ItemId, StringComparer.Ordinal).FirstOrDefault();
+        if (pending.Offer is not null) return Sell(language, pending.ItemId, pending.Reserved, pending.Offer, "sell", waiting: true);
         var held = pack.Stock.Where(s => s.Quantity > s.Reserved).OrderByDescending(s => s.Quantity - s.Reserved).ThenBy(s => s.ItemId, StringComparer.Ordinal).FirstOrDefault();
         if (held is not null) return WaitingOffer(view, scenario, language, held.ItemId, held.Quantity - held.Reserved);
         if (view.Harvest is { } job) return Harvesting(language, job, Free(pack, job.ItemId), me.Position);
-        if (sold && PreferredPlot(view, scenario) is { } plot) return BuyPlot(view, scenario, language, plot);
         return Find(view, scenario, language, pack);
     }
 
@@ -230,7 +235,9 @@ public static class FriendlyGuidance
         if (site is null)
             return Step("find", L("Найдите доступный ресурс", "Find an available resource"), L("Сейчас нет видимого общего ресурса с запасом.", "No visible public resource currently has stock."), -1, -1, "resources", 0, 1, "", true, "", 0, []);
         long have = Free(pack, site.ItemId);
-        return Step("find", PlayerText.ActionPhrase(language, Verb(site.ItemId), site.ItemId, 1), L("Общий ресурс на карте. Единица появится в рюкзаке только после завершения цикла.", "A public resource on the map. The unit reaches your backpack only when the cycle finishes."), site.Position.X, site.Position.Z, "resources", have, 1, site.ItemId, true, "", 0, []);
+        string found = L("Общий ресурс на карте. Единица появится в рюкзаке только после завершения цикла.", "A public resource on the map. The unit reaches your backpack only when the cycle finishes.");
+        if (have > 0) found += L($" В рюкзаке остаток {have}.", $" Backpack remainder {have}.");
+        return Step("find", PlayerText.ActionPhrase(language, Verb(site.ItemId), site.ItemId, 1), found, site.Position.X, site.Position.Z, "resources", 0, 1, site.ItemId, true, "", 0, []);
     }
 
     private static StarterStep WaitingOffer(PlayerView view, ScenarioDefinition scenario, string language, string item, long have)
@@ -244,13 +251,19 @@ public static class FriendlyGuidance
     private static StarterStep Harvesting(string language, OwnHarvest job, long have, Cell position)
     {
         string L(string ru, string en) => PlayerText.Local(language, ru, en);
-        return Step("harvest", PlayerText.ActionPhrase(language, Verb(job.ItemId), job.ItemId, Math.Max(1, job.Quantity)), L("Цикл ещё не завершён. Остановка не засчитывает товар.", "The cycle is not finished. Stopping does not grant the goods."), position.X, position.Z, "resources", have, Math.Max(1, job.Quantity), job.ItemId, true, "", 0, []);
+        string cycle = L("Цикл ещё не завершён. Остановка не засчитывает товар.", "The cycle is not finished. Stopping does not grant the goods.");
+        if (have > 0) cycle += L($" В рюкзаке остаток {have}. Он не входит в этот цикл.", $" Backpack remainder {have}. It is not part of this cycle.");
+        return Step("harvest", PlayerText.ActionPhrase(language, Verb(job.ItemId), job.ItemId, Math.Max(1, job.Quantity)), cycle, position.X, position.Z, "resources", 0, Math.Max(1, job.Quantity), job.ItemId, true, "", 0, []);
     }
 
-    private static StarterStep Sell(string language, string item, long have, CapitalOfferView offer, string id)
+    private static StarterStep Sell(string language, string item, long remainder, CapitalOfferView offer, string id, bool waiting = false)
     {
         string L(string ru, string en) => PlayerText.Local(language, ru, en);
-        return Step(id, PlayerText.ActionPhrase(language, "sell", item, 1), L("Заказ столицы: ", "Capital order: ") + PlayerText.Money(offer.UnitPriceMinor) + L(" за единицу. Это действующая цена заказа, не новая формула.", " per unit. This is the live order price, not a new formula."), offer.Position.X, offer.Position.Z, "orders", have, offer.RemainingQuantity, item, true, "", offer.Id, []);
+        string price = PlayerText.Money(offer.UnitPriceMinor);
+        string detail = waiting
+            ? L($"Продажа ещё не подтверждена. В резерве {remainder}. Заказ принимает до {offer.RemainingQuantity} по {price}.", $"The sale is not confirmed yet. Reserved {remainder}. The order accepts up to {offer.RemainingQuantity} at {price}.")
+            : L($"Остаток {remainder}. Заказ принимает до {offer.RemainingQuantity} по {price}. В счёт цели идёт только подтверждённая продажа.", $"Remainder {remainder}. The order accepts up to {offer.RemainingQuantity} at {price}. Only a confirmed sale counts.");
+        return Step(id, PlayerText.ActionPhrase(language, "sell", item, 1), detail, offer.Position.X, offer.Position.Z, "orders", 0, 1, item, true, "", offer.Id, []);
     }
 
     public static StarterStep? GatherSite(PlayerView view, string language, string item)
@@ -346,6 +359,23 @@ public static class FriendlyGuidance
     private static long Free(InventoryView inventory, string item) => inventory.Stock.Where(s => s.ItemId == item).Sum(s => s.Quantity - s.Reserved);
 
     private static int Distance(Cell a, Cell b) => Math.Abs(a.X - b.X) + Math.Abs(a.Z - b.Z);
+
+    public static Cell[] Cells(GameAction? action, ScenarioDefinition scenario)
+    {
+        if (action is null) return [];
+        if (action.Kind is ActionKind.BuyPlot or ActionKind.ReservePlot or ActionKind.CancelPlotReservation or ActionKind.Build)
+        {
+            // Покупка участка несёт идентификатор, а не клетку. Цель (0, 0) здесь не участок.
+            var at = action.Target;
+            if (action.Plot is { } plot && scenario.Plots?.FirstOrDefault(p => p.Id == plot.Value) is { } defined) at = defined.Position;
+            var lot = scenario.Layout?.IndustrialLots.FirstOrDefault(l => l.Cells.Contains(at));
+            return lot is null ? [at] : lot.Cells;
+        }
+        if (action.Kind is ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.StopHarvest
+            or ActionKind.BuyVehicle or ActionKind.PlaceEquipment or ActionKind.PackEquipment or ActionKind.BoardVehicle)
+            return [action.Target];
+        return [];
+    }
 
     private static string Reason(string language, string code)
     {

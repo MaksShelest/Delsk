@@ -117,7 +117,7 @@ public partial class CityMapPanel : VBoxContainer
     private void SyncFocus(){foreach(var (focus,button) in _focus)button.SetPressedNoSignal(focus==_state.Focus);}
     public void ShowData(CityMapFrame map,PlayerView view,bool pending)
     {
-        _map=map;_view=view;SyncFocus();
+        _map=map;_view=view;Canvas.Language=_language;SyncFocus();
         var ids=new[]{0L}.Concat(map.Participants).ToArray();
         if(!_participants.SequenceEqual(ids))
         {
@@ -136,7 +136,7 @@ public partial class CityMapPanel : VBoxContainer
         _participantCaption.Text=L("По участнику: ","By participant: ")+(_state.Participant==0?L("Все участники","All participants"):OwnerCaption(_state.Participant));
         Canvas.ShowData(map);Canvas.CustomMinimumSize=new(160,120);
         UpdateDetails();_walk.Disabled|=pending;_open.Disabled|=pending;ApplyLayout();
-        _legend.Text=L("Свободная земля — светлый контур, своя и чужая — цвет участника из мира, бронь — пунктир. Жёлтая полоса — готовность партии, заполнение или доставленная доля. Голубая линия — путь персонажа, пунктир — поставка.","Free land is a light outline. Own and other property use the same participant colours as the world. A reservation is dashed. The yellow bar is batch progress, cargo fill or the delivered share. The blue line is the person's route; a dashed line is a delivery.");
+        _legend.Text=L("Ресурсы нарисованы своими знаками, ратуша, терминал, автосалон, предприятия и склады — знаком здания и коротким именем. Свободная земля — светлый контур, своя и чужая — цвет участника, бронь — пунктир. Жёлтая полоса — готовность партии, заполнение или доставленная доля. Голубая линия — путь персонажа, пунктир — поставка.","Resources use their own pictures. The town hall, terminal, dealership, enterprises and stores use a building mark and a short name. Free land is a light outline. Own and other property use the participant colour. A reservation is dashed. The yellow bar is batch progress, cargo fill or the delivered share. The blue line is the person's route; a dashed line is a delivery.");
     }
     private string OwnerCaption(long id)=>id==0?L("Город / общее","City / public"):L("Участник #","Participant #")+id+" · "+WorldSkins.ActorName(id,_language);
     public void SelectGoal(StarterStep step)

@@ -63,7 +63,8 @@ public static class WorldSkins
     {
         string name=ActorName(actor,language),caption=human?you+" · "+name:name;
         Node3D geometry;
-        if(Preferences.PeopleSet==AppearancePreferences.Cozy && Model(AppearanceCatalog.People[Preferences.ForActor(actor)].Asset,1,reverse:true) is {} model)geometry=model;
+        // Classic смотрит в −Z, и поворот сцены тоже ведёт −Z вперёд. Cozy с разворотом на 180° шёл задом.
+        if(Preferences.PeopleSet==AppearancePreferences.Cozy && Model(AppearanceCatalog.People[Preferences.ForActor(actor)].Asset,1) is {} model)geometry=model;
         else
         {
             geometry=WorldModels.Person(human?new("eef0dc"):MapSymbols.ActorColor(actor,false),caption);

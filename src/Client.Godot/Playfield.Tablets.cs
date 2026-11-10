@@ -168,18 +168,48 @@ public partial class Playfield
         _feedback=L("Подойдите к терминалу столицы, чтобы открыть продажу.","Walk to the capital terminal to open the sale.");
         Refresh();
     }
+    private Cell? _guideCell;
+    private Cell _guideFrom=new(int.MinValue,0);
     private void ShowGuide(StarterStep step)
     {
         if(step.X<0&&step.TargetId>0&&step.TargetKind is "building" or "ground" or "equipment")
         {OpenPlayerTablet();_playerTablet?.OpenHolding(step.TargetKind=="ground"?"ground":step.TargetKind,step.TargetId);return;}
-        if(step.Focus is "production" or "industry")_cityMapPreferences.ApplyFocus(CityMapFocus.Production);
-        else if(step.Focus=="property")_cityMapPreferences.ApplyFocus(CityMapFocus.Property);
-        else _cityMapPreferences.ApplyFocus(CityMapFocus.All);
-        _cityMapPreferences.SelectedKey=FriendlyGuidance.PredictedKey(step);
-        if(step.X>=0)_cityMapPreferences.Center(step.X+.5,step.Z+.5);
-        OpenCityMap();
-        _cityMapPanel?.SelectGoal(step);
-        if(step.X>=0)_cityMapPanel?.Canvas.Zoom(3);
+        if(step.X<0)
+        {
+            ClearGuide();
+            _feedback=L("У этой цели нет точки на земле.","This goal has no point on the ground.");
+            if(_feedbackLabel is not null)_feedbackLabel.Text=_feedback;
+            Refresh();
+            return;
+        }
+        var target=new Cell(step.X,step.Z);
+        if(_guideCell==target){ClearGuide();Refresh();return;}
+        _guideCell=target;
+        _guideFrom=new(int.MinValue,0);
+        Refresh();
+    }
+    private void ClearGuide()
+    {
+        _guideCell=null;
+        _stage?.ShowRoute(null);
+    }
+    private void SyncGuide(Cell position)
+    {
+        if(_guideCell is null||_session is null)return;
+        if(_goalStep is not {} step||step.X<0){ClearGuide();return;}
+        var target=new Cell(step.X,step.Z);
+        if(position==target){ClearGuide();return;}
+        if(_guideCell==target&&_guideFrom==position)return;
+        _guideCell=target;_guideFrom=position;
+        var guide=_session.Engine.PreviewMovement(_human,target);
+        if(!guide.Allowed)
+        {
+            ClearGuide();
+            _feedback=L("Путь к цели сейчас недоступен.","The path to the goal is not available now.");
+            if(_feedbackLabel is not null)_feedbackLabel.Text=_feedback;
+            return;
+        }
+        _stage?.ShowRoute(guide.Path.ToArray());
     }
     private void ShowOnCityMap(Cell cell)
     {

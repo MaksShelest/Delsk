@@ -6,6 +6,11 @@ public partial class PresentationStage
 {
     private string _landKey="";
     private MeshInstance3D? _land;
+    private PresentationFrame? _shown;
+    private bool _ownership;
+    private Cell[] _preview=[];
+    private MeshInstance3D? _route;
+    private string _routeKey="";
     private readonly Dictionary<long,MeshInstance3D> _activity=[];
     private string _activityKey="";
 
@@ -76,19 +81,58 @@ public partial class PresentationStage
         }
     }
 
-    private void ShowLand(PresentationFrame frame,bool ownership,int selectedX,int selectedZ)
+    public void SetPreview(IReadOnlyList<Cell> cells)
+    {
+        _preview=cells.Count==0?[]:cells.ToArray();
+        if(_shown is {} frame)ShowLand(frame,_ownership);
+    }
+
+    public void ShowRoute(Cell[]? path)
+    {
+        string key=path is null?"":string.Join(";",path.Select(c=>$"{c.X},{c.Z}"));
+        if(key==_routeKey)return;
+        _routeKey=key;
+        if(_route is not null){_route.QueueFree();_route=null;}
+        if(path is null||path.Length==0)return;
+        var tool=new SurfaceTool();tool.Begin(Mesh.PrimitiveType.Triangles);
+        var ink=new Color(0.33f,0.46f,0.28f,0.9f);
+        var mark=new Color(0.95f,0.9f,0.62f,0.95f);
+        for(int i=1;i<path.Length;i++)
+        {
+            AddEdge(tool,path[i-1].X,path[i-1].Z,path[i].X,path[i].Z,ink,0.032f,0.03f);
+            AddChevron(tool,path[i-1],path[i],mark,0.045f);
+        }
+        var end=path[^1];
+        AddRing(tool,end.X,end.Z,mark,0.016f,0.05f);
+        tool.GenerateNormals();
+        _route=new MeshInstance3D{Name="GoalRoute",Mesh=tool.Commit(),CastShadow=GeometryInstance3D.ShadowCastingSetting.Off};
+        _route.MaterialOverride=new StandardMaterial3D{VertexColorUseAsAlbedo=true,ShadingMode=BaseMaterial3D.ShadingModeEnum.Unshaded,Transparency=BaseMaterial3D.TransparencyEnum.Alpha,CullMode=BaseMaterial3D.CullModeEnum.Disabled};
+        AddChild(_route);
+    }
+
+    private void ShowLand(PresentationFrame frame,bool ownership)
     {
         var parcels=frame.Markers.Where(m=>m.Kind is "plot-own" or "plot-foreign" or "plot-reserved" or "plot-free" or "shop-plot")
             .Select(m=>new LandParcel(m.X,m.Z,m.OwnerId,m.Kind)).ToArray();
         var borders=LandOutline.Borders(parcels,ownership);
-        string key=ownership+"|"+selectedX+":"+selectedZ+"|"+string.Join(";",borders.Select(b=>$"{b.State}:{b.Owner}:{b.X1:0.00}:{b.Z1:0.00}:{b.X2:0.00}:{b.Z2:0.00}"));
+        string key=ownership+"|"+string.Join(",",_preview.Select(c=>$"{c.X}:{c.Z}"))+"|"+string.Join(";",borders.Select(b=>$"{b.State}:{b.Owner}:{b.X1:0.00}:{b.Z1:0.00}:{b.X2:0.00}:{b.Z2:0.00}"));
         if(key==_landKey&&_land is not null)return;
         _landKey=key;
         if(_land is not null){_land.QueueFree();_land=null;}
-        if(borders.Length==0&&selectedX<0)return;
+        if(borders.Length==0&&_preview.Length==0)return;
         var tool=new SurfaceTool();tool.Begin(Mesh.PrimitiveType.Triangles);
         foreach(var edge in borders)AddEdge(tool,edge.X1,edge.Z1,edge.X2,edge.Z2,BorderColor(edge,frame),edge.State=="plot-own"?0.045f:0.028f,0.09f);
-        if(selectedX>=0)AddRing(tool,selectedX,selectedZ,new Color("f2cd6a"),0.055f,0.11f);
+        var chosen=_preview.ToHashSet();
+        var fill=new Color(0.86f,0.91f,0.78f,0.22f);
+        var line=new Color(0.96f,0.93f,0.82f,0.9f);
+        foreach(var cell in _preview)
+        {
+            AddFill(tool,cell.X,cell.Z,fill,0.025f);
+            if(!chosen.Contains(new(cell.X,cell.Z-1)))AddEdge(tool,cell.X-.5f,cell.Z-.5f,cell.X+.5f,cell.Z-.5f,line,0.016f,0.04f);
+            if(!chosen.Contains(new(cell.X+1,cell.Z)))AddEdge(tool,cell.X+.5f,cell.Z-.5f,cell.X+.5f,cell.Z+.5f,line,0.016f,0.04f);
+            if(!chosen.Contains(new(cell.X,cell.Z+1)))AddEdge(tool,cell.X+.5f,cell.Z+.5f,cell.X-.5f,cell.Z+.5f,line,0.016f,0.04f);
+            if(!chosen.Contains(new(cell.X-1,cell.Z)))AddEdge(tool,cell.X-.5f,cell.Z+.5f,cell.X-.5f,cell.Z-.5f,line,0.016f,0.04f);
+        }
         tool.GenerateNormals();
         _land=new MeshInstance3D{Name="LandOutline",Mesh=tool.Commit(),CastShadow=GeometryInstance3D.ShadowCastingSetting.Off};
         _land.MaterialOverride=new StandardMaterial3D{VertexColorUseAsAlbedo=true,ShadingMode=BaseMaterial3D.ShadingModeEnum.Unshaded,Transparency=BaseMaterial3D.TransparencyEnum.Alpha,CullMode=BaseMaterial3D.CullModeEnum.Disabled};
@@ -116,6 +160,26 @@ public partial class PresentationStage
         AddEdge(tool,x+.5f,z-.5f,x+.5f,z+.5f,color,width,y);
         AddEdge(tool,x+.5f,z+.5f,x-.5f,z+.5f,color,width,y);
         AddEdge(tool,x-.5f,z+.5f,x-.5f,z-.5f,color,width,y);
+    }
+
+    private static void AddFill(SurfaceTool tool,int x,int z,Color color,float y)
+    {
+        void Vert(float px,float pz){tool.SetColor(color);tool.AddVertex(new(px,y,pz));}
+        float x0=x-.5f,x1=x+.5f,z0=z-.5f,z1=z+.5f;
+        Vert(x0,z0);Vert(x1,z0);Vert(x1,z1);Vert(x0,z0);Vert(x1,z1);Vert(x0,z1);
+    }
+
+    private static void AddChevron(SurfaceTool tool,Cell from,Cell to,Color color,float y)
+    {
+        var dir=new Vector3(to.X-from.X,0,to.Z-from.Z);
+        if(dir.LengthSquared()<0.01f)return;
+        dir=dir.Normalized();
+        var side=new Vector3(-dir.Z,0,dir.X);
+        var tip=new Vector3(from.X,y,from.Z)+dir*0.72f;
+        var left=tip-dir*0.14f+side*0.07f;
+        var right=tip-dir*0.14f-side*0.07f;
+        void Vert(Vector3 p){tool.SetColor(color);tool.AddVertex(p);}
+        Vert(left);Vert(tip);Vert(right);Vert(right);Vert(tip);Vert(left);
     }
 
     private static void AddEdge(SurfaceTool tool,float x1,float z1,float x2,float z2,Color color,float width,float y)

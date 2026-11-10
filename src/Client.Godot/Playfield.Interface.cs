@@ -81,7 +81,7 @@ public partial class Playfield
         _stick=null;
         if(OS.HasFeature("mobile")||OS.GetCmdlineUserArgs().Contains("--touch-controls"))
         {_stick=new VirtualJoystick();_playChrome!.AddChild(_stick);}
-        var bar = new PanelContainer { Theme=TabletDesign.Theme, MouseFilter = MouseFilterEnum.Stop };
+        var bar = _hudBar = new PanelContainer { Theme=TabletDesign.Theme, MouseFilter = MouseFilterEnum.Stop };
         bar.SetAnchorsAndOffsetsPreset(LayoutPreset.TopWide); bar.OffsetBottom = 54;
         bar.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color("f3f3ed"),
             ContentMarginLeft = 12, ContentMarginRight = 12, ContentMarginTop = 6, ContentMarginBottom = 6 });
@@ -161,16 +161,16 @@ public partial class Playfield
             button.TextOverrunBehavior=TextServer.OverrunBehavior.NoTrimming;
         }
         var goal=new VBoxContainer();
-        _goalTitle=new Label{Name="StarterGoalTitle",AutowrapMode=TextServer.AutowrapMode.Off,TextOverrunBehavior=TextServer.OverrunBehavior.TrimEllipsis,SizeFlagsHorizontal=SizeFlags.ExpandFill,VerticalAlignment=VerticalAlignment.Center};_goalTitle.AddThemeColorOverride("font_color",new Color("24312d"));_goalTitle.AddThemeFontSizeOverride("font_size",16);
-        _goalHint=new Label{Name="StarterGoalHint",AutowrapMode=TextServer.AutowrapMode.WordSmart,Visible=false};_goalHint.AddThemeColorOverride("font_color",new Color("24312d"));
+        _goalTitle=new Label{Name="StarterGoalTitle",AutowrapMode=TextServer.AutowrapMode.WordSmart,SizeFlagsHorizontal=SizeFlags.ExpandFill};_goalTitle.AddThemeColorOverride("font_color",new Color("24312d"));_goalTitle.AddThemeFontSizeOverride("font_size",16);
+        _goalHint=new Label{Name="StarterGoalHint",AutowrapMode=TextServer.AutowrapMode.WordSmart,Visible=false,MaxLinesVisible=6,TextOverrunBehavior=TextServer.OverrunBehavior.TrimEllipsis};_goalHint.AddThemeColorOverride("font_color",new Color("24312d"));
         _goalWhere=new Button{Name="StarterGoalWhere",Text=L("К цели","Go"),CustomMinimumSize=new(0,36)};
         _goalWhere.Pressed+=()=>{if(_goalStep is {} step)ShowGuide(step);};
         _goalMore=new Button{Name="StarterGoalMore",Text=L("Ещё","More"),CustomMinimumSize=new(0,36)};
         _goalMore.Pressed+=()=>{_goalOpen=!_goalOpen;Refresh();};
         var hide=new Button{Name="StarterGoalHide",Text="×",CustomMinimumSize=new(36,36),TooltipText=L("Скрыть подсказку","Hide the hint")};
         hide.Pressed+=()=>{_guideVisible=false;SaveInterface();Refresh();};
-        var goalRow=new HBoxContainer();goalRow.AddChild(_goalTitle);goalRow.AddChild(_goalWhere);goalRow.AddChild(_goalMore);goalRow.AddChild(hide);
-        goal.AddChild(goalRow);goal.AddChild(_goalHint);
+        var goalRow=new HBoxContainer();goalRow.AddChild(_goalWhere);goalRow.AddChild(_goalMore);goalRow.AddChild(hide);
+        goal.AddChild(_goalTitle);goal.AddChild(goalRow);goal.AddChild(_goalHint);
         _goalBar=new PanelContainer{Name="StarterGoal",MouseFilter=MouseFilterEnum.Stop,Visible=false};
         _goalBar.AddThemeStyleboxOverride("panel",new StyleBoxFlat{BgColor=new Color("f7f4ea"),ContentMarginLeft=8,ContentMarginRight=8,ContentMarginTop=4,ContentMarginBottom=4,CornerRadiusTopLeft=8,CornerRadiusTopRight=8,CornerRadiusBottomRight=8,CornerRadiusBottomLeft=8});
         _goalBar.AddChild(goal);_playChrome.AddChild(_goalBar);
@@ -203,19 +203,53 @@ public partial class Playfield
         _contextKey = ""; _choices = [];ApplyHudMode();LayoutCityHud(bar);
         _playChrome.MoveChild(_goalBar,_playChrome.GetChildCount()-1);
     }
+    private PanelContainer? _hudBar;
+    private void FitTooltip(float width)
+    {
+        if(_tooltip is null)return;
+        _tooltip.CustomMinimumSize=new(width,0);
+        _tooltip.Size=new(width,Math.Max(1,_tooltip.GetCombinedMinimumSize().Y));
+    }
     private void LayoutCityHud(Control bar)
     {
-        float top=bar.Position.Y+bar.Size.Y;var safe=UiSafeArea.Read(bar);bool narrow=GetViewportRect().Size.X<800;
+        float top=bar.Position.Y+bar.Size.Y;var safe=UiSafeArea.Read(bar);
+        var view=GetViewportRect().Size;
         _roadCardTop=top+12;LayoutRoadWork();
         if(_playNotice is not null){_playNotice.OffsetTop=top+8;_playNotice.OffsetBottom=top+42;_playNotice.OffsetLeft=16+(float)safe.Left;_playNotice.OffsetRight=-16-(float)safe.Right;}
         if(_storageWarning is not null){_storageWarning.OffsetTop=top+44;_storageWarning.OffsetBottom=top+100;_storageWarning.OffsetRight=-16-(float)safe.Right;}
-        if(_tooltip is not null)_tooltip.Position=new(16+(float)safe.Left,top+(_goalBar is {Visible:true}?_goalBar.Size.Y+16:8));
-        if(_goalBar is not null)
+        if(_goalHint is not null)_goalHint.MaxLinesVisible=view.Y<480?3:6;
+        if(_goalBar is {Visible:true})
         {
-            float width=Math.Min(420,Math.Max(180,GetViewportRect().Size.X-24-(float)safe.Left-(float)safe.Right));
+            // Заголовок на своей строке и переносится. Иначе длинный английский текст сжимается до пары букв.
+            float available=view.X-24-(float)safe.Left-(float)safe.Right;
+            float width=Math.Min(available,Math.Max(280,16));
             _goalBar.Position=new(12+(float)safe.Left,top+8);
             _goalBar.CustomMinimumSize=new(width,0);
             _goalBar.Size=new(width,Math.Max(_goalBar.GetCombinedMinimumSize().Y,1));
+        }
+        if(_tooltip is not null)
+        {
+            float left=16+(float)safe.Left;
+            float right=view.X-16-(float)safe.Right;
+            if(_goalBar is {Visible:true})
+            {
+                float beside=right-(_goalBar.Position.X+_goalBar.Size.X)-8;
+                if(beside>=180)
+                {
+                    _tooltip.Position=new(_goalBar.Position.X+_goalBar.Size.X+8,_goalBar.Position.Y);
+                    FitTooltip(Math.Min(330,beside));
+                }
+                else
+                {
+                    _tooltip.Position=new(left,_goalBar.Position.Y+_goalBar.Size.Y+8);
+                    FitTooltip(Math.Min(330,Math.Max(120,right-left)));
+                }
+            }
+            else
+            {
+                _tooltip.Position=new(left,top+8);
+                FitTooltip(Math.Min(330,Math.Max(120,right-left)));
+            }
         }
     }
     private void LoadInterface()
@@ -271,7 +305,11 @@ public partial class Playfield
         _goalBar.Visible=show;
         if(_goalStep is not {} step||_goalMore is null)return;
         string title=PlayerText.Local(_language,step.TitleRu,step.TitleEn);
-        if(step.Count&&step.Need>0)title+=" — "+step.Have+"/"+step.Need;
+        if(step.Count&&step.Need>0)
+        {
+            long shown=Math.Min(Math.Max(0,step.Have),step.Need);
+            title+=" — "+shown+"/"+step.Need;
+        }
         _goalTitle.Text=title;
         string explanation=PlayerText.Local(_language,step.DetailRu,step.DetailEn);
         string gaps=FriendlyGuidance.Describe(step.Gaps,_language,true);
@@ -279,15 +317,20 @@ public partial class Playfield
         _goalHint.Visible=_goalOpen;
         _goalMore.Text=_goalOpen?"–":L("Ещё","More");
         _goalMore.TooltipText=_goalOpen?L("Свернуть","Fold"):L("Подробнее","Details");
-        _goalWhere.Text=step.X<0&&step.TargetId>0?L("Открыть","Open"):L("К цели","Go");
+        bool guiding=_guideCell is {} at && step.X==at.X && step.Z==at.Z;
+        _goalWhere.Text=step.X<0&&step.TargetId>0?L("Открыть","Open"):guiding?L("Скрыть","Hide"):L("К цели","Go");
         _goalWhere.Disabled=step.X<0&&step.TargetId==0;
+        if(_hudBar is not null)LayoutCityHud(_hudBar);
+        Callable.From(()=>{if(_hudBar is not null)LayoutCityHud(_hudBar);}).CallDeferred();
     }
+    private string _previewKey="";
     private void FillPlayContext(VBoxContainer host)
     {
         if(_contextActions is null)
         {
             _contextActions=new ContextActionsPanel();host.AddChild(_contextActions);
             _contextActions.Requested+=ConfirmContextChoice;
+            _contextActions.Preview+=choice=>{_previewKey=choice?.Key??"";_stage?.SetPreview(choice is null?[]:FriendlyGuidance.Cells(choice.Command,_scenario));};
             _contextActions.CollapsedChanged+=collapsed=>{_contextCollapsed=collapsed;LayoutContextDock();};
             if(_contextCollapsed)_contextActions.Dismiss();
             _contextActions.ExpansionChanged+=expanded=>

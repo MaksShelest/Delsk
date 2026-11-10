@@ -7386,7 +7386,7 @@
     "version": "map-adapter-2",
     "sourceId": "compact_valley_i6c21",
     "sourceName": "\u041C\u0430\u043B\u0430\u044F \u0434\u043E\u043B\u0438\u043D\u0430",
-    "sourceSha256": "bbc5ebf485a11d7f1bb6e6860c6825897877bc1553c92a8bbc894cd7080ad95c",
+    "sourceSha256": "de033c3cf4c7aff923c25efb2da20f9791de2fffa5c5de6508b5c9f6eed337a9",
     "maxParticipants": 11,
     "roadCenterCells": [
       {
@@ -9458,8 +9458,12 @@
         },
         "equipmentParking": [
           {
-            "x": 9,
-            "z": 17
+            "x": 24,
+            "z": 4
+          },
+          {
+            "x": 24,
+            "z": 10
           },
           {
             "x": 24,
@@ -9476,10 +9480,6 @@
           {
             "x": 24,
             "z": 13
-          },
-          {
-            "x": 24,
-            "z": 10
           },
           {
             "x": 22,
