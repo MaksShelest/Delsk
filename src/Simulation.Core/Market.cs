@@ -17,6 +17,7 @@ public sealed partial class SimulationEngine
         if(!IsTradingSource(actor.Id,source))throw new RuleViolation("NotAvailable");
         if (c.Action.Quantity <= 0) throw new RuleViolation("InvalidQuantity");
         if (c.Action.UnitPriceMinor <= 0) throw new RuleViolation("InvalidPrice");
+        RequireProvincialSale(actor.Id, c.Action.ItemId, c.Action.Quantity);
         _ = checked(c.Action.Quantity * c.Action.UnitPriceMinor);
         long id = _nextId, next = checked(id + 1);
         var offer = new MarketOfferState(id, actor.Id, shop.Id, source, c.Action.ItemId,

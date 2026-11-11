@@ -57,6 +57,7 @@ public sealed partial class SimulationEngine
                 foreach(var ingredient in e.Recipe.Ingredients)
                 {
                     _flows[ingredient.ItemId].RecipeInput = consumed![ingredient.ItemId];
+                    ConsumeProvincialInput(actor.Id, ingredient.ItemId, ingredient.Quantity);
                     Emit("ProductionBatchStarted",actor.Id,id,ingredient.ItemId,ingredient.Quantity);
                 }
             }
@@ -88,6 +89,7 @@ public sealed partial class SimulationEngine
         RequireActionLocation(actor, c.Action);
         if (c.Action.Quantity <= 0) throw new RuleViolation("InvalidQuantity");
         if (c.Action.ItemId != offer.Definition.ItemId) throw new RuleViolation("WrongItem");
+        RequireProvincialSale(actor.Id, c.Action.ItemId, c.Action.Quantity);
         // A per-actor request may exceed the remaining order: allocation happens only at closing.
         long cutoff = offer.Cutoff ?? Math.Min(offer.ExpiresAtTick ?? long.MaxValue, checked(Tick + _config.TradeWindowTicks));
         string hold = $"capital-sale:{c.CommandId}";
@@ -187,8 +189,9 @@ public sealed partial class SimulationEngine
         InvariantBoundary?.Invoke("actors");
         foreach (var flow in _flows.Values)
         {
+            if (flow.ProvincialSupplied != _provincialTotals.GetValueOrDefault(flow.Id)) throw new InvalidOperationException($"I05: {flow.Id} provincial supply");
             long physical = _economy.Inventories.Values.Aggregate(0L, (n, inv) => checked(n + inv.Count(flow.Id)+inv.Overflow.Values.Where(l=>l.ItemId==flow.Id).Sum(l=>l.Quantity)));
-            long expected = checked(flow.Initial + ImportQuantity(flow.Id) + flow.Harvested + flow.Produced + ResearchStockDelta(flow.Id) - flow.RecipeInput - flow.Exported - flow.ConstructionInput-flow.Lost+flow.ConstructionRecovered);
+            long expected = checked(flow.Initial + ImportQuantity(flow.Id) + flow.ProvincialSupplied + flow.Harvested + flow.Produced + ResearchStockDelta(flow.Id) - flow.RecipeInput - flow.Exported - flow.ConstructionInput-flow.Lost+flow.ConstructionRecovered);
             if (physical != expected || expected < 0) throw new InvalidOperationException($"I05: {flow.Id} not conserved");
         }
         foreach (var e in ProductionUnits())

@@ -91,11 +91,12 @@ public partial class StoragePanel : VBoxContainer
             if(building is null&&!_overflowOnly&&view.Development is not null&&plot?.ExpansionFor is null)
             foreach(var production in _scenario.BuildingTypes!.Where(t=>t.Kind==BuildingKind.Production))
             {
-                var initial=production.Levels.Single(l=>l.Level==1);bool anchor=_scenario.Layout is null||_scenario.Layout.IndustrialLots.Any(l=>l.Cells.OrderBy(c=>c.Z).ThenBy(c=>c.X).First()==stock.Position);if(!anchor)continue;
+                var initial=production.Levels.Single(l=>l.Level==1);bool anchor=_scenario.Layout is null||_scenario.Layout.IndustrialLots.Any(l=>(IndustrialParcelRules.Applies(view.Economy)&&IndustrialParcels.TryFrame(l) is {} frame?frame.Anchor:l.Cells.OrderBy(c=>c.Z).ThenBy(c=>c.X).First())==stock.Position);if(!anchor)continue;
                 var box=new VBoxContainer();box.AddChild(GameUi.Intro(GameUi.Industry(_lang,production.Id),PlayerText.Money(initial.PriceMinor)+" + "+string.Join(", ",initial.Materials.Select(m=>PlayerText.Item(_lang,m.ItemId)+" ×"+m.Quantity))+" · "+GameDuration.Format(initial.ConstructionTicks,_lang),production.Id,80));_actions.AddChild(box);string typeId=production.Id;
-                Action(L("Построить","Build"),()=>new(ActionKind.Build,Target:stock.Position,BuildingTypeId:typeId),v=>work is null&&v.AvailableCashMinor>=initial.PriceMinor&&initial.Materials.All(m=>Free(Current(v),m.ItemId)>=m.Quantity),box);
+                Action(L("Построить","Build"),()=>new(ActionKind.Build,Target:stock.Position,BuildingTypeId:typeId),v=>work is null&&v.AvailableCashMinor+(v.ProvincialProgram is { Status: "Open", IndustryId: var industry, ConstructionRemaining: var left } && industry==typeId?left:0)>=initial.PriceMinor&&initial.Materials.All(m=>Free(Current(v),m.ItemId)>=m.Quantity),box);
                 var gap=new Label{Name="BuildGap_"+production.Id,AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(gap);_buildGaps[production.Id]=gap;
-                if(view.AvailableCashMinor<initial.PriceMinor&&FriendlyGuidance.MoneySource(view,_lang) is {} money)
+                long shown=view.ProvincialProgram is { Status: "Open", IndustryId: var shownIndustry, ConstructionRemaining: var shownLeft } && shownIndustry==typeId?shownLeft:0;
+                if(view.AvailableCashMinor+shown<initial.PriceMinor&&FriendlyGuidance.MoneySource(view,_lang) is {} money)
                     box.AddChild(GameUi.Button("BuildMoney_"+typeId,money.Id=="sell"?L("Продать товар из рюкзака","Sell goods from the backpack"):L("Где добыть товар для продажи","Where to gather goods to sell"),()=>GuideRequested?.Invoke(money)));
                 foreach(var cost in initial.Materials)
                 {

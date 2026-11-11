@@ -131,6 +131,48 @@ def valley_i6c21():
     return data
 
 
+def valley_i6c8c():
+    """Same valley, with 3×2 parcels that face the central road."""
+    data = valley_i6c21()
+    def lot(n, x, z, entry):
+        return dict(id=f'valley_c8c_lot_{n:02}', cells=rect(x, z, 3, 2), entry=entry)
+    lots = []
+    for i, z in enumerate((0, 2, 4, 6, 8, 14, 16, 18)):
+        lots.append(lot(i * 2 + 1, 7, z, (10, z)))
+        lots.append(lot(i * 2 + 2, 11, z, (10, z + 1)))
+    data['id'] = 'compact_valley_i6c8c'
+    data['schema_version'] = 'delsk-map-design-4'
+    data['industrial_lots'] = lots
+    data['assignment'] = 'startup-rotation-1; sixteen 3x2 industrial parcels facing the central road; eight public resources; no initial private ownership; compact-exhibition-1.'
+    occupied = {}
+    def take(points, label):
+        for point in points:
+            cell = tuple(point)
+            if cell in occupied:
+                raise SystemExit(f'overlap {cell} {occupied[cell]} / {label}')
+            occupied[cell] = label
+    for lot in lots:
+        cells = lot['cells']
+        xs = [c[0] for c in cells]
+        zs = [c[1] for c in cells]
+        entry = tuple(lot['entry'])
+        if max(xs) - min(xs) != 2 or max(zs) - min(zs) != 1 or entry[0] not in (min(xs) - 1, max(xs) + 1):
+            raise SystemExit('valley i6c8c parcel '+lot['id'])
+        take(cells, lot['id'])
+    for group in data['resource_districts']:
+        take(group['cells'], group['id'])
+    for site in data['civic_objects']:
+        take(site['footprint'], site['kind'])
+    take([s['cell'] for s in data['market_stalls']], 'stall')
+    take(data['civic_objects'][-1]['equipment_parking'], 'parking')
+    for cell in data['road_center_cells']:
+        if tuple(cell) in occupied:
+            raise SystemExit(f'road overlap {cell}')
+    if len(lots) != 16:
+        raise SystemExit('valley i6c8c lot count')
+    return data
+
+
 def woodland():
     roads = set(rect(10,0,2,15)+rect(17,3,1,12)+rect(0,5,18,2)+rect(10,3,8,2)
                 +rect(10,10,8,1)+rect(10,14,8,1)+rect(4,6,2,8)+rect(0,13,12,1))
@@ -215,11 +257,53 @@ def woodland_i6c4():
     return data
 
 
+def woodland_i6c8c():
+    """Same woodland ring, with 3×2 parcels facing the two vertical roads."""
+    data = woodland_i6c4()
+    def lot(n, x, z, entry):
+        return dict(id=f'woodland_i6c8c_lot_{n:02}', cells=rect(x, z, 3, 2), entry=entry)
+    lots = []
+    for i, z in enumerate((4, 6, 8, 10)):
+        lots.append(lot(i * 2 + 1, 5, z, (4, z)))
+        lots.append(lot(i * 2 + 2, 9, z, (12, z)))
+    data['id'] = 'woodland_region_i6c8c'
+    data['schema_version'] = 'delsk-map-design-4'
+    data['industrial_lots'] = lots
+    data['assignment'] = 'startup-rotation-1; eight 3x2 industrial parcels inside the ring; eight public resources; no initial private ownership; compact-exhibition-1.'
+    occupied = {}
+    def take(points, label):
+        for point in points:
+            cell = tuple(point)
+            if cell in occupied:
+                raise SystemExit(f'overlap {cell} {occupied[cell]} / {label}')
+            occupied[cell] = label
+    for lot in lots:
+        cells = lot['cells']
+        xs = [c[0] for c in cells]
+        zs = [c[1] for c in cells]
+        entry = tuple(lot['entry'])
+        if max(xs) - min(xs) != 2 or max(zs) - min(zs) != 1 or entry[0] not in (min(xs) - 1, max(xs) + 1):
+            raise SystemExit('woodland i6c8c parcel '+lot['id'])
+        take(cells, lot['id'])
+    for group in data['resource_districts']:
+        take(group['cells'], group['id'])
+    for site in data['civic_objects']:
+        take(site['footprint'], site['kind'])
+    take([s['cell'] for s in data['market_stalls']], 'stall')
+    take(data['civic_objects'][-1]['equipment_parking'], 'parking')
+    for cell in data['road_center_cells']:
+        if tuple(cell) in occupied:
+            raise SystemExit(f'road overlap {cell}')
+    if len(lots) != 8 or len(data['road_center_cells']) != 46:
+        raise SystemExit('woodland i6c8c geometry')
+    return data
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--check', action='store_true')
     args = p.parse_args()
-    for file, data in [('compact_valley', valley()), ('woodland_region', woodland()), ('compact_valley_i6c21', valley_i6c21()), ('woodland_region_i6c4', woodland_i6c4())]:
+    for file, data in [('compact_valley', valley()), ('woodland_region', woodland()), ('compact_valley_i6c21', valley_i6c21()), ('woodland_region_i6c4', woodland_i6c4()), ('compact_valley_i6c8c', valley_i6c8c()), ('woodland_region_i6c8c', woodland_i6c8c())]:
         path = ROOT/'docs/vnext/maps'/f'{file}.json'
         content = json.dumps(data, ensure_ascii=False, indent=2)+'\n'
         if args.check:

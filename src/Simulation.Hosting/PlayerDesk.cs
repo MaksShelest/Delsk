@@ -81,7 +81,7 @@ public static class PlayerDesk
             seen.CapitalOffers, seen.Account.AvailableMinor, engine.HarvestOf(actor), engine.EconomyRules,
             new(seen.MarketOffers, seen.OwnMarketBids, seen.OwnMarketAllocations, seen.MarketRules, engine.PublicShops()),
             seen.OwnEquipment, seen.OwnDeliveryContracts, seen.BuyOffers, seen.OwnSupplyRequests, seen.City)
-            { Services=engine.ServicesOf(actor),PersonalAccount=engine.AccountOf(actor),Roads=engine.RoadsOf(actor),Fleet=engine.FleetOf(actor),ProductionContent=engine.ProductionContentOf(actor),Development=engine.DevelopmentOf(actor),Demolition=engine.DemolitionOf(actor),Storage=engine.HasGroundStorage?engine.StorageOf(actor):null,Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))] };
+            { Services=engine.ServicesOf(actor),PersonalAccount=engine.AccountOf(actor),Roads=engine.RoadsOf(actor),Fleet=engine.FleetOf(actor),ProductionContent=engine.ProductionContentOf(actor),Development=engine.DevelopmentOf(actor),Demolition=engine.DemolitionOf(actor),Storage=engine.HasGroundStorage?engine.StorageOf(actor):null,Resources=seen.Resources,Transfers=engine.TransfersOf(actor),Blocked=engine.BlockedCells(),Negotiations=seen.Negotiations,TradingParticipants=seen.TradingParticipants,PurchaseGuides=[..seen.OwnMarketAllocations.Where(a=>a.Buyer==actor && a.ClosedTick is null).Select(a=>engine.NavigatePurchase(actor,a.Id))],ProvincialProgram=engine.ProvincialProgramOf(actor) };
     }
 }
 
@@ -105,6 +105,7 @@ public record PlayerView(long Tick, ParticipantView Participant, long CashMinor,
     public System.Collections.Immutable.ImmutableArray<TradeNegotiation> Negotiations {get;init;}=[];
     public System.Collections.Immutable.ImmutableArray<ParticipantId> TradingParticipants {get;init;}=[];
     public System.Collections.Immutable.ImmutableArray<PurchaseGuide> PurchaseGuides {get;init;}=[];
+    public ProvincialProgramView? ProvincialProgram {get;init;}
 }
 
 public sealed record PlayerMarketView(MarketOfferView[] Offers, MarketBidView[] Bids, MarketAllocationView[] Allocations,
@@ -296,6 +297,11 @@ public static class PlayerText
         ["received"] = "Получено: {0} ×{1}",
         ["harvest.left"] = "Добыча {0}: осталось {1}",
         ["reason.NoMoney"] = "Недостаточно денег.",
+        ["reason.ProvincialSupportDisabled"] = "Программа провинции выключена.",
+        ["reason.ProvincialSupportUsed"] = "Программа уже использована.",
+        ["reason.ProvincialSupplyCollected"] = "Поставка программы уже получена.",
+        ["reason.SubsidizedGoods"] = "Эту часть поставила столица: её нельзя продать, пока она не ушла в стройку или в первую партию.",
+        ["reason.SpecializationRequired"] = "Сначала выберите отрасль.",
         ["reason.ParcelGeometry"] = "Это не целый промышленный участок.",
         ["reason.ParcelEntry"] = "У участка нет подъезда к городской дороге.",
         ["reason.ParcelOccupied"] = "Участок уже занят.",
@@ -581,6 +587,11 @@ public static class PlayerText
         ["received"] = "Received: {0} ×{1}",
         ["harvest.left"] = "Harvest {0}: {1} left",
         ["reason.NoMoney"] = "Not enough money.",
+        ["reason.ProvincialSupportDisabled"] = "The provincial program is off.",
+        ["reason.ProvincialSupportUsed"] = "The program has already been used.",
+        ["reason.ProvincialSupplyCollected"] = "The program supply has already been collected.",
+        ["reason.SubsidizedGoods"] = "The capital supplied this part. It cannot be sold until construction or the first batch uses it.",
+        ["reason.SpecializationRequired"] = "Choose an industry first.",
         ["reason.ParcelGeometry"] = "This is not a whole industrial parcel.",
         ["reason.ParcelEntry"] = "The parcel has no entrance to the city road.",
         ["reason.ParcelOccupied"] = "The parcel is already taken.",

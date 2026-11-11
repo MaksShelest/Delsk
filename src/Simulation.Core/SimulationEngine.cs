@@ -286,6 +286,9 @@ public sealed partial class SimulationEngine
                 case ActionKind.SetVoteChoice: SetVoteChoice(actor, c); break;
                 case ActionKind.ContinueAfterVictory: ContinueAfterVictory(actor, c); break;
                 case ActionKind.ChooseStartingSpecialization: ChooseStartingSpecialization(actor, c); break;
+                case ActionKind.AcceptProvincialSupport: AcceptProvincialSupport(actor, c); break;
+                case ActionKind.CollectProvincialSupply: CollectProvincialSupply(actor, c); break;
+                case ActionKind.SellProvincialOutput: SellProvincialOutput(actor, c); break;
                 default: throw new RuleViolation("UnknownAction");
             }
             _results[c.CommandId] = new(c.CommandId, ResultStatus.Accepted, "Accepted", Tick);
@@ -426,7 +429,7 @@ public sealed partial class SimulationEngine
                 e.Batch?.WorkDone ?? 0, e.Batch?.WorkRequired ?? 0, e.Completed, e.EnergyPaid,
                 e.Recipe.Id, e.Definition.Level, e.Definition.Capacity, e.Definition.WorkRateMultiplier) {BatchRecipeId=e.Batch?.RecipeId??"",BatchInputs=e.Batch is {} batch?batch.Inputs:[],Workshops=WorkshopViews(e.Definition.Id),Installations=InstallationViews(e.Definition.Id)}).ToArray(),
             _flows.Values.OrderBy(f => f.Id, StringComparer.Ordinal).Select(f => new FlowView(f.Id, f.Initial, f.Harvested,
-                f.RecipeInput, f.Produced, f.Exported, f.ConstructionInput,f.Lost,f.ConstructionRecovered,ImportQuantity(f.Id))).ToArray(),
+                f.RecipeInput, f.Produced, f.Exported, f.ConstructionInput,f.Lost,f.ConstructionRecovered,ImportQuantity(f.Id),f.ProvincialSupplied)).ToArray(),
             _offers.Values.OrderBy(o => o.Definition.Id).Select(o => new CapitalOfferView(o.Definition.Id, o.Definition.ItemId,
                 o.Remaining, o.Definition.UnitPriceMinor, o.Definition.Position, o.Cutoff,
                 (long)Int128.Min(long.MaxValue, o.Requests.Values.Aggregate((Int128)0, (n, r) => n + r.Quantity) +
@@ -465,6 +468,7 @@ public sealed partial class SimulationEngine
         if(InspectServices() is {} services)payload=new{Payload=payload,Services=services};
         if(InspectDevelopment() is {} development)payload=new{Payload=payload,Development=development};
         if(CaptureStartingSpecializations() is { } chosen)payload=new{Payload=payload,StartingSpecializations=chosen};
+        if(CaptureProvincialSupport() is { } program)payload=new{Payload=payload,ProvincialSupport=program};
         var travel = TravelDeviation();
         return ScenarioValidation.Hash(travel is null ? payload : new { Payload = payload, Travel = travel });
     }

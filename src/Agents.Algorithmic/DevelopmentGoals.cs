@@ -13,6 +13,16 @@ public sealed partial class AlgorithmicController
     }
     private IEnumerable<Candidate> DevelopmentCandidates(ControllerObservation o)
     {
+        // Та же программа, что у человека: сначала участие, затем поставка на терминал.
+        if(o.ProvincialProgram is { Status: "Offered" } offered)
+            yield return One("AcceptProvincialSupport",offered.IndustryId,500000,new(ActionKind.AcceptProvincialSupport));
+        if(o.ProvincialProgram is { Status: "Open", SupplyCollected: false } open && o.ProductionContent is { } content)
+        {
+            var collect=new List<PlanStep>();
+            Move(collect,o.Participant.Position,content.Terminal);
+            collect.Add(new(new(ActionKind.CollectProvincialSupply)));
+            yield return new("CollectProvincialSupply",open.IndustryId,480000,collect.ToArray());
+        }
         var d=o.Development;if(d is null)yield break;var carrier=Carrier(o);var settings=_state.Settings;
         if(HasObligations(o)||o.Account.AvailableMinor<settings.CashReserveMinor||settings.ExpansionWeight==0)yield break;
         // Each plan stages one real backpack load and replans after receipt. No promised inventory IDs.
@@ -62,7 +72,8 @@ public sealed partial class AlgorithmicController
                 var face=FacingOf(d,plot.Position);
                 var contour=type.Levels.MaxBy(l=>l.Level)!.Footprint.Select(c=>IndustrialParcels.Place(plot.Position,face.X,face.Z,c.X,c.Z));
                 if(contour.Any(c=>!o.Plots.Any(p=>p.Position==c&&p.BuildingId is null&&p.ExpansionFor is null&&(p.OwnerId is null||p.OwnerId==Actor)&&(p.ReservedBy is null||p.ReservedBy==Actor))))continue;
-                if(o.Account.AvailableMinor<level.PriceMinor+ParcelPrice(o,plot)+settings.CashReserveMinor)continue;
+                long grant=o.ProvincialProgram is { Status: "Open", IndustryId: var funded } && funded==type.Id ? o.ProvincialProgram.ParcelRemaining+o.ProvincialProgram.ConstructionRemaining : 0;
+                if(o.Account.AvailableMinor+grant<level.PriceMinor+ParcelPrice(o,plot)+settings.CashReserveMinor)continue;
                 if(plot.OwnerId is null){var steps=new List<PlanStep>();Move(steps,o.Participant.Position,plot.Position);steps.Add(new(new(ActionKind.BuyPlot,Plot:plot.Id)));yield return new("BuildProduction","Anchor:"+plot.Id.Value,145000,steps.ToArray());break;}
                 var ground=o.Inventories.SingleOrDefault(i=>i.Id!=carrier.Id&&i.Position==plot.Position&&!o.Buildings.Any(b=>b.InputId==i.Id||b.OutputId==i.Id));if(ground is null)continue;
                 if(Supply(ground,level.Materials.ToArray(),"BuildProduction","Stage:"+plot.Id.Value) is {} supply){yield return supply;break;}

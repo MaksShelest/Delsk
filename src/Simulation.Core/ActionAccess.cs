@@ -14,7 +14,7 @@ public static class ActionPolicy
     public static bool IsServiceDecision(ActionKind kind)=>kind is ActionKind.ForceCloseDeliveryService or ActionKind.AcceptDeliveryService or ActionKind.RejectDeliveryService or ActionKind.ConfirmDeliveryService or ActionKind.CancelDeliveryService or ActionKind.ViewDeliveryService;
     public static ActionReach Reach(ActionKind kind) => kind switch
     {
-        ActionKind.PlaceEquipment or ActionKind.PackEquipment or ActionKind.PickupDeliveryService or ActionKind.UnloadDeliveryService or ActionKind.SetRoadCellEnabled or ActionKind.StartRoadCell or ActionKind.SetRoadWork or ActionKind.TurnVehicle or ActionKind.BuyVehicle or ActionKind.BoardVehicle or ActionKind.AssignVehicle or ActionKind.InstallVehicleKit or ActionKind.BuildLoadingPlatform or ActionKind.BuyImport or ActionKind.ModernizeWorkshop or ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.TakeOverflow or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
+        ActionKind.CollectProvincialSupply or ActionKind.SellProvincialOutput or ActionKind.PlaceEquipment or ActionKind.PackEquipment or ActionKind.PickupDeliveryService or ActionKind.UnloadDeliveryService or ActionKind.SetRoadCellEnabled or ActionKind.StartRoadCell or ActionKind.SetRoadWork or ActionKind.TurnVehicle or ActionKind.BuyVehicle or ActionKind.BoardVehicle or ActionKind.AssignVehicle or ActionKind.InstallVehicleKit or ActionKind.BuildLoadingPlatform or ActionKind.BuyImport or ActionKind.ModernizeWorkshop or ActionKind.BuyExpansionLand or ActionKind.OutfitWorkshop or ActionKind.DemolishBuilding or ActionKind.CancelConstruction or ActionKind.TakeOverflow or ActionKind.BuyResource or ActionKind.LeaseResource or ActionKind.Harvest or ActionKind.StartHarvesting or ActionKind.Transfer or ActionKind.SellAvailableToCapital or
         ActionKind.ReservePlot or ActionKind.BuyPlot or ActionKind.Build or ActionKind.UpgradeBuilding or
         ActionKind.SetWage or ActionKind.BuyEquipment or ActionKind.UpgradeEquipment or ActionKind.CollectPurchase or
         ActionKind.DeliverContract or ActionKind.BuyLogistics or ActionKind.UpgradeLogistics or ActionKind.SignSupport => ActionReach.AtLocation,
@@ -24,7 +24,7 @@ public static class ActionPolicy
         ActionKind.CreateBuyOffer or ActionKind.AcceptDeliveryQuantity or ActionKind.WithdrawSupplyRequest or ActionKind.CancelBuyOffer or
         ActionKind.SetLogisticsContract or ActionKind.SetLogisticsStorage or ActionKind.SetLogisticsInbound or ActionKind.SetLogisticsProduction or
         ActionKind.QueueLogisticsJob or ActionKind.SetLogisticsEnabled or ActionKind.SetVoteChoice or ActionKind.ContinueAfterVictory or
-        ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.ChooseStartingSpecialization => ActionReach.Remote,
+        ActionKind.ProposeSupport or ActionKind.AcceptSupport or ActionKind.RejectSupport or ActionKind.ChooseStartingSpecialization or ActionKind.AcceptProvincialSupport => ActionReach.Remote,
         _ => throw new ArgumentOutOfRangeException(nameof(kind))
     };
 }
@@ -63,6 +63,7 @@ public sealed partial class SimulationEngine
             ActionKind.AssignVehicle=>_enterprises.TryGetValue(action.Enterprise.Value,out var assigning)&&assigning.Definition.OwnerId==actor.Id?[assigning.Definition.Position]:null,
             ActionKind.BuildLoadingPlatform=>_buildings.TryGetValue(action.Building.Value,out var platformBuilding)&&platformBuilding.Owner==actor.Id&&!Demolished(platformBuilding.Id)?[platformBuilding.Position]:null,
             ActionKind.BuyImport=>Content is null?null:[ImportTerminal],
+            ActionKind.CollectProvincialSupply or ActionKind.SellProvincialOutput=>Content is null||_config.CapitalDemand is null?null:[ImportTerminal],
             ActionKind.ModernizeWorkshop=>_enterprises.TryGetValue(action.Enterprise.Value,out var modernizing)&&modernizing.Definition.OwnerId==actor.Id&&!Demolished(modernizing.Definition.Id)?[modernizing.Definition.Position]:null,
             ActionKind.BuyResource or ActionKind.LeaseResource => _resources.Keys.Any(k=>k.Position==action.Target) ? [action.Target] : null,
             ActionKind.SetWage => WageLocation(actor.Id, action.Group.Value),

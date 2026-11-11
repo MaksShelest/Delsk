@@ -65,7 +65,7 @@ public partial class MapEditor : Control
         if(edit is not null && Godot.FileAccess.FileExists(edit)){LoadText(Godot.FileAccess.GetFileAsString(edit));SavedPath=edit;if(UserMaps.IsUserId(Draft.Id))_savedId=Draft.Id;}
         else
         {
-            var embedded=Text("Play.compact-valley-i6c21-design.json");
+            var embedded=Text("Play.compact-valley-i6c8c-design.json")??Text("Play.compact-valley-i6c21-design.json");
             if(embedded is not null)LoadText(embedded);else{Draft=MapDraft.Create();FrameMap();}
         }
         Resized+=()=>{if(_framedSize.DistanceTo(Size)>1){_framedSize=Size;if(!_painting&&!_zooming)FrameMap();}};

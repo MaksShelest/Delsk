@@ -190,7 +190,8 @@ public sealed partial class AlgorithmicController
                 if (plots.Any(p => p is null)) continue;
                 bool parcel = o.Economics?.IndustrialParcels is { Version: 1 };
                 long cost = parcel ? checked(level.PriceMinor + ParcelPrice(o, plot)) : checked(level.PriceMinor + plots.Sum(p => p!.OwnerId is null ? p.PriceMinor : 0));
-                if (cash < checked(cost + settings.CashReserveMinor) ||
+                long grant = o.ProvincialProgram is { Status: "Open", IndustryId: var funded } && funded == type.Id ? o.ProvincialProgram.ParcelRemaining + o.ProvincialProgram.ConstructionRemaining : 0;
+                if (cash + grant < checked(cost + settings.CashReserveMinor) ||
                     level.Materials.Sum(m => checked(m.Quantity * Volume(o, m.ItemId))) > freeVolume) continue;
                 var steps = new List<PlanStep>(); Cell current = o.Participant.Position; bool feasible = true;
                 foreach (var material in level.Materials)

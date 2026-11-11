@@ -26,24 +26,34 @@ public class I6C2MapsTests
     private static ParticipantId Human=>new(1);
     private static void Move(GameSession s,Cell at)=>FleetE1Tests.Move(s,at);
     private static void Step(GameSession s,GameAction a,bool accepted=true)=>FleetE1Tests.Step(s,a,accepted);
-    [Theory][InlineData(PlayMaps.CompactValley,32,25,15,11)][InlineData(PlayMaps.Second,18,15,6,4)]
-    public void NewSnapshotMatchesSourceAndCurrentEconomyWithoutAnAppendedYard(string key,int width,int height,int sites,int capacity)
+    [Theory]
+    [InlineData(PlayMaps.CompactValley,32,25,16,11,"compact_valley_i6c8c.json",PlayMaps.CompactValleyI6C8CScenarioId)]
+    [InlineData(PlayMaps.Second,18,15,8,4,"woodland_region_i6c8c.json",PlayMaps.WoodlandI6C8CScenarioId)]
+    public void NewSnapshotMatchesSourceAndCurrentEconomyWithoutAnAppendedYard(string key,int width,int height,int sites,int capacity,string design,string scenarioId)
     {
-        var d=Resolve(key).Scenario;var l=d.Layout!;
+        var profile=VNextProvincialSupportProfile.ForOrdinaryMap(MobileEquipmentI4Tests.Profile());
+        var options=new OrdinaryGameOptions(3,StartingIndustry:"woodworking");
+        var source=MapDesignReader.Read(Encoding.UTF8.GetBytes(OrdinaryNewGameTests.Text(design)),profile);
+        var d=OrdinaryNewGame.Resolve(source,profile,options,vnextBalance:MapDesignTests.Balance()).Scenario;var l=d.Layout!;
         var snapshot=JsonSerializer.Deserialize<ScenarioDefinition>(OrdinaryNewGameTests.Text(PlayMaps.NewGameResource(key).Replace("Play.","")),SimulationJson.Options)!;
-        var actual=OrdinaryNewGame.Resolve(snapshot,Economy(key),new(),vnextBalance:MapDesignTests.Balance()).Scenario;
+        var actual=OrdinaryNewGame.Resolve(snapshot,profile,options,vnextBalance:MapDesignTests.Balance()).Scenario;
         Assert.Equal(JsonSerializer.Serialize(d,SimulationJson.Options),JsonSerializer.Serialize(actual,SimulationJson.Options));
         Assert.Equal((width,height),(d.MapWidth,d.MapHeight));Assert.Equal(sites,l.IndustrialLots.Length);Assert.Equal(capacity,l.MaxParticipants);
+        Assert.Equal("map-adapter-4",l.Version);Assert.Equal(scenarioId,d.Id);
+        Assert.All(l.IndustrialLots,lot=>Assert.NotNull(IndustrialParcels.TryFrame(lot)));
         Assert.Equal(34,d.Items.Length);Assert.Equal(69,d.Recipes.Length);Assert.Equal(6,d.BuildingTypes!.Count(t=>t.Kind==BuildingKind.Production));
         Assert.Equal(8,d.ResourceNodes.Select(n=>n.ItemId).Distinct().Count());Assert.Equal(key==PlayMaps.Second?2:16,l.CivicObjects.Single(c=>c.Kind=="dealership").EquipmentParking!.Length);
-        if(key==PlayMaps.Second){Assert.Equal(PlayMaps.WoodlandI6C4ScenarioId,d.Id);Assert.Equal(46,l.InitialCityDirtCells.Length);Assert.Equal(2,d.Economy!.Fleet!.EquipmentDealerVersion);}
+        if(key==PlayMaps.Second){Assert.Equal(46,l.InitialCityDirtCells.Length);Assert.Equal(2,d.Economy!.Fleet!.EquipmentDealerVersion);}
         Assert.All(d.ResourceNodes.GroupBy(r=>r.ItemId),g=>{Assert.Contains(g,r=>r.Rules!.Public);Assert.Contains(g,r=>!r.Rules!.Public);});
         Assert.All(d.Participants,a=>Assert.Equal(20000,a.CashMinor));Assert.All(d.Plots!,p=>Assert.Null(p.OwnerId));
         Assert.Equal(3,Resolve(key).Controllers.Length);Assert.NotEqual(PlayMaps.CurrentSecondScenarioId,d.Id);
         Assert.Throws<ArgumentException>(()=>Resolve(key,capacity));
         var maximum=Resolve(key,capacity-1).Scenario;Assert.Equal(capacity,maximum.Participants.Length);
-        var w=Economy(key).World;
-        Assert.Equal(JsonSerializer.Serialize(w.Rules.Fleet),JsonSerializer.Serialize(d.Economy!.Fleet));Assert.Equal(w.PlotPriceMinor,d.Plots!.First(p=>!p.IsShopSite).PriceMinor);
+        Assert.Equal(JsonSerializer.Serialize(profile.World.Rules.Fleet),JsonSerializer.Serialize(d.Economy!.Fleet));
+        Assert.Equal(10_000,d.Plots!.First(p=>!p.IsShopSite).PriceMinor);
+        Assert.Equal(15,d.Economy.Fleet!.WageMinor);Assert.Equal(2,d.Economy.PlayerWageStepMinor);
+        Assert.Equal(1,d.Economy.IndustrialParcels!.Version);Assert.True(d.Economy.ProvincialSupport!.Applies);
+        Assert.Equal(1,d.Economy.ResourceRights!.Version);
     }
     [Theory][InlineData(PlayMaps.CompactValley)][InlineData(PlayMaps.Second)]
     public void FullIndustrialOccupancyKeepsEveryResourceCivicEntryMarketAndSpawnReachable(string key)

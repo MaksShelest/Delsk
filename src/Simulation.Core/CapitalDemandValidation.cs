@@ -46,15 +46,15 @@ public sealed partial class SimulationEngine
                 throw new InvalidOperationException("Invalid commodity phase");
         // Same complete invariant check, indexed once rather than rescanning all historical offers for every good/period.
         var generatedOrders=_offers.Values.ToLookup(o=>(o.CreatedTick,o.Definition.ItemId));
-        var totals=items.ToDictionary(id=>id,id=>new long[7],StringComparer.Ordinal);
+        var totals=items.ToDictionary(id=>id,id=>new long[8],StringComparer.Ordinal);
         long minimumPrice=_items.Values.Min(i=>i.BasePriceMinor);
         long smooth = 0; int remainder = 0;
         foreach (var p in _demandPeriods)
         {
             if (p.Goods.IsDefault || !p.Goods.Select(g => g.ItemId).SequenceEqual(items) || p.Tick != p.Period * settings.PeriodTicks ||
                 p.Period < 0 || p.Tick > Tick || _demandPeriods[(int)p.Period] != p ||
-                p.Goods.Any(g => g.Imported<0 || g.Harvested < 0 || g.Produced < 0 || g.Consumed < 0 || g.Exported < 0 || g.DemandQuantity < 0 || g.Lost<0 || g.ConstructionRecovered<0 ||
-                    g.StockChange != checked(g.Imported + g.Harvested + g.Produced - g.Consumed - g.Exported - g.Lost + g.ConstructionRecovered)) ||
+                p.Goods.Any(g => g.Imported<0 || g.ProvincialSupplied<0 || g.Harvested < 0 || g.Produced < 0 || g.Consumed < 0 || g.Exported < 0 || g.DemandQuantity < 0 || g.Lost<0 || g.ConstructionRecovered<0 ||
+                    g.StockChange != checked(g.Imported + g.ProvincialSupplied + g.Harvested + g.Produced - g.Consumed - g.Exported - g.Lost + g.ConstructionRecovered)) ||
                 p.GrossOutputBaseMinor != p.Goods.Sum(g => checked((g.Harvested + g.Produced) * _items[g.ItemId].BasePriceMinor)) ||
                 p.InternalConsumptionBaseMinor != p.Goods.Sum(g => checked(g.Consumed * _items[g.ItemId].BasePriceMinor)) ||
                 p.StockChangeBaseMinor != p.Goods.Sum(g => checked(g.StockChange * _items[g.ItemId].BasePriceMinor)))
@@ -71,7 +71,7 @@ public sealed partial class SimulationEngine
             foreach (var g in p.Goods)
             {
                 var sum=totals[g.ItemId];
-                checked{sum[0]+=g.Harvested;sum[1]+=g.Imported;sum[2]+=g.Produced;sum[3]+=g.Consumed;sum[4]+=g.Exported;sum[5]+=g.Lost;sum[6]+=g.ConstructionRecovered;}
+                checked{sum[0]+=g.Harvested;sum[1]+=g.Imported;sum[2]+=g.Produced;sum[3]+=g.Consumed;sum[4]+=g.Exported;sum[5]+=g.Lost;sum[6]+=g.ConstructionRecovered;sum[7]+=g.ProvincialSupplied;}
                 if (g.UnitPriceMinor != MarketPrice(_items[g.ItemId], p.Tick, random))
                     throw new InvalidOperationException("Invalid fixed market price");
                 var orders = generatedOrders[(p.Tick,g.ItemId)].ToArray();
@@ -90,7 +90,8 @@ public sealed partial class SimulationEngine
                 f.Exported != totals[f.ItemId][4] ||
                 f.Harvested > _flows[f.ItemId].Harvested || f.Produced > _flows[f.ItemId].Produced || f.RecipeInput > _flows[f.ItemId].RecipeInput ||
                 f.ConstructionInput > _flows[f.ItemId].ConstructionInput || f.Exported > _flows[f.ItemId].Exported ||
-                f.Lost != totals[f.ItemId][5] || f.Lost>_flows[f.ItemId].Lost || f.ConstructionRecovered!=totals[f.ItemId][6] || f.ConstructionRecovered>_flows[f.ItemId].ConstructionRecovered)
+                f.Lost != totals[f.ItemId][5] || f.Lost>_flows[f.ItemId].Lost || f.ConstructionRecovered!=totals[f.ItemId][6] || f.ConstructionRecovered>_flows[f.ItemId].ConstructionRecovered ||
+                f.ProvincialSupplied!=totals[f.ItemId][7] || f.ProvincialSupplied>_flows[f.ItemId].ProvincialSupplied)
                 throw new InvalidOperationException("Demand baseline does not match measured periods");
         foreach (var o in _offers.Values)
             if (o.Definition.Id < 1000 || o.Definition.Position != settings.Terminal || o.CreatedTick < 0 || o.CreatedTick > Tick ||

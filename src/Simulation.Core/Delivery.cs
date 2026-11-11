@@ -11,6 +11,7 @@ public sealed partial class SimulationEngine
         RequireIdle(actor);
         RequireActionLocation(actor, c.Action);
         if (c.Action.Quantity <= 0 || c.Action.Quantity > d.UnprovidedQuantity) throw new RuleViolation("InvalidQuantity");
+        RequireProvincialSale(actor.Id, d.ItemId, c.Action.Quantity);
         BeginTransfer(actor,c,actor.Inventory,d.DestinationInventory?.Value??0,d.ItemId,c.Action.Quantity,"Delivery",d.Id);
     }
     private void ReceiveDelivery(int index, long sourceInventory, long q, bool inTransit,

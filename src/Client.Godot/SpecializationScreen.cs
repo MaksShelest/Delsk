@@ -36,8 +36,8 @@ public partial class SpecializationScreen : ColorRect
         var intro = new Label
         {
             Text = L(
-                "Выберите направление будущей поддержки. Участок, строительство и материалы оплачиваются по обычным ценам. Бесплатного предприятия нет.",
-                "Choose a direction for future support. Land, construction and materials keep their ordinary prices. There is no free enterprise."),
+                "Выберите отрасль. После начала игры столица один раз оплатит первый участок, первое предприятие этой отрасли, материалы и сырьё первой партии. Свои 200 монет останутся.",
+                "Choose an industry. After the game starts, the capital once pays for the first parcel, the first enterprise of that industry, its materials and the first batch of input. Your 200 coins stay."),
             AutowrapMode = TextServer.AutowrapMode.WordSmart
         };
         intro.AddThemeColorOverride("font_color", new Color("425448"));
