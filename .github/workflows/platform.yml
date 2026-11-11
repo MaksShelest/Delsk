@@ -184,7 +184,7 @@ jobs:
           python-version: '3.12'
       - name: Prepare unprivileged software display and pinned Mono editor
         run: |
-          python scripts/run_check.py --name i5-display-install --timeout 180 --log-directory artifacts/gate-checks -- sudo apt-get update
+          python scripts/run_check.py --name i5-display-install --timeout 180 --log-directory artifacts/gate-checks -- sudo apt-get update || python scripts/run_check.py --name i5-display-install-retry --timeout 180 --log-directory artifacts/gate-checks -- sudo apt-get update
           python scripts/run_check.py --name i5-display-packages --timeout 180 --log-directory artifacts/gate-checks -- sudo apt-get install -y xvfb libgl1-mesa-dri
           mkdir -p .tools
           python scripts/run_check.py --name i5-editor-download --timeout 180 --log-directory artifacts/gate-checks -- curl --fail --location --silent --show-error --max-time 170 https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_linux_x86_64.zip --output .tools/godot.zip
