@@ -91,6 +91,7 @@ public sealed partial class SimulationEngine
             {
                 long held = reserved.GetValueOrDefault(term.ItemId);
                 long add = Math.Min(term.Quantity - held, _economy.Inventories[old.Source.Value].Free(term.ItemId));
+                add = Math.Min(add, ProvincialSellable(_economy.Inventories[old.Source.Value].Owner, term.ItemId, add));
                 if (add <= 0) continue;
                 if (held > 0) tx.ReleaseStock(old.Source.Value, SupportHold(old.Id, term.ItemId));
                 tx.ReserveStock(old.Source.Value, SupportHold(old.Id, term.ItemId), term.ItemId, checked(held + add));

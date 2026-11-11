@@ -32,7 +32,7 @@ public sealed record ProvincialProgramView(
     long ParcelReserved, long ParcelRemaining,
     long ConstructionReserved, long ConstructionRemaining,
     long OperatingReserved, long OperatingRemaining,
-    long SupplyValueMinor, bool SupplyCollected, string NextStep);
+    long SupplyValueMinor, bool SupplyCollected, string NextStep, MaterialCost[] Restricted);
 
 public sealed partial class SimulationEngine
 {
@@ -264,13 +264,18 @@ public sealed partial class SimulationEngine
         };
     }
 
+    private long ProvincialSellable(long actor, string item, long requested)
+    {
+        if (!_provincial.TryGetValue(actor, out var state)) return requested;
+        long restricted = state.Supply.Where(line => line.ItemId == item).Sum(line => line.Remaining);
+        if (restricted <= 0) return requested;
+        long free = _economy.Inventories.Values.Where(inventory => inventory.Owner == actor).Sum(inventory => inventory.Free(item));
+        return Math.Min(requested, Math.Max(0, checked(free - restricted)));
+    }
+
     private void RequireProvincialSale(long actor, string item, long quantity)
     {
-        if (!_provincial.TryGetValue(actor, out var state)) return;
-        long restricted = state.Supply.Where(line => line.ItemId == item).Sum(line => line.Remaining);
-        if (restricted <= 0) return;
-        long free = _economy.Inventories.Values.Where(inventory => inventory.Owner == actor).Sum(inventory => inventory.Free(item));
-        if (quantity > checked(free - restricted)) throw new RuleViolation("SubsidizedGoods");
+        if (quantity > ProvincialSellable(actor, item, quantity)) throw new RuleViolation("SubsidizedGoods");
     }
 
     private void ReleaseProvincialBuilding(long owner, long target)
@@ -352,5 +357,6 @@ public sealed partial class SimulationEngine
         state.IndustryId, state.Status, state.ParcelReserved, state.ParcelReserved - state.ParcelUsed,
         state.ConstructionReserved, state.ConstructionReserved - state.ConstructionUsed,
         state.OperatingReserved, state.OperatingReserved - state.OperatingUsed,
-        state.SupplyValueMinor, state.SupplyCollected, next);
+        state.SupplyValueMinor, state.SupplyCollected, next,
+        state.Supply.Where(line => line.Remaining > 0).Select(line => new MaterialCost(line.ItemId, line.Remaining)).ToArray());
 }

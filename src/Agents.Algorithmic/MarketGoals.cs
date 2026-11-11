@@ -59,7 +59,7 @@ public sealed partial class AlgorithmicController
                 var capital=BestOffer(o,item.ItemId,item.Quantity-item.Reserved,stock.Position);
                 if(capital is not null && !o.BuyOffers.Any(b=>b.Buyer!=Actor && b.Status=="Open" && b.ItemId==item.ItemId))
                 {
-                    long sell=Math.Min(item.Quantity-item.Reserved,Math.Min(capital.RemainingQuantity,volume/Volume(o,item.ItemId)));
+                    long sell=Surplus(o,item.ItemId,Math.Min(item.Quantity-item.Reserved,Math.Min(capital.RemainingQuantity,volume/Volume(o,item.ItemId))));
                     if(sell>0){var liquidation=new List<PlanStep>();Move(liquidation,o.Participant.Position,stock.Position);
                         liquidation.Add(new(new(ActionKind.Transfer,Source:stock.Id,Destination:carrier.Id,ItemId:item.ItemId,Quantity:sell)));
                         Move(liquidation,stock.Position,capital.Position);liquidation.Add(new(new(ActionKind.SellAvailableToCapital,OfferId:capital.Id,ItemId:item.ItemId,Quantity:sell)));
@@ -67,7 +67,8 @@ public sealed partial class AlgorithmicController
                 }
                 var last=o.MarketOffers.Where(m=>m.Seller==Actor && m.Shop==shop.Id && m.ItemId==item.ItemId).OrderByDescending(m=>m.CreatedTick).FirstOrDefault();
                 if(last is {Status:not MarketOfferStatus.Closed} || last is {AllocatedQuantity:0,ClosedTick: { } closed} && o.Tick-closed<_state.Settings.BlockedRetryTicks)continue;
-                long q=Math.Min(item.Quantity-item.Reserved,_state.Settings.MarketLotQuantity);
+                long q=Surplus(o,item.ItemId,Math.Min(item.Quantity-item.Reserved,_state.Settings.MarketLotQuantity));
+                if(q<=0)continue;
                 long price=checked((long)((Int128)BasePrice(o,item.ItemId)*_state.Settings.SellPriceBasisPoints/10000));
                 yield return One("PublishSellOffer",item.ItemId,160000,new(ActionKind.CreateSellOffer,Building:shop.Id,ItemId:item.ItemId,Quantity:q,UnitPriceMinor:Math.Max(1,price)));
             }

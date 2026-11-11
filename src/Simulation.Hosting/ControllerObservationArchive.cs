@@ -88,20 +88,41 @@ internal sealed class ControllerObservationPool
         {_sampleTicks.Add(samples[i].Tick);_sampleValues.Add(_graph.AddJson(JsonSerializer.Serialize(samples[i] with{Tick=0},SimulationJson.Options)));}
         return new(2,Properties.Select(p=>p.Name).ToArray(),null,_turns.ToArray(),_graph.Nodes.ToArray(),_graph.Shapes.ToArray(),_sampleTicks.ToArray(),_sampleValues.ToArray());
     }
+    /// <summary>
+    /// Старый архив называет поля и хранит их индексы. Совпадение всего списка больше не требуется:
+    /// отсутствует только ProvincialProgram, и тогда у каждого хода есть явная JSON-ссылка на null.
+    /// </summary>
+    private static int[] BindObservationProperties(string[] saved)
+    {
+        if(saved.Length==0||saved.Any(string.IsNullOrEmpty))throw new CheckpointException("InvalidObservationArchive");
+        var current=new Dictionary<string,int>(StringComparer.Ordinal);
+        for(int i=0;i<Properties.Length;i++)current.Add(Properties[i].Name,i);
+        var seen=new HashSet<string>(StringComparer.Ordinal);var map=new int[saved.Length];
+        for(int i=0;i<saved.Length;i++)
+        {
+            if(!seen.Add(saved[i])||!current.TryGetValue(saved[i],out int index))throw new CheckpointException("InvalidObservationArchive");
+            map[i]=index;
+        }
+        var present=map.ToHashSet();
+        for(int i=0;i<Properties.Length;i++)
+            if(!present.Contains(i)&&Properties[i].Name!=nameof(ControllerObservation.ProvincialProgram))throw new CheckpointException("InvalidObservationArchive");
+        return map;
+    }
     internal static (ControllerObservationPool Pool,ControllerTurn[] Turns,ControllerSample[]? Samples) Restore(ControllerObservationArchive saved,long tick,int actors)
     {
-        if(saved.Version is not(1 or 2)||saved.Properties is null||!saved.Properties.SequenceEqual(Properties.Select(p=>p.Name))||saved.Turns is null||
+        if(saved.Version is not(1 or 2)||saved.Properties is null||saved.Turns is null||
             saved.Turns.LongLength>checked((tick+1)*Math.Max(1,actors)*16))throw new CheckpointException("InvalidObservationArchive");
+        int[] savedToCurrent=BindObservationProperties(saved.Properties);
         var pool=new ControllerObservationPool();int[]? translated=null;
         if(saved.Version==1)
         {
-            if(saved.Values is null||saved.Nodes is not null||saved.Shapes is not null||saved.SampleTicks is not null||saved.SampleValues is not null||saved.Values.LongLength>(long)saved.Turns.Length*Properties.Length)throw new CheckpointException("InvalidObservationArchive");
+            if(saved.Values is null||saved.Nodes is not null||saved.Shapes is not null||saved.SampleTicks is not null||saved.SampleValues is not null||saved.Values.LongLength>(long)saved.Turns.Length*saved.Properties.Length)throw new CheckpointException("InvalidObservationArchive");
             translated=new int[saved.Values.Length];var distinct=new HashSet<(int,string)>();
             for(int i=0;i<saved.Values.Length;i++)
             {
-                var field=saved.Values[i];if(field is null||field.Property<0||field.Property>=Properties.Length||field.Json is null||!distinct.Add((field.Property,field.Json)))throw new CheckpointException("InvalidObservationField");
+                var field=saved.Values[i];if(field is null||field.Property<0||field.Property>=saved.Properties.Length||field.Json is null||!distinct.Add((field.Property,field.Json)))throw new CheckpointException("InvalidObservationField");
                 // Old readers normalised DTO values on restore; preserve that exact interpretation.
-                var property=Properties[field.Property];object? value=JsonSerializer.Deserialize(field.Json,property.PropertyType,SimulationJson.Options);
+                var property=Properties[savedToCurrent[field.Property]];object? value=JsonSerializer.Deserialize(field.Json,property.PropertyType,SimulationJson.Options);
                 if(value is null&&property.Name is nameof(ControllerObservation.Map) or nameof(ControllerObservation.Participant) or nameof(ControllerObservation.Account))throw new CheckpointException("MissingObservationField");
                 translated[i]=pool._graph.AddJson(JsonSerializer.Serialize(value,property.PropertyType,SimulationJson.Options));
             }
@@ -112,17 +133,24 @@ internal sealed class ControllerObservationPool
             pool._graph=ObservationGraph.Restore(saved.Nodes,saved.Shapes);
         }
         var identities=new List<ControllerTurn>();var used=new HashSet<int>();int tickIndex=Array.FindIndex(Properties,p=>p.Name==nameof(ControllerObservation.Tick));int actorIndex=Array.FindIndex(Properties,p=>p.Name==nameof(ControllerObservation.Participant));
+        var present=savedToCurrent.ToHashSet();
         foreach(var item in saved.Turns)
         {
-            if(item?.Turn is null||item.Turn.Observation is not null||item.Fields is null||item.Fields.Length!=Properties.Length)throw new CheckpointException("InvalidArchivedTurn");
-            int[] fields=new int[Properties.Length];
+            if(item?.Turn is null||item.Turn.Observation is not null||item.Fields is null||item.Fields.Length!=saved.Properties.Length)throw new CheckpointException("InvalidArchivedTurn");
+            int[] fields=new int[Properties.Length];int absent=-1;
+            for(int s=0;s<saved.Properties.Length;s++)
+            {
+                int id=item.Fields[s];int current=savedToCurrent[s];
+                if(translated is not null)
+                {if(id<0||id>=translated.Length||saved.Values![id].Property!=s)throw new CheckpointException("InvalidObservationReference");used.Add(id);id=translated[id];}
+                var property=Properties[current];pool._graph.Validate(id,property.PropertyType);fields[current]=id;
+                if(property.Name is nameof(ControllerObservation.Map) or nameof(ControllerObservation.Participant) or nameof(ControllerObservation.Account)&&pool._graph.Nodes[id].Json=="null")throw new CheckpointException("MissingObservationField");
+            }
             for(int p=0;p<Properties.Length;p++)
             {
-                int id=item.Fields[p];
-                if(translated is not null)
-                {if(id<0||id>=translated.Length||saved.Values![id].Property!=p)throw new CheckpointException("InvalidObservationReference");used.Add(id);id=translated[id];}
-                pool._graph.Validate(id,Properties[p].PropertyType);fields[p]=id;
-                if(Properties[p].Name is nameof(ControllerObservation.Map) or nameof(ControllerObservation.Participant) or nameof(ControllerObservation.Account)&&pool._graph.Nodes[id].Json=="null")throw new CheckpointException("MissingObservationField");
+                if(present.Contains(p))continue;
+                absent=absent<0?pool._graph.AddJson("null"):absent;
+                pool._graph.Validate(absent,Properties[p].PropertyType);fields[p]=absent;
             }
             var restored=new ArchivedControllerTurn(item.Turn,fields);pool._turns.Add(restored);pool._last[item.Turn.Actor.Value]=item.Turn;
             var identity=JsonSerializer.Deserialize<ControllerObservation>("{}",SimulationJson.Options)!;

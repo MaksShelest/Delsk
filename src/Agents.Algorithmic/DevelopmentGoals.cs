@@ -23,6 +23,35 @@ public sealed partial class AlgorithmicController
             collect.Add(new(new(ActionKind.CollectProvincialSupply)));
             yield return new("CollectProvincialSupply",open.IndustryId,480000,collect.ToArray());
         }
+        if(o.ProvincialProgram is { NextStep: "sell" } selling && o.ProductionContent is { } market)
+        {
+            var made=o.Enterprises.FirstOrDefault(e=>e.CompletedBatches>0);
+            if(made is not null)
+            {
+                var recipe=o.Map.Recipes.Single(r=>r.Id==made.RecipeId);
+                var output=Inventory(o,made.OutputId);var pack=Carrier(o);
+                long held=Free(output,recipe.OutputItem)+Free(pack,recipe.OutputItem);
+                var offer=BestOffer(o,recipe.OutputItem,Math.Max(1,Math.Min(held,recipe.OutputQuantity)),output.Position);
+                var steps=new List<PlanStep>();
+                if(offer is not null && held>0)
+                {
+                    long q=Math.Min(Math.Min(held,recipe.OutputQuantity),offer.RemainingQuantity);
+                    long fromOutput=Math.Min(q,Free(output,recipe.OutputItem));
+                    if(fromOutput>0){Move(steps,o.Participant.Position,output.Position);steps.Add(new(new(ActionKind.Transfer,Source:output.Id,Destination:pack.Id,ItemId:recipe.OutputItem,Quantity:fromOutput)));}
+                    Move(steps,fromOutput>0?output.Position:o.Participant.Position,offer.Position);
+                    steps.Add(new(new(ActionKind.SellAvailableToCapital,ItemId:recipe.OutputItem,Quantity:q,OfferId:offer.Id)));
+                    yield return new("SellProvincialOutput",selling.IndustryId,470000,steps.ToArray());
+                }
+                else if(Free(pack,recipe.OutputItem)>=recipe.OutputQuantity||Free(output,recipe.OutputItem)>=recipe.OutputQuantity)
+                {
+                    if(Free(pack,recipe.OutputItem)<recipe.OutputQuantity)
+                    {Move(steps,o.Participant.Position,output.Position);steps.Add(new(new(ActionKind.Transfer,Source:output.Id,Destination:pack.Id,ItemId:recipe.OutputItem,Quantity:recipe.OutputQuantity)));}
+                    Move(steps,Free(pack,recipe.OutputItem)<recipe.OutputQuantity?output.Position:o.Participant.Position,market.Terminal);
+                    steps.Add(new(new(ActionKind.SellProvincialOutput,ItemId:recipe.OutputItem,Quantity:recipe.OutputQuantity)));
+                    yield return new("SellProvincialOutput",selling.IndustryId,470000,steps.ToArray());
+                }
+            }
+        }
         var d=o.Development;if(d is null)yield break;var carrier=Carrier(o);var settings=_state.Settings;
         if(HasObligations(o)||o.Account.AvailableMinor<settings.CashReserveMinor||settings.ExpansionWeight==0)yield break;
         // Each plan stages one real backpack load and replans after receipt. No promised inventory IDs.
