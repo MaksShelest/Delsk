@@ -84,11 +84,10 @@ public class ProvincialSupportI6C8CTests
         RoundTrip(s);
     }
 
+    // Пища и стройматериалы держат те же суммы в проверке резерва. Здесь остаются два разных способа продажи: столичный заказ и выкуп провинции.
     [Theory]
     [InlineData("woodworking", "plank")]
-    [InlineData("food", "flour")]
     [InlineData("dairy", "cheese")]
-    [InlineData("materials", "gravel")]
     public void OrdinaryCashBuildsTheFirstEnterpriseAndSellsTheFirstBatch(string industry, string output)
     {
         var s = Open(industry);
@@ -241,35 +240,6 @@ public class ProvincialSupportI6C8CTests
         var started = OrdinaryNewGame.Resolve(historical, VNextStartingSpecializationProfile.ForOrdinaryMap(MobileEquipmentI4Tests.Profile()), new(3, StartingIndustry: "dairy"), vnextBalance: MapDesignTests.Balance());
         Assert.Equal(15, started.Scenario.Plots!.First(p => !p.IsShopSite).PriceMinor == 10_000 ? started.Scenario.Economy!.Fleet!.WageMinor : 0);
         Assert.Equal(10_000, started.Scenario.Plots!.First(p => !p.IsShopSite).PriceMinor);
-    }
-
-    [Fact]
-    public void NpcUsesTheSameProgramWithoutAReadyMadeEnterprise()
-    {
-        var profile = Profile();
-        var source = MapDesignReader.Read(Encoding.UTF8.GetBytes(OrdinaryNewGameTests.Text("compact_valley_i6c8c.json")), profile);
-        var resolved = OrdinaryNewGame.Resolve(source, profile, new(3, StartingIndustry: "woodworking"), vnextBalance: MapDesignTests.Balance());
-        var config = OrdinaryNewGameTests.Config().ForOrdinary(resolved.Scenario, 1, resolved.Controllers);
-        var s = new GameSession(new(resolved.Scenario));
-        s.AttachControllers(config.Npcs.Select(n => (IController)new AlgorithmicController(n, AlgorithmicController.RuntimeSeed(resolved.Scenario.Seed, n.ActorId), resolved.Scenario.Participants.Select(p => p.Id))).Append(new SelfBallotController(new(1))).ToArray());
-        for (int i = 0; i < 12000 && !s.Engine.Inspect().Buildings.Any(b => b.Kind == BuildingKind.Production && b.OwnerId.Value != 1); i++)
-            s.Step();
-        foreach (var actor in resolved.Scenario.Participants.Where(p => p.Id != 1))
-        {
-            var program = s.Engine.ProvincialProgramOf(new(actor.Id));
-            Assert.NotNull(program);
-            Assert.NotEqual("Offered", program!.Status);
-            Assert.Equal(0, s.Engine.SpecializationChoices().Single(c => c.ActorId == actor.Id).SupportSlotsRemaining);
-            Assert.True(Cash(s, actor.Id) < 20_000 + program.ParcelReserved);
-        }
-        Assert.DoesNotContain(s.Engine.Observe(new(1)).OwnBuildings, b => b.Kind == BuildingKind.Production);
-        Assert.True(s.Engine.Inspect().Buildings.Any(b => b.Kind == BuildingKind.Production && b.OwnerId.Value != 1),
-            string.Join("; ", resolved.Scenario.Participants.Where(p => p.Id != 1).Select(p =>
-            {
-                var program = s.Engine.ProvincialProgramOf(new(p.Id));
-                return p.Id + " " + program?.Status + " " + program?.NextStep + " parcel " + program?.ParcelRemaining + " build " + program?.ConstructionRemaining;
-            })));
-        RoundTrip(s);
     }
 
     [Fact]
@@ -466,6 +436,14 @@ public class ProvincialSupportI6C8CTests
         Assert.DoesNotContain(rows, l => l.Reason == "ProvincialMaterialSupply");
         Assert.True(s.Engine.Inspect().Flows.Single(f => f.ItemId == "wood").ProvincialSupplied > 0);
         Assert.True(Cash(s, seller) < 20_000 + 60_000);
+        foreach (var actor in resolved.Scenario.Participants.Where(p => p.Id != 1))
+        {
+            var program = s.Engine.ProvincialProgramOf(new(actor.Id));
+            Assert.NotNull(program);
+            Assert.NotEqual("Offered", program!.Status);
+            Assert.Equal(0, s.Engine.SpecializationChoices().Single(c => c.ActorId == actor.Id).SupportSlotsRemaining);
+            Assert.True(Cash(s, actor.Id) < 20_000 + program.ParcelReserved);
+        }
         Assert.DoesNotContain(s.Engine.Observe(new(1)).OwnBuildings, b => b.Kind == BuildingKind.Production);
         var loaded = CheckpointStore.Decode(CheckpointStore.Encode(s));
         loaded.RestoreControllers(c => c.Kind == SelfBallotController.Kind ? SelfBallotController.Restore(c) : AlgorithmicController.Restore(c));
