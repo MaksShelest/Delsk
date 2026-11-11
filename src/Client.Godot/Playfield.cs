@@ -221,14 +221,16 @@ public partial class Playfield : Control
 
     private int _newNpcCount=3;
     private string? _userMapPath;
-    private OrdinaryGameResolution ResolveNewGame(string key,int count)
+    private string? _startingIndustry;
+    private OrdinaryGameResolution ResolveNewGame(string key,int count,bool allowUnassigned=false)
     {
         var map=ReadMap(key);
         var economy=ReadEconomy(key);
         VNextBalance? full=null;
         if(economy.VNext is {} provenance)
         {var read=VNextBalanceReader.Read(System.Text.Encoding.UTF8.GetBytes(Text("Play.vnext-balance.json")));if(!read.IsValid || read.Sha256!=provenance.FullBalanceSha256)throw new InvalidOperationException("Full balance/profile mismatch");full=read.Balance;}
-        return OrdinaryNewGame.Resolve(map,economy,new(count,_newDifficulty.ToString()),vnextBalance:full);
+        string? industry=allowUnassigned?null:_startingIndustry;
+        return OrdinaryNewGame.Resolve(map,economy,new(count,_newDifficulty.ToString(),StartingIndustry:industry,AllowUnassigned:allowUnassigned&&industry is null),vnextBalance:full);
     }
     private OrdinaryGameResolution ResolveUserMap(string path,EconomyProfile economy)
     {
@@ -239,18 +241,18 @@ public partial class Playfield : Control
         VNextBalance? full=null;
         if(economy.VNext is {} provenance)
         {var read=VNextBalanceReader.Read(System.Text.Encoding.UTF8.GetBytes(Text("Play.vnext-balance.json")));if(!read.IsValid || read.Sha256!=provenance.FullBalanceSha256)throw new InvalidOperationException("Full balance/profile mismatch");full=read.Balance;}
-        return UserMaps.Start(draft,economy,new(npcs,_newDifficulty.ToString()),full);
+        return UserMaps.Start(draft,economy,new(npcs,_newDifficulty.ToString(),StartingIndustry:_startingIndustry),full);
     }
     private ScenarioDefinition ReadMap(string key)
     {
         // An explicit pre-I4 research profile retains its historical map snapshot.
         // Ordinary starts without an override always use the current versioned worlds.
-        bool legacy=key==PlayMaps.CompactValley&&OS.GetCmdlineUserArgs().Contains("--economy")&&ReadEconomy(key).Id is not (VNextMobileEquipmentProfile.ProfileId or VNextEquipmentClassesProfile.ProfileId or VNextWageScheduleProfile.ProfileId or VNextResourceRightsProfile.ProfileId);
+        bool legacy=key==PlayMaps.CompactValley&&OS.GetCmdlineUserArgs().Contains("--economy")&&ReadEconomy(key).Id is not (VNextMobileEquipmentProfile.ProfileId or VNextEquipmentClassesProfile.ProfileId or VNextWageScheduleProfile.ProfileId or VNextResourceRightsProfile.ProfileId or VNextStartingSpecializationProfile.ProfileId);
         return JsonSerializer.Deserialize<ScenarioDefinition>(Text(legacy?PlayMaps.Resource(key):PlayMaps.NewGameResource(key)),SimulationJson.Options)??throw new InvalidOperationException(key);
     }
 
     private void DismissMaps()
-    { if (_mapSelection is not null) {_newNpcCount=_mapSelection.NpcCount;_newMapKey = _mapSelection.SelectedMap;_newDifficulty=_mapSelection.Difficulty;_newModel=_mapSelection.ModelConfiguration;} _mapSelection?.QueueFree(); _mapSelection = null; }
+    { if (_mapSelection is not null) {_newNpcCount=_mapSelection.NpcCount;_newMapKey = _mapSelection.SelectedMap;_newDifficulty=_mapSelection.Difficulty;_newModel=_mapSelection.ModelConfiguration;_startingIndustry=_mapSelection.SelectedIndustry;} _mapSelection?.QueueFree(); _mapSelection = null; }
 
     private void ShowMaps()
     {
@@ -260,7 +262,7 @@ public partial class Playfield : Control
         ResetTablet();
         ApplySurface();
         DismissMaps();
-        _mapSelection = new MapSelectionScreen(_language, _session is not null || System.IO.File.Exists(SavePath), ReadMap, _newMapKey,_newDifficulty,_newModel,_newNpcCount,(key,count)=>ResolveNewGame(key,count).Scenario);
+        _mapSelection = new MapSelectionScreen(_language, _session is not null || System.IO.File.Exists(SavePath), ReadMap, _newMapKey,_newDifficulty,_newModel,_newNpcCount,(key,count)=>ResolveNewGame(key,count,allowUnassigned:true).Scenario);
         _mapSelection.MapChosen += key =>
         {
             try{_mapSelection.ModelConfiguration?.Validate();}catch(ArgumentException){_mapSelection.TooltipText=L("Проверьте имя модели и настройки.","Check model name and settings.");return;}
@@ -296,7 +298,11 @@ public partial class Playfield : Control
 
     private void OfferPendingUserPlay()
     {
-        if(_userMapPath is not {} path)return;
+        if(_userMapPath is not {} path || _mapSelection is null)return;
+        _mapSelection.EnsureSpecialization(()=>ContinueUserPlay(path),()=>{_userMapPath=null;MapHandoff.ClearPlay();});
+    }
+    private void ContinueUserPlay(string path)
+    {
         if(_session is null && !System.IO.File.Exists(SavePath)){BeginUserMap(path);return;}
         var confirm=new ConfirmationDialog{DialogText=PlayerText.Local(_language,
             "Начать новую партию на своей карте? Текущая партия будет заменена.","Start a new game on your map? The current game will be replaced.")};

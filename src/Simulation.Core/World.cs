@@ -138,6 +138,7 @@ public static partial class ScenarioValidation
     {
         ArgumentNullException.ThrowIfNull(s);
         s.Economy?.Validate();
+        StartingSpecializations.ValidateRoster(s);
         if(s.NewGame is {} setup && (setup.Version!="ordinary-setup-1" || setup.AssignmentVersion is not ("legacy-default" or "startup-rotation-1") ||
             setup.Difficulty is not ("Easy" or "Medium" or "Hard") || s.Participants is null || !s.Participants.Any(p=>p.Id==setup.HumanActorId) ||
             s.Participants.Length is <4 or >11 || string.IsNullOrWhiteSpace(setup.SourceMapId) || setup.BasePopulation<0 || setup.BaseMaximumPopulation<setup.BasePopulation ||

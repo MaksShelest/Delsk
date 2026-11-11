@@ -81,6 +81,8 @@ public sealed partial class AlgorithmicController
         var candidates=o.BuildingTypes.Where(t=>t.Kind==BuildingKind.Production&&CanBootstrapIndustry(o,t));
         if(o.Enterprises.IsEmpty)
         {
+            // Своя специализация задаёт первое предприятие, только если его сырьё уже можно запустить.
+            if(o.Economics?.StartingIndustry is {Length:>0} industry&&candidates.FirstOrDefault(t=>t.Id==industry) is {} directed)return directed;
             var preferred=candidates.Where(t=>t.Levels[0].UnlockedRecipes.Any(id=>o.Map.Recipes.Single(r=>r.Id==id).Uses(_state.Settings.PreferredInput))).ToArray();
             if(preferred.Length>0)candidates=preferred;
         }
@@ -93,6 +95,7 @@ public sealed partial class AlgorithmicController
         }
         return candidates.OrderBy(t=>t.Levels[0].PriceMinor+t.Levels[0].Materials.Sum(m=>m.Quantity*BasePrice(o,m.ItemId))).ThenBy(t=>t.Id,StringComparer.Ordinal).FirstOrDefault();
     }
+    internal string? PreferredNewEnterprise(ControllerObservation o)=>StartupIndustry(o)?.Id;
     private long StartupReserve(ControllerObservation o,ControllerBuildingType? type)
     {
         if(type is null)return _state.Settings.CashReserveMinor;var level=type.Levels[0];

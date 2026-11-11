@@ -18,6 +18,8 @@ public partial class MapSelectionScreen : ColorRect
     public event System.Action? FeedbackSettingsRequested;
     public event System.Action? AppearanceSettingsRequested;
     public string SelectedMap { get; private set; }
+    public string? SelectedIndustry { get; private set; }
+    private SpecializationScreen? _specialization;
     public int NpcCount {get;private set;}=3;
     public NpcDifficulty Difficulty {get;private set;}=NpcDifficulty.Medium;
     public LocalGameModel? ModelConfiguration {get;private set;}
@@ -59,7 +61,7 @@ public partial class MapSelectionScreen : ColorRect
         var choices=new OptionButton{Name="NpcDifficulty",SizeFlagsHorizontal=SizeFlags.ExpandFill};foreach(var text in new[]{L("Лёгкая","Easy"),L("Средняя","Medium"),L("Сложная","Hard")})choices.AddItem(text);
         choices.Selected=Math.Clamp((int)difficulty-1,0,2);difficultyRow.AddChild(choices);choices.ItemSelected+=i=>Difficulty=(NpcDifficulty)(i+1);
         var launch=new HBoxContainer();controls.AddChild(launch);
-        _startButton=AddButton(launch,L("Начать","Start"),()=>{if(_previewAvailable)MapChosen?.Invoke(SelectedMap);});_startButton.Name="StartGame";GameUi.Primary(_startButton);
+        _startButton=AddButton(launch,L("Начать","Start"),()=>BeginChosen(()=>MapChosen?.Invoke(SelectedMap)));_startButton.Name="StartGame";GameUi.Primary(_startButton);
         var resume=AddButton(launch,L("Продолжить","Continue"),()=>Continued?.Invoke());resume.Name="ContinueGame";resume.Disabled=!canContinue;
         resume.TooltipText=canContinue?"":L("Пока нет сохранённой партии","No saved game yet");
         AddButton(controls,L("Выбрать карту","Choose map"),ShowCatalog).Name="ChooseMap";
@@ -187,11 +189,44 @@ public partial class MapSelectionScreen : ColorRect
             var status=new Label{Name="UserMapStatus_"+id,Text=errors==0?L("Проверена","Checked"):L("Ошибок: ","Errors: ")+errors,AutowrapMode=TextServer.AutowrapMode.WordSmart};
             status.AddThemeColorOverride("font_color",new Color(errors==0?"38633d":"83552c"));text.AddChild(status);
             var actions=new HBoxContainer();text.AddChild(actions);
-            var play=AddButton(actions,L("Играть","Play"),()=>UserMapChosen?.Invoke(path));play.Name="PlayUser_"+id;play.Disabled=errors>0;if(errors==0)GameUi.Primary(play);
+            var play=AddButton(actions,L("Играть","Play"),()=>BeginUserMap(path));play.Name="PlayUser_"+id;play.Disabled=errors>0;if(errors==0)GameUi.Primary(play);
             var edit=AddButton(actions,L("Редактировать","Edit"),()=>UserMapEdit?.Invoke(path));edit.Name="EditUser_"+id;
             row.AddChild(new UserMapSketch(draft){Name="UserMapSketch_"+id,CustomMinimumSize=new(180,110)});
         }
         close.GrabFocus();
+    }
+    public void EnsureSpecialization(System.Action next, System.Action cancel)
+    {
+        if (SelectedIndustry is { Length: > 0 } || !UserMapsNeedSpecialization()) { next(); return; }
+        ShowSpecialization(next, cancel);
+    }
+    private void BeginChosen(System.Action next)
+    {
+        if (!_previewAvailable) return;
+        if (!SpecializationFor(SelectedMap)) { SelectedIndustry = null; next(); return; }
+        ShowSpecialization(next, null);
+    }
+    private void BeginUserMap(string path)
+    {
+        if (UserMapsNeedSpecialization()) ShowSpecialization(() => UserMapChosen?.Invoke(path), null);
+        else { SelectedIndustry = null; UserMapChosen?.Invoke(path); }
+    }
+    private bool SpecializationFor(string key) => TrySetup(key, out _) && PreviewScenario(key).Economy?.StartingSpecializations is { Version: 1, Enabled: true };
+    private bool UserMapsNeedSpecialization() => SpecializationFor(PlayMaps.CompactValley);
+    private void ShowSpecialization(System.Action next, System.Action? cancel)
+    {
+        CloseCatalog();
+        CloseSpecialization();
+        var screen = new SpecializationScreen(_language);
+        _specialization = screen;
+        screen.Confirmed += industry => { SelectedIndustry = industry; CloseSpecialization(); next(); };
+        screen.Cancelled += () => { SelectedIndustry = null; CloseSpecialization(); cancel?.Invoke(); };
+        AddChild(screen);
+    }
+    private void CloseSpecialization()
+    {
+        _specialization?.QueueFree();
+        _specialization = null;
     }
     private static Button AddButton(Container parent, string text, System.Action action)
     { var button = new Button { Text = text, FocusMode = FocusModeEnum.All, CustomMinimumSize=new(80,40),AutowrapMode=TextServer.AutowrapMode.Off }; button.Pressed += action; parent.AddChild(button);return button; }

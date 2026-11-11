@@ -60,6 +60,7 @@ public sealed partial class SimulationEngine
             _economy.Inventories.Add(inv, new(inv, p.Id, p.Position, p.InventoryCapacity));
             _actors.Add(p.Id, new(p.Id, account, inv, p.Position));
         }
+        ApplyStartingRoster();
         var recipes = _config.Recipes.ToDictionary(r => r.Id, StringComparer.Ordinal);
         foreach (var e in _config.Enterprises.OrderBy(e => e.Id))
         {
@@ -284,6 +285,7 @@ public sealed partial class SimulationEngine
                 case ActionKind.SignSupport: SignSupport(actor, c); break;
                 case ActionKind.SetVoteChoice: SetVoteChoice(actor, c); break;
                 case ActionKind.ContinueAfterVictory: ContinueAfterVictory(actor, c); break;
+                case ActionKind.ChooseStartingSpecialization: ChooseStartingSpecialization(actor, c); break;
                 default: throw new RuleViolation("UnknownAction");
             }
             _results[c.CommandId] = new(c.CommandId, ResultStatus.Accepted, "Accepted", Tick);
@@ -462,6 +464,7 @@ public sealed partial class SimulationEngine
         if(InspectBilling() is {} billing)payload=new{Payload=payload,Billing=billing};
         if(InspectServices() is {} services)payload=new{Payload=payload,Services=services};
         if(InspectDevelopment() is {} development)payload=new{Payload=payload,Development=development};
+        if(CaptureStartingSpecializations() is { } chosen)payload=new{Payload=payload,StartingSpecializations=chosen};
         var travel = TravelDeviation();
         return ScenarioValidation.Hash(travel is null ? payload : new { Payload = payload, Travel = travel });
     }

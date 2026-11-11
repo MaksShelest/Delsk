@@ -5,7 +5,8 @@ using Simulation.Core;
 
 namespace Simulation.Hosting;
 
-public sealed record OrdinaryGameOptions(int NpcCount=3,string Difficulty="Medium",ulong? Seed=null,long HumanActorId=1,int MovementVersion=2)
+public sealed record OrdinaryGameOptions(int NpcCount=3,string Difficulty="Medium",ulong? Seed=null,long HumanActorId=1,int MovementVersion=2,
+    string? StartingIndustry=null,bool DisableStartingSpecializations=false,StartingSpecializationAssignment[]? SpecializationRoster=null,bool AllowUnassigned=false)
 {
     public static OrdinaryGameOptions Read(string json)
     {
@@ -83,8 +84,48 @@ public static class OrdinaryNewGame
                 vnext?checked(globals!.StartPopulationPerParticipant*4):baseScenario.Population,vnext?checked(globals!.MaxPopulationPerParticipant*4):baseScenario.Labor?.MaximumPopulation,vnext?globals!.StartTreasuryMinorPer4Participants:baseScenario.StartingTreasuryMinor,baseScenario.CapitalDemand?.BootstrapBaseBudgetMinor)};
         scenario=scenario with{Economy=(scenario.Economy??new()) with{Movement=options.MovementVersion==1?MovementRules.H2:MovementRules.I1,
             VehicleControl=options.MovementVersion==2 && scenario.Economy is {Roads:not null,Fleet:not null}?VehicleControlRules.I2:null}};
+        scenario=ApplySpecializations(scenario,options);
         ScenarioValidation.Validate(scenario);
         return new(scenario,options.HumanActorId,[..actors.Where(p=>p.Id!=options.HumanActorId).Select(p=>new ControllerAssignment(p.Id,p.PublicPreferenceItem,options.Difficulty))]);
+    }
+    private static ScenarioDefinition ApplySpecializations(ScenarioDefinition scenario,OrdinaryGameOptions options)
+    {
+        var rules=scenario.Economy?.StartingSpecializations;
+        bool requested=options.StartingIndustry is not null||options.DisableStartingSpecializations||options.SpecializationRoster is not null;
+        if(rules is null)
+        {
+            if(requested)throw new ArgumentException("This profile has no starting specializations");
+            return scenario;
+        }
+        if(options.DisableStartingSpecializations)
+        {
+            if(options.StartingIndustry is not null||options.SpecializationRoster is not null)throw new ArgumentException("Disabled specializations cannot assign a direction");
+            return scenario with{Economy=scenario.Economy! with{StartingSpecializations=rules with{Enabled=false}}};
+        }
+        if(!rules.Enabled)
+        {
+            if(requested)throw new ArgumentException("Starting specializations are turned off");
+            return scenario;
+        }
+        if(options.SpecializationRoster is not null)
+        {
+            if(options.StartingIndustry is not null&&options.SpecializationRoster.FirstOrDefault(r=>r.ActorId==options.HumanActorId)?.IndustryId!=options.StartingIndustry)
+                throw new ArgumentException("The human specialization does not match the roster");
+            return scenario with{StartingSpecializationRoster=options.SpecializationRoster};
+        }
+        if(options.StartingIndustry is null)
+        {
+            if(options.AllowUnassigned)return scenario;
+            throw new ArgumentException("Choose a starting specialization");
+        }
+        if(!StartingSpecializations.ChainReady(scenario,options.StartingIndustry))throw new ArgumentException("Unknown starting specialization");
+        var rows=new List<StartingSpecializationAssignment>();
+        foreach(var actor in scenario.Participants.OrderBy(p=>p.Id))
+        {
+            if(actor.Id==options.HumanActorId)rows.Add(new(actor.Id,options.StartingIndustry));
+            else if(StartingSpecializations.ChooseNpc(scenario,actor.Id) is { } industry)rows.Add(new(actor.Id,industry));
+        }
+        return scenario with{StartingSpecializationRoster=rows.ToArray()};
     }
     public static long Scale(long baseValue,int participants)
     {if(baseValue<0 || participants<1)throw new ArgumentException("Nonnegative base and positive roster required");return checked((long)(((Int128)baseValue*participants+3)/4));}
