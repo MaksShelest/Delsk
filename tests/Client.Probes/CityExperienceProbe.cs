@@ -62,7 +62,10 @@ public partial class CityExperienceProbe : Control
         _app=GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();AddChild(_app);await Frames(5);
         var setup=Field<MapSelectionScreen>(_app,"_mapSelection");
         ((UiDisclosure)setup.AdditionalSettings.GetParent()).Open();await Frames();await Click(TextButton("English"));
-        setup=Field<MapSelectionScreen>(_app,"_mapSelection");await Number(All(setup).OfType<SpinBox>().Single(s=>s.Name=="NpcCount"),count.ToString());
+        setup=Field<MapSelectionScreen>(_app,"_mapSelection");
+        if(All(setup).OfType<UiDisclosure>().FirstOrDefault(s=>s.Name=="GameSettings") is {} gameSettings)
+        {gameSettings.Open();await Frames();}
+        await Number(All(setup).OfType<SpinBox>().Single(s=>s.Name=="NpcCount"),count.ToString());
         if(_language=="ru"){((UiDisclosure)setup.AdditionalSettings.GetParent()).Open();await Frames();await Click(TextButton("Русский"));}
         if(PlayMaps.UserCatalog.Contains(map))
         {await Click(Named<Button>("ChooseMap"));await Click(Named<Button>("SelectMap_"+map));await Click(Named<Button>("StartGame"));}

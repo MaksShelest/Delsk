@@ -50,15 +50,16 @@ public partial class DevelopmentPanel : VBoxContainer
                 string.Join("\n",current.Concat(d.Quests.Where(q=>q.Status!="Active").TakeLast(10)).Select(q=>$"#{q.Id} · {PlayerText.Item(_language,q.ItemId)} {q.Delivered}/{q.Quantity} · {q.Reward} XP · "+State(q.Status)+L(" · срок "," · deadline ")+q.DeadlineTick));
             if(_plain)
             {
-                _status.Text=current.Length==0&&d.Choices.Length==0
-                    ?L("Сейчас нет задания. Новое появится по договору столицы с реальным спросом.","There is no quest right now. A new one appears from a capital contract with real demand.")
-                    :string.Join("\n",current.Select(q=>PlayerText.ActionPhrase(_language,"deliver",q.ItemId,0)+" — "+q.Delivered+"/"+q.Quantity+L(". Награда: ",". Reward: ")+q.Reward+" XP"));
+                _status.Text=current.Length>0
+                    ?string.Join("\n",current.Select(q=>PlayerText.ActionPhrase(_language,"deliver",q.ItemId,0)+" — "+q.Delivered+"/"+q.Quantity+L(" · награда "," · reward ")+q.Reward+L(" опыта"," XP")))
+                    :d.Choices.Length>0?L("Выберите, что доставить.","Choose what to deliver.")
+                    :L("Пока нет заданий. Они появляются после заключения договора со столицей.","Quests appear after you sign a contract with the capital.");
                 _technical.Text=technical;_more!.Visible=true;
             }
             else{_status.Text=technical;if(_more is not null)_more.Visible=false;}
-            foreach(var q in current)Button("abandon:"+q.Id,_plain?L("Отказаться","Abandon"):L("Отказаться от задания #","Abandon quest #")+q.Id+L(" (договор сохраняется)"," (contract remains)"),new(ActionKind.AbandonIndustryQuest,OfferId:q.Id));
+            foreach(var q in current)Button("abandon:"+q.Id,_plain?L("Отказаться от задания: ","Abandon quest: ")+PlayerText.Item(_language,q.ItemId):L("Отказаться от задания #","Abandon quest #")+q.Id+L(" (договор сохраняется)"," (contract remains)"),new(ActionKind.AbandonIndustryQuest,OfferId:q.Id));
             foreach(var c in d.Choices)Button($"quest:{c.ContractId}:{c.Industry}:{c.Batches}",_plain
-                ?PlayerText.ActionPhrase(_language,"deliver",c.ItemId,0)+" ×"+c.Quantity+L(". Награда: ",". Reward: ")+c.Reward+" XP"
+                ?L("Принять: ","Accept: ")+PlayerText.Item(_language,c.ItemId)+" ×"+c.Quantity+L(" · награда "," · reward ")+c.Reward+L(" опыта"," XP")
                 :PlayerText.Enterprise(_language,c.Industry)+$" · #{c.ContractId} · {PlayerText.Item(_language,c.ItemId)} ×{c.Quantity} → {c.Reward} XP"+L(" · срок "," · deadline ")+c.DeadlineTick,
                 new(ActionKind.AcceptIndustryQuest,ContractId:c.ContractId,BuildingTypeId:c.Industry,Quantity:c.Batches,OfferWindow:c.ReviewWindow),active<d.Rules.QuestSlots);
         }

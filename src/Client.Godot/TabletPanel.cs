@@ -13,8 +13,16 @@ public partial class TabletPanel : PanelContainer
     private readonly VBoxContainer _column;
     private readonly Label _title;
     private bool _compactFrame;
+    private bool _friendly;
+    private readonly Button _help;
     public bool SideDock{get;private set;}
     public void SetTitle(string title)=>_title.Text=title;
+    public void SetSimple(bool friendly)
+    {
+        _friendly=friendly;
+        Theme=CompactTabletDesign.ForPlayer(friendly);
+        if(IsInsideTree())LayoutFrame();
+    }
     /// <summary>Левая панель под верхним HUD: заголовок и закрытие фиксированы, мир остаётся справа.</summary>
     public void UseSideDock()
     {
@@ -30,6 +38,7 @@ public partial class TabletPanel : PanelContainer
     }
     private void LayoutFrame()
     {
+        _help.Text=_friendly&&!SideDock&&GetViewportRect().Size.X>=700?L("Справка","Help"):"?";
         if(SideDock)
         {
             var dockSafe=UiSafeArea.Read(this);var size=GetViewportRect().Size;bool dockShort=size.Y<540;bool phone=size.X<1000;bool tiny=phone&&size.X<=820&&dockShort;
@@ -47,8 +56,8 @@ public partial class TabletPanel : PanelContainer
         if(!_compactFrame)return;
         AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("f1f2ec",shortScreen?8:12));
         _column.AddThemeConstantOverride("separation",shortScreen?3:5);
-        _title.AddThemeFontSizeOverride("font_size",shortScreen?18:20);
-        _header.GetChild<Control>(0).Visible=true;_header.GetChild<Control>(0).CustomMinimumSize=new(shortScreen?20:28,shortScreen?20:28);
+        _title.AddThemeFontSizeOverride("font_size",(shortScreen?18:20)+(_friendly?2:0));
+        _header.GetChild<Control>(0).Visible=!_friendly||GetViewportRect().Size.X>=560;_header.GetChild<Control>(0).CustomMinimumSize=new(shortScreen?20:28,shortScreen?20:28);
         foreach(var button in _header.GetChildren().OfType<Button>().Where(b=>b is not OptionButton)){button.CustomMinimumSize=new(shortScreen?40:44,shortScreen?40:44);button.SizeFlagsVertical=SizeFlags.ShrinkCenter;}
         _status.MaxLinesVisible=shortScreen?1:3;
     }
@@ -82,7 +91,7 @@ public partial class TabletPanel : PanelContainer
         var header=new HBoxContainer();_header=header;column.AddChild(header);header.AddChild(TabletDesign.Art(icon,new(56,56)));
         header.AddChild(new Label{Text=title,SizeFlagsHorizontal=SizeFlags.ExpandFill,AutowrapMode=TextServer.AutowrapMode.WordSmart,ThemeTypeVariation="TabletTitle"});
         _title=(Label)header.GetChild(1);_title.AddThemeFontSizeOverride("font_size",27);
-        var help=new Button{Name="TabletHelp",Text="?",TooltipText=L("Справка по этому экрану","Help for this screen"),FocusMode=FocusModeEnum.None,CustomMinimumSize=new(44,44)};
+        var help=_help=new Button{Name="TabletHelp",Text="?",TooltipText=L("Справка по этому экрану","Help for this screen"),FocusMode=FocusModeEnum.None,CustomMinimumSize=new(44,44)};
         help.Pressed+=()=>HelpRequested?.Invoke();header.AddChild(help);
         var close=new Button{Name="TabletClose",Text="×",TooltipText=L("Закрыть","Close"),FocusMode=FocusModeEnum.None,CustomMinimumSize=new(44,44)};
         close.Pressed+=()=>Closed?.Invoke();header.AddChild(close);column.AddChild(new HSeparator());
@@ -103,7 +112,9 @@ public partial class TabletPanel : PanelContainer
     }
     public void ShowClock(bool timeRunning,bool paused,long tick,string feedback)
     {
-        _time.SetPressedNoSignal(timeRunning);_time.Text="";
+        _time.SetPressedNoSignal(timeRunning);_time.Text=_friendly&&!SideDock?L("Ход времени","World time"):"";
+        _time.TooltipText=_friendly?L(timeRunning?"Поставить мир на паузу":"Возобновить ход времени",timeRunning?"Pause the world":"Resume world time")
+            :L("Пауза останавливает весь мир, включая NPC. Разрешённое движение запускает время.","Pause stops the whole world, including NPCs. Allowed movement resumes time.");
         _clock.Text="◷ "+$"{tick/3600:00}:{tick/60%60:00}:{tick%60:00}"+" · "+L(paused?"Пауза":"Время идёт",paused?"Paused":"Running");
         _status.Text=feedback;_status.Visible=feedback.Length>0;
         if(IsInsideTree()&&Body.Size.X>0)GameUi.FitControls(Body,Body.Size.X);

@@ -45,13 +45,16 @@ public partial class PlayerTablet : VBoxContainer
     private readonly List<string> _pickerKeys=[];
     private readonly Button _sell;
     private readonly Label _goalTitle;
+    private readonly Label _overviewTitle;
     private readonly Label _goalBody;
+    private readonly Label _goalNext;
     private readonly Label _goalGaps;
     private readonly Button _goalGo;
     private readonly Button _goalMore;
     private readonly VBoxContainer _goalSources=new();
     private readonly Label _problems;
     private readonly Label _summaryLine=Wrapped();
+    private readonly Control _goalCard;
     private Container _stats=null!;
     private Container _quick=null!;
     private Control _problemsCard=null!;
@@ -109,14 +112,17 @@ public partial class PlayerTablet : VBoxContainer
         Group("city","ГОРОД","CITY");Nav("participants","Участники","Participants");Nav("city","Город и политика","City & politics");
         Group("information","ИНФОРМАЦИЯ","INFORMATION");Nav("map","Карта","Map");Nav("notices","События","Notices");Nav("tutorial","Обучение","Guide");
         _mobile.ItemSelected+=index=>{if((int)index>=0&&(int)index<_pickerKeys.Count)OpenSection(_pickerKeys[(int)index]);};
-        var overview=Page("overview");overview.AddChild(_overview);_overview.AddChild(TabletDesign.Heading(L("Обзор хозяйства","Holdings overview"),21));
+        var overview=Page("overview");overview.AddChild(_overview);_overviewTitle=TabletDesign.Heading(L("Обзор хозяйства","Holdings overview"),21);_overview.AddChild(_overviewTitle);
         _summaryLine.Name="OverviewSummary";_overview.AddChild(_summaryLine);
         _stats=new TabletColumns{Breakpoint=560};_overview.AddChild(_stats);
         Stat(_stats,"coin",_capital,L("Капитал","Capital"));Stat(_stats,"people",_employed,L("Занятые работники","Employed staff"));Stat(_stats,"bag",_room,L("Свободно в рюкзаке","Backpack room"));
         _goalTitle=TabletDesign.Heading("",20);_goalTitle.Name="OverviewGoalTitle";_goalBody=Wrapped();_goalBody.Name="OverviewGoalBody";_goalBody.Visible=!friendly;_goalGaps=Wrapped();_goalGaps.Name="OverviewGoalGaps";
+        _goalNext=GameUi.Text("",18);_goalNext.Name="OverviewGoalNext";
         _goalGo=CompactTabletDesign.Button("OverviewGoal",L("К цели","Go"),()=>{if(_step is not null)GuideRequested?.Invoke(_step);});GameUi.Primary(_goalGo);
         Button goalMore=null!;goalMore=CompactTabletDesign.Button("OverviewGoalMore",L("Подробнее","Details"),()=>{_goalBody.Visible=!_goalBody.Visible;goalMore.Text=_goalBody.Visible?L("Свернуть","Fold"):L("Подробнее","Details");});_goalMore=goalMore;
-        var goal=new VBoxContainer();goal.AddChild(_goalTitle);goal.AddChild(_goalGaps);goal.AddChild(_goalSources);goal.AddChild(_goalGo);goal.AddChild(_goalMore);goal.AddChild(_goalBody);_overview.AddChild(CompactTabletDesign.Card(goal));
+        var goal=new VBoxContainer();goal.AddChild(_goalTitle);goal.AddChild(_goalNext);goal.AddChild(_goalGaps);goal.AddChild(_goalSources);
+        var goalActions=TabletDesign.Flow();goalActions.AddChild(_goalGo);goalActions.AddChild(_goalMore);goal.AddChild(goalActions);goal.AddChild(_goalBody);
+        _goalCard=CompactTabletDesign.Card(goal);_overview.AddChild(_goalCard);
         _problems=Wrapped();_problemsCard=CompactTabletDesign.Card(_problems);_overview.AddChild(_problemsCard);
         _quick=TabletDesign.Flow();_overview.AddChild(_quick);
         _quick.AddChild(CompactTabletDesign.Button("OverviewObjects",L("Мои объекты","My objects"),()=>OpenSection("holdings")));
@@ -150,6 +156,23 @@ public partial class PlayerTablet : VBoxContainer
     public void ApplyPresentation(bool friendly)
     {
         _friendly=friendly;_development.UsePlain(friendly);
+        Theme=CompactTabletDesign.ForPlayer(friendly);
+        if(_fleet is not null)_fleet.Theme=Theme;
+        if(_groundCard is not null)_groundCard.Theme=Theme;
+        _goalTitle.AddThemeFontSizeOverride("font_size",friendly?22:20);
+        _overviewTitle.Visible=!friendly;
+        _overview.MoveChild(_goalCard,friendly?0:3);
+        _goalBody.Visible=!friendly;_goalSourcesKey="";
+        _empty.Text=friendly?L("Здесь появятся ваши здания и техника.","Your buildings and equipment will appear here.")
+            :L("Своих объектов пока нет. Добывайте сырьё, продавайте столице, покупайте участок и стройте.","No holdings yet. Harvest inputs, sell to the capital, buy a plot and build.");
+        _mobile.TooltipText=friendly?L("Разделы хозяйства","Business sections"):"";
+        foreach(var (key,button) in _navigation)
+        {
+            string? icon=key switch{"overview"=>"home","holdings"=>"warehouse","inventory"=>"bag","fleet" or "services"=>"truck",
+                "quests"=>"star","purchases"=>"market","account"=>"coin","map"=>"pin","participants"=>"people","city"=>"city",_=>null};
+            button.Icon=friendly&&icon is not null?TabletDesign.Texture(icon):null;
+            if(friendly)button.AddThemeConstantOverride("icon_max_width",21);
+        }
         foreach(var page in FriendlyGuidance.Navigation(friendly))
             foreach(string key in page.Keys)Place(key,page.Group);
         _sell.GetParent()?.RemoveChild(_sell);
@@ -174,8 +197,11 @@ public partial class PlayerTablet : VBoxContainer
     {
         _pickerKeys.Clear();_mobile.Clear();
         foreach(var page in FriendlyGuidance.Navigation(_friendly))
+        {
+            if(_friendly&&page.Group=="actions"){_pickerKeys.Add("sell");_mobile.AddItem(_sell.Text);}
             foreach(string key in page.Keys)
                 if(_navigation.TryGetValue(key,out var button)){_pickerKeys.Add(key);_mobile.AddItem(button.TooltipText);}
+        }
         string selected=_section=="object"?"holdings":_section=="equipment"?"fleet":_section;
         int choice=_pickerKeys.IndexOf(selected);if(choice>=0)_mobile.Select(choice);
     }
@@ -183,21 +209,25 @@ public partial class PlayerTablet : VBoxContainer
     {
         if(_view is null)return;
         _step=FriendlyGuidance.Read(_view,_scenario,_language,ConfirmedSale);
-        _goalTitle.Text=PlayerText.Local(_language,_step.TitleRu,_step.TitleEn)+(_step.Count&&_step.Need>0?" — "+_step.Have+"/"+_step.Need:"");
+        string title=_friendly?StarterGoalUi.Title(_step,_language):PlayerText.Local(_language,_step.TitleRu,_step.TitleEn);
+        long progress=_friendly&&_step.Need>0?Math.Clamp(_step.Have,0,_step.Need):_step.Have;
+        _goalTitle.Text=title+(_step.Count&&_step.Need>0?" — "+progress+"/"+_step.Need:"");
         _goalBody.Text=PlayerText.Local(_language,_step.DetailRu,_step.DetailEn);
-        if(!_friendly)_goalBody.Visible=true;
-        _goalMore.Visible=_friendly;
-        _goalMore.Text=L("Подробнее","Details");
+        _goalNext.Text=StarterGoalUi.Next(_step,_language);
+        _goalNext.Visible=_friendly&&_goalNext.Text.Length>0;
+        _goalMore.Visible=_friendly&&_goalBody.Text.Length>0&&_goalNext.Text!=_goalBody.Text;
+        if(!_goalMore.Visible)_goalBody.Visible=!_friendly;
+        _goalMore.Text=_goalBody.Visible?L("Свернуть","Fold"):L("Подробнее","Details");
         _goalGaps.Text=FriendlyGuidance.Describe(_step.Gaps,_language,_friendly);_goalGaps.Visible=_goalGaps.Text.Length>0;
-        _goalGo.Text=_step.X<0&&_step.TargetId>0?L("Открыть","Open"):L("К цели","Go");
-        _goalGo.Disabled=_step.X<0&&_step.TargetId==0;
+        _goalGo.Text=_friendly?StarterGoalUi.Action(_step,_language):_step.X<0&&_step.TargetId>0?L("Открыть","Open"):L("К цели","Go");
+        _goalGo.Disabled=_friendly?!StarterGoalUi.CanOpen(_step):_step.X<0&&_step.TargetId==0;
+        _goalGo.Visible=!_friendly||!_goalGo.Disabled;
         _problems.Text=FriendlyGuidance.Attention(_view,_language);
         bool calm=_problems.Text is "Срочных проблем нет." or "No urgent problems.";
         _problemsCard.Visible=!_friendly||!calm;
         _stats.Visible=!_friendly;_quick.Visible=!_friendly;_noticesCard.Visible=!_friendly;_summaryLine.Visible=_friendly;
         var pack= _view.Inventories.Single(i=>i.Id==_view.Participant.InventoryId);
-        var city=_view.City!.Participants.Single(p=>p.Actor==_view.Participant.Id);
-        _summaryLine.Text=L("Капитал ","Capital ")+PlayerText.Money(city.CapitalMinor)+L(" · свободно "," · available ")+PlayerText.Money(_view.AvailableCashMinor)+L(" · рюкзак "," · pack ")+Math.Max(0,pack.Capacity-pack.OccupiedVolume-pack.ReservedCapacity)+"/"+pack.Capacity;
+        _summaryLine.Text=L("Доступно ","Available ")+PlayerText.Money(_view.AvailableCashMinor)+L(" · Рюкзак "," · Backpack ")+pack.OccupiedVolume+"/"+pack.Capacity;
         string sources=_step.Id+":"+string.Join(",",_step.Gaps.Select(g=>g.Kind+g.ItemId+g.Have+"/"+g.Need));
         if(sources!=_goalSourcesKey)
         {
@@ -246,7 +276,7 @@ public partial class PlayerTablet : VBoxContainer
         var objectPage=Page("object");objectPage.SizeFlagsVertical=woodworking?SizeFlags.ExpandFill:SizeFlags.Fill;
         _cardHost.SizeFlagsVertical=woodworking?SizeFlags.ExpandFill:SizeFlags.Fill;
         ((ScrollContainer)objectPage.GetParent()).VerticalScrollMode=woodworking?ScrollContainer.ScrollMode.Disabled:ScrollContainer.ScrollMode.Auto;
-        if(kind=="ground"){_groundCard=new(_scenario,_language,kind,id,_submit,_access,demolitionQuote:_demolitionQuote);_groundCard.GuideRequested+=step=>GuideRequested?.Invoke(step);_cardHost.AddChild(_groundCard);_groundCard.ShowData(_view,_pending);}
+        if(kind=="ground"){_groundCard=new(_scenario,_language,kind,id,_submit,_access,demolitionQuote:_demolitionQuote){Theme=CompactTabletDesign.ForPlayer(_friendly)};_groundCard.GuideRequested+=step=>GuideRequested?.Invoke(step);_cardHost.AddChild(_groundCard);_groundCard.ShowData(_view,_pending);}
         else{_card=new(_scenario,_language,kind,id,_submit,_access,_demolitionQuote,woodworkingPrototype:woodworking,productionType:_view.Buildings.FirstOrDefault(b=>b.Id.Value==id)?.TypeId??"woodworking"){Theme=TabletDesign.Theme};_card.CloseRequested+=Back;_card.HelpRequested+=()=>HelpRequested?.Invoke();_card.MapRequested+=()=>MapRequested?.Invoke();_card.FleetRequested+=()=>OpenSection("fleet");_cardHost.AddChild(_card);_card.ShowData(_view,_pending,_paused);}
         _cardHost.Visible=true;_back.Visible=true;SelectSection("object");
     }
@@ -255,6 +285,7 @@ public partial class PlayerTablet : VBoxContainer
     {
         switch(section)
         {
+            case "sell":RefreshPicker();ExchangeRequested?.Invoke();return;
             case "map":MapRequested?.Invoke();return;
             case "notices":NoticesRequested?.Invoke();return;
             case "tutorial":TutorialRequested?.Invoke();return;

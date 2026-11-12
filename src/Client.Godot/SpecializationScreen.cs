@@ -8,14 +8,24 @@ public partial class SpecializationScreen : ColorRect
     public event System.Action<string>? Confirmed;
     public event System.Action? Cancelled;
     private readonly string _language;
+    private readonly bool _friendly;
+    private readonly bool _grants;
     private readonly Dictionary<string, Button> _cards = new(StringComparer.Ordinal);
     private Button? _confirm;
     private GridContainer? _grid;
+    private ScrollContainer? _scroll;
+    private VBoxContainer? _body;
+    private Label? _heading;
+    private Label? _intro;
+    private Control? _grantCard;
+    private Label? _note;
     private string? _selected;
 
-    public SpecializationScreen(string language)
+    public SpecializationScreen(string language, bool friendly = true, bool grants = true)
     {
         _language = language;
+        _friendly = friendly;
+        _grants = grants;
         Name = "SpecializationScreen";
         Color = new Color(0.08f, .13f, .11f, .72f);
         MouseFilter = MouseFilterEnum.Stop;
@@ -24,55 +34,77 @@ public partial class SpecializationScreen : ColorRect
 
     public override void _Ready()
     {
-        var panel = new PanelContainer { Theme = CompactTabletDesign.Theme, Name = "SpecializationPanel" };
+        var panel = new PanelContainer { Theme = CompactTabletDesign.ForPlayer(_friendly), Name = "SpecializationPanel" };
         panel.AddThemeStyleboxOverride("panel", CompactTabletDesign.Surface("e8eee5", 12));
         panel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         AddChild(panel);
         UiSafeArea.Panel(panel, 12, 12, 12, 12);
-        var body = new VBoxContainer();
+        var body = _body = new VBoxContainer();
         body.AddThemeConstantOverride("separation", 8);
         panel.AddChild(body);
-        body.AddChild(TabletDesign.Heading(L("Стартовая специализация", "Starting specialization"), 26));
-        var intro = new Label
+        _heading = TabletDesign.Heading(_friendly ? L("С чего начнём?", "What will you make first?") : L("Стартовая специализация", "Starting specialization"), _friendly ? 30 : 26);
+        body.AddChild(_heading);
+        var intro = _intro = new Label
         {
-            Text = L(
+            Text = _friendly ? L("Выберите, что будет выпускать ваше первое предприятие.", "Choose what your first business will make.") : L(
                 "Выберите отрасль. После начала игры столица один раз оплатит первый участок, первое предприятие этой отрасли, материалы и сырьё первой партии. Свои 200 монет останутся.",
                 "Choose an industry. After the game starts, the capital once pays for the first parcel, the first enterprise of that industry, its materials and the first batch of input. Your 200 coins stay."),
             AutowrapMode = TextServer.AutowrapMode.WordSmart
         };
         intro.AddThemeColorOverride("font_color", new Color("425448"));
         body.AddChild(intro);
-        var scroll = new ScrollContainer { Name = "SpecializationScroll", HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, SizeFlagsVertical = SizeFlags.ExpandFill, ClipContents = true };
+        var scroll = _scroll = new ScrollContainer { Name = "SpecializationScroll", HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, SizeFlagsVertical = SizeFlags.ExpandFill, ClipContents = true, FollowFocus = _friendly };
         body.AddChild(scroll);
         _grid = new GridContainer { Name = "SpecializationCards", SizeFlagsHorizontal = SizeFlags.ExpandFill, Columns = 2 };
         _grid.AddThemeConstantOverride("h_separation", 10);
         _grid.AddThemeConstantOverride("v_separation", 10);
-        scroll.AddChild(_grid);
+        var content = _friendly ? new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill } : null;
+        if (content is null) scroll.AddChild(_grid);
+        else { scroll.AddChild(content); content.AddChild(_grid); }
         foreach (var direction in StartingSpecializations.Directions)
             _grid.AddChild(Card(direction.IndustryId));
-        var note = new Label
+        if (_friendly && _grants)
         {
-            Text = L(
+            var help = new HBoxContainer { Name = "StartingGrantHelp" };
+            help.AddChild(TabletDesign.Art("coin", new(34, 34)));
+            help.AddChild(GameUi.Text(L("После начала партии оформите помощь на участок, стройку и первую партию товаров.",
+                "Once you start, claim support for your land, building and first batch."), 17));
+            _grantCard = GameUi.Card(help);
+            content!.AddChild(_grantCard);
+        }
+        var note = _note = new Label
+        {
+            Text = _friendly ? L("Позже можно открыть предприятия и в других отраслях.", "You can start businesses in other industries later.") : L(
                 "Выбор один на партию и не запрещает другие отрасли. Нажатие на карточку партию не начинает.",
                 "The choice is once per game and does not block other industries. Pressing a card does not start the game."),
             AutowrapMode = TextServer.AutowrapMode.WordSmart
         };
-        note.AddThemeFontSizeOverride("font_size", 14);
+        note.AddThemeFontSizeOverride("font_size", _friendly ? 16 : 14);
         note.AddThemeColorOverride("font_color", new Color("425448"));
-        body.AddChild(note);
-        var actions = new HBoxContainer();
+        (content ?? body).AddChild(note);
+        Container actions = _friendly ? TabletDesign.Flow() : new HBoxContainer();
         body.AddChild(actions);
-        var back = new Button { Name = "BackToMapSelection", Text = L("К выбору карты", "Back to maps"), CustomMinimumSize = new(160, 44) };
+        var back = new Button { Name = "BackToMapSelection", Text = _friendly ? L("Назад", "Back") : L("К выбору карты", "Back to maps"), CustomMinimumSize = new(_friendly ? 72 : 160, 44) };
         back.Pressed += () => Cancelled?.Invoke();
         actions.AddChild(back);
-        _confirm = new Button { Name = "ConfirmSpecialization", Text = L("Подтвердить направление", "Confirm direction"), Disabled = true, CustomMinimumSize = new(220, 44), SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        _confirm = new Button { Name = "ConfirmSpecialization", Text = _friendly ? L("Начать игру", "Start game") : L("Подтвердить направление", "Confirm direction"), Disabled = true, CustomMinimumSize = new(_friendly ? 150 : 220, 44), SizeFlagsHorizontal = SizeFlags.ExpandFill };
         _confirm.TooltipText = L("Сначала выберите карточку", "Select a card first");
         GameUi.Primary(_confirm);
         _confirm.Pressed += () => { if (_selected is { } industry) Confirmed?.Invoke(industry); };
         actions.AddChild(_confirm);
         Resized += Reflow;
         Reflow();
-        back.GrabFocus();
+        if (_friendly)
+        {
+            var ordered = _cards.Values.Append(back).Append(_confirm).ToArray();
+            for (int i = 0; i < ordered.Length; i++)
+            {
+                ordered[i].FocusNext = ordered[i].GetPathTo(ordered[(i + 1) % ordered.Length]);
+                ordered[i].FocusPrevious = ordered[i].GetPathTo(ordered[(i + ordered.Length - 1) % ordered.Length]);
+            }
+            ordered[0].GrabFocus();
+        }
+        else back.GrabFocus();
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -85,7 +117,26 @@ public partial class SpecializationScreen : ColorRect
     {
         if (_grid is null || !IsInsideTree()) return;
         var size = GetViewportRect().Size;
-        _grid.Columns = size.X < 900 || size.Y < 520 ? 1 : 2;
+        _grid.Columns = _friendly ? (size.X < 600 ? 1 : 2) : (size.X < 900 || size.Y < 520 ? 1 : 2);
+        if (_friendly)
+        {
+            bool shortScreen = size.Y < 450;
+            _body!.AddThemeConstantOverride("separation", shortScreen ? 5 : 8);
+            _heading!.AddThemeFontSizeOverride("font_size", shortScreen ? 26 : 30);
+            _intro!.Text = shortScreen && _grants
+                ? L("Выберите первое предприятие. Столица поможет с участком, стройкой и первой партией.",
+                    "Choose your first business. Get help with land, construction and your first batch.")
+                : L("Выберите, что будет выпускать ваше первое предприятие.", "Choose what your first business will make.");
+            if (_grantCard is not null) _grantCard.Visible = !shortScreen;
+            _note!.Visible = !shortScreen;
+            foreach (var button in _cards.Values)
+            {
+                button.CustomMinimumSize = new(0, shortScreen ? 65 : 88);
+                button.AddThemeFontSizeOverride("font_size", shortScreen ? 18 : 20);
+                button.AddThemeConstantOverride("icon_max_width", shortScreen ? 48 : 70);
+            }
+            return;
+        }
         foreach (var button in _cards.Values) FitCard(button);
     }
 
@@ -101,23 +152,35 @@ public partial class SpecializationScreen : ColorRect
     private Control Card(string industry)
     {
         var copy = Copy(industry);
+        string enterprise = _friendly && industry == "food" ? L("Мельница и пекарня", "Mill and bakery") : L(copy.EnterpriseRu, copy.EnterpriseEn);
+        string chain = L(copy.ChainRu, copy.ChainEn);
         var button = new Button
         {
             Name = "Specialization_" + industry,
             Alignment = HorizontalAlignment.Left,
             AutowrapMode = TextServer.AutowrapMode.WordSmart,
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
-            Text = L(copy.TitleRu, copy.TitleEn) + "\n" + L(copy.EnterpriseRu, copy.EnterpriseEn) + "\n" + L(copy.ChainRu, copy.ChainEn) + "\n" + L(copy.TextRu, copy.TextEn)
+            Text = _friendly ? enterprise + "\n" + chain
+                : L(copy.TitleRu, copy.TitleEn) + "\n" + enterprise + "\n" + chain + "\n" + L(copy.TextRu, copy.TextEn)
         };
+        if (_friendly)
+        {
+            button.Icon = TabletDesign.Texture(industry);
+            button.ExpandIcon = true;
+            button.CustomMinimumSize = new(0, 88);
+            button.AddThemeConstantOverride("icon_max_width", 70);
+            button.AddThemeConstantOverride("h_separation", 14);
+            button.AddThemeFontSizeOverride("font_size", 20);
+        }
         button.AddThemeStyleboxOverride("normal", CompactTabletDesign.Surface("f7f8f1", 12));
         button.AddThemeStyleboxOverride("hover", CompactTabletDesign.Surface("f7f8f1", 12));
         button.AddThemeStyleboxOverride("pressed", CompactTabletDesign.Surface("f7f8f1", 12));
-        button.AddThemeStyleboxOverride("focus", CompactTabletDesign.Surface("f7f8f1", 12));
+        if (!_friendly) button.AddThemeStyleboxOverride("focus", CompactTabletDesign.Surface("f7f8f1", 12));
         button.AddThemeColorOverride("font_color", new Color("243c30"));
         button.AddThemeColorOverride("font_hover_color", new Color("243c30"));
         button.AddThemeColorOverride("font_pressed_color", new Color("243c30"));
         button.AddThemeColorOverride("font_focus_color", new Color("243c30"));
-        button.Resized += () => FitCard(button);
+        if (!_friendly) button.Resized += () => FitCard(button);
         button.Pressed += () => Select(industry);
         _cards[industry] = button;
         var row = new HBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
@@ -140,9 +203,9 @@ public partial class SpecializationScreen : ColorRect
                 box.BorderColor = new Color(Copy(id).Accent);
                 box.BorderWidthLeft = box.BorderWidthRight = box.BorderWidthTop = box.BorderWidthBottom = 3;
             }
-            foreach (string state in new[] { "normal", "hover", "pressed", "focus" }) button.AddThemeStyleboxOverride(state, box);
+            foreach (string state in _friendly ? new[] { "normal", "hover", "pressed" } : new[] { "normal", "hover", "pressed", "focus" }) button.AddThemeStyleboxOverride(state, box);
         }
-        if (_grid?.GetParent() is ScrollContainer scroll && _cards[industry].GetParent() is Control row)
+        if (_scroll is { } scroll && _cards[industry].GetParent() is Control row)
             scroll.CallDeferred(ScrollContainer.MethodName.EnsureControlVisible, row);
     }
 

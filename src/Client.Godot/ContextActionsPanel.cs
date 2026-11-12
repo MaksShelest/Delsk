@@ -11,7 +11,12 @@ public partial class ContextActionsPanel : PanelContainer
     public readonly ContextSelection Selection=new();
     public bool Expanded=>Selection.Expanded;
     public bool Dismissed {get;private set;}
-    public bool Friendly {get;set;}
+    private bool _friendly;
+    public bool Friendly
+    {
+        get=>_friendly;
+        set{if(_friendly!=value){_friendly=value;Theme=CompactTabletDesign.ForPlayer(value);}}
+    }
     public event Action<bool>? CollapsedChanged;
     public int ActiveCount=>Selection.Choices.Count(c=>c.Enabled&&(!Selection.Pending||c.Command is null));
     private readonly VBoxContainer _body=new();
@@ -136,7 +141,7 @@ public partial class ContextActionsPanel : PanelContainer
             item.Progress.Visible=choice.Command?.Kind==ActionKind.StopHarvest;
         }
         _more.Visible=choices.Length>primary.Length;
-        _more.Text=Friendly&&!Expanded?PlayerText.Local(language,"Ещё","More"):"⋯";_more.TooltipText=MoreHint();_dismiss.TooltipText=PlayerText.Local(language,"Свернуть действия","Collapse actions");
+        _more.Text=Friendly?PlayerText.Local(language,Expanded?"Свернуть":"Ещё",Expanded?"Fold":"More"):"⋯";_more.TooltipText=MoreHint();_dismiss.TooltipText=PlayerText.Local(language,"Свернуть действия","Collapse actions");
         string feedback=string.Join(" · ",new[]{status}.Concat(choices.Where(c=>primary.Contains(c.Key)&&!c.Enabled).Select(c=>c.Details)).Where(t=>t.Length>0).Distinct());
         _scroll.Visible=Expanded;_status.Text=feedback;_status.TooltipText=feedback;_status.Visible=feedback.Length>0;
         _heightTop=top;
