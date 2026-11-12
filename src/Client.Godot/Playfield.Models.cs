@@ -33,18 +33,41 @@ public partial class Playfield
         }
         else _session.AttachControllers(policies);
     }
-    private void RestoreGameControllers()
+    private void RestoreGameControllers(GameSession session)
     {
-        var saved=_session.ControllerStates.Where(c=>c.Kind==HybridController.PolicyKind).ToArray();
-        if(saved.Length>0)
+        var saved = session.ControllerStates.Where(c => c.Kind == HybridController.PolicyKind).ToArray();
+        OllamaAdapter? adapter = null;
+        ModelRuntime? runtime = null;
+        var restored = new List<HybridController>();
+        try
         {
-            var model=LocalGameModel.FromCheckpoint(saved[0])??throw new CheckpointException("MissingGameModelConfiguration");
-            if(saved.Any(c=>LocalGameModel.FromCheckpoint(c)!=model))throw new CheckpointException("ConflictingGameModelConfiguration");
-            MakeRuntime(model,saved.Select(c=>c.Actor.Value));
+            if (saved.Length > 0)
+            {
+                var model = LocalGameModel.FromCheckpoint(saved[0]) ?? throw new CheckpointException("MissingGameModelConfiguration");
+                if (saved.Any(c => LocalGameModel.FromCheckpoint(c) != model)) throw new CheckpointException("ConflictingGameModelConfiguration");
+                model.Validate();
+                adapter = new(model.Adapter);
+                runtime = new(adapter, saved.Select(c => c.Actor.Value), model.Runtime);
+            }
+            session.RestoreControllers(c =>
+            {
+                if (c.Kind == SelfBallotController.Kind) return SelfBallotController.Restore(c);
+                if (c.Kind != HybridController.PolicyKind) return AlgorithmicController.Restore(c);
+                var hybrid = HybridController.Restore(c, runtime!);
+                restored.Add(hybrid);
+                return hybrid;
+            });
         }
-        var restored=new List<HybridController>();
-        _session.RestoreControllers(c=>{if(c.Kind==SelfBallotController.Kind)return SelfBallotController.Restore(c);if(c.Kind!=HybridController.PolicyKind)return AlgorithmicController.Restore(c);var h=HybridController.Restore(c,_modelRuntime!);restored.Add(h);return h;});
-        _hybrids=restored.ToArray();
+        catch
+        {
+            runtime?.Dispose();
+            adapter?.Dispose();
+            throw;
+        }
+        DisposeModel();
+        _modelRuntime = runtime;
+        _modelAdapter = adapter;
+        _hybrids = restored.ToArray();
     }
     private bool ModelFrame()
     {

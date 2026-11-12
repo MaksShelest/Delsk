@@ -186,6 +186,53 @@ public sealed class CheckpointTests
     }
 
     [Fact]
+    public void RecoveredSessionCanSaveAgainWithoutReplacingTheGoodBackupWithDamagedBytes()
+    {
+        string folder = Path.Combine(Path.GetTempPath(), "delsk-recovery-" + Guid.NewGuid().ToString("N"));
+        string path = Path.Combine(folder, "save.json");
+        byte[] damaged = [0x7b, 0x00, 0xff];
+        try
+        {
+            var original = Fixtures.Session();
+            CheckpointStore.Save(original, path);
+            File.Move(path, path + ".bak");
+            string backup = File.ReadAllText(path + ".bak");
+            Assert.True(CheckpointStore.Load(path, recoverBackup: true).UsedBackup);
+            File.WriteAllBytes(path, damaged);
+            var recovered = CheckpointStore.Load(path, recoverBackup: true).Session;
+            Fixtures.Command(recovered, new(ActionKind.Harvest, ItemId: "wood", Quantity: 2));
+
+            CheckpointStore.Save(recovered, path, preserveDamagedMain: true);
+
+            Assert.Equal(backup, File.ReadAllText(path + ".bak"));
+            string quarantine = Assert.Single(Directory.GetFiles(folder, "save.json.corrupt-*"));
+            Assert.Equal(damaged, File.ReadAllBytes(quarantine));
+            var loaded = CheckpointStore.Load(path, recoverBackup: true);
+            Assert.False(loaded.UsedBackup);
+            ContinueTogether(recovered, loaded.Session, 20);
+            CheckpointStore.Save(recovered, path, preserveDamagedMain: true);
+            Assert.Equal(20, CheckpointStore.Load(path).Session.Engine.Tick);
+            Assert.Equal(1, CheckpointStore.Load(path + ".bak").Session.Engine.Tick);
+            Assert.Equal(quarantine, Assert.Single(Directory.GetFiles(folder, "save.json.corrupt-*")));
+            Assert.Empty(Directory.GetFiles(folder, "*.tmp-*"));
+        }
+        finally { if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true); }
+    }
+
+    [Fact]
+    public void BackupRequestedWithoutBackupReportsThePrimaryFailure()
+    {
+        string path = Path.GetTempFileName();
+        try
+        {
+            File.WriteAllText(path, "{broken");
+            Assert.Equal("InvalidCheckpointJson", Assert.Throws<CheckpointException>(() =>
+                CheckpointStore.Load(path, recoverBackup: true)).Message);
+        }
+        finally { File.Delete(path); }
+    }
+
+    [Fact]
     public void AtomicFileReplacementKeepsValidBackup_AndCorruptMainNeverOverwritesIt()
     {
         string folder = Path.Combine(Path.GetTempPath(), "delsk-checkpoint-" + Guid.NewGuid().ToString("N"));
