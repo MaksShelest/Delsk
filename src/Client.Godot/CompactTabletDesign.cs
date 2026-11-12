@@ -4,10 +4,12 @@ using Godot;
 public static class CompactTabletDesign
 {
     private static Theme? _theme;
+    private static Theme? _playerTheme;
     public static Theme Theme=>_theme??=Create();
-    private static Theme Create()
+    public static Theme ForPlayer(bool friendly) => friendly ? (_playerTheme ??= Create(18)) : Theme;
+    private static Theme Create(int fontSize = 16)
     {
-        var theme=(Theme)TabletDesign.Theme.Duplicate(true);theme.DefaultFontSize=16;
+        var theme=(Theme)TabletDesign.Theme.Duplicate(true);theme.DefaultFontSize=fontSize;
         foreach(string type in new[]{"Label","Button","OptionButton","CheckButton","CheckBox","LineEdit","RichTextLabel"})
         {
             theme.SetColor("font_color",type,new("303a35"));theme.SetColor("font_hover_color",type,new("303a35"));

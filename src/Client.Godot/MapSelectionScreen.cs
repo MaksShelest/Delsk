@@ -30,6 +30,7 @@ public partial class MapSelectionScreen : ColorRect
     private Label _participantCount=null!;
     private readonly System.Func<string,int,ScenarioDefinition>? _readSetup;
     private readonly string _language;
+    private readonly bool _friendly;
     private readonly System.Func<string, ScenarioDefinition> _read;
     private Control? _catalog;
     private void CloseCatalog(){var catalog=_catalog;_catalog=null;catalog?.GetParent()?.RemoveChild(catalog);catalog?.QueueFree();}
@@ -41,32 +42,47 @@ public partial class MapSelectionScreen : ColorRect
     private readonly Label _selected=new();
     private readonly VBoxContainer _preferences=new();
     public VBoxContainer AdditionalSettings=>_preferences;
-    public MapSelectionScreen(string language, bool canContinue, System.Func<string, ScenarioDefinition> read, string selected = PlayMaps.CompactValley, NpcDifficulty difficulty=NpcDifficulty.Medium,LocalGameModel? model=null,int npcCount=3,System.Func<string,int,ScenarioDefinition>? readSetup=null)
+    public MapSelectionScreen(string language, bool canContinue, System.Func<string, ScenarioDefinition> read, string selected = PlayMaps.CompactValley, NpcDifficulty difficulty=NpcDifficulty.Medium,LocalGameModel? model=null,int npcCount=3,System.Func<string,int,ScenarioDefinition>? readSetup=null,bool friendly=true)
     {
         new OrdinaryGameOptions(npcCount).Validate();NpcCount=npcCount;_readSetup=readSetup;
-        SelectedMap=PlayMaps.UserCatalog.Contains(selected)?selected:PlayMaps.CompactValley;_read=read;_language=language;
-        Theme=CompactTabletDesign.Theme;Color=new Color("e8eee5");SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        SelectedMap=PlayMaps.UserCatalog.Contains(selected)?selected:PlayMaps.CompactValley;_read=read;_language=language;_friendly=friendly;
+        Theme=CompactTabletDesign.ForPlayer(friendly);Color=new Color("e8eee5");SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         var margin=new MarginContainer();margin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);AddChild(margin);
-        var split=new HBoxContainer{Name="MainMenuColumns"};split.AddThemeConstantOverride("separation",20);margin.AddChild(split);
+        BoxContainer split=friendly?new BoxContainer():new HBoxContainer();split.Name="MainMenuColumns";split.AddThemeConstantOverride("separation",20);margin.AddChild(split);
         var scroll=new ScrollContainer{HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled,SizeFlagsVertical=SizeFlags.ExpandFill};split.AddChild(scroll);
         var controls=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};controls.AddThemeConstantOverride("separation",8);scroll.AddChild(controls);
         controls.AddChild(TabletDesign.Heading("Delsk",32));
+        if(friendly)controls.AddChild(GameUi.Text(L("Добудьте сырьё, откройте своё дело и развивайте город.","Gather resources, start a business and grow the city."),18));
         _selected.Name="SelectedMapName";_selected.AutowrapMode=TextServer.AutowrapMode.WordSmart;controls.AddChild(_selected);
-        var roster=new HBoxContainer();controls.AddChild(roster);roster.AddChild(new Label{Text=L("NPC","NPC"),SizeFlagsVertical=SizeFlags.ShrinkCenter});
+        var gameOptions=friendly?new VBoxContainer():controls;
+        var roster=new HBoxContainer();gameOptions.AddChild(roster);roster.AddChild(new Label{Text=friendly?L("Соперники","Rivals"):"NPC",SizeFlagsVertical=SizeFlags.ShrinkCenter});
         var count=_npcCount=new SpinBox{Name="NpcCount",MinValue=3,MaxValue=10,Step=1,Rounded=true,Value=npcCount,CustomMinimumSize=new(90,40)};roster.AddChild(count);
         var total=_participantCount=new Label{Name="ParticipantCount",Text=L("Всего: ","Total: ")+(NpcCount+1),SizeFlagsVertical=SizeFlags.ShrinkCenter};roster.AddChild(total);
         count.ValueChanged+=value=>{NpcCount=checked((int)value);new OrdinaryGameOptions(NpcCount).Validate();total.Text=L("Всего: ","Total: ")+(NpcCount+1);ShowPreview();};
         Difficulty=difficulty;ModelConfiguration=model;
-        var difficultyRow=new HBoxContainer();controls.AddChild(difficultyRow);difficultyRow.AddChild(new Label{Text=L("Сложность","Difficulty"),SizeFlagsVertical=SizeFlags.ShrinkCenter});
+        var difficultyRow=new HBoxContainer();gameOptions.AddChild(difficultyRow);difficultyRow.AddChild(new Label{Text=L("Сложность","Difficulty"),SizeFlagsVertical=SizeFlags.ShrinkCenter});
         var choices=new OptionButton{Name="NpcDifficulty",SizeFlagsHorizontal=SizeFlags.ExpandFill};foreach(var text in new[]{L("Лёгкая","Easy"),L("Средняя","Medium"),L("Сложная","Hard")})choices.AddItem(text);
         choices.Selected=Math.Clamp((int)difficulty-1,0,2);difficultyRow.AddChild(choices);choices.ItemSelected+=i=>Difficulty=(NpcDifficulty)(i+1);
-        var launch=new HBoxContainer();controls.AddChild(launch);
-        _startButton=AddButton(launch,L("Начать","Start"),()=>BeginChosen(()=>MapChosen?.Invoke(SelectedMap)));_startButton.Name="StartGame";GameUi.Primary(_startButton);
+        Container launch=friendly?new VBoxContainer():new HBoxContainer();controls.AddChild(launch);
+        _startButton=AddButton(launch,friendly?L("Новая игра","New game"):L("Начать","Start"),()=>BeginChosen(()=>MapChosen?.Invoke(SelectedMap)));_startButton.Name="StartGame";
         var resume=AddButton(launch,L("Продолжить","Continue"),()=>Continued?.Invoke());resume.Name="ContinueGame";resume.Disabled=!canContinue;
         resume.TooltipText=canContinue?"":L("Пока нет сохранённой партии","No saved game yet");
+        if(friendly)
+        {
+            GameUi.Primary(canContinue?resume:_startButton);
+            launch.MoveChild(resume,0);resume.Visible=canContinue;
+            foreach(var button in new[]{_startButton,resume})button.CustomMinimumSize=new(0,48);
+        }
+        else GameUi.Primary(_startButton);
         AddButton(controls,L("Выбрать карту","Choose map"),ShowCatalog).Name="ChooseMap";
-        AddButton(controls,L("Редактор карт","Map editor"),()=>MapEditorRequested?.Invoke()).Name="OpenMapEditor";
-        AddButton(controls,L("Мои карты","My maps"),ShowUserMaps).Name="OpenMyMaps";
+        var mapTools=friendly?new VBoxContainer():controls;
+        AddButton(mapTools,L("Редактор карт","Map editor"),()=>MapEditorRequested?.Invoke()).Name="OpenMapEditor";
+        AddButton(mapTools,L("Мои карты","My maps"),ShowUserMaps).Name="OpenMyMaps";
+        if(friendly)
+        {
+            controls.AddChild(new UiDisclosure(L("Параметры партии","Game settings"),gameOptions){Name="GameSettings"});
+            controls.AddChild(new UiDisclosure(L("Свои карты","Custom maps"),mapTools));
+        }
         var options=new HFlowContainer();_preferences.AddChild(options);
         AddButton(options,L("Экран","Display"),()=>DisplaySettingsRequested?.Invoke());AddButton(options,L("Звук","Audio"),()=>FeedbackSettingsRequested?.Invoke());
         AddButton(options,L("Оформление","Appearance"),()=>AppearanceSettingsRequested?.Invoke());AddButton(options,L("English","Русский"),()=>LanguageChanged?.Invoke());
@@ -80,7 +96,11 @@ public partial class MapSelectionScreen : ColorRect
             var safe=UiSafeArea.Read(this);bool compact=GetViewportRect().Size.Y<500;int gap=compact?12:24;
             margin.AddThemeConstantOverride("margin_left",gap+(int)safe.Left);margin.AddThemeConstantOverride("margin_right",gap+(int)safe.Right);
             margin.AddThemeConstantOverride("margin_top",gap+(int)safe.Top);margin.AddThemeConstantOverride("margin_bottom",gap+(int)safe.Bottom);
-            scroll.CustomMinimumSize=new(Math.Clamp(GetViewportRect().Size.X*.34f,270,360),0);
+            var viewport=GetViewportRect().Size;
+            split.Vertical=friendly&&viewport.X<680&&viewport.Y>=520;
+            scroll.CustomMinimumSize=split.Vertical?Vector2.Zero:new(Math.Clamp(viewport.X*.34f,270,360),0);
+            previewCard.SizeFlagsVertical=split.Vertical?SizeFlags.Fill:SizeFlags.ExpandFill;
+            previewCard.CustomMinimumSize=new(0,split.Vertical?Math.Min(260,viewport.Y*.34f):0);
             split.AddThemeConstantOverride("separation",compact?12:24);
         });
         ShowPreview();
@@ -126,21 +146,27 @@ public partial class MapSelectionScreen : ColorRect
         _npcCount.MaxValue=MaximumNpcs(SelectedMap);_npcCount.SetValueNoSignal(NpcCount);
         _participantCount.Text=L("Всего: ","Total: ")+(NpcCount+1);
         foreach(Node child in _preview.GetChildren()){_preview.RemoveChild(child);child.QueueFree();}
-        _selected.Text=PlayMaps.Name(SelectedMap,_language);
+        _selected.Text=(_friendly?L("Карта: ","Map: "):"")+PlayMaps.Name(SelectedMap,_language);
         // Geography always comes from the real map, even when its new-game profile is unsupported.
         _previewAvailable=TrySetup(SelectedMap,out string reason);var scenario=_previewAvailable?PreviewScenario(SelectedMap):_read(SelectedMap);
         _startButton!.Disabled=!_previewAvailable;_startButton.TooltipText=reason;
-        _preview.AddChild(TabletDesign.Heading(PlayMaps.Name(SelectedMap,_language),24));
+        if(!_friendly)_preview.AddChild(TabletDesign.Heading(PlayMaps.Name(SelectedMap,_language),24));
         var map=new MapPreview(scenario){Name="MainMapPreview",CustomMinimumSize=new(180,100),SizeFlagsVertical=SizeFlags.ExpandFill,SizeFlagsHorizontal=SizeFlags.ExpandFill};_preview.AddChild(map);
-        _preview.AddChild(new Label{Text=PlayMaps.Description(SelectedMap,_language),AutowrapMode=TextServer.AutowrapMode.WordSmart});
-        _preview.AddChild(new Label{Text=$"{scenario.MapWidth} × {scenario.MapHeight}"+L(" клеток · "," cells · ")+scenario.ResourceNodes.Select(n=>n.ItemId).Distinct().Count()+L(" ресурсов"," resources"),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        _preview.AddChild(new Label{Text=DescribeMap(SelectedMap),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        if(!_friendly)_preview.AddChild(new Label{Text=$"{scenario.MapWidth} × {scenario.MapHeight}"+L(" клеток · "," cells · ")+scenario.ResourceNodes.Select(n=>n.ItemId).Distinct().Count()+L(" ресурсов"," resources"),AutowrapMode=TextServer.AutowrapMode.WordSmart});
         var status=new Label{Name="MapAvailability",Text=_previewAvailable?L("Готова к игре · максимум NPC: ","Ready to play · maximum NPCs: ")+MaximumNpcs(SelectedMap):reason,AutowrapMode=TextServer.AutowrapMode.WordSmart};
-        status.AddThemeColorOverride("font_color",new Color(_previewAvailable?"38633d":"83552c"));_preview.AddChild(status);
+        status.AddThemeColorOverride("font_color",new Color(_previewAvailable?"38633d":"83552c"));status.Visible=!_friendly||!_previewAvailable;_preview.AddChild(status);
     }
+    private string DescribeMap(string key) => !_friendly ? PlayMaps.Description(key,_language) : key switch
+    {
+        PlayMaps.CompactValley => L("Ресурсы на западе, город на востоке. Участки под стройку вдоль дороги.","Resources to the west, town to the east. Build along the road between them."),
+        PlayMaps.Second => L("Промышленные районы среди лесов. Подъезды к участкам показаны на карте.","Industrial districts among the woods. The map shows access roads to the plots."),
+        _ => PlayMaps.Description(key,_language)
+    };
     private void ShowCatalog()
     {
         var overlay=new ColorRect{Name="MapCatalog",Color=new Color(0.08f,.13f,.11f,.65f),MouseFilter=MouseFilterEnum.Stop};overlay.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);CloseCatalog();AddChild(overlay);_catalog=overlay;
-        var panel=new PanelContainer{Theme=CompactTabletDesign.Theme};panel.AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("e8eee5",12));
+        var panel=new PanelContainer{Theme=CompactTabletDesign.ForPlayer(_friendly)};panel.AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("e8eee5",12));
         panel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);overlay.AddChild(panel);UiSafeArea.Panel(panel,12,12,12,100);
         var body=new VBoxContainer();panel.AddChild(body);var header=new HBoxContainer();body.AddChild(header);
         header.AddChild(new Label{Text=L("Каталог карт","Map catalog"),SizeFlagsHorizontal=SizeFlags.ExpandFill});
@@ -154,7 +180,7 @@ public partial class MapSelectionScreen : ColorRect
             var row=new HBoxContainer();row.AddThemeConstantOverride("separation",16);card.AddChild(row);
             var text=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};row.AddChild(text);
             var title=TabletDesign.Heading(PlayMaps.Name(key,_language),20);title.AddThemeColorOverride("font_color",new Color("243c30"));text.AddChild(title);
-            var description=new Label{Text=PlayMaps.Description(key,_language),AutowrapMode=TextServer.AutowrapMode.WordSmart};description.AddThemeColorOverride("font_color",new Color("425448"));description.AddThemeFontSizeOverride("font_size",14);text.AddChild(description);
+            var description=new Label{Text=DescribeMap(key),AutowrapMode=TextServer.AutowrapMode.WordSmart};description.AddThemeColorOverride("font_color",new Color("425448"));description.AddThemeFontSizeOverride("font_size",_friendly?17:14);text.AddChild(description);
             var select=AddButton(text,L("Выбрать","Select")+" · "+$"{scenario.MapWidth} × {scenario.MapHeight}",()=>{SelectedMap=choice;ShowPreview();CloseCatalog();});select.Name="SelectMap_"+key;
             // A future map can be previewed; Start remains disabled when the profile rejects it.
             if(!available){select.TooltipText=reason;var status=new Label{Text=reason,AutowrapMode=TextServer.AutowrapMode.WordSmart};status.AddThemeColorOverride("font_color",new Color("83552c"));status.AddThemeFontSizeOverride("font_size",13);text.AddChild(status);}
@@ -166,7 +192,7 @@ public partial class MapSelectionScreen : ColorRect
     private void ShowUserMaps()
     {
         var overlay=new ColorRect{Name="UserMapCatalog",Color=new Color(0.08f,.13f,.11f,.65f),MouseFilter=MouseFilterEnum.Stop};overlay.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);CloseCatalog();AddChild(overlay);_catalog=overlay;
-        var panel=new PanelContainer{Theme=CompactTabletDesign.Theme};panel.AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("e8eee5",12));
+        var panel=new PanelContainer{Theme=CompactTabletDesign.ForPlayer(_friendly)};panel.AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("e8eee5",12));
         panel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);overlay.AddChild(panel);UiSafeArea.Panel(panel,12,12,12,100);
         var body=new VBoxContainer();panel.AddChild(body);var header=new HBoxContainer();body.AddChild(header);
         header.AddChild(new Label{Text=L("Мои карты","My maps"),SizeFlagsHorizontal=SizeFlags.ExpandFill});
@@ -198,26 +224,27 @@ public partial class MapSelectionScreen : ColorRect
     public void EnsureSpecialization(System.Action next, System.Action cancel)
     {
         if (SelectedIndustry is { Length: > 0 } || !UserMapsNeedSpecialization()) { next(); return; }
-        ShowSpecialization(next, cancel);
+        ShowSpecialization(next, cancel, PlayMaps.CompactValley);
     }
     private void BeginChosen(System.Action next)
     {
         if (!_previewAvailable) return;
         if (!SpecializationFor(SelectedMap)) { SelectedIndustry = null; next(); return; }
-        ShowSpecialization(next, null);
+        ShowSpecialization(next, null, SelectedMap);
     }
     private void BeginUserMap(string path)
     {
-        if (UserMapsNeedSpecialization()) ShowSpecialization(() => UserMapChosen?.Invoke(path), null);
+        if (UserMapsNeedSpecialization()) ShowSpecialization(() => UserMapChosen?.Invoke(path), null, PlayMaps.CompactValley);
         else { SelectedIndustry = null; UserMapChosen?.Invoke(path); }
     }
     private bool SpecializationFor(string key) => TrySetup(key, out _) && PreviewScenario(key).Economy?.StartingSpecializations is { Version: 1, Enabled: true };
     private bool UserMapsNeedSpecialization() => SpecializationFor(PlayMaps.CompactValley);
-    private void ShowSpecialization(System.Action next, System.Action? cancel)
+    private void ShowSpecialization(System.Action next, System.Action? cancel, string map)
     {
         CloseCatalog();
         CloseSpecialization();
-        var screen = new SpecializationScreen(_language);
+        bool grants=PreviewScenario(map).Economy?.ProvincialSupport is { Applies: true };
+        var screen = new SpecializationScreen(_language,_friendly,grants);
         _specialization = screen;
         screen.Confirmed += industry => { SelectedIndustry = industry; CloseSpecialization(); next(); };
         screen.Cancelled += () => { SelectedIndustry = null; CloseSpecialization(); cancel?.Invoke(); };

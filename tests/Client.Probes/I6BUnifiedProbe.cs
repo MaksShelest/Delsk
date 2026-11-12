@@ -132,6 +132,7 @@ public partial class I6BUnifiedProbe : Control
     {
         Call(_app,"CloseTablet");Move(View.ProductionContent!.Terminal);Refresh();Call(_app,"OpenCapitalTablet");await Frames();
         var offer=View.CapitalOffers.First(o=>o.RemainingQuantity>0&&Stock(View.Participant.InventoryId,o.ItemId)>0&&o.CreatedTick<View.Tick);await Click("CapitalGoods_"+offer.ItemId);await Shot("i6b-07-exchange-ru-1100");await Click((Math.Min(Stock(View.Participant.InventoryId,offer.ItemId),offer.RemainingQuantity)>1?"CapitalSellOne_":"CapitalSellAll_")+offer.Id);await FinishCommand();Check(_session.CommandTape.Last(c=>c.AuthenticatedActor.Value==1).Command.Action.Kind==ActionKind.SellAvailableToCapital,"capital sale uses original ordinary command");
+        if(All(_app).OfType<UiDisclosure>().FirstOrDefault(c=>c.Name=="ExchangeMore") is {} extra){extra.Open();await Frames();}
         await Click("ExchangePage5");long money=View.CashMinor;await Click("ImportBuy_steel");await FinishCommand();Check(View.CashMinor<money,"import UI uses published price");await Click("ImportTakeAll_steel");await FinishCommand();Check(Stock(View.Participant.InventoryId,"steel")>0,"paid import pickup remains physical transfer");
         await Click("ExchangePage1");await Frames();Check(All(_app).OfType<ParticipantMarketTablet>().Any(p=>p.IsVisibleInTree()),"participant market remains reachable");
     }

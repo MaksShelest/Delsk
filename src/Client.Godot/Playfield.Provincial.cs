@@ -21,7 +21,7 @@ public partial class Playfield
         if (view.ProvincialProgram is null) return;
         _provincial ??= new ProvincialProgramPanel();
         if (_provincial.GetParent() is null) AddChild(_provincial);
-        _provincial.Show(view, _language, WaitingCommand, Offer);
+        _provincial.Show(view, _language, WaitingCommand, Offer, _friendly);
         _provincial.Visible = true;
     }
 }
@@ -69,12 +69,15 @@ public sealed partial class ProvincialProgramPanel : PanelContainer
         row.AddChild(_close);
     }
 
-    public void Show(PlayerView view, string language, bool waiting, System.Action<GameAction> offer)
+    public void Show(PlayerView view, string language, bool waiting, System.Action<GameAction> offer, bool friendly = false)
     {
         if (view.ProvincialProgram is not { } program) { Visible = false; _confirm = false; return; }
         bool ru = _russian = !language.StartsWith("en", System.StringComparison.OrdinalIgnoreCase);
         if (_shown != program.Status) { _shown = program.Status; _confirm = false; }
-        _title.Text = ru ? "Программа развития провинции" : "Provincial development program";
+        Theme = CompactTabletDesign.ForPlayer(friendly);
+        _title.Text = friendly ? (ru ? "Помощь на старте" : "Help getting started") : (ru ? "Программа развития провинции" : "Provincial development program");
+        _title.AddThemeFontSizeOverride("font_size", friendly ? 22 : 18);
+        _body.AddThemeFontSizeOverride("font_size", friendly ? 18 : 14);
         string industry = PlayerText.Enterprise(language, program.IndustryId, 1);
         long state = program.ParcelReserved + program.ConstructionReserved + program.OperatingReserved + program.SupplyValueMinor;
         string status = program.Status switch
@@ -94,7 +97,11 @@ public sealed partial class ProvincialProgramPanel : PanelContainer
             "sell" => ru ? "Продайте первую продукцию столице. Если заказа нет, провинция выкупает одну партию на терминале." : "Sell the first output to the capital. If there is no order, the province buys one batch at the terminal.",
             _ => ru ? "Программа выполнена. Дальше хозяйство ваше." : "The program is complete. The business is yours from here."
         };
-        _body.Text = (ru ? "Отрасль: " : "Industry: ") + industry + "\n" +
+        _body.Text = friendly ? (program.Status == "Offered"
+            ? (ru ? $"Первое предприятие: {industry}.\nСтолица оплатит участок, стройку и первую партию. Ваши деньги останутся у вас."
+                  : $"First business: {industry}.\nThe capital pays for land, construction and the first batch. You keep your own money.")
+            : next)
+            : (ru ? "Отрасль: " : "Industry: ") + industry + "\n" +
             (ru ? "Первое предприятие: " : "First enterprise: ") + industry + "\n" +
             (ru ? "Участок: " : "Parcel: ") + PlayerText.Money(program.ParcelReserved) + "\n" +
             (ru ? "Финансирование столицы: " : "Capital funding: ") + PlayerText.Money(state) + "\n" +
@@ -109,7 +116,7 @@ public sealed partial class ProvincialProgramPanel : PanelContainer
         if (viewport.X > 1 && viewport.Y > 1)
         {
             OffsetRight = OffsetLeft + System.Math.Min(420, System.Math.Max(220, viewport.X - 24));
-            OffsetBottom = OffsetTop + System.Math.Min(360, System.Math.Max(180, viewport.Y - OffsetTop - 12));
+            OffsetBottom = friendly ? OffsetTop + GetCombinedMinimumSize().Y : OffsetTop + System.Math.Min(360, System.Math.Max(180, viewport.Y - OffsetTop - 12));
         }
     }
 
