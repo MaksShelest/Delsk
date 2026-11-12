@@ -39,6 +39,15 @@ def verify_roads(folder):
         return i2 and a in owned and b in owned and vehicles[a]['modelId']!='trakt_d1' and vehicles[b]['modelId']!='trakt_d1' and not models[vehicles[a]['modelId']].get('equipmentTypeId') and not models[vehicles[b]['modelId']].get('equipmentTypeId') and opposite(lanes[a],lanes[b]) and at in built and positions[a] in built and positions[b] in built and not {at,positions[a],positions[b]}&bypass_cells
     prices={i['id']:i['basePriceMinor'] for i in config['items']}
     inventory={i['id']['value']:i for i in state['inventories']};positions={};listings={};equipment_stock={};work={};mode={};starts=[];paid={}
+    dealer_version = config['economy']['fleet'].get('equipmentDealerVersion', 0)
+    if dealer_version == 2:
+        dealer = next(s for s in config['layout']['civicObjects'] if s['kind'] == 'dealership')
+        catalog_requests = {}
+        first_traffic = {}
+        for event in events:
+            identity = event['entityId']
+            if event['type'] == 'TrafficCellEntered' and identity not in first_traffic:
+                first_traffic[identity] = point(event['reasonCode'].split('>')[0])
     equipment_initial={e['entityId']:point(e['reasonCode']) for e in events if e['type']=='EquipmentTrafficRegistered'}
     for machine in state['equipment']:
         identity=machine['id']['value']
@@ -51,11 +60,33 @@ def verify_roads(folder):
         kind=e['type'];identity=e['entityId'];tick=e['tick']
         if kind in ('DealerInitialStock','DealerSupply'):
             listings[identity]=point(e['reasonCode'])
-            if config['economy']['fleet'].get('equipmentDealerVersion')==1 and models[e['itemId']].get('equipmentTypeId'):equipment_stock[identity]=listings[identity]
+            if dealer_version in (1, 2) and models[e['itemId']].get('equipmentTypeId'):
+                equipment_stock[identity] = listings[identity]
         elif kind=='DealerReplaced':
             listings.pop(identity,None);equipment_stock.pop(identity,None)
-        elif kind=='VehiclePurchased':
-            positions[identity]=listings.pop(identity);equipment_stock.pop(identity,None)
+        elif kind == 'VehicleCatalogRequested':
+            assert dealer_version == 2 and e['commandId'] not in catalog_requests
+            catalog_requests[e['commandId']] = e
+        elif kind == 'VehiclePurchased':
+            if identity in listings:
+                positions[identity] = listings.pop(identity)
+                equipment_stock.pop(identity, None)
+            else:
+                assert dealer_version == 2 and e.get('commandId') in catalog_requests
+                request = catalog_requests.pop(e['commandId'])
+                assert owner(request) == owner(e) and request['itemId'] == e['itemId'] and request['tick'] < tick
+                vehicle = vehicles[identity]
+                model = models[vehicle['modelId']]
+                assert model['id'] == e['itemId']
+                # Catalog receipts omit the bay. The first movement origin or stationary cargo witnesses it.
+                position = first_traffic.get(identity, cell(inventory[vehicle['cargoInventory']['value']]['position']))
+                if model.get('equipmentTypeId'):
+                    bays = dealer['equipmentParking']
+                else:
+                    parking = dealer['parking']
+                    bays = parking[-1:] if model['materialsOnly'] else parking[:2]
+                assert position in map(cell, bays), 'Catalog vehicle did not start in an eligible dealer bay'
+                positions[identity] = position
         elif kind=='TrafficLaneState':
             assert i2 and identity in owned and vehicles[identity]['modelId']!='trakt_d1'
             assert owner(e)==vehicles[identity]['owner']['value'] and not e.get('amountMinor') and not e.get('commandId') and not e.get('itemId')

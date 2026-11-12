@@ -23,6 +23,28 @@ class RoadAuditTests(unittest.TestCase):
                 (Path(folder)/name).write_text(text)
             with contextlib.redirect_stdout(io.StringIO()):verify_roads(folder)
     def test_valid_independent_physical_history(self):self.verify(self.fixture())
+    def test_catalog_vehicle_starts_at_an_eligible_bay(self):
+        data = self.fixture()
+        config = data['scenario.json']
+        config['economy']['fleet']['equipmentDealerVersion'] = 2
+        start, end = config['layout']['roadCorridorCells']
+        dealer = dict(kind='dealership', footprint=[], parking=[start, dict(x=0, z=1), end, dict(x=1, z=1)])
+        config['layout']['civicObjects'].append(dealer)
+        events = data['events.jsonl']
+        events[0] = dict(type='VehicleCatalogRequested', entityId=0, tick=1, commandId='order', actorId=dict(value=1), itemId='car')
+        events[1].update(commandId='order', actorId=dict(value=1), itemId='car')
+        self.verify(data)
+
+        stationary = copy.deepcopy(data)
+        stationary['events.jsonl'].pop()
+        stationary['roads.json']['traffic'].clear()
+        stationary['final-state.json']['inventories'][0]['position'] = start
+        self.verify(stationary)
+
+        dealer['parking'] = [end, dict(x=0, z=1), start, dict(x=1, z=1)]
+        with self.assertRaisesRegex(AssertionError, 'eligible dealer bay'):
+            self.verify(data)
+
     def i2_fixture(self,shared_target=False):
         d=self.fixture();a,b=dict(x=0,z=0),dict(x=1,z=0);c=dict(x=2,z=0)
         d['scenario.json']['economy'].update(movement=dict(version=2,speedDivisor=40,speedMultiplier=3,nominalSpeeds=dict(runningRoad=10,runningOffroad=8,vehicleOffroad=10)),vehicleControl=dict(version=1,exitHoldQuanta=5,laneOffset=200))

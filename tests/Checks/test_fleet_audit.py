@@ -33,6 +33,49 @@ class FleetAuditTests(unittest.TestCase):
 
     def test_real_shapes_and_balanced_acquisition_are_accepted(self):self.verify(self.fixture())
 
+    def test_class_dealer_checks_catalog_receipts_and_upgraded_capacity(self):
+        data = self.fixture()
+        config = data['scenario.json']
+        rules = config['economy']['fleet']
+        rules['equipmentDealerVersion'] = 2
+        equipment_models = [dict(id=f'extractor_{kind}_1', capacityVolume=20, priceMinor=100,
+                                 materialsOnly=False, equipmentTypeId=f'extract_{kind}', equipmentLevel=1)
+                            for kind in ('field', 'forest', 'dairy', 'mine')]
+        rules['models'].extend(equipment_models)
+        config['equipmentTypes'] = [dict(id='extract_dairy', itemId='milk', items=['milk', 'eggs'],
+                                         levels=[dict(level=1, storageCapacity=20), dict(level=2, storageCapacity=40)])]
+        initial = ['sputnik20', 'muravey70', 'extractor_field_1', 'extractor_forest_1']
+        listings = [dict(id=1000 + n, modelId=model_id, deliveredTick=0) for n, model_id in enumerate(initial)]
+        data['fleet.json']['stock'] = listings
+        data['fleet.json']['vehicles'][0].update(id=1004, modelId='extractor_dairy_1')
+        data['fleet.json']['purchases'][0]['vehicleId'] = 1004
+        cargo = data['final-state.json']['inventories'][0]
+        cargo.update(capacity=40, stock=[dict(itemId='eggs')])
+        data['final-state.json']['equipment'] = [dict(id=dict(value=1004), typeId='extract_dairy', level=2,
+                                                    storageId=cargo['id'], position=cargo['position'],
+                                                    ownerId=cargo['ownerId'], deployed=True)]
+        data['events.jsonl'] = [dict(type='DealerInitialStock', entityId=listing['id'], tick=0, itemId=listing['modelId'])
+                                for listing in listings]
+        data['events.jsonl'].extend([
+            dict(type='VehicleCatalogRequested', entityId=0, tick=20, actorId=dict(value=1), itemId='extractor_dairy_1', commandId='order'),
+            dict(type='VehiclePurchased', entityId=1004, tick=500, actorId=dict(value=1), itemId='extractor_dairy_1', commandId='order', amountMinor=100),
+            dict(type='EquipmentUpgraded', entityId=1004, tick=550),
+        ])
+        self.verify(data)
+
+        for name, mutate in (
+            ('missing catalog request', lambda d: d['events.jsonl'].pop(4)),
+            ('wrong winner', lambda d: d['events.jsonl'][4].update(actorId=dict(value=2))),
+            ('wrong delivery tick', lambda d: d['events.jsonl'][5].update(tick=499)),
+            ('missing upgrade', lambda d: d['events.jsonl'].pop()),
+            ('wrong capacity', lambda d: d['final-state.json']['inventories'][0].update(capacity=20)),
+        ):
+            with self.subTest(name=name):
+                invalid = copy.deepcopy(data)
+                mutate(invalid)
+                with self.assertRaises(AssertionError):
+                    self.verify(invalid)
+
     def test_corrupt_stock_money_cargo_driver_and_privacy_are_rejected(self):
         original=self.fixture()
         mutations={
