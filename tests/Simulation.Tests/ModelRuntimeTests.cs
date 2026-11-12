@@ -21,8 +21,9 @@ public class ModelRuntimeTests
         var gate = new TaskCompletionSource<ModelReply>(TaskCreationOptions.RunContinuationsAsynchronously);
         var adapter = new TestModelAdapter((_, _) => gate.Task); using var runtime = new ModelRuntime(adapter, [1, 2, 3], new(1, 20)); runtime.Bind("s1", 1);
         var a = ModelTestFixtures.Request(); runtime.Enqueue(a); runtime.Pump(0);
-        await ModelTestFixtures.Until(() => adapter.Calls.Count == 1); await Task.Delay(40, TestContext.Current.CancellationToken);
-        runtime.Freeze(1); Assert.Equal("HttpTimeout", runtime.Read(a)!.Outcome); runtime.Cancel(a);
+        await ModelTestFixtures.Until(() => adapter.Calls.Count == 1);
+        await ModelTestFixtures.Until(() => runtime.Peek(a)?.Outcome == "HttpTimeout");
+        runtime.Freeze(1); Assert.Equal("HttpTimeout", runtime.Read(a)?.Outcome); runtime.Cancel(a);
         var b = ModelTestFixtures.Request(2, 1); var c = ModelTestFixtures.Request(3, 1);
         runtime.Enqueue(b); runtime.Enqueue(c); runtime.Pump(1); runtime.Freeze(2);
         Assert.Equal(1, runtime.ActiveRequests); Assert.Equal(1, runtime.WaitingRequests); Assert.Single(adapter.Calls);

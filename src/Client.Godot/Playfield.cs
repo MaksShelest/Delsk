@@ -59,7 +59,9 @@ public partial class Playfield : Control
     private string? _contextCommandId;
     private string _contextMessage="";
     private void CloseContextActions()=>_contextActions?.SetExpanded(false);
-    private ContextChoice[] CurrentContext()=>_surface==Surface.Play?ContextActions.Read(_session.Engine,_human,_scenario,_language):PlayContext.At(PlayerDesk.Read(_session.Engine,_human),_scenario,_language);
+    private ContextChoice[] CurrentContext(PlayerView view) => _surface == Surface.Play
+        ? ContextActions.FromView(_session.Engine, view, _scenario, _language)
+        : PlayContext.At(view, _scenario, _language);
 
     private VBoxContainer? _debugContext;
     private VBoxContainer _cards = null!;
@@ -191,12 +193,12 @@ public partial class Playfield : Control
             if (_waitRelease && !MovementHeld()) _waitRelease = false;
             bool modelWaiting=ModelFrame();AdvanceFeedback(delta);
             if(modelWaiting){AnimateInterface(delta);return;}
+            var priorTravel = _session.Engine.TravelOf(_human);
             SampleHeading();
             DeveloperFrame();
             if(_session.Engine.WaitingForBallots){_session.PumpVoting();Refresh();return;}
             long prior = _session.Engine.Tick;
             int priorQuantum = _session.Engine.TravelQuantum;
-            var priorTravel = _session.Engine.TravelOf(_human);
             _scheduler.AdvanceElapsed(TimeSpan.FromSeconds(Math.Min(delta, 0.25)));
             var travel = _session.Engine.TravelOf(_human);
             if (_session.Engine.Tick != prior || _session.Engine.TravelQuantum != priorQuantum || travel != priorTravel) Refresh();
@@ -340,6 +342,7 @@ public partial class Playfield : Control
         _storageCursor=0;_storageLossUntil=0;_storageLoss="";
         DismissHelp();
         ResetTablet(true);
+        ResetProvincial();
         _mode = mode;LoadCityExperience(true);
         _gain = "";
         _hoverX = _hoverZ = null;
@@ -455,10 +458,11 @@ public partial class Playfield : Control
     }
     private void ConfirmContextChoice(ContextChoice choice)
     {
-        var current=CurrentContext();
+        var view = PlayerDesk.Read(_session.Engine, _human);
+        var current = CurrentContext(view);
         if(_surface==Surface.Play&&_contextActions is {} panel)
         {
-            string scope=ContextActions.Scope(PlayerDesk.Read(_session.Engine,_human));
+            string scope=ContextActions.Scope(view);
             if(scope!=panel.Selection.Scope){_contextMessage=L("Контекст изменился. Выберите действие заново.","Context changed. Select the action again.");Refresh();return;}
             panel.Selection.Update(scope,current);panel.Selection.Pending=WaitingCommand;
             if(!panel.Selection.TryChoose(choice,out _)){_contextMessage=WaitingCommand?T("command.sent"):choice.Enabled?L("Действие изменилось. Выберите его заново.","Action changed. Select it again."):choice.Details;Refresh();return;}
@@ -500,7 +504,7 @@ public partial class Playfield : Control
     private void RebuildContext()
     {
         _harvestBars.Clear();
-        if (_contextHost is not null) FillPlayContext(_contextHost);
+        if (_contextHost is not null) FillPlayContext(_contextHost, PlayerDesk.Read(_session.Engine, _human));
         if (_debugContext is not null) FillContext(_debugContext);
     }
 
@@ -595,8 +599,8 @@ public partial class Playfield : Control
         _stage?.ShowRoadWorkEffects(view);
         if (_surface == Surface.Debug) _board?.Show(frame, _cellX, _cellZ);
         if (_surface == Surface.Play && view.ProvincialProgram is { Status: "Offered" } && !_provincialIntro)
-        { _provincialIntro = true; OpenProvincial(); }
-        _provincial?.Show(view, _language, WaitingCommand, action => Offer(action));
+        { _provincialIntro = true; OpenProvincial(view); }
+        else if (_provincial is { Visible: true }) _provincial.Show(view, _language, WaitingCommand, Offer);
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
         string stock = pack.Stock.Length == 0 ? T("inventory.empty")
             : string.Join(", ", pack.Stock.OrderBy(s => s.ItemId, StringComparer.Ordinal).Select(s => $"{PlayerText.Item(_language, s.ItemId)} ×{s.Quantity}"));
@@ -604,7 +608,7 @@ public partial class Playfield : Control
         if (_inventoryLabel is not null) _inventoryLabel.Text = inventory;
         if (_playInventory is not null) _playInventory.Text = _friendly ? L("Рюкзак ", "Pack ") + pack.OccupiedVolume + "/" + pack.Capacity : HudStock(view, pack);
         UpdateHudGoods(pack);
-        var next = CurrentContext();
+        var next = CurrentContext(view);
         _contextIndex = PlayContext.Keep(_contextIndex, _choices, next);
         if (WaitingCommand)
             next = next.Select(c => c.Command is not null
@@ -612,7 +616,7 @@ public partial class Playfield : Control
         _choices = next;
         if(_previewKey.Length>0&&next.All(c=>c.Key!=_previewKey)){_previewKey="";_stage?.SetPreview([]);}
         string contextKey = _contextIndex.ToString(CultureInfo.InvariantCulture) + "|" + string.Join(",", next.Select(c => $"{c.Key}:{c.Label}:{c.Enabled}:{c.Details}"));
-        if(_surface==Surface.Play&&_contextHost is not null)FillPlayContext(_contextHost);
+        if(_surface==Surface.Play&&_contextHost is not null)FillPlayContext(_contextHost, view);
         if (contextKey != _contextKey) { _contextKey = contextKey; if(_debugContext is not null)FillContext(_debugContext); }
         foreach (var bar in _harvestBars)
         {
@@ -970,6 +974,7 @@ public partial class Playfield : Control
         if (_stage?.GetParent() is SubViewport viewport)
             viewport.RenderTargetUpdateMode = _surface == Surface.Play ? SubViewport.UpdateMode.Always : SubViewport.UpdateMode.Disabled;
         if (_playChrome is not null) _playChrome.Visible = _surface == Surface.Play;
+        if (_surface != Surface.Play && _provincial is not null) _provincial.Hide();
         if (_panel is not null) _panel.Visible = _surface == Surface.Debug;
         if (_menu is not null) _menu.Visible = _surface == Surface.Menu;
     }
@@ -1035,6 +1040,7 @@ public partial class Playfield : Control
         var loaded = CheckpointStore.Load(SavePath);
         DismissHelp();
         ResetTablet(true);
+        ResetProvincial();
         _stage?.ResetMotion();
         DisposeModel();
         _storageCursor=0;_storageLossUntil=0;_storageLoss="";
@@ -1163,7 +1169,7 @@ public partial class Playfield : Control
             Input.IsPhysicalKeyPressed(Key.S), Input.IsPhysicalKeyPressed(Key.W));
         if(heading==default&&_stick is not null)heading=_stick.Heading;
         bool canMove = _session.Engine.CanTravel(_human,heading.X,heading.Z);
-        if (_tabletState.BlocksTime && !canMove) heading = default;
+        if (!canMove) heading = default;
         if (_tabletState.ResumeForMovement(canMove)) { ApplyPause(); Refresh(); }
         if (heading == _sent) return;
         _sent = heading;

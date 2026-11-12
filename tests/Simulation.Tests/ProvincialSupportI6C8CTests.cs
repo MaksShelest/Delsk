@@ -84,6 +84,50 @@ public class ProvincialSupportI6C8CTests
         RoundTrip(s);
     }
 
+    [Fact]
+    public void GuidanceSelectsAWholeFreeParcelAndOffersTheSubsidizedIndustry()
+    {
+        var session = Open("dairy");
+        var actor = new ParticipantId(1);
+        var scenario = session.Engine.Configuration();
+        Send(session, new(ActionKind.AcceptProvincialSupport));
+        var view = PlayerDesk.Read(session.Engine, actor);
+        var first = FriendlyGuidance.Read(view, scenario, "ru");
+        var firstLot = scenario.Layout!.IndustrialLots.Single(l => l.Cells.Contains(new Cell(first.X, first.Z)));
+        var occupied = firstLot.Cells.First(c => c != new Cell(first.X, first.Z));
+        var partial = view with
+        {
+            Plots = view.Plots.Select(p => p.Position == occupied ? p with { OwnerId = new(2) } : p).ToArray()
+        };
+        var alternative = FriendlyGuidance.Read(partial, scenario, "en");
+        Assert.Equal("program-land", alternative.Id);
+        Assert.DoesNotContain(new Cell(alternative.X, alternative.Z), firstLot.Cells);
+
+        var target = new Cell(first.X, first.Z);
+        Assert.Equal(IndustrialParcels.TryFrame(firstLot)!.Value.Anchor, target);
+        StorageC1Tests.Move(session, target);
+        var choice = Assert.Single(ContextActions.Read(session.Engine, actor, scenario, "ru"),
+            c => c.Command?.Kind == ActionKind.BuyPlot);
+        Assert.True(choice.Enabled, choice.Details);
+        Assert.Equal(first.TargetId, choice.Command!.Plot.Value);
+        Send(session, choice.Command);
+        view = PlayerDesk.Read(session.Engine, actor);
+        Assert.Equal(6, view.Plots.Count(p => p.OwnerId == actor));
+        Assert.Equal(20_000, view.AvailableCashMinor);
+        Assert.Equal("program-supply", FriendlyGuidance.Read(view, scenario, "ru").Id);
+
+        StorageC1Tests.Move(session, view.ProductionContent!.Terminal);
+        Send(session, new(ActionKind.CollectProvincialSupply));
+        var neighbor = firstLot.Cells.First(c => c != target);
+        StorageC1Tests.Move(session, neighbor);
+        var construction = FriendlyGuidance.Read(PlayerDesk.Read(session.Engine, actor), scenario, "ru");
+        Assert.Equal("dairy", construction.ItemId);
+        Assert.Equal(target, new Cell(construction.X, construction.Z));
+        var money = Assert.Single(construction.Gaps, gap => gap.Kind == "money");
+        Assert.Equal(39_000, money.Have);
+        Assert.Equal(19_000, money.Need);
+    }
+
     // Пища и стройматериалы держат те же суммы в проверке резерва. Здесь остаются два разных способа продажи: столичный заказ и выкуп провинции.
     [Theory]
     [InlineData("woodworking", "plank")]

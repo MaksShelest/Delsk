@@ -122,7 +122,7 @@ public sealed partial class GameSession
             var awaiting = _controllerAwaiting[_controllers[i].Actor.Value];
             feedback[i] = awaiting.Select(Engine.Result).Where(r => r is not null).Select(r => r!).ToImmutableArray();
             decisions[i] = _controllers[i].Decide(observations[i], feedback[i]);
-            if (decisions[i].Actions.IsDefault || decisions[i].Actions.Length > Engine.Configuration().MaxCommandsPerActorTick)
+            if (decisions[i].Actions.IsDefault || decisions[i].Actions.Length > Engine.CommandBudget)
                 throw new InvalidOperationException("Controller exceeded equal command budget");
             awaiting.RemoveAll(id => feedback[i].Any(r => r.CommandId == id));
         }
@@ -140,16 +140,19 @@ public sealed partial class GameSession
                 RecordTurn(new(Engine.Tick, _controllers[i].Actor, observations[i], feedback[i], decisions[i], ids.ToImmutable()));
         }
     }
+    private Dictionary<string, long>? _controllerSamplePrices;
+
     private void SampleControllers(WorldView world)
     {
-        var items = Engine.Configuration().Items.ToDictionary(i => i.Id, StringComparer.Ordinal);
+        if (_controllers.Length == 0) return;
+        var prices = _controllerSamplePrices ??= Engine.Configuration().Items.ToDictionary(i => i.Id, i => i.BasePriceMinor, StringComparer.Ordinal);
         foreach (var c in _controllers)
         {
             var actor = world.Participants.Single(p => p.Id == c.Actor);
             var stocks = world.Inventories.Where(i => i.OwnerId == c.Actor).SelectMany(i => i.Stock).ToArray();
             var last = _observationPool is null?_controllerTurns.LastOrDefault(t=>t.Actor==c.Actor):_observationPool.Last(c.Actor.Value);
             _controllerSamples.Add(new(world.Tick, c.Actor.Value, world.Accounts.Single(a => a.Id == actor.AccountId).BalanceMinor,
-                stocks.Sum(s => checked(s.Quantity * items[s.ItemId].BasePriceMinor)), stocks.Sum(s => s.Quantity),
+                stocks.Sum(s => checked(s.Quantity * prices[s.ItemId])), stocks.Sum(s => s.Quantity),
                 world.EmploymentGroups.Where(g => g.OwnerId == c.Actor).Sum(g => g.Headcount),
                 world.Enterprises.Count(e => e.OwnerId == c.Actor), world.Equipment.Count(e => e.OwnerId == c.Actor),
                 actor.Busy, last?.Decision.Goal ?? "Idle", last?.Decision.Reason ?? "Initial"));

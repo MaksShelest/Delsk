@@ -43,7 +43,8 @@ public partial class PresentationStage : Node3D
         public Node3D? LegL,LegR,ArmL,ArmR,Hips,Bob;
         public Vector3 LegLRest,LegRRest,ArmLRest,ArmRRest,HipsRest,HipsRestPos;
         public float AngleFrom,AngleTo,AngleElapsed=1;
-        public bool Faced;
+        public Vector2? SimulationFacing;
+        public bool OnRoute;
     }
     private readonly System.Collections.Generic.Dictionary<long, Mover> _actors = new();
     private readonly Dictionary<long,Label3D> _speechLabels=[];
@@ -87,7 +88,6 @@ public partial class PresentationStage : Node3D
         _cameraDistance=Mathf.MoveToward(_cameraDistance,_cameraTarget,(float)delta*Mathf.Max(5,_cameraTarget*2));
         // Короткий шаг, чтобы редкий длинный кадр не перескакивал фокус.
         _frameInset=Mathf.MoveToward(_frameInset,_follow?_frameInsetTarget:0,Mathf.Min((float)delta,.05f)*1.8f);
-        FollowHuman();
         foreach (var mover in _actors.Values.Concat(_trips.Values).Concat(_fleet.Values).Concat(_roadEquipment.Values.Select(e=>e.Mover)))
         {
             if(!_frozen)
@@ -98,7 +98,11 @@ public partial class PresentationStage : Node3D
                 float turn=Mathf.Max(.05f,mover.TurnSeconds);
                 mover.AngleElapsed=Mathf.Min(turn,mover.AngleElapsed+(float)delta);
                 // Угол ±π через Euler Y не меняет базис. Поворот задаётся базисом.
-                ApplyYaw(mover,Mathf.LerpAngle(mover.AngleFrom,mover.AngleTo,mover.AngleElapsed/turn));
+                if (mover.AngleFrom != mover.AngleTo)
+                {
+                    ApplyYaw(mover, Mathf.LerpAngle(mover.AngleFrom, mover.AngleTo, mover.AngleElapsed / turn));
+                    if (mover.AngleElapsed >= turn) mover.AngleFrom = mover.AngleTo;
+                }
             }
             if(mover.Walker)StepWalk(mover,delta,!_frozen);
         }
@@ -134,7 +138,7 @@ public partial class PresentationStage : Node3D
                 body.AddChild(WorldSkins.Person(actor.Id,actor.Human,you,language));
                 body.Position = at;
                 AddChild(body);
-                mover = new Mover(body, at) { Human = actor.Human, Walker = true, TurnSeconds = 0.32f };
+                mover = new Mover(body, at) { Human = actor.Human, Walker = true, TurnSeconds = 0.12f };
                 BindLimbs(mover);
                 _actors[actor.Id] = mover;
             }
@@ -148,6 +152,7 @@ public partial class PresentationStage : Node3D
             mover.Node.Visible=actor.VehicleId==0;
             if(!mover.Node.Visible)ResetLimbs(mover);
             if(actor.Human)_riddenVehicle=actor.VehicleId;
+            var facing = new Vector2(actor.FacingX, actor.FacingZ);
             if(actor.Motion.Active)
             {
                 float shown=quantum/10f;
@@ -156,22 +161,22 @@ public partial class PresentationStage : Node3D
                 var step=new Vector3(pose.X,0f,pose.Z);
                 bool far=mover.Node.Position.DistanceTo(step)>1.35f;
                 Target(mover,step,0.1f,snap||far,false);
-                if(Mathf.Abs(pose.FaceX)+Mathf.Abs(pose.FaceZ)>0.01f)
-                {
-                    TargetRotation(mover,pose.FaceX,pose.FaceZ,snap||far);
-                    mover.Faced=true;
-                }
+                if (Mathf.Abs(pose.FaceX) + Mathf.Abs(pose.FaceZ) > 0.01f)
+                    TargetRotation(mover, pose.FaceX, pose.FaceZ, snap || far);
             }
             else
             {
+                var displacement = at - mover.To;
+                // Manual movement may slide along a wall. Face the movement that actually occurred.
+                if (!snap && displacement.LengthSquared() > 0.000001f)
+                    TargetRotation(mover, displacement.X, displacement.Z, false);
+                else if (facing != Vector2.Zero && mover.SimulationFacing != facing && !mover.OnRoute)
+                    TargetRotation(mover, facing.X, facing.Y, snap);
                 Target(mover, at, actor.Human ? 0.1f : 0.2f, snap, false);
-                // После шага остаётся последний угол. Начальный курс Core не разворачивает фигуру на 180° в конце пути.
-                if(!mover.Faced && (actor.FacingX != 0 || actor.FacingZ != 0))
-                {
-                    TargetRotation(mover, actor.FacingX, actor.FacingZ, snap);
-                    mover.Faced=true;
-                }
             }
+            // During a routed walk Core keeps the initial heading. Preserve the final visual heading on arrival.
+            mover.SimulationFacing = facing;
+            mover.OnRoute = actor.Motion.Active;
             int labelRow = frame.Actors.Count(other => other.X == actor.X && other.Z == actor.Z && other.Id < actor.Id);
             var caption=mover.Node.GetNodeOrNull<Label3D>("Appearance/Caption");
             if(caption is not null)

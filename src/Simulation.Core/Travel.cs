@@ -24,6 +24,7 @@ public sealed partial class SimulationEngine
         if (_stepping) throw new InvalidOperationException("Step is not reentrant");
         if (x is < -1 or > 1 || z is < -1 or > 1) throw new ArgumentOutOfRangeException(nameof(x));
         if (!_actors.TryGetValue(actor.Value, out var state)) throw new ArgumentException("Participant not available");
+        if (state.Job is { Kind: "Move" }) return;
         if(Roads is not null&&DrivenVehicle(state.Id) is {} roadVehicle)
         {
             state.HeadingX=x;state.HeadingZ=z;

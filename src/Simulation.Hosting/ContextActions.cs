@@ -10,9 +10,13 @@ public static class ContextActions
         .Concat((v.Equipment??[]).Where(e=>e.Position==v.Participant.Position).Select(e=>"e"+e.Id.Value))
         .Concat((v.Fleet?.Vehicles??[]).Where(e=>e.Position==v.Participant.Position).Select(e=>"v"+e.Vehicle.Id)));
 
-    public static ContextChoice[] Read(SimulationEngine engine,ParticipantId actor,ScenarioDefinition scenario,string language)
+    public static ContextChoice[] Read(SimulationEngine engine, ParticipantId actor, ScenarioDefinition scenario, string language) =>
+        FromView(engine, PlayerDesk.Read(engine, actor), scenario, language);
+
+    public static ContextChoice[] FromView(SimulationEngine engine, PlayerView v, ScenarioDefinition scenario, string language)
     {
-        var v=PlayerDesk.Read(engine,actor);var cell=v.Participant.Position;
+        var actor = v.Participant.Id;
+        var cell = v.Participant.Position;
         string L(string ru,string en)=>PlayerText.Local(language,ru,en);
         var choices=PlayContext.At(v,scenario,language,true).Where(c=>!c.Key.StartsWith("resource:info:",StringComparison.Ordinal)).ToList();
         choices.RemoveAll(c=>c.Command?.Kind==ActionKind.BoardVehicle&&(v.Equipment??[]).Any(e=>e.Id.Value==c.Command.VehicleId&&e.Deployed==true));

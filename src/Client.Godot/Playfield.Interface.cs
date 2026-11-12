@@ -318,13 +318,16 @@ public partial class Playfield
         _goalMore.Text=_goalOpen?"–":L("Ещё","More");
         _goalMore.TooltipText=_goalOpen?L("Свернуть","Fold"):L("Подробнее","Details");
         bool guiding=_guideCell is {} at && step.X==at.X && step.Z==at.Z;
-        _goalWhere.Text=step.X<0&&step.TargetId>0?L("Открыть","Open"):guiding?L("Скрыть","Hide"):L("К цели","Go");
-        _goalWhere.Disabled=step.X<0&&step.TargetId==0;
+        var purchase = GuidePurchase(step, view.Participant.Position);
+        _goalWhere.Text = purchase?.Label ?? (step.Id == "program" || step.X < 0 && step.TargetId > 0
+            ? L("Открыть", "Open") : guiding ? L("Скрыть", "Hide") : L("К цели", "Go"));
+        _goalWhere.Disabled = purchase is { Enabled: false } || step.Id != "program" && step.X < 0 && step.TargetId == 0;
+        _goalWhere.TooltipText = purchase?.Details ?? "";
         if(_hudBar is not null)LayoutCityHud(_hudBar);
         Callable.From(()=>{if(_hudBar is not null)LayoutCityHud(_hudBar);}).CallDeferred();
     }
     private string _previewKey="";
-    private void FillPlayContext(VBoxContainer host)
+    private void FillPlayContext(VBoxContainer host, PlayerView contextView)
     {
         if(_contextActions is null)
         {
@@ -341,7 +344,6 @@ public partial class Playfield
         var response=_contextCommandId is {} id?_session.Engine.Result(id):null;
         string status=_contextCommandId is null?"":ContextActions.ResultText(_language,response);
         if(_contextMessage.Length>0)status=_contextMessage;
-        var contextView=PlayerDesk.Read(_session.Engine,_human);
         _contextActions.ShowSummary(string.Join(" | ",contextView.Resources.Where(r=>r.Position==contextView.Participant.Position).Select(r=>PlayContext.ResourceLine(contextView,r,_language))));
         _contextActions.ShowData(ContextActions.Scope(contextView),_choices,_language,WaitingCommand,status,_roadCardTop);
         LayoutContextDock();

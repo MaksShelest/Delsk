@@ -164,7 +164,6 @@ try
         {
             if(name=="$begin")
             {
-                if(invariantOpen)session.Measurements.End("invariant-remainder",invariantMark);
                 invariantMark=session.Measurements.Start();invariantOpen=true;return;
             }
             if(!invariantOpen)return;

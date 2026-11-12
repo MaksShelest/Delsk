@@ -343,6 +343,7 @@ public sealed partial class SimulationEngine
         if (!state.SupplyCollected) return "collect-supply";
         if (state.ConstructionUsed == 0) return "build";
         if (state.OperatingUsed == 0) return "wait-construction";
+        if (state.OutputSold) return "done";
         if (_buildings.TryGetValue(state.SubsidizedConstructionId, out var building) && !Demolished(building.Id) &&
             _enterprises.TryGetValue(building.Id, out var enterprise))
         {

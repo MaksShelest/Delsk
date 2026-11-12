@@ -7,12 +7,21 @@ public partial class Playfield
     private ProvincialProgramPanel? _provincial;
     private bool _provincialIntro;
 
-    private void OpenProvincial()
+    private void ResetProvincial()
+    {
+        _provincial?.QueueFree();
+        _provincial = null;
+        _provincialIntro = false;
+    }
+
+    private void OpenProvincial(PlayerView? view = null)
     {
         if (_surface != Surface.Play) return;
+        view ??= PlayerDesk.Read(_session.Engine, _human);
+        if (view.ProvincialProgram is null) return;
         _provincial ??= new ProvincialProgramPanel();
         if (_provincial.GetParent() is null) AddChild(_provincial);
-        _provincial.Show(PlayerDesk.Read(_session.Engine, _human), _language, WaitingCommand, action => Offer(action));
+        _provincial.Show(view, _language, WaitingCommand, Offer);
         _provincial.Visible = true;
     }
 }
@@ -26,6 +35,7 @@ public sealed partial class ProvincialProgramPanel : PanelContainer
     private readonly Button _close = new() { CustomMinimumSize = new(88, 40) };
     private bool _confirm;
     private string _shown = "";
+    private bool _russian;
 
     public ProvincialProgramPanel()
     {
@@ -62,7 +72,8 @@ public sealed partial class ProvincialProgramPanel : PanelContainer
     public void Show(PlayerView view, string language, bool waiting, System.Action<GameAction> offer)
     {
         if (view.ProvincialProgram is not { } program) { Visible = false; _confirm = false; return; }
-        bool ru = !language.StartsWith("en", System.StringComparison.OrdinalIgnoreCase);
+        bool ru = _russian = !language.StartsWith("en", System.StringComparison.OrdinalIgnoreCase);
+        if (_shown != program.Status) { _shown = program.Status; _confirm = false; }
         _title.Text = ru ? "Программа развития провинции" : "Provincial development program";
         string industry = PlayerText.Enterprise(language, program.IndustryId, 1);
         long state = program.ParcelReserved + program.ConstructionReserved + program.OperatingReserved + program.SupplyValueMinor;
@@ -93,7 +104,6 @@ public sealed partial class ProvincialProgramPanel : PanelContainer
         _join.Disabled = waiting;
         _join.Text = waiting ? (ru ? "Ждём ответ" : "Waiting") : _confirm ? (ru ? "Подтвердить помощь" : "Confirm the grant") : (ru ? "Участвовать" : "Join");
         _close.Text = ru ? "Закрыть" : "Close";
-        if (_shown != program.Status) { _shown = program.Status; _confirm = false; }
         _offer = offer;
         var viewport = GetViewportRect().Size;
         if (viewport.X > 1 && viewport.Y > 1)
@@ -107,7 +117,7 @@ public sealed partial class ProvincialProgramPanel : PanelContainer
 
     private void ConfirmJoin()
     {
-        if (!_confirm) { _confirm = true; _join.Text = _join.Text.Contains("Join") || _join.Text.Contains("Confirm") ? "Confirm the grant" : "Подтвердить помощь"; return; }
+        if (!_confirm) { _confirm = true; _join.Text = _russian ? "Подтвердить помощь" : "Confirm the grant"; return; }
         _confirm = false;
         _offer?.Invoke(new(ActionKind.AcceptProvincialSupport));
     }

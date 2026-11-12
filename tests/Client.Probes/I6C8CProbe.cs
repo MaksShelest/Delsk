@@ -1,6 +1,7 @@
 using Godot;
 using Simulation.Core;
 using Simulation.Hosting;
+using System.Reflection;
 
 /// <summary>Кадры окна программы провинции. Linux software GL не заменяет Windows или Android.</summary>
 public partial class I6C8CProbe : Control
@@ -29,10 +30,12 @@ public partial class I6C8CProbe : Control
             await Show(open, "en", 1100, 720, output + "/en-1100x720-open.png", join: false);
             await Show(open, "ru", 960, 440, output + "/ru-960x440-open.png", join: false);
             await Show(open, "en", 800, 360, output + "/en-800x360-open.png", join: false);
-            GD.Print("I6C8C screenshots ok");
+            await VerifyGameplay();
+            GD.Print("I6C8C screenshots and gameplay ok");
             System.IO.File.WriteAllText(output + "/native.json", System.Text.Json.JsonSerializer.Serialize(new
             {
                 status = "succeeded",
+                gameplay = new[] { "manual-reversal", "hud-parcel-purchase", "six-cells-granted" },
                 screens = new[] { "ru-1100x720-offered", "ru-1100x720-open", "en-1100x720-open", "ru-960x440-open", "en-800x360-open" }
             }));
             GetTree().Quit(0);
@@ -44,6 +47,59 @@ public partial class I6C8CProbe : Control
             catch (System.Exception write) { GD.PrintErr(write); }
             GetTree().Quit(1);
         }
+    }
+
+    private const BindingFlags Flags = BindingFlags.Instance | BindingFlags.NonPublic;
+    private static T Field<T>(Playfield app, string field) => (T)typeof(Playfield).GetField(field, Flags)!.GetValue(app)!;
+    private static void Call(Playfield app, string method) => typeof(Playfield).GetMethod(method, Flags)!.Invoke(app, null);
+
+    private async Task VerifyGameplay()
+    {
+        var app = GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();
+        AddChild(app);
+        await Frames(5);
+        app.SetProcess(false);
+        var save = (string)typeof(Playfield).GetProperty("SavePath", Flags)!.GetValue(app)!;
+        CheckpointStore.Save(Open(), save);
+        Call(app, "Load");
+        Call(app, "ContinueGame");
+        await Frames(5);
+        var session = Field<GameSession>(app, "_session");
+        var stage = Field<PresentationStage>(app, "_stage");
+        var actor = new ParticipantId(1);
+        session.SetPaused(false);
+        Call(app, "Refresh");
+        var player = stage.GetNode<Node3D>("Actor_1");
+        foreach (int x in new[] { 1, -1 })
+        {
+            session.SetTravelHeading(actor, x, 0);
+            session.AdvanceTravelQuantum();
+            Call(app, "Refresh");
+            stage._Process(0.15);
+            if ((-player.Basis.Z).Dot(new Vector3(x, 0, 0)) < 0.99f)
+                throw new InvalidOperationException("Manual movement failed to turn the player " + x);
+        }
+        session.SetTravelHeading(actor, 0, 0);
+        session.Send(actor, new(ActionKind.AcceptProvincialSupport));
+        session.Step();
+        Call(app, "Refresh");
+        var target = Field<StarterStep>(app, "_goalStep");
+        if (target.Id != "program-land") throw new InvalidOperationException("Missing parcel objective");
+        var move = session.Send(actor, new(ActionKind.MoveTo, Target: new(target.X, target.Z)));
+        session.Step();
+        if (session.Engine.Result(move)?.Status != ResultStatus.Accepted) throw new InvalidOperationException("No route to the guided parcel");
+        for (int i = 0; i < 100 && session.Engine.Observe(actor).Participant.Busy; i++) session.Step();
+        Call(app, "Refresh");
+        var button = Field<Button>(app, "_goalWhere");
+        if (button.Disabled || !button.Text.Contains("2×3")) throw new InvalidOperationException("HUD purchase unavailable " + button.Text);
+        button.EmitSignal(Button.SignalName.Pressed);
+        session.Step();
+        Call(app, "Refresh");
+        var view = PlayerDesk.Read(session.Engine, actor);
+        if (view.Plots.Count(p => p.OwnerId == actor) != 6 || view.AvailableCashMinor != 20_000)
+            throw new InvalidOperationException("HUD purchase did not grant all six cells");
+        app.QueueFree();
+        await Frames(1);
     }
 
     private static GameSession Open()

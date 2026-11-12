@@ -52,11 +52,8 @@ public static class Presentation
                 travel.OffsetX, travel.OffsetZ, travel.FacingX, travel.FacingZ){VehicleId=fleet?.Vehicles.FirstOrDefault(v=>v.Driver==p.Id.Value)?.Id??0,Motion=engine.PedestrianMotionOf(p.Id.Value)};
         }).ToArray();
         var markers = new List<PresentationMarker>();
-        var blocked = new HashSet<Cell>(engine.BlockedCells());
-        for (int x = 0; x < scenario.MapWidth; x++)
-            for (int z = 0; z < scenario.MapHeight; z++)
-                if (blocked.Contains(new(x, z)))
-                    markers.Add(new("blocked", x, z, "", 0, 0));
+        foreach (var cell in engine.BlockedCells().OrderBy(c => c.X).ThenBy(c => c.Z))
+            markers.Add(new("blocked", cell.X, cell.Z, "", 0, 0));
         foreach (var plot in world.Plots.OrderBy(p => p.Id.Value))
         {
             string kind = plot.IsCorridor ? "corridor"

@@ -90,7 +90,7 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
             state.Accounts.Single(a => a.Kind == "WagesSink").BalanceMinor,
             state.Accounts.Single(a => a.Kind == "Treasury").BalanceMinor,
             state.Flows.Sum(f => f.Harvested), state.Flows.Sum(f => f.Produced),
-            state.Flows.Sum(f => f.Exported), MeasuredStateHash(), state.Population, state.Unemployed));
+            state.Flows.Sum(f => f.Exported), MeasuredStateHash(state), state.Population, state.Unemployed));
         _laborSamples.Add(new(state.Tick, state.EmploymentGroups));
         SampleControllers(state);
         Measurements?.End("sampling-including-hash",sampleMark);
@@ -100,9 +100,9 @@ public sealed partial class GameSession(SimulationEngine engine, string sessionI
             System.Diagnostics.Stopwatch.GetElapsedTime(coreStart,sampleStart).TotalMilliseconds,
             System.Diagnostics.Stopwatch.GetElapsedTime(sampleStart).TotalMilliseconds));
     }
-    private string MeasuredStateHash()
+    private string MeasuredStateHash(WorldView state)
     {
-        var mark=Measurements?.Start()??default;string hash=Engine.ComputeStateHash();Measurements?.End("state-hash",mark);return hash;
+        var mark=Measurements?.Start()??default;string hash=Engine.ComputeStateHash(state);Measurements?.End("state-hash",mark);return hash;
     }
     public void SetPaused(bool paused)
     {

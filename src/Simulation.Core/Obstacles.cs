@@ -25,7 +25,8 @@ public sealed partial class SimulationEngine
         _map.SetBuildingWalls(previous.Concat(walls));
         try
         {
-            foreach(var anchor in anchors) _map.FindPath(position,anchor);
+            var reachable = _map.DistancesFrom(position);
+            if (anchors.Any(anchor => !reachable.ContainsKey(anchor))) throw new RuleViolation("NoPath");
         }
         catch(RuleViolation){throw new RuleViolation("AccessWouldBeBlocked");}
         finally{_map.SetBuildingWalls(previous);}

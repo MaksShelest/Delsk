@@ -183,7 +183,7 @@ public partial class I6C74Probe : Control
 
     private GameSession Boot(Playfield app)
     {
-        var resolved = (OrdinaryGameResolution)Call(app, "ResolveNewGame", PlayMaps.CompactValley, 3)!;
+        var resolved = (OrdinaryGameResolution)Call(app, "ResolveNewGame", PlayMaps.CompactValley, 3, true)!;
         var funded = resolved.Scenario with { Participants = resolved.Scenario.Participants.Select(p => p.Id == 1 ? p with { CashMinor = 1000000 } : p).ToArray() };
         var session = new GameSession(new(funded));
         string save = typeof(Playfield).GetProperty("SavePath", Flags)!.GetValue(app)!.ToString()!;
