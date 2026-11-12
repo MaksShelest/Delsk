@@ -51,9 +51,10 @@ public partial class CityJourneyPanel : VBoxContainer
     private readonly OptionButton _step=new(){Name="JourneyStep"};
     private readonly Label _body=new(){Name="JourneyBody",AutowrapMode=TextServer.AutowrapMode.WordSmart};
     private readonly Button _before=new(){Name="JourneyPrevious"},_after=new(){Name="JourneyNext"},_go=new(){Name="JourneyAction"};
-    public CityJourneyPanel(string language,CityReadState state)
+    private readonly bool _wholeParcels;
+    public CityJourneyPanel(string language, CityReadState state, bool wholeParcels)
     {
-        Name="CityJourney";_state=state;_language=language;
+        Name="CityJourney";_state=state;_language=language;_wholeParcels=wholeParcels;
         AddChild(TabletDesign.Heading(L("Пять шагов к своему хозяйству","Five steps to your own business"),25));
         for(int i=0;i<CityJourney.Steps.Length;i++)_step.AddItem((i+1)+". "+Title(CityJourney.Steps[i]));_step.Select(state.TutorialPage);_step.ItemSelected+=i=>Select((int)i);AddChild(_step);AddChild(_body);
         _go.Pressed+=()=>NavigateRequested?.Invoke(CityJourney.Steps[_state.TutorialPage].Destination);_go.CustomMinimumSize=new(44,48);AddChild(_go);
@@ -63,5 +64,15 @@ public partial class CityJourneyPanel : VBoxContainer
     private string L(string ru,string en)=>PlayerText.Local(_language,ru,en);
     private string Title(CityLesson s)=>L(s.TitleRu,s.TitleEn);
     private void Select(int index){_state.TutorialPage=Math.Clamp(index,0,4);_step.Select(_state.TutorialPage);ShowStep();Changed?.Invoke();}
-    private void ShowStep(){var lesson=CityJourney.Steps[_state.TutorialPage];_body.Text=L(lesson.BodyRu,lesson.BodyEn);_go.Text=L("Открыть: ","Open: ")+Title(lesson);_before.Disabled=_state.TutorialPage==0;_after.Disabled=_state.TutorialPage==4;}
+    private void ShowStep()
+    {
+        var lesson = CityJourney.Steps[_state.TutorialPage];
+        _body.Text = L(lesson.BodyRu, lesson.BodyEn);
+        if (_wholeParcels && _state.TutorialPage == 1)
+            _body.Text = L("Промышленный участок 2×3 покупается одним действием. Подойдите к отмеченной клетке и нажмите «Купить участок». Полная цена — 600 монет. При участии в программе провинции первый участок оплачивает столица. Доставьте материалы на строительную клетку и начните стройку.",
+                "A 2×3 industrial parcel is bought in one action. Walk to the marked cell and select Buy parcel. The total price is 600 coins. The capital funds your first parcel if you join the provincial program. Deliver the materials to the building cell and start construction.");
+        _go.Text = L("Открыть: ", "Open: ") + Title(lesson);
+        _before.Disabled = _state.TutorialPage == 0;
+        _after.Disabled = _state.TutorialPage == CityJourney.Steps.Length - 1;
+    }
 }

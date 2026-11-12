@@ -2,6 +2,7 @@
 """Independent arithmetic checks of runner exports. Author: Шелестов Максим Евгеньевич."""
 import csv
 import json
+from collections import Counter
 from pathlib import Path
 import sys
 from import_audit import verify_imports
@@ -41,16 +42,27 @@ def verify(folder):
             labor_by_tick.setdefault(tick, {})[group] = (int(row["owner_id"]), n)
     for tick, sample in samples.items():
         assert int(sample['population']) == int(sample['unemployed']) + employed[tick]
+    events = [json.loads(line) for line in (folder/'events.jsonl').read_text(encoding='utf-8').splitlines()]
+    provincial_quantities, provincial_cost = Counter(), Counter()
+    for event in events:
+        if event['type'] == 'ProvincialSupplyDelivered':
+            assert event['quantity'] > 0 and event['amountMinor'] > 0
+            provincial_quantities[event['itemId']] += event['quantity']
+            provincial_cost[event['tick']] += event['amountMinor']
+    assert provincial_quantities == Counter({f['itemId']: f.get('provincialSupplied', 0) for f in summary['flows']})
     for flow in summary['flows']:
         physical = sum(stock['quantity'] for inventory in state['inventories'] for stock in inventory['stock'] if stock['itemId']==flow['itemId']) + sum(lot['quantity'] for inventory in state['inventories'] for lot in (inventory.get('overflow') or []) if lot['itemId']==flow['itemId'])
-        assert physical == flow['initial']+flow.get('imported',0)+flow['harvested']+flow['produced']+sum(m['newValue']-m['oldValue'] for m in modifications if m['kind']=='Stock' and m['item']==flow['itemId'])-flow['recipeInput']-flow['exported']-flow.get('constructionInput',0)-flow.get('lost',0)+flow.get('constructionRecovered',0)
+        stock_adjustment = sum(m['newValue'] - m['oldValue'] for m in modifications if m['kind'] == 'Stock' and m['item'] == flow['itemId'])
+        assert physical == (flow['initial'] + flow.get('imported', 0) + flow.get('provincialSupplied', 0)
+                            + flow['harvested'] + flow['produced'] + stock_adjustment - flow['recipeInput']
+                            - flow['exported'] - flow.get('constructionInput', 0) - flow.get('lost', 0)
+                            + flow.get('constructionRecovered', 0))
     for inv in state['inventories']:
         assert inv['occupiedVolume']+inv['reservedCapacity'] <= inv['capacity']
         assert all(0 <= item['reserved'] <= item['quantity'] for item in inv['stock'])
     tape = [json.loads(line) for line in (folder/'commands.jsonl').read_text(encoding='utf-8').splitlines()]
     assert tape or json.loads((folder/'scenario.json').read_text(encoding='utf-8')).get('economyProfileId'), 'No real commands recorded'
     ledger = [json.loads(line) for line in (folder/'ledger.jsonl').read_text(encoding='utf-8').splitlines()]
-    events = [json.loads(line) for line in (folder/'events.jsonl').read_text(encoding='utf-8').splitlines()]
     assert sum(entry['amountMinor'] for entry in ledger if entry['reason']=='CapitalSettlement') == sum(s['paidMinor'] for s in summary['settlements'])
     assert all(0 <= a['reservedMinor'] <= a['balanceMinor'] for a in state['accounts'])
     accounts = {a['id']['value']: a for a in state['accounts']}
@@ -172,6 +184,28 @@ def verify(folder):
     content = json.loads(content_path.read_text()) if content_path.is_file() else None
     public = [json.loads(line) for line in (folder/'public-events.jsonl').read_text().splitlines()]
     import_paid = verify_imports(config, state, content, events, ledger, tape, public, modifications)
+    assert not any(e['type'].startswith('Provincial') for e in public)
+    provincial_funding, provincial_expense, material_expense = Counter(), Counter(), Counter()
+    for entry in ledger:
+        reason = entry['reason']
+        if not reason.startswith('Provincial'):
+            continue
+        debit, credit = entry['debitAccount']['value'], entry['creditAccount']['value']
+        tick, amount = entry['tick'], entry['amountMinor']
+        assert amount > 0
+        if reason == 'ProvincialSupportAppropriation':
+            assert debit == 0 and accounts[credit]['kind'] == 'Treasury'
+            provincial_funding[tick] += amount
+        else:
+            assert accounts[debit]['kind'] == 'Treasury'
+            if reason == 'ProvincialMaterialSupply':
+                assert credit == 0
+                material_expense[tick] += amount
+            else:
+                assert reason in ('ProvincialParcelGrant', 'ProvincialConstructionGrant', 'ProvincialOperatingReserve', 'ProvincialOutputPurchase')
+                assert accounts[credit]['kind'] == 'Participant'
+            provincial_expense[tick] += amount
+    assert provincial_funding == provincial_expense and material_expense == provincial_cost
     demand = state.get('capitalDemand')
     assert json.loads((folder/'capital-demand.json').read_text(encoding='utf-8')) == demand
     if demand is not None:
@@ -186,7 +220,9 @@ def verify(folder):
             consumed = sum(g['consumed'] * bases[g['itemId']] for g in goods)
             stock_delta = sum(g['stockChange'] * bases[g['itemId']] for g in goods)
             assert gross == period['grossOutputBaseMinor'] and consumed == period['internalConsumptionBaseMinor'] and stock_delta == period['stockChangeBaseMinor']
-            assert all(g['stockChange'] == g.get('imported',0) + g['harvested'] + g['produced'] - g['consumed'] - g['exported'] - g.get('lost',0) + g.get('constructionRecovered',0) for g in goods)
+            assert all(g['stockChange'] == g.get('imported', 0) + g.get('provincialSupplied', 0) + g['harvested']
+                       + g['produced'] - g['consumed'] - g['exported'] - g.get('lost', 0)
+                       + g.get('constructionRecovered', 0) for g in goods)
             smooth, carry = divmod(smooth + gross + carry, 2)
             assert smooth == period['smoothedOutputBaseMinor'] and carry == period['smoothingRemainder']
             assert period['targetBaseMinor'] == max(rules['bootstrapBaseBudgetMinor'], smooth * rules['demandNumerator'] // rules['demandDenominator'])
@@ -198,10 +234,10 @@ def verify(folder):
             emissions = [l for l in ledger if l['reason'] == 'CapitalDemandBudget' and l['tick'] == period['tick']]
             assert len(emissions) <= 1 and sum(l['amountMinor'] for l in emissions) == period['externalFundingMinor']
             assert sum(o['originalQuantity'] * o['unitPriceMinor'] for o in state['capitalOffers'] if o['createdTick'] == period['tick']) == monetary
-        assert sum(p['externalFundingMinor'] for p in periods) == state['externalMoneyInMinor']
+        assert sum(p['externalFundingMinor'] for p in periods) + sum(provincial_funding.values()) == state['externalMoneyInMinor']
         assert all(l['tick'] % rules['periodTicks'] == 0 for l in ledger if l['reason'] == 'CapitalDemandBudget')
-        # Import pays an external supplier; it is a separate sink from retired demand.
-        assert sum(o['releasedQuantity'] * o['unitPriceMinor'] for o in state['capitalOffers']) + import_paid == state['externalMoneyOutMinor']
+        retired_demand = sum(o['releasedQuantity'] * o['unitPriceMinor'] for o in state['capitalOffers'])
+        assert retired_demand + import_paid + sum(material_expense.values()) == state['externalMoneyOutMinor']
     assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'DeliveryFunding') == sum(d['quantity'] * d['unitPriceMinor'] for d in contracts)
     assert sum(l['amountMinor'] for l in ledger if l['reason'] == 'DeliveryBond') == sum(d['bondMinor'] for d in contracts)
     systems = state.get('logistics', [])

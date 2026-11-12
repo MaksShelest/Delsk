@@ -59,7 +59,9 @@ public partial class Playfield : Control
     private string? _contextCommandId;
     private string _contextMessage="";
     private void CloseContextActions()=>_contextActions?.SetExpanded(false);
-    private ContextChoice[] CurrentContext()=>_surface==Surface.Play?ContextActions.Read(_session.Engine,_human,_scenario,_language):PlayContext.At(PlayerDesk.Read(_session.Engine,_human),_scenario,_language);
+    private ContextChoice[] CurrentContext(PlayerView view) => _surface == Surface.Play
+        ? ContextActions.FromView(_session.Engine, view, _scenario, _language)
+        : PlayContext.At(view, _scenario, _language);
 
     private VBoxContainer? _debugContext;
     private VBoxContainer _cards = null!;
@@ -74,6 +76,11 @@ public partial class Playfield : Control
     private double _worstFrame;
     private int _contextFirst;
     private string SavePath => ProjectSettings.GlobalizePath($"user://play-{_mode}-{SimulationEngine.RulesVersion}{(SimulationEngine.IsDeveloperBuild?"-developer":"")}.json");
+
+    private bool HasSavedGame => System.IO.File.Exists(SavePath) || System.IO.File.Exists(SavePath + ".bak");
+    private long? _recoveredSaveTick;
+
+    private void SaveGame() => CheckpointStore.Save(_session, SavePath, preserveDamagedMain: true);
 
     private enum Surface { Play, Menu, Debug, Maps }
     private string _mapKey = PlayMaps.First;
@@ -191,12 +198,12 @@ public partial class Playfield : Control
             if (_waitRelease && !MovementHeld()) _waitRelease = false;
             bool modelWaiting=ModelFrame();AdvanceFeedback(delta);
             if(modelWaiting){AnimateInterface(delta);return;}
+            var priorTravel = _session.Engine.TravelOf(_human);
             SampleHeading();
             DeveloperFrame();
             if(_session.Engine.WaitingForBallots){_session.PumpVoting();Refresh();return;}
             long prior = _session.Engine.Tick;
             int priorQuantum = _session.Engine.TravelQuantum;
-            var priorTravel = _session.Engine.TravelOf(_human);
             _scheduler.AdvanceElapsed(TimeSpan.FromSeconds(Math.Min(delta, 0.25)));
             var travel = _session.Engine.TravelOf(_human);
             if (_session.Engine.Tick != prior || _session.Engine.TravelQuantum != priorQuantum || travel != priorTravel) Refresh();
@@ -215,7 +222,7 @@ public partial class Playfield : Control
         else return;
         ApplyPause();
         if (what == NotificationApplicationPaused || what == NotificationApplicationFocusOut)
-        { SaveCityExperience();try { CheckpointStore.Save(_session, SavePath); } catch (Exception failure) { _feedback = failure.Message; } }
+        { SaveCityExperience();try { SaveGame(); } catch (Exception failure) { _feedback = failure.Message; } }
         Refresh();
     }
 
@@ -262,11 +269,11 @@ public partial class Playfield : Control
         ResetTablet();
         ApplySurface();
         DismissMaps();
-        _mapSelection = new MapSelectionScreen(_language, _session is not null || System.IO.File.Exists(SavePath), ReadMap, _newMapKey,_newDifficulty,_newModel,_newNpcCount,(key,count)=>ResolveNewGame(key,count,allowUnassigned:true).Scenario);
+        _mapSelection = new MapSelectionScreen(_language, _session is not null || HasSavedGame, ReadMap, _newMapKey,_newDifficulty,_newModel,_newNpcCount,(key,count)=>ResolveNewGame(key,count,allowUnassigned:true).Scenario);
         _mapSelection.MapChosen += key =>
         {
             try{_mapSelection.ModelConfiguration?.Validate();}catch(ArgumentException){_mapSelection.TooltipText=L("Проверьте имя модели и настройки.","Check model name and settings.");return;}
-            if (_session is null && !System.IO.File.Exists(SavePath)) { BeginMap(key); return; }
+            if (_session is null && !HasSavedGame) { BeginMap(key); return; }
             var confirm = new ConfirmationDialog { DialogText = PlayerText.Local(_language,
                 "Начать новую партию? Текущая партия будет заменена.", "Start a new game? The current game will be replaced.") };
             AddChild(confirm);
@@ -277,7 +284,15 @@ public partial class Playfield : Control
         _mapSelection.Continued += () =>
         {
             if (_session is not null) { DismissMaps(); ContinueGame(); }
-            else { try { Load(); } catch (Exception failure) { _mapSelection.TooltipText = failure.Message; GD.PushWarning(failure.Message); } }
+            else
+            {
+                try { Load(); }
+                catch (Exception failure)
+                {
+                    GD.PushWarning(failure.Message);
+                    ShowSaveError(L("Не удалось открыть сохранённую партию.", "Could not open the saved game."));
+                }
+            }
         };
         _mapSelection.LanguageChanged += () => { _language = _language == "ru" ? "en" : "ru"; ShowMaps(); };
         _mapSelection.DisplaySettingsRequested += ToggleFullscreen;
@@ -303,7 +318,7 @@ public partial class Playfield : Control
     }
     private void ContinueUserPlay(string path)
     {
-        if(_session is null && !System.IO.File.Exists(SavePath)){BeginUserMap(path);return;}
+        if(_session is null && !HasSavedGame){BeginUserMap(path);return;}
         var confirm=new ConfirmationDialog{DialogText=PlayerText.Local(_language,
             "Начать новую партию на своей карте? Текущая партия будет заменена.","Start a new game on your map? The current game will be replaced.")};
         AddChild(confirm);
@@ -319,7 +334,7 @@ public partial class Playfield : Control
         DismissMaps();
         MapHandoff.ClearPlay();
         Start("economy", false);
-        try { CheckpointStore.Save(_session, SavePath); }
+        try { SaveGame(); }
         catch (Exception failure) { _feedback = failure.Message; }
         _userMapPath=null;
     }
@@ -330,7 +345,7 @@ public partial class Playfield : Control
         _stage?.ResetMotion();
         DismissMaps();
         Start("economy", false);
-        try { CheckpointStore.Save(_session, SavePath); }
+        try { SaveGame(); }
         catch (Exception failure) { _feedback = failure.Message; }
     }
 
@@ -340,6 +355,8 @@ public partial class Playfield : Control
         _storageCursor=0;_storageLossUntil=0;_storageLoss="";
         DismissHelp();
         ResetTablet(true);
+        ResetProvincial();
+        _recoveredSaveTick = null;
         _mode = mode;LoadCityExperience(true);
         _gain = "";
         _hoverX = _hoverZ = null;
@@ -455,10 +472,11 @@ public partial class Playfield : Control
     }
     private void ConfirmContextChoice(ContextChoice choice)
     {
-        var current=CurrentContext();
+        var view = PlayerDesk.Read(_session.Engine, _human);
+        var current = CurrentContext(view);
         if(_surface==Surface.Play&&_contextActions is {} panel)
         {
-            string scope=ContextActions.Scope(PlayerDesk.Read(_session.Engine,_human));
+            string scope=ContextActions.Scope(view);
             if(scope!=panel.Selection.Scope){_contextMessage=L("Контекст изменился. Выберите действие заново.","Context changed. Select the action again.");Refresh();return;}
             panel.Selection.Update(scope,current);panel.Selection.Pending=WaitingCommand;
             if(!panel.Selection.TryChoose(choice,out _)){_contextMessage=WaitingCommand?T("command.sent"):choice.Enabled?L("Действие изменилось. Выберите его заново.","Action changed. Select it again."):choice.Details;Refresh();return;}
@@ -500,7 +518,7 @@ public partial class Playfield : Control
     private void RebuildContext()
     {
         _harvestBars.Clear();
-        if (_contextHost is not null) FillPlayContext(_contextHost);
+        if (_contextHost is not null) FillPlayContext(_contextHost, PlayerDesk.Read(_session.Engine, _human));
         if (_debugContext is not null) FillContext(_debugContext);
     }
 
@@ -595,8 +613,8 @@ public partial class Playfield : Control
         _stage?.ShowRoadWorkEffects(view);
         if (_surface == Surface.Debug) _board?.Show(frame, _cellX, _cellZ);
         if (_surface == Surface.Play && view.ProvincialProgram is { Status: "Offered" } && !_provincialIntro)
-        { _provincialIntro = true; OpenProvincial(); }
-        _provincial?.Show(view, _language, WaitingCommand, action => Offer(action));
+        { _provincialIntro = true; OpenProvincial(view); }
+        else if (_provincial is { Visible: true }) _provincial.Show(view, _language, WaitingCommand, Offer);
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
         string stock = pack.Stock.Length == 0 ? T("inventory.empty")
             : string.Join(", ", pack.Stock.OrderBy(s => s.ItemId, StringComparer.Ordinal).Select(s => $"{PlayerText.Item(_language, s.ItemId)} ×{s.Quantity}"));
@@ -604,7 +622,7 @@ public partial class Playfield : Control
         if (_inventoryLabel is not null) _inventoryLabel.Text = inventory;
         if (_playInventory is not null) _playInventory.Text = _friendly ? L("Рюкзак ", "Pack ") + pack.OccupiedVolume + "/" + pack.Capacity : HudStock(view, pack);
         UpdateHudGoods(pack);
-        var next = CurrentContext();
+        var next = CurrentContext(view);
         _contextIndex = PlayContext.Keep(_contextIndex, _choices, next);
         if (WaitingCommand)
             next = next.Select(c => c.Command is not null
@@ -612,7 +630,7 @@ public partial class Playfield : Control
         _choices = next;
         if(_previewKey.Length>0&&next.All(c=>c.Key!=_previewKey)){_previewKey="";_stage?.SetPreview([]);}
         string contextKey = _contextIndex.ToString(CultureInfo.InvariantCulture) + "|" + string.Join(",", next.Select(c => $"{c.Key}:{c.Label}:{c.Enabled}:{c.Details}"));
-        if(_surface==Surface.Play&&_contextHost is not null)FillPlayContext(_contextHost);
+        if(_surface==Surface.Play&&_contextHost is not null)FillPlayContext(_contextHost, view);
         if (contextKey != _contextKey) { _contextKey = contextKey; if(_debugContext is not null)FillContext(_debugContext); }
         foreach (var bar in _harvestBars)
         {
@@ -893,7 +911,7 @@ public partial class Playfield : Control
         column.AddChild(controls);
         _fpsLabel = new Label(); controls.AddChild(_fpsLabel);
         Button(controls, "step", StepOne);
-        Button(controls, "save", () => { CheckpointStore.Save(_session, SavePath); _feedback = T("save"); Refresh(); });
+        Button(controls, "save", () => { SaveGame(); _feedback = T("save"); Refresh(); });
         Button(controls, "load", Load);
         Button(controls, "language", ChangeLanguage);
         controls.AddChild(new VSeparator());
@@ -934,6 +952,9 @@ public partial class Playfield : Control
         var box = new VBoxContainer { SizeFlagsHorizontal=SizeFlags.ExpandFill };center.AddChild(box);
         box.AddChild(new Label { Text = T("menu.title") + " · " + PlayMaps.Name(_mapKey, _language), HorizontalAlignment = HorizontalAlignment.Center,AutowrapMode=TextServer.AutowrapMode.WordSmart });
         box.AddChild(new Label { Text = T("menu.escape"), AutowrapMode = TextServer.AutowrapMode.WordSmart });
+        if (_recoveredSaveTick is long tick)
+            box.AddChild(new Label { Name = "RecoveredSaveNotice", AutowrapMode = TextServer.AutowrapMode.WordSmart,
+                Text = L($"Открыта резервная копия партии на тике {tick}.", $"Opened the game's backup at tick {tick}.") });
         Button(box, "menu.continue", ContinueGame);GameUi.Primary(box.GetChildren().OfType<Button>().Last());
 #if DEBUG
         Button(box, "menu.debug", OpenDebug);
@@ -970,6 +991,7 @@ public partial class Playfield : Control
         if (_stage?.GetParent() is SubViewport viewport)
             viewport.RenderTargetUpdateMode = _surface == Surface.Play ? SubViewport.UpdateMode.Always : SubViewport.UpdateMode.Disabled;
         if (_playChrome is not null) _playChrome.Visible = _surface == Surface.Play;
+        if (_surface != Surface.Play && _provincial is not null) _provincial.Hide();
         if (_panel is not null) _panel.Visible = _surface == Surface.Debug;
         if (_menu is not null) _menu.Visible = _surface == Surface.Menu;
     }
@@ -1008,8 +1030,13 @@ public partial class Playfield : Control
 
     private void ExitGame()
     {
-        try { if (_session is not null) CheckpointStore.Save(_session, SavePath); }
-        catch (Exception failure) { _feedback = failure.Message; Refresh(); return; }
+        try { if (_session is not null) SaveGame(); }
+        catch (Exception failure)
+        {
+            GD.PushWarning(failure.Message);
+            ShowSaveError(L("Не удалось сохранить партию.", "Could not save the game."));
+            return;
+        }
         GetTree().Quit();
     }
 
@@ -1030,19 +1057,30 @@ public partial class Playfield : Control
         else Submit(action);
     }
 
+    private void ShowSaveError(string message)
+    {
+        var dialog = new AcceptDialog { Name = "SaveError", Title = L("Сохранение партии", "Saved game"), DialogText = message };
+        AddChild(dialog);
+        dialog.Confirmed += dialog.QueueFree;
+        dialog.Canceled += dialog.QueueFree;
+        UiSafeArea.Popup(dialog, this, new(430, 140));
+    }
+
     private void Load()
     {
-        var loaded = CheckpointStore.Load(SavePath);
+        var loaded = CheckpointStore.Load(SavePath, recoverBackup: true);
+        var scenario = loaded.Session.Engine.Configuration();
+        RestoreGameControllers(loaded.Session);
         DismissHelp();
         ResetTablet(true);
+        ResetProvincial();
         _stage?.ResetMotion();
-        DisposeModel();
         _storageCursor=0;_storageLossUntil=0;_storageLoss="";
         _session = loaded.Session;
-        _scenario = _session.Engine.Configuration();LoadCityExperience(false);
+        _recoveredSaveTick = loaded.UsedBackup ? _session.Engine.Tick : null;
+        _scenario = scenario;LoadCityExperience(false);
         _mapKey = PlayMaps.KeyForScenario(_scenario.Id);
         _human = new(_scenario.NewGame?.HumanActorId??1);
-        RestoreGameControllers();
         ObserveModelFallbacks();
         _scheduler = new TickScheduler(_session,controllerBarrier:()=>ModelBarrier);
         _pending = null;
@@ -1163,7 +1201,7 @@ public partial class Playfield : Control
             Input.IsPhysicalKeyPressed(Key.S), Input.IsPhysicalKeyPressed(Key.W));
         if(heading==default&&_stick is not null)heading=_stick.Heading;
         bool canMove = _session.Engine.CanTravel(_human,heading.X,heading.Z);
-        if (_tabletState.BlocksTime && !canMove) heading = default;
+        if (!canMove) heading = default;
         if (_tabletState.ResumeForMovement(canMove)) { ApplyPause(); Refresh(); }
         if (heading == _sent) return;
         _sent = heading;

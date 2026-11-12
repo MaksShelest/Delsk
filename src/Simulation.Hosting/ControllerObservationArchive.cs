@@ -12,8 +12,16 @@ internal record ControllerObservationArchive(int Version,string[] Properties,Obs
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] int[]? SampleValues=null);
 internal sealed class ControllerObservationPool
 {
-    private static readonly PropertyInfo[] Properties=typeof(ControllerObservation).GetProperties(BindingFlags.Instance|BindingFlags.Public)
-        .Where(p=>p.CanRead&&p.SetMethod?.IsPublic==true).OrderBy(p=>p.Name,StringComparer.Ordinal).ToArray();
+    private static readonly PropertyInfo[] DeclarationOrder = typeof(ControllerObservation).GetProperties(BindingFlags.Instance | BindingFlags.Public)
+        .Where(p => p.CanRead && p.SetMethod?.IsPublic == true).ToArray();
+    private static readonly PropertyInfo[] Properties = DeclarationOrder.OrderBy(p => p.Name, StringComparer.Ordinal).ToArray();
+    private static readonly (int Index, string JsonName, bool OmitNull)[] ExportFields = DeclarationOrder.Select(field => (
+        Array.IndexOf(Properties, field),
+        SimulationJson.Options.PropertyNamingPolicy?.ConvertName(field.Name) ?? field.Name,
+        field.GetCustomAttribute<System.Text.Json.Serialization.JsonIgnoreAttribute>()?.Condition ==
+            System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)).ToArray();
+    private const int CachedFieldLimit = 256 * 1024;
+    private readonly (string? Json, int Node)[] _recentFields = new (string?, int)[Properties.Length];
     private ObservationGraph _graph=new();
     private readonly List<ArchivedControllerTurn> _turns=[];
     private readonly Dictionary<long,ControllerTurn> _last=[];
@@ -27,7 +35,20 @@ internal sealed class ControllerObservationPool
     internal ControllerTurn? Last(long actor)=>_last.GetValueOrDefault(actor);
     internal ControllerTurn Add(ControllerTurn turn)
     {
-        int[] fields=Properties.Select(p=>_graph.AddJson(JsonSerializer.Serialize(p.GetValue(turn.Observation),p.PropertyType,SimulationJson.Options))).ToArray();
+        var fields = new int[Properties.Length];
+        for (int i = 0; i < fields.Length; i++)
+        {
+            var property = Properties[i];
+            string json = JsonSerializer.Serialize(property.GetValue(turn.Observation), property.PropertyType, SimulationJson.Options);
+            var recent = _recentFields[i];
+            if (string.Equals(recent.Json, json, StringComparison.Ordinal)) fields[i] = recent.Node;
+            else
+            {
+                fields[i] = _graph.AddJson(json);
+                // The last exact representation is enough to reuse common fields across a barrier.
+                _recentFields[i] = json.Length <= CachedFieldLimit ? (json, fields[i]) : default;
+            }
+        }
         var metadata=turn with{Observation=null!};_turns.Add(new(metadata,fields));_last[turn.Actor.Value]=metadata;return turn;
     }
     private object? Read(int property,int node)
@@ -66,12 +87,12 @@ internal sealed class ControllerObservationPool
                     if(property.Name!="observation"){property.Value.WriteTo(writer);continue;}
                     writer.WriteStartObject();
                     // Preserve the original DTO declaration/serializer order, not the archive's sorted index order.
-                    foreach(var field in typeof(ControllerObservation).GetProperties(BindingFlags.Public|BindingFlags.Instance).Where(p=>p.CanRead&&p.SetMethod?.IsPublic==true))
+                    foreach (var field in ExportFields)
                     {
-                        int p=Array.FindIndex(Properties,x=>x.Name==field.Name);int root=item.Fields[p];
-                        var ignore=field.GetCustomAttribute<System.Text.Json.Serialization.JsonIgnoreAttribute>();
-                        if(ignore?.Condition==System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull&&_graph.Nodes[root].Json=="null")continue;
-                        writer.WritePropertyName(SimulationJson.Options.PropertyNamingPolicy?.ConvertName(field.Name)??field.Name);_graph.Write(writer,root);
+                        int root = item.Fields[field.Index];
+                        if (field.OmitNull && _graph.Nodes[root].Json == "null") continue;
+                        writer.WritePropertyName(field.JsonName);
+                        _graph.Write(writer, root);
                     }
                     writer.WriteEndObject();
                 }

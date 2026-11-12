@@ -17,18 +17,30 @@ internal sealed class GridMap
     public Dictionary<Cell,int> DistancesFrom(Cell source)
     {
         if(!Walkable(source))throw new RuleViolation("NoPath");
-        var distances=new Dictionary<Cell,int>{{source,0}};var queue=new Queue<Cell>();queue.Enqueue(source);
-        while(queue.TryDequeue(out var cell))foreach(var next in Neighbors(cell))
-            if(Walkable(next) && distances.TryAdd(next,checked(distances[cell]+1)))queue.Enqueue(next);
+        var distances = new Dictionary<Cell, int> { [source] = 0 };
+        var queue = new Queue<Cell>();
+        queue.Enqueue(source);
+        while (queue.TryDequeue(out var cell))
+        {
+            int distance = checked(distances[cell] + 1);
+            foreach (var direction in Directions)
+            {
+                var next = new Cell(cell.X + direction.X, cell.Z + direction.Z);
+                if (Walkable(next) && distances.TryAdd(next, distance)) queue.Enqueue(next);
+            }
+        }
         return distances;
     }
-    private static Cell[] Neighbors(Cell cell)=>[new(cell.X+1,cell.Z),new(cell.X,cell.Z+1),new(cell.X-1,cell.Z),new(cell.X,cell.Z-1)];
-    public Cell[] FindPath(Cell source, Cell destination,Func<Cell,bool>? allow=null)
+
+    // Canonical neighbor order is part of rules-v1.
+    private static readonly Cell[] Directions = [new(1, 0), new(0, 1), new(-1, 0), new(0, -1)];
+
+    public Cell[] FindPath(Cell source, Cell destination, Func<Cell, bool>? allow = null)
     {
-        if (!Walkable(source) || !Walkable(destination) || source!=destination&&allow is not null&&!allow(destination)) throw new RuleViolation("NoPath");
-        var previous = new Dictionary<Cell, Cell>();
+        if (!Walkable(source) || !Walkable(destination) || source != destination && allow is not null && !allow(destination))
+            throw new RuleViolation("NoPath");
+        var previous = new Dictionary<Cell, Cell> { [source] = source };
         var queue = new Queue<Cell>();
-        var seen = new HashSet<Cell> { source };
         queue.Enqueue(source);
         while (queue.TryDequeue(out var cell))
         {
@@ -36,12 +48,18 @@ internal sealed class GridMap
             {
                 var path = new List<Cell> { cell };
                 while (cell != source) { cell = previous[cell]; path.Add(cell); }
-                path.Reverse(); return path.ToArray();
+                path.Reverse();
+                return path.ToArray();
             }
-            // Canonical neighbor order is part of rules-v1.
-            Cell[] neighbors = Neighbors(cell);
-            foreach (var next in neighbors)
-                if (Walkable(next) && (allow is null||allow(next)) && seen.Add(next)) { previous[next] = cell; queue.Enqueue(next); }
+            foreach (var direction in Directions)
+            {
+                var next = new Cell(cell.X + direction.X, cell.Z + direction.Z);
+                if (Walkable(next) && !previous.ContainsKey(next) && (allow is null || allow(next)))
+                {
+                    previous.Add(next, cell);
+                    queue.Enqueue(next);
+                }
+            }
         }
         throw new RuleViolation("NoPath");
     }

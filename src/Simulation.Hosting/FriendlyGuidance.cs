@@ -81,13 +81,17 @@ public static class FriendlyGuidance
             return Step("program", PlayerText.Local(language, "Программа провинции", "Provincial program"),
                 PlayerText.Local(language, "Столица оплатит первый участок 2×3, первое предприятие отрасли «", "The capital pays for the first 2×3 parcel, the first ") + PlayerText.Enterprise(language, offered.IndustryId, 1) +
                 PlayerText.Local(language, "», материалы и сырьё первой партии. Свои 200 монет останутся.", " of the chosen industry, its materials and the first batch of input. Your 200 coins stay."),
-                me.Position.X, me.Position.Z, "program", 0, 0, offered.IndustryId, false, "program", 0, []);
+                -1, -1, "program", 0, 0, offered.IndustryId, false, "program", 0, []);
         if (view.ProvincialProgram is { Status: "Open", NextStep: "buy-parcel" })
         {
-            var parcel = view.Plots.Where(p => p.OwnerId is null && p.BuildingId is null && !p.IsCorridor && !p.IsShopSite && p.ExpansionFor is null)
-                .OrderBy(p => Distance(me.Position, p.Position)).FirstOrDefault();
-            if (parcel is not null) return Step("program-land", PlayerText.Local(language, "Купите участок по программе", "Buy the parcel with the program"),
-                PlayerText.Local(language, "Шесть клеток оплачивает столица. Свои 200 монет не списываются.", "The capital pays for the six cells. Your 200 coins are not spent."),
+            var parcel = PreferredPlot(view, scenario);
+            if (parcel is null) return Step("program-land-unavailable",
+                PlayerText.Local(language, "Нет свободного участка 2×3", "No free 2×3 parcel"),
+                PlayerText.Local(language, "Для программы нужны шесть свободных клеток с подъездом к дороге.", "The program requires six available cells with road access."),
+                -1, -1, "property", 0, 0, "", false, "", 0, []);
+            return Step("program-land", PlayerText.Local(language, "Купите участок 2×3 по программе", "Buy the 2×3 parcel with the grant"),
+                PlayerText.Local(language, "Встаньте на отмеченную клетку и купите весь участок одним действием. Шесть клеток оплачивает столица.",
+                    "Walk to the marked cell and buy the whole parcel in one action. The capital pays for all six cells."),
                 parcel.Position.X, parcel.Position.Z, "property", view.AvailableCashMinor, 0, "", false, "ground", parcel.Id.Value, []);
         }
         if (view.ProvincialProgram is { Status: "Open", NextStep: "collect-supply" } && view.ProductionContent is { } content)
@@ -96,9 +100,17 @@ public static class FriendlyGuidance
                 content.Terminal.X, content.Terminal.Z, "terminal", 0, 0, "", false, "terminal", 0, []);
         var produced = view.Buildings.Where(b => b.OwnerId == me.Id && b.Kind == BuildingKind.Production).OrderBy(b => b.Id.Value).ToArray();
         if (produced.Length > 0) return Production(view, scenario, language, produced, pack);
-        var owned = view.Plots.Where(p => p.OwnerId == me.Id && p.BuildingId is null && !p.IsCorridor && !p.IsShopSite && p.ShopParticipantId is null && p.ExpansionFor is null)
+        var anchors = view.Development?.BuildAnchors;
+        var owned = view.Plots.Where(p => p.OwnerId == me.Id && p.BuildingId is null && !p.IsCorridor && !p.IsShopSite && p.ShopParticipantId is null && p.ExpansionFor is null
+            && (anchors is not { IsDefaultOrEmpty: false } || anchors.Value.Contains(p.Position)))
             .OrderBy(p => Distance(me.Position, p.Position)).ThenBy(p => p.Id.Value).FirstOrDefault();
-        if (owned is not null) return Build(view, scenario, language, owned, pack);
+        if (owned is not null)
+        {
+            if (view.Storage?.Construction.FirstOrDefault(c => c.Position == owned.Position && c.BuildingId == 0) is { } construction)
+                return Step("wait-construction", PlayerText.Local(language, "Дождитесь окончания строительства", "Wait for construction to finish"),
+                    "", owned.Position.X, owned.Position.Z, "property", 0, 0, construction.TypeId, false, "ground", owned.Id.Value, []);
+            return Build(view, scenario, language, owned, pack);
+        }
         // Подтверждённая продажа двигает шаг даже если в рюкзаке ещё лежит товар. Одна кнопка «продать» этого не делает.
         if (sold && PreferredPlot(view, scenario) is { } plot) return BuyPlot(view, scenario, language, plot);
         var goods = Sellable(view, pack).FirstOrDefault();
@@ -150,7 +162,9 @@ public static class FriendlyGuidance
             gaps.Add(new("note", "", 0, 0, Reason(language, "BuildAtContourAnchor"), Reason(language, "BuildAtContourAnchor")));
         var offsets = MapLots.Offsets(type, level.Level);
         var lot = scenario.Layout?.IndustrialLots.FirstOrDefault(l => l.Cells.Contains(cell));
-        if (lot is not null && !MapLots.Covers(lot.Cells, cell, offsets))
+        if (lot is not null && !(IndustrialParcelRules.Applies(view.Economy) && IndustrialParcels.TryFrame(lot) is { } frame && frame.Anchor == cell
+            ? IndustrialParcels.MapFootprint(frame, offsets).All(lot.Cells.Contains)
+            : MapLots.Covers(lot.Cells, cell, offsets)))
         {
             string note = MapLots.TooSmall(language, PlayerText.Building(language, type.Id), offsets.Length, lot.Cells.Length);
             gaps.Add(new("note", "", 0, 0, note, note));
@@ -223,13 +237,14 @@ public static class FriendlyGuidance
     private static StarterStep Build(PlayerView view, ScenarioDefinition scenario, string language, PlotView plot, InventoryView pack)
     {
         string L(string ru, string en) => PlayerText.Local(language, ru, en);
-        var type = CheapestFactory(scenario);
+        var program = view.ProvincialProgram is { NextStep: "build" } support ? support : null;
+        var type = program is null ? CheapestFactory(scenario) : scenario.BuildingTypes?.SingleOrDefault(t => t.Id == program.IndustryId);
         var materials = MaterialsOf(view, plot, pack);
         var level = type is null ? null : Level(type);
         var gaps = new List<RequirementGap>();
         if (level is not null)
         {
-            gaps.Add(new("money", "", view.AvailableCashMinor, level.PriceMinor));
+            gaps.Add(new("money", "", view.AvailableCashMinor + (program?.ConstructionRemaining ?? 0), level.PriceMinor));
             foreach (var cost in level.Materials) gaps.Add(new("material", cost.ItemId, Free(materials, cost.ItemId), cost.Quantity));
         }
         string name = type is null ? L("предприятие", "an enterprise") : PlayerText.Enterprise(language, type.Id, 1);
@@ -359,9 +374,21 @@ public static class FriendlyGuidance
 
     private static PlotView? PreferredPlot(PlayerView view, ScenarioDefinition scenario)
     {
+        if (IndustrialParcelRules.Applies(view.Economy) && scenario.Layout is { } layout)
+        {
+            var freeCells = view.Plots.Where(PlayContext.ParcelCellFree).ToDictionary(p => p.Position);
+            return layout.IndustrialLots
+                .Where(lot => lot.Cells.All(freeCells.ContainsKey))
+                .Select(lot => (Lot: lot, Frame: IndustrialParcels.TryFrame(lot)))
+                .Where(row => row.Frame.HasValue && !view.Blocked.Contains(row.Frame.Value.Anchor))
+                .OrderBy(row => Distance(view.Participant.Position, row.Frame!.Value.Anchor))
+                .ThenBy(row => freeCells[row.Frame!.Value.Anchor].Id.Value)
+                .Where(row => IndustrialParcels.ReachesNetwork(layout, row.Lot.Entry))
+                .Select(row => freeCells[row.Frame!.Value.Anchor]).FirstOrDefault();
+        }
         var free = view.Plots.Where(p => p.OwnerId is null && p.ReservedBy is null && !p.IsCorridor && !p.IsShopSite && p.ShopParticipantId is null && p.ExpansionFor is null).ToArray();
         if (free.Length == 0) return null;
-        var anchors = (scenario.Layout?.IndustrialLots ?? []).Select(l => IndustrialParcelRules.Applies(view.Economy) && IndustrialParcels.TryFrame(l) is { } frame ? frame.Anchor : l.Cells.OrderBy(c => c.Z).ThenBy(c => c.X).First()).ToHashSet();
+        var anchors = (scenario.Layout?.IndustrialLots ?? []).Select(l => l.Cells.OrderBy(c => c.Z).ThenBy(c => c.X).First()).ToHashSet();
         return free.Where(p => anchors.Contains(p.Position)).OrderBy(p => p.PriceMinor).ThenBy(p => p.Id.Value).FirstOrDefault()
             ?? free.OrderBy(p => p.PriceMinor).ThenBy(p => p.Id.Value).First();
     }

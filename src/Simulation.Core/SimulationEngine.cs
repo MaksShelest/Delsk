@@ -33,6 +33,7 @@ public sealed partial class SimulationEngine
     public long Tick { get; private set; }
     public bool TickLimitReached => Tick >= _config.MaxTicks;
     public string ConfigHash { get; }
+    internal int CommandBudget => _config.MaxCommandsPerActorTick;
 
     public SimulationEngine(ScenarioDefinition config)
     {
@@ -98,7 +99,14 @@ public sealed partial class SimulationEngine
         => _events.Add(new(++_eventSequence, Tick, _phase, type,
             actor.HasValue ? new ParticipantId(actor.Value) : null, entity, item, quantity, money, reason, command));
 
-    public SimulationEvent[] EventsSince(long afterSequence) => _events.Where(e => e.Sequence > afterSequence).ToArray();
+    public SimulationEvent[] EventsSince(long afterSequence)
+    {
+        // Journal sequences are contiguous and one-based, including after checkpoint restore.
+        int start = (int)Math.Clamp(afterSequence, 0, _events.Count);
+        var events = new SimulationEvent[_events.Count - start];
+        _events.CopyTo(start, events, 0, events.Length);
+        return events;
+    }
     public LedgerRecord[] Ledger() => _economy.Ledger.Select(x => new LedgerRecord(x.Tick,
         new(x.DebitAccount), new(x.CreditAccount), x.AmountMinor, x.Reason)).ToArray();
     public CommandResult? Result(string commandId) => _results.GetValueOrDefault(commandId);
@@ -455,9 +463,12 @@ public sealed partial class SimulationEngine
             view.SupplyRequests.Where(r => r.Supplier == actorId).ToArray(),
             view.DeliveryContracts.Where(d => d.Supplier == actorId || d.Buyer == actorId).ToArray(), Delivery, view.Logistics.Where(l => l.OwnerId == actorId).ToArray(), Logistics, _controllerBatchPrices??PublicCapitalPrices(false), _controllerBatchHistory??PublicCapitalPrices(true), ObserveElections(actorId), ObserveSupport(actorId), _controllerBatchEconomy??PublicEconomy()) { Resources = _controllerBatchResources??ResourceSites(),Negotiations=ObserveNegotiations(actorId),NegotiationRules=NegotiationRules,TradingParticipants=TradingParticipants() };
     }
-    public string ComputeStateHash()
+    public string ComputeStateHash() => ComputeStateHash(Inspect());
+
+    // Hosting passes the snapshot it just read for this tick's metrics.
+    internal string ComputeStateHash(WorldView world)
     {
-        object payload = StatePayload();
+        object payload = StatePayload(world);
         if(HasGroundStorage)payload=new{Payload=payload,Storage=CaptureStorage()};
         if(CaptureDemolition() is {} demolition)payload=new{Payload=payload,Demolition=demolition,RetiredBuildings=BuildingViews(true).Where(b=>Demolished(b.Id.Value)).ToArray(),RetiredEnterprises=_enterprises.Values.Where(e=>Demolished(e.Definition.Id)).OrderBy(e=>e.Definition.Id).Select(e=>new{e.Definition,e.Input,e.Output,Recipe=e.Recipe.Id,e.Enabled,e.Completed,e.EnergyPaid,Group=e.Group.View()}).ToArray()};
         if (CaptureWorkshops() is {} workshops) payload = new { Payload = payload, Workshops = workshops };
@@ -473,9 +484,9 @@ public sealed partial class SimulationEngine
         return ScenarioValidation.Hash(travel is null ? payload : new { Payload = payload, Travel = travel });
     }
 
-    private object StatePayload() => new
+    private object StatePayload(WorldView world) => new
     {
-        Transfers = _transfers.Values.OrderBy(t=>t.Id).ToArray(), EquipmentMotionIntervals = _equipment.Values.OrderBy(e=>e.Id).Select(e=>new { e.Id,e.MovedAtTick }).ToArray(), Resources = ResourceSites(), ResourceClaims = _resourceClaims.Values.OrderBy(c => c.JobId).ToArray(), World = Inspect(), Research = ResearchModifications, CityStage = _cityStage, Support = InspectSupport(), Negotiations=InspectNegotiations(), CommandRandom = _commandRandom.State, LaborRandom = _laborRandom.State, MarketRandom = _marketRandom.State,
+        Transfers = _transfers.Values.OrderBy(t=>t.Id).ToArray(), EquipmentMotionIntervals = _equipment.Values.OrderBy(e=>e.Id).Select(e=>new { e.Id,e.MovedAtTick }).ToArray(), Resources = ResourceSites(), ResourceClaims = _resourceClaims.Values.OrderBy(c => c.JobId).ToArray(), World = world, Research = ResearchModifications, CityStage = _cityStage, Support = InspectSupport(), Negotiations=InspectNegotiations(), CommandRandom = _commandRandom.State, LaborRandom = _laborRandom.State, MarketRandom = _marketRandom.State,
         MoneyHolds = _economy.Accounts.OrderBy(x => x.Key).Select(x => new { x.Key, Holds = x.Value.Holds.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray() }).ToArray(),
         InventoryHolds = _economy.Inventories.OrderBy(x => x.Key).Select(x => new { x.Key,
             Stock = x.Value.Reservations.OrderBy(h => h.Key, StringComparer.Ordinal).ToArray(),

@@ -58,7 +58,7 @@ public static class CheckpointStore
         catch (Exception ex) when (ex is FormatException or InvalidDataException or DecoderFallbackException)
         { throw new CheckpointException("InvalidCompressedCheckpoint",ex); }
     }
-    public static void Save(GameSession session, string path)
+    public static void Save(GameSession session, string path, bool preserveDamagedMain = false)
     {
         string full = Path.GetFullPath(path);
         Directory.CreateDirectory(Path.GetDirectoryName(full)!);
@@ -71,8 +71,14 @@ public static class CheckpointStore
             _ = ReadFile(temporary); // Check checksum, schema, references, invariants and hash before installation.
             if (File.Exists(full))
             {
-                _ = ReadFile(full); // Never rotate a corrupt main file over an existing valid backup.
-                File.Replace(temporary, full, full + ".bak");
+                string previous = full + ".bak";
+                try { _ = ReadFile(full); }
+                catch (CheckpointException) when (preserveDamagedMain)
+                {
+                    // Keep the damaged bytes separately and leave the recovery copy available.
+                    previous = full + ".corrupt-" + Guid.NewGuid().ToString("N");
+                }
+                File.Replace(temporary, full, previous);
             }
             else File.Move(temporary, full); // Same-directory first installation; refuse competing writers.
         }
@@ -89,7 +95,7 @@ public static class CheckpointStore
     {
         string full = Path.GetFullPath(path);
         try { return new(ReadFile(full, beforeStep), false, full); }
-        catch (Exception ex) when (recoverBackup && ex is CheckpointException or IOException)
+        catch (Exception ex) when (recoverBackup && (ex is CheckpointException or IOException) && File.Exists(full + ".bak"))
         { return new(ReadFile(full + ".bak", beforeStep), true, full + ".bak"); }
     }
 }

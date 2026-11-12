@@ -23,6 +23,10 @@ public static class PlayContext
     };
     private static long Free(InventoryView pack, string item) => pack.Stock.Where(s => s.ItemId == item).Sum(s => s.Quantity - s.Reserved);
 
+    internal static bool ParcelCellFree(PlotView plot) =>
+        plot is { IsCorridor: false, IsShopSite: false, ShopParticipantId: null, OwnerId: null,
+            ReservedBy: null, BuildingId: null, ExpansionFor: null, PriceMinor: IndustrialParcelRules.CellPriceMinor };
+
     public static ContextChoice[] At(PlayerView view, ScenarioDefinition scenario, string language, bool tablets = false)
     {
         var cell = view.Participant.Position;
@@ -42,9 +46,9 @@ public static class PlayContext
                     L(language, "Материалы и сырьё первой партии ждут на терминале.", "Materials and the first batch of input are waiting at the terminal.")));
             if (program.NextStep == "sell" && view.ProductionContent?.Terminal == cell)
             {
-                var made = view.Enterprises.FirstOrDefault(e => e.CompletedBatches > 0);
-                var recipe = made is null ? null : scenario.Recipes.SingleOrDefault(r => r.Id == made.RecipeId);
-                if (recipe is not null)
+                var direction = StartingSpecializations.Direction(program.IndustryId);
+                var recipe = scenario.Recipes.SingleOrDefault(r => r.Id == direction?.RecipeId);
+                if (recipe is not null && !view.CapitalOffers.Any(o => o.ItemId == recipe.OutputItem && o.RemainingQuantity > 0 && o.ExpiresAtTick > view.Tick))
                     choices.Add(new("provincial:sell", L(language, "Провинция выкупает первую партию", "The province buys the first batch"),
                         new(ActionKind.SellProvincialOutput, ItemId: recipe.OutputItem, Quantity: recipe.OutputQuantity),
                         Free(pack, recipe.OutputItem) >= recipe.OutputQuantity,
@@ -84,7 +88,7 @@ public static class PlayContext
         if (wholeParcel && plot is { IsCorridor: false, OwnerId: null, ExpansionFor: null })
         {
             var owned = view.Plots.Where(p => parcelLot!.Cells.Contains(p.Position)).ToArray();
-            bool free = owned.Length == IndustrialParcelRules.Cells && owned.All(p => p.OwnerId is null && p.ReservedBy is null && p.BuildingId is null && p.ExpansionFor is null);
+            bool free = owned.Length == IndustrialParcelRules.Cells && owned.All(ParcelCellFree);
             bool entry = scenario.Layout is { } layout && IndustrialParcels.ReachesNetwork(layout, parcelLot!.Entry);
             long cover = view.ProvincialProgram is { Status: "Open", ParcelRemaining: > 0 } program ? program.ParcelRemaining : 0;
             bool money = view.AvailableCashMinor + cover >= IndustrialParcelRules.PriceMinor;
@@ -95,7 +99,9 @@ public static class PlayContext
             if (!entry) reasons.Add(L(language, "Нет подъезда к городской дороге.", "No entrance to the city road."));
             if (!money) reasons.Add(L(language, "Нужно 600 монет.", "600 coins are required."));
             choices.Add(new("buy:" + plot.Id.Value,
-                L(language, "Купить участок — 600 монет", "Buy parcel — 600 coins"),
+                cover == IndustrialParcelRules.PriceMinor
+                    ? L(language, "Купить участок 2×3 по программе", "Buy the 2×3 parcel with the grant")
+                    : L(language, "Купить участок — 600 монет", "Buy parcel — 600 coins"),
                 PlayerDesk.BuyPlot(plot.Id.Value), free && entry && money,
                 reasons.Count == 0 ? caption : caption + " " + string.Join(" ", reasons)));
         }

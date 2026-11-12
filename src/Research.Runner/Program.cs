@@ -78,6 +78,7 @@ try
             ?? throw new ArgumentException("Invalid command tape")).ToArray() : null;
     if(options.TryGetValue("--human-ballot",out var humanBallot) && humanBallot!="self")throw new ArgumentException("Only --human-ballot self is supported");
     bool saved = false;
+    string? recoveredPrimaryPath = null;
     if (options.TryGetValue("--load", out string? loadPath))
     {
         if (options.ContainsKey("--seed") || options.ContainsKey("--scenario"))
@@ -86,7 +87,11 @@ try
         var loaded = CheckpointStore.Load(loadPath, recover, mode == "paced" ? Pace : null);
         session = loaded.Session; definition = session.Engine.Configuration();
         models.Restore(session, options);
-        if (loaded.UsedBackup) Console.WriteLine($"Recovered backup: {loaded.LoadedPath}; tick={session.Engine.Tick}");
+        if (loaded.UsedBackup)
+        {
+            recoveredPrimaryPath = Path.GetFullPath(loadPath);
+            Console.WriteLine($"Recovered backup: {loaded.LoadedPath}; tick={session.Engine.Tick}");
+        }
         target ??= session.PlaybackFinalTick ?? throw new ArgumentException("Load without a recorded plan requires --ticks FINAL_TICK");
         if (tape is not null)
         {
@@ -164,7 +169,6 @@ try
         {
             if(name=="$begin")
             {
-                if(invariantOpen)session.Measurements.End("invariant-remainder",invariantMark);
                 invariantMark=session.Measurements.Start();invariantOpen=true;return;
             }
             if(!invariantOpen)return;
@@ -258,7 +262,13 @@ try
     Console.WriteLine(JsonSerializer.Serialize(new { Status = "succeeded", Tick = session.Engine.Tick,
         StateHash = session.Engine.ComputeStateHash(), Output = Path.GetFullPath(directory), CheckpointSaved = saved }, SimulationJson.Options));
     return 0;
-    void Save(GameSession s) { CheckpointStore.Save(s, options["--checkpoint"]); saved = true; }
+    void Save(GameSession s)
+    {
+        string path = Path.GetFullPath(options["--checkpoint"]);
+        var comparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        CheckpointStore.Save(s, path, preserveDamagedMain: string.Equals(path, recoveredPrimaryPath, comparison));
+        saved = true;
+    }
     void WriteHostProfile(double? exportMilliseconds=null)
     {
         if(!hostProfile || session.Measurements is not {} measured)return;

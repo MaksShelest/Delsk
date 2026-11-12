@@ -60,6 +60,30 @@ public class LivingWorldTests
     }
 
     [Fact]
+    public void ManualInputDuringRouteKeepsCheckpointAndReplayValid()
+    {
+        var session = new GameSession(new(StorageC1Tests.Definition()));
+        var actor = new ParticipantId(1);
+        var move = session.Send(actor, new(ActionKind.MoveTo, Target: new(4, 0)));
+        session.Step();
+        Assert.Equal(ResultStatus.Accepted, session.Engine.Result(move)!.Status);
+        Assert.True(session.Engine.Observe(actor).Participant.Busy);
+        var before = session.Engine.TravelOf(actor);
+
+        session.SetTravelHeading(actor, -1, 0);
+
+        Assert.Equal(before, session.Engine.TravelOf(actor));
+        var loaded = CheckpointStore.Decode(CheckpointStore.Encode(session));
+        Assert.Equal(session.Engine.ComputeStateHash(), loaded.Engine.ComputeStateHash());
+        StorageC1Tests.Idle(session);
+        StorageC1Tests.Idle(loaded);
+        Assert.Equal(new Cell(4, 0), loaded.Engine.Observe(actor).Participant.Position);
+        Assert.Equal(session.Engine.ComputeStateHash(), loaded.Engine.ComputeStateHash());
+        var replay = GameSession.Replay(session.Engine.Configuration(), session.CommandTape, session.Engine.Tick);
+        Assert.Equal(session.Engine.ComputeStateHash(), replay.Engine.ComputeStateHash());
+    }
+
+    [Fact]
     public void GroundPilesFollowOwnStockAndHideForeignQuantities()
     {
         var definition=StorageC1Tests.Definition();

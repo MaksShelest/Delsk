@@ -31,8 +31,15 @@ public static class PedestrianPoseMath
             float u=(dist-780f)/440f;
             var p0=Along(motion.Ax,motion.Az,motion.Bx,motion.Bz,780f);
             var p1=Along(motion.Bx,motion.Bz,motion.Cx,motion.Cz,220f);
-            float cx=p0.X+(p1.X-p0.X)*u,cz=p0.Z+(p1.Z-p0.Z)*u;
-            if(Inside(cx,cz,motion)){x=cx;z=cz;faceX=p1.X-p0.X;faceZ=p1.Z-p0.Z;}
+            float v=1f-u;
+            float cx=v*v*p0.X+2f*v*u*motion.Bx+u*u*p1.X;
+            float cz=v*v*p0.Z+2f*v*u*motion.Bz+u*u*p1.Z;
+            if(Inside(cx,cz,motion))
+            {
+                x=cx;z=cz;
+                faceX=v*(motion.Bx-p0.X)+u*(p1.X-motion.Bx);
+                faceZ=v*(motion.Bz-p0.Z)+u*(p1.Z-motion.Bz);
+            }
         }
         if(Math.Abs(faceX)+Math.Abs(faceZ)<0.001f){faceX=motion.Bx-motion.Ax;faceZ=motion.Bz-motion.Az;}
         return new(x,z,faceX,faceZ);

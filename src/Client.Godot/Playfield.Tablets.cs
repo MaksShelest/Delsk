@@ -110,7 +110,7 @@ public partial class Playfield
         {_cityInbox=new(_language,OpenCityNotice,ReadCityNotice);_tabletPanel.Body.AddChild(_cityInbox);_cityInbox.ShowData(_cityNotices,view.Tick,WaitingCommand);}
         else if(_tabletState.Kind==TabletKind.Tutorial)
         {
-            _journey=new(_language,_cityRead);_journey.Changed+=SaveCityExperience;
+            _journey=new(_language,_cityRead,IndustrialParcelRules.Applies(view.Economy));_journey.Changed+=SaveCityExperience;
             _journey.NavigateRequested+=page=>{if(page=="map")OpenCityMap();else if(page=="notices")OpenCityNotices();else OpenCitySection(page);};_tabletPanel.Body.AddChild(_journey);
         }
         else if(_tabletState.Kind==TabletKind.CityMap)
@@ -170,8 +170,22 @@ public partial class Playfield
     }
     private Cell? _guideCell;
     private Cell _guideFrom=new(int.MinValue,0);
+    private ContextChoice? GuidePurchase(StarterStep step, Cell position) =>
+        step.Id is "program-land" or "plot" && position == new Cell(step.X, step.Z)
+            ? _choices.FirstOrDefault(c => c.Command is { Kind: ActionKind.BuyPlot } action && action.Plot.Value == step.TargetId)
+            : null;
+
     private void ShowGuide(StarterStep step)
     {
+        if (step.Id == "program") { ClearGuide(); OpenProvincial(); return; }
+        if (step.Id is "program-land" or "plot" && GuidePurchase(step, _session.Engine.Observe(_human).Participant.Position) is { } purchase)
+        {
+            ClearGuide();
+            StopHeading();
+            _waitRelease = true;
+            ConfirmContextChoice(purchase);
+            return;
+        }
         if(step.X<0&&step.TargetId>0&&step.TargetKind is "building" or "ground" or "equipment")
         {OpenPlayerTablet();_playerTablet?.OpenHolding(step.TargetKind=="ground"?"ground":step.TargetKind,step.TargetId);return;}
         if(step.X<0)
