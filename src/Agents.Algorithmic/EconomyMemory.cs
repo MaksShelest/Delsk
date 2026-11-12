@@ -98,7 +98,9 @@ public sealed partial class AlgorithmicController
     internal string? PreferredNewEnterprise(ControllerObservation o)=>StartupIndustry(o)?.Id;
     private long StartupReserve(ControllerObservation o,ControllerBuildingType? type)
     {
-        if(type is null)return _state.Settings.CashReserveMinor;var level=type.Levels[0];
+        if(type is null)return _state.Settings.CashReserveMinor;
+        if(o.ProvincialProgram is { Status: "Open", IndustryId: var funded } && funded==type.Id)return _state.Settings.CashReserveMinor;
+        var level=type.Levels[0];
         long land=o.Plots.Where(p=>p.OwnerId==Actor&&p.BuildingId is null&&o.Development?.BuildAnchors.Contains(p.Position)==true).Any()?0:o.Economics?.IndustrialParcels is { Version: 1 }?IndustrialParcelRules.PriceMinor:o.Plots.Where(p=>!p.IsCorridor&&!p.IsShopSite).Select(p=>p.PriceMinor).DefaultIfEmpty(0).Min();
         long imports=level.Materials.Sum(m=>Math.Max(0,m.Quantity-o.Inventories.Sum(i=>Free(i,m.ItemId)))*(o.ProductionContent?.Rules.Imports.FirstOrDefault(i=>i.ItemId==m.ItemId)?.UnitPriceMinor??0));
         return checked(level.PriceMinor+land+imports+_state.Settings.CashReserveMinor+5*_state.Settings.BaseWageMinor*_state.Settings.WageReviewTicks);

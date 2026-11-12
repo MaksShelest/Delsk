@@ -4,7 +4,7 @@ using System.Text;
 namespace Simulation.Core;
 
 /// <summary>
-/// Четыре направления будущей поддержки. Субсидий здесь нет: слот только резервируется.
+/// Четыре направления. Слот 1 резервирует программу; I6-C8C переводит его в 0 при участии.
 /// </summary>
 public sealed record StartingDirection(string IndustryId, string RecipeId, string InputItem, string OutputItem);
 
@@ -129,10 +129,16 @@ public sealed partial class SimulationEngine
         var seen = new HashSet<long>();
         foreach (var row in saved)
         {
-            if (row is null || row.SupportSlotsRemaining != 1 || !seen.Add(row.ActorId) || !_actors.ContainsKey(row.ActorId) || !StartingSpecializations.ChainReady(_config, row.IndustryId))
+            if (row is null) throw new CheckpointException("InvalidSpecialization");
+            bool program = _provincial.ContainsKey(row.ActorId);
+            bool provincial = EconomyRules.ProvincialSupport is { Applies: true };
+            if (!seen.Add(row.ActorId) || !_actors.ContainsKey(row.ActorId) || !StartingSpecializations.ChainReady(_config, row.IndustryId) ||
+                (provincial ? row.SupportSlotsRemaining is not (0 or 1) || program != (row.SupportSlotsRemaining == 0) : row.SupportSlotsRemaining != 1 || program) ||
+                program && _provincial[row.ActorId].IndustryId != row.IndustryId)
                 throw new CheckpointException("InvalidSpecialization");
             _specializations.Add(row.ActorId, row!);
         }
+        if (_provincial.Keys.Any(actor => !_specializations.ContainsKey(actor))) throw new CheckpointException("InvalidProvincialSupport");
     }
 
     private void ChooseStartingSpecialization(ActorState actor, CommandEnvelope c)

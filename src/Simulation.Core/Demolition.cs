@@ -28,7 +28,7 @@ public sealed partial class SimulationEngine
         // Journal entries describe actual committed investments; initial scenario assets have none.
         var commands=construction?new HashSet<string>([job!.CommandId],StringComparer.Ordinal):_events.Where(e=>BuildingInvestment(e,target)).Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal);
         var invested=_events.Where(e=>e.Type=="ConstructionMaterialConsumed"&&e.CommandId is {} id&&commands.Contains(id)).GroupBy(e=>e.ItemId,StringComparer.Ordinal).OrderBy(g=>g.Key,StringComparer.Ordinal).Select(g=>new MaterialCost(g.Key,g.Sum(e=>e.Quantity))).ToArray();
-        var recovery=invested.Select(m=>new MaterialCost(m.ItemId,checked((long)((Int128)m.Quantity*DemolitionRules.RecoveryBasisPoints/10000)))).Where(m=>m.Quantity>0).ToArray();
+        var recovery=ProvincialRecovery(actor.Value,target,invested);
         long[] inventories=building is null?[job!.InventoryId]:BuildingInventories(building);
         var stock=inventories.SelectMany(id=>_economy.Inventories[id].Stock).GroupBy(s=>s.Key,StringComparer.Ordinal).OrderBy(g=>g.Key,StringComparer.Ordinal).Select(g=>new MaterialCost(g.Key,g.Sum(s=>s.Value))).ToArray();
         var blockers=new List<string>();
@@ -116,12 +116,13 @@ public sealed partial class SimulationEngine
         else{_demolitionReceipts.Add(new(id,false,actor.Id,Tick,quote.PriceMinor,quote.Cells,quote.Invested,quote.Recovery,grounds));Emit("BuildingDemolished",actor.Id,id,money:quote.PriceMinor,command:command.CommandId);}
         foreach(var lot in lots)Emit("OverflowCreated",actor.Id,lot.Id,lot.ItemId,lot.Quantity,reason:lot.ExpiresTick.ToString(System.Globalization.CultureInfo.InvariantCulture),command:command.CommandId);
         RecordDemolitionRecovery(quote,command);
+        ReleaseProvincialBuilding(actor.Id,id);
         ApplyBuildingObstacles();
     }
     private void RecordDemolitionRecovery(DemolitionQuote quote,CommandEnvelope command)
     {foreach(var m in quote.Recovery){_flows[m.ItemId].ConstructionRecovered=checked(_flows[m.ItemId].ConstructionRecovered+m.Quantity);Emit("DemolitionMaterialRecovered",quote.Owner,quote.Target,m.ItemId,m.Quantity,command:command.CommandId);}foreach(var m in quote.Invested){long recovered=quote.Recovery.Where(r=>r.ItemId==m.ItemId).Sum(r=>r.Quantity);Emit("DemolitionMaterialDiscarded",quote.Owner,quote.Target,m.ItemId,m.Quantity-recovered,command:command.CommandId);}}
     private void FinishCancellation(StorageConstruction job,DemolitionQuote quote,long[] inventories,CommandEnvelope command)
-    {_storageConstruction.Remove(job.Id);if(job.Development is not null)ReleaseDevelopmentRights(job.BuildingId);_demolitionReceipts.Add(new(job.Id,true,job.Owner,Tick,quote.PriceMinor,quote.Cells,quote.Invested,quote.Recovery,inventories));Emit("StorageConstructionCancelled",job.Owner,job.Id,money:quote.PriceMinor,command:command.CommandId);}
+    {_storageConstruction.Remove(job.Id);if(job.Development is not null)ReleaseDevelopmentRights(job.BuildingId);_demolitionReceipts.Add(new(job.Id,true,job.Owner,Tick,quote.PriceMinor,quote.Cells,quote.Invested,quote.Recovery,inventories));Emit("StorageConstructionCancelled",job.Owner,job.Id,money:quote.PriceMinor,command:command.CommandId);ReleaseProvincialBuilding(job.Owner,job.Id);}
     private void ReleaseDemolitionWorkers(EmploymentGroup group)
     {int count=group.Headcount;_unemployed=checked(_unemployed+count);group.Headcount=0;group.Target=0;group.Ready=false;group.ReadinessReason="UserPaused";group.AssessedAtTick=Tick;if(count>0)Emit("EmploymentChanged",group.Owner,group.Id,quantity:-count);}
     private void GuardDemolition(GameAction a,long actor)
@@ -160,7 +161,7 @@ public sealed partial class SimulationEngine
             var commands=r.Construction?_events.Where(e=>e.EntityId==r.Target&&e.Type=="StorageConstructionStarted").Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal):_events.Where(e=>BuildingInvestment(e,r.Target)).Select(e=>e.CommandId!).ToHashSet(StringComparer.Ordinal);
             var actual=_events.Where(e=>e.Type=="ConstructionMaterialConsumed"&&e.CommandId is {} id&&commands.Contains(id)).GroupBy(e=>e.ItemId,StringComparer.Ordinal).OrderBy(g=>g.Key,StringComparer.Ordinal).Select(g=>new MaterialCost(g.Key,g.Sum(e=>e.Quantity))).ToArray();
             if(!actual.SequenceEqual(r.Invested))throw new CheckpointException("InvalidActualInvestment");
-            if(r.Tick<1||r.Tick>Tick||(r.GroundInventories.Length!=r.Cells.Length&&!(r.Construction&&r.GroundInventories.Length==1))||r.Cells.Length==0||r.PriceMinor!=r.Cells.Sum(c=>checked(DemolitionRules.CellPriceMinor+(c.Level-1)*DemolitionRules.ExtraLevelPriceMinor))||!r.Recovery.SequenceEqual(r.Invested.Select(m=>new MaterialCost(m.ItemId,checked((long)((Int128)m.Quantity*DemolitionRules.RecoveryBasisPoints/10000)))).Where(m=>m.Quantity>0))||!_events.Any(e=>e.Type==(r.Construction?"StorageConstructionCancelled":"BuildingDemolished")&&e.EntityId==r.Target&&e.Tick==r.Tick&&e.ActorId?.Value==r.Owner&&e.AmountMinor==r.PriceMinor))throw new CheckpointException("InvalidDemolitionReceipt");
+            if(r.Tick<1||r.Tick>Tick||(r.GroundInventories.Length!=r.Cells.Length&&!(r.Construction&&r.GroundInventories.Length==1))||r.Cells.Length==0||r.PriceMinor!=r.Cells.Sum(c=>checked(DemolitionRules.CellPriceMinor+(c.Level-1)*DemolitionRules.ExtraLevelPriceMinor))||!r.Recovery.SequenceEqual(ProvincialRecovery(r.Owner,r.Target,r.Invested))||!_events.Any(e=>e.Type==(r.Construction?"StorageConstructionCancelled":"BuildingDemolished")&&e.EntityId==r.Target&&e.Tick==r.Tick&&e.ActorId?.Value==r.Owner&&e.AmountMinor==r.PriceMinor))throw new CheckpointException("InvalidDemolitionReceipt");
             if(!r.Construction){var b=_buildings[r.Target];if(b.Owner!=r.Owner||b.Input!=r.GroundInventories[0]||!r.Cells.SequenceEqual(DemolitionCells(b))||b.Footprint.Any(c=>_plotsByCell[c].Building==r.Target)||UnitsFor(r.Target).Any(e=>e.Enabled||e.Batch is not null||e.Group.Headcount!=0))throw new CheckpointException("InvalidDemolishedBuilding");}
         }
     }

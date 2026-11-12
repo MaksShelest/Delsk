@@ -10,13 +10,47 @@ public static class PlayContext
 {
     public static long ReservationFee(long priceMinor, EconomicRules? rules = null) => (rules ?? new()).ReservationFee(priceMinor);
     private static string L(string lang, string ru, string en) => PlayerText.Local(lang, ru, en);
+    private static string ProgramStep(string lang, string step) => step switch
+    {
+        "accept" => L(lang, "Подтвердите участие.", "Confirm participation."),
+        "buy-parcel" => L(lang, "Купите промышленный участок. Его оплатит столица.", "Buy an industrial parcel. The capital pays for it."),
+        "collect-supply" => L(lang, "Заберите материалы и сырьё на терминале.", "Collect materials and input at the terminal."),
+        "build" => L(lang, "Постройте первое предприятие на участке.", "Build the first enterprise on the parcel."),
+        "wait-construction" => L(lang, "Дождитесь окончания стройки.", "Wait for construction to finish."),
+        "produce" => L(lang, "Запустите первую партию.", "Start the first batch."),
+        "sell" => L(lang, "Продайте первую продукцию. Если заказа столицы нет, провинция выкупает одну партию на терминале.", "Sell the first output. If the capital has no order, the province buys one batch at the terminal."),
+        _ => L(lang, "Программа выполнена. Дальше можно развивать хозяйство.", "The program is complete. The business can continue from here.")
+    };
     private static long Free(InventoryView pack, string item) => pack.Stock.Where(s => s.ItemId == item).Sum(s => s.Quantity - s.Reserved);
 
     public static ContextChoice[] At(PlayerView view, ScenarioDefinition scenario, string language, bool tablets = false)
     {
         var cell = view.Participant.Position;
-        var choices = new List<ContextChoice>();
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
+        var choices = new List<ContextChoice>();
+        if (view.ProvincialProgram is { Status: "Offered" })
+            choices.Add(new("provincial:accept", L(language, "Участвовать в программе провинции", "Join the provincial program"),
+                new(ActionKind.AcceptProvincialSupport), true,
+                L(language, "Столица оплатит первый участок, первое предприятие, материалы и сырьё первой партии.",
+                    "The capital pays for the first parcel, the first enterprise, materials and the first batch of input.")));
+        else if (view.ProvincialProgram is { } program)
+        {
+            choices.Add(new("provincial", L(language, "Программа провинции", "Provincial program"), null, true, ProgramStep(language, program.NextStep)));
+            if (program.Status == "Open" && !program.SupplyCollected && view.ProductionContent?.Terminal == cell)
+                choices.Add(new("provincial:collect", L(language, "Забрать поставку программы", "Collect the program supply"),
+                    new(ActionKind.CollectProvincialSupply), true,
+                    L(language, "Материалы и сырьё первой партии ждут на терминале.", "Materials and the first batch of input are waiting at the terminal.")));
+            if (program.NextStep == "sell" && view.ProductionContent?.Terminal == cell)
+            {
+                var made = view.Enterprises.FirstOrDefault(e => e.CompletedBatches > 0);
+                var recipe = made is null ? null : scenario.Recipes.SingleOrDefault(r => r.Id == made.RecipeId);
+                if (recipe is not null)
+                    choices.Add(new("provincial:sell", L(language, "Провинция выкупает первую партию", "The province buys the first batch"),
+                        new(ActionKind.SellProvincialOutput, ItemId: recipe.OutputItem, Quantity: recipe.OutputQuantity),
+                        Free(pack, recipe.OutputItem) >= recipe.OutputQuantity,
+                        L(language, "Один раз и только пока у столицы нет заказа на этот товар.", "Once, and only while the capital has no order for this good.")));
+            }
+        }
         if(view.Transfers.Length>0)
             choices.Add(new("transfer:stop",L(language,"Остановить передачу","Stop transfer"),new(ActionKind.StopTransfer)));
         foreach(var site in view.Resources.Where(r=>r.Position==cell))
@@ -52,8 +86,10 @@ public static class PlayContext
             var owned = view.Plots.Where(p => parcelLot!.Cells.Contains(p.Position)).ToArray();
             bool free = owned.Length == IndustrialParcelRules.Cells && owned.All(p => p.OwnerId is null && p.ReservedBy is null && p.BuildingId is null && p.ExpansionFor is null);
             bool entry = scenario.Layout is { } layout && IndustrialParcels.ReachesNetwork(layout, parcelLot!.Entry);
-            bool money = view.AvailableCashMinor >= IndustrialParcelRules.PriceMinor;
+            long cover = view.ProvincialProgram is { Status: "Open", ParcelRemaining: > 0 } program ? program.ParcelRemaining : 0;
+            bool money = view.AvailableCashMinor + cover >= IndustrialParcelRules.PriceMinor;
             string caption = L(language, "6 клеток · подъезд к дороге · место для полного развития", "6 cells · road entrance · room to develop fully");
+            if (cover > 0) caption += L(language, " · программу оплачивает столица", " · the capital program pays");
             var reasons = new List<string>();
             if (!free) reasons.Add(L(language, "Участок уже занят.", "The parcel is already taken."));
             if (!entry) reasons.Add(L(language, "Нет подъезда к городской дороге.", "No entrance to the city road."));
@@ -184,7 +220,8 @@ public static class PlayContext
                 long cost = choice.Command.Kind == ActionKind.BuyPlot
                     ? wholeParcel ? IndustrialParcelRules.PriceMinor : plot!.PriceMinor
                     : ReservationFee(plot!.PriceMinor, view.Economy);
-                if (view.AvailableCashMinor < cost) { enabled = false; reason = wholeParcel ? choice.Details : L(language, "Недостаточно денег.", "Not enough money."); }
+                long cover = choice.Command.Kind == ActionKind.BuyPlot && wholeParcel && view.ProvincialProgram is { Status: "Open", ParcelRemaining: > 0 } program ? program.ParcelRemaining : 0;
+                if (view.AvailableCashMinor + cover < cost) { enabled = false; reason = wholeParcel ? choice.Details : L(language, "Недостаточно денег.", "Not enough money."); }
                 if (plot!.IsShopSite && view.Plots.Any(p => p.IsShopSite && p.Id != plot.Id && (p.OwnerId == view.Participant.Id || p.ReservedBy == view.Participant.Id)))
                 { enabled = false; reason = PlayerText.Reason(language,"ShopSiteLimit"); }
             }

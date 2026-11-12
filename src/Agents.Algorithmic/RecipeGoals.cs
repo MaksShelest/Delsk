@@ -29,6 +29,7 @@ public sealed partial class AlgorithmicController
                     if(!r.Ingredients.All(m=>o.Inventories.Any(i=>Free(i,m.ItemId)>=m.Quantity)||o.Map.ResourceNodes.Any(n=>n.ItemId==m.ItemId&&AvailableResource(o,n))||content.Imports.Any(i=>i.ItemId==m.ItemId&&i.Remaining>=m.Quantity)))continue;
                     if(best is null||(Int128)Net(r)*best.FullStaffTicks>(Int128)Net(best)*r.FullStaffTicks)best=r;
                 }
+                var directed=DirectedRecipe(o,b.TypeId,type,tech,input,output);if(directed is not null)best=directed;
                 if(best is null||best.Id==current.Id)continue;var plan=new List<PlanStep>();if(unit.Enabled)plan.Add(new(new(ActionKind.SetProductionEnabled,Enterprise:parent.Id,WorkshopId:line.Workshop,Enabled:false)));
                 plan.Add(new(new(ActionKind.SetRecipe,Enterprise:parent.Id,WorkshopId:line.Workshop,RecipeId:best.Id)));plan.Add(new(new(ActionKind.SetProductionEnabled,Enterprise:parent.Id,WorkshopId:line.Workshop,Enabled:true)));
                 yield return new("SelectRecipe",best.Id,135000*_state.Settings.ProductionWeight/100,plan.ToArray());
@@ -57,5 +58,15 @@ public sealed partial class AlgorithmicController
             if(e.Enabled)steps.Add(new(new(ActionKind.SetProductionEnabled,Enterprise:e.Id,Enabled:true)));
             yield return new("SelectRecipe",best.Id,135000*_state.Settings.ProductionWeight/100,steps.ToArray());
         }
+    }
+    /// <summary>Программа уже привезла сырьё конкретного рецепта. Его и нужно поставить, даже если другой рецепт дороже.</summary>
+    private RecipeDefinition? DirectedRecipe(ControllerObservation o,string industry,ControllerBuildingType type,int tech,ControllerInventory input,ControllerInventory output)
+    {
+        if(o.ProvincialProgram is not {} program||program.IndustryId!=industry)return null;
+        var direction=StartingSpecializations.Direction(program.IndustryId);if(direction is null)return null;
+        if(!type.Levels.Where(l=>l.Level<=tech).SelectMany(l=>l.UnlockedRecipes).Contains(direction.RecipeId))return null;
+        var recipe=o.Map.Recipes.Single(r=>r.Id==direction.RecipeId);
+        if(recipe.Ingredients.Sum(i=>i.Quantity*Volume(o,i.ItemId))>input.Capacity||recipe.OutputQuantity*Volume(o,recipe.OutputItem)>output.Capacity)return null;
+        return recipe;
     }
 }

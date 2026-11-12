@@ -46,6 +46,7 @@ public static class FriendlyGuidance
         if (choice.Command?.Kind is ActionKind.StopHarvest or ActionKind.StopTransfer) return 0;
         if (choice.Key.StartsWith("machine:stop:", StringComparison.Ordinal)) return 1;
         if (choice.Command?.Kind is ActionKind.StartHarvesting or ActionKind.Harvest) return 2;
+        if (choice.Key == "provincial" || choice.Key.StartsWith("provincial:", StringComparison.Ordinal) || choice.Command?.Kind is ActionKind.AcceptProvincialSupport or ActionKind.CollectProvincialSupply) return 3;
         if (choice.Command?.Kind is ActionKind.BuyPlot) return 3;
         if (choice.Command?.Kind is ActionKind.BuyResource) return 4;
         if (choice.Key == "exchange") return 4;
@@ -76,6 +77,23 @@ public static class FriendlyGuidance
     {
         var me = view.Participant;
         var pack = view.Inventories.Single(i => i.Id == me.InventoryId);
+        if (view.ProvincialProgram is { Status: "Offered" } offered)
+            return Step("program", PlayerText.Local(language, "Программа провинции", "Provincial program"),
+                PlayerText.Local(language, "Столица оплатит первый участок 2×3, первое предприятие отрасли «", "The capital pays for the first 2×3 parcel, the first ") + PlayerText.Enterprise(language, offered.IndustryId, 1) +
+                PlayerText.Local(language, "», материалы и сырьё первой партии. Свои 200 монет останутся.", " of the chosen industry, its materials and the first batch of input. Your 200 coins stay."),
+                me.Position.X, me.Position.Z, "program", 0, 0, offered.IndustryId, false, "program", 0, []);
+        if (view.ProvincialProgram is { Status: "Open", NextStep: "buy-parcel" })
+        {
+            var parcel = view.Plots.Where(p => p.OwnerId is null && p.BuildingId is null && !p.IsCorridor && !p.IsShopSite && p.ExpansionFor is null)
+                .OrderBy(p => Distance(me.Position, p.Position)).FirstOrDefault();
+            if (parcel is not null) return Step("program-land", PlayerText.Local(language, "Купите участок по программе", "Buy the parcel with the program"),
+                PlayerText.Local(language, "Шесть клеток оплачивает столица. Свои 200 монет не списываются.", "The capital pays for the six cells. Your 200 coins are not spent."),
+                parcel.Position.X, parcel.Position.Z, "property", view.AvailableCashMinor, 0, "", false, "ground", parcel.Id.Value, []);
+        }
+        if (view.ProvincialProgram is { Status: "Open", NextStep: "collect-supply" } && view.ProductionContent is { } content)
+            return Step("program-supply", PlayerText.Local(language, "Заберите поставку на терминале", "Collect the supply at the terminal"),
+                PlayerText.Local(language, "Там строительные материалы и сырьё первой партии.", "Construction materials and the first batch of input are there."),
+                content.Terminal.X, content.Terminal.Z, "terminal", 0, 0, "", false, "terminal", 0, []);
         var produced = view.Buildings.Where(b => b.OwnerId == me.Id && b.Kind == BuildingKind.Production).OrderBy(b => b.Id.Value).ToArray();
         if (produced.Length > 0) return Production(view, scenario, language, produced, pack);
         var owned = view.Plots.Where(p => p.OwnerId == me.Id && p.BuildingId is null && !p.IsCorridor && !p.IsShopSite && p.ShopParticipantId is null && p.ExpansionFor is null)
@@ -119,9 +137,10 @@ public static class FriendlyGuidance
     public static string ConstructionText(PlayerView view, ScenarioDefinition scenario, BuildingTypeDefinition type, BuildingLevelDefinition level, InventoryView materials, string language)
     {
         string L(string ru, string en) => PlayerText.Local(language, ru, en);
+        long cover = type.Kind == BuildingKind.Production && view.ProvincialProgram is { Status: "Open", IndustryId: var industry, ConstructionRemaining: var left } && industry == type.Id ? left : 0;
         var gaps = new List<RequirementGap>
         {
-            new("money", "", view.AvailableCashMinor, level.PriceMinor)
+            new("money", "", view.AvailableCashMinor + cover, level.PriceMinor)
         };
         foreach (var cost in level.Materials)
             gaps.Add(new("material", cost.ItemId, Free(materials, cost.ItemId), cost.Quantity));

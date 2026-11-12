@@ -71,7 +71,10 @@ jobs:
   natural:
     needs: [matrix]
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    # Run 42921641924 cancelled three extended large-districts jobs at the
+    # 35-minute job limit (KeyboardInterrupt / operation canceled). The
+    # simulations had not failed. Sixty minutes keeps the same cases.
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       max-parallel: 12

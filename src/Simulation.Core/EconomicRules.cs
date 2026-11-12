@@ -20,12 +20,13 @@ public sealed record EconomicRules(long PlayerWageStepMinor = 100, int Reservati
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] VehicleControlRules? VehicleControl=null,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ResourceRightsRules? ResourceRights=null,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] IndustrialParcelRules? IndustrialParcels=null,
-    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] StartingSpecializationRules? StartingSpecializations=null)
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] StartingSpecializationRules? StartingSpecializations=null,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ProvincialSupportRules? ProvincialSupport=null)
 {
     public long ReservationFee(long price) => checked((long)(((Int128)price * ReservationFeeBasisPoints + 9999) / 10000));
     public void Validate()
     {
-        IndustrialParcels?.Validate();StartingSpecializations?.Validate();
+        IndustrialParcels?.Validate();StartingSpecializations?.Validate();ProvincialSupport?.Validate();
         ResourceRights?.Validate();
         Movement?.Validate();
         VehicleControl?.Validate();if(VehicleControl is not null&&(Movement!=MovementRules.I1||Roads is null||Fleet is null))throw new ArgumentException("Vehicle control requires Movement2 and roads");

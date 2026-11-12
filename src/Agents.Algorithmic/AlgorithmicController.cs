@@ -109,9 +109,10 @@ public sealed partial class AlgorithmicController
         // Liquidating carried goods also prevents a full personal inventory from deadlocking a new goal.
         foreach (var stock in carrier.Stock.Where(s => s.Quantity > s.Reserved))
         {
-            var offer = BestOffer(o, stock.ItemId, stock.Quantity - stock.Reserved, o.Participant.Position);
-            if (offer is null) continue;
-            long q = Math.Min(stock.Quantity - stock.Reserved, offer.RemainingQuantity);
+            long pile = Surplus(o, stock.ItemId, stock.Quantity - stock.Reserved);
+            var offer = BestOffer(o, stock.ItemId, pile, o.Participant.Position);
+            if (offer is null || pile <= 0) continue;
+            long q = Math.Min(pile, offer.RemainingQuantity);
             var steps = new List<PlanStep>(); Move(steps, o.Participant.Position, offer.Position);
             steps.Add(new(new(ActionKind.SellAvailableToCapital, ItemId: stock.ItemId, Quantity: q, OfferId: offer.Id)));
             yield return new("SellCarried", stock.ItemId, 120000 + Rate(o, offer, q, o.Participant.Position) * settings.CashWeight, steps.ToArray());
@@ -190,7 +191,8 @@ public sealed partial class AlgorithmicController
                 if (plots.Any(p => p is null)) continue;
                 bool parcel = o.Economics?.IndustrialParcels is { Version: 1 };
                 long cost = parcel ? checked(level.PriceMinor + ParcelPrice(o, plot)) : checked(level.PriceMinor + plots.Sum(p => p!.OwnerId is null ? p.PriceMinor : 0));
-                if (cash < checked(cost + settings.CashReserveMinor) ||
+                long grant = o.ProvincialProgram is { Status: "Open", IndustryId: var funded } && funded == type.Id ? o.ProvincialProgram.ParcelRemaining + o.ProvincialProgram.ConstructionRemaining : 0;
+                if (cash + grant < checked(cost + settings.CashReserveMinor) ||
                     level.Materials.Sum(m => checked(m.Quantity * Volume(o, m.ItemId))) > freeVolume) continue;
                 var steps = new List<PlanStep>(); Cell current = o.Participant.Position; bool feasible = true;
                 foreach (var material in level.Materials)
@@ -264,6 +266,14 @@ public sealed partial class AlgorithmicController
     private static ControllerInventory Carrier(ControllerObservation o) => Inventory(o, o.Participant.InventoryId);
     private static ControllerInventory Inventory(ControllerObservation o, InventoryId id) => o.Inventories.Single(i => i.Id == id);
     private static long Free(ControllerInventory i, string item) => i.Stock.Where(s => s.ItemId == item).Sum(s => s.Quantity - s.Reserved);
+    /// <summary>Свободный остаток сверх ещё не израсходованной поставки программы. Сама поставка не продаётся.</summary>
+    internal static long Surplus(ControllerObservation o, string item, long pileFree)
+    {
+        long restricted = o.ProvincialProgram?.Restricted.Where(line => line.ItemId == item).Sum(line => line.Quantity) ?? 0;
+        if (restricted <= 0) return pileFree;
+        long total = o.Inventories.Sum(i => Free(i, item));
+        return Math.Min(pileFree, Math.Max(0, total - restricted));
+    }
     private static long FreeVolume(ControllerInventory i) => i.Capacity - i.OccupiedVolume - i.ReservedCapacity;
     private static long Volume(ControllerObservation o, string item) => o.Map.Items.Single(i => i.Id == item).UnitVolume;
     private static bool Reachable(ControllerObservation o, Cell target) => Distance(o.Map, o.Participant.Position, target) >= 0;

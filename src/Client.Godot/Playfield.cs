@@ -247,7 +247,7 @@ public partial class Playfield : Control
     {
         // An explicit pre-I4 research profile retains its historical map snapshot.
         // Ordinary starts without an override always use the current versioned worlds.
-        bool legacy=key==PlayMaps.CompactValley&&OS.GetCmdlineUserArgs().Contains("--economy")&&ReadEconomy(key).Id is not (VNextMobileEquipmentProfile.ProfileId or VNextEquipmentClassesProfile.ProfileId or VNextWageScheduleProfile.ProfileId or VNextResourceRightsProfile.ProfileId or VNextStartingSpecializationProfile.ProfileId);
+        bool legacy=key==PlayMaps.CompactValley&&OS.GetCmdlineUserArgs().Contains("--economy")&&ReadEconomy(key).Id is not (VNextMobileEquipmentProfile.ProfileId or VNextEquipmentClassesProfile.ProfileId or VNextWageScheduleProfile.ProfileId or VNextResourceRightsProfile.ProfileId or VNextStartingSpecializationProfile.ProfileId or VNextProvincialSupportProfile.ProfileId);
         return JsonSerializer.Deserialize<ScenarioDefinition>(Text(legacy?PlayMaps.Resource(key):PlayMaps.NewGameResource(key)),SimulationJson.Options)??throw new InvalidOperationException(key);
     }
 
@@ -490,6 +490,7 @@ public partial class Playfield : Control
         if(choice.Key=="city"){_playerTab=3;OpenPlayerTablet();return;}
         if(choice.Key=="dealership"){if(_scenario.Economy?.Fleet is not null){OpenCitySection("dealer");}else OpenHelp("dealership");return;}
         if (choice.Key == "exchange") { OpenCapitalTablet(); return; }
+        if (choice.Key == "provincial") { OpenProvincial(); return; }
         if (choice.Command is { } action)
         {string? prior=_trackedId;Offer(action);if(_surface==Surface.Play&&_trackedId!=prior)_contextCommandId=_trackedId;Refresh();}
     }
@@ -593,6 +594,9 @@ public partial class Playfield : Control
         _stage?.ShowActivity(view);
         _stage?.ShowRoadWorkEffects(view);
         if (_surface == Surface.Debug) _board?.Show(frame, _cellX, _cellZ);
+        if (_surface == Surface.Play && view.ProvincialProgram is { Status: "Offered" } && !_provincialIntro)
+        { _provincialIntro = true; OpenProvincial(); }
+        _provincial?.Show(view, _language, WaitingCommand, action => Offer(action));
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
         string stock = pack.Stock.Length == 0 ? T("inventory.empty")
             : string.Join(", ", pack.Stock.OrderBy(s => s.ItemId, StringComparer.Ordinal).Select(s => $"{PlayerText.Item(_language, s.ItemId)} ×{s.Quantity}"));
@@ -1120,6 +1124,12 @@ public partial class Playfield : Control
         var result = _session.Engine.Result(_trackedId);
         if (result is null) return T("command.sent");
         if (result.Status == ResultStatus.Rejected) return T("command.rejected") + " " + PlayerText.Reason(_language, result.ReasonCode);
+        if (result.Status == ResultStatus.Accepted && _trackedKind == ActionKind.AcceptProvincialSupport)
+            return L("Столица открыла программу. Первый участок, предприятие, материалы и сырьё первой партии будут оплачены.", "The capital opened the program. The first parcel, enterprise, materials and the first batch of input will be paid.");
+        if (result.Status == ResultStatus.Accepted && _trackedKind == ActionKind.CollectProvincialSupply)
+            return L("Поставка программы получена на терминале. Отнесите её на участок.", "The program supply is at the terminal. Carry it to the parcel.");
+        if (result.Status == ResultStatus.Accepted && _trackedKind == ActionKind.SellProvincialOutput)
+            return L("Провинция купила первую партию.", "The province bought the first batch.");
         if (_trackedKind == ActionKind.SellAvailableToCapital && view.Participant.Busy)
             return PlayerText.Local(_language, "Заявка на продажу принята. Ожидаем закрытия торгового окна.", "Sale request accepted. Waiting for the trading window to close.");
         if (view.Harvest is { Repeating: true } harvest)

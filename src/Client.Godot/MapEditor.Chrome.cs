@@ -238,7 +238,7 @@ public partial class MapEditor
     private static EconomyProfile Economy()
     {
         var mobile=EconomyProfile.Read(Text("Play.i4-mobile-equipment.json")??throw new System.InvalidOperationException("Нет профиля техники"));
-        var economy=VNextStartingSpecializationProfile.ForOrdinaryMap(mobile);
+        var economy=VNextProvincialSupportProfile.ForOrdinaryMap(mobile);
         var read=VNextBalanceReader.Read(System.Text.Encoding.UTF8.GetBytes(Text("Play.vnext-balance.json")??throw new System.InvalidOperationException("Нет баланса")));
         if(!read.IsValid||economy.VNext is null||read.Sha256!=economy.VNext.FullBalanceSha256)throw new System.InvalidOperationException("Full balance/profile mismatch");
         return economy;

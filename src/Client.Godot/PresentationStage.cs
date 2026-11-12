@@ -381,14 +381,17 @@ public partial class PresentationStage : Node3D
         }
         if(frame.Layout is {} layout)
         {
-            if(layout.SourceId is PlayMaps.CompactValleyScenarioId or PlayMaps.CompactValleyI6C2ScenarioId or PlayMaps.WoodlandScenarioId or PlayMaps.WoodlandI6C4ScenarioId)
+            if(layout.SourceId is PlayMaps.CompactValleyScenarioId or PlayMaps.CompactValleyI6C2ScenarioId or PlayMaps.CompactValleyI6C8CScenarioId or PlayMaps.WoodlandScenarioId or PlayMaps.WoodlandI6C4ScenarioId or PlayMaps.WoodlandI6C8CScenarioId)
             {
                 // Трава остаётся цельной. Границы участка и контур действия появляются отдельно, не как постоянная сетка.
                 foreach(var lot in layout.IndustrialLots)
                 {
-                    float x=lot.Cells.Min(c=>c.X)+.5f,z=lot.Cells.Min(c=>c.Z)+1;
+                    bool wide=layout.SourceId is PlayMaps.CompactValleyI6C8CScenarioId or PlayMaps.WoodlandI6C8CScenarioId;
+                    float x=wide?(lot.Cells.Min(c=>c.X)+lot.Cells.Max(c=>c.X))/2f:lot.Cells.Min(c=>c.X)+.5f;
+                    float z=wide?(lot.Cells.Min(c=>c.Z)+lot.Cells.Max(c=>c.Z))/2f:lot.Cells.Min(c=>c.Z)+1;
                     if(layout.SourceId==PlayMaps.CompactValleyScenarioId)WorldModels.Part(ground,new BoxMesh{Size=new(1.98f,.01f,2.98f)},new Color("5c5344"),new(x,.008f,z));
-                    WorldModels.Part(ground,new BoxMesh{Size=new(1.86f,.018f,2.86f)},new Color("a8a386"),new(x,.015f,z));
+                    if(wide)WorldModels.Part(ground,new BoxMesh{Size=new(2.94f,.01f,1.94f)},new Color("5c5344"),new(x,.008f,z));
+                    WorldModels.Part(ground,new BoxMesh{Size=wide?new Vector3(2.8f,.018f,1.82f):new(1.86f,.018f,2.86f)},new Color("a8a386"),new(x,.015f,z));
                 }
                 foreach(var stall in layout.MarketStalls)
                     WorldModels.Part(ground,new BoxMesh{Size=new(.82f,.018f,.82f)},new Color("b5a3b1"),new(stall.Cell.X,.015f,stall.Cell.Z));

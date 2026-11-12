@@ -73,4 +73,31 @@ public class H2StorageTests
         if(fault=="actor")archive["turns"]![0]!["turn"]!["actor"]!["value"]=999;
         Assert.Throws<CheckpointException>(()=>CheckpointStore.Decode(Wrap(payload)));
     }
+    [Fact]
+    public void PreviousArchiveWithoutProvincialProgramRestoresAsNullAndOtherGapsStayInvalid()
+    {
+        var payload=Payload(CheckpointStore.Encode(Frozen()));
+        var archive=payload["controllers"]!["observationArchive"]!;
+        var names=archive["properties"]!.AsArray();
+        int index=names.Select((node,i)=>(node,i)).Single(x=>x.node!.GetValue<string>()==nameof(ControllerObservation.ProvincialProgram)).i;
+        names.RemoveAt(index);
+        foreach(var turn in archive["turns"]!.AsArray())turn!["fields"]!.AsArray().RemoveAt(index);
+        var legacy=CheckpointStore.Decode(Wrap(payload));Restore(legacy);
+        Assert.Equal(30,legacy.Engine.Tick);
+        Assert.Null(legacy.Engine.ObserveController(new(1)).ProvincialProgram);
+        Assert.DoesNotContain("provincialProgram",JsonSerializer.Serialize(legacy.ControllerTurns[0],SimulationJson.Options),StringComparison.Ordinal);
+        string hash=legacy.Engine.ComputeStateHash();
+        legacy.Step();
+        Assert.NotEqual(hash,legacy.Engine.ComputeStateHash());
+        var broken=Payload(CheckpointStore.Encode(Frozen()));
+        var brokenNames=broken["controllers"]!["observationArchive"]!["properties"]!.AsArray();
+        brokenNames.RemoveAt(brokenNames.Select((node,i)=>(node,i)).Single(x=>x.node!.GetValue<string>()==nameof(ControllerObservation.Map)).i);
+        Assert.Throws<CheckpointException>(()=>CheckpointStore.Decode(Wrap(broken)));
+        var duplicate=Payload(CheckpointStore.Encode(Frozen()));
+        duplicate["controllers"]!["observationArchive"]!["properties"]!.AsArray().Add(nameof(ControllerObservation.Map));
+        Assert.Throws<CheckpointException>(()=>CheckpointStore.Decode(Wrap(duplicate)));
+        var foreign=Payload(CheckpointStore.Encode(Frozen()));
+        foreign["controllers"]!["observationArchive"]!["properties"]!.AsArray()[0]="ForeignObservation";
+        Assert.Throws<CheckpointException>(()=>CheckpointStore.Decode(Wrap(foreign)));
+    }
 }

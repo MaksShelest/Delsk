@@ -9,7 +9,7 @@ public static class UserMaps
 {
     public static readonly string[] Reserved =
     [
-        "draft_map", "compact_valley", "compact_valley_i6c2", "compact_valley_i6c21", "woodland_region_i6c2", "woodland_region_i6c4",
+        "draft_map", "compact_valley", "compact_valley_i6c2", "compact_valley_i6c21", "compact_valley_i6c8c", "woodland_region_i6c2", "woodland_region_i6c4", "woodland_region_i6c8c",
         "small_river", "large_districts", "user_map"
     ];
 

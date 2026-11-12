@@ -130,6 +130,7 @@ internal sealed class ItemFlow(string id)
     public long ConstructionInput { get; set; }
     public long ConstructionRecovered {get;set;}
     public long Lost {get;set;}
+    public long ProvincialSupplied {get;set;}
 }
 
 public static partial class ScenarioValidation

@@ -50,7 +50,8 @@ internal record WorldCheckpoint(int SchemaVersion, string RulesVersion, Scenario
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] RoadsState? Roads=null,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] BillingState? Billing=null,
     [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ServicesState? Services=null,
-    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] StartingSpecializationState[]? StartingSpecializations=null);
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] StartingSpecializationState[]? StartingSpecializations=null,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] ProvincialSupportState[]? ProvincialSupport=null);
 
 public sealed partial class SimulationEngine
 {
@@ -90,7 +91,7 @@ public sealed partial class SimulationEngine
                     r.Reservation, r.CommandId)).ToArray(), o.SupplyRequests.Values.OrderBy(r => r.Supplier.Value).ToArray(), o.Window)).ToArray(), world.Flows, world.Settlements,
             _completedPersonalJobs.Order().ToArray(), _seenCommands.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(),
             _results.Values.OrderBy(c => c.CommandId, StringComparer.Ordinal).ToArray(), _pending.Select(c => c.CommandId).ToArray(),
-            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum, _cityStage,_researchModifications.ToArray(),IsDeveloperBuild,ResourceSites(),_resourceClaims.Values.OrderBy(c=>c.JobId).ToArray(),_transfers.Values.OrderBy(t=>t.Id).ToArray(),InspectNegotiations(),!HasGroundStorage?null:CaptureStorage(),CaptureDemolition(),CaptureWorkshops(),InspectDevelopment(),InspectProductionContent(),InspectFleet(),InspectRoads(),InspectBilling(),InspectServices(),StartingSpecializations:CaptureStartingSpecializations());
+            Ledger(), _events.ToArray(), _marketRandom.State, SaveMarketOffers(), _marketAllocations.ToArray(), SaveBuyOffers(), _deliveryContracts.ToArray(), _capitalCompensation, SaveLogistics(), CapitalDemandState(), ElectionState(), InspectSupport(), _travelQuantum, _cityStage,_researchModifications.ToArray(),IsDeveloperBuild,ResourceSites(),_resourceClaims.Values.OrderBy(c=>c.JobId).ToArray(),_transfers.Values.OrderBy(t=>t.Id).ToArray(),InspectNegotiations(),!HasGroundStorage?null:CaptureStorage(),CaptureDemolition(),CaptureWorkshops(),InspectDevelopment(),InspectProductionContent(),InspectFleet(),InspectRoads(),InspectBilling(),InspectServices(),StartingSpecializations:CaptureStartingSpecializations(),ProvincialSupport:CaptureProvincialSupport());
         return JsonSerializer.Serialize(saved, SimulationJson.Options);
     }
     private static string MigrateTravel(string json)
@@ -258,7 +259,7 @@ public sealed partial class SimulationEngine
         }
         _flows.Clear();
         foreach (var f in s.Flows) _flows.Add(f.ItemId, new(f.ItemId) { Initial = f.Initial, Harvested = f.Harvested,
-            RecipeInput = f.RecipeInput, Produced = f.Produced, Exported = f.Exported, ConstructionInput = f.ConstructionInput,Lost=f.Lost,ConstructionRecovered=f.ConstructionRecovered });
+            RecipeInput = f.RecipeInput, Produced = f.Produced, Exported = f.Exported, ConstructionInput = f.ConstructionInput,Lost=f.Lost,ConstructionRecovered=f.ConstructionRecovered,ProvincialSupplied=f.ProvincialSupplied });
         _settlements.Clear(); _settlements.AddRange(s.Settlements);
         _completedPersonalJobs.Clear(); foreach (long id in s.CompletedJobs)
             if (!_completedPersonalJobs.Add(id)) throw new CheckpointException("DuplicateCompletedJob");
@@ -279,6 +280,7 @@ public sealed partial class SimulationEngine
         RestoreSupport(s.Support);
         RestoreResources(s.Resources,s.ResourceClaims??[]);
         _transfers.Clear();foreach(var t in s.Transfers??[])_transfers.Add(t.Id,t);
+        RestoreProvincialSupport(s.ProvincialSupport);
         RestoreStartingSpecializations(s.StartingSpecializations);
         _phase = Tick == 0 ? 0 : 9;
     }

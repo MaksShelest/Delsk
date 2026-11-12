@@ -72,6 +72,7 @@ public sealed partial class SimulationEngine
         var quote=CalculateServiceQuote(actor.Id,terms);
         if(quote.Token!=a.ServiceQuote)throw new RuleViolation("StaleServiceQuote");
         if(_serviceOrders.Values.Count(o=>o.Active&&o.Customer.Value==actor.Id)>=16)throw new RuleViolation("ServiceOrderLimit");
+        if(terms.PurchaseId==0&&_economy.Inventories.TryGetValue(terms.Source.Value,out var source)&&terms.Quantity>ProvincialSellable(source.Owner,terms.ItemId,terms.Quantity))throw new RuleViolation("SubsidizedGoods");
         long id=_nextId;var order=new ServiceOrder(id,new(actor.Id),_vehicles[a.VehicleId].Owner,quote,Tick,checked(Tick+Services!.ResponseTicks));
         var tx=_economy.Begin(Tick);tx.HoldMoney(actor.Account,order.MoneyHold,quote.FeeMinor);
         if(terms.PurchaseId==0)tx.ReserveStock(terms.Source.Value,order.StockHold,terms.ItemId,terms.Quantity);

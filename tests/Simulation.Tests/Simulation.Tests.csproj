@@ -7,9 +7,11 @@
     <EmbeddedResource Include="../../docs/vnext/maps/compact_valley_h3.json" LogicalName="Fixture.compact_valley.json" />
     <EmbeddedResource Include="../../docs/vnext/maps/compact_valley.json" LogicalName="Fixture.compact_valley_i6c2.json" />
     <EmbeddedResource Include="../../scenarios/vnext/compact-valley-i6c21.json" LogicalName="Fixture.compact-valley-i6c21.json" />
+    <EmbeddedResource Include="../../scenarios/vnext/compact-valley-i6c8c.json" LogicalName="Fixture.compact-valley-i6c8c.json" />
     <EmbeddedResource Include="../../scenarios/vnext/compact-valley-i6c2.json" LogicalName="Fixture.compact-valley-i6c2.json" />
     <EmbeddedResource Include="../../scenarios/vnext/woodland-region-i6c2.json" LogicalName="Fixture.woodland-region-i6c2.json" />
     <EmbeddedResource Include="../../scenarios/vnext/woodland-region-i6c4.json" LogicalName="Fixture.woodland-region-i6c4.json" />
+    <EmbeddedResource Include="../../scenarios/vnext/woodland-region-i6c8c.json" LogicalName="Fixture.woodland-region-i6c8c.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../../config/vnext/economy.c1-storage.json" LogicalName="Fixture.economy.c1-storage.json" />

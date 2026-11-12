@@ -108,12 +108,16 @@ public sealed partial class SimulationEngine
         }
         long inventory=building?.Input??_groundStorage[_plotsByCell[anchor].Definition.Id];
         if(_transfers.Values.Any(t=>t.Source==inventory||t.Destination==inventory))throw new RuleViolation("StorageBusy");
+        long cover=ConstructionGrant(actor.Id,type.Id,building is null,level.Level,level.PriceMinor);
+        if(level.PriceMinor>0&&_economy.Accounts[actor.Account].Available+cover<level.PriceMinor)throw new RuleViolation("NoMoney");
         long id=_nextId,next=checked(id+1),end=checked(Tick+level.ConstructionTicks);var flows=PrepareMaterialFlows(level.Materials);
         var tx=_economy.Begin(Tick);foreach(var material in level.Materials)tx.RemoveFreeStock(inventory,material.ItemId,material.Quantity);
         if(building is not null)foreach(var cell in cells.Where(cell=>!building.Footprint.Contains(cell)))
             tx.ReserveCapacityVolume(_groundStorage[_plotsByCell[cell].Definition.Id],$"development:{id}",GroundRules.GroundCapacity);
+        if(cover>0)Appropriate(tx,actor.Account,cover,"ProvincialConstructionGrant");
         if(level.PriceMinor>0)tx.Pay(actor.Account,_treasury,level.PriceMinor,building is null?"Construction":"BuildingUpgrade");
         CheckBuildingAccess(anchor,type);tx.Commit();
+        if(cover>0)MarkConstruction(actor.Id,id,level.Materials);
         if(building is not null)_preparingDevelopment.Remove(building.Id);
         _nextId=next;var plan=new DevelopmentProject(contour,[..cells.OrderBy(c=>c.Z).ThenBy(c=>c.X).Select(c=>new DemolitionCell(c,level.Level))]);
         _storageConstruction.Add(id,new(id,actor.Id,anchor,type.Id,level.Level,inventory,building?.Id??0,Tick,end,level.Materials.ToArray(),level.PriceMinor,command.CommandId,plan));
@@ -136,7 +140,8 @@ public sealed partial class SimulationEngine
         var tx=_economy.Begin(Tick);tx.SetCapacity(c.InventoryId,level.InputCapacity);
         StageReleaseDevelopmentHolds(tx,c);
         if(c.BuildingId==0)tx.CreateInventory(output!.Value,c.Owner,c.Position,level.OutputCapacity);else tx.SetCapacity(output!.Value,level.OutputCapacity);
-        tx.Commit();_nextId=next;
+        long reserve=OperatingGrant(c);if(reserve>0)Appropriate(tx,_actors[c.Owner].Account,reserve,"ProvincialOperatingReserve");
+        tx.Commit();if(reserve>0)MarkOperating(c.Owner);_nextId=next;
         BuildingState b;
         if(c.BuildingId==0)
         {

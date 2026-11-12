@@ -62,16 +62,20 @@ public sealed partial class SimulationEngine
         if (layout.IndustrialLots.Any(other => other.Id != lot.Id && plots.Any(p => other.Entry == p.Definition.Position || other.Cells.Contains(p.Definition.Position))))
             throw new RuleViolation("ParcelOccupied");
         long price = IndustrialParcelRules.PriceMinor;
-        if (_economy.Accounts[actor.Account].Available < price) throw new RuleViolation("NoMoney");
+        long cover = ParcelGrant(actor.Id);
+        if (cover != 0 && cover != price) throw new RuleViolation("ParcelPrice");
+        if (_economy.Accounts[actor.Account].Available + cover < price) throw new RuleViolation("NoMoney");
         long first = _nextId;
         int grounds = HasGroundStorage ? plots.Length : 0;
         long next = checked(_nextId + grounds);
         var tx = _economy.Begin(Tick);
+        if (cover > 0) Appropriate(tx, actor.Account, cover, "ProvincialParcelGrant");
         tx.Pay(actor.Account, _treasury, price, "ParcelPurchase");
         if (HasGroundStorage)
             for (int i = 0; i < plots.Length; i++)
                 tx.CreateInventory(checked(first + i), actor.Id, plots[i].Definition.Position, GroundRules.GroundCapacity);
         tx.Commit();
+        if (cover > 0) MarkParcel(actor.Id);
         for (int i = 0; i < plots.Length; i++)
         {
             plots[i].Owner = actor.Id;
