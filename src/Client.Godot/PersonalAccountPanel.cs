@@ -31,8 +31,8 @@ public partial class PersonalAccountPanel : VBoxContainer
         buttons.AddChild(_view);buttons.AddChild(_amount);buttons.AddChild(_pay);invoicePage.AddChild(buttons);GameUi.Primary(_pay);
         _view.Pressed+=()=>{if(!_view.Disabled&&Selected>0)Send(new(ActionKind.ViewInvoice,OfferId:Selected));};
         _pay.Pressed+=()=>{if(!_pay.Disabled&&Selected>0)Send(new(ActionKind.PayInvoice,OfferId:Selected,Quantity:checked((long)Math.Round((decimal)_amount.Value*100,MidpointRounding.AwayFromZero))));};
-        string help=L("Сумма в монетах; 0 — доступная часть всего счёта. Сначала основной долг, затем пени. Просмотр не означает оплату. Резервы и escrow защищены. Долг не запрещает работать.",
-            "Amount in coins; 0 pays as much as available. Principal first, then penalties. Viewing does not pay. Holds and escrow stay protected. Debt does not block work.");invoicePage.AddChild(GameUi.Hint(help));
+        string help=L("Сумма платежа. Ноль списывает доступную часть счёта. Сначала основной долг, затем пени. Просмотр не означает оплату. Резервы и escrow защищены. Долг не запрещает работать.",
+            "Payment amount. Zero pays as much as available. Principal first, then penalties. Viewing does not pay. Holds and escrow stay protected. Debt does not block work.");invoicePage.AddChild(GameUi.Hint(help));
         historyPage.AddChild(TabletDesign.Heading(L("Доходы и расходы","Income & expenses"),20));historyPage.AddChild(GameUi.Card(_history));
         var pages=TabletDesign.Flow();_newer.Text=L("‹ Новые операции","‹ Newer operations");_older.Text=L("Ранние операции ›","Older operations ›");pages.AddChild(_newer);pages.AddChild(_older);historyPage.AddChild(pages);
         _newer.Pressed+=()=>{_offset=Math.Max(0,_offset-20);Reload();};_older.Pressed+=()=>{_offset+=20;Reload();};
@@ -48,21 +48,21 @@ public partial class PersonalAccountPanel : VBoxContainer
     private void Reload()
     {
         if(_data is null)return;var data=_query?.Invoke(_offset,_billOffset)??_data;_data=data;
-        _available.Value.Text=PlayerText.Money(data.Account.AvailableMinor);_debt.Value.Text=PlayerText.Money(data.DebtMinor);_receivable.Value.Text=PlayerText.Money(data.ReceivableMinor);
+        _available.Value.Text=PlayerText.Money(data.Account.AvailableMinor, _language);_debt.Value.Text=PlayerText.Money(data.DebtMinor, _language);_receivable.Value.Text=PlayerText.Money(data.ReceivableMinor, _language);
         _summary.Text=L("Баланс / свободно / резерв: ","Balance / available / reserved: ")+string.Join(" / ",new[]{data.Account.BalanceMinor,data.Account.AvailableMinor,data.Account.ReservedMinor}.Select(PlayerText.Money))+"\n"+
-            L("Деньги в расчётах по договорам: ","Funds in contract escrow: ")+PlayerText.Money(data.EscrowMinor)+"\n"+
-            L("Доходы / расходы: ","Income / expenses: ")+PlayerText.Money(data.IncomeMinor)+" / "+PlayerText.Money(data.ExpensesMinor)+"\n"+
-            L("Долг / ещё не выставлено / к получению: ","Debt / unbilled / receivable: ")+PlayerText.Money(data.DebtMinor)+" / "+PlayerText.Money(data.AccruedMinor)+" / "+PlayerText.Money(data.ReceivableMinor);
+            L("Деньги в расчётах по договорам: ","Funds in contract escrow: ")+PlayerText.Money(data.EscrowMinor, _language)+"\n"+
+            L("Доходы / расходы: ","Income / expenses: ")+PlayerText.Money(data.IncomeMinor, _language)+" / "+PlayerText.Money(data.ExpensesMinor, _language)+"\n"+
+            L("Долг / ещё не выставлено / к получению: ","Debt / unbilled / receivable: ")+PlayerText.Money(data.DebtMinor, _language)+" / "+PlayerText.Money(data.AccruedMinor, _language)+" / "+PlayerText.Money(data.ReceivableMinor, _language);
         _refreshing=true;_auto.SetPressedNoSignal(data.AutoPay);_auto.Disabled=_pending||data.Rules is null;_refreshing=false;
         long selected=Selected;
         if(selected>0&&_query is not null&&_knownBillCount>0&&data.InvoiceCount>_knownBillCount&&!data.Invoices.Take(20).Any(i=>i.Id==selected))
         {_billOffset+=data.InvoiceCount-_knownBillCount;data=_query(_offset,_billOffset);_data=data;}
         _knownBillCount=data.InvoiceCount;var invoices=data.Invoices.Take(20).ToArray();var ids=invoices.Select(i=>i.Id).ToArray();
         // Keep selection and page during live updates; never rebuild the surrounding scroll.
-        if(!_ids.SequenceEqual(ids)){_ids=ids;_invoices.Clear();foreach(var i in invoices)_invoices.AddItem((i.Remaining==0?L("Оплачен","Paid"):PlayerText.Money(i.Remaining)+L(" монет к оплате"," coins due"))+" · "+(i.Viewed?"":"● ")+"#"+i.Id);if(_ids.Length>0)_invoices.Select(Math.Max(0,Array.IndexOf(_ids,selected)));}
+        if(!_ids.SequenceEqual(ids)){_ids=ids;_invoices.Clear();foreach(var i in invoices)_invoices.AddItem((i.Remaining==0?L("Оплачен","Paid"):PlayerText.Money(i.Remaining, _language)+L(" к оплате"," due"))+" · "+(i.Viewed?"":"● ")+"#"+i.Id);if(_ids.Length>0)_invoices.Select(Math.Max(0,Array.IndexOf(_ids,selected)));}
         _newer.Disabled=_offset==0;_older.Disabled=_query is null||_offset+20>=data.OperationCount;
         _billNewer.Disabled=_billOffset==0;_billOlder.Disabled=_query is null||_billOffset+20>=data.InvoiceCount;
-        _history.Text=string.Join('\n',data.Operations.Take(20).Select(o=>$"t{o.Tick} · {(o.AmountMinor>0?"+":"−")}{PlayerText.Money(Math.Abs(o.AmountMinor))} · {Kind(o.Kind)} · {Party(o.Counterparty,o.CounterpartyKind)}"));
+        _history.Text=string.Join('\n',data.Operations.Take(20).Select(o=>$"t{o.Tick} · {(o.AmountMinor>0?"+":"−")}{PlayerText.Money(Math.Abs(o.AmountMinor), _language)} · {Kind(o.Kind)} · {Party(o.Counterparty,o.CounterpartyKind)}"));
         if(data.Operations.IsEmpty)_history.Text=L("Операций пока нет.","No operations yet.");RenderInvoice();if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Size.X);
     }
     private string Party(ParticipantId? actor,string kind)=>actor?.Value==0?(kind=="Capital"?L("Столица","Capital"):L("Город","City")):actor is {} id?WorldSkins.ActorName(id.Value,_language):kind switch
@@ -88,9 +88,9 @@ public partial class PersonalAccountPanel : VBoxContainer
         var bill=_data?.Invoices.FirstOrDefault(i=>i.Id==Selected);_view.Disabled=_pending||bill is null||bill.Viewed;_pay.Disabled=_pending||bill is null||bill.Remaining==0||_data!.Account.AvailableMinor==0;
         if(bill is null){_invoice.Text=L("Счетов пока нет.","No invoices yet.");return;}
         _invoice.Text=$"#{bill.Id} · t{bill.CreatedTick} · "+(bill.Viewed?L("Просмотрен","Viewed"):L("● Новый","● New"))+" · "+(bill.Remaining==0?L("Оплачен","Paid"):L("Не погашен","Unpaid"))+"\n"+
-            L("Основной долг / пени: ","Principal / penalties: ")+PlayerText.Money(bill.PrincipalRemaining)+" / "+PlayerText.Money(bill.PenaltyRemaining)+"\n"+
+            L("Основной долг / пени: ","Principal / penalties: ")+PlayerText.Money(bill.PrincipalRemaining, _language)+" / "+PlayerText.Money(bill.PenaltyRemaining, _language)+"\n"+
             L("До конца льготного срока: ","Grace remaining: ")+Math.Max(0,bill.DueTick-_data!.Tick)+L(" с активного времени. "," active seconds. ")+L("Без пеней до t","Penalty-free through t")+bill.DueTick+L(" включительно. "," inclusive. ")+(bill.PrincipalRemaining>0?L("Следующая пеня t","Next penalty t")+bill.NextPenaltyTick:L("Новые пени не начисляются.","No new penalties accrue."))+"\n"+
-            string.Join(" · ",bill.Claims.Select(c=>(c.Recipient.Value==0?L("Город","City"):L("Участник #","Participant #")+c.Recipient.Value)+": "+PlayerText.Money(c.PrincipalMinor-c.PaidMinor)));
+            string.Join(" · ",bill.Claims.Select(c=>(c.Recipient.Value==0?L("Город","City"):L("Участник #","Participant #")+c.Recipient.Value)+": "+PlayerText.Money(c.PrincipalMinor-c.PaidMinor, _language)));
         _invoice.AddThemeColorOverride("font_color",bill.Viewed?TabletDesign.Ink:new Color("bb3030"));
     }
 }

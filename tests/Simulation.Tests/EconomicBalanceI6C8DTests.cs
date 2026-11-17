@@ -8,6 +8,16 @@ namespace Simulation.Tests;
 public sealed class EconomicBalanceI6C8DTests
 {
     [Theory]
+    [InlineData(15, "0,15", "0.15")]
+    [InlineData(250, "2,50", "2.50")]
+    [InlineData(1700, "17,00", "17.00")]
+    public void MoneyKeepsTwoMinorDigits(long minor, string russian, string english)
+    {
+        Assert.Equal(russian, PlayerText.Money(minor, "ru"));
+        Assert.Equal(english, PlayerText.Money(minor, "en"));
+    }
+
+    [Theory]
     [InlineData(PlayMaps.CompactValley)]
     [InlineData(PlayMaps.Second)]
     public void OrdinaryProfileFundsStarterOrdersWithoutChangingTheCatalog(string key)

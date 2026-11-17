@@ -80,7 +80,7 @@ public static class FriendlyGuidance
         if (view.ProvincialProgram is { Status: "Offered" } offered)
             return Step("program", PlayerText.Local(language, "Программа провинции", "Provincial program"),
                 PlayerText.Local(language, "Столица оплатит первый участок 2×3, первое предприятие отрасли «", "The capital pays for the first 2×3 parcel, the first ") + PlayerText.Enterprise(language, offered.IndustryId, 1) +
-                PlayerText.Local(language, "», материалы и сырьё первой партии. Свои 200 монет останутся.", " of the chosen industry, its materials and the first batch of input. Your 200 coins stay."),
+                PlayerText.Local(language, "», материалы и сырьё первой партии. Стартовые деньги останутся у вас.", " of the chosen industry, its materials and the first batch of input. You keep your starting money."),
                 -1, -1, "program", 0, 0, offered.IndustryId, false, "program", 0, []);
         if (view.ProvincialProgram is { Status: "Open", NextStep: "buy-parcel" })
         {
@@ -130,7 +130,7 @@ public static class FriendlyGuidance
         string L(string ru, string en) => PlayerText.Local(language, ru, en);
         var lines = new List<string>();
         if (view.PersonalAccount is { DebtMinor: > 0 } account)
-            lines.Add(L("Долг: ", "Debt: ") + PlayerText.Money(account.DebtMinor));
+            lines.Add(L("Долг: ", "Debt: ") + PlayerText.Money(account.DebtMinor, language));
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
         if (pack.Capacity > 0 && pack.OccupiedVolume + pack.ReservedCapacity >= pack.Capacity)
             lines.Add(L("Рюкзак заполнен.", "Backpack is full."));
@@ -188,8 +188,8 @@ public static class FriendlyGuidance
             if (missingOnly && gap.Kind is "money" or "material" or "staff" && missing == 0) continue;
             lines.Add(gap.Kind switch
             {
-                "money" when gap.ItemId == "energy" => L("Энергия партии: ", "Recipe batch energy: ") + PlayerText.Money(gap.Have) + " / " + PlayerText.Money(gap.Need) + (missing > 0 ? L(", не хватает ", ", short ") + PlayerText.Money(missing) : ""),
-                "money" => L("Деньги: ", "Money: ") + PlayerText.Money(gap.Have) + " / " + PlayerText.Money(gap.Need) + (missing > 0 ? L(", не хватает ", ", short ") + PlayerText.Money(missing) : ""),
+                "money" when gap.ItemId == "energy" => L("Энергия партии: ", "Recipe batch energy: ") + PlayerText.Money(gap.Have, language) + " / " + PlayerText.Money(gap.Need, language) + (missing > 0 ? L(", не хватает ", ", short ") + PlayerText.Money(missing, language) : ""),
+                "money" => L("Деньги: ", "Money: ") + PlayerText.Money(gap.Have, language) + " / " + PlayerText.Money(gap.Need, language) + (missing > 0 ? L(", не хватает ", ", short ") + PlayerText.Money(missing, language) : ""),
                 "material" => PlayerText.Item(language, gap.ItemId) + ": " + gap.Have + " / " + gap.Need + (missing > 0 ? L(", не хватает ", ", short ") + missing : ""),
                 "staff" => L("Работники: ", "Workers: ") + gap.Have + " / " + gap.Need,
                 "space" => L(gap.NoteRu, gap.NoteEn),
@@ -262,9 +262,9 @@ public static class FriendlyGuidance
         bool parcel = IndustrialParcelRules.Applies(view.Economy);
         long price = parcel ? IndustrialParcelRules.PriceMinor : plot.PriceMinor;
         string detail = parcel
-            ? L("Первая продажа уже подтверждена. Следующий шаг — весь участок 2×3 под ", "The first sale is confirmed. The next step is the whole 2×3 parcel for ") + name + L(". Шесть клеток, подъезд и место для полного развития стоят ", ". Six cells, the entrance and room to develop fully cost ") + PlayerText.Money(price) + L(".", ".")
-            : L("Первая продажа уже подтверждена. Следующий шаг — свой участок под ", "The first sale is confirmed. The next step is your own plot for ") + name + L(". Цена участка ", ". Plot price ") + PlayerText.Money(plot.PriceMinor) + L(". Это цена земли, не цена здания.", ". This is the land price, not the building price.");
-        return Step("plot", parcel ? L("Купите участок — 600 монет", "Buy the parcel — 600 coins") : L("Купите участок", "Buy a plot"), detail, plot.Position.X, plot.Position.Z, "property", view.AvailableCashMinor, price, "", false, "ground", plot.Id.Value, []);
+            ? L("Первая продажа уже подтверждена. Следующий шаг — весь участок 2×3 под ", "The first sale is confirmed. The next step is the whole 2×3 parcel for ") + name + L(". Шесть клеток, подъезд и место для полного развития стоят ", ". Six cells, the entrance and room to develop fully cost ") + PlayerText.Money(price, language) + L(".", ".")
+            : L("Первая продажа уже подтверждена. Следующий шаг — свой участок под ", "The first sale is confirmed. The next step is your own plot for ") + name + L(". Цена участка ", ". Plot price ") + PlayerText.Money(plot.PriceMinor, language) + L(". Это цена земли, не цена здания.", ". This is the land price, not the building price.");
+        return Step("plot", parcel ? L("Купите участок за 600,00", "Buy the parcel for 600.00") : L("Купите участок", "Buy a plot"), detail, plot.Position.X, plot.Position.Z, "property", view.AvailableCashMinor, price, "", false, "ground", plot.Id.Value, []);
     }
 
     private static StarterStep Find(PlayerView view, ScenarioDefinition scenario, string language, InventoryView pack)
@@ -302,7 +302,7 @@ public static class FriendlyGuidance
     private static StarterStep Sell(string language, string item, long remainder, CapitalOfferView offer, string id, bool waiting = false)
     {
         string L(string ru, string en) => PlayerText.Local(language, ru, en);
-        string price = PlayerText.Money(offer.UnitPriceMinor);
+        string price = PlayerText.Money(offer.UnitPriceMinor, language);
         string detail = waiting
             ? L($"Продажа ещё не подтверждена. В резерве {remainder}. Заказ принимает до {offer.RemainingQuantity} по {price}.", $"The sale is not confirmed yet. Reserved {remainder}. The order accepts up to {offer.RemainingQuantity} at {price}.")
             : L($"Остаток {remainder}. Заказ принимает до {offer.RemainingQuantity} по {price}. В счёт цели идёт только подтверждённая продажа.", $"Remainder {remainder}. The order accepts up to {offer.RemainingQuantity} at {price}. Only a confirmed sale counts.");

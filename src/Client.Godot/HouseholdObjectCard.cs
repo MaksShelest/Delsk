@@ -145,7 +145,7 @@ public partial class HouseholdObjectCard : VBoxContainer
             {
                 var recipe = _scenario.Recipes.Single(r => r.Id == enterprise.RecipeId);
                 _heading.Text += "\n" + string.Join(" + ",recipe.Ingredients.Select(i=>PlayerText.Item(_language,i.ItemId)+" ×"+i.Quantity))+" → "+PlayerText.Item(_language,recipe.OutputItem)+" ×"+recipe.OutputQuantity +
-                    (_scenario.Economy?.Workshops is null?L(" · энергия/партия ", " · energy/batch "):L(" · услуга/полный тик "," · service/full tick ")) + PlayerText.Money(_scenario.Economy?.Workshops?.ServiceMinorPerFullTick??recipe.EnergyPerBatchMinor) + "\n" + TabletText.Reason(_language, enterprise.ReasonCode);
+                    (_scenario.Economy?.Workshops is null?L(" · энергия/партия ", " · energy/batch "):L(" · услуга/полный тик "," · service/full tick ")) + PlayerText.Money(_scenario.Economy?.Workshops?.ServiceMinorPerFullTick??recipe.EnergyPerBatchMinor, _language) + "\n" + TabletText.Reason(_language, enterprise.ReasonCode);
                 var progress = TabletProgress.Production(enterprise); _progress.MaxValue = progress.Total; _progress.Value = progress.Done;
                 if(enterprise.Workshops.IsDefault)Add("work", enterprise.Enabled ? L("Остановить производство", "Stop production") : L("Включить производство", "Start production"), PlayerDesk.Work(_id, !enterprise.Enabled));
                 if (building is not null && enterprise.Workshops.IsDefault)
@@ -154,7 +154,7 @@ public partial class HouseholdObjectCard : VBoxContainer
                         Add("recipe:" + recipeId, L("Рецепт: ", "Recipe: ") + Recipe(recipeId), new(ActionKind.SetRecipe, Enterprise: new(building.Id.Value), RecipeId: recipeId), !enterprise.Enabled && enterprise.BatchId == 0);
             }
             if (_scenario.Economy?.Workshops is null && building is not null && _scenario.BuildingTypes!.Single(t => t.Id == building.TypeId).Levels.FirstOrDefault(l => l.Level == building.Level + 1) is { } upgrade)
-                Add("upgrade", L("Улучшить здание — ", "Upgrade building — ") + PlayerText.Money(upgrade.PriceMinor) + " + " + string.Join(", ", upgrade.Materials.Select(m => PlayerText.Item(_language, m.ItemId) + " ×" + m.Quantity)),
+                Add("upgrade", L("Улучшить здание — ", "Upgrade building — ") + PlayerText.Money(upgrade.PriceMinor, _language) + " + " + string.Join(", ", upgrade.Materials.Select(m => PlayerText.Item(_language, m.ItemId) + " ×" + m.Quantity)),
                     new(ActionKind.UpgradeBuilding, Building: building.Id,Quantity:building.Level+1), enterprise is null || !enterprise.Enabled && enterprise.BatchId == 0);
         }
         _quickTransfers.Visible=_woodworking is null&&enterprise is not null&&building?.Kind==BuildingKind.Production;
@@ -184,13 +184,13 @@ public partial class HouseholdObjectCard : VBoxContainer
             }
         var groups = view.Employment.Where(g => machine is null ? g.Role == EmploymentRole.Production && (g.Id.Value == _id || enterprise is not null && !enterprise.Workshops.IsDefault && enterprise.Workshops.Any(w=>w.GroupId==g.Id)) ||
             view.Logistics.Any(l => l.EnterpriseId.Value == _id && l.GroupId == g.Id) : g.Id == machine.GroupId).ToArray();
-        _workers.Text = string.Join("\n", groups.Select(g => Role(g.Role) + L(": на вас работают ", ": working for you ") + $"{g.Headcount}/{g.Capacity}" + L(" · ставка ", " · wage ") + PlayerText.Money(g.WageMinor) +
-            (g.PendingWageMinor is long pay ? L(" · новая ", " · pending ") + PlayerText.Money(pay) + L(" с тика ", " from tick ") + g.PayEffectiveTick : "")));
+        _workers.Text = string.Join("\n", groups.Select(g => Role(g.Role) + L(": на вас работают ", ": working for you ") + $"{g.Headcount}/{g.Capacity}" + L(" · ставка ", " · wage ") + PlayerText.Money(g.WageMinor, _language) +
+            (g.PendingWageMinor is long pay ? L(" · новая ", " · pending ") + PlayerText.Money(pay, _language) + L(" с тика ", " from tick ") + g.PayEffectiveTick : "")));
         foreach (var group in groups)
         {
             long wage = group.PendingWageMinor ?? group.WageMinor, step = view.Economy!.PlayerWageStepMinor;
-            Add("wage+:" + group.Id.Value, Role(group.Role) + L(": зарплата +", ": wage +") + PlayerText.Money(step), PlayerDesk.Wage(group.Id.Value, wage > long.MaxValue-step ? wage : wage + step), wage <= long.MaxValue-step);
-            Add("wage-:" + group.Id.Value, Role(group.Role) + L(": зарплата −", ": wage −") + PlayerText.Money(step), PlayerDesk.Wage(group.Id.Value, Math.Max(0, wage - step)), wage > 0);
+            Add("wage+:" + group.Id.Value, Role(group.Role) + L(": зарплата +", ": wage +") + PlayerText.Money(step, _language), PlayerDesk.Wage(group.Id.Value, wage > long.MaxValue-step ? wage : wage + step), wage <= long.MaxValue-step);
+            Add("wage-:" + group.Id.Value, Role(group.Role) + L(": зарплата −", ": wage −") + PlayerText.Money(step, _language), PlayerDesk.Wage(group.Id.Value, Math.Max(0, wage - step)), wage > 0);
         }
         _delivery.Text = "";
         if (enterprise is not null) LogisticsActions(view, enterprise, Add);
@@ -233,7 +233,7 @@ public partial class HouseholdObjectCard : VBoxContainer
             {
                 var entry=group.OrderBy(x=>x.Level).First();var r=_scenario.Recipes.Single(r=>r.Id==entry.Id);
                 var box=new VBoxContainer();box.AddChild(TabletDesign.Heading(L("Уровень ","Level ")+entry.Level,21));
-                box.AddChild(new Label{Text=Recipe(r.Id)+"\n"+L("Полный штат: ","Full crew: ")+r.RequiredStaff+L(" · рабочих тиков: "," · work ticks: ")+r.FullStaffTicks+L(" · энергия: "," · energy: ")+PlayerText.Money(r.EnergyPerBatchMinor),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+                box.AddChild(new Label{Text=Recipe(r.Id)+"\n"+L("Полный штат: ","Full crew: ")+r.RequiredStaff+L(" · рабочих тиков: "," · work ticks: ")+r.FullStaffTicks+L(" · энергия: "," · energy: ")+PlayerText.Money(r.EnergyPerBatchMinor, _language),AutowrapMode=TextServer.AutowrapMode.WordSmart});
                 var choose=new Button{FocusMode=FocusModeEnum.None};string key="recipe:"+r.Id;choose.Pressed+=()=>{if(_buttons.TryGetValue(key,out var original) && !original.Button.Disabled)original.Button.EmitSignal(BaseButton.SignalName.Pressed);};box.AddChild(choose);
                 _recipeButtons.Add((choose,r.Id,entry.Level));_recipeCards.AddChild(TabletDesign.Wrap(box));
             }
@@ -269,7 +269,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         if (system is null)
         {
             if(view.Fleet is not null){_delivery.Text=L("Купите машину в автосалоне, привезите сюда и назначьте её в разделе «Автопарк» планшета игрока.","Buy a vehicle at the dealer, drive it here and assign it in the player tablet Fleet section.");return;}
-            add("truck", L("Купить грузовик — ", "Buy truck — ") + PlayerText.Money((_scenario.Logistics ?? new()).PurchasePriceMinor), PlayerDesk.BuyLogistics(_id), true); return;
+            add("truck", L("Купить грузовик — ", "Buy truck — ") + PlayerText.Money((_scenario.Logistics ?? new()).PurchasePriceMinor, _language), PlayerDesk.BuyLogistics(_id), true); return;
         }
         _delivery.Text = L("Доставка · уровень ", "Logistics · level ") + system.Level + L(" · вместимость ", " · capacity ") + view.Inventories.Single(i=>i.Id==system.CargoInventory).Capacity + "\n" + (system.Trip is { } trip
             ? TabletText.Reason(_language, system.ReasonCode) + " · " + PlayerText.Item(_language, trip.ItemId) + $" ×{trip.Quantity}" +
@@ -279,7 +279,7 @@ public partial class HouseholdObjectCard : VBoxContainer
         add("output", system.Enabled ? L("Остановить отправку", "Stop outbound") : L("Включить отправку", "Enable outbound"), PlayerDesk.Supplies(system.Id.Value, LogisticsDirection.Output, !system.Enabled), true);
         add("inbound", system.InboundEnabled ? L("Остановить подвоз", "Stop inbound") : L("Включить подвоз", "Enable inbound"), PlayerDesk.Supplies(system.Id.Value, LogisticsDirection.Inbound, !system.InboundEnabled), true);
         if (system.VehicleId==0 && system.Level == 1 && _scenario.Logistics?.Upgrade is { } upgrade)
-            add("truck-upgrade", L("Улучшить грузовик — ", "Upgrade truck — ") + PlayerText.Money(upgrade.PriceMinor), new(ActionKind.UpgradeLogistics, Logistics: system.Id), system.Trip is null && !system.Enabled && !system.InboundEnabled);
+            add("truck-upgrade", L("Улучшить грузовик — ", "Upgrade truck — ") + PlayerText.Money(upgrade.PriceMinor, _language), new(ActionKind.UpgradeLogistics, Logistics: system.Id), system.Trip is null && !system.Enabled && !system.InboundEnabled);
         foreach (var b in view.Buildings.Where(b => b.Id.Value != _id))
         {
             bool production = b.Kind == BuildingKind.Production;

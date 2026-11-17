@@ -278,7 +278,7 @@ public class ResourceRightsI6C75Tests
         var buy = Assert.Single(ru, choice => choice.Command?.Kind == ActionKind.BuyResource);
         Assert.True(buy.Enabled);
         Assert.Contains("Купить ресурсную клетку", buy.Label);
-        Assert.Contains(PlayerText.Money(15_000), buy.Label);
+        Assert.Contains(PlayerText.Money(15_000, "ru"), buy.Label);
         Assert.Equal("Добыть", Assert.Single(ru, choice => choice.Command?.Kind == ActionKind.StartHarvesting).Label);
         Assert.DoesNotContain(ru, choice => choice.Command?.Kind == ActionKind.LeaseResource);
         Assert.Contains("ничейный", PlayContext.ResourceLine(view, view.Resources.Single(), "ru"));

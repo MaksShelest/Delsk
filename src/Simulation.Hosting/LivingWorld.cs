@@ -110,6 +110,6 @@ public static class RoadCardText
             : PlayerText.Local(language,"исполнителю 90%, городу 10%","builder 90%, city 10%");
         return stage+" · "+owner+" · t"+contribution.Tick.ToString(System.Globalization.CultureInfo.InvariantCulture)
             +PlayerText.Local(language," · денежный вклад "," · cash contribution ")
-            +PlayerText.Money(contribution.PriceMinor)+" · "+share;
+            +PlayerText.Money(contribution.PriceMinor, language)+" · "+share;
     }
 }

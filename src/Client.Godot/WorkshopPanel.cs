@@ -63,7 +63,7 @@ public partial class WorkshopPanel : VBoxContainer
             }
             var recipe=_scenario.Recipes.Single(r=>r.Id==w.RecipeId);var group=view.Employment.Single(g=>g.Id==w.GroupId);
             row.Title.Text=L("Цех ","Workshop ")+(Array.FindIndex(e.Workshops.ToArray(),x=>x.Id==w.Id)+1)+" · "+PlayerText.Item(_language,recipe.OutputItem);row.Current.ShowRecipe(recipe,_language);
-            row.Status.Name="WorkshopStatus_"+w.Id;row.Status.Text=GameUi.Reason(_language,w.ReasonCode)+" · "+L("Команда ","Crew ")+w.Staff+" / "+group.Capacity+" · "+w.ProductivityPercent+"%\n"+L("Ставка ","Wage ")+PlayerText.Money(group.WageMinor)+(group.PendingWageMinor is {} pay?L(" → объявлено "," → pending ")+PlayerText.Money(pay):"");
+            row.Status.Name="WorkshopStatus_"+w.Id;row.Status.Text=GameUi.Reason(_language,w.ReasonCode)+" · "+L("Команда ","Crew ")+w.Staff+" / "+group.Capacity+" · "+w.ProductivityPercent+"%\n"+L("Ставка ","Wage ")+PlayerText.Money(group.WageMinor, _language)+(group.PendingWageMinor is {} pay?L(" → объявлено "," → pending ")+PlayerText.Money(pay, _language):"");
             row.Progress.MaxValue=Math.Max(1,w.WorkRequired);row.Progress.Value=w.WorkDone;
             Action(row.Actions,"work:"+w.Id,w.Enabled?L("Остановить цех","Stop workshop"):L("Запустить цех","Start workshop"),new(ActionKind.SetProductionEnabled,Enterprise:e.Id,WorkshopId:w.Id,Enabled:!w.Enabled),true);
             int technology=view.Development?.Experience.Single(x=>x.Industry==building.TypeId).TechnologyLevel??building.Level;
@@ -77,7 +77,7 @@ public partial class WorkshopPanel : VBoxContainer
             }
             string chosen=row.Recipes.Selected>=0?row.Recipes.GetItemMetadata(row.Recipes.Selected).AsString():w.RecipeId;
             row.Preview.ShowRecipe(_scenario.Recipes.Single(r=>r.Id==chosen),_language);
-            row.Details.Text=(w.BatchId>0?L("Партия сохранена. Для смены рецепта завершите её, затем остановите цех между партиями.","A batch is retained. Finish it, then stop between batches to change the recipe."):w.Enabled?L("Остановите цех, чтобы выбрать другой рецепт.","Stop this workshop to choose another recipe."):L("Выберите рецепт и запустите цех. Новые варианты открываются развитием и оснащением.","Choose a recipe, then start. Development and equipment unlock further recipes."))+"\n"+L("Оснащение ","Equipment ")+version+L(" · готовых партий "," · completed batches ")+w.CompletedBatches+L(" · услуга за полный рабочий тик "," · service per full work tick ")+PlayerText.Money(_scenario.Economy!.Workshops!.ServiceMinorPerFullTick);
+            row.Details.Text=(w.BatchId>0?L("Партия сохранена. Для смены рецепта завершите её, затем остановите цех между партиями.","A batch is retained. Finish it, then stop between batches to change the recipe."):w.Enabled?L("Остановите цех, чтобы выбрать другой рецепт.","Stop this workshop to choose another recipe."):L("Выберите рецепт и запустите цех. Новые варианты открываются развитием и оснащением.","Choose a recipe, then start. Development and equipment unlock further recipes."))+"\n"+L("Оснащение ","Equipment ")+version+L(" · готовых партий "," · completed batches ")+w.CompletedBatches+L(" · услуга за полный рабочий тик "," · service per full work tick ")+PlayerText.Money(_scenario.Economy!.Workshops!.ServiceMinorPerFullTick, _language);
             Action(row.Advanced,"recipe:"+w.Id,L("Выбрать рецепт","Use recipe"),new(ActionKind.SetRecipe,Enterprise:e.Id,WorkshopId:w.Id,RecipeId:chosen),!w.Enabled&&w.BatchId==0&&chosen!=w.RecipeId,row.Details.Text);
             if(view.ProductionContent is {} pc)
             {
@@ -87,18 +87,18 @@ public partial class WorkshopPanel : VBoxContainer
                 {
                     var input=view.Inventories.Single(i=>i.Id==e.InputId);
                     bool ready=!w.Enabled&&w.BatchId==0&&project is null&&technology>=(upgrade.Version==2?4:5)&&view.AvailableCashMinor>=upgrade.PriceMinor&&upgrade.Materials.All(m=>input.Stock.Where(s=>s.ItemId==m.ItemId).Sum(s=>s.Quantity-s.Reserved)>=m.Quantity);
-                    string terms=L("Оснащение ","Equipment ")+upgrade.Version+" · "+PlayerText.Money(upgrade.PriceMinor)+" + "+string.Join(", ",upgrade.Materials.Select(m=>PlayerText.Item(_language,m.ItemId)+" ×"+m.Quantity))+" · "+GameDuration.Format(upgrade.Ticks,_language);
+                    string terms=L("Оснащение ","Equipment ")+upgrade.Version+" · "+PlayerText.Money(upgrade.PriceMinor, _language)+" + "+string.Join(", ",upgrade.Materials.Select(m=>PlayerText.Item(_language,m.ItemId)+" ×"+m.Quantity))+" · "+GameDuration.Format(upgrade.Ticks,_language);
                     Action(row.Advanced,"modernize:"+w.Id,terms,new(ActionKind.ModernizeWorkshop,Enterprise:e.Id,WorkshopId:w.Id,Quantity:upgrade.Version),ready,L("Нужны технология, материалы и свободные деньги. Цех должен быть остановлен без партии.","Requires the technology, materials and available funds. Stop the workshop with no unfinished batch."));
                 }
             }
             long wage=group.PendingWageMinor??group.WageMinor,step=view.Economy!.PlayerWageStepMinor;
-            Action(row.Team,"wage-plus:"+w.Id,L("Ставка +","Wage +")+PlayerText.Money(step),PlayerDesk.Wage(w.GroupId.Value,wage>long.MaxValue-step?wage:wage+step),wage<=long.MaxValue-step);
-            Action(row.Team,"wage-minus:"+w.Id,L("Ставка −","Wage −")+PlayerText.Money(step),PlayerDesk.Wage(w.GroupId.Value,Math.Max(0,wage-step)),wage>0,L("Ставка уже равна нулю.","The wage is already zero."));
+            Action(row.Team,"wage-plus:"+w.Id,L("Ставка +","Wage +")+PlayerText.Money(step, _language),PlayerDesk.Wage(w.GroupId.Value,wage>long.MaxValue-step?wage:wage+step),wage<=long.MaxValue-step);
+            Action(row.Team,"wage-minus:"+w.Id,L("Ставка −","Wage −")+PlayerText.Money(step, _language),PlayerDesk.Wage(w.GroupId.Value,Math.Max(0,wage-step)),wage>0,L("Ставка уже равна нулю.","The wage is already zero."));
             foreach(var donor in e.Workshops.Where(d=>d.Id!=w.Id))
                 Action(row.Team,$"staff:{donor.Id}:{w.Id}",L("Перевести 1 из цеха ","Transfer 1 from workshop ")+(Array.FindIndex(e.Workshops.ToArray(),x=>x.Id==donor.Id)+1),new(ActionKind.AssignWorkshopWorkers,Enterprise:e.Id,WorkshopId:w.Id,Group:donor.GroupId,Quantity:1),donor.Staff>0&&w.Staff<group.Capacity,L("В исходном цехе нужен работник, а в этом — свободное место.","The source needs a worker and this workshop needs a free place."));
         }
         if(type.WorkshopOutfit is {} outfit)
-            Action(_installation,"outfit",L("Оснастить свободное место · ","Equip a free place · ")+PlayerText.Money(outfit.PriceMinor)+" + "+string.Join(", ",outfit.Materials.Select(m=>PlayerText.Item(_language,m.ItemId)+" ×"+m.Quantity))+" · "+GameDuration.Format(outfit.Ticks,_language),new(ActionKind.OutfitWorkshop,Enterprise:e.Id),e.Workshops.Length+e.Installations.Length<slots&&!view.Participant.Busy,L("Нужно готовое свободное место, материалы на входе и оплата.","Requires a ready free place, materials in input and payment."));
+            Action(_installation,"outfit",L("Оснастить свободное место · ","Equip a free place · ")+PlayerText.Money(outfit.PriceMinor, _language)+" + "+string.Join(", ",outfit.Materials.Select(m=>PlayerText.Item(_language,m.ItemId)+" ×"+m.Quantity))+" · "+GameDuration.Format(outfit.Ticks,_language),new(ActionKind.OutfitWorkshop,Enterprise:e.Id),e.Workshops.Length+e.Installations.Length<slots&&!view.Participant.Busy,L("Нужно готовое свободное место, материалы на входе и оплата.","Requires a ready free place, materials in input and payment."));
         foreach(var install in e.Installations)_summary.Text+="\n"+L("Монтаж цеха: осталось ","Workshop installation: remaining ")+GameDuration.Format(install.EndTick-view.Tick,_language);
         foreach(var item in _buttons)if(!_seen.Contains(item.Key))item.Value.Button.Visible=false;
         if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Size.X);

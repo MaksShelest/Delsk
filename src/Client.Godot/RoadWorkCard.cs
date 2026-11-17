@@ -97,8 +97,8 @@ public partial class RoadWorkCard : PanelContainer
         _progress.Visible=work?.Batch is not null;_loadBlock.Visible=!active;_go.Visible=_board.Visible=!active;
         _cell.Disabled=_mode.Disabled=active||_pending;
         _details.Text=q is null?L("Не выбран участок.","Select a cell."):$"{Surface(q.CurrentLevel)} → {(q.Next is null?"—":Surface(q.Next.Level))}\n"+
-            (q.Next is null?"":PlayerText.Money(q.Next.PriceMinor)+L(" монет · "," coins · ")+(q.ExpectedTicks is {} ticks?GameDuration.Format(ticks,_language):"—"));
-        var order=_view.Roads?.Orders.FirstOrDefault(o=>o.Cell==selected&&o.Level==q?.Next?.Level&&o.PaidTick==0);if(order is not null)_details.Text+="\n"+L("Городской заказ · награда ","City order · reward ")+PlayerText.Money(order.Reward)+L(" монет"," coins")+(order.Assignee==0?L(" · примите в разделе дорог"," · accept in Roads"):order.Assignee==_view.Participant.Id.Value?L(" · принят вами"," · accepted by you"):L(" · принят другим участником"," · assigned to another participant"));
+            (q.Next is null?"":PlayerText.Money(q.Next.PriceMinor, _language)+" · "+(q.ExpectedTicks is {} ticks?GameDuration.Format(ticks,_language):"—"));
+        var order=_view.Roads?.Orders.FirstOrDefault(o=>o.Cell==selected&&o.Level==q?.Next?.Level&&o.PaidTick==0);if(order is not null)_details.Text+="\n"+L("Городской заказ · награда ","City order · reward ")+PlayerText.Money(order.Reward, _language)+(order.Assignee==0?L(" · примите в разделе дорог"," · accept in Roads"):order.Assignee==_view.Participant.Id.Value?L(" · принят вами"," · accepted by you"):L(" · принят другим участником"," · assigned to another participant"));
         _stock.Text=L("Тракт-Д1 #","Trakt-D1 #")+_vehicle+L(" · запас "," · cargo ")+$"{cargo.OccupiedVolume}+{cargo.ReservedCapacity}/{cargo.Capacity}\n"+
             L("Нужно / в кузове: ","Required / in cargo: ")+string.Join(" · ",(q?.Materials??[]).Select(m=>PlayerText.Item(_language,m.ItemId)+$" {m.Required}/{m.Available}"+ (m.Available<m.Required?L(" · загрузить "," · load ")+(m.Required-m.Available):"")));
         if(work?.Batch is not null)_stock.Text=L("Тракт-Д1 #","Trakt-D1 #")+_vehicle+L(" · запас "," · cargo ")+$"{cargo.OccupiedVolume}+{cargo.ReservedCapacity}/{cargo.Capacity}\n"+
@@ -114,7 +114,7 @@ public partial class RoadWorkCard : PanelContainer
         _status.Text+=Mode==EquipmentMode.Personal?L(" · управляете вы"," · operated by you"):L(" · работников "," · workers ")+(work?.Group.Headcount??0)+"/2";
         if(Mode==EquipmentMode.Automatic&&!active)_status.Text+="\n"+L("Выйдите и отойдите; затем «Нанять и запустить».","Leave and step aside, then hire and start.");
         _wage.Visible=Mode==EquipmentMode.Automatic;_wage.Disabled=_pending||work is null;
-        if(Mode==EquipmentMode.Automatic&&work is not null)_status.Text+=" · "+PlayerText.Money(work.Group.WageMinor)+L("/работник/рабочий тик","/worker/working tick");
+        if(Mode==EquipmentMode.Automatic&&work is not null)_status.Text+=" · "+PlayerText.Money(work.Group.WageMinor, _language)+L("/работник/рабочий тик","/worker/working tick");
         _start.Text=work is {Enabled:false}&&(work.Batch is not null||work.Reason=="PaverPositioningPaused")?L("Продолжить","Resume"):
             q?.Reason=="NoStaff"?L("Нанять и запустить","Hire and start"):L("Начать строительство","Start construction");
         _start.Disabled=_pending||(active?work!.Enabled:q?.CanStart!=true);

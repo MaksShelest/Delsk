@@ -103,9 +103,9 @@ public sealed partial class ProvincialProgramPanel : PanelContainer
             : next)
             : (ru ? "Отрасль: " : "Industry: ") + industry + "\n" +
             (ru ? "Первое предприятие: " : "First enterprise: ") + industry + "\n" +
-            (ru ? "Участок: " : "Parcel: ") + PlayerText.Money(program.ParcelReserved) + "\n" +
-            (ru ? "Финансирование столицы: " : "Capital funding: ") + PlayerText.Money(state) + "\n" +
-            (ru ? "Свои расходы по пакету: 0.00 · на руках " : "Your cost for the package: 0.00 · cash on hand ") + PlayerText.Money(view.AvailableCashMinor) + "\n" +
+            (ru ? "Участок: " : "Parcel: ") + PlayerText.Money(program.ParcelReserved, language) + "\n" +
+            (ru ? "Финансирование столицы: " : "Capital funding: ") + PlayerText.Money(state, language) + "\n" +
+            (ru ? "Свои расходы по пакету: 0,00 · на руках " : "Your cost for the package: 0.00 · cash on hand ") + PlayerText.Money(view.AvailableCashMinor, language) + "\n" +
             (ru ? "Статус: " : "Status: ") + status + "\n" + next;
         _join.Visible = program.Status == "Offered";
         _join.Disabled = waiting;

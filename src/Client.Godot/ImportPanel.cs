@@ -39,7 +39,7 @@ public partial class ImportPanel : VBoxContainer
                 take.Pressed+=()=>{if(!take.Disabled)Collect((long)quantity.Value);};all.Pressed+=()=>{if(!all.Disabled)Collect(Maximum(item));};quantity.ValueChanged+=_=>{if(_view is not null)ShowView(_view,_pending);};
             }
             long owned=content.Pickup is {} pickup?view.Inventories.Single(i=>i.Id==pickup).Stock.Where(s=>s.ItemId==item).Sum(s=>s.Quantity-s.Reserved):0,q=(long)row.Quantity.Value,max=Maximum(item);
-            row.Label.Text=PlayerText.Item(_language,item)+" · "+PlayerText.Money(spec.UnitPriceMinor)+L(" за 1"," per unit")+"\n"+L("В продаже ","In stock ")+stock.Remaining+L(" · оплачено к выдаче "," · paid for pickup ")+owned;
+            row.Label.Text=PlayerText.Item(_language,item)+" · "+PlayerText.Money(spec.UnitPriceMinor, _language)+L(" за 1"," per unit")+"\n"+L("В продаже ","In stock ")+stock.Remaining+L(" · оплачено к выдаче "," · paid for pickup ")+owned;
             row.Label.TooltipText=L("Проверка поставок через ","Supply review in ")+GameDuration.Format(stock.NextRefreshTick-view.Tick,_language);
             row.Buy.Disabled=pending||!at||view.Participant.Busy||q>stock.Remaining||(Int128)q*spec.UnitPriceMinor>view.AvailableCashMinor;
             row.Take.Disabled=pending||!at||view.Participant.Busy||q>max;row.All.Disabled=pending||!at||view.Participant.Busy||max==0;row.All.Text=L("Забрать всё (","Collect all (")+max+")";

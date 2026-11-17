@@ -79,7 +79,7 @@ public static class ContextActions
             bool enabled=!v.Participant.Busy&&fleet.OwnRequests.Length==0&&v.AvailableCashMinor>=model.PriceMinor;
             string name=model.EquipmentTypeId is {} type?L("Добыча: ","Extract: ")+PlayerText.Item(language,scenario.EquipmentTypes!.Single(t=>t.Id==type).ItemId)+
                 (model.EquipmentLevel==1?L(" · малая"," · small"):L(" · большая"," · large")):model.Name;
-            choices.Add(new("dealer:buy:"+listing.Id,name+" · "+L("Купить за ","Buy for ")+PlayerText.Money(model.PriceMinor)+L(" монет"," coins"),action,enabled,
+            choices.Add(new("dealer:buy:"+listing.Id,name+" · "+L("Купить за ","Buy for ")+PlayerText.Money(model.PriceMinor, language),action,enabled,
                 enabled?"":PlayerText.Reason(language,v.Participant.Busy?"ParticipantBusy":fleet.OwnRequests.Length>0?"NotAvailable":"NoMoney")));
         }
         }

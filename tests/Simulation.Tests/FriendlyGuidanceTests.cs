@@ -68,7 +68,7 @@ public class FriendlyGuidanceTests
         Assert.Contains(PlayerText.Accusative("ru", site.ItemId), title);
         Assert.DoesNotContain("Добудьте " + PlayerText.Item("ru", site.ItemId), title);
         long price = view.Plots.Where(p => p.OwnerId is null && !p.IsCorridor && !p.IsShopSite && p.ExpansionFor is null).Min(p => p.PriceMinor);
-        Assert.DoesNotContain(PlayerText.Money(price), PlayerText.Local("ru", step.DetailRu, step.DetailEn));
+        Assert.DoesNotContain(PlayerText.Money(price, "ru"), PlayerText.Local("ru", step.DetailRu, step.DetailEn));
         Assert.Equal($"resource:{step.X}:{step.Z}:{site.ItemId}", FriendlyGuidance.PredictedKey(step));
         var en = FriendlyGuidance.Read(view, scenario, "en");
         Assert.Equal(step.Id, en.Id);
@@ -96,8 +96,8 @@ public class FriendlyGuidanceTests
         var level = type.Levels.Single(l => l.Level == 1);
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
         string text = FriendlyGuidance.ConstructionText(view, scenario, type, level, pack, "ru");
-        Assert.Contains(PlayerText.Money(level.PriceMinor), text);
-        Assert.Contains(PlayerText.Money(view.AvailableCashMinor), text);
+        Assert.Contains(PlayerText.Money(level.PriceMinor, "ru"), text);
+        Assert.Contains(PlayerText.Money(view.AvailableCashMinor, "ru"), text);
         Assert.Contains("Цена каталога", text);
         foreach (var material in level.Materials)
         {
@@ -136,7 +136,7 @@ public class FriendlyGuidanceTests
         var after = FriendlyGuidance.Read(view, scenario, "ru", sold: true);
         Assert.Equal("plot", after.Id);
         Assert.StartsWith("plot:", FriendlyGuidance.PredictedKey(after));
-        Assert.DoesNotContain(PlayerText.Money(view.AvailableCashMinor), after.TitleRu);
+        Assert.DoesNotContain(PlayerText.Money(view.AvailableCashMinor, "ru"), after.TitleRu);
         var plot = view.Plots.First(p => p.OwnerId is null && !p.IsCorridor && !p.IsShopSite && p.ExpansionFor is null);
         var owned = view with { Plots = view.Plots.Select(p => p.Id == plot.Id ? p with { OwnerId = view.Participant.Id } : p).ToArray() };
         var building = FriendlyGuidance.Read(owned, scenario, "ru", sold: true);

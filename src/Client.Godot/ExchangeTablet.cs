@@ -36,5 +36,5 @@ public partial class ExchangeTablet : VBoxContainer
         Capital.Visible=SelectedPage is 0 or 4;Market.Visible=SelectedPage is >0 and <5;_imports.Visible=SelectedPage==5;
         Capital.ShowPage(SelectedPage==4);Market.ShowPage(SelectedPage switch{1=>0,2=>1,3=>2,_=>3});
     }
-    public void ShowHeader(PlayerView view,bool pending=false){_imports.ShowView(view,pending);_cash.Text=PlayerText.Local(_language,"Доступно: ","Available: ")+PlayerText.Money(view.AvailableCashMinor)+(_friendly?"":PlayerText.Local(_language," · баланс "," · balance ")+PlayerText.Money(view.CashMinor));if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Size.X);}
+    public void ShowHeader(PlayerView view,bool pending=false){_imports.ShowView(view,pending);_cash.Text=PlayerText.Local(_language,"Доступно: ","Available: ")+PlayerText.Money(view.AvailableCashMinor, _language)+(_friendly?"":PlayerText.Local(_language," · баланс "," · balance ")+PlayerText.Money(view.CashMinor, _language));if(IsInsideTree()&&Size.X>0)GameUi.FitControls(this,Size.X);}
 }
