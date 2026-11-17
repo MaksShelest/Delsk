@@ -49,7 +49,7 @@ public partial class PersonalAccountPanel : VBoxContainer
     {
         if(_data is null)return;var data=_query?.Invoke(_offset,_billOffset)??_data;_data=data;
         _available.Value.Text=PlayerText.Money(data.Account.AvailableMinor, _language);_debt.Value.Text=PlayerText.Money(data.DebtMinor, _language);_receivable.Value.Text=PlayerText.Money(data.ReceivableMinor, _language);
-        _summary.Text=L("Баланс / свободно / резерв: ","Balance / available / reserved: ")+string.Join(" / ",new[]{data.Account.BalanceMinor,data.Account.AvailableMinor,data.Account.ReservedMinor}.Select(PlayerText.Money))+"\n"+
+        _summary.Text=L("Баланс / свободно / резерв: ","Balance / available / reserved: ")+string.Join(" / ",new[]{data.Account.BalanceMinor,data.Account.AvailableMinor,data.Account.ReservedMinor}.Select(value => PlayerText.Money(value, _language)))+"\n"+
             L("Деньги в расчётах по договорам: ","Funds in contract escrow: ")+PlayerText.Money(data.EscrowMinor, _language)+"\n"+
             L("Доходы / расходы: ","Income / expenses: ")+PlayerText.Money(data.IncomeMinor, _language)+" / "+PlayerText.Money(data.ExpensesMinor, _language)+"\n"+
             L("Долг / ещё не выставлено / к получению: ","Debt / unbilled / receivable: ")+PlayerText.Money(data.DebtMinor, _language)+" / "+PlayerText.Money(data.AccruedMinor, _language)+" / "+PlayerText.Money(data.ReceivableMinor, _language);
