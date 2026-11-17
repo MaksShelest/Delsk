@@ -16,6 +16,8 @@ public partial class ParticipantMarketTablet : VBoxContainer
     private readonly VBoxContainer _ownOffers=new();
     private readonly HFlowContainer _filters,_inputs,_bidActions;
     private readonly Label _pickupTitle,_emptyOwn,_priceLabel;
+    private readonly Label _intro;
+    private readonly bool _friendly;
     private readonly System.Func<GameAction,ActionAccess>? _access;
     private int _page;
     public void ShowPage(int page){_page=Math.Clamp(page,0,3);ApplyPage();}
@@ -23,6 +25,7 @@ public partial class ParticipantMarketTablet : VBoxContainer
     {
         _filters.Visible=_rows.Visible=_selected.Visible=_bidActions.Visible=_page==0;_inputs.Visible=_page<3;_price.Visible=_priceLabel.Visible=_page is 0 or 2;
         _pickups.Visible=_pickupTitle.Visible=_page==1;_history.Visible=_page==3;
+        if(_friendly)_intro.Visible=_page==0;
         bool owns=_view?.Buildings.Any(b=>b.Id.Value==_shop && b.Kind==BuildingKind.Shop)??false;
         _ownOffers.Visible=_page==2;if(_ownOffers.GetParent() is Control ownShell)ownShell.Visible=_ownOffers.Visible;
         _seller.Visible=_page==2 && owns;if(_seller.GetParent() is Control shell)shell.Visible=_seller.Visible;_emptyOwn.Visible=_page==2 && !owns;
@@ -54,11 +57,11 @@ public partial class ParticipantMarketTablet : VBoxContainer
     private long Price => checked((long)Math.Round(_price.Value * 100, MidpointRounding.AwayFromZero));
 
     public ParticipantMarketTablet(ScenarioDefinition scenario, string language, CapitalTablePreferences preferences,
-        long shop, System.Action<GameAction> submit,System.Func<GameAction,ActionAccess>? access=null)
+        long shop, System.Action<GameAction> submit,System.Func<GameAction,ActionAccess>? access=null,bool friendly=false)
     {
-        _scenario = scenario; _language = language; _preferences = preferences; _shop = shop; _submit = submit;
+        _scenario = scenario; _language = language; _preferences = preferences; _shop = shop; _submit = submit; _friendly=friendly;
         _access=access;_item = scenario.Items[0].Id; _price.Value = scenario.Items[0].BasePriceMinor / 100d;
-        AddChild(new Label { Text = L("Выберите товар и максимальную цену. Оплаченную покупку нужно забрать до срока; для торговли требуется своя лавка.",
+        AddChild(_intro=new Label { Text = friendly?L("Для торговли нужна своя лавка. Заберите оплаченные покупки до срока.","You need your own shop to trade. Collect paid purchases before the deadline.") : L("Выберите товар и максимальную цену. Оплаченную покупку нужно забрать до срока; для торговли требуется своя лавка.",
             "Choose goods and your maximum price. Successful purchases must be collected before their deadline. Your own shop is needed to trade."), AutowrapMode = TextServer.AutowrapMode.WordSmart });
         var filters = TabletDesign.Flow();_filters=filters; AddChild(filters);
         var items = new[] { "" }.Concat(scenario.Items.Select(i => i.Id)).ToArray();

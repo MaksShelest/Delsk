@@ -161,7 +161,7 @@ public partial class Playfield
             button.TextOverrunBehavior=TextServer.OverrunBehavior.NoTrimming;
         }
         var goal=new VBoxContainer();
-        _goalTitle=new Label{Name="StarterGoalTitle",AutowrapMode=TextServer.AutowrapMode.WordSmart,SizeFlagsHorizontal=SizeFlags.ExpandFill};_goalTitle.AddThemeColorOverride("font_color",new Color("24312d"));_goalTitle.AddThemeFontSizeOverride("font_size",16);
+        _goalTitle=TabletDesign.Heading("",18);_goalTitle.Name="StarterGoalTitle";_goalTitle.SizeFlagsHorizontal=SizeFlags.ExpandFill;
         _goalHint=new Label{Name="StarterGoalHint",AutowrapMode=TextServer.AutowrapMode.WordSmart,Visible=false,MaxLinesVisible=6,TextOverrunBehavior=TextServer.OverrunBehavior.TrimEllipsis};_goalHint.AddThemeColorOverride("font_color",new Color("24312d"));
         _goalWhere=new Button{Name="StarterGoalWhere",Text=L("К цели","Go"),CustomMinimumSize=new(0,36)};
         _goalWhere.Pressed+=()=>{if(_goalStep is {} step)ShowGuide(step);};
@@ -169,9 +169,9 @@ public partial class Playfield
         _goalMore.Pressed+=()=>{_goalOpen=!_goalOpen;Refresh();};
         var hide=new Button{Name="StarterGoalHide",Text="×",CustomMinimumSize=new(36,36),TooltipText=L("Скрыть подсказку","Hide the hint")};
         hide.Pressed+=()=>{_guideVisible=false;SaveInterface();Refresh();};
-        var goalRow=new HBoxContainer();goalRow.AddChild(_goalWhere);goalRow.AddChild(_goalMore);goalRow.AddChild(hide);
+        var goalRow=TabletDesign.Flow();goalRow.AddChild(_goalWhere);goalRow.AddChild(_goalMore);goalRow.AddChild(hide);
         goal.AddChild(_goalTitle);goal.AddChild(goalRow);goal.AddChild(_goalHint);
-        _goalBar=new PanelContainer{Name="StarterGoal",MouseFilter=MouseFilterEnum.Stop,Visible=false};
+        _goalBar=new PanelContainer{Name="StarterGoal",MouseFilter=MouseFilterEnum.Stop,Visible=false,Theme=CompactTabletDesign.ForPlayer(true)};
         _goalBar.AddThemeStyleboxOverride("panel",new StyleBoxFlat{BgColor=new Color("f7f4ea"),ContentMarginLeft=8,ContentMarginRight=8,ContentMarginTop=4,ContentMarginBottom=4,CornerRadiusTopLeft=8,CornerRadiusTopRight=8,CornerRadiusBottomRight=8,CornerRadiusBottomLeft=8});
         _goalBar.AddChild(goal);_playChrome.AddChild(_goalBar);
         void FitHud()
@@ -222,7 +222,7 @@ public partial class Playfield
         {
             // Заголовок на своей строке и переносится. Иначе длинный английский текст сжимается до пары букв.
             float available=view.X-24-(float)safe.Left-(float)safe.Right;
-            float width=Math.Min(available,Math.Max(280,16));
+            float width=Math.Min(available,340);
             _goalBar.Position=new(12+(float)safe.Left,top+8);
             _goalBar.CustomMinimumSize=new(width,0);
             _goalBar.Size=new(width,Math.Max(_goalBar.GetCombinedMinimumSize().Y,1));
@@ -270,6 +270,7 @@ public partial class Playfield
     {
         if(_friendly==simple)return;
         _friendly=simple;SaveInterface();ApplyHudMode();
+        _tabletPanel?.SetSimple(simple);
         _playerTablet?.ApplyPresentation(simple);
         if(_tabletPanel is not null&&_tabletState.Kind==TabletKind.Player)
             _tabletPanel.SetTitle(simple?L("Хозяйство","Business"):L("Планшет игрока","Player tablet"));
@@ -282,6 +283,11 @@ public partial class Playfield
         var row=(Container)_hudMenu.GetParent();
         _hudTablet.Text=_friendly?L("Хозяйство","Business"):L("Планшет","Tablet");
         _hudMenu.Text=L("Меню","Menu");_hudMap.Text=L("Карта","Map");
+        foreach(var control in new Control?[]{_hudMenu,_hudTablet,_hudMap,_accountNotice,_hudNotices,_gameClock})
+        {
+            if(_friendly)control?.AddThemeFontSizeOverride("font_size",18);
+            else control?.RemoveThemeFontSizeOverride("font_size");
+        }
         _hudPlots.Visible=!_friendly;_hudHelp.Visible=!_friendly;
         if(_hudGoods is not null&&_friendly)_hudGoods.Visible=false;
         void Place(Control control,int index){if(control.GetParent()==row)row.MoveChild(control,index);}
@@ -304,24 +310,23 @@ public partial class Playfield
         bool show=_friendly&&_guideVisible&&_goalStep is not null&&_surface==Surface.Play&&!_tabletState.IsOpen&&_helpOverlay is null;
         _goalBar.Visible=show;
         if(_goalStep is not {} step||_goalMore is null)return;
-        string title=PlayerText.Local(_language,step.TitleRu,step.TitleEn);
+        string title=StarterGoalUi.Title(step,_language);
         if(step.Count&&step.Need>0)
         {
             long shown=Math.Min(Math.Max(0,step.Have),step.Need);
             title+=" — "+shown+"/"+step.Need;
         }
         _goalTitle.Text=title;
-        string explanation=PlayerText.Local(_language,step.DetailRu,step.DetailEn);
+        string explanation=StarterGoalUi.Next(step,_language);
         string gaps=FriendlyGuidance.Describe(step.Gaps,_language,true);
         _goalHint.Text=gaps.Length==0?explanation:explanation+"\n"+gaps;
         _goalHint.Visible=_goalOpen;
-        _goalMore.Text=_goalOpen?"–":L("Ещё","More");
+        _goalMore.Text=_goalOpen?L("Свернуть","Fold"):L("Как?","How?");
         _goalMore.TooltipText=_goalOpen?L("Свернуть","Fold"):L("Подробнее","Details");
         bool guiding=_guideCell is {} at && step.X==at.X && step.Z==at.Z;
         var purchase = GuidePurchase(step, view.Participant.Position);
-        _goalWhere.Text = purchase?.Label ?? (step.Id == "program" || step.X < 0 && step.TargetId > 0
-            ? L("Открыть", "Open") : guiding ? L("Скрыть", "Hide") : L("К цели", "Go"));
-        _goalWhere.Disabled = purchase is { Enabled: false } || step.Id != "program" && step.X < 0 && step.TargetId == 0;
+        _goalWhere.Text = purchase?.Label ?? StarterGoalUi.Action(step,_language,guiding);
+        _goalWhere.Disabled = purchase is { Enabled: false } || !StarterGoalUi.CanOpen(step);
         _goalWhere.TooltipText = purchase?.Details ?? "";
         if(_hudBar is not null)LayoutCityHud(_hudBar);
         Callable.From(()=>{if(_hudBar is not null)LayoutCityHud(_hudBar);}).CallDeferred();

@@ -99,6 +99,7 @@ public partial class Playfield
         _tabletPanel = new TabletPanel(title,_language,_tabletState.Kind==TabletKind.Player?"home":_tabletState.Kind is TabletKind.Capital or TabletKind.Market?"market":"warehouse");
         if(equipmentSide){_tabletPanel.UseSideDock();_tabletPanel.Resized+=SyncSideFrame;}
         else if(_tabletState.Kind is TabletKind.Player or TabletKind.CityMap||woodworking)_tabletPanel.UseCompactFrame();
+        _tabletPanel.SetSimple(_friendly);
         _tabletPanel.Closed += CloseTablet;
         _tabletPanel.HelpRequested += () => OpenHelp(_tabletState.Kind switch
         { TabletKind.CityMap=>"map",TabletKind.Notices or TabletKind.Tutorial=>"journey",TabletKind.Player => _playerTablet?.SelectedTab switch { 0 => _playerTablet.HelpTopic, 2 => "politics", _ => "city" },
@@ -110,7 +111,7 @@ public partial class Playfield
         {_cityInbox=new(_language,OpenCityNotice,ReadCityNotice);_tabletPanel.Body.AddChild(_cityInbox);_cityInbox.ShowData(_cityNotices,view.Tick,WaitingCommand);}
         else if(_tabletState.Kind==TabletKind.Tutorial)
         {
-            _journey=new(_language,_cityRead,IndustrialParcelRules.Applies(view.Economy));_journey.Changed+=SaveCityExperience;
+            _journey=new(_language,_cityRead,IndustrialParcelRules.Applies(view.Economy),_friendly);_journey.Changed+=SaveCityExperience;
             _journey.NavigateRequested+=page=>{if(page=="map")OpenCityMap();else if(page=="notices")OpenCityNotices();else OpenCitySection(page);};_tabletPanel.Body.AddChild(_journey);
         }
         else if(_tabletState.Kind==TabletKind.CityMap)
@@ -134,11 +135,11 @@ public partial class Playfield
             if(_scenario.Layout is not null){_tabletPolitics=_playerTablet.PoliticsHost;FillPolitics(view,_tabletPolitics);}
         }
         else if(_tabletState.Kind==TabletKind.Object&&_objectKind=="ground")
-        {_groundPanel=new(_scenario,_language,"ground",_tabletState.EnterpriseId,Submit,a=>_session.Engine.AccessFor(_human,a),demolitionQuote:(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction));_groundPanel.GuideRequested+=ShowGuide;_tabletPanel.Body.AddChild(_groundPanel);}
+        {_groundPanel=new(_scenario,_language,"ground",_tabletState.EnterpriseId,Submit,a=>_session.Engine.AccessFor(_human,a),demolitionQuote:(id,construction)=>_session.Engine.QuoteDemolition(_human,id,construction)){Theme=CompactTabletDesign.ForPlayer(_friendly)};_groundPanel.GuideRequested+=ShowGuide;_tabletPanel.Body.AddChild(_groundPanel);}
         else if (_tabletState.Kind is TabletKind.Market or TabletKind.Capital)
         {
             long shop=view.Buildings.FirstOrDefault(b=>b.Kind==BuildingKind.Shop)?.Id.Value??0;
-            _exchangeTablet=new(_scenario,_language,_capitalPreferences,_marketPreferences,shop,Submit,_tabletState.Kind==TabletKind.Market,a=>_session.Engine.AccessFor(_human,a));
+            _exchangeTablet=new(_scenario,_language,_capitalPreferences,_marketPreferences,shop,Submit,_tabletState.Kind==TabletKind.Market,a=>_session.Engine.AccessFor(_human,a),_friendly);
             _capitalTablet=_exchangeTablet.Capital;_marketTablet=_exchangeTablet.Market;_tabletPanel.Body.AddChild(_exchangeTablet);
         }
         else
@@ -165,6 +166,8 @@ public partial class Playfield
         if(_surface==Surface.Play&&_tabletState.OpenCapital(view,_scenario)){PrepareTablet();return;}
         var step=FriendlyGuidance.Read(view,_scenario,_language,_cityRead.Noted("sale"));
         if(step.X>=0&&step.Focus=="orders"){ShowGuide(step);return;}
+        if(_friendly&&(_scenario.CapitalDemand?.Terminal??_scenario.Layout?.CivicObjects.FirstOrDefault(c=>c.Kind=="terminal")?.Entry) is {} terminal)
+        {ShowGuideTo(terminal);return;}
         _feedback=L("Подойдите к терминалу столицы, чтобы открыть продажу.","Walk to the capital terminal to open the sale.");
         Refresh();
     }
@@ -177,7 +180,13 @@ public partial class Playfield
 
     private void ShowGuide(StarterStep step)
     {
-        if (step.Id == "program") { ClearGuide(); OpenProvincial(); return; }
+        if (step.Id == "program")
+        {
+            ClearGuide();
+            if (_friendly && _tabletState.IsOpen) CloseTablet();
+            OpenProvincial();
+            return;
+        }
         if (step.Id is "program-land" or "plot" && GuidePurchase(step, _session.Engine.Observe(_human).Participant.Position) is { } purchase)
         {
             ClearGuide();
@@ -196,8 +205,12 @@ public partial class Playfield
             Refresh();
             return;
         }
-        var target=new Cell(step.X,step.Z);
+        ShowGuideTo(new Cell(step.X,step.Z));
+    }
+    private void ShowGuideTo(Cell target)
+    {
         if(_guideCell==target){ClearGuide();Refresh();return;}
+        if(_friendly&&_tabletState.IsOpen)CloseTablet();
         _guideCell=target;
         _guideFrom=new(int.MinValue,0);
         Refresh();
@@ -209,9 +222,12 @@ public partial class Playfield
     }
     private void SyncGuide(Cell position)
     {
-        if(_guideCell is null||_session is null)return;
-        if(_goalStep is not {} step||step.X<0){ClearGuide();return;}
-        var target=new Cell(step.X,step.Z);
+        if(_guideCell is not {} target||_session is null)return;
+        if(!_friendly)
+        {
+            if(_goalStep is not {} step||step.X<0){ClearGuide();return;}
+            target=new Cell(step.X,step.Z);
+        }
         if(position==target){ClearGuide();return;}
         if(_guideCell==target&&_guideFrom==position)return;
         _guideCell=target;_guideFrom=position;

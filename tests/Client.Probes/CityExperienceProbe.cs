@@ -62,7 +62,10 @@ public partial class CityExperienceProbe : Control
         _app=GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();AddChild(_app);await Frames(5);
         var setup=Field<MapSelectionScreen>(_app,"_mapSelection");
         ((UiDisclosure)setup.AdditionalSettings.GetParent()).Open();await Frames();await Click(TextButton("English"));
-        setup=Field<MapSelectionScreen>(_app,"_mapSelection");await Number(All(setup).OfType<SpinBox>().Single(s=>s.Name=="NpcCount"),count.ToString());
+        setup=Field<MapSelectionScreen>(_app,"_mapSelection");
+        if(All(setup).OfType<UiDisclosure>().FirstOrDefault(s=>s.Name=="GameSettings") is {} gameSettings)
+        {gameSettings.Open();await Frames();}
+        await Number(All(setup).OfType<SpinBox>().Single(s=>s.Name=="NpcCount"),count.ToString());
         if(_language=="ru"){((UiDisclosure)setup.AdditionalSettings.GetParent()).Open();await Frames();await Click(TextButton("Русский"));}
         if(PlayMaps.UserCatalog.Contains(map))
         {await Click(Named<Button>("ChooseMap"));await Click(Named<Button>("SelectMap_"+map));await Click(Named<Button>("StartGame"));}
@@ -81,7 +84,8 @@ public partial class CityExperienceProbe : Control
         await Press(Key.M);var panel=Named<CityMapPanel>("FullCityMap");var canvas=panel.Canvas;await Reveal(canvas);
         var prefs=canvas.State;var frame=Field<CityMapFrame>(panel,"_map");Check(frame.Participants.Length==count+1,"Map lost participants");
         var tablet=Named<TabletPanel>("GameTablet");var rect=tablet.GetGlobalRect();Check(rect.Position.X>=0&&rect.End.X<=width+1,"Tablet exceeds narrow viewport: "+rect);
-        var timeRect=Named<CheckButton>("TabletTime").GetGlobalRect();Check(timeRect.Position.X>=0&&timeRect.End.X<=width+1,"Time control exceeds narrow viewport: "+timeRect);
+        var time=Named<CheckButton>("TabletTime");var timeRect=time.GetGlobalRect();Check(timeRect.Position.X>=0&&timeRect.End.X<=width+1,"Time control exceeds narrow viewport: "+timeRect);
+        Check(width!=360||time.Text.Length==0&&time.TooltipText.Length>0,"Portrait time switch keeps its tooltip and leaves room for the clock");
         string hash=Session.Engine.ComputeStateHash();long tick=Session.Engine.Tick;int commands=Session.CommandTape.Length;
         var resource=frame.Objects.First(o=>o.Layer==CityLayer.Resources&&CityMap.At(frame,o.Entry,CityLayer.All,0).First().Key==o.Key);
         await Mouse(canvas.GlobalPosition+canvas.Point(resource.Entry));Check(prefs.SelectedKey==resource.Key,"Native cell hit did not select resource");

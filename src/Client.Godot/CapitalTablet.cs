@@ -39,13 +39,14 @@ public partial class CapitalTablet : VBoxContainer
     private OwnCapitalTrading? _trading;
     private bool _pending;
 
-    public CapitalTablet(ScenarioDefinition scenario, string language, CapitalTablePreferences preferences, System.Action<GameAction> submit,Func<GameAction,ActionAccess>? access=null)
+    public CapitalTablet(ScenarioDefinition scenario, string language, CapitalTablePreferences preferences, System.Action<GameAction> submit,Func<GameAction,ActionAccess>? access=null,bool friendly=false)
     {
         _scenario = scenario; _language = language; _preferences = preferences; _submit = submit;_access=access;
         var pages = TabletDesign.Flow();_pageButtons=pages; AddChild(pages);
         var orders = Action(pages, L("Предложения", "Offers")); var history = Action(pages, L("История", "History"));
         _orders = new VBoxContainer(); AddChild(_orders);
-        _orders.AddChild(GameUi.Hint(L("Столица покупает товары из вашего рюкзака. Выберите заказ и продайте доступное количество у точки приёмки.","The capital buys goods from your backpack. Choose an order and sell available stock at its receiving point.")));
+        _orders.AddChild(friendly?GameUi.Text(L("Выберите заказ на товар из рюкзака. Продать его можно на терминале.","Choose an order for goods in your backpack. Sell them at the terminal."),18)
+            :GameUi.Hint(L("Столица покупает товары из вашего рюкзака. Выберите заказ и продайте доступное количество у точки приёмки.","The capital buys goods from your backpack. Choose an order and sell available stock at its receiving point.")));
         _results = new VBoxContainer { Visible = false }; AddChild(_results);
         orders.Pressed += () => { _orders.Visible = true; _results.Visible = false; };
         history.Pressed += () => { _orders.Visible = false; _results.Visible = true; };

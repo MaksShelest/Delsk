@@ -52,14 +52,17 @@ public partial class CityJourneyPanel : VBoxContainer
     private readonly Label _body=new(){Name="JourneyBody",AutowrapMode=TextServer.AutowrapMode.WordSmart};
     private readonly Button _before=new(){Name="JourneyPrevious"},_after=new(){Name="JourneyNext"},_go=new(){Name="JourneyAction"};
     private readonly bool _wholeParcels;
-    public CityJourneyPanel(string language, CityReadState state, bool wholeParcels)
+    private readonly bool _friendly;
+    public CityJourneyPanel(string language, CityReadState state, bool wholeParcels, bool friendly = false)
     {
         Name="CityJourney";_state=state;_language=language;_wholeParcels=wholeParcels;
+        _friendly = friendly;
         AddChild(TabletDesign.Heading(L("Пять шагов к своему хозяйству","Five steps to your own business"),25));
         for(int i=0;i<CityJourney.Steps.Length;i++)_step.AddItem((i+1)+". "+Title(CityJourney.Steps[i]));_step.Select(state.TutorialPage);_step.ItemSelected+=i=>Select((int)i);AddChild(_step);AddChild(_body);
         _go.Pressed+=()=>NavigateRequested?.Invoke(CityJourney.Steps[_state.TutorialPage].Destination);_go.CustomMinimumSize=new(44,48);AddChild(_go);
         var navigation=TabletDesign.Flow();_before.Text=L("‹ Назад","‹ Back");_after.Text=L("Далее ›","Next ›");_before.Pressed+=()=>Select(state.TutorialPage-1);_after.Pressed+=()=>Select(state.TutorialPage+1);navigation.AddChild(_before);navigation.AddChild(_after);AddChild(navigation);
-        AddChild(new Label{Text=L("Это памятка, не выдача ресурсов или наград. Время общее с NPC; помощь и пауза сохраняют прежний режим. Esc закрывает текущий экран. Кнопки доступны через Tab и Enter.","This guide grants no resources or rewards. Time is shared with NPCs; help and pause retain the previous mode. Esc closes the current screen. Use Tab and Enter for buttons."),AutowrapMode=TextServer.AutowrapMode.WordSmart});ShowStep();
+        if(!friendly)AddChild(new Label{Text=L("Это памятка, не выдача ресурсов или наград. Время общее с NPC; помощь и пауза сохраняют прежний режим. Esc закрывает текущий экран. Кнопки доступны через Tab и Enter.","This guide grants no resources or rewards. Time is shared with NPCs; help and pause retain the previous mode. Esc closes the current screen. Use Tab and Enter for buttons."),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        ShowStep();
     }
     private string L(string ru,string en)=>PlayerText.Local(_language,ru,en);
     private string Title(CityLesson s)=>L(s.TitleRu,s.TitleEn);
@@ -71,7 +74,18 @@ public partial class CityJourneyPanel : VBoxContainer
         if (_wholeParcels && _state.TutorialPage == 1)
             _body.Text = L("Промышленный участок 2×3 покупается одним действием. Подойдите к отмеченной клетке и нажмите «Купить участок». Полная цена — 600 монет. При участии в программе провинции первый участок оплачивает столица. Доставьте материалы на строительную клетку и начните стройку.",
                 "A 2×3 industrial parcel is bought in one action. Walk to the marked cell and select Buy parcel. The total price is 600 coins. The capital funds your first parcel if you join the provincial program. Deliver the materials to the building cell and start construction.");
-        _go.Text = L("Открыть: ", "Open: ") + Title(lesson);
+        if (_friendly)
+        {
+            (_body.Text, _go.Text) = lesson.Destination switch
+            {
+                "map" => (L("Найдите сырьё на карте и добудьте его. Затем отнесите товар на терминал и продайте по заказу столицы.", "Find a resource on the map and gather it. Bring your goods to the terminal and sell them against a capital order."), L("Открыть карту", "Open map")),
+                "holdings" => (L(_wholeParcels ? "Купите участок из шести клеток одним действием. Принесите материалы на отмеченную клетку и начните стройку." : "Купите участок, принесите материалы и начните стройку.", _wholeParcels ? "Buy all six cells in one action. Bring materials to the marked cell and start building." : "Buy a plot, bring materials and start building."), L("Открыть хозяйство", "Open business")),
+                "quests" => (L("Выберите задание. В карточке увидите, что нужно произвести и какую награду получите.", "Choose a quest to see what you need to make and what you will earn."), L("Открыть задания", "Open quests")),
+                "fleet" => (L("Подберите машину под ваш груз. Если заказываете доставку, проверьте цену и срок до подтверждения.", "Choose a vehicle for your cargo. When ordering delivery, check the price and deadline before confirming."), L("Открыть транспорт", "Open vehicles")),
+                _ => (L("В событиях видны неоплаченные счета и товары, которые пора вывезти. Выберите событие, чтобы перейти к действию.", "Notices show unpaid invoices and goods you need to move. Select a notice to see what to do."), L("Открыть события", "Open notices"))
+            };
+        }
+        else _go.Text = L("Открыть: ", "Open: ") + Title(lesson);
         _before.Disabled = _state.TutorialPage == 0;
         _after.Disabled = _state.TutorialPage == CityJourney.Steps.Length - 1;
     }

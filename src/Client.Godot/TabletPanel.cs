@@ -13,8 +13,16 @@ public partial class TabletPanel : PanelContainer
     private readonly VBoxContainer _column;
     private readonly Label _title;
     private bool _compactFrame;
+    private bool _friendly;
+    private readonly Button _help;
     public bool SideDock{get;private set;}
     public void SetTitle(string title)=>_title.Text=title;
+    public void SetSimple(bool friendly)
+    {
+        _friendly=friendly;
+        Theme=CompactTabletDesign.ForPlayer(friendly);
+        if(IsInsideTree())LayoutFrame();
+    }
     /// <summary>Левая панель под верхним HUD: заголовок и закрытие фиксированы, мир остаётся справа.</summary>
     public void UseSideDock()
     {
@@ -30,9 +38,14 @@ public partial class TabletPanel : PanelContainer
     }
     private void LayoutFrame()
     {
+        var viewport=GetViewportRect().Size;
+        var safe=UiSafeArea.Read(this);
+        float contentWidth=viewport.X-(float)(safe.Left+safe.Right);
+        _help.Text=_friendly&&!SideDock&&contentWidth>=700?L("Справка","Help"):"?";
+        _time.Text=_friendly&&!SideDock&&contentWidth>=480?L("Ход времени","World time"):"";
         if(SideDock)
         {
-            var dockSafe=UiSafeArea.Read(this);var size=GetViewportRect().Size;bool dockShort=size.Y<540;bool phone=size.X<1000;bool tiny=phone&&size.X<=820&&dockShort;
+            var dockSafe=safe;var size=viewport;bool dockShort=size.Y<540;bool phone=size.X<1000;bool tiny=phone&&size.X<=820&&dockShort;
             float fraction=!phone?.38f:tiny?.62f:.56f;float left=(float)dockSafe.Left+(dockShort?4:8);float right=(float)dockSafe.Right+8;
             float minWorld=size.X*(phone?.28f:.55f);float width=Mathf.Min(size.X*fraction,size.X-left-right-minWorld);width=Mathf.Max(width,Mathf.Min(260,size.X*.5f));
             OffsetLeft=left;OffsetRight=-(size.X-left-width);OffsetTop=(dockShort?46:62)+(float)dockSafe.Top;OffsetBottom=-(dockShort?4:8)-(float)dockSafe.Bottom;
@@ -42,13 +55,13 @@ public partial class TabletPanel : PanelContainer
             foreach(var button in _header.GetChildren().OfType<Button>().Where(b=>b is not OptionButton)){button.CustomMinimumSize=new(dockShort?40:44,dockShort?40:44);button.SizeFlagsVertical=SizeFlags.ShrinkCenter;}
             _status.MaxLinesVisible=dockShort?1:2;return;
         }
-        var safe=UiSafeArea.Read(this);bool shortScreen=ShortLandscape;float side=shortScreen?6:GetViewportRect().Size.X>=1360?64:12;
+        bool shortScreen=ShortLandscape;float side=shortScreen?6:viewport.X>=1360?64:12;
         OffsetLeft=side+(float)safe.Left;OffsetRight=-side-(float)safe.Right;OffsetTop=(shortScreen?46:66)+(float)safe.Top;OffsetBottom=-(shortScreen?6:18)-(float)safe.Bottom;
         if(!_compactFrame)return;
         AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("f1f2ec",shortScreen?8:12));
         _column.AddThemeConstantOverride("separation",shortScreen?3:5);
-        _title.AddThemeFontSizeOverride("font_size",shortScreen?18:20);
-        _header.GetChild<Control>(0).Visible=true;_header.GetChild<Control>(0).CustomMinimumSize=new(shortScreen?20:28,shortScreen?20:28);
+        _title.AddThemeFontSizeOverride("font_size",(shortScreen?18:20)+(_friendly?2:0));
+        _header.GetChild<Control>(0).Visible=!_friendly||GetViewportRect().Size.X>=560;_header.GetChild<Control>(0).CustomMinimumSize=new(shortScreen?20:28,shortScreen?20:28);
         foreach(var button in _header.GetChildren().OfType<Button>().Where(b=>b is not OptionButton)){button.CustomMinimumSize=new(shortScreen?40:44,shortScreen?40:44);button.SizeFlagsVertical=SizeFlags.ShrinkCenter;}
         _status.MaxLinesVisible=shortScreen?1:3;
     }
@@ -82,7 +95,7 @@ public partial class TabletPanel : PanelContainer
         var header=new HBoxContainer();_header=header;column.AddChild(header);header.AddChild(TabletDesign.Art(icon,new(56,56)));
         header.AddChild(new Label{Text=title,SizeFlagsHorizontal=SizeFlags.ExpandFill,AutowrapMode=TextServer.AutowrapMode.WordSmart,ThemeTypeVariation="TabletTitle"});
         _title=(Label)header.GetChild(1);_title.AddThemeFontSizeOverride("font_size",27);
-        var help=new Button{Name="TabletHelp",Text="?",TooltipText=L("Справка по этому экрану","Help for this screen"),FocusMode=FocusModeEnum.None,CustomMinimumSize=new(44,44)};
+        var help=_help=new Button{Name="TabletHelp",Text="?",TooltipText=L("Справка по этому экрану","Help for this screen"),FocusMode=FocusModeEnum.None,CustomMinimumSize=new(44,44)};
         help.Pressed+=()=>HelpRequested?.Invoke();header.AddChild(help);
         var close=new Button{Name="TabletClose",Text="×",TooltipText=L("Закрыть","Close"),FocusMode=FocusModeEnum.None,CustomMinimumSize=new(44,44)};
         close.Pressed+=()=>Closed?.Invoke();header.AddChild(close);column.AddChild(new HSeparator());
@@ -90,7 +103,8 @@ public partial class TabletPanel : PanelContainer
         Body=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};scroll.AddChild(Body);
         _status=new Label{Name="TabletFeedback",AutowrapMode=TextServer.AutowrapMode.WordSmart,MaxLinesVisible=3};column.AddChild(_status);
         var footer=new HBoxContainer{Name="TabletFooter"};footer.AddThemeConstantOverride("separation",6);column.AddChild(footer);
-        _clock=new Label{Name="TabletClock",SizeFlagsHorizontal=SizeFlags.ExpandFill,VerticalAlignment=VerticalAlignment.Center};footer.AddChild(_clock);
+        _clock=new Label{Name="TabletClock",SizeFlagsHorizontal=SizeFlags.ExpandFill,VerticalAlignment=VerticalAlignment.Center,
+            TextOverrunBehavior=TextServer.OverrunBehavior.TrimEllipsis};footer.AddChild(_clock);
         _time=new CheckButton{Name="TabletTime",CustomMinimumSize=new(48,44),FocusMode=FocusModeEnum.None,TooltipText=L("Пауза останавливает весь мир, включая NPC. Разрешённое движение запускает время.","Pause stops the whole world, including NPCs. Allowed movement resumes time.")};
         foreach(string state in new[]{"normal","hover","pressed"})_time.AddThemeStyleboxOverride(state,new StyleBoxEmpty{ContentMarginLeft=2,ContentMarginRight=2});
         _time.AddThemeStyleboxOverride("focus",new StyleBoxFlat{BgColor=Colors.Transparent,BorderColor=TabletDesign.Green,BorderWidthLeft=2,BorderWidthRight=2,BorderWidthTop=2,BorderWidthBottom=2,CornerRadiusTopLeft=6,CornerRadiusTopRight=6,CornerRadiusBottomLeft=6,CornerRadiusBottomRight=6});
@@ -103,7 +117,9 @@ public partial class TabletPanel : PanelContainer
     }
     public void ShowClock(bool timeRunning,bool paused,long tick,string feedback)
     {
-        _time.SetPressedNoSignal(timeRunning);_time.Text="";
+        _time.SetPressedNoSignal(timeRunning);
+        _time.TooltipText=_friendly?L(timeRunning?"Поставить мир на паузу":"Возобновить ход времени",timeRunning?"Pause the world":"Resume world time")
+            :L("Пауза останавливает весь мир, включая NPC. Разрешённое движение запускает время.","Pause stops the whole world, including NPCs. Allowed movement resumes time.");
         _clock.Text="◷ "+$"{tick/3600:00}:{tick/60%60:00}:{tick%60:00}"+" · "+L(paused?"Пауза":"Время идёт",paused?"Paused":"Running");
         _status.Text=feedback;_status.Visible=feedback.Length>0;
         if(IsInsideTree()&&Body.Size.X>0)GameUi.FitControls(Body,Body.Size.X);

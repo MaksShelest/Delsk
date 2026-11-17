@@ -269,7 +269,7 @@ public partial class Playfield : Control
         ResetTablet();
         ApplySurface();
         DismissMaps();
-        _mapSelection = new MapSelectionScreen(_language, _session is not null || HasSavedGame, ReadMap, _newMapKey,_newDifficulty,_newModel,_newNpcCount,(key,count)=>ResolveNewGame(key,count,allowUnassigned:true).Scenario);
+        _mapSelection = new MapSelectionScreen(_language, _session is not null || HasSavedGame, ReadMap, _newMapKey,_newDifficulty,_newModel,_newNpcCount,(key,count)=>ResolveNewGame(key,count,allowUnassigned:true).Scenario,_friendly);
         _mapSelection.MapChosen += key =>
         {
             try{_mapSelection.ModelConfiguration?.Validate();}catch(ArgumentException){_mapSelection.TooltipText=L("Проверьте имя модели и настройки.","Check model name and settings.");return;}
@@ -356,6 +356,7 @@ public partial class Playfield : Control
         DismissHelp();
         ResetTablet(true);
         ResetProvincial();
+        ClearGuide();
         _recoveredSaveTick = null;
         _mode = mode;LoadCityExperience(true);
         _gain = "";
@@ -614,7 +615,7 @@ public partial class Playfield : Control
         if (_surface == Surface.Debug) _board?.Show(frame, _cellX, _cellZ);
         if (_surface == Surface.Play && view.ProvincialProgram is { Status: "Offered" } && !_provincialIntro)
         { _provincialIntro = true; OpenProvincial(view); }
-        else if (_provincial is { Visible: true }) _provincial.Show(view, _language, WaitingCommand, Offer);
+        else if (_provincial is { Visible: true }) _provincial.Show(view, _language, WaitingCommand, Offer, _friendly);
         var pack = view.Inventories.Single(i => i.Id == view.Participant.InventoryId);
         string stock = pack.Stock.Length == 0 ? T("inventory.empty")
             : string.Join(", ", pack.Stock.OrderBy(s => s.ItemId, StringComparer.Ordinal).Select(s => $"{PlayerText.Item(_language, s.ItemId)} ×{s.Quantity}"));
@@ -1074,6 +1075,7 @@ public partial class Playfield : Control
         DismissHelp();
         ResetTablet(true);
         ResetProvincial();
+        ClearGuide();
         _stage?.ResetMotion();
         _storageCursor=0;_storageLossUntil=0;_storageLoss="";
         _session = loaded.Session;
