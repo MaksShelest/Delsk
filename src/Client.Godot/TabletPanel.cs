@@ -38,10 +38,14 @@ public partial class TabletPanel : PanelContainer
     }
     private void LayoutFrame()
     {
-        _help.Text=_friendly&&!SideDock&&GetViewportRect().Size.X>=700?L("Справка","Help"):"?";
+        var viewport=GetViewportRect().Size;
+        var safe=UiSafeArea.Read(this);
+        float contentWidth=viewport.X-(float)(safe.Left+safe.Right);
+        _help.Text=_friendly&&!SideDock&&contentWidth>=700?L("Справка","Help"):"?";
+        _time.Text=_friendly&&!SideDock&&contentWidth>=480?L("Ход времени","World time"):"";
         if(SideDock)
         {
-            var dockSafe=UiSafeArea.Read(this);var size=GetViewportRect().Size;bool dockShort=size.Y<540;bool phone=size.X<1000;bool tiny=phone&&size.X<=820&&dockShort;
+            var dockSafe=safe;var size=viewport;bool dockShort=size.Y<540;bool phone=size.X<1000;bool tiny=phone&&size.X<=820&&dockShort;
             float fraction=!phone?.38f:tiny?.62f:.56f;float left=(float)dockSafe.Left+(dockShort?4:8);float right=(float)dockSafe.Right+8;
             float minWorld=size.X*(phone?.28f:.55f);float width=Mathf.Min(size.X*fraction,size.X-left-right-minWorld);width=Mathf.Max(width,Mathf.Min(260,size.X*.5f));
             OffsetLeft=left;OffsetRight=-(size.X-left-width);OffsetTop=(dockShort?46:62)+(float)dockSafe.Top;OffsetBottom=-(dockShort?4:8)-(float)dockSafe.Bottom;
@@ -51,7 +55,7 @@ public partial class TabletPanel : PanelContainer
             foreach(var button in _header.GetChildren().OfType<Button>().Where(b=>b is not OptionButton)){button.CustomMinimumSize=new(dockShort?40:44,dockShort?40:44);button.SizeFlagsVertical=SizeFlags.ShrinkCenter;}
             _status.MaxLinesVisible=dockShort?1:2;return;
         }
-        var safe=UiSafeArea.Read(this);bool shortScreen=ShortLandscape;float side=shortScreen?6:GetViewportRect().Size.X>=1360?64:12;
+        bool shortScreen=ShortLandscape;float side=shortScreen?6:viewport.X>=1360?64:12;
         OffsetLeft=side+(float)safe.Left;OffsetRight=-side-(float)safe.Right;OffsetTop=(shortScreen?46:66)+(float)safe.Top;OffsetBottom=-(shortScreen?6:18)-(float)safe.Bottom;
         if(!_compactFrame)return;
         AddThemeStyleboxOverride("panel",CompactTabletDesign.Surface("f1f2ec",shortScreen?8:12));
@@ -99,7 +103,8 @@ public partial class TabletPanel : PanelContainer
         Body=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};scroll.AddChild(Body);
         _status=new Label{Name="TabletFeedback",AutowrapMode=TextServer.AutowrapMode.WordSmart,MaxLinesVisible=3};column.AddChild(_status);
         var footer=new HBoxContainer{Name="TabletFooter"};footer.AddThemeConstantOverride("separation",6);column.AddChild(footer);
-        _clock=new Label{Name="TabletClock",SizeFlagsHorizontal=SizeFlags.ExpandFill,VerticalAlignment=VerticalAlignment.Center};footer.AddChild(_clock);
+        _clock=new Label{Name="TabletClock",SizeFlagsHorizontal=SizeFlags.ExpandFill,VerticalAlignment=VerticalAlignment.Center,
+            TextOverrunBehavior=TextServer.OverrunBehavior.TrimEllipsis};footer.AddChild(_clock);
         _time=new CheckButton{Name="TabletTime",CustomMinimumSize=new(48,44),FocusMode=FocusModeEnum.None,TooltipText=L("Пауза останавливает весь мир, включая NPC. Разрешённое движение запускает время.","Pause stops the whole world, including NPCs. Allowed movement resumes time.")};
         foreach(string state in new[]{"normal","hover","pressed"})_time.AddThemeStyleboxOverride(state,new StyleBoxEmpty{ContentMarginLeft=2,ContentMarginRight=2});
         _time.AddThemeStyleboxOverride("focus",new StyleBoxFlat{BgColor=Colors.Transparent,BorderColor=TabletDesign.Green,BorderWidthLeft=2,BorderWidthRight=2,BorderWidthTop=2,BorderWidthBottom=2,CornerRadiusTopLeft=6,CornerRadiusTopRight=6,CornerRadiusBottomLeft=6,CornerRadiusBottomRight=6});
@@ -112,7 +117,7 @@ public partial class TabletPanel : PanelContainer
     }
     public void ShowClock(bool timeRunning,bool paused,long tick,string feedback)
     {
-        _time.SetPressedNoSignal(timeRunning);_time.Text=_friendly&&!SideDock?L("Ход времени","World time"):"";
+        _time.SetPressedNoSignal(timeRunning);
         _time.TooltipText=_friendly?L(timeRunning?"Поставить мир на паузу":"Возобновить ход времени",timeRunning?"Pause the world":"Resume world time")
             :L("Пауза останавливает весь мир, включая NPC. Разрешённое движение запускает время.","Pause stops the whole world, including NPCs. Allowed movement resumes time.");
         _clock.Text="◷ "+$"{tick/3600:00}:{tick/60%60:00}:{tick%60:00}"+" · "+L(paused?"Пауза":"Время идёт",paused?"Paused":"Running");

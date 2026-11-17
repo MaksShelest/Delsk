@@ -31,7 +31,7 @@ public partial class I5ContextProbe : Control
         button.Pressed+=()=>_inputTrace.Add(name+" pressed");
         Check(disabled||!button.Disabled,"available "+name);var rect=button.GetGlobalRect();
         var point=_mode=="touch"?rect.End-new Vector2(2,2):rect.GetCenter();
-        Check(GetViewportRect().HasPoint(point),"hit inside viewport "+name);
+        Check(GetViewportRect().HasPoint(point),$"hit inside viewport {name}: button={rect}, panel={Panel.GetGlobalRect()}, viewport={GetViewportRect()}");
         int window=GetWindow().GetWindowId();
         if(_mode=="keyboard")
         {button.GrabFocus();await Frames();await Key(Godot.Key.Enter,true);if(duringRefresh){Step();await Frames();}await Key(Godot.Key.Enter,false);}

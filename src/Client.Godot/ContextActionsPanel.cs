@@ -63,11 +63,18 @@ public partial class ContextActionsPanel : PanelContainer
     public float DockWidth(float maximum)
     {
         if(Dismissed)return _reopen.GetCombinedMinimumSize().X;
-        float natural=40+44+(_more.Visible?52:0)+8;
+        float natural=GetThemeStylebox("panel").GetMinimumSize().X+ActionControlsWidth();
         foreach(string key in Selection.PrimaryKeys(Friendly))if(_rows.TryGetValue(key,out var row))
-            natural+=Math.Clamp(row.Button.GetThemeFont("font").GetStringSize(row.Button.Text,fontSize:row.Button.GetThemeFontSize("font_size")).X+28,90,280)+8;
+            natural+=ButtonWidth(row.Button)+_primary.GetThemeConstant("h_separation");
         return Math.Min(maximum,Expanded?Math.Max(natural,560):natural);
     }
+    private float ActionControlsWidth()
+    {
+        float gap=_actions.GetThemeConstant("separation");
+        return _dismiss.GetCombinedMinimumSize().X+gap+(_more.Visible?_more.GetCombinedMinimumSize().X+gap:0);
+    }
+    private static float ButtonWidth(Button button) => Math.Clamp(button.GetThemeFont("font")
+        .GetStringSize(button.Text,fontSize:button.GetThemeFontSize("font_size")).X+28,90,280);
     public void SetExpanded(bool value)
     {
         if(Selection.Expanded==value)return;
@@ -150,13 +157,15 @@ public partial class ContextActionsPanel : PanelContainer
     private void LayoutRows()
     {
         if(!IsInsideTree())return;
-        float maximum=GetViewportRect().Size.X-40;
-        float width=Math.Max(90,Math.Min(Size.X-16,maximum));
-        float Natural(Button button)=>Math.Clamp(button.GetThemeFont("font").GetStringSize(button.Text,fontSize:button.GetThemeFontSize("font_size")).X+28,90,280);
+        var safe=UiSafeArea.Read(this);
+        float maximum=GetViewportRect().Size.X-(float)(safe.Left+safe.Right)-24;
+        float width=Math.Min(Size.X,maximum)-GetThemeStylebox("panel").GetMinimumSize().X;
+        float primaryWidth=width-ActionControlsWidth();
+        float listWidth=width-_scroll.GetVScrollBar().GetCombinedMinimumSize().X;
         foreach(var item in _rows.Values)
         {
             bool primary=item.Row.GetParent()==_primary;
-            float rowWidth=Math.Min(Natural(item.Button),Math.Max(90,width-112));
+            float rowWidth=Math.Min(ButtonWidth(item.Button),Math.Max(40,primary?primaryWidth:listWidth));
             item.Button.AutowrapMode=TextServer.AutowrapMode.WordSmart;item.Button.ClipText=false;
             item.Button.TextOverrunBehavior=TextServer.OverrunBehavior.NoTrimming;
             item.Button.CustomMinimumSize=new(rowWidth,44);item.Row.CustomMinimumSize=new(rowWidth,0);
