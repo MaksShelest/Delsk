@@ -118,8 +118,8 @@ public partial class I6C8AProbe : Control
             var frame = IndustrialParcels.TryFrame(lot)!.Value;
             Idle(poor, new(ActionKind.MoveTo, Target: frame.Anchor));
             var denied = await FocusBuy(app, poor, frame.Anchor);
-            Check(denied.Text == "Купить участок — 600 монет", "poor button " + denied.Text);
-            Check(denied.Disabled && denied.TooltipText.Contains("Нужно 600 монет."), "short cash explains the price");
+            Check(denied.Text == "Купить участок за 600,00", "poor button " + denied.Text);
+            Check(denied.Disabled && denied.TooltipText.Contains("Нужно 600,00."), "short cash explains the price");
             var stage = Field<PresentationStage>(app, "_stage");
             Check(Field<bool>(stage, "_previewBlocked") && Field<Cell[]>(stage, "_preview").Length == 6, "short cash outlines six cells in red");
             await Shot("short-cash-1100x720");
@@ -129,7 +129,7 @@ public partial class I6C8AProbe : Control
             lot = South(funded); frame = IndustrialParcels.TryFrame(lot)!.Value;
             Idle(funded, new(ActionKind.MoveTo, Target: frame.Anchor));
             var buy = await FocusBuy(app, funded, frame.Anchor);
-            Check(buy.Text == "Купить участок — 600 монет" && !buy.Disabled, "buy names 600 coins");
+            Check(buy.Text == "Купить участок за 600,00" && !buy.Disabled, "buy shows the full parcel price");
             Check(buy.TooltipText.Contains("6 клеток · подъезд к дороге · место для полного развития"), "caption " + buy.TooltipText);
             stage = Field<PresentationStage>(app, "_stage");
             var preview = Field<Cell[]>(stage, "_preview");

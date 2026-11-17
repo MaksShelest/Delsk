@@ -91,4 +91,27 @@ public sealed class EconomicBalanceI6C8DTests
             CapitalDemand = settings with { BootstrapBaseBudgetMinor = 3499 }
         }));
     }
+
+    [Fact]
+    public void AParticipantWithZeroCashCanSellHandGatheredRawMaterial()
+    {
+        var scenario = Fixtures.Cycle(cash: 0) with
+        {
+            CapitalOffers = [],
+            CapitalDemand = new(new(0, 0), PeriodTicks: 30, BootstrapBaseBudgetMinor: 3500, Allocation: new(1, 50, 6))
+        };
+        var s = Fixtures.Session(scenario);
+        Assert.Equal("Accepted", LandContentFixtures.Reason(s, new(ActionKind.Harvest, ItemId: "wood", Quantity: 2)));
+        Fixtures.UntilIdle(s);
+        var order = Assert.Single(s.Engine.Inspect().CapitalOffers, offer => offer.ItemId == "wood");
+        Assert.Equal(1, order.RemainingQuantity);
+        Assert.Equal("Accepted", LandContentFixtures.Reason(s,
+            new(ActionKind.SellAvailableToCapital, OfferId: order.Id, ItemId: "wood", Quantity: 1)));
+        s.AdvanceTo(s.Engine.Tick + scenario.TradeWindowTicks);
+        var sale = Assert.Single(s.Engine.Inspect().Settlements);
+        Assert.Equal(1, sale.Accepted);
+        Assert.Equal(order.UnitPriceMinor, sale.PaidMinor);
+        Assert.InRange(sale.PaidMinor, 350, 674);
+        Assert.Equal(sale.PaidMinor, s.Engine.Observe(new(1)).Account.AvailableMinor);
+    }
 }

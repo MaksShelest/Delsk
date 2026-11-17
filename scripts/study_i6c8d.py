@@ -19,7 +19,8 @@ DIFFICULTIES = ('Easy', 'Medium', 'Hard')
 
 def scenarios(cohort):
     if cohort == 'short':
-        return [(*case, 'Medium', 'production', 1200) for case in product(MAPS, INDUSTRIES, [17])]
+        return [(*case, 'Medium', strategy, 1200) for case in product(MAPS, INDUSTRIES, [17])
+                for strategy in ('production', 'raw')]
     if cohort == 'human':
         cases = chain(product(MAPS, INDUSTRIES, [17]), product(MAPS, ('woodworking', 'dairy'), [42]))
         return [(*case, 'Medium', strategy, 2400) for case in cases for strategy in ('raw', 'production')]
@@ -56,9 +57,9 @@ def run(case, profile, output, cohort):
     long_run = cohort == 'long'
     if long_run:
         command += ['--checkpoint', str(checkpoint), '--checkpoint-at', str(ticks // 2), '--progress', 'true']
-    result = checked(command, 270 if long_run else 180, run_directory, 'study')
-    if result or not long_run:
-        return result
+    continuous_exit = checked(command, 270 if long_run else 180, run_directory, 'study')
+    if not long_run or not checkpoint.is_file():
+        return continuous_exit
 
     resumed = run_directory / 'resumed'
     result = checked([*RUNNER, '--load', str(checkpoint), '--output', str(resumed),
@@ -66,6 +67,8 @@ def run(case, profile, output, cohort):
                      270, run_directory, 'resume')
     if result:
         return result
+    if continuous_exit:
+        return continuous_exit
 
     def hashes(folder):
         metadata = json.loads((folder / 'summary.json').read_text(encoding='utf-8'))
