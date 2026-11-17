@@ -1,0 +1,40 @@
+{
+  "map": "woodland-region",
+  "profile": "I6-C8D",
+  "difficulty": "Hard",
+  "seed": 17,
+  "checkpoint_tick": 2700,
+  "checkpoint_bytes": 705925,
+  "summaries": {
+    "continuous": {
+      "tick": 5400,
+      "stateHash": "250050374ebebc8a083ff0e64a8a084caffc6fe06b47330694c5ec85afd64dba",
+      "controllerStateHash": "94e2c8571b3210802a6f52eef2c45cf333f148e9d8e8ccb36813533ef3297254"
+    },
+    "resumed": {
+      "tick": 5400,
+      "stateHash": "250050374ebebc8a083ff0e64a8a084caffc6fe06b47330694c5ec85afd64dba",
+      "controllerStateHash": "94e2c8571b3210802a6f52eef2c45cf333f148e9d8e8ccb36813533ef3297254"
+    },
+    "replayed": {
+      "tick": 5400,
+      "stateHash": "250050374ebebc8a083ff0e64a8a084caffc6fe06b47330694c5ec85afd64dba",
+      "controllerStateHash": "8284481dad00c92ace1b6bdbfe7969873b2320519f7a9bd0f46e87cb543ceeec"
+    }
+  },
+  "identical_files": {
+    "final-state.json": "cecf94e960748404666ccb0c75a9f414786720a76aafcbec95ad48845a5f57fd",
+    "ledger.jsonl": "c6b25fcd0fb2544bc754d009165c7ac3dda97ae4222d9ffa05ef03d84ca3d5d0",
+    "events.jsonl": "3beac16137c6377489211d3694129f3b1cc9664bbaa637b61e98cf8148b3a9cb",
+    "commands.jsonl": "98143fb4627b1e7e7b758e8834c9def24a78f240e28a2f641193599dc99b195e",
+    "scenario.json": "d0b536ee933d564014089b23060d152265d8888f01ca48e6d6f01244f4ba4cb5",
+    "development.json": "c7bec12809d3718763df6dfd1c6602f68db32e166ff1ad4ca40d4417da2b5c55",
+    "capital-demand.json": "f13e3049868dc42c22836d53fddb4849e2915e24495c5268419f01991a8be6f0",
+    "physical-state.json": "e082f9050b6513facec2b37519c87b5ddb545db5f20dd07f39b400a09d7ee3a3",
+    "workshops.json": "99e5946eb65ba1cb0eec47d456686d6ab8f822fde529fe689feca4635e1e4be2",
+    "fleet.json": "48902fea05137c006914c23f342ffe7d8e2a9b47966e3a43aaa0a769e3462de6",
+    "roads.json": "298ce0ec9666642e9441ec11db3a49bc8b8295601877e1c2d287737a5e53c31d",
+    "services.json": "05776909047345981a8414a91d394c19df411b88b2e2bd478b710a227c9b2329",
+    "billing.json": "6891c9a32b070d59681cfe4477ec0ea899dc4938866357008621ab1e7f728380"
+  }
+}

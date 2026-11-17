@@ -1,0 +1,60 @@
+{
+  "i6c8c": {
+    "measuredTicks": 600,
+    "averageTickMs": 53.73239016666663,
+    "medianTickMs": 32.4775,
+    "p95TickMs": 120.2691,
+    "maximumTickMs": 4198.5032,
+    "saveBytes": 439178,
+    "encodeMs": 667.166,
+    "decodeMs": 4354.4988,
+    "workingSetBytes": 188469248,
+    "checkpointHashMatches": true,
+    "scope": "Hosted headless Step including controllers, invariants and sample/hash; includes JIT; encode/decode measured separately, not disk I/O; process memory includes restored session; no rendering/device claim",
+    "averageStages": {
+      "controllersMs": 27.631899999999987,
+      "coreMs": 9.678011166666659,
+      "samplingMs": 16.344889
+    },
+    "p95Stages": {
+      "controllersMs": 93.3681,
+      "coreMs": 42.7778,
+      "samplingMs": 47.8852
+    },
+    "cpuMs": 11061.932999999999,
+    "allocatedBytes": 1518375008,
+    "peakWorkingSetBytes": 188637184,
+    "managedMemoryBytes": 129179320,
+    "initialCapitalMinor": 580000,
+    "finalCapitalMinor": 1171021
+  },
+  "i6c8d": {
+    "measuredTicks": 600,
+    "averageTickMs": 48.73469416666667,
+    "medianTickMs": 25.3551,
+    "p95TickMs": 104.3229,
+    "maximumTickMs": 5710.6888,
+    "saveBytes": 479527,
+    "encodeMs": 365.8266,
+    "decodeMs": 1789.7236,
+    "workingSetBytes": 193052672,
+    "checkpointHashMatches": true,
+    "scope": "Hosted headless Step including controllers, invariants and sample/hash; includes JIT; encode/decode measured separately, not disk I/O; process memory includes restored session; no rendering/device claim",
+    "averageStages": {
+      "controllersMs": 25.43823000000001,
+      "coreMs": 9.066890666666664,
+      "samplingMs": 14.06124766666668
+    },
+    "p95Stages": {
+      "controllersMs": 81.65,
+      "coreMs": 40.162,
+      "samplingMs": 47.279
+    },
+    "cpuMs": 10194.581,
+    "allocatedBytes": 1648461800,
+    "peakWorkingSetBytes": 193220608,
+    "managedMemoryBytes": 134423488,
+    "initialCapitalMinor": 580000,
+    "finalCapitalMinor": 1172110
+  }
+}

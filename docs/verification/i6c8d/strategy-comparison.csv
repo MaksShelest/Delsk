@@ -1,0 +1,17 @@
+profile,map,industry,seed,tick,raw_first_paid_tick,raw_sold,raw_cash_result_minor,production_cash_result_minor,production_input_base_value_minor,production_to_raw_cash_ratio
+i6c8c,compact-valley,woodworking,17,1200,115,35,18357,1719,1000,0.0936
+i6c8d,compact-valley,woodworking,17,1200,115,20,10010,23716,15000,2.3692
+i6c8c,compact-valley,food,17,1200,135,50,14741,1537,5400,0.1043
+i6c8d,compact-valley,food,17,1200,135,35,10212,26139,9900,2.5596
+i6c8c,compact-valley,dairy,17,1200,160,43,17834,-12531,8400,-0.7026
+i6c8d,compact-valley,dairy,17,1200,160,25,10057,15389,14400,1.5302
+i6c8c,compact-valley,materials,17,1200,176,50,15303,1536,900,0.1004
+i6c8d,compact-valley,materials,17,1200,176,29,8747,17237,8100,1.9706
+i6c8c,woodland-region,woodworking,17,1200,72,35,18357,-3436,6000,-0.1872
+i6c8d,woodland-region,woodworking,17,1200,72,20,10010,38578,17000,3.8539
+i6c8c,woodland-region,food,17,1200,82,50,14741,6071,5400,0.4118
+i6c8d,woodland-region,food,17,1200,82,35,10212,36623,14400,3.5863
+i6c8c,woodland-region,dairy,17,1200,98,45,18456,-12531,8400,-0.6790
+i6c8d,woodland-region,dairy,17,1200,98,25,10057,33666,21600,3.3475
+i6c8c,woodland-region,materials,17,1200,97,50,15303,2354,900,0.1538
+i6c8d,woodland-region,materials,17,1200,97,30,9065,44097,15300,4.8645
