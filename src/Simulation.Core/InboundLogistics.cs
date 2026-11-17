@@ -55,7 +55,10 @@ public sealed partial class SimulationEngine
         if (free < volume) throw new RuleViolation("NoDestinationSpace");
         long quantity = Math.Min(source.Free(item), Math.Min(l.CargoCapacity / volume, free / volume));
         quantity=Math.Min(quantity,ProductionInputRoom(e.Input,item,free)/volume);
-        if(ParallelWorkshops)quantity=Math.Min(quantity,ingredient.Quantity);
+        // Mixed recipes still reserve room for other components and arrive in single-batch lots.
+        // Workshops that all use the same ingredient can fill the vehicle and the receiving buffer.
+        if (ParallelWorkshops && (requirements.Length != 1 || EconomyRules.Workshops is not { FillSingleIngredientInboundCargo: true }))
+            quantity = Math.Min(quantity, ingredient.Quantity);
         if (quantity <= 0) throw new RuleViolation("NoStock");
         var path = _map.FindPath(_economy.Inventories[l.Source].Position, source.Position);
         long leg = Math.Max(1, UsesAcceleratedMovement?FreightTravelTicks(l,path):checked((path.Length - 1L) * Logistics.MoveTicksPerCell));

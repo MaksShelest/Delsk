@@ -40,6 +40,63 @@ public class InboundTests
     private static void WaitTrips(GameSession s,long count)
     {long end=s.Engine.Tick+100;while(System(s).CompletedTrips<count&&s.Engine.Tick<end)s.Step();Assert.Equal(count,System(s).CompletedTrips);}
     [Fact]
+    public void WorkshopInboundBaselineUsesOneRecipeBatchPerTrip()
+    {
+        var d = WorkshopInboundScenario();
+        var s = Prefix(InputCommandTick, d);
+        Assert.Equal("Accepted", Input(s));
+        WaitTrips(s, 8);
+        Assert.Equal(new long[] { 2, 2, 2, 2, 2, 2, 2, 1 }, InboundReceipts(s));
+        Assert.Equal(15, Fixtures.Count(s, Factory(s).InputId, "wood"));
+        Assert.Equal(3200, Wages(s));
+    }
+
+    [Fact]
+    public void SingleIngredientFreightFillsTheBufferThenResumesWithoutAnotherOrder()
+    {
+        var d = WorkshopInboundScenario();
+        d = d with { Economy = d.Economy! with { Workshops = new(FillSingleIngredientInboundCargo: true) } };
+        var s = Prefix(InputCommandTick, d);
+        Assert.Equal("Accepted", Input(s));
+        s.Step();
+        Assert.Equal(10, System(s).Trip!.Quantity);
+        var loaded = CheckpointStore.Decode(CheckpointStore.Encode(s));
+        WaitTrips(s, 2);
+        s.AdvanceTo(s.Engine.Tick + 5);
+        loaded.AdvanceTo(s.Engine.Tick);
+        Assert.Equal(s.Engine.ComputeStateHash(), loaded.Engine.ComputeStateHash());
+        Assert.Equal(new long[] { 10, 5 }, InboundReceipts(s));
+        Assert.Equal(15, Fixtures.Count(s, Factory(s).InputId, "wood"));
+        Assert.Equal("NoDestinationSpace", System(s).ReasonCode);
+        Assert.Equal(800, Wages(s));
+        Assert.Equal(0, s.Engine.Inspect().Accounts.Sum(a => a.ReservedMinor));
+
+        Assert.Equal("Accepted", LandContentFixtures.Reason(s,
+            new(ActionKind.SetProductionEnabled, Enterprise: Factory(s).Id, Enabled: true)));
+        WaitTrips(s, 3);
+        Assert.Equal(1, s.CommandTape.Count(c => c.Command.Action.Kind == ActionKind.SetLogisticsInbound));
+        Assert.True(Factory(s).CompletedBatches > 0);
+        Assert.Equal(1200, Wages(s));
+        var replay = GameSession.Replay(d, s.CommandTape, s.Engine.Tick);
+        Assert.Equal(s.Engine.ComputeStateHash(), replay.Engine.ComputeStateHash());
+    }
+
+    private static ScenarioDefinition WorkshopInboundScenario()
+    {
+        var d = Scenario();
+        return d with
+        {
+            Economy = new(Workshops: new()),
+            BuildingTypes = d.BuildingTypes!.Select(t => t.Kind == BuildingKind.Production
+                ? t with { Levels = t.Levels.Select(l => l with { StaffCapacity = 5, WorkRateMultiplier = 1, WorkshopSlots = 1 }).ToArray() }
+                : t).ToArray()
+        };
+    }
+
+    private static long[] InboundReceipts(GameSession s) =>
+        s.Engine.EventsSince(0).Where(e => e.Type == "LogisticsInputReceived").Select(e => e.Quantity).ToArray();
+
+    [Fact]
     public void RawStockFeedsProductionAndFinishedOutputUsesTheSameTransportAndCrew()
     {
         var s=Run();var w=s.Engine.Inspect();Assert.Equal(3,System(s).CompletedTrips);Assert.Null(System(s).Trip);
