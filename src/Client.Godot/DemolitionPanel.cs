@@ -37,7 +37,7 @@ public partial class DemolitionPanel:VBoxContainer
         if(_target!=target||_construction!=construction){_preview.Visible=false;ResetHold();}_target=target;_construction=construction;_current=_quote(target,construction);Visible=_current is not null;if(_current is null)return;
         bool preparing=view.Demolition?.Preparing.Contains(target)==true;_prepare.Visible=!construction&&!preparing;_resume.Visible=!construction&&preparing;_prepare.Disabled=pending;_resume.Disabled=pending;
         _open.Text=construction?L("Отменить начатую стройку…","Cancel started construction…"):L("Снос…","Demolish…");_open.Disabled=pending;
-        _summary.Text=L("Стоимость сноса: ","Demolition cost: ")+PlayerText.Money(_current.PriceMinor)+L(" монет. Денежные вложения не возвращаются."," coins. Construction payments are not refunded.")+"\n"+
+        _summary.Text=L("Стоимость сноса: ","Demolition cost: ")+PlayerText.Money(_current.PriceMinor, _language)+L(". Денежные вложения не возвращаются.",". Construction payments are not refunded.")+"\n"+
             L("Клетки/уровни: ","Cells/levels: ")+string.Join("; ",_current.Cells.Select(c=>$"({c.Position.X},{c.Position.Z}) L{c.Level}"))+"\n"+
             L("Возврат 60% фактических материалов: ","Recover 60% of actual materials: ")+Materials(_current.Recovery)+"\n"+
             L("Обычные запасы сохраняются полностью: ","Normal stocks preserved in full: ")+Materials(_current.Stock)+"\n"+

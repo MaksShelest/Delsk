@@ -28,7 +28,7 @@ public partial class RoadPanel : VBoxContainer
         AddChild(_state);AddChild(_cost);var advanced=new VBoxContainer();advanced.AddChild(GameUi.Hint(L("Маршрут: x,z; x,z (до 64 клеток)","Route: x,z; x,z (up to 64 cells)")));advanced.AddChild(_route);advanced.AddChild(_contributions);AddChild(new UiDisclosure(L("Маршрут и права на дорогу","Route & road rights"),advanced));AddChild(_error);
         var buttons=TabletDesign.Flow();_start.Text=L("Начать / продолжить","Start / resume");_stop.Text=L("Остановить работы","Pause work");_turn.Text=L("Развернуться","Turn around");
         GameUi.Primary(_start);foreach(var b in new[]{_start,_stop,_turn})buttons.AddChild(b);AddChild(buttons);
-        var wages=TabletDesign.Flow();_pay.Text=L("Зарплата группы · монет/тик","Crew wage · coins/tick");wages.AddChild(_wage);wages.AddChild(_pay);AddChild(wages);
+        var wages=TabletDesign.Flow();_pay.Text=L("Зарплата группы за тик","Crew wage per tick");wages.AddChild(_wage);wages.AddChild(_pay);AddChild(wages);
         _pay.Pressed+=()=>{if(Selected>0)Submit(new(ActionKind.SetWage,Group:new(Selected),WageMinor:PlayerDesk.MinorFromCoins(_wage.Value)));};
         _start.Pressed+=()=>Send(true);_stop.Pressed+=()=>Send(false);_turn.Pressed+=()=>{if(Selected>0)Submit(new(ActionKind.TurnVehicle,VehicleId:Selected));};
         AddChild(new UiDisclosure(L("Управление машиной","Vehicle controls"),_exit));
@@ -79,7 +79,7 @@ public partial class RoadPanel : VBoxContainer
             if(PlayerDesk.MinorFromCoins(_wage.Value)!=desired)_wage.SetValueNoSignal(desired/100d);
         }
         var rule=roads.Rules.Stages[_level.Selected];
-        _cost.Text=L("На клетку: ","Per cell: ")+rule.PriceMinor/100m+L(" монет · "," coins · ")+string.Join(", ",rule.Materials.Select(m=>m.Quantity+" "+PlayerText.Item(_language,m.ItemId)))+" · "+rule.Ticks+L(" тиков при 2 рабочих; ×2 лично/при одном."," ticks with 2 workers; ×2 personal/with one.");
+        _cost.Text=L("На клетку: ","Per cell: ")+PlayerText.Money(rule.PriceMinor, _language)+" · "+string.Join(", ",rule.Materials.Select(m=>m.Quantity+" "+PlayerText.Item(_language,m.ItemId)))+" · "+rule.Ticks+L(" тиков при 2 рабочих; ×2 лично/при одном."," ticks with 2 workers; ×2 personal/with one.");
         var traffic=roads.OwnTraffic.FirstOrDefault(t=>t.VehicleId==Selected);
         _state.Text=selectedVehicle is null?L("Сначала приобретите Тракт в автосалоне.","Purchase a Trakt at the dealer first."):
             L("Место ","Position ")+selectedVehicle.Position.X+","+selectedVehicle.Position.Z+" · "+(work?.Reason=="NoStaff"?TabletText.Reason(_language,"NoStaff"):PlayerText.Reason(_language,work?.Reason??traffic?.Reason??"Parked"))+
@@ -93,7 +93,7 @@ public partial class RoadPanel : VBoxContainer
         if(orderKey==_orderKey)return;_orderButtons.Clear();_orderKey=orderKey;foreach(Node n in _orders.GetChildren()){_orders.RemoveChild(n);n.QueueFree();}
         foreach(var order in roads.Orders.Where(o=>o.PaidTick==0).Take(3))
         {
-            var line=new VBoxContainer();line.AddChild(Wrap(L("Городской маршрут: ","City route: ")+$"{order.Cell.X},{order.Cell.Z} · {order.Level} · {order.Reward/100m}"+L(" монет"," coins")));
+            var line=new VBoxContainer();line.AddChild(Wrap(L("Городской маршрут: ","City route: ")+$"{order.Cell.X},{order.Cell.Z} · {order.Level} · {PlayerText.Money(order.Reward, _language)}"));
             var accept=new Button{Text=order.Assignee==0?L("Принять задание","Accept task"):L("Задание принято","Task accepted"),Disabled=order.Assignee!=0};
             var action=new GameAction(ActionKind.AcceptRoadOrder,OfferId:order.Id);var permission=_access(action);accept.Disabled=pending||!permission.Allowed;line.AddChild(GameUi.Hint(permission.Allowed?L("Награда выплачивается за готовое покрытие.","The reward is paid for completed road surface."):GameUi.Reason(_language,permission.ReasonCode)));_orderButtons.Add((accept,action));accept.Pressed+=()=>Submit(action);line.AddChild(accept);_orders.AddChild(line);
         }

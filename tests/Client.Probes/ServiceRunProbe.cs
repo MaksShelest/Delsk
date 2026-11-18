@@ -50,7 +50,7 @@ public partial class ServiceRunProbe : Control
                 string saved=output+"/transit-"+language+".save.json";CheckpointStore.Save(_session,saved);_session=CheckpointStore.Decode(System.IO.File.ReadAllText(saved));_session.SetPaused(true);
                 RunUntil(()=>!_session.Engine.Observe(new(2)).Participant.Busy);Refresh();await Frames();await Click("ServiceUnload_"+order.Id);await Commit();
                 _session.SetPaused(false);_session.Step();_session.SetPaused(true);Refresh();await Frames();Check(Run().Delivered>0&&Run().Cargo>0&&Run().PaidMinor>0,"No actual partial unloading/payment");
-                Check(Named<Label>("ServiceProgress_"+order.Id).Text.Contains(PlayerText.Money(Run().PaidMinor)),"UI does not show actual payment");
+                Check(Named<Label>("ServiceProgress_"+order.Id).Text.Contains(PlayerText.Money(Run().PaidMinor, language)),"UI does not show actual payment");
                 _scroll.EnsureControlVisible(Named<ProgressBar>("ServiceDelivered_"+order.Id));await Frames();await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);GetViewport().GetTexture().GetImage().SavePng(output+"/service-runs-"+language+".png");
                 RunUntil(()=>Run().Stage=="Completed");Check(Run().PaidMinor==order.Quote.FeeMinor&&Run().Delivered==30,"Completion mismatch");
                 _session=CheckpointStore.Decode(System.IO.File.ReadAllText(fixtures+"/in-transit.save.json"));_session.SetPaused(true);order=_session.Engine.InspectServices()!.Orders.Single();

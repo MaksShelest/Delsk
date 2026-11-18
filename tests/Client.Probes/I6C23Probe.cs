@@ -139,7 +139,8 @@ public partial class I6C23Probe : Control
             RequireContrast(theme.GetColor("font_disabled_color", "Button"), disabled, "disabled");
             RequireContrast(theme.GetColor("font_hover_color", "Button"), hover, "hover");
             RequireContrast(theme.GetColor("font_color", "Label"), cardPaper, "label");
-            var price = All(dealerPanel).OfType<Label>().First(l => l.Text.Contains("монет"));
+            var prices = session.Engine.Configuration().Economy!.Fleet!.Models.Select(m => PlayerText.Money(m.PriceMinor, "ru")).ToHashSet(StringComparer.Ordinal);
+            var price = All(dealerPanel).OfType<Label>().First(l => prices.Contains(l.Text));
             RequireContrast(price.GetThemeColor("font_color"), cardPaper, "price");
             RequireContrast(new Color("556860"), cardPaper, "secondary");
             await Shot("03-dealer");

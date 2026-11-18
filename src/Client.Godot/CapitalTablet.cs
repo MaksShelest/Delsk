@@ -97,7 +97,7 @@ public partial class CapitalTablet : VBoxContainer
             long free = (stock?.Quantity ?? 0) - (stock?.Reserved ?? 0);
             row.SellQuantity = Math.Min(free, offer.RemainingQuantity);
             var request = trading.Requests.SingleOrDefault(r => r.OfferId == offer.Id);
-            row.Terms.Text = PlayerText.Item(_language, offer.ItemId) + "  ·  " + PlayerText.Money(offer.UnitPriceMinor) + L(" / шт.", " / unit") +
+            row.Terms.Text = PlayerText.Item(_language, offer.ItemId) + "  ·  " + PlayerText.Money(offer.UnitPriceMinor, _language) + L(" / шт.", " / unit") +
                 "\n" + L("Спрос: ", "Demand: ") + offer.RemainingQuantity + L("   ·   Доступно: ", "   ·   Available: ") + free;
             row.Terms.TooltipText = request is null ? "" : L("Ваша заявка: ", "Your request: ") + request.Quantity;
             row.Deadline.Text = request is not null ? L("Ваша заявка: ", "Your request: ") + request.Quantity :
@@ -122,7 +122,7 @@ public partial class CapitalTablet : VBoxContainer
         _historyCount = trading.Settlements.Length;
         _history.Text = trading.Settlements.Length == 0 ? L("Завершённых сделок пока нет", "No completed trades yet") :
             string.Join("\n\n", trading.Settlements.OrderByDescending(s => s.Tick).Select(s =>
-                PlayerText.Item(_language, s.ItemId) + L("  ·  Продано ", "  ·  Sold ") + $"{s.Accepted}/{s.Requested}  ·  +{PlayerText.Money(s.PaidMinor)}" +
+                PlayerText.Item(_language, s.ItemId) + L("  ·  Продано ", "  ·  Sold ") + $"{s.Accepted}/{s.Requested}  ·  +{PlayerText.Money(s.PaidMinor, _language)}" +
                 "  ·  " + $"{s.Tick / 3600:00}:{s.Tick / 60 % 60:00}:{s.Tick % 60:00}"));
     }
     private void AddOffer(CapitalOfferView offer)

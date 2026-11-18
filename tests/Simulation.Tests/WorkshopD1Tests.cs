@@ -43,6 +43,54 @@ public class WorkshopD1Tests
         Step(s,new(ActionKind.AssignWorkshopWorkers,Enterprise:new(8),Group:new(8),WorkshopId:second,Quantity:2));
         s.Send(new(1),new(ActionKind.SetProductionEnabled,Enterprise:new(8),Enabled:true));s.Send(new(1),new(ActionKind.SetProductionEnabled,Enterprise:new(8),WorkshopId:second,Enabled:true));s.Step();
     }
+    [Fact]
+    public void TwoEquippedWorkshopsIncreasePaidSalesAfterOperatingAndInputCosts()
+    {
+        var profile = VNextI6C8DBalanceProfile.ForOrdinaryMap(MobileEquipmentI4Tests.Profile());
+        var recipe = profile.World.Recipes.Single(r => r.Id == "saw_planks") with { Id = "d1-plank" };
+        var original = Definition();
+        var terminal = new Cell(9, 0);
+        var scenario = original with
+        {
+            Recipes = original.Recipes.Select(r => r.Id == recipe.Id ? recipe : r).ToArray(),
+            CapitalOffers = [new(100, recipe.OutputItem, 60, 900, terminal)],
+            Economy = original.Economy! with { Workshops = profile.World.Rules.Workshops },
+            Labor = new(StepTicks: 1, MobilityNumerator: 1, MobilityDenominator: 1, GrowthPerPeriod: 0),
+            BuildingTypes = original.BuildingTypes!.Select(t => t.Id == "d1-prepared"
+                ? t with { Levels = t.Levels.Select(l => l with { WageMinor = 15 }).ToArray() } : t).ToArray()
+        };
+
+        (long batches, long revenue, long net, long outfit) Measure(bool expanded)
+        {
+            var s = expanded ? Equipped(scenario) : new GameSession(new SimulationEngine(scenario));
+            Supply(s, wood: 30, grain: 0);
+            long start = s.Engine.Tick;
+            var lines = Lines(s);
+            foreach (var line in lines)
+                s.Send(new(1), new(ActionKind.SetProductionEnabled, Enterprise: new(8), WorkshopId: line.Id, Enabled: true));
+            s.AdvanceTo(start + 80);
+            foreach (var line in lines)
+                s.Send(new(1), new(ActionKind.SetProductionEnabled, Enterprise: new(8), WorkshopId: line.Id, Enabled: false));
+            s.Step();
+            long batches = Lines(s).Sum(w => w.CompletedBatches);
+            long quantity = batches * recipe.OutputQuantity;
+            Step(s, new(ActionKind.Transfer, Source: Enterprise(s).OutputId, Destination: StorageC1Tests.Carrier(s),
+                ItemId: recipe.OutputItem, Quantity: quantity));
+            StorageC1Tests.Idle(s);
+            StorageC1Tests.Move(s, terminal);
+            Step(s, new(ActionKind.SellAvailableToCapital, OfferId: 100, ItemId: recipe.OutputItem, Quantity: quantity));
+            s.AdvanceTo(s.Engine.Tick + scenario.TradeWindowTicks);
+            var ledger = s.Engine.Ledger();
+            long revenue = Assert.Single(s.Engine.Inspect().Settlements).PaidMinor;
+            long costs = ledger.Where(l => l.Tick > start && l.Reason is "Wages" or "Energy").Sum(l => l.AmountMinor);
+            long inputs = s.Engine.Inspect().Flows.Single(f => f.ItemId == "wood").RecipeInput * 500;
+            return (batches, revenue, revenue - costs - inputs, ledger.Where(l => l.Reason == "WorkshopOutfit").Sum(l => l.AmountMinor));
+        }
+
+        Assert.Equal((4L, 14_400L, 3_317L, 0L), Measure(false));
+        Assert.Equal((8L, 28_800L, 6_634L, 15_000L), Measure(true));
+    }
+
     [Fact] public void ProfileIsDerivedFromBalanceWithoutFreePlacesOrOutfits()
     {
         var b=MapDesignTests.Balance();var p=VNextWorkshopProfile.Create(MapDesignTests.Economy(),b);

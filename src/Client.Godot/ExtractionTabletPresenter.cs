@@ -91,7 +91,7 @@ public partial class ExtractionTabletPresenter : VBoxContainer
         _progress.MaxValue=Math.Max(1,machine.WorkRequired);_progress.Value=machine.WorkDone;_progress.Visible=machine.WorkRequired>0;
         _fill.MaxValue=Math.Max(1,stock.Capacity);_fill.Value=stock.OccupiedVolume;
         _crew.Text=L("Команда ","Crew ")+group.Headcount+" / "+group.Capacity;
-        _team.Text=_crew.Text+"\n"+L("Ставка: ","Wage: ")+PlayerText.Money(group.WageMinor)+(group.PendingWageMinor is {} wage?L(" → объявлено "," → pending ")+PlayerText.Money(wage):"");
+        _team.Text=_crew.Text+"\n"+L("Ставка: ","Wage: ")+PlayerText.Money(group.WageMinor, _language)+(group.PendingWageMinor is {} wage?L(" → объявлено "," → pending ")+PlayerText.Money(wage, _language):"");
         long carried=stock.Stock.Sum(s=>s.Quantity-s.Reserved);
         _cargoTitle.Text=carried<=0?L("Груз пока пуст","Cargo is empty"):L("Груз: ","Cargo: ")+stock.OccupiedVolume+"/"+stock.Capacity;
         _stock.ShowStock(stock,_language,stock.Stock.Where(s=>s.Quantity>0).Select(s=>s.ItemId));_stock.Visible=carried>0;
@@ -110,14 +110,14 @@ public partial class ExtractionTabletPresenter : VBoxContainer
         else _upgradeLines.Text=L("Уровень ","Level ")+machine.Level+" → "+next.Level+"\n"+
             L("Добыча: ","Output: ")+level.CycleQuantity+" → "+next.CycleQuantity+L(" за цикл."," per cycle.")+"\n"+
             L("Вместимость: ","Capacity: ")+level.StorageCapacity+" → "+next.StorageCapacity+".\n"+
-            L("Стоимость: ","Cost: ")+PlayerText.Money(next.PriceMinor)+L(" монет."," coins.");
+            L("Стоимость: ","Cost: ")+PlayerText.Money(next.PriceMinor, _language)+".";
         string reason="";
         if(next is not null)
         {
             if(machine.Mode!=EquipmentMode.Off||machine.PersonalJobId!=0||machine.CycleId!=0||machine.Motion is not null)
                 reason=L("Сначала остановите технику.","Stop the machine first.");
             else if(view.AvailableCashMinor<next.PriceMinor)
-                reason=L("Недостаточно монет: нужно ","Not enough coins: need ")+PlayerText.Money(next.PriceMinor)+L(", свободно ",", available ")+PlayerText.Money(view.AvailableCashMinor)+".";
+                reason=L("Недостаточно денег. Нужно ","Insufficient funds. Need ")+PlayerText.Money(next.PriceMinor, _language)+L(", свободно ",", available ")+PlayerText.Money(view.AvailableCashMinor, _language)+".";
         }
         _upgradeReason.Text=reason;_upgradeReason.Visible=reason.Length>0;_upgradeSlot.Visible=next is not null;
     }

@@ -1,10 +1,13 @@
 using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 
 namespace Simulation.Core;
 
 public record CapitalDemandSettings(Cell Terminal, int PeriodTicks = 60, long BootstrapBaseBudgetMinor = 20000,
     int DemandNumerator = 11, int DemandDenominator = 10, int CommonWaveTicks = 600,
-    int ItemWaveTicks = 240, int OrderTtlTicks = 180, int PriceScaleBasisPoints = 10000);
+    int ItemWaveTicks = 240, int OrderTtlTicks = 180, int PriceScaleBasisPoints = 10000,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] CapitalDemandAllocation? Allocation = null);
+public sealed record CapitalDemandAllocation(int StarterOrderQuantity, int ProductionBudgetPercent, int MaximumBudgetMultiplier);
 public record CommodityCycle(string ItemId, int PricePhase, int DemandPhase);
 public record MarketPricePoint(string ItemId, long UnitPriceMinor, long PublishedAtTick);
 public record DemandCommodityView(string ItemId, long Harvested, long Produced, long Consumed,

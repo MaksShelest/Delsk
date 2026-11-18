@@ -64,7 +64,7 @@ public partial class I6C75Probe : Control
         session.SetPaused(true); Call(app, "Refresh"); await Frames(3);
         Camera(app, new(node.Position.X, 0, node.Position.Z), 12);
         var buy = All(app).OfType<Button>().First(b => b.Name == "Context_resource_buy_" + node.ItemId);
-        Check(buy.Text.Contains("Купить ресурсную клетку") && buy.Text.Contains("150.00"), "buy names the cell price " + buy.Text);
+        Check(buy.Text.Contains("Купить ресурсную клетку") && buy.Text.Contains("150,00"), "buy names the cell price " + buy.Text);
         buy.GrabFocus(); await Frames(3);
         var preview = Field<Cell[]>(Field<PresentationStage>(app, "_stage"), "_preview");
         Check(preview.Length == 1 && preview[0] == node.Position, "buy highlights " + node.ItemId + " " + buy.Text);

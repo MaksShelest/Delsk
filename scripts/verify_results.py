@@ -213,6 +213,7 @@ def verify(folder):
         assert len(periods) == state['tick'] // rules['periodTicks'] + 1
         smooth = carry = 0
         raw = {n['itemId'] for n in config['resourceNodes']}
+        allocation = rules.get('allocation')
         for number, period in enumerate(periods):
             assert period['period'] == number and period['tick'] == number * rules['periodTicks']
             goods = period['goods']
@@ -225,7 +226,12 @@ def verify(folder):
                        + g.get('constructionRecovered', 0) for g in goods)
             smooth, carry = divmod(smooth + gross + carry, 2)
             assert smooth == period['smoothedOutputBaseMinor'] and carry == period['smoothingRemainder']
-            assert period['targetBaseMinor'] == max(rules['bootstrapBaseBudgetMinor'], smooth * rules['demandNumerator'] // rules['demandDenominator'])
+            target = max(rules['bootstrapBaseBudgetMinor'], smooth * rules['demandNumerator'] // rules['demandDenominator'])
+            if allocation is not None:
+                target = min(target, rules['bootstrapBaseBudgetMinor'] * allocation['maximumBudgetMultiplier'])
+                assert all(g['demandQuantity'] >= allocation['starterOrderQuantity'] for g in goods
+                           if g['itemId'] in {'plank', 'flour', 'cheese', 'gravel'})
+            assert period['targetBaseMinor'] == target
             ordered = sum(g['demandQuantity'] * bases[g['itemId']] for g in goods)
             assert ordered == period['orderedBaseMinor'] and 0 <= period['targetBaseMinor'] - ordered < min(bases.values())
             assert all(g['demandQuantity'] >= 1 for g in goods if g['itemId'] in raw)

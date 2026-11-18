@@ -16,9 +16,16 @@ public static partial class ScenarioValidation
             throw new ArgumentException("Invalid capital demand settings");
         try
         {
-            long minimum = s.ResourceNodes.Select(n => n.ItemId).Distinct(StringComparer.Ordinal)
-                .Sum(id => s.Items.Single(i => i.Id == id).BasePriceMinor);
-            if (d.BootstrapBaseBudgetMinor < minimum) throw new ArgumentException("Bootstrap demand cannot buy each raw resource");
+            var raw = s.ResourceNodes.Select(n => n.ItemId).ToHashSet(StringComparer.Ordinal);
+            if (d.Allocation is { } allocation &&
+                (allocation.StarterOrderQuantity is < 1 or > 10 || allocation.ProductionBudgetPercent is < 0 or > 100 ||
+                 allocation.MaximumBudgetMultiplier is < 1 or > 10))
+                throw new ArgumentException("Invalid capital demand allocation");
+            var starter = d.Allocation is null ? [] : StartingSpecializations.Directions.Select(x => x.OutputItem).ToHashSet(StringComparer.Ordinal);
+            long minimum = s.Items.Sum(item => checked(item.BasePriceMinor *
+                Math.Max(raw.Contains(item.Id) ? 1 : 0, starter.Contains(item.Id) ? d.Allocation!.StarterOrderQuantity : 0)));
+            if (d.BootstrapBaseBudgetMinor < minimum)
+                throw new ArgumentException(d.Allocation is null ? "Bootstrap demand cannot buy each raw resource" : "Bootstrap demand cannot fund the minimum orders");
             _ = checked(s.MaxTicks + d.OrderTtlTicks);
         }
         catch (OverflowException ex) { throw new ArgumentException("Capital demand arithmetic overflow", ex); }
@@ -62,7 +69,7 @@ public sealed partial class SimulationEngine
             Int128 numerator = (Int128)smooth + p.GrossOutputBaseMinor + remainder;
             smooth = checked((long)(numerator / 2)); remainder = (int)(numerator % 2);
             if (p.SmoothedOutputBaseMinor != smooth || p.SmoothingRemainder != remainder ||
-                p.TargetBaseMinor != Math.Max(settings.BootstrapBaseBudgetMinor, checked((long)((Int128)smooth * settings.DemandNumerator / settings.DemandDenominator))) ||
+                p.TargetBaseMinor != CapitalTarget(settings, smooth) ||
                 p.OrderedBaseMinor != p.Goods.Sum(g => checked(g.DemandQuantity * _items[g.ItemId].BasePriceMinor)) ||
                 p.OrderedBaseMinor > p.TargetBaseMinor || p.TargetBaseMinor - p.OrderedBaseMinor >= minimumPrice ||
                 p.MonetaryBudgetMinor != p.Goods.Sum(g => checked(g.DemandQuantity * g.UnitPriceMinor)) || p.ExternalFundingMinor < 0 ||

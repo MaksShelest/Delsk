@@ -254,7 +254,7 @@ public partial class Playfield : Control
     {
         // An explicit pre-I4 research profile retains its historical map snapshot.
         // Ordinary starts without an override always use the current versioned worlds.
-        bool legacy=key==PlayMaps.CompactValley&&OS.GetCmdlineUserArgs().Contains("--economy")&&ReadEconomy(key).Id is not (VNextMobileEquipmentProfile.ProfileId or VNextEquipmentClassesProfile.ProfileId or VNextWageScheduleProfile.ProfileId or VNextResourceRightsProfile.ProfileId or VNextStartingSpecializationProfile.ProfileId or VNextProvincialSupportProfile.ProfileId);
+        bool legacy=key==PlayMaps.CompactValley&&OS.GetCmdlineUserArgs().Contains("--economy")&&ReadEconomy(key).Id is not (VNextMobileEquipmentProfile.ProfileId or VNextEquipmentClassesProfile.ProfileId or VNextWageScheduleProfile.ProfileId or VNextResourceRightsProfile.ProfileId or VNextStartingSpecializationProfile.ProfileId or VNextProvincialSupportProfile.ProfileId or VNextI6C8DBalanceProfile.ProfileId);
         return JsonSerializer.Deserialize<ScenarioDefinition>(Text(legacy?PlayMaps.Resource(key):PlayMaps.NewGameResource(key)),SimulationJson.Options)??throw new InvalidOperationException(key);
     }
 
@@ -668,8 +668,8 @@ public partial class Playfield : Control
         if(_accountNotice is not null)
         {
             long debt=view.PersonalAccount?.DebtMinor??0;
-            _accountNotice.Text=_friendly?PlayerText.Money(view.AvailableCashMinor):L("Счёт","Account")+(view.PersonalAccount?.UnreadCount>0?" ●":"");
-            _accountNotice.TooltipText=L("Свободно ","Available ")+PlayerText.Money(view.AvailableCashMinor)+L(" · баланс "," · balance ")+PlayerText.Money(view.CashMinor)+(debt>0?L(" · долг "," · debt ")+PlayerText.Money(debt):"");
+            _accountNotice.Text=_friendly?PlayerText.Money(view.AvailableCashMinor, _language):L("Счёт","Account")+(view.PersonalAccount?.UnreadCount>0?" ●":"");
+            _accountNotice.TooltipText=L("Свободно ","Available ")+PlayerText.Money(view.AvailableCashMinor, _language)+L(" · баланс "," · balance ")+PlayerText.Money(view.CashMinor, _language)+(debt>0?L(" · долг "," · debt ")+PlayerText.Money(debt, _language):"");
             var ink=debt>0?new Color("6a4a16"):new Color("24312d");
             foreach(string state in new[]{"font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"})
                 _accountNotice.AddThemeColorOverride(state,ink);
@@ -697,7 +697,7 @@ public partial class Playfield : Control
     }
 
     private string HudStock(PlayerView view, InventoryView pack) =>
-        $"{PlayerText.Money(view.CashMinor)} · {L("Рюкзак","Pack")} {pack.OccupiedVolume}/{pack.Capacity}";
+        $"{PlayerText.Money(view.CashMinor, _language)} · {L("Рюкзак","Pack")} {pack.OccupiedVolume}/{pack.Capacity}";
 
     private void UpdateHudGoods(InventoryView pack) => _hudGoods?.ShowInventory(pack, _language);
 
@@ -774,7 +774,7 @@ public partial class Playfield : Control
     private void WageRow(Container parent, EmploymentView group)
     {
         long shown = group.PendingWageMinor ?? group.WageMinor;
-        parent.AddChild(new Label { Text = $"{group.Role} {group.Headcount}/{group.Capacity} {PlayerText.Money(shown)}" });
+        parent.AddChild(new Label { Text = $"{group.Role} {group.Headcount}/{group.Capacity} {PlayerText.Money(shown, _language)}" });
         var row = new HBoxContainer();
         parent.AddChild(row);
         Button(row, "wage.raise", () => Offer(PlayerDesk.Wage(group.Id.Value, shown + (_scenario.Economy ?? new()).PlayerWageStepMinor)));
@@ -1128,12 +1128,12 @@ public partial class Playfield : Control
                     ? PlayerText.Local(_language, "Добыча остановлена: инвентарь заполнен.", "Harvesting stopped: inventory full.")
                     : PlayerText.Local(_language, "Добыча остановлена. Незавершённый прогресс сброшен.", "Harvesting stopped. Unfinished progress discarded.");
             if (done.Type == "CapitalSaleSettled")
-                _gain = PlayerText.Local(_language, "Продано: ", "Sold: ") + PlayerText.Item(_language, done.ItemId) + $" ×{done.Quantity} · +{PlayerText.Money(done.AmountMinor)}";
+                _gain = PlayerText.Local(_language, "Продано: ", "Sold: ") + PlayerText.Item(_language, done.ItemId) + $" ×{done.Quantity} · +{PlayerText.Money(done.AmountMinor, _language)}";
             if (done.Type == "BuildingConstructed")
             {
                 var materials = _scenario.BuildingTypes?.FirstOrDefault(t => t.Id == done.ReasonCode)?.Levels.Single(l => l.Level == 1).Materials;
                 _gain = PlayerText.Local(_language, "Построено: ", "Built: ") + PlayerText.Building(_language, done.ReasonCode) +
-                    $" · -{PlayerText.Money(done.AmountMinor)}" +
+                    $" · -{PlayerText.Money(done.AmountMinor, _language)}" +
                     (materials is null ? "" : " · " + string.Join(", ", materials.Select(m => "-" + PlayerText.Item(_language, m.ItemId) + " ×" + m.Quantity)));
             }
         }

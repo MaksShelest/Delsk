@@ -33,7 +33,7 @@ public partial class CityInboxPanel : VBoxContainer
             string status=viewedPending?.Contains(n.Key)==true?L("Просмотр запрошен · включите время","View queued · run time"):n.Unread?L("● Новое","● New"):L("Просмотрено","Viewed");
             if(n.Category=="bill")status+=" · "+(n.Resolved?L("Оплачен","Paid"):L("Не погашен","Unpaid"));
             else if(n.Category=="service")status+=" · "+(n.Resolved?L("Закрыто","Closed"):L("Требует внимания","Needs attention"));
-            row.Text.Text=category+" · "+status+"\n"+(n.Item=="demolition"?L("Снос завершён · #","Demolition complete · #")+n.Id:n.Category=="bill"?L("Счёт #","Invoice #")+n.Id+" · "+PlayerText.Money(n.Quantity):n.Category=="work"&&n.Target=="building"?(n.Item=="workshop"?L("Цех","Workshop"):PlayerText.Building(_language,n.Item))+" #"+n.Id:n.Target=="road"?n.Quantity switch{1=>L("Грунтовка","Dirt road"),2=>L("Дорога I","Road I"),_=>L("Магистраль II","Highway II")}:n.Item.Length>0?PlayerText.Item(_language,n.Item)+" ×"+n.Quantity:"#"+n.Id)+
+            row.Text.Text=category+" · "+status+"\n"+(n.Item=="demolition"?L("Снос завершён · #","Demolition complete · #")+n.Id:n.Category=="bill"?L("Счёт #","Invoice #")+n.Id+" · "+PlayerText.Money(n.Quantity, _language):n.Category=="work"&&n.Target=="building"?(n.Item=="workshop"?L("Цех","Workshop"):PlayerText.Building(_language,n.Item))+" #"+n.Id:n.Target=="road"?n.Quantity switch{1=>L("Грунтовка","Dirt road"),2=>L("Дорога I","Road I"),_=>L("Магистраль II","Highway II")}:n.Item.Length>0?PlayerText.Item(_language,n.Item)+" ×"+n.Quantity:"#"+n.Id)+
                 (n.Deadline>0?"\n"+L("Осталось активного времени: ","Active time remaining: ")+GameDuration.Format(n.Deadline-tick,_language)+" · t"+n.Deadline:"");
             row.Text.AddThemeColorOverride("font_color",n.Category=="overflow"?new Color("a2491e"):n.Category=="bill"?new("a72f43"):n.Category=="service"?new("5b408c"):new("286455"));
             row.Read.Disabled=pending||!n.Unread||viewedPending?.Contains(n.Key)==true;row.Open.Disabled=pending;
@@ -72,8 +72,8 @@ public partial class CityJourneyPanel : VBoxContainer
         var lesson = CityJourney.Steps[_state.TutorialPage];
         _body.Text = L(lesson.BodyRu, lesson.BodyEn);
         if (_wholeParcels && _state.TutorialPage == 1)
-            _body.Text = L("Промышленный участок 2×3 покупается одним действием. Подойдите к отмеченной клетке и нажмите «Купить участок». Полная цена — 600 монет. При участии в программе провинции первый участок оплачивает столица. Доставьте материалы на строительную клетку и начните стройку.",
-                "A 2×3 industrial parcel is bought in one action. Walk to the marked cell and select Buy parcel. The total price is 600 coins. The capital funds your first parcel if you join the provincial program. Deliver the materials to the building cell and start construction.");
+            _body.Text = L("Промышленный участок 2×3 покупается одним действием. Подойдите к отмеченной клетке и нажмите «Купить участок». Полная цена участка — 600,00. При участии в программе провинции первый участок оплачивает столица. Доставьте материалы на строительную клетку и начните стройку.",
+                "A 2×3 industrial parcel is bought in one action. Walk to the marked cell and select Buy parcel. The total parcel price is 600.00. The capital funds your first parcel if you join the provincial program. Deliver the materials to the building cell and start construction.");
         if (_friendly)
         {
             (_body.Text, _go.Text) = lesson.Destination switch

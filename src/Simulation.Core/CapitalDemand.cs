@@ -41,6 +41,38 @@ public sealed partial class SimulationEngine
     {
         if (_config.CapitalDemand is { } settings && Tick % settings.PeriodTicks == 0) PublishCapitalDemand();
     }
+
+    private static long CapitalTarget(CapitalDemandSettings settings, long smoothed)
+    {
+        Int128 target = Int128.Max(settings.BootstrapBaseBudgetMinor, (Int128)smoothed * settings.DemandNumerator / settings.DemandDenominator);
+        if (settings.Allocation is { } allocation)
+            target = Int128.Min(target, (Int128)settings.BootstrapBaseBudgetMinor * allocation.MaximumBudgetMultiplier);
+        return checked((long)target);
+    }
+
+    private long AllocateProductionDemand(DemandCommodityView[] goods, long[] quantities, long remaining,
+        CapitalDemandAllocation allocation)
+    {
+        // Include two earlier periods so that intermittent batches also contribute to the order mix.
+        var recent = _demandPeriods.TakeLast(2).ToArray();
+        var available = goods.Select((good, index) => checked(good.Produced + recent.Sum(period => period.Goods[index].Produced))).ToArray();
+        var values = goods.Select((good, index) => (Int128)available[index] * _items[good.ItemId].BasePriceMinor).ToArray();
+        Int128 total = values.Aggregate(Int128.Zero, (sum, value) => sum + value);
+        if (total == 0) return remaining;
+
+        long budget = checked((long)((Int128)remaining * allocation.ProductionBudgetPercent / 100));
+        for (int i = 0; i < goods.Length; i++)
+        {
+            long price = _items[goods[i].ItemId].BasePriceMinor;
+            // Decimal-free proportional allocation. The budget and unit amount are both bounded.
+            Int128 share = (Int128)budget * available[i] / total;
+            long additional = checked((long)Int128.Min(available[i], share));
+            quantities[i] = checked(quantities[i] + additional);
+            remaining = checked(remaining - additional * price);
+        }
+        return remaining;
+    }
+
     private void PublishCapitalDemand()
     {
         var settings = _config.CapitalDemand!;
@@ -56,10 +88,19 @@ public sealed partial class SimulationEngine
         long stockChange = metrics.Aggregate(0L, (sum, m) => checked(sum + checked(m.StockChange * _items[m.ItemId].BasePriceMinor)));
         Int128 smoothNumerator = (Int128)(previous?.SmoothedOutputBaseMinor ?? 0) + gross + (previous?.SmoothingRemainder ?? 0);
         long smoothed = checked((long)(smoothNumerator / 2)); int carry = (int)(smoothNumerator % 2);
-        long target = Math.Max(settings.BootstrapBaseBudgetMinor, checked((long)((Int128)smoothed * settings.DemandNumerator / settings.DemandDenominator)));
+        long target = CapitalTarget(settings, smoothed);
         var raw = _config.ResourceNodes.Select(n => n.ItemId).Distinct(StringComparer.Ordinal).ToHashSet(StringComparer.Ordinal);
         long[] quantities = metrics.Select(m => raw.Contains(m.ItemId) ? 1L : 0L).ToArray();
+        if (settings.Allocation is { } basket)
+        {
+            var starter = StartingSpecializations.Directions.Select(d => d.OutputItem).ToHashSet(StringComparer.Ordinal);
+            for (int i = 0; i < metrics.Length; i++)
+                if (starter.Contains(metrics[i].ItemId))
+                    quantities[i] = Math.Max(quantities[i], basket.StarterOrderQuantity);
+        }
         long remaining = checked(target - metrics.Select((m, i) => checked(quantities[i] * _items[m.ItemId].BasePriceMinor)).Sum());
+        if (settings.Allocation is { } allocation)
+            remaining = AllocateProductionDemand(metrics, quantities, remaining, allocation);
         long[] weights = metrics.Select(m => (long)Wave(Tick, settings.ItemWaveTicks,
             _commodityCycles.Single(c => c.ItemId == m.ItemId).DemandPhase, EconomyRules.DemandWeightMinimumBasisPoints, EconomyRules.DemandWeightMaximumBasisPoints)).ToArray();
         long totalWeight = weights.Sum();

@@ -138,7 +138,7 @@ public partial class ParticipantMarketTablet : VBoxContainer
             foreach(Node n in _ownOffers.GetChildren()){_ownOffers.RemoveChild(n);n.QueueFree();}
             _ownOffers.AddChild(TabletDesign.Heading(L("Мои опубликованные лоты","My published lots"),22));
             var mine=market.Offers.Where(o=>o.Seller==_view.Participant.Id).ToArray();
-            foreach(var own in mine)_ownOffers.AddChild(new Label{Text="#"+own.Id+" · "+PlayerText.Item(_language,own.ItemId)+" ×"+own.Quantity+" · "+PlayerText.Money(own.BasePriceMinor)+" · "+(own.Status==MarketOfferStatus.Closed?L("Закрыт","Closed"):own.Status==MarketOfferStatus.Auction?L("Аукцион","Auction"):L("Сбор заявок","Collecting requests")),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+            foreach(var own in mine)_ownOffers.AddChild(new Label{Text="#"+own.Id+" · "+PlayerText.Item(_language,own.ItemId)+" ×"+own.Quantity+" · "+PlayerText.Money(own.BasePriceMinor, _language)+" · "+(own.Status==MarketOfferStatus.Closed?L("Закрыт","Closed"):own.Status==MarketOfferStatus.Auction?L("Аукцион","Auction"):L("Сбор заявок","Collecting requests")),AutowrapMode=TextServer.AutowrapMode.WordSmart});
             if(mine.Length==0)_ownOffers.AddChild(new Label{Text=L("Вы ещё не публиковали лоты.","You have not published any lots yet.")});
             foreach (Node n in _rows.GetChildren()){_rows.RemoveChild(n);n.QueueFree();}
             var offers = market.Offers.Where(o => (_preferences.ItemId.Length == 0 || o.ItemId == _preferences.ItemId));
@@ -157,11 +157,11 @@ public partial class ParticipantMarketTablet : VBoxContainer
         foreach (var row in _windows)
         {
             var o = market.Offers.Single(o => o.Id == row.Id);
-            row.Text.Text = $"" + PlayerText.Item(_language,o.ItemId) + $" ×{o.Quantity} · " + PlayerText.Money(o.BasePriceMinor) +
+            row.Text.Text = $"" + PlayerText.Item(_language,o.ItemId) + $" ×{o.Quantity} · " + PlayerText.Money(o.BasePriceMinor, _language) +
                 L(" за 1 · продавец ", " per unit · seller ") + WorldSkins.ActorName(o.Seller.Value,_language) + $" · ({o.Position.X},{o.Position.Z}) · " +
                 (o.Status == MarketOfferStatus.Closed ? L("Закрыт", "Closed") : o.Status == MarketOfferStatus.Auction ? L("Аукцион, раунд ", "Auction, round ") + o.Round : L("Сбор заявок", "Collecting requests")) +
                 L(" · осталось секунд: ", " · seconds left: ") + Math.Max(0,o.CutoffTick-_view.Tick) +
-                (o.Bids.Length == 0 ? "" : "\n" + L("Публичные ставки: ", "Public bids: ") + string.Join("; ",o.Bids.Select(b => $"#{b.Buyer.Value} ×{b.Quantity}: " + PlayerText.Money(b.CurrentPriceMinor))));
+                (o.Bids.Length == 0 ? "" : "\n" + L("Публичные ставки: ", "Public bids: ") + string.Join("; ",o.Bids.Select(b => $"#{b.Buyer.Value} ×{b.Quantity}: " + PlayerText.Money(b.CurrentPriceMinor, _language))));
             int duration = o.Status == MarketOfferStatus.Auction ? market.Rules.AuctionRoundTicks : _scenario.TradeWindowTicks;
             row.Bar.Value = o.Status == MarketOfferStatus.Closed ? 100 : 100d * Math.Clamp(duration-Math.Max(0,o.CutoffTick-_view.Tick),0,duration)/duration;
         }
@@ -181,7 +181,7 @@ public partial class ParticipantMarketTablet : VBoxContainer
             display.Collect.TooltipText=L("Подойдите к месту выдачи. Количество ограничено выбранным значением и местом в рюкзаке.","Visit the pickup point. Collection is limited by the selected amount and backpack capacity.");_collectButtons.Add((claim.Id,display.Collect));
         }
         if(_collectButtons.Count==0&&_pickups.GetChildCount()==0)_pickups.AddChild(GameUi.Hint(L("Оплаченных покупок к выдаче нет.","No paid purchases awaiting collection.")));
-        _history.Text = L("Результаты: ","Results: ") + string.Join("; ",market.Allocations.TakeLast(8).Select(a => $"#{a.Id} " + ClaimStatus(a.Status) + " · " + L("выдано ","collected ") + a.CollectedQuantity + L(" · штраф "," · fine ") + PlayerText.Money(a.FineMinor)));
+        _history.Text = L("Результаты: ","Results: ") + string.Join("; ",market.Allocations.TakeLast(8).Select(a => $"#{a.Id} " + ClaimStatus(a.Status) + " · " + L("выдано ","collected ") + a.CollectedQuantity + L(" · штраф "," · fine ") + PlayerText.Money(a.FineMinor, _language)));
         UpdateActions();
     }
     private string ClaimStatus(string status) => status switch
@@ -198,7 +198,7 @@ public partial class ParticipantMarketTablet : VBoxContainer
         var offer = market.Offers.SingleOrDefault(o => o.Id == _offer);
         var bid = market.Bids.SingleOrDefault(b => b.OfferId == _offer);
         _selected.Text = offer is null ? L("Выберите лот; затем укажите количество и максимальную цену за 1.","Select a lot, then enter quantity and maximum unit price.") :
-            $"#{offer.Id} · " + PlayerText.Item(_language,offer.ItemId) + (bid is null ? "" : L(" · моя ставка "," · my bid ") + PlayerText.Money(bid.CurrentPriceMinor) + L(" · мой лимит "," · my limit ") + PlayerText.Money(bid.MaximumPriceMinor));
+            $"#{offer.Id} · " + PlayerText.Item(_language,offer.ItemId) + (bid is null ? "" : L(" · моя ставка "," · my bid ") + PlayerText.Money(bid.CurrentPriceMinor, _language) + L(" · мой лимит "," · my limit ") + PlayerText.Money(bid.MaximumPriceMinor, _language));
         bool unavailable = _pending || offer is null || offer.Seller == _view.Participant.Id || offer.Status == MarketOfferStatus.Closed;
         _buy.Disabled = !_view.TradingParticipants.Contains(_view.Participant.Id) || unavailable || offer?.Status != MarketOfferStatus.Collecting || Price < offer?.BasePriceMinor || (Int128)Quantity * (offer?.BasePriceMinor ?? 0) > _view.AvailableCashMinor + (bid is null ? 0 : (Int128)bid.Quantity*bid.CurrentPriceMinor);
         _raise.Disabled = !_view.TradingParticipants.Contains(_view.Participant.Id) || unavailable || offer?.Status != MarketOfferStatus.Auction || bid is null || Price > bid.MaximumPriceMinor || Price-bid.CurrentPriceMinor < market.Rules.MinimumRaiseMinor;

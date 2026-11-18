@@ -73,7 +73,7 @@ public partial class CurrentDealsPanel : VBoxContainer
         void Add(string id, string caption, GameAction action) => actions.Add((id, caption, action));
         foreach (var offer in view.CapitalOffers.Where(o => o.RemainingQuantity > 0 && (o.ExpiresAtTick is null || o.ExpiresAtTick >= view.Tick)))
         {
-            Add("supply-capital:" + offer.Id, L("Принять поставку столице: ", "Commit to capital delivery: ") + PlayerText.Item(_language, offer.ItemId) + $" ×{Quantity} · " + PlayerText.Money(offer.UnitPriceMinor),
+            Add("supply-capital:" + offer.Id, L("Принять поставку столице: ", "Commit to capital delivery: ") + PlayerText.Item(_language, offer.ItemId) + $" ×{Quantity} · " + PlayerText.Money(offer.UnitPriceMinor, _language),
                 new(ActionKind.AcceptDeliveryQuantity, OfferId: offer.Id, Quantity: Quantity, OfferWindow: offer.Window));
             if (view.SupplyRequests!.Any(r=>r.CapitalOfferId==offer.Id)) Add("withdraw-capital:" + offer.Id, L("Снять свою заявку поставки столице #", "Withdraw capital supply request #") + offer.Id,
                 new(ActionKind.WithdrawSupplyRequest, OfferId: offer.Id, OfferWindow: offer.Window));
@@ -82,7 +82,7 @@ public partial class CurrentDealsPanel : VBoxContainer
             if (offer.Buyer == view.Participant.Id) Add("cancel:" + offer.Id, L("Отменить незаключённый остаток закупки #", "Cancel uncontracted buy offer #") + offer.Id, new(ActionKind.CancelBuyOffer, BuyOfferId: offer.Id));
             else
             {
-                Add("supply:" + offer.Id, L("Принять поставку #", "Commit to delivery #") + offer.Id + " · " + PlayerText.Item(_language, offer.ItemId) + $" ×{Quantity} · " + PlayerText.Money(offer.UnitPriceMinor), new(ActionKind.AcceptDeliveryQuantity, BuyOfferId: offer.Id, Quantity: Quantity, OfferWindow: offer.Window));
+                Add("supply:" + offer.Id, L("Принять поставку #", "Commit to delivery #") + offer.Id + " · " + PlayerText.Item(_language, offer.ItemId) + $" ×{Quantity} · " + PlayerText.Money(offer.UnitPriceMinor, _language), new(ActionKind.AcceptDeliveryQuantity, BuyOfferId: offer.Id, Quantity: Quantity, OfferWindow: offer.Window));
                 if (view.SupplyRequests!.Any(r=>r.BuyOfferId==offer.Id)) Add("withdraw:" + offer.Id, L("Снять свою заявку поставки #", "Withdraw supply request #") + offer.Id, new(ActionKind.WithdrawSupplyRequest, BuyOfferId: offer.Id, OfferWindow: offer.Window));
             }
         foreach (var contract in (view.Contracts ?? []).Where(c => c.Supplier == view.Participant.Id && c.ClosedTick is null))

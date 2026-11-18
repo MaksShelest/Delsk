@@ -719,7 +719,9 @@ public static class PlayerText
     }
 
     public static string Local(string language, string ru, string en) => language == "ru" ? ru : en;
-    public static string Money(long minor) => (minor / 100m).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+    public static string Money(long minor, string language = "en") => Money((decimal)minor, language);
+    public static string Money(decimal minor, string language) => (minor / 100m).ToString("0.00",
+        language == "ru" ? System.Globalization.CultureInfo.GetCultureInfo("ru-RU") : System.Globalization.CultureInfo.InvariantCulture);
     /// <summary>Именительный падеж. Для фраз «добудьте/продайте» есть <see cref="ActionPhrase"/>.</summary>
     public static string Accusative(string language, string itemId)
     {

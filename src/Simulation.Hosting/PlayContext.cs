@@ -64,11 +64,11 @@ public static class PlayContext
             if(ResourceRightsRules.Purchasable(open,site.Public,site.Owner?.Value,site.Tenant?.Value))
             {
                 string block=site.Reserved>0?PlayerText.Reason(language,"ResourceBusy"):view.AvailableCashMinor<site.PurchasePriceMinor?PlayerText.Reason(language,"NoMoney"):"";
-                choices.Add(new("resource:buy:"+site.ItemId,L(language,"Купить ресурсную клетку — ","Buy resource cell — ")+PlayerText.Item(language,site.ItemId)+" · "+PlayerText.Money(site.PurchasePriceMinor),
+                choices.Add(new("resource:buy:"+site.ItemId,L(language,"Купить ресурсную клетку — ","Buy resource cell — ")+PlayerText.Item(language,site.ItemId)+" · "+PlayerText.Money(site.PurchasePriceMinor, language),
                     new(ActionKind.BuyResource,Target:cell,ItemId:site.ItemId),block.Length==0,block));
             }
             if(ResourceRightsRules.Leasable(open,site.Public,site.Owner?.Value,site.Tenant?.Value))
-                choices.Add(new("resource:lease:"+site.ItemId,L(language,"Арендовать на ","Lease for ")+site.LeaseTicks+L(language," тиков — "," ticks — ")+PlayerText.Money(site.LeasePriceMinor),
+                choices.Add(new("resource:lease:"+site.ItemId,L(language,"Арендовать на ","Lease for ")+site.LeaseTicks+L(language," тиков — "," ticks — ")+PlayerText.Money(site.LeasePriceMinor, language),
                     new(ActionKind.LeaseResource,Target:cell,ItemId:site.ItemId),view.AvailableCashMinor>=site.LeasePriceMinor));
         }
         if (view.Harvest is { } harvest)
@@ -97,11 +97,11 @@ public static class PlayContext
             var reasons = new List<string>();
             if (!free) reasons.Add(L(language, "Участок уже занят.", "The parcel is already taken."));
             if (!entry) reasons.Add(L(language, "Нет подъезда к городской дороге.", "No entrance to the city road."));
-            if (!money) reasons.Add(L(language, "Нужно 600 монет.", "600 coins are required."));
+            if (!money) reasons.Add(L(language, "Нужно 600,00.", "You need 600.00."));
             choices.Add(new("buy:" + plot.Id.Value,
                 cover == IndustrialParcelRules.PriceMinor
                     ? L(language, "Купить участок 2×3 по программе", "Buy the 2×3 parcel with the grant")
-                    : L(language, "Купить участок — 600 монет", "Buy parcel — 600 coins"),
+                    : L(language, "Купить участок за 600,00", "Buy parcel for 600.00"),
                 PlayerDesk.BuyPlot(plot.Id.Value), free && entry && money,
                 reasons.Count == 0 ? caption : caption + " " + string.Join(" ", reasons)));
         }
@@ -110,11 +110,11 @@ public static class PlayContext
             (plot.ReservedBy is null || plot.ReservedBy == view.Participant.Id))
         {
             choices.Add(new("buy:" + plot.Id.Value,
-                string.Format(CultureInfo.InvariantCulture, PlayerText.Get(language, "context.buy"), PlayerText.Money(plot.PriceMinor)),
+                string.Format(CultureInfo.InvariantCulture, PlayerText.Get(language, "context.buy"), PlayerText.Money(plot.PriceMinor, language)),
                 PlayerDesk.BuyPlot(plot.Id.Value)));
             if (plot.ReservedBy is null)
                 choices.Add(new("reserve:" + plot.Id.Value,
-                    string.Format(CultureInfo.InvariantCulture, PlayerText.Get(language, "context.reserve"), PlayerText.Money(ReservationFee(plot.PriceMinor, view.Economy))),
+                    string.Format(CultureInfo.InvariantCulture, PlayerText.Get(language, "context.reserve"), PlayerText.Money(ReservationFee(plot.PriceMinor, view.Economy), language)),
                     PlayerDesk.ReservePlot(plot.Id.Value)));
         }
         if(tablets && plot is not null && view.Storage?.Ground.Any(g=>g.PlotId==plot.Id.Value)==true)choices.Insert(0,new("object:ground:"+plot.Id.Value,L(language,"Хранение на земле · склад","Ground storage · warehouse"),null));
@@ -146,7 +146,7 @@ public static class PlayContext
             if(type.Kind==BuildingKind.Production&&view.Development is {} development&&!development.BuildAnchors.IsEmpty&&!development.BuildAnchors.Contains(cell))
                 issues.Add(PlayerText.Reason(language,"BuildAtContourAnchor"));
             if (view.AvailableCashMinor < level.PriceMinor)
-                issues.Add(L(language, "Деньги: нужно ", "Money needed: ") + PlayerText.Money(level.PriceMinor) + L(language, ", доступно ", ", available ") + PlayerText.Money(view.AvailableCashMinor));
+                issues.Add(L(language, "Деньги: нужно ", "Money needed: ") + PlayerText.Money(level.PriceMinor, language) + L(language, ", доступно ", ", available ") + PlayerText.Money(view.AvailableCashMinor, language));
             var materialInventory=(type.Kind==BuildingKind.Warehouse&&scenario.Economy?.Storage is not null||type.Kind==BuildingKind.Production&&view.Development is not null)&&view.Storage?.Ground.FirstOrDefault(g=>g.PlotId==plot?.Id.Value) is {} ground?view.Inventories.Single(i=>i.Id.Value==ground.InventoryId):pack;
             foreach (var cost in level.Materials)
                 if (Free(materialInventory, cost.ItemId) < cost.Quantity)
@@ -168,7 +168,7 @@ public static class PlayContext
                 (!p.IsShopSite && p.ShopParticipantId is null || (p.IsShopSite || p.ShopParticipantId == view.Participant.Id) && type.Kind == BuildingKind.Shop))))
                 issues.Add(L(language, "Нет свободной собственной площади под всё здание.", "The full footprint must be free and owned."));
             string materials = string.Join(", ", level.Materials.Select(m => PlayerText.Item(language, m.ItemId) + " ×" + m.Quantity));
-            string price = PlayerText.Money(level.PriceMinor) + (materials.Length > 0 ? " + " + materials : "");
+            string price = PlayerText.Money(level.PriceMinor, language) + (materials.Length > 0 ? " + " + materials : "");
             choices.Add(new("build:" + type.Id, L(language, "Построить: ", "Build: ") + PlayerText.Building(language, type.Id) + " — " + price,
                 PlayerDesk.Build(cell, type.Id), issues.Count == 0, string.Join("; ", issues)));
         }
@@ -202,7 +202,7 @@ public static class PlayContext
             .OrderBy(o => o.ItemId, StringComparer.Ordinal).ThenBy(o => o.Id))
         {
             long available = Free(pack, offer.ItemId);
-            string terms = $"#{offer.Id} · " + PlayerText.Item(language, offer.ItemId) + " · " + PlayerText.Money(offer.UnitPriceMinor) +
+            string terms = $"#{offer.Id} · " + PlayerText.Item(language, offer.ItemId) + " · " + PlayerText.Money(offer.UnitPriceMinor, language) +
                 L(language, "/шт. · спрос ", "/unit · demand ") + offer.RemainingQuantity;
             long reserved = pack.Stock.Where(s => s.ItemId == offer.ItemId).Sum(s => s.Reserved);
             terms += L(language, " · свободно ", " · available ") + available + L(language, ", резерв ", ", reserved ") + reserved;
@@ -355,6 +355,6 @@ public static class PlayContext
         if (plot.ShopParticipantId is { } assigned)
             state = L(language, "Место лавочки участника ", "Shop site for participant ") + assigned.Value + ". " +
                 (assigned == view.Participant.Id ? state : L(language, "Чужое место: покупать и строить нельзя.", "Assigned to another participant: no purchase or building."));
-        return state + " " + string.Format(CultureInfo.InvariantCulture, PlayerText.Get(language, "plot.price"), PlayerText.Money(plot.PriceMinor), PlayerText.Money(ReservationFee(plot.PriceMinor, view.Economy)));
+        return state + " " + string.Format(CultureInfo.InvariantCulture, PlayerText.Get(language, "plot.price"), PlayerText.Money(plot.PriceMinor, language), PlayerText.Money(ReservationFee(plot.PriceMinor, view.Economy), language));
     }
 }

@@ -681,7 +681,7 @@ theme_override_colors/font_color = Color(0.14510, 0.24706, 0.21176, 1)
 theme_override_font_sizes/font_size = 27
 theme_override_fonts/font = ExtResource("bold")
 mouse_default_cursor_shape = 2
-tooltip_text = "Уменьшить ставку на 0,05 монеты"
+tooltip_text = "Уменьшить ставку на 0,05"
 
 [node name="WageAmountBox" type="Panel" parent="Panel/Workers"]
 layout_mode = 0
@@ -744,7 +744,7 @@ theme_override_colors/font_color = Color(0.14510, 0.24706, 0.21176, 1)
 theme_override_font_sizes/font_size = 27
 theme_override_fonts/font = ExtResource("bold")
 mouse_default_cursor_shape = 2
-tooltip_text = "Повысить ставку на 0,05 монеты"
+tooltip_text = "Повысить ставку на 0,05"
 
 [node name="Hint" type="Label" parent="Panel/Workers"]
 layout_mode = 0
@@ -1254,7 +1254,7 @@ theme_override_colors/font_color = Color(0.14510, 0.24706, 0.21176, 1)
 theme_override_font_sizes/font_size = 20
 theme_override_fonts/font = ExtResource("bold")
 mouse_default_cursor_shape = 2
-tooltip_text = "Стоимость: 200 монет и 10 досок во встроенном запасе. Откроются 4 рабочих места; люди не появятся мгновенно."
+tooltip_text = "Стоимость: 200,00 и 10 досок во встроенном запасе. Откроются 4 рабочих места; люди не появятся мгновенно."
 
 [node name="FooterLine" type="Panel" parent="Panel"]
 layout_mode = 0
@@ -1339,7 +1339,7 @@ offset_right = 390.0
 offset_bottom = 150.0
 theme_override_font_sizes/font_size = 23
 theme_override_colors/font_color = Color(0.145,0.247,0.212,1)
-text = "200 монет"
+text = "200,00"
 horizontal_alignment = 1
 
 [node name="BuyTransport" type="Button" parent="Panel/Delivery/NoTransport"]

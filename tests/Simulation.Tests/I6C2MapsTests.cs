@@ -151,7 +151,7 @@ public class I6C2MapsTests
         var s=new GameSession(new(d));var action=new GameAction(ActionKind.BuyVehicle,VehicleId:listing.Id);
         Assert.True(s.Engine.AccessFor(Human,action).Allowed);Assert.False(s.Engine.AccessFor(new(3),action).Allowed);
         foreach(string language in new[]{"ru","en"})
-        {var choice=ContextActions.Read(s.Engine,Human,d,language).First(c=>c.Command==action);Assert.Contains("Спутник-20",choice.Label);Assert.Contains(PlayerText.Money(d.Economy!.Fleet!.Models.Single(m=>m.Id==listing.ModelId).PriceMinor),choice.Label);}
+        {var choice=ContextActions.Read(s.Engine,Human,d,language).First(c=>c.Command==action);Assert.Contains("Спутник-20",choice.Label);Assert.Contains(PlayerText.Money(d.Economy!.Fleet!.Models.Single(m=>m.Id==listing.ModelId).PriceMinor, language),choice.Label);}
         Step(s,action);Step(s,action,false);FleetE1Tests.Step(s,action,actor:2);
         var copy=CheckpointStore.Decode(CheckpointStore.Encode(s));s.AdvanceTo(s.Engine.Tick+6);copy.AdvanceTo(s.Engine.Tick);
         Assert.Equal(s.Engine.ComputeStateHash(),copy.Engine.ComputeStateHash());Assert.Single(s.Engine.InspectFleet()!.Purchases);

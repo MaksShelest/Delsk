@@ -78,10 +78,10 @@ public partial class ProductionTabletPresenter : Control
         if(_pastry){Text("Production/InputSugar",r.Ingredients.Single(i=>i.ItemId=="sugar").Quantity.ToString());Text("Production/InputMilk",r.Ingredients.Single(i=>i.ItemId=="milk").Quantity.ToString());}Text("Production/Output",r.OutputQuantity.ToString());
         Text("Production/InputName",_pastry?string.Join(" + ",new[]{"grain","sugar","milk"}.Select(i=>PlayerText.Item(_language,i))):PlayerText.Item(_language,first.ItemId));Text("Production/OutputName",PlayerText.Item(_language,r.OutputItem));
         Text("Production/ProgressLabel",L("Готовность партии","Batch progress"));var p=TabletProgress.Production(e);Node<ProgressBar>("Production/Progress").MaxValue=p.Total;Node<ProgressBar>("Production/Progress").Value=p.Done;
-        Text("Production/ProgressValue",$"{p.Done}/{p.Total}");Text("Production/RecipeNote",L("Энергия за партию: ","Energy per batch: ")+PlayerText.Money(r.EnergyPerBatchMinor)+" · "+TabletText.Reason(_language,e.ReasonCode));
+        Text("Production/ProgressValue",$"{p.Done}/{p.Total}");Text("Production/RecipeNote",L("Энергия за партию: ","Energy per batch: ")+PlayerText.Money(r.EnergyPerBatchMinor, _language)+" · "+TabletText.Reason(_language,e.ReasonCode));
         ButtonState("Production/PauseProduction","work",e.Enabled?L("Остановить производство","Stop production"):L("Включить производство","Start production"));
         Text("Workers/Headcount",$"{g.Headcount} / {g.Capacity}");Text("Workers/Full",g.Headcount==g.Capacity?L("Все места заняты","Fully staffed"):L("Есть свободные места","Vacancies available"));
-        Text("Workers/WageAmount",PlayerText.Money(g.WageMinor));Text("Workers/Hint",g.PendingWageMinor is long wage?L("Новая ставка ","Pending wage ")+PlayerText.Money(wage)+L(" с тика "," from tick ")+g.PayEffectiveTick:L("Наём происходит по правилам города.","Hiring follows city labor rules."));
+        Text("Workers/WageAmount",PlayerText.Money(g.WageMinor, _language));Text("Workers/Hint",g.PendingWageMinor is long wage?L("Новая ставка ","Pending wage ")+PlayerText.Money(wage, _language)+L(" с тика "," from tick ")+g.PayEffectiveTick:L("Наём происходит по правилам города.","Hiring follows city labor rules."));
         ButtonState("Workers/WageMinus","wage-:"+_id);ButtonState("Workers/WagePlus","wage+:"+_id);
         void Stock(string prefix,InventoryView stock,string item)
         {
@@ -98,16 +98,16 @@ public partial class ProductionTabletPresenter : Control
         var transfer=view.Transfers.FirstOrDefault(t=>t.Source==pack.Id.Value && t.Destination==input.Id.Value || t.Source==output.Id.Value && t.Destination==pack.Id.Value);
         if(transfer is not null)Text("Production/RecipeNote",L("Ручной перенос: ","Manual transfer: ")+transfer.Completed+"/"+transfer.Quantity+L(" · остановка в подробностях"," · stop in details"));
         var next=_scenario.BuildingTypes!.Single(t=>t.Id==b.TypeId).Levels.FirstOrDefault(l=>l.Level==b.Level+1);
-        Text("Upgrade/CostMoney",next is null?"—":PlayerText.Money(next.PriceMinor));Text("Upgrade/CostPlanks",next is null?"—":string.Join(" + ",next.Materials.Select(m=>m.Quantity)));
+        Text("Upgrade/CostMoney",next is null?"—":PlayerText.Money(next.PriceMinor, _language));Text("Upgrade/CostPlanks",next is null?"—":string.Join(" + ",next.Materials.Select(m=>m.Quantity)));
         Node<Label>("Upgrade/CostPlanks").TooltipText=next is null?"":string.Join(" + ",next.Materials.Select(m=>PlayerText.Item(_language,m.ItemId)+" ×"+m.Quantity));
         Text("Upgrade/Hint",next is null?L("Максимальный уровень","Maximum level"):L("Остановите работу; материалы — из местного склада.","Stop work; materials come from local stock."));ButtonState("Upgrade/UpgradeProduction","upgrade",L("Улучшить","Upgrade"));
         var l=view.Logistics.SingleOrDefault(l=>l.EnterpriseId==e.Id);Node<Control>("Delivery/NoTransport").Visible=l is null;
-        Text("Delivery/NoTransport/Cost",PlayerText.Money((_scenario.Logistics??new()).PurchasePriceMinor));ButtonState("Delivery/NoTransport/BuyTransport","truck",L("Купить транспорт","Buy transport"));
+        Text("Delivery/NoTransport/Cost",PlayerText.Money((_scenario.Logistics??new()).PurchasePriceMinor, _language));ButtonState("Delivery/NoTransport/BuyTransport","truck",L("Купить транспорт","Buy transport"));
         ButtonState("Delivery/SupplyToggle","inbound");ButtonState("Delivery/SendToggle","output");
         Node<CheckButton>("Delivery/SupplyToggle").SetPressedNoSignal(l?.InboundEnabled??false);Node<CheckButton>("Delivery/SendToggle").SetPressedNoSignal(l?.Enabled??false);
         Node<Button>("Delivery/SupplyToggle").Text=L("Вкл.","On");Node<Button>("Delivery/SendToggle").Text=L("Вкл.","On");
         var crew=l is null?null:view.Employment.Single(g=>g.Id==l.GroupId);
-        Text("Delivery/CrewBrief",crew is null?"":L("Команда ","Crew ")+crew.Headcount+"/"+crew.Capacity+" · "+PlayerText.Money(crew.WageMinor));
+        Text("Delivery/CrewBrief",crew is null?"":L("Команда ","Crew ")+crew.Headcount+"/"+crew.Capacity+" · "+PlayerText.Money(crew.WageMinor, _language));
         Text("Delivery/TripStatus",l is null?"":TabletText.Reason(_language,l.ReasonCode)+(l.Trip is {} trip?" · "+PlayerText.Item(_language,trip.ItemId)+" ×"+trip.Quantity:""));
         Node<Button>("Delivery/Source").Text=l is null?"—":L("Источники · ","Sources · ")+l.Queue.Count(j=>j.Enabled && (j.InboundSource.Value!=0 || j.Source.Value!=0));
         Node<Button>("Delivery/Destination").Text=l is null?"—":L("Получатели / договоры · ","Destinations / contracts · ")+l.Queue.Count(j=>j.Enabled && (j.OwnDestination.Value!=0 || j.ContractId!=0 || j.Destination.Value!=0));

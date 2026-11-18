@@ -106,7 +106,7 @@ public class ContextActionsI5Tests
         foreach(var offer in buys)
         {
             var listing=fleet.Stock.Single(s=>s.Id==offer.Command!.VehicleId);var model=fleet.Models.Single(m=>m.Id==listing.ModelId);
-            Assert.Contains(PlayerText.Money(model.PriceMinor),offer.Label);Assert.False(offer.Enabled);Assert.Equal(PlayerText.Reason(language,"NoMoney"),offer.Details);
+            Assert.Contains(PlayerText.Money(model.PriceMinor, language),offer.Label);Assert.False(offer.Enabled);Assert.Equal(PlayerText.Reason(language,"NoMoney"),offer.Details);
             Assert.True(e.AccessFor(Human,offer.Command!).Allowed);
         }
         Assert.DoesNotContain(choices,c=>c.Key.StartsWith("section:",StringComparison.Ordinal));

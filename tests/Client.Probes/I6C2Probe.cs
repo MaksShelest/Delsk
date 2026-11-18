@@ -89,7 +89,7 @@ public partial class I6C2Probe : Control
         Move(listing.Position);Panel.Reopen();Refresh();await Frames();
         var offer=Panel.Selection.Choices.First(c=>c.Command?.Kind==ActionKind.BuyVehicle&&c.Command.VehicleId==listing.Id);
         var model=View.Fleet.Models.Single(m=>m.Id==listing.ModelId);var button=Named<Button>(ContextActionsPanel.ButtonName(offer.Key));
-        Check(button.Text.Contains(model.Name)&&button.Text.Contains(PlayerText.Money(model.PriceMinor)),"RU button shows concrete model and actual price");
+        Check(button.Text.Contains(model.Name)&&button.Text.Contains(PlayerText.Money(model.PriceMinor, "ru")),"RU button shows concrete model and actual price");
         Check(View.Participant.Position!=View.Fleet.Dealer,"local offer works away from the dealership entrance");
         Camera(new(6.5f,0,3),7,true);await Shot("06-concrete-car-purchase");
         int tape=_session.CommandTape.Length;await Click(ContextActionsPanel.ButtonName(offer.Key));
