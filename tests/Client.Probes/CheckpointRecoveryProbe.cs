@@ -30,7 +30,10 @@ public partial class CheckpointRecoveryProbe : Control
             await Frame();
             await ContinueFromMenu(game);
             Check(Current(game)?.Engine.ComputeStateHash() == original.Engine.ComputeStateHash(), "Backup-only slot loaded a different world");
-            Check(game.FindChild("RecoveredSaveNotice", true, false) is Label { Visible: true }, "Recovery notice was missing");
+            var notice = game.FindChild("SaveError", true, false) as AcceptDialog;
+            Check(notice is { Visible: true } && notice.DialogText.Contains("резервная копия"), "Recovery notice was missing");
+            notice!.GetOkButton().EmitSignal(Button.SignalName.Pressed);
+            path = (string)typeof(Playfield).GetProperty("SavePath", Private)!.GetValue(game)!;
             Call(game, "SaveGame");
             Check(CheckpointStore.Load(path).Session.Engine.Tick == 0, "Backup-only slot did not get a new primary");
             game.QueueFree();

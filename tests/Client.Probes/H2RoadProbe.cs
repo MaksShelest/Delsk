@@ -27,7 +27,7 @@ public partial class H2RoadProbe : Control
             var args=OS.GetCmdlineUserArgs();output=args[Array.IndexOf(args,"--output")+1];string map=args[Array.IndexOf(args,"--map")+1];
             bool verify=args.Contains("--verify");GetWindow().Size=new(1600,1000);GetWindow().ContentScaleSize=GetWindow().Size;
             var app=GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();AddChild(app);await Frames();app.SetProcess(false);
-            Call(app,"DismissMaps");Set(app,"_mapKey",map);Set(app,"_newNpcCount",10);Call(app,"Start","economy",false);await Frames();app.SetProcess(false);
+            Call(app,"DismissMaps");Set(app,"_newMapKey",map);Set(app,"_newNpcCount",10);Call(app,"Start","economy",false);await Frames();app.SetProcess(false);
             if(args.Contains("--load"))
             {
                 string file=args[Array.IndexOf(args,"--load")+1];var save=typeof(Playfield).GetProperty("SavePath",Flags)!.GetValue(app)!.ToString()!;

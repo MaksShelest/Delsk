@@ -115,7 +115,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        case: [city, compact, forms]
+        case: [city, compact, forms, saved-worlds]
     env:
       DOTNET_PROCESSOR_COUNT: '2'
     steps:
@@ -216,7 +216,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
-      - name: Require all nine native cases across bounded disjoint groups
+      - name: Require the city UX, saved worlds and context native checks
         env:
           NATIVE_RESULT: ${{ needs.city-ux-native.result }}
           I5_RESULT: ${{ needs.i5-context-native.result }}

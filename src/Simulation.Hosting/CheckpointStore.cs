@@ -35,6 +35,7 @@ public static class CheckpointStore
         {
             var envelope = JsonSerializer.Deserialize<CheckpointEnvelope>(json, SimulationJson.Options)
                 ?? throw new CheckpointException("EmptyCheckpointEnvelope");
+            if (envelope.FormatVersion <= 0) throw new CheckpointException("InvalidCheckpointEnvelope");
             if (envelope.FormatVersion is not (1 or FormatVersion)) throw new CheckpointException("UnknownCheckpointFormat");
             if (envelope.PayloadJson is null || envelope.Sha256 != Digest(envelope.PayloadJson))
                 throw new CheckpointException("CheckpointChecksumMismatch");
@@ -59,6 +60,14 @@ public static class CheckpointStore
         { throw new CheckpointException("InvalidCompressedCheckpoint",ex); }
     }
     public static void Save(GameSession session, string path, bool preserveDamagedMain = false)
+        => Save(session, path, preserveDamagedMain, protectExistingWorld: false);
+
+    public static bool IsIncompatible(CheckpointException e) => e.ReasonCode is
+        "UnknownCheckpointFormat" or "UnknownSessionSchema" or "UnknownWorldSchema" or "UnknownRulesVersion"
+        or "UnknownMovementSchema" or "UnknownEquipmentDealerSchema" or "UnknownVehicleControlSchema"
+        or "DeveloperSessionUnsupported" or "UnknownControllerVersion" or "UnknownPolicyModuleVersion";
+
+    internal static void Save(GameSession session, string path, bool preserveDamagedMain, bool protectExistingWorld)
     {
         string full = Path.GetFullPath(path);
         Directory.CreateDirectory(Path.GetDirectoryName(full)!);
@@ -72,17 +81,36 @@ public static class CheckpointStore
             if (File.Exists(full))
             {
                 string previous = full + ".bak";
-                try { _ = ReadFile(full); }
-                catch (CheckpointException) when (preserveDamagedMain)
+                try { CheckWorldIdentity(ReadFile(full), session, protectExistingWorld); }
+                catch (CheckpointException e) when (preserveDamagedMain && !(protectExistingWorld && IsIncompatible(e)))
                 {
+                    if (e.ReasonCode == "DifferentSavedWorld") throw;
+                    if (protectExistingWorld) CheckBackupIdentity(full, session);
                     // Keep the damaged bytes separately and leave the recovery copy available.
                     previous = full + ".corrupt-" + Guid.NewGuid().ToString("N");
                 }
                 File.Replace(temporary, full, previous);
             }
-            else File.Move(temporary, full); // Same-directory first installation; refuse competing writers.
+            else
+            {
+                if (protectExistingWorld) CheckBackupIdentity(full, session);
+                File.Move(temporary, full); // Same-directory first installation; refuse competing writers.
+            }
         }
         finally { if (File.Exists(temporary)) File.Delete(temporary); }
+    }
+    private static void CheckBackupIdentity(string path, GameSession session)
+    {
+        if (!File.Exists(path + ".bak")) return;
+        GameSession backup;
+        try { backup = ReadFile(path + ".bak"); }
+        catch (CheckpointException) { return; } // The backup stays in place.
+        CheckWorldIdentity(backup, session, protectExistingWorld: true);
+    }
+    private static void CheckWorldIdentity(GameSession existing, GameSession session, bool protectExistingWorld)
+    {
+        if (protectExistingWorld && (existing.SessionId != session.SessionId || existing.Engine.ConfigHash != session.Engine.ConfigHash))
+            throw new CheckpointException("DifferentSavedWorld");
     }
     private static GameSession ReadFile(string path, Action? beforeStep = null)
     {
@@ -92,10 +120,14 @@ public static class CheckpointStore
         return Decode(reader.ReadToEnd(), beforeStep);
     }
     public static CheckpointLoadResult Load(string path, bool recoverBackup = false, Action? beforeStep = null)
+        => Load(path, recoverBackup, beforeStep, protectExistingWorld: false);
+
+    internal static CheckpointLoadResult Load(string path, bool recoverBackup, Action? beforeStep, bool protectExistingWorld)
     {
         string full = Path.GetFullPath(path);
         try { return new(ReadFile(full, beforeStep), false, full); }
-        catch (Exception ex) when (recoverBackup && (ex is CheckpointException or IOException) && File.Exists(full + ".bak"))
+        catch (Exception ex) when (recoverBackup && (ex is CheckpointException or IOException)
+            && !(protectExistingWorld && ex is CheckpointException e && IsIncompatible(e)) && File.Exists(full + ".bak"))
         { return new(ReadFile(full + ".bak", beforeStep), true, full + ".bak"); }
     }
 }

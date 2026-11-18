@@ -48,13 +48,13 @@ public partial class I3RoadWorkProbe : Control
             var args=OS.GetCmdlineUserArgs();string Arg(string name)=>args[Array.IndexOf(args,name)+1];_output=Arg("--output");System.IO.Directory.CreateDirectory(_output);
             string fixture=Arg("--fixture");
             _app=GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();AddChild(_app);await Frames();_app.SetProcess(false);Call(_app,"DismissMaps");
-            string save=typeof(Playfield).GetProperty("SavePath",Flags)!.GetValue(_app)!.ToString()!;
-            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(save)!);
+            string SavePath()=>typeof(Playfield).GetProperty("SavePath",Flags)!.GetValue(_app)!.ToString()!;
+            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(SavePath())!);
             var cases=new[]{("ru",new Vector2I(800,720),false),("en",new Vector2I(1000,760),false),("en",new Vector2I(360,800),true)};
             foreach(var (language,size,touch) in cases.Where(c=>!args.Contains("--case")||c.Item1+"-"+c.Item2.X==Arg("--case")))
             {
                 GetWindow().Size=size;GetWindow().ContentScaleSize=size;
-                Call(_app,"CloseRoadWork");System.IO.File.Copy(fixture,save,true);Set(_app,"_language",language);Call(_app,"Load");await Frames();Call(_app,"ContinueGame");await Frames();_app.SetProcess(false);
+                Call(_app,"CloseRoadWork");System.IO.File.Copy(fixture,SavePath(),true);Set(_app,"_language",language);Call(_app,"Load");await Frames();Call(_app,"ContinueGame");await Frames();_app.SetProcess(false);
                 _app.Notification((int)NotificationApplicationFocusIn);_app._Process(0);_session=Field<GameSession>(_app,"_session");_session.SetPaused(false);
                 var v=_session.Engine.InspectFleet()!.Vehicles.Single();Call(_app,"Refresh");Set(_app,"_contextIndex",0);Call(_app,"ConfirmContext");await Frames();
                 Check(Named<RoadWorkCard>("RoadWorkCard").IsVisibleInTree(),"ordinary context opens compact card");
@@ -82,14 +82,14 @@ public partial class I3RoadWorkProbe : Control
                 await Click("RoadCellClose",touch);Call(_app,"OpenPlayerTablet");await Frames();Field<PlayerTablet>(_app,"_playerTablet").OpenSection("fleet",v.Id);await Frames();
                 await Click("FleetRoadWork_"+v.Id);Check(Named<RoadWorkCard>("RoadWorkCard").IsVisibleInTree(),"own vehicle card opens road work");
                 Call(_app,"CloseRoadWork");CheckpointStore.Save(_session,_output+"/final-"+language+"-"+size.X+".save.json");
-                System.IO.File.Copy(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(fixture)!,"loadable.save.json"),save,true);Call(_app,"Load");await Frames();Call(_app,"ContinueGame");await Frames();_app.SetProcess(false);
+                System.IO.File.Copy(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(fixture)!,"loadable.save.json"),SavePath(),true);Call(_app,"Load");await Frames();Call(_app,"ContinueGame");await Frames();_app.SetProcess(false);
                 _session=Field<GameSession>(_app,"_session");_session.SetPaused(false);Call(_app,"OpenRoadWork",v.Id);await Frames();
                 Named<SpinBox>("RoadMaterialQuantity").Value=2;await Click("RoadMaterialLoad",touch);Step(3);
                 var pack=_session.Engine.Observe(new(1));var cargo=pack.OwnInventories.Single(i=>i.Id==v.CargoInventory);
                 Check(cargo.Stock.Single(s=>s.ItemId=="gravel").Quantity==2,"load moves actual backpack stock into cargo");
                 Check(pack.OwnInventories.Single(i=>i.Id==pack.Participant.InventoryId).Stock.All(s=>s.ItemId!="gravel"||s.Quantity==0),"load does not copy goods");
                 await Click("RoadPaverBoard",touch);Step();Check(Named<Button>("RoadCellStart").Disabled,"missing asphalt disables start");await Shot(language+"-"+size.X+"-missing-material");
-                Call(_app,"CloseRoadWork");System.IO.File.Copy(fixture,save,true);Call(_app,"Load");await Frames();Call(_app,"ContinueGame");await Frames();_app.SetProcess(false);
+                Call(_app,"CloseRoadWork");System.IO.File.Copy(fixture,SavePath(),true);Call(_app,"Load");await Frames();Call(_app,"ContinueGame");await Frames();_app.SetProcess(false);
                 _session=Field<GameSession>(_app,"_session");_session.SetPaused(false);Call(_app,"OpenRoadWork",v.Id);await Frames();
                 var mode=Named<OptionButton>("RoadWorkMode");mode.Select(1);mode.EmitSignal(OptionButton.SignalName.ItemSelected,1);await Frames();
                 await Click("RoadPaverBoard",touch);Step();await Click("RoadCellGo",touch);Step();int walk=10;

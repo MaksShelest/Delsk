@@ -35,12 +35,11 @@ public partial class StorageProbe:Control
         if(_app is not null){RemoveChild(_app);_app.QueueFree();await Frames();}
         _app=GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();AddChild(_app);await Frames(5);
         if(_language=="en")await Click(Button("English"));
-        var path=(string)typeof(Playfield).GetProperty("SavePath",BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(_app)!;CheckpointStore.Save(prepared,path);
+        new SavedWorldStore(ProjectSettings.GlobalizePath("user://")).Create(prepared);
         // Refresh the ordinary selection, so Continue discovers the newly written file.
         await Click(Button(_language=="en"?"Русский":"English"));await Click(Button(_language=="en"?"English":"Русский"));
         await Click(Button(_language=="en"?"Continue":"Продолжить"));await Frames(4);
         _session=Field<GameSession>(_app,"_session");_app.Notification((int)NotificationApplicationFocusOut);await Frames();
-        await Click(Button(_language=="en"?"Continue":"Продолжить"));
         Check(_session.Engine.ComputeStateHash()==prepared.Engine.ComputeStateHash(),"Disk Continue changed state");
     }
     private async Task Drive(long ticks)
