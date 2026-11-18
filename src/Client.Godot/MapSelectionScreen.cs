@@ -9,6 +9,7 @@ public partial class MapSelectionScreen : ColorRect
 {
     public event System.Action<string>? MapChosen;
     public event System.Action? Continued;
+    public event System.Action? WorldsRequested;
     public event System.Action? LanguageChanged;
     public event System.Action? QuitRequested;
     public event System.Action? MapEditorRequested;
@@ -19,6 +20,10 @@ public partial class MapSelectionScreen : ColorRect
     public event System.Action? AppearanceSettingsRequested;
     public string SelectedMap { get; private set; }
     public string? SelectedIndustry { get; private set; }
+    public string WorldName => _worldName.Text.Trim();
+    public string SeedText => _seed.Text.Trim();
+    private readonly LineEdit _worldName = new() { Name = "NewWorldName", MaxLength = SavedWorldStore.MaximumNameLength };
+    private readonly LineEdit _seed = new() { Name = "NewWorldSeed", MaxLength = 20, VirtualKeyboardType = LineEdit.VirtualKeyboardTypeEnum.Number };
     private SpecializationScreen? _specialization;
     public int NpcCount {get;private set;}=3;
     public NpcDifficulty Difficulty {get;private set;}=NpcDifficulty.Medium;
@@ -63,6 +68,10 @@ public partial class MapSelectionScreen : ColorRect
         var difficultyRow=new HBoxContainer();gameOptions.AddChild(difficultyRow);difficultyRow.AddChild(new Label{Text=L("Сложность","Difficulty"),SizeFlagsVertical=SizeFlags.ShrinkCenter});
         var choices=new OptionButton{Name="NpcDifficulty",SizeFlagsHorizontal=SizeFlags.ExpandFill};foreach(var text in new[]{L("Лёгкая","Easy"),L("Средняя","Medium"),L("Сложная","Hard")})choices.AddItem(text);
         choices.Selected=Math.Clamp((int)difficulty-1,0,2);difficultyRow.AddChild(choices);choices.ItemSelected+=i=>Difficulty=(NpcDifficulty)(i+1);
+        _worldName.PlaceholderText = L("Название мира (необязательно)", "World name (optional)");
+        _seed.PlaceholderText = L("Seed карты (необязательно)", "Map seed (optional)");
+        gameOptions.AddChild(_worldName);
+        gameOptions.AddChild(_seed);
         Container launch=friendly?new VBoxContainer():new HBoxContainer();controls.AddChild(launch);
         _startButton=AddButton(launch,friendly?L("Новая игра","New game"):L("Начать","Start"),()=>BeginChosen(()=>MapChosen?.Invoke(SelectedMap)));_startButton.Name="StartGame";
         var resume=AddButton(launch,L("Продолжить","Continue"),()=>Continued?.Invoke());resume.Name="ContinueGame";resume.Disabled=!canContinue;
@@ -74,6 +83,7 @@ public partial class MapSelectionScreen : ColorRect
             foreach(var button in new[]{_startButton,resume})button.CustomMinimumSize=new(0,48);
         }
         else GameUi.Primary(_startButton);
+        AddButton(controls,L("Мои миры","My worlds"),()=>WorldsRequested?.Invoke()).Name="OpenMyWorlds";
         AddButton(controls,L("Выбрать карту","Choose map"),ShowCatalog).Name="ChooseMap";
         var mapTools=friendly?new VBoxContainer():controls;
         AddButton(mapTools,L("Редактор карт","Map editor"),()=>MapEditorRequested?.Invoke()).Name="OpenMapEditor";

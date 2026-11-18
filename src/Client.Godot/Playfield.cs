@@ -13,7 +13,6 @@ public partial class Playfield : Control
     private ScenarioDefinition _scenario = null!;
     private ParticipantId _human;
     private string _language = "ru";
-    private string _mode = "economy";
     private string _feedback = "";
     private string _cardsSignature = "";
     private bool _suspended;
@@ -75,14 +74,7 @@ public partial class Playfield : Control
     private int _frameSampleCount;
     private double _worstFrame;
     private int _contextFirst;
-    private string SavePath => ProjectSettings.GlobalizePath($"user://play-{_mode}-{SimulationEngine.RulesVersion}{(SimulationEngine.IsDeveloperBuild?"-developer":"")}.json");
-
-    private bool HasSavedGame => System.IO.File.Exists(SavePath) || System.IO.File.Exists(SavePath + ".bak");
-    private long? _recoveredSaveTick;
-
-    private void SaveGame() => CheckpointStore.Save(_session, SavePath, preserveDamagedMain: true);
-
-    private enum Surface { Play, Menu, Debug, Maps }
+    private enum Surface { Play, Menu, Debug, Maps, Worlds }
     private string _mapKey = PlayMaps.First;
     private string _newMapKey = PlayMaps.CompactValley;
     private MapSelectionScreen? _mapSelection;
@@ -97,6 +89,8 @@ public partial class Playfield : Control
             GetTree().CallDeferred(SceneTree.MethodName.ChangeSceneToFile, "res://PlatformProbe.tscn");
             return;
         }
+        InstallQuitHandling();
+        _worlds = new SavedWorldStore(ProjectSettings.GlobalizePath("user://"));
         InitializeAppearance();
         InitializeFeedback();
         Input.MouseMode = Input.MouseModeEnum.Visible;
@@ -105,7 +99,7 @@ public partial class Playfield : Control
         LoadInterface();
         CallDeferred(nameof(ConfigureDisplay));
         EnsureStage();
-        if (OS.GetCmdlineUserArgs().Contains("--trip")) Start("trip", false);
+        if (OS.GetCmdlineUserArgs().Contains("--trip")) TryStart("trip", false);
         else ShowMaps();
     }
 
@@ -120,10 +114,15 @@ public partial class Playfield : Control
     public override void _UnhandledInput(InputEvent e)
     {
         if (_left || e is not InputEventKey key) return;
-        if (_surface == Surface.Maps)
+        if (_surface is Surface.Maps or Surface.Worlds)
         {
-            if (key.Pressed && !key.Echo && key.Keycode == Key.Escape && _session is not null)
-            { DismissMaps(); OpenMenu(); GetViewport().SetInputAsHandled(); }
+            if (key.Pressed && !key.Echo && key.Keycode == Key.Escape &&
+                (_surface == Surface.Worlds || _session is not null))
+            {
+                if (_surface == Surface.Worlds) CloseWorlds();
+                else { DismissMaps(); OpenMenu(); }
+                GetViewport().SetInputAsHandled();
+            }
             return;
         }
         if (_session is null) return;
@@ -181,7 +180,7 @@ public partial class Playfield : Control
 
     public override void _Process(double delta)
     {
-        if (_left || _session is null) return;
+        if (_left || _session is null || _surface is Surface.Maps or Surface.Worlds) return;
         try
         {
             _frameSampleSeconds += delta;
@@ -214,15 +213,26 @@ public partial class Playfield : Control
 
     public override void _Notification(int what)
     {
-        if (_left || _session is null) return;
-        if (what == NotificationApplicationPaused) { _suspended = true; _waitRelease = true; CloseContextActions();StopHeading(); }
-        else if (what == NotificationApplicationFocusOut) { _unfocused = true; _waitRelease = true; CloseContextActions();StopHeading(); }
+        if (_left) return;
+        if (_quitHandling && (what is (int)NotificationWMCloseRequest or (int)NotificationWMGoBackRequest))
+        {
+            ExitGame();
+            return;
+        }
+        if (what == NotificationApplicationPaused) _suspended = true;
+        else if (what == NotificationApplicationFocusOut) _unfocused = true;
         else if (what == NotificationApplicationResumed) { _suspended = false; _skipNextFrame = true; }
         else if (what == NotificationApplicationFocusIn) { _unfocused = false; _skipNextFrame = true; }
         else return;
+
+        if (_session is null) return;
+        if (what is (int)NotificationApplicationPaused or (int)NotificationApplicationFocusOut)
+        {
+            _waitRelease = true;
+            CloseContextActions();
+            TrySaveCurrent();
+        }
         ApplyPause();
-        if (what == NotificationApplicationPaused || what == NotificationApplicationFocusOut)
-        { SaveCityExperience();try { SaveGame(); } catch (Exception failure) { _feedback = failure.Message; } }
         Refresh();
     }
 
@@ -237,7 +247,7 @@ public partial class Playfield : Control
         if(economy.VNext is {} provenance)
         {var read=VNextBalanceReader.Read(System.Text.Encoding.UTF8.GetBytes(Text("Play.vnext-balance.json")));if(!read.IsValid || read.Sha256!=provenance.FullBalanceSha256)throw new InvalidOperationException("Full balance/profile mismatch");full=read.Balance;}
         string? industry=allowUnassigned?null:_startingIndustry;
-        return OrdinaryNewGame.Resolve(map,economy,new(count,_newDifficulty.ToString(),StartingIndustry:industry,AllowUnassigned:allowUnassigned&&industry is null),vnextBalance:full);
+        return OrdinaryNewGame.Resolve(map,economy,new(count,_newDifficulty.ToString(),Seed:allowUnassigned?null:_newSeed,StartingIndustry:industry,AllowUnassigned:allowUnassigned&&industry is null),vnextBalance:full);
     }
     private OrdinaryGameResolution ResolveUserMap(string path,EconomyProfile economy)
     {
@@ -248,7 +258,7 @@ public partial class Playfield : Control
         VNextBalance? full=null;
         if(economy.VNext is {} provenance)
         {var read=VNextBalanceReader.Read(System.Text.Encoding.UTF8.GetBytes(Text("Play.vnext-balance.json")));if(!read.IsValid || read.Sha256!=provenance.FullBalanceSha256)throw new InvalidOperationException("Full balance/profile mismatch");full=read.Balance;}
-        return UserMaps.Start(draft,economy,new(npcs,_newDifficulty.ToString(),StartingIndustry:_startingIndustry),full);
+        return UserMaps.Start(draft,economy,new(npcs,_newDifficulty.ToString(),Seed:_newSeed,StartingIndustry:_startingIndustry),full);
     }
     private ScenarioDefinition ReadMap(string key)
     {
@@ -259,162 +269,132 @@ public partial class Playfield : Control
     }
 
     private void DismissMaps()
-    { if (_mapSelection is not null) {_newNpcCount=_mapSelection.NpcCount;_newMapKey = _mapSelection.SelectedMap;_newDifficulty=_mapSelection.Difficulty;_newModel=_mapSelection.ModelConfiguration;_startingIndustry=_mapSelection.SelectedIndustry;} _mapSelection?.QueueFree(); _mapSelection = null; }
+    {
+        if (_mapSelection is not { } setup) return;
+        _mapSelection = null;
+        _newNpcCount = setup.NpcCount;
+        _newMapKey = setup.SelectedMap;
+        _newDifficulty = setup.Difficulty;
+        _newModel = setup.ModelConfiguration;
+        _startingIndustry = setup.SelectedIndustry;
+        RemoveChild(setup);
+        setup.QueueFree();
+    }
 
     private void ShowMaps()
     {
-        DismissHelp();
-        if (_session is not null) { StopHeading(); _scheduler.SetPaused(true); }
-        _surface = Surface.Maps;
-        ResetTablet();
-        ApplySurface();
+        PauseForWorldSelection(Surface.Maps);
+        DismissWorlds();
         DismissMaps();
-        _mapSelection = new MapSelectionScreen(_language, _session is not null || HasSavedGame, ReadMap, _newMapKey,_newDifficulty,_newModel,_newNpcCount,(key,count)=>ResolveNewGame(key,count,allowUnassigned:true).Scenario,_friendly);
-        _mapSelection.MapChosen += key =>
+        FindSavedWorlds();
+        var setup = new MapSelectionScreen(_language, _session is not null || _lastWorld is not null, ReadMap,
+            _newMapKey, _newDifficulty, _newModel, _newNpcCount, (key,count)=>ResolveNewGame(key,count,allowUnassigned:true).Scenario, _friendly);
+        _mapSelection = setup;
+        setup.MapChosen += BeginMap;
+        setup.Continued += ContinueLastWorld;
+        setup.WorldsRequested += ShowWorlds;
+        setup.LanguageChanged += () => { _language = _language == "ru" ? "en" : "ru"; ShowMaps(); };
+        setup.DisplaySettingsRequested += ToggleFullscreen;
+        setup.FeedbackSettingsRequested += OpenFeedbackSettings;
+        setup.AppearanceSettingsRequested += OpenAppearanceSettings;
+        setup.QuitRequested += ExitGame;
+        setup.MapEditorRequested += () => OpenMapEditor(null);
+        setup.UserMapEdit += OpenMapEditor;
+        setup.UserMapChosen += BeginUserMap;
+        AddChild(setup);
+        if (MapHandoff.Play is { } pending)
         {
-            try{_mapSelection.ModelConfiguration?.Validate();}catch(ArgumentException){_mapSelection.TooltipText=L("Проверьте имя модели и настройки.","Check model name and settings.");return;}
-            if (_session is null && !HasSavedGame) { BeginMap(key); return; }
-            var confirm = new ConfirmationDialog { DialogText = PlayerText.Local(_language,
-                "Начать новую партию? Текущая партия будет заменена.", "Start a new game? The current game will be replaced.") };
-            AddChild(confirm);
-            confirm.Confirmed += () => { confirm.QueueFree(); BeginMap(key); };
-            confirm.Canceled += () => confirm.QueueFree();
-            UiSafeArea.Popup(confirm,this,new(580,170));
-        };
-        _mapSelection.Continued += () =>
-        {
-            if (_session is not null) { DismissMaps(); ContinueGame(); }
-            else
-            {
-                try { Load(); }
-                catch (Exception failure)
-                {
-                    GD.PushWarning(failure.Message);
-                    ShowSaveError(L("Не удалось открыть сохранённую партию.", "Could not open the saved game."));
-                }
-            }
-        };
-        _mapSelection.LanguageChanged += () => { _language = _language == "ru" ? "en" : "ru"; ShowMaps(); };
-        _mapSelection.DisplaySettingsRequested += ToggleFullscreen;
-        _mapSelection.FeedbackSettingsRequested += OpenFeedbackSettings;
-        _mapSelection.AppearanceSettingsRequested += OpenAppearanceSettings;
-        _mapSelection.QuitRequested += ExitGame;
-        _mapSelection.MapEditorRequested += () => GetTree().ChangeSceneToFile("res://MapEditor.tscn");
-        _mapSelection.UserMapEdit += path => { MapHandoff.QueueEdit(path); GetTree().ChangeSceneToFile("res://MapEditor.tscn"); };
-        _mapSelection.UserMapChosen += path => { _userMapPath=path;_newNpcCount=_mapSelection.NpcCount;_newDifficulty=_mapSelection.Difficulty;OfferPendingUserPlay(); };
-        if(_session is not null)DeveloperMenu(_mapSelection.AdditionalSettings);
-        AddChild(_mapSelection);
-        if(MapHandoff.Play is {} pending)
-        {
-            _userMapPath=pending;_newNpcCount=MapHandoff.Npcs;_newDifficulty=MapHandoff.Difficulty;
+            _userMapPath = pending;
+            _newNpcCount = MapHandoff.Npcs;
+            _newDifficulty = MapHandoff.Difficulty;
             CallDeferred(nameof(OfferPendingUserPlay));
         }
     }
 
     private void OfferPendingUserPlay()
     {
-        if(_userMapPath is not {} path || _mapSelection is null)return;
-        _mapSelection.EnsureSpecialization(()=>ContinueUserPlay(path),()=>{_userMapPath=null;MapHandoff.ClearPlay();});
-    }
-    private void ContinueUserPlay(string path)
-    {
-        if(_session is null && !HasSavedGame){BeginUserMap(path);return;}
-        var confirm=new ConfirmationDialog{DialogText=PlayerText.Local(_language,
-            "Начать новую партию на своей карте? Текущая партия будет заменена.","Start a new game on your map? The current game will be replaced.")};
-        AddChild(confirm);
-        confirm.Confirmed += () => { confirm.QueueFree(); BeginUserMap(path); };
-        confirm.Canceled += () => { _userMapPath=null; MapHandoff.ClearPlay(); confirm.QueueFree(); };
-        UiSafeArea.Popup(confirm,this,new(580,170));
+        if (_userMapPath is not { } path || _mapSelection is null) return;
+        _mapSelection.EnsureSpecialization(()=>BeginUserMap(path),()=>{_userMapPath=null;MapHandoff.ClearPlay();});
     }
 
-    private void BeginUserMap(string path)
-    {
-        _userMapPath=path;_mapKey=PlayMaps.CompactValley;
-        _stage?.ResetMotion();
-        DismissMaps();
-        MapHandoff.ClearPlay();
-        Start("economy", false);
-        try { SaveGame(); }
-        catch (Exception failure) { _feedback = failure.Message; }
-        _userMapPath=null;
-    }
+    private void BeginUserMap(string path) => BeginConfiguredMap(PlayMaps.CompactValley, path);
 
-    private void BeginMap(string key)
-    {
-        _mapKey = key; _newMapKey = key;
-        _stage?.ResetMotion();
-        DismissMaps();
-        Start("economy", false);
-        try { SaveGame(); }
-        catch (Exception failure) { _feedback = failure.Message; }
-    }
+    private void BeginMap(string key) => BeginConfiguredMap(key, null);
 
-    private void Start(string mode, bool hold)
+    private void BeginConfiguredMap(string key, string? path)
     {
-        DisposeModel();
-        _storageCursor=0;_storageLossUntil=0;_storageLoss="";
-        DismissHelp();
-        ResetTablet(true);
-        ResetProvincial();
-        ClearGuide();
-        _recoveredSaveTick = null;
-        _mode = mode;LoadCityExperience(true);
-        _gain = "";
-        _hoverX = _hoverZ = null;
-        _selectedEnterprise = 0;
-        _pending = null;
-        _trackedId = null;
-        _trackedKind = null;
-        _trackedItem = "";
-        _cellX = null;
-        _cellZ = null;
-        _waitRelease = true;
-        _sent = default;
-        if (mode == "trip")
+        if (_mapSelection is not { } setup) return;
+        ulong seed = 0;
+        if (setup.SeedText.Length > 0 && !ulong.TryParse(setup.SeedText, NumberStyles.None, CultureInfo.InvariantCulture, out seed))
         {
-            _scenario = JsonSerializer.Deserialize<ScenarioDefinition>(Text("Play.logistics-cycle.json"), SimulationJson.Options)
-                ?? throw new InvalidOperationException("Play.logistics-cycle.json");
-            _human = new(1);
-            _contextCollapsed=false;
-            _session = new GameSession(new SimulationEngine(_scenario));
-            _scheduler = new TickScheduler(_session,controllerBarrier:()=>ModelBarrier);
-            _feedback = "";
-            _cardsSignature = "";
-            try { ScriptedScenarios.PrepareVisibleTrip(_session, _scenario); }
-            catch (Exception failure) { _feedback = failure.Message; }
-            _surface = Surface.Menu;
-            CatchPublicCursor();
-            _feedback = T("new.session") + " " + T("trip");
-            ApplyPause();
-            CallDeferred(nameof(RebuildChrome));
+            ShowSaveError(L("Введите целое неотрицательное число для seed карты.", "Enter a whole non-negative number for the map seed."));
             return;
         }
-        string scenarioName = mode == "politics" ? "Play.baseline-politics.json" : PlayMaps.Resource(_mapKey);
-        string controllerName = mode == "politics" ? "Play.baseline-politics-controllers.json" : "Play.baseline-controllers.json";
-        _scenario = JsonSerializer.Deserialize<ScenarioDefinition>(Text(scenarioName), SimulationJson.Options)
-            ?? throw new InvalidOperationException(scenarioName);
-        var config = JsonSerializer.Deserialize<AutonomousConfiguration>(Text(controllerName), SimulationJson.Options)
-            ?? throw new InvalidOperationException(controllerName);
-        if (mode == "economy")
+
+        try { setup.ModelConfiguration?.Validate(); }
+        catch (ArgumentException)
         {
-            var economy = ReadEconomy(_userMapPath is null?_mapKey:PlayMaps.CompactValley);
-            var resolved=_userMapPath is {} userPath?ResolveUserMap(userPath,economy):ResolveNewGame(_mapKey,_newNpcCount);
-            _scenario=resolved.Scenario;
-            config=config.ForOrdinary(_scenario,resolved.HumanActorId,resolved.Controllers);
-            config = config with { Npcs = config.Npcs.Select(n => AlgorithmicController.WithEconomy(n, economy.Npc)).ToArray() };
+            ShowSaveError(L("Проверьте имя модели и настройки.", "Check the model name and settings."));
+            return;
         }
-        _human = new(config.HumanActorId);
-        _contextCollapsed=false;
-        _session = new GameSession(new SimulationEngine(_scenario));
-        AttachGameControllers(config,mode=="economy");
-        _scheduler = new TickScheduler(_session,controllerBarrier:()=>ModelBarrier);
-        _feedback = hold ? T("new.session") + " " + T(mode) : "";
-        _cardsSignature = "";
-        _surface = hold ? Surface.Menu : Surface.Play;
-        ObserveModelFallbacks();
-        CatchPublicCursor();
-        ApplyPause();
-        CallDeferred(nameof(RebuildChrome));
+
+        _newSeed = setup.SeedText.Length == 0 ? null : seed;
+        _newWorldName = setup.WorldName.Length == 0 ? null : setup.WorldName;
+        _newMapKey = key;
+        _newNpcCount = MapHandoff.Play is not null ? MapHandoff.Npcs : setup.NpcCount;
+        _newDifficulty = MapHandoff.Play is not null ? MapHandoff.Difficulty : setup.Difficulty;
+        _newModel = setup.ModelConfiguration;
+        _startingIndustry = setup.SelectedIndustry;
+        _userMapPath = path;
+        if (TryStart("economy", false, key)) MapHandoff.ClearPlay();
+        _userMapPath = null;
+        _newSeed = null;
+        _newWorldName = null;
+    }
+
+    private void Start(string mode, bool hold) => StartOnMap(mode, hold, _mapKey);
+
+    private void StartOnMap(string mode, bool hold, string mapKey)
+    {
+        GameControllerRuntime? controllers = null;
+        try
+        {
+            ScenarioDefinition scenario;
+            GameSession session;
+            if (mode == "trip")
+            {
+                scenario = JsonSerializer.Deserialize<ScenarioDefinition>(Text("Play.logistics-cycle.json"), SimulationJson.Options)
+                    ?? throw new InvalidOperationException("Play.logistics-cycle.json");
+                session = new GameSession(new SimulationEngine(scenario));
+                ScriptedScenarios.PrepareVisibleTrip(session, scenario);
+                hold = true;
+            }
+            else
+            {
+                var controllerName = mode == "politics" ? "Play.baseline-politics-controllers.json" : "Play.baseline-controllers.json";
+                var config = JsonSerializer.Deserialize<AutonomousConfiguration>(Text(controllerName), SimulationJson.Options)
+                    ?? throw new InvalidOperationException(controllerName);
+                if (mode == "economy")
+                {
+                    var economy = ReadEconomy(mapKey);
+                    var resolved = _userMapPath is { } path ? ResolveUserMap(path, economy) : ResolveNewGame(mapKey, _newNpcCount);
+                    scenario = resolved.Scenario;
+                    config = config.ForOrdinary(scenario, resolved.HumanActorId, resolved.Controllers);
+                    config = config with { Npcs = config.Npcs.Select(n => AlgorithmicController.WithEconomy(n, economy.Npc)).ToArray() };
+                }
+                else scenario = JsonSerializer.Deserialize<ScenarioDefinition>(Text("Play.baseline-politics.json"), SimulationJson.Options)
+                    ?? throw new InvalidOperationException("Play.baseline-politics.json");
+                session = new GameSession(new SimulationEngine(scenario));
+                controllers = AttachGameControllers(session, scenario, config, mode == "economy");
+            }
+            string id = _worlds.Create(session, _newWorldName, mode);
+            AdoptWorld(id, mode, session, scenario, controllers, hold, usedBackup: false);
+        }
+        catch
+        {
+            if (!ReferenceEquals(_controllers, controllers)) controllers?.Dispose();
+            throw;
+        }
     }
 
     private void RebuildChrome()
@@ -597,7 +577,7 @@ public partial class Playfield : Control
 
     private void Refresh()
     {
-        if (_status is null) return;
+        if (_status is null || _session is null || _surface is Surface.Maps or Surface.Worlds) return;
         var view = PlayerDesk.Read(_session.Engine, _human);
         if(_surface!=Surface.Play||_tabletState.IsOpen||_helpOverlay is not null||_roadWorkCard is not null)CloseContextActions();
         if(_bottomChrome is not null)_bottomChrome.Visible=_surface==Surface.Play&&!_tabletState.IsOpen&&_helpOverlay is null&&_roadWorkCard is null;
@@ -917,9 +897,9 @@ public partial class Playfield : Control
         Button(controls, "language", ChangeLanguage);
         controls.AddChild(new VSeparator());
         controls.AddChild(new Label { Text = T("new.session"), VerticalAlignment = VerticalAlignment.Center });
-        Button(controls, "economy", () => Start("economy", true));
-        Button(controls, "politics", () => Start("politics", true));
-        Button(controls, "trip", () => Start("trip", true));
+        Button(controls, "economy", () => TryStart("economy", true));
+        Button(controls, "politics", () => TryStart("politics", true));
+        Button(controls, "trip", () => TryStart("trip", true));
         var stateRow = new HBoxContainer();
         column.AddChild(stateRow);
         _status = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart, SizeFlagsHorizontal = SizeFlags.ExpandFill };
@@ -961,6 +941,9 @@ public partial class Playfield : Control
         Button(box, "menu.debug", OpenDebug);
 #endif
         DeveloperMenu(box);
+        var worlds = new Button { Name = "OpenMyWorlds", Text = L("Мои миры", "My worlds") };
+        worlds.Pressed += ShowWorlds;
+        box.AddChild(worlds);
         var chooseMap = new Button { Text = PlayerText.Local(_language, "Выбрать карту / новая партия", "Choose map / new game"), FocusMode = FocusModeEnum.None };
         chooseMap.Pressed += ShowMaps;
         box.AddChild(chooseMap);
@@ -1024,21 +1007,10 @@ public partial class Playfield : Control
     {
         _surface = Surface.Play;
         _waitRelease = true;
+        StopHeading();
         ApplyPause();
         ApplySurface();
         Refresh();
-    }
-
-    private void ExitGame()
-    {
-        try { if (_session is not null) SaveGame(); }
-        catch (Exception failure)
-        {
-            GD.PushWarning(failure.Message);
-            ShowSaveError(L("Не удалось сохранить партию.", "Could not save the game."));
-            return;
-        }
-        GetTree().Quit();
     }
 
     private void OnDebugCell(int x, int z)
@@ -1065,43 +1037,6 @@ public partial class Playfield : Control
         dialog.Confirmed += dialog.QueueFree;
         dialog.Canceled += dialog.QueueFree;
         UiSafeArea.Popup(dialog, this, new(430, 140));
-    }
-
-    private void Load()
-    {
-        var loaded = CheckpointStore.Load(SavePath, recoverBackup: true);
-        var scenario = loaded.Session.Engine.Configuration();
-        RestoreGameControllers(loaded.Session);
-        DismissHelp();
-        ResetTablet(true);
-        ResetProvincial();
-        ClearGuide();
-        _stage?.ResetMotion();
-        _storageCursor=0;_storageLossUntil=0;_storageLoss="";
-        _session = loaded.Session;
-        _recoveredSaveTick = loaded.UsedBackup ? _session.Engine.Tick : null;
-        _scenario = scenario;LoadCityExperience(false);
-        _mapKey = PlayMaps.KeyForScenario(_scenario.Id);
-        _human = new(_scenario.NewGame?.HumanActorId??1);
-        ObserveModelFallbacks();
-        _scheduler = new TickScheduler(_session,controllerBarrier:()=>ModelBarrier);
-        _pending = null;
-        _trackedId = null;
-        _trackedKind = null;
-        _surface = Surface.Menu;
-        _waitRelease = true;
-        _sent = default;
-        StopHeading();
-        CatchPublicCursor();
-        ApplyPause();
-        _feedback = T("load");
-        _cardsSignature = "";
-        _contextKey = "";
-        _choices = [];
-        _hoverX = null;
-        _hoverZ = null;
-        DismissMaps();
-        CallDeferred(nameof(RebuildChrome));
     }
 
     private void CatchPublicCursor()

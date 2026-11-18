@@ -15,10 +15,10 @@ public partial class CityExperienceProbe
         if(Field<SubViewportContainer>(_app,"_view") is {} old){old.GetParent().RemoveChild(old);old.QueueFree();Set("_view",null);Set("_stage",null);}
         var s=CheckpointStore.Load(System.IO.Path.Combine(folder,name+".save.json")).Session;s.SetPaused(true);
         long actor=long.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(folder,name+".actor")));
-        Set("_session",s);Set("_scenario",s.Engine.Configuration());Set("_human",new ParticipantId(actor));Set("_scheduler",new TickScheduler(s));
+        Set("_worldId",new SavedWorldStore(ProjectSettings.GlobalizePath("user://")).Create(s));Set("_session",s);Set("_scenario",s.Engine.Configuration());Set("_human",new ParticipantId(actor));Set("_scheduler",new TickScheduler(s));
         Set("_trackedId",null);Set("_trackedKind",null);Set("_pending",null);Set("_playerTab",0);Set("_storageCursor",0L);Set("_storageLossUntil",0L);
         var surface=typeof(Playfield).GetField("_surface",BindingFlags.Instance|BindingFlags.NonPublic)!;surface.SetValue(_app,Enum.Parse(surface.FieldType,"Play"));
-        Invoke("LoadCityExperience",true);Invoke("CatchPublicCursor");Invoke("RebuildChrome");await Frames(5);
+        Invoke("LoadCityExperience","economy");Invoke("CatchPublicCursor");Invoke("RebuildChrome");await Frames(5);
         await OpenPlayerSection("notices","События","Notices");_app.Notification((int)NotificationApplicationFocusIn);await Frames();Check(s.Paused,"Prepared inbox did not pause");
     }
     private async Task CommitPrepared()

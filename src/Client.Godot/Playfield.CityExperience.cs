@@ -10,10 +10,13 @@ public partial class Playfield
     private CityJourneyPanel? _journey;
     private CityNotice[] _cityNotices=[];
     private readonly Dictionary<string,string> _noticeViews=[];
-    private void LoadCityExperience(bool fresh)
+    private string CityExperiencePath => Path.ChangeExtension(SavePath, ".ui.cfg");
+    private void LoadCityExperience(string mode)
     {
-        _noticeViews.Clear();_cityRead=new();_cityMapPreferences.Reset();if(fresh){SaveCityExperience();return;}
-        var file=new ConfigFile();if(file.Load("user://city-experience-"+_mode+".cfg")!=Error.Ok)return;
+        _noticeViews.Clear();_cityNotices=[];_cityRead=new();_cityMapPreferences.Reset();_showOwnership=false;
+        var file=new ConfigFile();
+        if(file.Load(CityExperiencePath)!=Error.Ok &&
+            (!SavedWorldStore.IsImported(_worldId!) || file.Load("user://city-experience-"+mode+".cfg")!=Error.Ok))return;
         _showOwnership=file.GetValue("ux","ownership",false).AsBool();
         try
         {
@@ -25,8 +28,9 @@ public partial class Playfield
     }
     private void SaveCityExperience()
     {
+        if (_worldId is null) return;
         var file=new ConfigFile();file.SetValue("ux","memory",JsonSerializer.Serialize(_cityRead.Capture()));file.SetValue("ux","map",JsonSerializer.Serialize(_cityMapPreferences.Capture()));file.SetValue("ux","ownership",_showOwnership);
-        if(file.Save("user://city-experience-"+_mode+".cfg")!=Error.Ok)_feedback=L("Не удалось сохранить настройки карты и памятки.","Could not save map and guide preferences.");
+        if(file.Save(CityExperiencePath)!=Error.Ok)_feedback=L("Не удалось сохранить настройки карты и памятки.","Could not save map and guide preferences.");
     }
     private void OpenCityNotices()
     {if(_surface!=Surface.Play)return;_tabletState.OpenNotices(PlayerDesk.Read(_session.Engine,_human));PrepareTablet();}

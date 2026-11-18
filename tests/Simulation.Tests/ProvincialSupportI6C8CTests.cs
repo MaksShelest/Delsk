@@ -37,7 +37,7 @@ public class ProvincialSupportI6C8CTests
         Assert.Equal(s.Engine.ComputeStateHash(), replay.Engine.ComputeStateHash());
     }
 
-    private static void Haul(GameSession s, InventoryId source, InventoryId destination, string item, long quantity)
+    internal static void Haul(GameSession s, InventoryId source, InventoryId destination, string item, long quantity)
     {
         long volume = s.Engine.Configuration().Items.Single(i => i.Id == item).UnitVolume;
         long chunk = Math.Max(1, 20 / volume);
