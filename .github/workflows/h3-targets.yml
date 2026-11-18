@@ -86,6 +86,12 @@ jobs:
         shell: pwsh
         run: |
           python scripts/check_world_proportions.py --godot "$env:DELSK_GODOT" --maps compact-valley --save docs/verification/h3/player/paid-warehouse.save.json --natural-save --asset-cache artifacts/packages/assets --output artifacts/natural-loaded
+          if ($LASTEXITCODE -ne 0) {
+            $code = $LASTEXITCODE
+            $failure = "artifacts/natural-loaded/compact-valley-saved/failure.txt"
+            if (Test-Path $failure) { Get-Content $failure }
+            exit $code
+          }
           exit $LASTEXITCODE
       - uses: actions/upload-artifact@v4
         if: always()
