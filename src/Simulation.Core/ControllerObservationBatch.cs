@@ -17,6 +17,7 @@ public sealed partial class SimulationEngine
     private CityEconomy? _controllerBatchEconomy;
     private ImmutableArray<MarketPricePoint>? _controllerBatchPrices,_controllerBatchHistory;
     private ImmutableArray<ResourceSiteView>? _controllerBatchResources;
+    private (ImmutableArray<Cell> Anchors, ImmutableArray<Cell> Facing)? _controllerBatchParcels;
     /// <summary>Freeze one common read-only barrier, retaining the same per-actor allowlists.</summary>
     public ControllerObservation[] ObserveControllers(IEnumerable<(ParticipantId Actor,bool EconomicPlanning)> requests)
     {
@@ -26,10 +27,11 @@ public sealed partial class SimulationEngine
         {
             _controllerBatchView=Inspect();_controllerBatchEconomy=PublicEconomy();
             if(UsesAcceleratedMovement&&Roads is not null)_controllerBatchNavigation=MovementNavigationSnapshot();
+            if (Development is not null) _controllerBatchParcels = ParcelAnchors();
             _controllerBatchPrices=PublicCapitalPrices(false);_controllerBatchHistory=PublicCapitalPrices(true);_controllerBatchResources=ResourceSites();
             return plan.Select(r=>ObserveController(r.Actor,r.EconomicPlanning)).ToArray();
         }
         finally
-        {_controllerBatchNavigation=null;_controllerBatchView=null;_controllerBatchEconomy=null;_controllerBatchPrices=null;_controllerBatchHistory=null;_controllerBatchResources=null;}
+        {_controllerBatchNavigation=null;_controllerBatchView=null;_controllerBatchEconomy=null;_controllerBatchPrices=null;_controllerBatchHistory=null;_controllerBatchResources=null;_controllerBatchParcels=null;}
     }
 }

@@ -95,10 +95,11 @@ public sealed partial class SimulationEngine
     public DevelopmentObservation? DevelopmentOf(ParticipantId actor)
     {
         if(Development is null||!_actors.ContainsKey(actor.Value))return null;
+        var parcels = _controllerBatchParcels ?? ParcelAnchors();
         return new([..Development.Industries.OrderBy(i=>i.Id,StringComparer.Ordinal).Select(i=>Experience(actor.Value,i.Id))],
             [.._industryQuests.Values.Where(q=>q.Owner==actor).OrderBy(q=>q.Id)],QuestChoices(actor.Value),
             [.._developmentBuildings.Values.Where(b=>b.Owner==actor.Value&&!Demolished(b.Id)).OrderBy(b=>b.Id)],
-            [.._storageConstruction.Values.Where(c=>c.Owner==actor.Value&&c.Development is not null).OrderBy(c=>c.Id).Select(c=>new DevelopmentProjectView(c.Id,c.BuildingId,c.Position,c.TypeId,c.Level,c.InventoryId,c.StartedTick,c.CompletesTick,c.PaidMinor,[..c.Materials],c.Development!))],Development,Tick/Development.QuestReviewTicks*Development.QuestReviewTicks,checked((Tick/Development.QuestReviewTicks+1)*Development.QuestReviewTicks),[.._preparingDevelopment.Where(id=>_buildings[id].Owner==actor.Value).Order()],ParcelAnchors().Anchors,ParcelAnchors().Facing);
+            [.._storageConstruction.Values.Where(c=>c.Owner==actor.Value&&c.Development is not null).OrderBy(c=>c.Id).Select(c=>new DevelopmentProjectView(c.Id,c.BuildingId,c.Position,c.TypeId,c.Level,c.InventoryId,c.StartedTick,c.CompletesTick,c.PaidMinor,[..c.Materials],c.Development!))],Development,Tick/Development.QuestReviewTicks*Development.QuestReviewTicks,checked((Tick/Development.QuestReviewTicks+1)*Development.QuestReviewTicks),[.._preparingDevelopment.Where(id=>_buildings[id].Owner==actor.Value).Order()],parcels.Anchors,parcels.Facing);
     }
     public DevelopmentState? InspectDevelopment()=>Development is null?null:new([.._experienceGrants],
         [.._industryQuests.Values.OrderBy(q=>q.Id)],[.._developmentBuildings.Values.OrderBy(b=>b.Id)],[.._preparingDevelopment.Order()]);
