@@ -1,0 +1,50 @@
+{
+  "native": {
+    "status": "succeeded",
+    "requestedCases": "saved-worlds",
+    "cases": [
+      {
+        "status": "succeeded",
+        "scope": "Godot native windows, synthetic mouse, keyboard and touch",
+        "cases": [
+          "two worlds",
+          "independent hashes and controllers",
+          "rename",
+          "backup fallback",
+          "double failure",
+          "delete cancel and confirm",
+          "legacy migration",
+          "focus autosave",
+          "window close and second-process Continue",
+          "RU/EN, landscape/portrait"
+        ]
+      }
+    ],
+    "matchedInputs": 766,
+    "scope": "Ordinary native window with synthetic keyboard/mouse/touch input; no physical Android/device assertion"
+  },
+  "crossExportWindows": {
+    "status": "succeeded",
+    "platform": "windows",
+    "packages": [
+      {
+        "flavor": "developer",
+        "package": "developer/DelskProbe.exe",
+        "sha256": "4ec2d40f41c1c954673fa4f6274bab4c1700d048b5bba24ecfc11eef1829d2b0",
+        "bytes": 103297536
+      },
+      {
+        "flavor": "release",
+        "package": "release/DelskProbe.exe",
+        "sha256": "73239dbdb15e1f99b808fc55e1ec97b37320c8d3ea50f73003670d2bb595f619",
+        "bytes": 109392384
+      }
+    ],
+    "sourceCommit": "66b9510ab056760359ffc621b1b61654b5aec035",
+    "tools": {
+      "dotnet": "10.0.401",
+      "godot": "4.7.2.stable.mono"
+    },
+    "scope": "Test-signed cross-platform packages; no hardware execution or real model inference implied. Code is an isolated copy; no test probes."
+  }
+}

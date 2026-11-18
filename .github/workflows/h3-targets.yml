@@ -3,6 +3,9 @@ on:
   push:
     branches: ['feat/vnext-h3-compact-acceptance']
     paths: ['docs/research/h3/build.json']
+  pull_request:
+    branches: [master]
+    paths: ['docs/I8_MANUAL_TEST_CHECKLIST.md']
   workflow_dispatch:
 permissions:
   contents: read
