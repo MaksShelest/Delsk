@@ -168,10 +168,15 @@ public partial class Playfield
         if ((_worldId ?? _lastWorld) is { } id) OpenSavedWorld(id, hold: true);
     }
 
-    private bool TryStart(string mode, bool hold)
+    private bool TryStart(string mode, bool hold, string? mapKey = null)
     {
         if (!TrySaveCurrent()) return false;
-        try { Start(mode, hold); return true; }
+        try
+        {
+            if (mapKey is null) Start(mode, hold);
+            else StartOnMap(mode, hold, mapKey);
+            return true;
+        }
         catch (Exception failure)
         {
             GD.PushWarning(failure.Message);

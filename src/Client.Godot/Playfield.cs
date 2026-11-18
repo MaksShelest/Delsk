@@ -346,13 +346,15 @@ public partial class Playfield : Control
         _newModel = setup.ModelConfiguration;
         _startingIndustry = setup.SelectedIndustry;
         _userMapPath = path;
-        if (TryStart("economy", false)) MapHandoff.ClearPlay();
+        if (TryStart("economy", false, key)) MapHandoff.ClearPlay();
         _userMapPath = null;
         _newSeed = null;
         _newWorldName = null;
     }
 
-    private void Start(string mode, bool hold)
+    private void Start(string mode, bool hold) => StartOnMap(mode, hold, _mapKey);
+
+    private void StartOnMap(string mode, bool hold, string mapKey)
     {
         GameControllerRuntime? controllers = null;
         try
@@ -374,8 +376,8 @@ public partial class Playfield : Control
                     ?? throw new InvalidOperationException(controllerName);
                 if (mode == "economy")
                 {
-                    var economy = ReadEconomy(_newMapKey);
-                    var resolved = _userMapPath is { } path ? ResolveUserMap(path, economy) : ResolveNewGame(_newMapKey, _newNpcCount);
+                    var economy = ReadEconomy(mapKey);
+                    var resolved = _userMapPath is { } path ? ResolveUserMap(path, economy) : ResolveNewGame(mapKey, _newNpcCount);
                     scenario = resolved.Scenario;
                     config = config.ForOrdinary(scenario, resolved.HumanActorId, resolved.Controllers);
                     config = config with { Npcs = config.Npcs.Select(n => AlgorithmicController.WithEconomy(n, economy.Npc)).ToArray() };
