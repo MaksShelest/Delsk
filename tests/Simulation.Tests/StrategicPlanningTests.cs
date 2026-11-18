@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using Agents.Algorithmic;
 using Simulation.Core;
@@ -52,5 +53,42 @@ public sealed class StrategicPlanningTests
         while(a.Engine.Tick<160){a.Step();loaded.Step();Assert.Equal(a.Engine.ComputeStateHash(),loaded.Engine.ComputeStateHash());Assert.Equal(a.ComputeControllerStateHash(),loaded.ComputeControllerStateHash());}
         var reversed=Start(true);reversed.AdvanceTo(160);Assert.Equal(a.CommandTape,reversed.CommandTape);
         Assert.Equal(a.Engine.ComputeStateHash(),GameSession.Replay(d,a.CommandTape,160).Engine.ComputeStateHash());
+    }
+
+    [Fact]
+    public void HardPlannerUsesTheSameOneTimeParcelAndConstructionGrantsAsThePlayer()
+    {
+        var profile = VNextI6C8DBalanceProfile.Create(
+            VNextProvincialSupportProfile.ForOrdinaryMap(MobileEquipmentI4Tests.Profile()));
+        var map = MapDesignReader.Read(Encoding.UTF8.GetBytes(
+            OrdinaryNewGameTests.Text("woodland_region_i6c8c.json")), profile);
+        var setup = OrdinaryNewGame.Resolve(map, profile,
+            new(3, "Hard", Seed: 17, StartingIndustry: "woodworking"), vnextBalance: MapDesignTests.Balance());
+        var definition = setup.Scenario;
+        var settings = OrdinaryNewGameTests.Config().ForOrdinary(definition, 1, setup.Controllers);
+        var participants = definition.Participants.Select(p => p.Id).ToArray();
+        var session = new GameSession(new(definition));
+        session.AttachControllers(settings.Npcs.Select(npc => (IController)new AlgorithmicController(
+            AlgorithmicController.WithEconomy(npc, profile.Npc),
+            AlgorithmicController.RuntimeSeed(definition.Seed, npc.ActorId), participants))
+            .Append(new SelfBallotController(new(1))));
+
+        Assert.All(definition.Participants, p => Assert.Equal(20_000, p.CashMinor));
+        Assert.DoesNotContain(session.Engine.Inspect().Buildings, b => b.Kind == BuildingKind.Production);
+        session.AdvanceTo(500);
+
+        var ledger = session.Engine.Ledger();
+        foreach (var npc in settings.Npcs)
+        {
+            var observation = session.Engine.ObserveController(new(npc.ActorId));
+            var parcel = Assert.Single(ledger, row => row.CreditAccount == observation.Account.Id &&
+                row.Reason == "ProvincialParcelGrant");
+            Assert.Equal(60_000, parcel.AmountMinor);
+            Assert.Single(ledger, row => row.CreditAccount == observation.Account.Id &&
+                row.Reason == "ProvincialConstructionGrant");
+            Assert.Equal(0, observation.ProvincialProgram!.ParcelRemaining);
+            Assert.Equal(0, observation.ProvincialProgram.ConstructionRemaining);
+            Assert.True(Assert.Single(observation.Enterprises).CompletedBatches > 0);
+        }
     }
 }

@@ -65,7 +65,8 @@ public sealed partial class AlgorithmicController
     }
     private (long Value,long Capital,long Risk) ForecastValue(ControllerObservation o,Candidate c,long eta)
     {
-        Int128 value=0,capital=0,risk=0;var settings=_state.Settings;
+        Int128 value=0,capital=0,risk=0,stagedMaterials=0;var settings=_state.Settings;
+        var program = o.ProvincialProgram is { Status: "Open" } open ? open : null;
         var actions=c.Steps.Select(s=>s.Action).ToArray();
         foreach(var a in actions)
         {
@@ -77,12 +78,32 @@ public sealed partial class AlgorithmicController
                 value+=(Int128)q*offer.UnitPriceMinor-(Int128)Math.Max(0,q-fresh)*BasePrice(o,a.ItemId);
                 if(offer.ExpiresAtTick<=o.Tick+eta)risk+=(Int128)q*offer.UnitPriceMinor;
             }
-            if(a.Kind==ActionKind.BuyPlot){var plot=o.Plots.Single(x=>x.Id==a.Plot);capital+=ParcelPrice(o,plot);}
+            if (a.Kind == ActionKind.BuyPlot)
+            {
+                var plot = o.Plots.Single(x => x.Id == a.Plot);
+                long price = ParcelPrice(o, plot);
+                long cover = program is not null && c.Goal == "BuildProduction" &&
+                    o.Economics?.IndustrialParcels is { Version: 1 } &&
+                    o.Development?.BuildAnchors.Contains(plot.Position) == true &&
+                    !plot.IsShopSite && plot.ShopParticipantId is null ? program.ParcelRemaining : 0;
+                capital += Math.Max(0, price - cover);
+            }
             if(a.Kind==ActionKind.BuyResource)capital+=o.Resources.Single(x=>x.Position==a.Target).PurchasePriceMinor;
             if(a.Kind==ActionKind.Build)
             {
-                var type=o.BuildingTypes.Single(x=>x.Id==a.BuildingTypeId);var level=type.Levels[0];capital+=level.PriceMinor;
-                capital+=level.Materials.Sum(m=>checked(m.Quantity*BasePrice(o,m.ItemId)));
+                var type=o.BuildingTypes.Single(x=>x.Id==a.BuildingTypeId);var level=type.Levels[0];
+                long materials = level.Materials.Sum(m => checked(m.Quantity * BasePrice(o, m.ItemId)));
+                if (o.Development is not null && type.Kind == BuildingKind.Production &&
+                    program is { ConstructionRemaining: > 0 } && program.IndustryId == type.Id)
+                {
+                    // The timed build candidate already has its materials at the site.
+                    capital += Math.Max(0, level.PriceMinor - program.ConstructionRemaining);
+                    stagedMaterials += materials;
+                }
+                else
+                {
+                    capital += (Int128)level.PriceMinor + materials;
+                }
                 if(type.Kind==BuildingKind.Production)value+=ProductionOpportunity(o,o.Map.Recipes.Single(r=>r.Id==level.RecipeId),level.StaffCapacity,level.WorkRateMultiplier,level.WageMinor,eta,a.Target,level.Materials);
             }
             if(a.Kind==ActionKind.BuyEquipment)
@@ -126,7 +147,7 @@ public sealed partial class AlgorithmicController
         // Existing commitments keep their signed prices/deadlines; new plans cannot spend their operating reserve.
         foreach(var contract in o.OwnDeliveryContracts.Where(x=>x.Supplier==Actor && x.ClosedTick is null && x.UnprovidedQuantity>0))
             if(o.Tick+eta>=contract.DeadlineTick)risk+=(Int128)contract.BondMinor+contract.UnprovidedQuantity*contract.UnitPriceMinor;
-        value-=capital*Limits.CapitalOpportunityBasisPoints/10000;
+        value-=(capital+stagedMaterials)*Limits.CapitalOpportunityBasisPoints/10000;
         return (Bounded(value),Bounded(capital),Bounded(risk));
     }
     private long ProductionOpportunity(ControllerObservation o,RecipeDefinition r,int capacity,int rate,long wage,long setup,Cell source,IEnumerable<MaterialCost>? consumed=null)
