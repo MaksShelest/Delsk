@@ -119,9 +119,18 @@ public partial class CityExperienceProbe : Control
         var setup=Field<MapSelectionScreen>(_app,"_mapSelection");await Frames();Check(setup.GetGlobalRect().End.X<=menuWidth+1,"Setup exceeds narrow window");
         await Click(Named<Button>("ChooseMap"));var catalog=Named<Control>("MapCatalog");Check(catalog.Size.X<=menuWidth,"Catalog wider than mobile window");await Click(Named<Button>("CloseMapCatalog"));
         await Capture("setup-"+_language+"-"+width);await Click(TextButton(_language=="ru"?"Продолжить":"Continue"));
-        _app.Notification((int)NotificationApplicationFocusOut);await Frames();long savedTick=Session.Engine.Tick;RemoveChild(_app);_app.QueueFree();await Frames();
-        _app=GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();AddChild(_app);await Frames(5);if(_language=="en"){var menu=Field<MapSelectionScreen>(_app,"_mapSelection");((UiDisclosure)menu.AdditionalSettings.GetParent()).Open();await Frames();await Click(TextButton("English"));}await Click(TextButton(_language=="ru"?"Продолжить":"Continue"));
-        Check(Session.Engine.Tick==savedTick&&Session.Engine.Configuration().Participants.Length==count+1,"Disk continuation changed time or roster");Check(Field<CityReadState>(_app,"_cityRead").TutorialPage==1,"Disk load lost guide memory");
+        // Continue enters live play now. Hold the automatic frame clock on both sides
+        // of this comparison so slow window frames cannot consume the restored tick.
+        _app.SetProcess(false);_app.Notification((int)NotificationApplicationFocusOut);
+        long savedTick=Session.Engine.Tick;string savedHash=Session.Engine.ComputeStateHash();
+        RemoveChild(_app);_app.QueueFree();await Frames();
+        _app=GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();AddChild(_app);_app.SetProcess(false);await Frames(5);
+        if(_language=="en"){var menu=Field<MapSelectionScreen>(_app,"_mapSelection");((UiDisclosure)menu.AdditionalSettings.GetParent()).Open();await Frames();await Click(TextButton("English"));}
+        await Click(TextButton(_language=="ru"?"Продолжить":"Continue"));
+        Check(Field<SubViewportContainer>(_app,"_view").Visible,"Continue did not open live play");
+        Check(Session.Engine.Tick==savedTick&&Session.Engine.Configuration().Participants.Length==count+1
+            &&Session.Engine.ComputeStateHash()==savedHash,$"Disk continuation changed state at saved tick {savedTick}; current tick {Session.Engine.Tick}");
+        Check(Field<CityReadState>(_app,"_cityRead").TutorialPage==1,"Disk load lost guide memory");
         _checks.AddRange(["ordinary new game and entire roster","native full-map cell hit and wheel zoom","keyboard pan","two-finger zoom without world input or ghost tap","layer and participant filters","help/close preserve selection and time","focus pause","guide memory","skin change preserves authoritative hash","narrow setup/catalog/appearance","disk continuation"]);
     }
     public override async void _Ready()

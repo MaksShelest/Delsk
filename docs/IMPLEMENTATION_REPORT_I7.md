@@ -27,6 +27,8 @@
 | `8db1ff3` | Тестовые ожидания обновлены с учётом языка и фактической цены. Все шесть заданий Godot прошли. Следующий коммит отменил ещё выполнявшийся Core. В `npc-natural (large-districts, 10)` остановка произошла в checkout, после чего шаг сводки также сообщил ошибку. [Godot](https://github.com/MaksShelest/Delsk/actions/runs/44188675050) · [Core](https://github.com/MaksShelest/Delsk/actions/runs/44188675065) · [Журнал checkout](https://github.com/MaksShelest/Delsk/actions/runs/44188675065/job/134414012469) |
 | `346809a` | Последние применимые прогоны Core и Godot на финальном HEAD PR #110 завершились успешно. Исправлений под исторические сбои и изменений таймаутов для I7 нет. [Core](https://github.com/MaksShelest/Delsk/actions/runs/44190400974) · [Godot](https://github.com/MaksShelest/Delsk/actions/runs/44190400816) |
 
+На слитом `master` `1c39e30` завершились успешно оба push-прогона. Длительная проверка H2 также прошла на `c842768` после отменённого прогона `604fb11`. [Core master](https://github.com/MaksShelest/Delsk/actions/runs/44236579074) · [H2 master](https://github.com/MaksShelest/Delsk/actions/runs/44236579069) · [H2 c842768](https://github.com/MaksShelest/Delsk/actions/runs/44186901957)
+
 ## Проверки I7
 
 | Сценарии | Что проверено |
@@ -36,7 +38,11 @@
 | G | Проверены основной и backup-only одиночные файлы, прежний профиль, отключённые специализации, идемпотентность и удаление перенесённого слота. |
 | H | Проверены выбор последнего мира на диске, штатное закрытие окна и продолжение из отдельного процесса Godot. Тест использует реальный клиент и изолированный пользовательский каталог. |
 
-Linux Godot 4.7.2 с программным OpenGL прошёл десять нативных сценариев в двух процессах. Проверены экраны RU 800×440 и EN 360×700 с синтетическим вводом мышью, клавиатурой и касанием. Точечный xUnit охватывает `SavedWorldTests`, `CheckpointTests` и `EconomicBalanceI6C8DTests`. CI Windows использует тот же нативный сценарий в группе `saved-worlds`; итоговые статусы привязаны к HEAD соответствующего PR.
+Linux Godot 4.7.2 с программным OpenGL прошёл десять нативных сценариев в двух процессах. Проверены экраны RU 800×440 и EN 360×700 с синтетическим вводом мышью, клавиатурой и касанием. На Windows Server 2025 прошли оба процесса группы `saved-worlds`. [Журнал Windows](https://github.com/MaksShelest/Delsk/actions/runs/44240643761/job/134587415358)
+
+Точечные запуски xUnit прошли 59/59 обычных проверок I7, checkpoint, I6-C8D и форматирования цен, а также 7/7 проверок I7 в Developer. Полный локальный запуск без разбиения достиг прежнего лимита 780 с после 1185 завершённых тестов. Последним начался `BillingPenaltyE3Tests.GraceIsInclusiveFirstPenaltyAt1001Then1000NoCompoundingAndPartialPrincipalFirst`. Команда завершилась с кодом 124 без итогового TRX.
+
+При проверках I7 возвращён выбор прежней карты при прямом отладочном старте. После исправления Linux-проверка HUD и режима разработчика прошла все 20 сценариев, а `windows-core-replay` прошёл на `58faa7c`. В CI формы города точность сравнения тика проверяется при остановленном автоматическом scheduler. Отдельное утверждение проверяет, что одно нажатие «Продолжить» сразу показывает игру. [Проверки PR #111](https://github.com/MaksShelest/Delsk/pull/111/checks)
 
 ```sh
 dotnet build tests/Simulation.Tests/Simulation.Tests.csproj -c Release
