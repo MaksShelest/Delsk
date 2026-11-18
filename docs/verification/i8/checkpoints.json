@@ -1,0 +1,32 @@
+{
+  "profileSha256": "4ba9603431be9ba4f3af19e4cfb6ff78576e8a79a1863df9489b85b38dbe3833",
+  "late": {
+    "tick": 7200,
+    "stateHash": "330fb4a780f8334059f0095a4edd192fb1eb9521d61d946f1b6756059f98ed9c",
+    "controllerStateHash": "95a2cd148381313bec2c951b14b060633aa1c043145f200d20c261cee7e1b807",
+    "bytes": 4700137,
+    "sha256": "55b5258261a3c6e18d6a8652c004806768ffbe4995d4e5c23328645a237dd40d",
+    "maxIndustryXp": 296,
+    "productionBuildings": 3
+  },
+  "replay": {
+    "tick": 840,
+    "stateHash": "ae4411a6c701761a4218b30489f1825584e3bb0df82b267b226631e2dfc114c0",
+    "controllerStateHash": "980f1015ab773196da732097cdaa38e272b2baded632bfa7ad599d50db33b6bd",
+    "matchingContinuousAndResumedExports": [
+      "events.jsonl",
+      "ledger.jsonl",
+      "commands.jsonl",
+      "capital-demand.json",
+      "development.json",
+      "elections.json",
+      "fleet.json",
+      "market.json",
+      "public-economy.json",
+      "roads.json",
+      "services.json",
+      "workshops.json",
+      "final-state.json"
+    ]
+  }
+}

@@ -28,11 +28,31 @@ public partial class WorldProportionsProbe : Control
             var args=OS.GetCmdlineUserArgs();output=args[Array.IndexOf(args,"--output")+1];string map=args[Array.IndexOf(args,"--map")+1];
             bool verify=args.Contains("--verify");GetWindow().Size=new(1600,1000);GetWindow().ContentScaleSize=GetWindow().Size;
             var app=GD.Load<PackedScene>("res://Playfield.tscn").Instantiate<Playfield>();AddChild(app);await Frames();app.SetProcess(false);
-            Call(app,"DismissMaps");Set(app,"_mapKey",map);Set(app,"_newNpcCount",10);Call(app,"Start","economy",false);await Frames();app.SetProcess(false);
             if(args.Contains("--load"))
             {
-                string file=args[Array.IndexOf(args,"--load")+1];var save=typeof(Playfield).GetProperty("SavePath",Flags)!.GetValue(app)!.ToString()!;
-                System.IO.File.Copy(file,save,true);Call(app,"Load");await Frames();Call(app,"ContinueGame");await Frames();
+                string file = args[Array.IndexOf(args, "--load") + 1];
+                var expected = CheckpointStore.Load(file).Session.Engine;
+                var store = Field<SavedWorldStore>(app, "_worlds");
+                string legacy = store.LegacyPath("economy");
+                System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(legacy)!);
+                System.IO.File.Copy(file, legacy);
+                Call(app, "Load");
+                var restored = Field<GameSession>(app, "_session").Engine;
+                Check(restored.Tick == expected.Tick && restored.ComputeStateHash() == expected.ComputeStateHash(),
+                    "Client did not adopt the supplied checkpoint");
+                await Frames();
+                Call(app, "ContinueGame");
+                await Frames();
+            }
+            else
+            {
+                Call(app, "DismissMaps");
+                Set(app, "_mapKey", map);
+                Set(app, "_newNpcCount", 10);
+                if (map == PlayMaps.CompactValley) Set(app, "_startingIndustry", "woodworking");
+                Call(app, "Start", "economy", false);
+                await Frames();
+                app.SetProcess(false);
             }
             var session=Field<GameSession>(app,"_session");session.SetPaused(true);var scenario=session.Engine.Configuration();
             var stage=Field<PresentationStage>(app,"_stage");stage.SetProcess(false);var camera=Field<Camera3D>(stage,"_camera");
