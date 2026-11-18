@@ -178,7 +178,7 @@ public partial class Playfield
         {
             // Значки рюкзака уступают место навигации. В простом режиме их нет совсем.
             // Узкая ширина переносит ту же панель на вторую строку, не обрезая кнопки.
-            if(_hudGoods is null)return;
+            if(!IsCurrentHud(bar)||_hudGoods is null)return;
             bool room=bar.Size.X>=520;
             if(_playInventory is not null)_playInventory.Visible=!_friendly||room;
             if(_friendly)_hudGoods.Visible=false;
@@ -204,6 +204,10 @@ public partial class Playfield
         _playChrome.MoveChild(_goalBar,_playChrome.GetChildCount()-1);
     }
     private PanelContainer? _hudBar;
+    private bool IsCurrentHud(Control bar) =>
+        ReferenceEquals(bar, _hudBar) && GodotObject.IsInstanceValid(bar) &&
+        bar.IsInsideTree() && !bar.IsQueuedForDeletion();
+
     private void FitTooltip(float width)
     {
         if(_tooltip is null)return;
@@ -212,6 +216,7 @@ public partial class Playfield
     }
     private void LayoutCityHud(Control bar)
     {
+        if (!IsCurrentHud(bar)) return;
         float top=bar.Position.Y+bar.Size.Y;var safe=UiSafeArea.Read(bar);
         var view=GetViewportRect().Size;
         _roadCardTop=top+12;LayoutRoadWork();
@@ -328,8 +333,11 @@ public partial class Playfield
         _goalWhere.Text = purchase?.Label ?? StarterGoalUi.Action(step,_language,guiding);
         _goalWhere.Disabled = purchase is { Enabled: false } || !StarterGoalUi.CanOpen(step);
         _goalWhere.TooltipText = purchase?.Details ?? "";
-        if(_hudBar is not null)LayoutCityHud(_hudBar);
-        Callable.From(()=>{if(_hudBar is not null)LayoutCityHud(_hudBar);}).CallDeferred();
+        if (_hudBar is { } bar)
+        {
+            LayoutCityHud(bar);
+            Callable.From(() => LayoutCityHud(bar)).CallDeferred();
+        }
     }
     private string _previewKey="";
     private void FillPlayContext(VBoxContainer host, PlayerView contextView)
