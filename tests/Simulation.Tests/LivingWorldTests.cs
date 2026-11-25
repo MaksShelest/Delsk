@@ -60,6 +60,35 @@ public class LivingWorldTests
     }
 
     [Fact]
+    public void ArrivalKeepsTheLastWalkingSliceThenExpiresWithoutEnteringTheSave()
+    {
+        var definition = StorageC1Tests.Definition();
+        var session = new GameSession(new(definition));
+        var actor = new ParticipantId(1);
+        var move = session.Send(actor, new(ActionKind.MoveTo, Target: new(4, 0)));
+        session.Step();
+        Assert.Equal(ResultStatus.Accepted, session.Engine.Result(move)!.Status);
+
+        for (int i = 0; i < 40 && session.Engine.Observe(actor).Participant.Busy; i++) session.Step();
+        Assert.Equal(new Cell(4, 0), session.Engine.Observe(actor).Participant.Position);
+        Assert.False(session.Engine.Observe(actor).Participant.Busy);
+        var final = session.Engine.PedestrianMotionOf(actor.Value);
+        Assert.True(final.Active);
+        Assert.True(PedestrianPoseMath.At(final, 0).X < 4);
+        Assert.Equal(4f, PedestrianPoseMath.At(final, 1f).X);
+
+        var loaded = CheckpointStore.Decode(CheckpointStore.Encode(session));
+        Assert.Equal(session.Engine.ComputeStateHash(), loaded.Engine.ComputeStateHash());
+        Assert.False(loaded.Engine.PedestrianMotionOf(actor.Value).Active);
+        session.Step();
+        loaded.Step();
+        Assert.False(session.Engine.PedestrianMotionOf(actor.Value).Active);
+        Assert.Equal(session.Engine.ComputeStateHash(), loaded.Engine.ComputeStateHash());
+        Assert.Equal(session.Engine.ComputeStateHash(),
+            GameSession.Replay(definition, session.CommandTape, session.Engine.Tick).Engine.ComputeStateHash());
+    }
+
+    [Fact]
     public void ManualInputDuringRouteKeepsCheckpointAndReplayValid()
     {
         var session = new GameSession(new(StorageC1Tests.Definition()));

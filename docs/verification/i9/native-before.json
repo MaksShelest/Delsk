@@ -1,0 +1,48 @@
+{
+  "status": "succeeded",
+  "baseline": true,
+  "actors": 11,
+  "headings": [
+    {
+      "x": -1,
+      "z": 0
+    },
+    {
+      "x": -1,
+      "z": 1
+    },
+    {
+      "x": 0,
+      "z": -1
+    },
+    {
+      "x": 0,
+      "z": 1
+    },
+    {
+      "x": 1,
+      "z": -1
+    },
+    {
+      "x": 1,
+      "z": 0
+    }
+  ],
+  "walkers": 11,
+  "opposition": 11,
+  "_peakWalkers": 11,
+  "_arrivals": 11,
+  "_missingArrivals": 11,
+  "_outsideRoute": 0,
+  "_authorityTargets": 939,
+  "_faceErrors": 12,
+  "_minFaceDot": -0.6497067,
+  "_maxDisplacement": 0.098995194,
+  "_pauseDrift": 0,
+  "_skinDrift": 0,
+  "sampledFrames": 57,
+  "medianFrameMs": 69.2173,
+  "p95FrameMs": 113.8352,
+  "medianStageMs": 0.0998,
+  "p95StageMs": 0.2221
+}

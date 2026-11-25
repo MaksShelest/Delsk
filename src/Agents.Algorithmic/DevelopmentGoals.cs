@@ -95,21 +95,57 @@ public sealed partial class AlgorithmicController
             var level=type.Levels.Single(l=>l.Level==1);var recipe=o.Map.Recipes.Single(r=>r.Id==level.RecipeId);
             bool preferred=o.ProductionContent is null?recipe.Uses(settings.PreferredInput):level.UnlockedRecipes.Any(id=>o.Map.Recipes.Single(r=>r.Id==id).Uses(settings.PreferredInput));
             if(UsesEconomicPlanning?StartupIndustry(o)?.Id!=type.Id:!preferred||BestOffer(o,recipe.OutputItem,recipe.OutputQuantity,o.Participant.Position) is null)continue;
-            foreach(var plot in o.Plots.Where(p=>p.BuildingId is null&&p.ExpansionFor is null&&!p.IsCorridor&&!p.IsShopSite&&p.ShopParticipantId is null&&(p.OwnerId is null||p.OwnerId==Actor)&&(p.ReservedBy is null||p.ReservedBy==Actor)&&
-                (d.BuildAnchors.IsEmpty||d.BuildAnchors.Contains(p.Position))).OrderBy(p=>p.OwnerId==Actor?0:1).ThenBy(p=>p.Id.Value))
+            bool provincial = NeedsProvincialParcel(o);
+            var sites = o.Plots.Where(p=>p.BuildingId is null&&p.ExpansionFor is null&&!p.IsCorridor&&!p.IsShopSite&&p.ShopParticipantId is null&&(p.OwnerId is null||p.OwnerId==Actor)&&(p.ReservedBy is null||p.ReservedBy==Actor)&&
+                (d.BuildAnchors.IsEmpty||d.BuildAnchors.Contains(p.Position)));
+            foreach (var plot in sites.Select(p => (Plot: p, Distance: provincial
+                         ? Distance(o.Map, o.Participant.Position, p.Position) : 0))
+                     .Where(p => p.Distance >= 0).OrderBy(p => p.Plot.OwnerId == Actor ? 0 : 1)
+                     .ThenBy(p => p.Distance).ThenBy(p => p.Plot.Id.Value).Select(p => p.Plot))
             {
                 var face=FacingOf(d,plot.Position);
                 var contour=type.Levels.MaxBy(l=>l.Level)!.Footprint.Select(c=>IndustrialParcels.Place(plot.Position,face.X,face.Z,c.X,c.Z));
                 if(contour.Any(c=>!o.Plots.Any(p=>p.Position==c&&p.BuildingId is null&&p.ExpansionFor is null&&(p.OwnerId is null||p.OwnerId==Actor)&&(p.ReservedBy is null||p.ReservedBy==Actor))))continue;
                 long grant=o.ProvincialProgram is { Status: "Open", IndustryId: var funded } && funded==type.Id ? o.ProvincialProgram.ParcelRemaining+o.ProvincialProgram.ConstructionRemaining : 0;
                 if(o.Account.AvailableMinor+grant<level.PriceMinor+ParcelPrice(o,plot)+settings.CashReserveMinor)continue;
-                if(plot.OwnerId is null){var steps=new List<PlanStep>();Move(steps,o.Participant.Position,plot.Position);steps.Add(new(new(ActionKind.BuyPlot,Plot:plot.Id)));yield return new("BuildProduction","Anchor:"+plot.Id.Value,145000,steps.ToArray());break;}
+                if (plot.OwnerId is null)
+                {
+                    if (provincial && !FreeProvincialParcel(o, plot.Id)) continue;
+                    var steps = new List<PlanStep>();
+                    Move(steps, o.Participant.Position, plot.Position);
+                    steps.Add(new(new(ActionKind.BuyPlot, Plot: plot.Id)));
+                    var purchase = new Candidate("BuildProduction", "Anchor:" + plot.Id.Value, 145000, steps.ToArray());
+                    if (provincial && !Feasible(purchase, o)) continue;
+                    yield return purchase;
+                    break;
+                }
                 var ground=o.Inventories.SingleOrDefault(i=>i.Id!=carrier.Id&&i.Position==plot.Position&&!o.Buildings.Any(b=>b.InputId==i.Id||b.OutputId==i.Id));if(ground is null)continue;
                 if(Supply(ground,level.Materials.ToArray(),"BuildProduction","Stage:"+plot.Id.Value) is {} supply){yield return supply;break;}
                 if(level.Materials.Any(m=>Free(ground,m.ItemId)<m.Quantity))break;
                 var build=new List<PlanStep>();Move(build,o.Participant.Position,plot.Position);build.Add(new(new(ActionKind.Build,Target:plot.Position,BuildingTypeId:type.Id)));yield return new("BuildProduction","Timed:"+plot.Id.Value,150000,build.ToArray());break;
             }
         }
+    }
+
+    private static bool NeedsProvincialParcel(ControllerObservation observation) =>
+        observation.ProvincialProgram is { Status: "Open", ParcelRemaining: > 0 } &&
+        observation.Economics?.IndustrialParcels is { Version: 1 };
+
+    private static bool FreeProvincialParcel(ControllerObservation observation, PlotId id)
+    {
+        var anchor = observation.Plots.FirstOrDefault(p => p.Id == id);
+        var development = observation.Development;
+        if (anchor is null || development is null || !development.BuildAnchors.Contains(anchor.Position)) return false;
+        var facing = FacingOf(development, anchor.Position);
+        for (int depth = 0; depth < 3; depth++)
+        for (int across = 0; across < 2; across++)
+        {
+            var cell = IndustrialParcels.Place(anchor.Position, facing.X, facing.Z, across, depth);
+            if (!observation.Plots.Any(p => p.Position == cell && p.OwnerId is null && p.ReservedBy is null &&
+                p.BuildingId is null && p.ExpansionFor is null && !p.IsCorridor && !p.IsShopSite && p.ShopParticipantId is null))
+                return false;
+        }
+        return true;
     }
 
     private static Cell FacingOf(DevelopmentObservation development, Cell anchor)

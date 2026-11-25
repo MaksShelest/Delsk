@@ -40,6 +40,8 @@ public partial class PresentationStage
         mover.HipsRest=body?.Rotation??default;
         mover.HipsRestPos=body?.Position??default;
         ResetLimbs(mover);
+        if (mover.Gait > 0.001f)
+            EaseLimbs(mover, Mathf.Sin(mover.Stride) * mover.Gait, mover.Gait, 1f);
     }
 
     private static void ResetLimbs(Mover mover)
@@ -54,21 +56,32 @@ public partial class PresentationStage
 
     private static void StepWalk(Mover mover,double delta,bool live)
     {
-        if(!mover.Node.Visible){ResetLimbs(mover);mover.LastSet=false;return;}
+        if(!mover.Node.Visible){ResetLimbs(mover);mover.LastSet=false;mover.Gait=0;return;}
         if(!live){mover.Last=mover.Node.Position;mover.LastSet=true;return;}
         var now=mover.Node.Position;
-        float speed=0;
+        float distance=0;
         if(mover.SnapWalk){mover.SnapWalk=false;mover.Last=now;mover.LastSet=true;}
-        else if(mover.LastSet)speed=now.DistanceTo(mover.Last)/Mathf.Max((float)delta,0.001f);
+        else if(mover.LastSet)distance=now.DistanceTo(mover.Last);
         mover.Last=now;mover.LastSet=true;
-        float swing=speed<0.05f?0:Mathf.Clamp(0.42f+speed*0.06f,0.42f,0.72f);
-        if(swing>0)mover.Stride+=(float)delta*Mathf.Clamp(speed*7.5f,3.4f,11f);
+        float seconds = Mathf.Max((float)delta, 0.001f);
+        float speed = distance / seconds;
+        float desired = speed < 0.025f ? 0 : Mathf.Clamp(0.46f + speed * 0.12f, 0.46f, 0.72f);
+        mover.Gait = Mathf.Lerp(mover.Gait, desired, 1f - Mathf.Exp(-seconds * 16f));
+        // Keep the phase tied to the visible distance, including at different render speeds.
+        if (distance > 0.00001f) mover.Stride += distance * 16f;
+        if (mover.Gait < 0.001f)
+        {
+            if (mover.Gait > 0) ResetLimbs(mover);
+            mover.Gait = 0;
+            return;
+        }
+        float swing = mover.Gait;
         float angle=Mathf.Sin(mover.Stride)*swing;
         if(mover.LegL is null)
         {
             if(mover.Bob is null)return;
-            float bob=swing>0?Mathf.Sin(mover.Stride*2f)*0.04f:0;
-            float sway=swing>0?Mathf.Sin(mover.Stride)*0.05f:0;
+            float bob=Mathf.Sin(mover.Stride*2f)*swing*0.06f;
+            float sway=angle*0.08f;
             var place=mover.Bob.Position;
             mover.Bob.Position=new(place.X,Mathf.Lerp(place.Y,mover.HipsRestPos.Y+bob,0.35f),place.Z);
             mover.Bob.Rotation=new(mover.HipsRest.X,mover.HipsRest.Y,Mathf.Lerp(mover.Bob.Rotation.Z,mover.HipsRest.Z+sway,0.35f));
@@ -86,8 +99,8 @@ public partial class PresentationStage
         var body=mover.Hips??mover.Bob;
         if(body is null)return;
         float k=1f-Mathf.Exp(-delta*12f);
-        float lift=swing>0?(1f-Mathf.Cos(mover.Stride*2f))*0.055f:0f;
-        float shift=swing>0?Mathf.Sin(mover.Stride)*0.03f:0f;
+        float lift=(1f-Mathf.Cos(mover.Stride*2f))*swing*.08f;
+        float shift=angle*.045f;
         var pos=body.Position;
         body.Position=new(Mathf.Lerp(pos.X,mover.HipsRestPos.X+shift,k),Mathf.Lerp(pos.Y,mover.HipsRestPos.Y+lift,k),Mathf.Lerp(pos.Z,mover.HipsRestPos.Z,k));
         body.Rotation=new(mover.HipsRest.X,mover.HipsRest.Y,Mathf.Lerp(body.Rotation.Z,mover.HipsRest.Z+shift,k));

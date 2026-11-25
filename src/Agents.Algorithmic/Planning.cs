@@ -34,6 +34,8 @@ public sealed partial class AlgorithmicController
         foreach(var step in _state.Plan.Skip(_state.NextStep))
         {
             var a=step.Action;
+            if (_state.Goal == "BuildProduction" && a.Kind == ActionKind.BuyPlot &&
+                NeedsProvincialParcel(o) && !FreeProvincialParcel(o, a.Plot)) return false;
             if(a.Kind is ActionKind.CounterTrade or ActionKind.AcceptTrade or ActionKind.RejectTrade && !o.Negotiations.Any(n=>n.Id==a.NegotiationId && n.Current.Version==a.NegotiationVersion && n.Status==NegotiationStatus.Proposed && n.ExpiresTick>o.Tick))return false;
             if(a.Kind==ActionKind.DeliverContract && !o.OwnDeliveryContracts.Any(c=>c.Id==a.ContractId && c.Supplier==Actor && c.UnprovidedQuantity>=a.Quantity && c.DeadlineTick>o.Tick))return false;
             if(a.Kind==ActionKind.CollectPurchase && !o.OwnMarketAllocations.Any(c=>c.Id==a.PurchaseId && c.Buyer==Actor && c.RemainingQuantity>=a.Quantity && c.DeadlineTick>o.Tick))return false;
