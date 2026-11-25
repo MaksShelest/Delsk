@@ -1,4 +1,5 @@
 using Godot;
+using Simulation.Core;
 using Simulation.Hosting;
 
 /// <summary>Rendering only. Fixed-step world positions are interpolated independently of FPS.</summary>
@@ -40,10 +41,12 @@ public partial class PresentationStage : Node3D
         public Vector3 Last;
         public bool LastSet;
         public float Stride;
+        public float Gait;
+        public long ShownTick = -1;
+        public int ShownQuantum;
         public Node3D? LegL,LegR,ArmL,ArmR,Hips,Bob;
         public Vector3 LegLRest,LegRRest,ArmLRest,ArmRRest,HipsRest,HipsRestPos;
         public float AngleFrom,AngleTo,AngleElapsed=1;
-        public Vector2? SimulationFacing;
         public bool OnRoute;
     }
     private readonly System.Collections.Generic.Dictionary<long, Mover> _actors = new();
@@ -94,7 +97,9 @@ public partial class PresentationStage : Node3D
             {
                 mover.Elapsed = Mathf.Min(mover.Duration, mover.Elapsed + (float)delta);
                 float span=mover.Duration<=0f?1f:mover.Elapsed/mover.Duration;
-                mover.Node.Position = mover.From.Lerp(mover.To, Mathf.Clamp(span, 0, 1));
+                var next = mover.From.Lerp(mover.To, Mathf.Clamp(span, 0, 1));
+                var displacement = next - mover.Node.Position;
+                mover.Node.Position = next;
                 float turn=Mathf.Max(.05f,mover.TurnSeconds);
                 mover.AngleElapsed=Mathf.Min(turn,mover.AngleElapsed+(float)delta);
                 // Угол ±π через Euler Y не меняет базис. Поворот задаётся базисом.
@@ -103,6 +108,8 @@ public partial class PresentationStage : Node3D
                     ApplyYaw(mover, Mathf.LerpAngle(mover.AngleFrom, mover.AngleTo, mover.AngleElapsed / turn));
                     if (mover.AngleElapsed >= turn) mover.AngleFrom = mover.AngleTo;
                 }
+                if (mover.Walker && displacement.LengthSquared() > 0.00000001f)
+                    TargetRotation(mover, displacement.X, displacement.Z, true);
             }
             if(mover.Walker)StepWalk(mover,delta,!_frozen);
         }
@@ -142,7 +149,7 @@ public partial class PresentationStage : Node3D
                 BindLimbs(mover);
                 _actors[actor.Id] = mover;
             }
-            if(appearanceChanged)
+            if(appearanceChanged && mover.ShownTick >= 0)
             {
                 var prior=mover.Node.GetNodeOrNull<Node3D>("Appearance");
                 if(prior is not null){mover.Node.RemoveChild(prior);prior.QueueFree();}
@@ -153,30 +160,33 @@ public partial class PresentationStage : Node3D
             if(!mover.Node.Visible)ResetLimbs(mover);
             if(actor.Human)_riddenVehicle=actor.VehicleId;
             var facing = new Vector2(actor.FacingX, actor.FacingZ);
-            if(actor.Motion.Active)
+            bool sameTime = mover.ShownTick == frame.Tick && mover.ShownQuantum == quantum;
+            bool snapWalker = mover.ShownTick < 0 || (frozen && !sameTime);
+            if (frozen && sameTime)
             {
-                float shown=quantum/10f;
-                float toward=frozen?shown:Mathf.Min(1f,(quantum+1)/10f);
-                var pose=PedestrianPoseMath.At(actor.Motion,snap?shown:toward);
-                var step=new Vector3(pose.X,0f,pose.Z);
-                bool far=mover.Node.Position.DistanceTo(step)>1.35f;
-                Target(mover,step,0.1f,snap||far,false);
-                if (Mathf.Abs(pose.FaceX) + Mathf.Abs(pose.FaceZ) > 0.01f)
-                    TargetRotation(mover, pose.FaceX, pose.FaceZ, snap || far);
+                // Pausing between quanta keeps the position already rendered.
+                mover.From = mover.To = mover.Node.Position;
+                mover.Elapsed = mover.Duration;
+            }
+            else if(actor.Motion.Active)
+            {
+                float shown = (float)quantum / SimulationEngine.TravelQuantaPerTick;
+                float toward = (float)(quantum + 1) / SimulationEngine.TravelQuantaPerTick;
+                var pose = PedestrianPoseMath.At(actor.Motion, snapWalker ? shown : toward);
+                Target(mover, new Vector3(pose.X, 0f, pose.Z), 0.1f, snapWalker);
+                if (snapWalker && (pose.FaceX != 0 || pose.FaceZ != 0))
+                    TargetRotation(mover, pose.FaceX, pose.FaceZ, true);
             }
             else
             {
-                var displacement = at - mover.To;
-                // Manual movement may slide along a wall. Face the movement that actually occurred.
-                if (!snap && displacement.LengthSquared() > 0.000001f)
-                    TargetRotation(mover, displacement.X, displacement.Z, false);
-                else if (facing != Vector2.Zero && mover.SimulationFacing != facing && !mover.OnRoute)
-                    TargetRotation(mover, facing.X, facing.Y, snap);
-                Target(mover, at, actor.Human ? 0.1f : 0.2f, snap, false);
+                if (snapWalker && facing != Vector2.Zero && !mover.OnRoute)
+                    TargetRotation(mover, facing.X, facing.Y, true);
+                Target(mover, at, 0.1f, snapWalker);
             }
             // During a routed walk Core keeps the initial heading. Preserve the final visual heading on arrival.
-            mover.SimulationFacing = facing;
             mover.OnRoute = actor.Motion.Active;
+            mover.ShownTick = frame.Tick;
+            mover.ShownQuantum = quantum;
             int labelRow = frame.Actors.Count(other => other.X == actor.X && other.Z == actor.Z && other.Id < actor.Id);
             var caption=mover.Node.GetNodeOrNull<Label3D>("Appearance/Caption");
             if(caption is not null)
@@ -293,7 +303,13 @@ public partial class PresentationStage : Node3D
     private void TargetRotation(Mover mover,float x,float z,bool snap)
     {
         float angle=Mathf.Atan2(-x,-z);
-        if(snap){mover.AngleFrom=mover.AngleTo=angle;mover.AngleElapsed=1;ApplyYaw(mover,angle);return;}
+        if(snap)
+        {
+            mover.AngleFrom=mover.AngleTo=angle;
+            mover.AngleElapsed=1;
+            if (Mathf.Abs(Mathf.AngleDifference(YawOf(mover), angle)) > 0.001f) ApplyYaw(mover, angle);
+            return;
+        }
         if(Mathf.Abs(Mathf.AngleDifference(mover.AngleTo,angle))<0.001f)return;
         mover.AngleFrom=YawOf(mover);mover.AngleTo=angle;mover.AngleElapsed=0;
     }

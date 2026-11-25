@@ -8,10 +8,15 @@ public readonly record struct PedestrianMotion(
     bool Active,
     int Ax, int Az, int Bx, int Bz, int Cx, int Cz,
     bool Crosses, bool Corner,
-    int StartMilli, int EndMilli);
+    int StartMilli, int EndMilli,
+    int DurationMilli = 1000);
 
 public sealed partial class SimulationEngine
 {
+    // Presentation-only samples from the last committed movement phase. Saves retain the
+    // active route; a freshly loaded world can reconstruct its ongoing slice as before.
+    private readonly Dictionary<long, PedestrianMotion> _pedestrianArrivals = new();
+
     /// <summary>
     /// Where a walking participant is allowed to be drawn during this tick.
     /// The end of the sample is the authority pose. The start is the same budget run backwards,
@@ -20,7 +25,11 @@ public sealed partial class SimulationEngine
     public PedestrianMotion PedestrianMotionOf(long actorId)
     {
         if(!_actors.TryGetValue(actorId,out var actor)||DrivenVehicle(actor.Id) is not null)return default;
-        if(actor.Job is not {Kind:"Move"} job||job.StartTick>=Tick||job.PathIndex>=job.Path.Length-1)return default;
+        if(actor.Job is not {Kind:"Move"} job)
+            return actor.OffsetX == TravelCenter && actor.OffsetZ == TravelCenter &&
+                actor.HeadingX == 0 && actor.HeadingZ == 0
+                ? _pedestrianArrivals.GetValueOrDefault(actorId) : default;
+        if(job.StartTick>=Tick||job.PathIndex>=job.Path.Length-1)return default;
         int index=job.PathIndex,segment=job.SegmentTicks;
         var ahead=job.Path[index+1];
         bool blocked=!_map.Walkable(ahead)||UsesFreeVehicleControl&&PedestrianTrafficBlocked(ahead,actor.Id);
@@ -67,6 +76,23 @@ public sealed partial class SimulationEngine
             {cx=next.X;cz=next.Z;corner=true;}
         }
         return new(true,origin.X,origin.Z,middle.X,middle.Z,cx,cz,crosses,corner,startMilli,endMilli);
+    }
+
+    private void RecordPedestrianArrival(ActorState actor, PersonalJob job, int startIndex, int startSegment)
+    {
+        if (DrivenVehicle(actor.Id) is not null) return;
+        int finalEdge = job.Path.Length - 2;
+        if (finalEdge - startIndex > 1) return;
+        long first = PresentationEdge(actor, job, startIndex);
+        long budget = UsesAcceleratedMovement ? MotionTimeScale : 1;
+        bool crosses = startIndex != finalEdge;
+        long spent = first - startSegment + (crosses ? PresentationEdge(actor, job, finalEdge) : 0);
+        int duration = (int)Math.Clamp((spent * 1000 + budget - 1) / budget, 1, 1000);
+        var a = job.Path[startIndex];
+        var b = job.Path[startIndex + 1];
+        var c = job.Path[^1];
+        _pedestrianArrivals[actor.Id] = new(true, a.X, a.Z, b.X, b.Z, c.X, c.Z,
+            crosses, crosses, Milli(startSegment, first), 1000, duration);
     }
 
     private long PresentationEdge(ActorState actor,PersonalJob job,int index)

@@ -9,7 +9,7 @@ public static class PedestrianPoseMath
 {
     public static PedestrianPose At(PedestrianMotion motion, float phase)
     {
-        if(phase<0)phase=0;if(phase>1)phase=1;
+        phase = Math.Clamp(phase * 1000 / Math.Max(1, motion.DurationMilli), 0, 1);
         float start=motion.StartMilli;
         float end=motion.Crosses?1000f+motion.EndMilli:motion.EndMilli;
         if(end<start)end=start;

@@ -58,23 +58,7 @@ public sealed class StrategicPlanningTests
     [Fact]
     public void HardPlannerUsesTheSameOneTimeParcelAndConstructionGrantsAsThePlayer()
     {
-        var profile = VNextI6C8DBalanceProfile.Create(
-            VNextProvincialSupportProfile.ForOrdinaryMap(MobileEquipmentI4Tests.Profile()));
-        var map = MapDesignReader.Read(Encoding.UTF8.GetBytes(
-            OrdinaryNewGameTests.Text("woodland_region_i6c8c.json")), profile);
-        var setup = OrdinaryNewGame.Resolve(map, profile,
-            new(3, "Hard", Seed: 17, StartingIndustry: "woodworking"), vnextBalance: MapDesignTests.Balance());
-        var definition = setup.Scenario;
-        var settings = OrdinaryNewGameTests.Config().ForOrdinary(definition, 1, setup.Controllers);
-        var participants = definition.Participants.Select(p => p.Id).ToArray();
-        var session = new GameSession(new(definition));
-        session.AttachControllers(settings.Npcs.Select(npc => (IController)new AlgorithmicController(
-            AlgorithmicController.WithEconomy(npc, profile.Npc),
-            AlgorithmicController.RuntimeSeed(definition.Seed, npc.ActorId), participants))
-            .Append(new SelfBallotController(new(1))));
-
-        Assert.All(definition.Participants, p => Assert.Equal(20_000, p.CashMinor));
-        Assert.DoesNotContain(session.Engine.Inspect().Buildings, b => b.Kind == BuildingKind.Production);
+        var (session, settings) = StartWithProvincialSupport("woodland_region_i6c8c.json", 3);
         session.AdvanceTo(500);
 
         var ledger = session.Engine.Ledger();
@@ -90,5 +74,39 @@ public sealed class StrategicPlanningTests
             Assert.Equal(0, observation.ProvincialProgram.ConstructionRemaining);
             Assert.True(Assert.Single(observation.Enterprises).CompletedBatches > 0);
         }
+    }
+
+    [Fact]
+    public void HardPlannersSpreadOutAcrossProvincialParcels()
+    {
+        var (session, _) = StartWithProvincialSupport("compact_valley_i6c8c.json", 10);
+        session.AdvanceTo(200);
+
+        var events = session.Engine.EventsSince(0);
+        var purchases = events.Where(e => e.Type == "ParcelPurchased").ToArray();
+        Assert.Equal(10, purchases.Select(e => e.ActorId).Distinct().Count());
+        Assert.Equal(10, purchases.Select(e => e.EntityId).Distinct().Count());
+        Assert.DoesNotContain(events, e => e.Type == "CommandRejected" && e.ReasonCode == "ParcelOccupied");
+    }
+
+    private static (GameSession Session, AutonomousConfiguration Settings) StartWithProvincialSupport(string mapFile, int npcCount)
+    {
+        var profile = VNextI6C8DBalanceProfile.Create(
+            VNextProvincialSupportProfile.ForOrdinaryMap(MobileEquipmentI4Tests.Profile()));
+        var map = MapDesignReader.Read(Encoding.UTF8.GetBytes(OrdinaryNewGameTests.Text(mapFile)), profile);
+        var setup = OrdinaryNewGame.Resolve(map, profile,
+            new(npcCount, "Hard", Seed: 17, StartingIndustry: "woodworking"), vnextBalance: MapDesignTests.Balance());
+        var definition = setup.Scenario;
+        var settings = OrdinaryNewGameTests.Config().ForOrdinary(definition, 1, setup.Controllers);
+        var participants = definition.Participants.Select(p => p.Id).ToArray();
+        var session = new GameSession(new(definition));
+        session.AttachControllers(settings.Npcs.Select(npc => (IController)new AlgorithmicController(
+            AlgorithmicController.WithEconomy(npc, profile.Npc),
+            AlgorithmicController.RuntimeSeed(definition.Seed, npc.ActorId), participants))
+            .Append(new SelfBallotController(new(1))));
+
+        Assert.All(definition.Participants, p => Assert.Equal(20_000, p.CashMinor));
+        Assert.DoesNotContain(session.Engine.Inspect().Buildings, b => b.Kind == BuildingKind.Production);
+        return (session, settings);
     }
 }

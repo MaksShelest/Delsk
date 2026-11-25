@@ -368,18 +368,26 @@ public sealed partial class SimulationEngine
     }
     private void AdvanceMovements()
     {
+        _pedestrianArrivals.Clear();
         foreach (var actor in _actors.Values.OrderBy(a => a.Id))
         {
             if (actor.Job is not { Kind: "Move" } job || job.StartTick >= Tick) continue;
             if(Roads is not null&&DrivenVehicle(actor.Id) is {} roadVehicle)
             {AdvanceRoadMove(actor,roadVehicle,job);continue;}
-            if(UsesAcceleratedMovement){AdvanceFastPersonalMove(actor,job);continue;}
+            int startIndex = job.PathIndex, startSegment = job.SegmentTicks;
+            if (UsesAcceleratedMovement)
+            {
+                AdvanceFastPersonalMove(actor, job);
+                if (actor.Job is null) RecordPedestrianArrival(actor, job, startIndex, startSegment);
+                continue;
+            }
             ++job.SegmentTicks;
             if (job.SegmentTicks < PersonalMoveTicks(actor,job.Path[job.PathIndex],job.Path[job.PathIndex+1])) continue;
             job.SegmentTicks = 0; ++job.PathIndex; actor.Position = job.Path[job.PathIndex];
             actor.OffsetX = TravelCenter; actor.OffsetZ = TravelCenter;
             _economy.Inventories[actor.Inventory].Position = actor.Position; SyncDrivenVehicle(actor);
-            if (Tick >= job.CompletionTick) CompleteMovement(actor.Id, job.Id);
+            if (Tick >= job.CompletionTick && CompleteMovement(actor.Id, job.Id))
+                RecordPedestrianArrival(actor, job, startIndex, startSegment);
         }
     }
     internal bool CompleteMovement(long actorId, long jobId)

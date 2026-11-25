@@ -26,8 +26,11 @@ public sealed partial class AlgorithmicController
                 RememberEconomicFailure(failed,o.Tick,result.ReasonCode);
                 if(failed.Kind==ActionKind.SignSupport && result.ReasonCode=="NotAvailable")
                     _state = _state with {FailedSupport=[.._state.FailedSupport.Where(id=>id!=failed.SupportProposalId),failed.SupportProposalId]};
+                bool lostProvincialParcel = failed.Kind == ActionKind.BuyPlot && NeedsProvincialParcel(o) &&
+                    result.ReasonCode is "ParcelOccupied" or "ParcelReserved";
                 _state = _state with { PendingCommandId = null, Plan = [], NextStep = 0,
-                    BlockedGoal = failed.Kind==ActionKind.SignSupport?"":_state.Goal, BlockedUntilTick = checked(o.Tick + _state.Settings.BlockedRetryTicks),
+                    BlockedGoal = failed.Kind==ActionKind.SignSupport || lostProvincialParcel ? "" : _state.Goal,
+                    BlockedUntilTick = checked(o.Tick + _state.Settings.BlockedRetryTicks),
                     Rejections = _state.Rejections + 1, Reason = result.ReasonCode, NextDecisionTick = o.Tick };
             }
             else
