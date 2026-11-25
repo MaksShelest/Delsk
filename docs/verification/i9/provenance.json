@@ -1,0 +1,26 @@
+{
+  "baseCommit": "5a780c8ac0fbb5d96c720b4e2f496809efd758f5",
+  "implementationCommit": "c315388",
+  "platform": "Godot Mono 4.7.2, Linux Xvfb, OpenGL Compatibility llvmpipe, 960x540",
+  "scenarioSha256": "0343fe0e83f459acf07240a56098d931e76cb9e16d9542b76ae11f24222039ff",
+  "naturalSha256": "8f2af50971bc4af945634f6d3bf87712ce63d5ef2664c348f85c4654ef3ce704",
+  "probeSha256": "a048d9c569831a77b91b42532f0ef779a934d70d37dd147e481e3c4f219fc99a",
+  "matrixScenarios": 24,
+  "baselineScenarios": 2,
+  "replayHashesMatched": 26,
+  "deterministicAt840": {
+    "continuous": {
+      "stateHash": "2c40eece1adc4a66ca41959bb0dead914d91d7a85bd3e6bc7c610dfc616a7022",
+      "controllerStateHash": "ff7abc18bf4114e28979210e2a932eff76c9a91830091522be8b45c41e9546c7"
+    },
+    "loaded": {
+      "stateHash": "2c40eece1adc4a66ca41959bb0dead914d91d7a85bd3e6bc7c610dfc616a7022",
+      "controllerStateHash": "ff7abc18bf4114e28979210e2a932eff76c9a91830091522be8b45c41e9546c7"
+    },
+    "replay": {
+      "stateHash": "2c40eece1adc4a66ca41959bb0dead914d91d7a85bd3e6bc7c610dfc616a7022",
+      "controllerStateHash": "8284481dad00c92ace1b6bdbfe7969873b2320519f7a9bd0f46e87cb543ceeec"
+    }
+  },
+  "previousI8SaveAt10800ContinuedTo10920": "f3f34d863699023197147106d17698e549a6d0654908b4ae40dafa681b1c57e0"
+}
