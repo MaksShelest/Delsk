@@ -18,9 +18,17 @@ public partial class DeveloperPanel : PanelContainer
     private readonly Label? _experienceCurrent;
     private readonly SpinBox _stock = new() { Name = "GodStockTarget", MinValue = 0, MaxValue = 1000000000000, Step = 1, UpdateOnTextChanged = true, CustomMinimumSize = new(150, 0) };
     private readonly SpinBox _exponent = new() { MinValue = 1, MaxValue = 5, Step = 1 };
-    private readonly SpinBox _target = new() { MinValue = 1, MaxValue = 1000000, Step = 1, Value = 600 };
-    private readonly SpinBox _count = new() { MinValue = 1, MaxValue = 100000, Step = 1, Value = 100 };
-    private readonly CheckButton _self = new() { FocusMode = FocusModeEnum.None };
+    private readonly SpinBox _target = new() { Name = "AdvanceTarget", MinValue = 1, Step = 1 };
+    private readonly SpinBox _count = new() { Name = "AdvanceCount", MinValue = 1, Step = 1 };
+    private readonly CheckButton _automatic = new() { Name = "AdvanceAutoBallot", FocusMode = FocusModeEnum.None };
+    private readonly OptionButton _candidate = new() { Name = "AdvanceCandidate" };
+    private readonly CheckButton _continue = new() { Name = "AdvanceContinueVictory", FocusMode = FocusModeEnum.None };
+    private readonly ProgressBar _progress = new() { Name = "AdvanceProgress", ShowPercentage = true };
+    private readonly Button _cancel = new() { Name = "AdvanceCancel" };
+    private readonly VBoxContainer _advance;
+    private readonly ParticipantId _human;
+    private VotingPanel? _manualBallot;
+    private bool _wasAdvancing;
     private readonly Label _status = new() { Name = "DeveloperStatus", AutowrapMode = TextServer.AutowrapMode.WordSmart };
     private readonly Label _moneyCurrent = new() { Name = "GodMoneyCurrent", AutowrapMode = TextServer.AutowrapMode.WordSmart };
     private readonly Label _stockCurrent = new() { Name = "GodStockCurrent", AutowrapMode = TextServer.AutowrapMode.WordSmart };
@@ -33,7 +41,7 @@ public partial class DeveloperPanel : PanelContainer
 
     public DeveloperPanel(DeveloperTools tools, GameSession session, ParticipantId human, string language, System.Action refresh)
     {
-        _tools = tools; _session = session; _language = language; _refresh = refresh;
+        _tools = tools; _session = session; _human = human; _language = language; _refresh = refresh;
         AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color("243a3e"), ContentMarginLeft = 12, ContentMarginRight = 12, ContentMarginTop = 12, ContentMarginBottom = 12 });
         _detail.AddThemeColorOverride("font_readonly_color", new Color("e8eee8"));
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect); OffsetLeft = 30; OffsetRight = -30; OffsetTop = 30; OffsetBottom = -30;
@@ -86,16 +94,99 @@ public partial class DeveloperPanel : PanelContainer
             "Мир остаётся на паузе. Изменения записываются в аудит. Зарезервированные деньги и товары защищены, вместимость не увеличивается. Применение не продвигает время. Во время голосования изменения недоступны.",
             "The world stays paused. Changes are audited. Reserved money and stock remain protected; capacity is unchanged. Applying does not advance time. Edits are unavailable during voting."), AutowrapMode = TextServer.AutowrapMode.WordSmart });
 
-        var advance = Tab(tabs, L("Перемотка", "Advance time"));
-        _target.MaxValue = session.Engine.Configuration().MaxTicks;
-        _self.Text = L("Временно голосовать за себя (с учётом договора)", "Temporarily vote for yourself (respect signed support)"); advance.AddChild(_self);
-        Row(advance, L("До тика", "To tick"), _target, () => { _tools.StartAdvance((long)_target.Value, _self.ButtonPressed); return null; });
-        Row(advance, L("На N тиков", "By N ticks"), _count, () => { _tools.StartAdvance(checked(session.Engine.Tick + (long)_count.Value), _self.ButtonPressed); return null; });
-        Button(advance, L("Остановить перемотку", "Cancel advance"), () => { _tools.CancelAdvance(); RefreshData(); });
-        advance.AddChild(new Label { Text = L("Закрытие экрана останавливает перемотку. Это реальные ходы вперёд, без отката.", "Closing this screen cancels advance. These are real forward ticks, without rewind."), AutowrapMode = TextServer.AutowrapMode.WordSmart });
+        _advance = Tab(tabs, L("Перемотка", "Advance time"));
+        _target.MaxValue = _count.MaxValue = session.Engine.Configuration().MaxTicks;
+        _target.Value = session.Engine.Tick + 1000;
+        _count.Value = 1000;
+        var horizons = new HFlowContainer(); _advance.AddChild(horizons);
+        foreach (int ticks in new[] { 1000, 3000, 10_000, 50_000 })
+            Button(horizons, ticks.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo(language)), () => _count.Value = ticks);
+        _automatic.Text = L("Автоматическое голосование", "Automatic voting");
+        _advance.AddChild(_automatic);
+        foreach (var person in session.Engine.Configuration().Participants)
+            _candidate.AddItem((person.Id == human.Value ? L("За себя · ", "For yourself · ") : "") +
+                WorldSkins.ActorName(person.Id, language), checked((int)person.Id));
+        _candidate.Select(_candidate.GetItemIndex(checked((int)human.Value)));
+        _advance.AddChild(_candidate);
+        _automatic.Toggled += _ => RefreshAdvance();
+        _advance.AddChild(new Label { Text = L("Обязательный политический договор имеет приоритет над выбранным кандидатом.",
+            "A binding political agreement takes priority over the selected candidate."), AutowrapMode = TextServer.AutowrapMode.WordSmart });
+        _continue.Text = L("Продолжать симуляцию после победы на выборах", "Continue simulation after an election victory");
+        _advance.AddChild(_continue);
+        AdvanceRow(L("До тика", "To tick"), _target, () => (long)_target.Value, "AdvanceStartTo");
+        AdvanceRow(L("На N тиков", "By N ticks"), _count, () => checked(session.Engine.Tick + (long)_count.Value), "AdvanceStartBy");
+        _advance.AddChild(_progress);
+        _cancel.Text = L("Остановить перемотку", "Cancel advance");
+        _cancel.Pressed += () => { _tools.CancelAdvance(); RefreshData(); };
+        _advance.AddChild(_cancel);
         var journal = new VBoxContainer { Name = L("Решения NPC", "NPC decisions") }; tabs.AddChild(journal);
         journal.AddChild(_log); journal.AddChild(_detail);
         _log.ItemSelected += selected => ShowEntry((int)selected);
+    }
+
+    private void AdvanceRow(string label, Control input, Func<long> target, string name)
+    {
+        var row = new HFlowContainer(); _advance.AddChild(row);
+        row.AddChild(new Label { Text = label }); row.AddChild(input);
+        Button(row, L("Начать", "Start"), () =>
+        {
+            try
+            {
+                _tools.StartAdvance(target(), _automatic.ButtonPressed ? new ParticipantId(_candidate.GetSelectedId()) : null,
+                    _continue.ButtonPressed);
+                _notice = "";
+            }
+            catch (Exception e) when (e is ArgumentException or InvalidOperationException or OverflowException)
+            { _notice = L("Перемотка не запущена · ", "Advance did not start · ") + e.Message; }
+            RefreshAdvance();
+        }, name);
+    }
+
+    public void RefreshAdvance()
+    {
+        bool active = _tools.AdvanceTarget.HasValue;
+        if (_wasAdvancing && !active) _automatic.SetPressedNoSignal(false);
+        _wasAdvancing = active;
+        _automatic.Disabled = _continue.Disabled = active || _session.Engine.TickLimitReached;
+        _candidate.Disabled = active || !_automatic.ButtonPressed;
+        _cancel.Disabled = !active;
+        long tick = _session.Engine.Tick;
+        long advanced = Math.Max(0, tick - (_tools.AdvanceStart ?? tick));
+        long span = Math.Max(0, (_tools.AdvanceGoal ?? tick) - (_tools.AdvanceStart ?? tick));
+        double speed = _tools.AdvanceElapsedSeconds > 0 ? advanced / _tools.AdvanceElapsedSeconds : 0;
+        _progress.Value = span > 0 ? advanced * 100.0 / span : 0;
+        string eta = active && speed > 0 && _tools.AdvanceStatus == "Running"
+            ? TimeSpan.FromSeconds(Math.Min(TimeSpan.MaxValue.TotalSeconds - 1, Math.Max(0, span - advanced) / speed)).ToString(@"d\.hh\:mm\:ss") : "—";
+        string status = _tools.AdvanceStatus switch
+        {
+            "Running" => L("Идёт", "Running"), "Completed" => L("Цель достигнута", "Target reached"),
+            "WaitingForBallot" => L("Ожидается ваш голос", "Waiting for your ballot"),
+            "WaitingForModel" => L("Ожидается решение модели", "Waiting for the model"),
+            "Victory" => L("Остановлено на победе", "Stopped at victory"),
+            "Cancelled" => L("Остановлено", "Cancelled"), "Failed" => L("Прервано", "Failed"),
+            _ => L("Готово к запуску", "Ready")
+        };
+        _status.Text = L("Старт ", "Start ") + (_tools.AdvanceStart?.ToString() ?? "—") + L(" · Тик ", " · Tick ") + tick +
+            L(" · Цель ", " · Target ") + (_tools.AdvanceGoal?.ToString() ?? "—") + " · " + status + "\n" +
+            $"{speed:0.0} " + L("тик/с · Осталось ", "ticks/s · Remaining ") + eta +
+            L(" · Выборов ", " · Elections ") + _tools.AdvanceElections +
+            (_tools.AdvanceError is { } reason ? "\n" + reason : "") + (_notice.Length > 0 ? "\n" + _notice : "");
+        if (active && _tools.AdvanceStatus == "WaitingForBallot")
+        {
+            var election = _session.Engine.Observe(_human).Elections;
+            if (_manualBallot is null)
+            {
+                _manualBallot = new VotingPanel(_language, election, candidate =>
+                {
+                    var voting = _session.Engine.Observe(_human).Elections.Voting!;
+                    _session.Send(_human, new(ActionKind.SetVoteChoice, Election: voting.Election, Candidate: candidate));
+                }, overlay: false) { CustomMinimumSize = new(0, 280) };
+                _advance.AddChild(_manualBallot);
+            }
+            _manualBallot.ShowData(_human, election);
+        }
+        else if (_manualBallot is not null)
+        { _advance.RemoveChild(_manualBallot); _manualBallot.QueueFree(); _manualBallot = null; }
     }
 
     private ParticipantId Actor => new(_actor.GetSelectedId());
@@ -129,9 +220,7 @@ public partial class DeveloperPanel : PanelContainer
     }
     public void RefreshData(bool updateStatus = true)
     {
-        if (updateStatus) _status.Text = L("Тик ", "Tick ") + _session.Engine.Tick + " · " + _tools.AdvanceStatus +
-            " · " + L("цель ", "target ") + (_tools.AdvanceTarget?.ToString() ?? "—") +
-            " · " + L("изменений: ", "edits: ") + _session.Engine.ResearchModifications.Length + "\n" + _notice;
+        if (updateStatus) RefreshAdvance();
         var world = _session.Engine.Inspect();
         var person = world.Participants.Single(p => p.Id == Actor);
         var account = world.Accounts.Single(a => a.Id == person.AccountId);

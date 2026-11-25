@@ -141,6 +141,37 @@ public class DeveloperToolsTests
         Assert.Equal("HumanSelfBallot",Assert.Single(s.Engine.ResearchModifications).Kind);Assert.Equal(2,s.Engine.Inspect().Elections.Results.Length);
         Assert.Equal(s.Engine.ComputeStateHash(),GameSession.Replay(d,s.CommandTape,8,s.Engine.ResearchModifications.ToArray()).Engine.ComputeStateHash());
     }
+    [Theory]
+    [InlineData(false, 3, ElectionMode.Victory)]
+    [InlineData(true, 10, ElectionMode.Sandbox)]
+    public void SelectedNpcReceivesOrdinaryVoteAndVictoryPolicyPreservesTheWinner(bool continueAfterVictory, long tick, ElectionMode mode)
+    {
+        var definition = StoppedElectionTests.Definition();
+        var original = new GameSession(new(definition));
+        original.AttachControllers([new SelfBallotController(new(2)), new SelfBallotController(new(3)), new SelfBallotController(new(4))]);
+        var loaded = CheckpointStore.Decode(CheckpointStore.Encode(original));
+        loaded.RestoreControllers(SelfBallotController.Restore);
+        foreach (var session in new[] { original, loaded })
+        {
+            using var tools = new DeveloperTools(session, new(1));
+            tools.StartAdvance(10, new ParticipantId(2), continueAfterVictory);
+            for (int i = 0; i < 200 && tools.AdvanceTarget.HasValue; i++) tools.PumpAdvance();
+            Assert.Equal(tick, session.Engine.Tick);
+            Assert.Equal(mode, session.Engine.PoliticalMode);
+            Assert.Equal(1, tools.AdvanceElections);
+            var result = Assert.Single(session.Engine.Inspect().Elections.Results);
+            Assert.Equal(new ParticipantId(2), result.Winner);
+            Assert.Equal(new ParticipantId(2), result.Ballots.Single(ballot => ballot.Voter.Value == 1).Candidate);
+            Assert.DoesNotContain(session.CommandTape, input => input.Command.Action.Kind == ActionKind.ContinueAfterVictory);
+            Assert.Equal(continueAfterVictory ? 1 : 0, session.Engine.ResearchModifications.Length);
+            Assert.Equal(session.Engine.ComputeStateHash(), CheckpointStore.Decode(CheckpointStore.Encode(session)).Engine.ComputeStateHash());
+            Assert.Equal(session.Engine.ComputeStateHash(), GameSession.Replay(definition, session.CommandTape, tick,
+                session.Engine.ResearchModifications.ToArray()).Engine.ComputeStateHash());
+        }
+        Assert.Equal(original.Engine.ComputeStateHash(), loaded.Engine.ComputeStateHash());
+        using var nextWorld = new DeveloperTools(new GameSession(new(definition)), new(1));
+        Assert.Throws<ArgumentException>(() => nextWorld.StartAdvance(10, new ParticipantId(900)));
+    }
     [Fact]
     public void DeveloperJournalIsBoundedAndIncludesRealCandidateScoresAndObservation()
     {

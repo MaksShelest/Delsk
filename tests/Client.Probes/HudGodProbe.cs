@@ -26,6 +26,52 @@ public partial class HudGodProbe : Control
         button.Select(index); button.EmitSignal(OptionButton.SignalName.ItemSelected, (long)index);
     }
 
+    private async Task CaptureAdvance(Playfield game, string output)
+    {
+        typeof(Playfield).GetField("_startingIndustry", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(game, "woodworking");
+        Call(game, "StartOnMap", "economy", true, PlayMaps.CompactValley);
+        for (int i = 0; i < 3; i++) await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+        Call(game, "OpenDebug");
+        Press(game, "GodModeButton");
+        var panel = Named<DeveloperPanel>(game, "DeveloperPanel");
+        var tabs = All(panel).OfType<TabContainer>().Single();
+        tabs.CurrentTab = 1;
+        var automatic = Named<CheckButton>(panel, "AdvanceAutoBallot");
+        var candidate = Named<OptionButton>(panel, "AdvanceCandidate");
+        Check(!automatic.ButtonPressed && candidate.GetItemText(1).Contains(WorldSkins.ActorName(2, "ru")), "Current roster or default is wrong");
+        automatic.ButtonPressed = true;
+        Choose(candidate, 1);
+        Named<CheckButton>(panel, "AdvanceContinueVictory").ButtonPressed = true;
+        Named<SpinBox>(panel, "AdvanceCount").Value = 10_000;
+        Press(panel, "AdvanceStartBy");
+        var tools = Field<DeveloperTools>(game, "_developer");
+        var session = Field<GameSession>(game, "_session");
+        Check(tools.AdvanceTarget == 10_000, "Advance did not accept the 10,000 tick horizon");
+        game.Notification((int)NotificationApplicationFocusOut);
+        for (int i = 0; i < 36 && session.Engine.Tick < 12; i++)
+        {
+            Call(game, "DeveloperFrame");
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+        }
+        long unfocusedTick = session.Engine.Tick;
+        Check(unfocusedTick >= 12 && Field<bool>(game, "_unfocused"), "Losing focus blocked the Developer advance");
+        game.Notification((int)NotificationApplicationFocusIn);
+        panel.RefreshAdvance();
+        await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+        Check(GetViewport().GetTexture().GetImage().SavePng(System.IO.Path.Combine(output,"advance.png")) == Error.Ok, "Screenshot write failed");
+        Press(panel, "AdvanceCancel");
+        Check(tools.AdvanceTarget is null && !automatic.ButtonPressed, "Cancelling retained automatic voting");
+        Call(game, "StartOnMap", "economy", true, PlayMaps.Second);
+        for (int i = 0; i < 3; i++) await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+        Call(game, "OpenDebug");
+        Press(game, "GodModeButton");
+        var next = Named<DeveloperPanel>(game, "DeveloperPanel");
+        Check(!Named<CheckButton>(next, "AdvanceAutoBallot").ButtonPressed && Named<OptionButton>(next, "AdvanceCandidate").GetSelectedId() == 1,
+            "Another world inherited the advance candidate");
+        System.IO.File.WriteAllText(System.IO.Path.Combine(output, "advance-check.json"), JsonSerializer.Serialize(new
+        { status = "succeeded", target = 10_000, advancedWhileUnfocused = unfocusedTick, cancelled = true, nextWorldDefaultCandidate = 1 }));
+    }
+
     public override async void _Ready()
     {
         try
@@ -107,6 +153,7 @@ public partial class HudGodProbe : Control
             Press(panel, "DeveloperClose");
             Check(!overlay.Visible && session.Paused, "Close button did not preserve Debug pause");
             session.Engine.ValidateInvariants();
+            if (args.Contains("--i10-capture")) await CaptureAdvance(game, output);
             // Drain deferred frees from HUD rebuilds and dispose the owned client
             // before terminating the test process; immediate Quit leaves RIDs pending.
             game.QueueFree();

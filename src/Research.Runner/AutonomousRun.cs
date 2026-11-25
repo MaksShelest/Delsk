@@ -5,9 +5,16 @@ using Simulation.Hosting;
 
 internal static class AutonomousRun
 {
-    public static long Configure(GameSession session, ScenarioDefinition scenario, string path, Func<AlgorithmicController, IController>? decorate = null, EconomyProfile? economics = null, bool selfBallots = false, OrdinaryGameResolution? ordinary = null)
+    public static long Configure(GameSession session, ScenarioDefinition scenario, string path, Func<AlgorithmicController, IController>? decorate = null, EconomyProfile? economics = null, bool selfBallots = false, OrdinaryGameResolution? ordinary = null, bool algorithmicHuman = false)
     {
         var config = ReadConfiguration(scenario, path, ordinary);
+        if (algorithmicHuman)
+        {
+            var assignment = scenario.StartingSpecializationRoster?.FirstOrDefault(p => p.ActorId == config.HumanActorId);
+            var settings = config.Npcs[0] with { ActorId = config.HumanActorId,
+                PreferredInput = StartingSpecializations.Direction(assignment?.IndustryId)?.InputItem ?? config.Npcs[0].PreferredInput };
+            config = config with { Npcs = [..config.Npcs, settings] };
+        }
         if (economics is not null) config = config with { Npcs = config.Npcs.Select(n => AlgorithmicController.WithEconomy(n, economics.Npc)).ToArray() };
         session.AttachControllers(config.Npcs.Select(n => new AlgorithmicController(n with { HumanActorId=config.HumanActorId }, AlgorithmicController.RuntimeSeed(scenario.Seed, n.ActorId), scenario.Participants.Select(p => p.Id)))
             .Select(c => decorate is null ? (IController)c : decorate(c))

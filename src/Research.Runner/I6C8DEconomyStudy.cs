@@ -14,8 +14,9 @@ internal sealed class I6C8DEconomyStudy(ScenarioDefinition scenario, StartingDir
         string output = Path.GetFullPath(args[2]);
         if (Directory.Exists(output) && Directory.EnumerateFileSystemEntries(output).Any())
             throw new ArgumentException("Output directory must be empty");
-        var basis = VNextProvincialSupportProfile.ForOrdinaryMap(EconomyProfile.Load(args[1]));
-        var candidate = VNextI6C8DBalanceProfile.Create(basis);
+        var mobile = EconomyProfile.Load(args[1]);
+        var basis = VNextProvincialSupportProfile.ForOrdinaryMap(mobile);
+        var candidate = VNextI6C8DBalanceProfile.ForOrdinaryMap(mobile);
         Directory.CreateDirectory(output);
         foreach (var (name, profile) in new[] { ("i6c8c", basis), ("i6c8d", candidate) })
             File.WriteAllBytes(Path.Combine(output, name + ".json"), VNextSupportedProfile.Serialize(profile));

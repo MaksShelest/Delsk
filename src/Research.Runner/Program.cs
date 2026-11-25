@@ -25,16 +25,14 @@ try
     {
         if (i + 1 >= args.Length || args[i] is not ("--scenario" or "--output" or "--script" or "--mode" or "--seed" or
             "--replay" or "--ticks" or "--checkpoint" or "--checkpoint-at" or "--load" or "--recover-backup" or "--controllers" or "--model-mode" or "--model-config" or "--economy" or "--new-game" or "--validate-only" or "--profile" or "--human-ballot" or "--research" or "--research-setup" or "--model-wait" or "--progress" or "--economy-sample" or "--compress-controller-turns" or "--host-profile"
-#if DELSK_DEVELOPER
-            or "--research-modifications"
-#endif
+            or "--research-modifications" or "--research-human" or "--research-ballot" or "--research-continue-after-victory" or "--checkpoint-on-cancel"
             ))
             throw new ArgumentException("Usage: --scenario PATH --output DIRECTORY [--economy config/economy.json] [--new-game OPTIONS_JSON (new baseline/hybrid only)] [--validate-only true] [--profile true] [--script cycle|recovery|development|labor|equipment|autonomous|market|pickup|delivery|capital-delivery|logistics|logistics-upgrade|own-storage|inbound|own-production|logistics-queue|capital-demand|elections|stopped-elections|physical-automation|participant-trade|food-chain|support|baseline|hybrid|model-safety] [--mode headless|paced] [--model-mode off|ollama --model-config PATH] [--seed N] [--replay COMMANDS --ticks N] [--checkpoint FILE --checkpoint-at T] [--load FILE --ticks FINAL_TICK --recover-backup true] [--compress-controller-turns true]");
         if (!options.TryAdd(args[i], args[i + 1])) throw new ArgumentException("Duplicate argument");
     }
-    foreach (string flag in new[] { "--profile", "--validate-only", "--research", "--model-wait", "--recover-backup", "--progress", "--economy-sample", "--compress-controller-turns", "--host-profile" })
+    foreach (string flag in new[] { "--profile", "--validate-only", "--research", "--model-wait", "--recover-backup", "--progress", "--economy-sample", "--compress-controller-turns", "--host-profile", "--checkpoint-on-cancel" })
         if (options.TryGetValue(flag,out var value) && !bool.TryParse(value,out _)) throw new ArgumentException(flag + " requires true or false");
-    foreach(string flag in new[]{"--profile","--validate-only","--research","--model-wait","--recover-backup","--progress","--economy-sample","--compress-controller-turns","--host-profile"})
+    foreach(string flag in new[]{"--profile","--validate-only","--research","--model-wait","--recover-backup","--progress","--economy-sample","--compress-controller-turns","--host-profile","--checkpoint-on-cancel"})
         if(options.ContainsKey(flag))options[flag]=bool.Parse(options[flag]).ToString().ToLowerInvariant();
     if ((options.ContainsKey("--load") || options.ContainsKey("--replay")) &&
         (options.GetValueOrDefault("--profile","false") == "true" || options.GetValueOrDefault("--validate-only","false") == "true"))
@@ -61,6 +59,8 @@ try
         throw new ArgumentException("Model options require a live hybrid session; replay never creates a model runtime");
     if (options.ContainsKey("--checkpoint-at") && !options.ContainsKey("--checkpoint"))
         throw new ArgumentException("--checkpoint-at requires --checkpoint");
+    bool cancelCheckpoint = options.GetValueOrDefault("--checkpoint-on-cancel") == "true";
+    if (cancelCheckpoint && !options.ContainsKey("--checkpoint")) throw new ArgumentException("--checkpoint-on-cancel requires --checkpoint");
     long? saveTick = options.TryGetValue("--checkpoint-at", out string? saveAt) ? long.Parse(saveAt, CultureInfo.InvariantCulture) : null;
     if (saveTick < 0) throw new ArgumentException("Checkpoint tick must be nonnegative");
     long nextDue = Stopwatch.GetTimestamp();
@@ -79,6 +79,7 @@ try
         File.ReadLines(replayPath).Select(line => JsonSerializer.Deserialize<RecordedCommand>(line, SimulationJson.Options)
             ?? throw new ArgumentException("Invalid command tape")).ToArray() : null;
     if(options.TryGetValue("--human-ballot",out var humanBallot) && humanBallot!="self")throw new ArgumentException("Only --human-ballot self is supported");
+    var electionPolicy = ResearchElectionPolicy.Read(options, script);
     bool saved = false;
     string? recoveredPrimaryPath = null;
     if (options.TryGetValue("--load", out string? loadPath))
@@ -122,7 +123,8 @@ try
         {
             var validationSession = new GameSession(new SimulationEngine(definition));
             if (script == "hybrid") models.Configure(validationSession, definition, options.GetValueOrDefault("--controllers", "scenarios/baseline-controllers.json"), options, false, economics,ordinary);
-            else AutonomousRun.Configure(validationSession, definition, options.GetValueOrDefault("--controllers", "scenarios/baseline-controllers.json"), economics: economics,ordinary:ordinary);
+            else AutonomousRun.Configure(validationSession, definition, options.GetValueOrDefault("--controllers", "scenarios/baseline-controllers.json"), economics: economics,ordinary:ordinary,algorithmicHuman:electionPolicy?.AlgorithmicHuman == true);
+            electionPolicy?.Voter(definition);
             Console.WriteLine($"Economy/scenario valid: {economics?.Id ?? definition.Id}"); return 0;
         }
         if (options.TryGetValue("--seed", out string? seed)) definition = definition with { Seed = ulong.Parse(seed, CultureInfo.InvariantCulture) };
@@ -133,8 +135,8 @@ try
         {
             string controllers = options.GetValueOrDefault("--controllers", script == "autonomous" ? "scenarios/autonomous-controllers.json" : "scenarios/baseline-controllers.json");
             long horizon = script is "hybrid" or "model-safety" ? models.Configure(session, definition, controllers, options, script == "model-safety", economics,ordinary)
-                : AutonomousRun.Configure(session, definition, controllers, economics: economics, selfBallots: options.GetValueOrDefault("--human-ballot")=="self",ordinary:ordinary);
-            if(definition.Elections?.PauseForBallots==true && options.GetValueOrDefault("--human-ballot")!="self")
+                : AutonomousRun.Configure(session, definition, controllers, economics: economics, selfBallots: options.GetValueOrDefault("--human-ballot")=="self",ordinary:ordinary,algorithmicHuman:electionPolicy?.AlgorithmicHuman == true);
+            if(definition.Elections?.PauseForBallots==true && options.GetValueOrDefault("--human-ballot")!="self" && electionPolicy is null)
                 throw new ArgumentException("Frozen elections require an explicit --human-ballot self policy in headless runs");
             target ??= horizon;
             if (script == "model-safety") { target = options.ContainsKey("--ticks") ? target : 60; mode = "ControlledFakeS7"; }
@@ -155,13 +157,15 @@ try
             session.ConfigurePlayback(tape, target.Value, script); mode = "recorded-" + mode;
         }
     }
-#if DELSK_DEVELOPER
     if(options.TryGetValue("--research-modifications",out var researchPath))
     {
         if(tape is null || options.ContainsKey("--load") || new FileInfo(researchPath).Length>1024*1024)throw new ArgumentException("Research modifications require a fresh replay and at most 1MiB of audit data");
-        session.ConfigureResearchPlayback(JsonSerializer.Deserialize<ResearchModification[]>(File.ReadAllText(researchPath),SimulationJson.Options)??throw new ArgumentException("InvalidResearchReplay"));
+        session.ConfigureElectionAuditPlayback(JsonSerializer.Deserialize<ResearchModification[]>(File.ReadAllText(researchPath),SimulationJson.Options)??throw new ArgumentException("InvalidResearchReplay"));
     }
-#endif
+    var researchVoter = electionPolicy?.Voter(definition);
+    if (options.ContainsKey("--load") && researchVoter is { } restoredVoter &&
+        session.ControllerStates.Any(c => c.Actor == restoredVoter) != electionPolicy!.AlgorithmicHuman)
+        throw new ArgumentException("The research human policy does not match the checkpoint controllers");
     double startupMilliseconds=watch.Elapsed.TotalMilliseconds;
     if(hostProfile)
     {
@@ -215,13 +219,17 @@ try
                     else HostControl.Boundary(directory,()=>progress?.Write(true,"paused"));
                     models.ProgressWaiting();observer?.Progress("waiting-model");progress?.Write(true,"waiting-model");Thread.Sleep(50);
                 }
-                long prior=session.Engine.Tick;session.Step();samples?.Maybe();
+                if (researchVoter is { } voter) electionPolicy!.ResolveBoundary(session, voter, target.Value);
+                long prior=session.Engine.Tick;session.Step();
+                if (researchVoter is null) samples?.Maybe();
                 progress?.Write(false,session.Engine.WaitingForBallots?"voting":"running");
-                if(session.Engine.WaitingForBallots)
+                if (researchVoter is { } currentVoter) electionPolicy!.ResolveBoundary(session, currentVoter, target.Value);
+                else if(session.Engine.WaitingForBallots)
                 {
                     if(!session.HasControllers && (session.PlaybackFinalTick is null || prior==session.Engine.Tick))throw new InvalidOperationException("ElectionWaitingForBallots");
                     if(session.HasControllers) {session.PumpVoting();if(session.Engine.WaitingForBallots)Thread.Sleep(1);}
                 }
+                if (researchVoter is not null) samples?.Maybe();
                 if(!session.Engine.WaitingForBallots && session.Engine.Tick<target.Value)observer?.Capture();
                 string phase=session.Engine.WaitingForBallots?"voting":"running";
                 observer?.Progress(phase);progress?.Write(false,phase);
@@ -239,10 +247,16 @@ try
         // Research profiles may deliberately eliminate profitable production. Fixed fixture targets are not economic rules.
         if (definition.EconomyProfileId is null) BaselineValidation.Check(session,definition);
         if (saveTick.HasValue && !saved) throw new ArgumentException("Checkpoint tick was not reached");
-        if (!saveTick.HasValue && options.ContainsKey("--checkpoint")) Save(session);
+        if (!saveTick.HasValue && !cancelCheckpoint && options.ContainsKey("--checkpoint")) Save(session);
     }
     catch (ResearchCancelledException)
     {
+        if (cancelCheckpoint)
+        {
+            try { Save(session); }
+            catch (Exception ex) when (ex is CheckpointException or IOException or UnauthorizedAccessException)
+            { Console.Error.WriteLine("Checkpoint was not updated on cancellation: " + ex.Message); }
+        }
         watch.Stop();samples?.Maybe(true);observer?.Capture();observer?.Progress("exporting");progress?.Write(true,"exporting");
         WriteHostProfile();
         RunArtifacts.Export(session,definition,directory,mode,script,watch.Elapsed.TotalMilliseconds,"cancelled","Researcher cancelled between steps",models.Metadata,compressControllerTurns:compressControllerTurns);

@@ -20,12 +20,20 @@ from research_lab_presets import city_plan
 
 
 class CityPlanTests(unittest.TestCase):
-    def test_current_ordinary_horizon_is_not_capped_by_profile_max_ticks(self):
-        scenario, _model, arms = expand(city_plan(ticks=8000), Path('.'))
+    def test_ordinary_horizon_is_not_capped_by_historical_profile_max_ticks(self):
+        plan = city_plan(ticks=8000) | dict(scenario='scenarios/vnext/compact-valley-i6c21.json', economy='config/vnext/economy.i6c72-wages.json')
+        del plan['startingIndustry']
+        scenario, _model, arms = expand(plan, Path('.'))
         self.assertEqual('compact_valley_i6c21', scenario['id'])
         self.assertEqual('vnext-i6c72-wages-1', arms[0]['economy']['id'])
         self.assertEqual(dict(npcCount=3, difficulty='Medium'), arms[0]['ordinary'])
         self.assertEqual(5000, arms[0]['economy']['world']['maxTicks'])
+
+    def test_new_city_plan_selects_current_ordinary_world_and_election_policy(self):
+        plan = city_plan()
+        self.assertEqual('ordinary-current', plan['economy'])
+        self.assertEqual('scenarios/vnext/compact-valley-i6c8c.json', plan['scenario'])
+        self.assertEqual(dict(human='ballot-only',ballot='self',continueAfterVictory=True), plan['electionPolicy'])
 
     def test_limits_and_recording_conflicts_fail_before_a_run(self):
         with self.assertRaisesRegex(ValueError, '1000000'):

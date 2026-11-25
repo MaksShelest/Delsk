@@ -6,6 +6,7 @@ public partial class Playfield
     private DeveloperTools? _developer;
     private DeveloperPanel? _developerPanel;
     private Control? _developerOverlay;
+    private ulong _nextAdvanceRefresh;
 
     partial void DeveloperMenu(VBoxContainer menu)
     {
@@ -36,6 +37,7 @@ public partial class Playfield
             _developerOverlay.AddChild(_developerPanel);
         }
         _developerOverlay.Visible = true;
+        ApplyPause();
         _developerPanel!.RefreshData();
     }
 
@@ -44,6 +46,8 @@ public partial class Playfield
         _developer?.CancelAdvance();
         if (_developerOverlay is not null) _developerOverlay.Visible = false;
         _waitRelease = true;
+        ApplyPause();
+        Refresh();
     }
 
     partial void DeveloperInput(InputEventKey key, ref bool handled)
@@ -55,11 +59,23 @@ public partial class Playfield
 
     partial void DeveloperFrame()
     {
-        if (_developerOverlay is not { Visible: true } || _suspended || _unfocused || _helpOverlay is not null) return;
+        if (_developerOverlay is not { Visible: true } || _suspended || _helpOverlay is not null || _developer?.AdvanceTarget is null) return;
         long prior = _session.Engine.Tick;
-        _developer?.PumpAdvance();
-        _developerPanel!.RefreshData();
-        if (_session.Engine.Tick != prior) Refresh();
+        string state = _developer.AdvanceStatus;
+        _developer.PumpAdvance();
+        ulong now = Time.GetTicksMsec();
+        if (now >= _nextAdvanceRefresh || state != _developer.AdvanceStatus)
+        {
+            _nextAdvanceRefresh = now + 200;
+            _developerPanel!.RefreshAdvance();
+            if (_session.Engine.Tick != prior || state != _developer.AdvanceStatus) Refresh();
+        }
+    }
+
+    partial void DeveloperOwnsClock(ref bool overlay, ref bool advancing)
+    {
+        overlay = _developerOverlay is { Visible: true };
+        advancing = overlay && _developer?.AdvanceTarget.HasValue == true;
     }
 
     partial void DeveloperReset()

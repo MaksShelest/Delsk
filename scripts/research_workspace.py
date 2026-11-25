@@ -88,6 +88,7 @@ def compatible(lab,left,right,left_arm,right_arm):
         controllers=read(folder/arm/'controllers.json')
         setup=read(folder/arm/'setup.json') if (folder/arm/'setup.json').exists() else None
         ordinary=read(folder/arm/'ordinary.json') if (folder/arm/'ordinary.json').exists() else None
+        election_policy=read(folder/arm/'electionPolicy.json') if (folder/arm/'electionPolicy.json').exists() else None
         for path in factors:
             if ordinary is not None and path=='ordinary.npcCount':
                 ordinary.pop('npcCount', None)
@@ -101,7 +102,7 @@ def compatible(lab,left,right,left_arm,right_arm):
                 parts=path.split('.');node=economy
                 for part in parts[:-1]:node=node.get(part,{})
                 node.pop(parts[-1],None)
-        return scenario,economy,controllers,setup,ordinary
+        return scenario,economy,controllers,setup,ordinary,election_policy
     return normalized(left,left_arm)==normalized(right,right_arm)
 
 

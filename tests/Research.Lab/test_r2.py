@@ -94,7 +94,7 @@ class ExperimentTests(unittest.TestCase):
     def test_wage_template_changes_npc_target_not_the_world_schedule(self):
         self.assertNotIn('npc.baseWageMinor', FACTORS)
         self.assertIn('npc.baseWageMinor', EXTRA_FACTORS)
-        built = build_plan(dict(template='wages', seedCount=2, ticks=120, groups=[
+        built = build_plan(dict(template='wages', profile='historical', seedCount=2, ticks=120, groups=[
             dict(label='A', value=15), dict(label='B', value=25)]))
         plan = built['plan']
         self.assertEqual(4, built['estimate']['runs'])
@@ -106,7 +106,7 @@ class ExperimentTests(unittest.TestCase):
         self.assertEqual('vnext-i6c72-wages-1', arms[0]['economy']['id'])
 
     def test_other_templates_use_real_switches(self):
-        count = build_plan(dict(template='npc-count', seedCount=1, ticks=50))['plan']
+        count = build_plan(dict(template='npc-count', profile='historical', seedCount=1, ticks=50))['plan']
         _, _, arms = expand(count, self.root)
         self.assertEqual([3, 6], [arm['ordinary']['npcCount'] for arm in arms])
         talks = build_plan(dict(template='negotiations', seedCount=1, ticks=50))['plan']
@@ -152,6 +152,16 @@ class ExperimentTests(unittest.TestCase):
         self.assertTrue((self.root / series['id']).resolve().is_relative_to(self.root.resolve()))
         with self.assertRaises(ValueError):
             analyze_snapshot(self.root, series | dict(id='../outside'))
+
+    def test_owned_long_run_summary_is_not_subject_to_input_plan_size_limit(self):
+        series = self.series()
+        generated = self.root / series['jobs'][0]['result'] / 'summary.json'
+        summary = json.loads(generated.read_text(encoding='utf-8'))
+        summary['capitalDemand'] = ['period'] * 310_000
+        generated.write_text(json.dumps(summary), encoding='utf-8')
+        self.assertGreater(generated.stat().st_size, 2 * 1024 * 1024)
+        report = analyze_snapshot(self.root, series)
+        self.assertEqual(2, report['metrics']['employed']['groups'][0]['n'])
 
     def series(self):
         key = 'r2-fixture'

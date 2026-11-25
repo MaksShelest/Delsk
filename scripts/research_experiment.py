@@ -16,7 +16,7 @@ from decimal import Decimal
 from pathlib import Path
 
 from research_findings import findings
-from research_lab import ROOT, integer, read, write
+from research_lab import ROOT, integer, read, read_metadata, validate_election_policy, write
 from research_report import write_bundle
 from research_statistics import METHOD, METHOD_NOTES, describe, mean_interval, paired
 
@@ -91,6 +91,14 @@ METRICS = {item['id']: item for item in [
     _metric(id='controllerDecisionTurns', title='Выполненные решения NPC', category='NPC', unit='count', unitLabel='ходы', money=False, trajectory=False,
              definition='Число ходов контроллеров, записанное runner. Это не число достигнутых целей.',
              source='summary.json, controllerDecisionTurns'),
+    _metric(id='productionBuildings', title='Производственные предприятия', category='NPC', unit='count', unitLabel='здания', money=False, trajectory=False,
+             definition='Постройки производственного назначения в итоговом снимке.', source='final-state.json, buildings'),
+    _metric(id='vehicles', title='Техника участников', category='NPC', unit='count', unitLabel='машины', money=False, trajectory=False,
+             definition='Купленные машины, оставшиеся у участников к концу прогона.', source='fleet.json, vehicles'),
+    _metric(id='industrialXp', title='Промышленный XP', category='NPC', unit='count', unitLabel='XP', money=False, trajectory=False,
+             definition='Начисленные записи промышленного опыта за весь прогон.', source='development.json, grants'),
+    _metric(id='elections', title='Завершённые выборы', category='Политика', unit='count', unitLabel='выборы', money=False, trajectory=False,
+             definition='Количество итогов голосования, включая выборы без большинства.', source='final-state.json, elections.results'),
     _metric(id='controllerRejections', title='Отклонённые команды', category='NPC', unit='count', unitLabel='отказы', money=False, trajectory=False,
              definition='Число ответов контроллера со статусом Rejected. Достижение целей отдельным показателем не считается: в экспорте нет надёжного счётчика целей.',
              source='summary.json, controllerRejections'),
@@ -116,7 +124,7 @@ TEMPLATES = {
                   comparison='Группы отличаются только целевой ставкой политики NPC.',
                   fixed='Шкала мира остаётся 0,15 монеты, ручной шаг 0,02. Меняется целевая ставка NPC, а не ставка зданий и не цена участка.'),
     'difficulty': dict(title='Сравнение сложности алгоритмических NPC', ordinary=True, factor='npc.difficulty', kind='text',
-                       values=['Easy', 'Hard'], primary='cityCapitalMinor', extras=['employed', 'producedUnits', 'controllerRejections'],
+                       values=['Easy', 'Hard'], primary='cityCapitalMinor', extras=['employed', 'producedUnits', 'controllerRejections', 'productionBuildings', 'vehicles', 'industrialXp', 'elections'],
                        goal='Сравнить две настройки сложности политики NPC на одной карте и одних seeds.',
                        hypothesis='Сложности могут дать разные итоги. Превосходство Hard заранее не предполагается.',
                        comparison='Группы отличаются только сложностью алгоритмических NPC.',
@@ -265,10 +273,12 @@ def build_plan(body):
     from research_lab_presets import CITY_MAPS, city_timeout
     if ordinary:
         choice = next((item for item in CITY_MAPS if item['path'] == body.get('map')), CITY_MAPS[0])
-        scenario, economy = choice['path'], choice['economy']
+        historical = body.get('profile') == 'historical'
+        selected = choice['historical'] if historical else choice
+        scenario, economy = selected['path'], selected['economy']
         npc_count = values[0] if factor == 'ordinary.npcCount' else body.get('npcs', 3)
-        if not integer(npc_count, 3, 10):
-            raise ValueError('Количество NPC: 3..10')
+        if not integer(npc_count, 3, choice['maxNpcs']) or factor == 'ordinary.npcCount' and max(values) > choice['maxNpcs']:
+            raise ValueError(f"Для этой карты количество NPC: 3..{choice['maxNpcs']}")
         tick_cap = 1_000_000
     else:
         historical = {
@@ -296,8 +306,7 @@ def build_plan(body):
     recording = body.get('recording', 'normal')
     if recording not in ('brief', 'normal', 'detailed'):
         raise ValueError('Режим записи: brief, normal или detailed')
-    profile = read(ROOT / choice['economy'])
-    profile_id = profile.get('id', 'не указан')
+    profile_id = 'vnext-i6c72-wages-1' if ordinary and historical else choice['profile']
     seeds = list(range(first_seed, first_seed + seed_count))
     slug = 'r2-' + template_id
     plan = dict(version=1, id=slug[:64], title=title, scenario=scenario, economy=economy, ticks=ticks, seeds=seeds,
@@ -305,7 +314,10 @@ def build_plan(body):
                 factors=[dict(path=factor, values=values)],
                 timeoutSeconds=city_timeout(ticks) if ordinary else min(14400, max(300, ticks * 4)))
     if ordinary:
-        plan['ordinaryNpcCount'] = npc_count
+        plan.update(ordinaryNpcCount=npc_count, ordinaryDifficulty=body.get('difficulty', 'Medium'),
+                    electionPolicy=body.get('electionPolicy', dict(human='ballot-only', ballot='self', continueAfterVictory=True)))
+        if not historical: plan['startingIndustry'] = body.get('industry', 'woodworking')
+        validate_election_policy(plan['electionPolicy'])
     else:
         plan['controllers'] = 'scenarios/baseline-controllers.json'
     fixed = [template['fixed'], f'Профиль {profile_id}.', f'Карта: {choice["label"]}.',
@@ -313,6 +325,9 @@ def build_plan(body):
              'Режим алгоритмический, без языковой модели.']
     if ordinary and factor != 'ordinary.npcCount':
         fixed.append(f'Алгоритмических NPC: {npc_count}.')
+    if ordinary:
+        policy = plan['electionPolicy']
+        fixed.append(f"Политика участника: {policy.get('human')} · голос: {policy.get('ballot')} · продолжать после победы: {policy.get('continueAfterVictory')}.")
     if factor != 'npc.baseWageMinor' and ordinary:
         fixed.append('Целевая ставка NPC и шкала мира остаются как в профиле.')
     science = dict(version=1, template=template_id, title=title, goal=goal, hypothesis=hypothesis, comparison=comparison,
@@ -320,15 +335,15 @@ def build_plan(body):
                    groups=[dict(label=group['label'], value=group['value'], valueLabel=_value_label(kind, group['value']),
                                 factorLabel=FACTOR_LABELS[factor]) for group in groups],
                    fixed=fixed, factor=factor, kind=kind, mapLabel=choice['label'], profileId=profile_id,
-                   profileNote='Хеш проекции пересчитывается только у группы, где изменено поле vNext-профиля. Контрольная группа копируется побайтно.' if profile.get('vNext') else 'Это исторический профиль без замка vNext. Сравниваемые группы используют один и тот же файл профиля, кроме выбранного поля.')
+                   profileNote='Хеш проекции пересчитывается только у группы, где изменено поле vNext-профиля. Контрольная группа копируется побайтно.' if ordinary else 'Это исторический профиль без замка vNext. Сравниваемые группы используют один и тот же файл профиля, кроме выбранного поля.')
     plan['science'] = science
     validate_science(plan)
     runs = len(seeds) * repetitions * len(groups)
-    # Оценка по измерению R1: Малая долина, 3 NPC, около 12 с и 46 МБ журнала решений на 1000 тиков.
+    count = max(values) if ordinary and factor == 'ordinary.npcCount' else npc_count or 3
     estimate = dict(runs=runs, independentSeeds=len(seeds),
-                    seconds=round(runs * ticks * 12 / 1000, 1),
-                    decisionBytes=runs * ticks * 46000,
-                    note='Оценка по одному измерению Малой долины в R1, не обещание срока. Журнал решений на 1000 тиков занимал около 46 МБ. Подробные кадры мира в эту оценку не входят.')
+                    seconds=round(runs * ticks * .035 * count / 3, 1),
+                    decisionBytes=runs * ticks * 46000 * count // 3,
+                    note='Плановая оценка для обычной записи. Долгие партии замедляются по мере роста мира. Размер зависит от сжатия и числа действий. Подробные кадры в оценку не входят.')
     return dict(plan=plan, estimate=estimate)
 
 
@@ -368,7 +383,7 @@ def _ident(value):
 def _load(path):
     if not path.is_file():
         return None
-    return read(path)
+    return read_metadata(path)
 
 
 def _account(summary, kind):
@@ -507,7 +522,7 @@ def _operating(folder):
         return None, 'Операционный результат не рассчитан: ' + str(error)[:300]
 
 
-def extract_run(folder, metric_ids, with_trajectory=False):
+def extract_run(folder, metric_ids, with_trajectory=False, cached=None):
     folder = Path(folder)
     summary, city = _load(folder / 'summary.json'), _load(folder / 'public-economy.json')
     progress = _load(folder / 'run-progress.json') or _load(folder / 'progress.json')
@@ -526,10 +541,13 @@ def extract_run(folder, metric_ids, with_trajectory=False):
     put('treasuryMinor', _account(summary, 'Treasury'), 'Счёт казны в итоге не найден.')
     put('participantCashMinor', _account(summary, 'Participant'), 'Счета участников в итоге не найдены.')
     if 'operatingCashMinor' in metric_ids:
-        amount, warning = _operating(folder)
+        amount, warning = (_operating(folder) if cached is None or 'operatingCashProfitMinor' not in cached else
+                           (cached['operatingCashProfitMinor'], 'Операционный результат требует классифицированных проводок.'))
         values['operatingCashMinor'] = amount
-        if warning:
+        if amount is None and warning:
             warnings.append(warning)
+    for metric in ('productionBuildings','vehicles','industrialXp','elections'):
+        put(metric, (cached or {}).get(metric))
     put('producedUnits', _flow(summary, 'produced'), 'Поток производства в итоге не найден.')
     put('harvestedUnits', _flow(summary, 'harvested'), 'Поток добычи в итоге не найден.')
     put('tradeTurnoverMinor', _paid(summary), 'Списки договоров или рыночных выделений в итоге отсутствуют.')
@@ -624,7 +642,7 @@ def analyze_snapshot(workspace, series, force=False):
     cached = folder / 'analysis' / 'statistics.json'
     if cached.is_file() and not force:
         try:
-            previous = read(cached)
+            previous = read_metadata(cached)
         except (OSError, ValueError):
             previous = None
         if previous and previous.get('fingerprint') == fingerprint and (folder / 'analysis' / 'report.html').is_file():
@@ -664,7 +682,7 @@ def analyze_snapshot(workspace, series, force=False):
                 included = False
                 exclusion = 'файлы успешного прогона не найдены'
             else:
-                extracted = extract_run(target, metric_ids, with_trajectory=True)
+                extracted = extract_run(target, metric_ids, with_trajectory=True, cached=job.get('metrics'))
                 metrics = extracted['metrics']
                 trajectories = extracted['trajectories']
                 warnings += extracted['warnings']
@@ -719,7 +737,7 @@ def analyze_snapshot(workspace, series, force=False):
                     omittedNote='В архив не входят decisions.jsonl, events.jsonl, кадры мира и ledger.jsonl: они нужны для подробного просмотра прогона, но многократно повторили бы огромные журналы. Итоги, срезы экономики и методика в архиве есть.\n')
     document['findings'] = findings(experiment, document['runs'], metric_documents)
     write_bundle(folder, document, _sources(workspace, series))
-    saved = read(folder / 'analysis' / 'statistics.json')
+    saved = read_metadata(folder / 'analysis' / 'statistics.json')
     if saved.get('fingerprint') != fingerprint or not (folder / 'analysis' / 'report.html').is_file():
         raise ValueError('Отчёт записан не полностью')
     return saved
@@ -782,7 +800,7 @@ def _sources(workspace, series):
         run = workspace / job['result']
         for name in KEEP_RUN:
             path = run / name
-            if path.is_file() and not path.is_symlink() and path.stat().st_size <= 8 * 1024 * 1024:
+            if path.is_file() and not path.is_symlink():
                 found.append((path, path.relative_to(folder).as_posix()))
     return found
 
@@ -830,7 +848,7 @@ def load_study(lab, series_id):
     document = None
     path = lab.workspace / series_id / 'analysis' / 'statistics.json'
     if path.is_file():
-        document = read(path)
+        document = read_metadata(path)
         if document.get('fingerprint') != _fingerprint(lab.workspace, snapshot):
             document = None
     return dict(series=snapshot, study=document, paths=_paths(lab.workspace / series_id))

@@ -72,7 +72,7 @@ def measure(folder):
     services=load('services.json',{}) or {}
     for order in services.get('orders',[]):escrow[identity(order['escrowAccount'])]=identity(order['customer'])
     capex={'Construction','BuildingUpgrade','PlotPurchase','PlotReservation','VehiclePurchase','EquipmentPurchase','EquipmentUpgrade','LogisticsPurchase','LogisticsUpgrade','WorkshopOutfit','WorkshopModernization','RoadConstruction','ResourcePurchase','VehicleHandlingKit','LoadingPlatformUpgrade'}
-    revenues={'CapitalSettlement','DeliveryPayment','PickupPayment','RoadRevenue','RoadOrderReward','QuestReward','IndustryQuestReward'}
+    revenues={'CapitalSettlement','DeliveryPayment','PickupPayment','RoadRevenue','RoadOrderReward','QuestReward','IndustryQuestReward','ProvincialOutputPurchase'}
     costs={'Wages','Energy','ResourceLease','HandlingService','HandlingWages','EquipmentTravelWages','LogisticsWages','RoadWages','ServiceDriverWages','RoadPrincipal','RoadPenalty','Demolition'}
     financial={'MarketEscrow','DeliveryFunding','DeliveryBond','DeliveryBondReturn','DeliveryRefund','PickupRefund','ServiceFunding','ServiceRefund','ServiceLateRefund','PlotReservationRefund'}
     for entry in rows(folder,'ledger.jsonl'):
@@ -103,6 +103,9 @@ def measure(folder):
             continue
         if reason in capex:
             if da:actors[da]['cashCapitalSpendingMinor']+=amount
+            continue
+        if reason in {'ProvincialParcelGrant','ProvincialConstructionGrant','ProvincialOperatingReserve'}:
+            if ca:actors[ca]['provincialGrantsMinor']+=amount
             continue
         if reason in financial or 'Funding' in reason or 'Escrow' in reason or 'Refund' in reason:continue
         if da or ca:unknown[reason]+=amount

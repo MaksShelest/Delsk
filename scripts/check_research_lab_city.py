@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 
 from research_city_report import CANONICAL, report
-from research_lab import Lab, read
+from research_lab import Lab, checkpoint_path, read
 from research_lab_presets import city_plan
 
 
@@ -64,8 +64,11 @@ def run_city(workspace, ticks):
         raise AssertionError('Отчёт не совпал с итоговым счётом казны')
     if data['population'] is None or data['municipalMinor'] is None:
         raise AssertionError('public-economy.json не попал в отчёт')
-    if read(folder/'manifest.json').get('economyProfileId') != 'vnext-i6c72-wages-1':
-        raise AssertionError('Обычная партия взяла не текущий профиль зарплат')
+    if read(folder/'manifest.json').get('economyProfileId') != 'vnext-i6c8d-economic-balance-1':
+        raise AssertionError('Обычная партия взяла не текущий профиль экономики')
+    definition = read(folder/'scenario.json')
+    if len(definition['startingSpecializationRoster']) != 4 or not any('ProvincialSupportAccepted' in line for line in (folder/'events.jsonl').open(encoding='utf-8')):
+        raise AssertionError('В текущем профиле не подтверждены специализация и стартовая поддержка')
     if not (folder/'economy-samples.jsonl').is_file():
         raise AssertionError('Обычная запись не сохранила срезы экономики')
     logs = list((lab.workspace/key/'checks').glob(job['id'] + '-a' + str(job['attempt']) + '.stdout.log'))
@@ -73,7 +76,7 @@ def run_city(workspace, ticks):
         raise AssertionError('Журнал stdout попытки не сохранён')
     return dict(ticks=ticks, treasuryMinor=treasury, population=data['population'], municipalMinor=data['municipalMinor'],
                 activeProductions=data['activeProductions'], constructed=data['buildings']['constructed'],
-                existing=data['buildings']['existing'], profile='vnext-i6c72-wages-1')
+                existing=data['buildings']['existing'], profile='vnext-i6c8d-economic-balance-1')
 
 
 def pause_city(workspace):
@@ -105,6 +108,8 @@ def pause_city(workspace):
             raise AssertionError('Остановленный прогон не записан как cancelled')
         if lab.compare([key])['groups'][0]['complete'] != 0:
             raise AssertionError('Неполный прогон попал в статистику')
+        if not checkpoint_path(lab.workspace/job['result']).is_file():
+            raise AssertionError('Остановка не сохранила контрольную точку')
     finally:
         if job['status'] == 'running':
             try:

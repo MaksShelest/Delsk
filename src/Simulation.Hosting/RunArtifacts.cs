@@ -41,8 +41,9 @@ public static class RunArtifacts
             Controllers = session.ControllerStates, ControllerStateHash = session.ComputeControllerStateHash(), Model = modelMetadata, RuntimeVersion = Environment.Version.ToString(),
             Commit = Environment.GetEnvironmentVariable("DELSK_COMMIT"), TickSeconds = 1,
             MapId = definition.Id, MapDesign=definition.Layout is {} layout?new{layout.Version,layout.SourceSha256,layout.SourceId}:null, NewGame=definition.NewGame, ParticipantCount=definition.Participants.Length, NpcCount=definition.NewGame is null?(int?)null:definition.Participants.Length-1, Difficulty = definition.NewGame?.Difficulty, DifficultyReason = "Per-actor policy/settings and module versions are recorded in controllers; no inferred global difficulty",
-            Stage = "Package8", DeveloperBuild=SimulationEngine.IsDeveloperBuild, ResearchModified=session.Engine.ResearchModified,
-            CleanComparisonEligible=!SimulationEngine.IsDeveloperBuild && !session.Engine.ResearchModified,
+            Stage = "Package8", DeveloperBuild=SimulationEngine.IsDeveloperBuild, ResearchModified=session.Engine.HasDeveloperInterventions,
+            ResearchElectionContinuation = session.Engine.HasResearchContinuation ? state.Elections.SandboxStartedAtTick : null,
+            CleanComparisonEligible=!SimulationEngine.IsDeveloperBuild && !session.Engine.HasDeveloperInterventions,
             EconomyProvenance = economyProvenance,
             Author = "Шелестов Максим Евгеньевич"
         });

@@ -109,7 +109,8 @@ public class StoppedElectionTests
         Execute(voter,new(ActionKind.AcceptSupport,SupportProposalId:1));Execute(buyer,new(ActionKind.SignSupport,SupportProposalId:1));
         s.AdvanceTo(20);Assert.Equal(buyer,s.Engine.Observe(voter).Elections.Voting!.RequiredCandidate);
         string rejected=s.Send(voter,Vote(seller));Assert.Equal("CommittedVote",s.Engine.Result(rejected)!.ReasonCode);
-        foreach(var actor in d.Participants)s.Send(new(actor.Id),Vote(actor.Id==seller?1:actor.Id));
+        Assert.Equal(ResultStatus.Accepted, s.SubmitConfiguredBallot(voter, voter)!.Status);
+        foreach(var actor in d.Participants.Where(person => person.Id != seller))s.Send(new(actor.Id),Vote(actor.Id));
         Assert.Equal(winner,Assert.Single(s.Engine.Inspect().Elections.Results).Winner.HasValue);
         Assert.Equal(PoliticalCommitmentStatus.Executed,Assert.Single(s.Engine.InspectSupport().Commitments).Status);
         Assert.Equal(s.Engine.ComputeStateHash(),GameSession.Replay(d,s.CommandTape,20).Engine.ComputeStateHash());

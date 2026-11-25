@@ -14,6 +14,8 @@ public sealed partial class SimulationEngine
     private readonly List<ElectionResult> _electionResults = [];
     private VotingSnapshot? _voting;
     public bool WaitingForBallots => _voting is not null;
+    public ElectionMode PoliticalMode => _electionMode;
+    public int CompletedElections => _electionResults.Count;
     private ElectionSettings Elections => _config.Elections ?? new();
 
     private void InitializeElections()
@@ -44,10 +46,13 @@ public sealed partial class SimulationEngine
         if (_firstVictory is null) throw new RuleViolation("NoVictory");
         if (_firstVictory.Winner.Value != actor.Id) throw new RuleViolation("NotAvailable");
         if (_electionMode == ElectionMode.Sandbox) throw new RuleViolation("AlreadySandbox");
-        // The first winner decides to continue, through the same authenticated command path.
+        StartSandbox(actor.Id, c.CommandId);
+    }
+    private void StartSandbox(long? actor, string? command = null, string reason = "")
+    {
         _electionMode = ElectionMode.Sandbox;
         _sandboxStartedAtTick = Tick;
-        Emit("SandboxStarted", actor.Id, _firstVictory.Election.Value, command: c.CommandId);
+        Emit("SandboxStarted", actor, _firstVictory!.Election.Value, reason: reason, command: command);
     }
     private void AdvanceElections()
     {
