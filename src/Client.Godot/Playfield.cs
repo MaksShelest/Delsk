@@ -196,11 +196,17 @@ public partial class Playfield : Control
             if (_skipNextFrame) { _skipNextFrame = false; return; }
             if (_waitRelease && !MovementHeld()) _waitRelease = false;
             bool modelWaiting=ModelFrame();AdvanceFeedback(delta);
-            if(modelWaiting){AnimateInterface(delta);return;}
+            if(modelWaiting){DeveloperFrame();AnimateInterface(delta);return;}
             var priorTravel = _session.Engine.TravelOf(_human);
             SampleHeading();
             DeveloperFrame();
-            if(_session.Engine.WaitingForBallots){_session.PumpVoting();Refresh();return;}
+            if(_session.Engine.WaitingForBallots)
+            {
+                bool developer = false, advancing = false;
+                DeveloperOwnsClock(ref developer, ref advancing);
+                if (!advancing) { _session.PumpVoting(); Refresh(); }
+                return;
+            }
             long prior = _session.Engine.Tick;
             int priorQuantum = _session.Engine.TravelQuantum;
             _scheduler.AdvanceElapsed(TimeSpan.FromSeconds(Math.Min(delta, 0.25)));
@@ -230,7 +236,9 @@ public partial class Playfield : Control
         {
             _waitRelease = true;
             CloseContextActions();
-            TrySaveCurrent();
+            bool developer = false, advancing = false;
+            DeveloperOwnsClock(ref developer, ref advancing);
+            if (!advancing || _suspended) TrySaveCurrent();
         }
         ApplyPause();
         Refresh();
@@ -408,7 +416,9 @@ public partial class Playfield : Control
     private void ApplyPause()
     {
         if (_session is null) return;
-        bool paused = _userPaused || _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots || ModelBarrier);
+        bool developer = false, advancing = false;
+        DeveloperOwnsClock(ref developer, ref advancing);
+        bool paused = _userPaused || developer || _tabletState.IsPaused(_surface != Surface.Play || _suspended || _unfocused || _helpOverlay is not null || _session.Engine.WaitingForBallots || ModelBarrier);
         if(_stick is not null)_stick.Visible=!paused&&_contextActions?.Expanded!=true&&_roadWorkCard is null&&!(_tabletState.Kind==TabletKind.Object&&_objectKind=="equipment"&&_scenario.Economy?.Fleet?.EquipmentDealerVersion is 1 or 2);
         if(paused&&!_session.Paused){StopHeading();_waitRelease=true;}
         if (_session.Paused != paused) _scheduler.SetPaused(paused);

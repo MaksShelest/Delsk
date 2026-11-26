@@ -3,6 +3,7 @@ Author: Шелестов Максим Евгеньевич.
 """
 import csv
 import json
+from collections import Counter
 from pathlib import Path
 from analyze_paired_series import model_counts, quantile
 
@@ -30,6 +31,10 @@ def measure(directory):
         lateDeliveries=sum(c['status']=='Expired' for c in state['deliveryContracts']),
         latePickups=sum(c['releasedQuantity']>0 for c in state['marketAllocations']),
         elections=len(state['elections']['results']), winner=state['elections']['firstVictory'],
+        economicMode=state['elections'].get('mode'),
+        productionBuildings=sum(b['kind']=='Production' for b in state['buildings']) if 'buildings' in state else None,
+        producedUnits=sum(f['produced'] for f in state['flows']),
+        vehicles=len((load('fleet.json') or {}).get('vehicles', [])) if (folder/'fleet.json').exists() else None,
         negotiations=len(load('negotiations.json')), modelRequests=traces['requested'], fallback=traces['fallbackResolved'],
         modelLatencyP50Ms=quantile(traces['latencies'], .5) if traces['latencies'] else None,
         modelLatencyP95Ms=quantile(traces['latencies'], .95) if traces['latencies'] else None)
@@ -59,6 +64,9 @@ def measure(directory):
         from full_economy_metrics import measure as full_measure
         result.update(full_measure(folder))
         full=result['fullEconomy'];a=full['actors'].values()
+        result['industrialXp']=sum(sum(grants.values()) for grants in full['experience'].values())
+        result['provincialSupportAccepted']=full['events'].get('ProvincialSupportAccepted',0)
+        result['productionStopReasons']=dict(Counter(e['reasonCode'] for e in state['enterprises'] if e['reasonCode'] != 'Working'))
         revenue=sum(r.get('salesRevenueMinor',0)+r.get('serviceRevenueMinor',0)+r.get('roadRevenueMinor',0)+r.get('workRewardMinor',0)+r.get('compensationMinor',0) for r in a)
         result['realizedRevenueMinor']=revenue
         result['operatingCashProfitMinor']=sum(r['operatingReceiptResultMinor'] for r in a) if not full['unclassifiedActorCashMinor'] else None

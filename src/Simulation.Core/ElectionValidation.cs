@@ -35,7 +35,7 @@ public sealed partial class SimulationEngine
             _voteChoices.Count != 0 || victoryResult is null || victoryResult != _electionResults.LastOrDefault() ||
             _firstVictory != new ElectionVictory(victoryResult.Id, victoryResult.Winner!.Value, victoryResult.VotingTick) ||
             (_electionMode == ElectionMode.Sandbox) != _sandboxStartedAtTick.HasValue ||
-            _sandboxStartedAtTick <= _firstVictory.Tick || _sandboxStartedAtTick > Tick)
+            _sandboxStartedAtTick < _firstVictory.Tick || _sandboxStartedAtTick == _firstVictory.Tick && !HasResearchContinuation || _sandboxStartedAtTick > Tick)
             throw new InvalidOperationException("Invalid first victory or sandbox state");
 
         if (_voteChoices.Any(c => !_actors.ContainsKey(c.Key) || !_actors.ContainsKey(c.Value)))
@@ -129,8 +129,8 @@ public sealed partial class SimulationEngine
         if (_sandboxStartedAtTick is { } started)
         {
             var sandbox = EventsOfType("SandboxStarted").Single();
-            if (sandbox.Tick != started || sandbox.Phase != 1 || sandbox.EntityId != _firstVictory!.Election.Value ||
-                sandbox.ActorId != _firstVictory.Winner)
+            if (sandbox.Tick != started || (!IsResearchSandboxEvent(sandbox) &&
+                (sandbox.Phase != 1 || sandbox.EntityId != _firstVictory!.Election.Value || sandbox.ActorId != _firstVictory.Winner)))
                 throw new InvalidOperationException("Sandbox journal mismatch");
         }
     }

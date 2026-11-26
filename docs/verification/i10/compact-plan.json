@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "id": "valley-hard",
+  "title": "Малая долина — 10 NPC Hard",
+  "scenario": "scenarios/vnext/compact-valley-i6c8c.json",
+  "economy": "ordinary-current",
+  "ordinaryNpcCount": 10,
+  "ticks": 10000,
+  "seeds": [
+    17
+  ],
+  "repetitions": 1,
+  "mode": "algorithmic",
+  "ordinaryDifficulty": "Hard",
+  "startingIndustry": "woodworking",
+  "electionPolicy": {
+    "human": "ballot-only",
+    "ballot": "self",
+    "continueAfterVictory": true
+  },
+  "factors": [],
+  "recording": "normal",
+  "timeoutSeconds": 14400
+}

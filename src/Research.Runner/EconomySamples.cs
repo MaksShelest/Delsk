@@ -35,6 +35,7 @@ internal sealed class EconomySamples
     }
     private void Write()
     {
+        var measurement = _session.Measurements?.Start() ?? default;
         var state = _session.Engine.Inspect();
         var city = _session.Engine.PublicEconomy();
         var events = _session.Engine.EventsSince(_sequence).ToArray();
@@ -81,7 +82,7 @@ internal sealed class EconomySamples
             Participants = state.Participants.Select(person =>
             {
                 var capital = city.Participants.Single(item => item.Actor == person.Id);
-                var latest = _session.ControllerSamples.LastOrDefault(sample => sample.ActorId == person.Id.Value);
+                var latest = _session.LatestControllerSample(person.Id.Value);
                 return new
                 {
                     Actor = person.Id.Value,
@@ -103,5 +104,6 @@ internal sealed class EconomySamples
         using var writer = new StreamWriter(stream, new UTF8Encoding(false));
         writer.WriteLine(JsonSerializer.Serialize(line, SimulationJson.Options));
         _last = state.Tick;
+        _session.Measurements?.End("economy-snapshot", measurement);
     }
 }

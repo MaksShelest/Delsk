@@ -107,21 +107,30 @@ def samples(folder):
     return thin(rows), invalid
 
 
-def participant_rows(final, city):
+def participant_rows(final, city, fleet=None, development=None):
     accounts = {ident(item.get('id')): item for item in (final or {}).get('accounts') or []}
     people = {ident(item.get('actor')): item for item in (city or {}).get('participants') or []}
     buildings = (final or {}).get('buildings') or []
     enterprises = (final or {}).get('enterprises') or []
+    xp = {}
+    for grant in (development or {}).get('grants', []):
+        actor = ident(grant.get('owner'))
+        xp[actor] = xp.get(actor, 0) + grant['xp']
     rows = []
     for person in (final or {}).get('participants') or []:
         actor = ident(person.get('id'))
         account = accounts.get(ident(person.get('accountId'))) or {}
         capital = people.get(actor) or {}
         owned = [item for item in buildings if ident(item.get('ownerId')) == actor]
+        factories = [item for item in enterprises if ident(item.get('ownerId')) == actor]
         staffed = [item for item in enterprises if ident(item.get('ownerId')) == actor and item.get('enabled') and (item.get('staff') or 0) > 0]
         rows.append(dict(actor=actor, human=actor == 1, cashMinor=account.get('balanceMinor'), capitalMinor=capital.get('capitalMinor'),
                          buildings=len(owned), productionBuildings=sum(1 for item in owned if item.get('kind') == 'Production'),
-                         staffedProductions=len(staffed), busy=bool(person.get('busy'))))
+                         staffedProductions=len(staffed), busy=bool(person.get('busy')),
+                         maximumProductionLevel=max((item.get('level',1) for item in factories),default=None),
+                         industrialXp=None if development is None else xp.get(actor,0),
+                         vehicles=None if fleet is None else sum(ident(v.get('owner'))==actor for v in fleet.get('vehicles', [])),
+                         productionReasons=[p.get('reasonCode') for p in factories if p.get('reasonCode')]))
     return rows
 
 
@@ -198,5 +207,6 @@ def report(folder):
         flows=None if final is None else dict(harvested=sum(item.get('harvested') or 0 for item in flows), produced=sum(item.get('produced') or 0 for item in flows),
                    exported=sum(item.get('exported') or 0 for item in flows)),
         contracts=contract_counts((final or {}).get('deliveryContracts') or summary.get('deliveryContracts')),
-        participants=participant_rows(final, city),
+        participants=participant_rows(final, city, load_json(folder/'fleet.json'), load_json(folder/'development.json')),
+        elections=(final or {}).get('elections'),
         metrics=metrics, samples=series, events=events, limitations=limitations)

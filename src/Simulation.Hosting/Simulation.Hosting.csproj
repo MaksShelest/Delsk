@@ -1,4 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup><ProjectReference Include="../Simulation.Core/Simulation.Core.csproj" /></ItemGroup>
-  <ItemGroup><InternalsVisibleTo Include="Simulation.Tests" /></ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Simulation.Tests" />
+    <InternalsVisibleTo Include="Simulation.Developer" />
+    <InternalsVisibleTo Include="Research.Runner" />
+  </ItemGroup>
 </Project>

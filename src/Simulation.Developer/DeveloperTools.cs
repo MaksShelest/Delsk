@@ -15,9 +15,17 @@ public sealed class DeveloperTools : IDisposable
     private readonly ParticipantId _human;
     private readonly Queue<DecisionLogEntry> _journal=[];
     private readonly int _capacity;
-    private bool _humanSelf;
+    private ParticipantId? _advanceCandidate;
+    private bool _continueAfterVictory;
+    private int _initialElections;
+    private readonly Stopwatch _advanceClock = new();
     public long? AdvanceTarget {get;private set;}
     public string AdvanceStatus {get;private set;}="Idle";
+    public long? AdvanceStart { get; private set; }
+    public long? AdvanceGoal { get; private set; }
+    public string? AdvanceError { get; private set; }
+    public double AdvanceElapsedSeconds => _advanceClock.Elapsed.TotalSeconds;
+    public int AdvanceElections => AdvanceStart.HasValue ? _session.Engine.CompletedElections - _initialElections : 0;
     public DecisionLogEntry[] Journal=>_journal.ToArray();
     public DeveloperTools(GameSession session,ParticipantId human,int capacity=256)
     {
@@ -41,13 +49,42 @@ public sealed class DeveloperTools : IDisposable
     public ResearchModification Stock(ParticipantId actor,InventoryId inventory,string item,long target)=>_session.DeveloperModify("Stock",actor,target,inventory,item);
     public ResearchModification IndustryExperience(ParticipantId actor,string industry,long target)=>_session.DeveloperModify("IndustryExperience",actor,target,item:industry);
     public ResearchModification WageExponent(int value)=>_session.DeveloperModify("WageExponent",_human,value);
-    public void StartAdvance(long target,bool humanSelf=false)
+    public void StartAdvance(long target, bool humanSelf)
     {
-        if(target<=_session.Engine.Tick || target>_session.Engine.Configuration().MaxTicks)throw new ArgumentOutOfRangeException(nameof(target));
-        if(humanSelf)_session.DeveloperModify("HumanSelfBallot",_human,1);
-        _humanSelf=humanSelf;AdvanceTarget=target;AdvanceStatus="Running";
+        ValidateAdvance(target, humanSelf ? _human : null);
+        if (humanSelf) _session.DeveloperModify("HumanSelfBallot", _human, 1);
+        StartAdvance(target, humanSelf ? _human : null);
     }
-    public void CancelAdvance(){AdvanceTarget=null;AdvanceStatus="Cancelled";}
+    public void StartAdvance(long target, ParticipantId? candidate = null, bool continueAfterVictory = false)
+    {
+        ValidateAdvance(target, candidate);
+        _advanceCandidate = candidate;
+        _continueAfterVictory = continueAfterVictory;
+        _initialElections = _session.Engine.CompletedElections;
+        AdvanceStart = _session.Engine.Tick;
+        AdvanceTarget = AdvanceGoal = target;
+        AdvanceError = null;
+        AdvanceStatus = "Running";
+        _advanceClock.Restart();
+    }
+    private void ValidateAdvance(long target, ParticipantId? candidate)
+    {
+        if (AdvanceTarget.HasValue) throw new InvalidOperationException("AdvanceAlreadyRunning");
+        var definition = _session.Engine.Configuration();
+        if (target <= _session.Engine.Tick || target > definition.MaxTicks) throw new ArgumentOutOfRangeException(nameof(target));
+        if (candidate is { } id && (definition.Elections?.PauseForBallots != true || !definition.Participants.Any(p => p.Id == id.Value)))
+            throw new ArgumentException("InvalidAdvanceCandidate");
+    }
+    private void EndAdvance(string status, string? error = null)
+    {
+        _advanceClock.Stop();
+        _advanceCandidate = null;
+        _continueAfterVictory = false;
+        AdvanceTarget = null;
+        AdvanceStatus = status;
+        AdvanceError = error;
+    }
+    public void CancelAdvance() { if (AdvanceTarget.HasValue) EndAdvance("Cancelled"); }
     /// <summary>At most eight real steps; the eight-ms budget is checked between atomic steps. Stops at unresolved choices.</summary>
     public void PumpAdvance(int maximumSteps=8)
     {
@@ -56,24 +93,38 @@ public sealed class DeveloperTools : IDisposable
         var watch=Stopwatch.StartNew();bool paused=_session.Paused;
         try
         {
-            for(int i=0;i<maximumSteps && watch.ElapsedMilliseconds<8;i++)
+            for(int i=0;;i++)
             {
                 if(_session.Engine.WaitingForBallots)
                 {
-                    var voting=_session.Engine.Observe(_human).Elections.Voting!;
-                    if(_humanSelf && voting.Awaiting.Contains(_human))
-                        _session.Send(_human,new(ActionKind.SetVoteChoice,Election:voting.Election,Candidate:voting.RequiredCandidate??_human));
+                    if (_advanceCandidate is { } candidate && _session.SubmitConfiguredBallot(_human, candidate) is { Status: ResultStatus.Rejected } rejection)
+                    { EndAdvance("Failed", rejection.ReasonCode); return; }
                     _session.PumpVoting();
-                    if(_session.Engine.WaitingForBallots){AdvanceStatus=_session.WaitingForModel?"WaitingForModel":"WaitingForBallot";return;}
+                    if(_session.Engine.WaitingForBallots)
+                    {
+                        if (_session.WaitingForModel) AdvanceStatus = "WaitingForModel";
+                        else if (_session.Engine.Observe(_human).Elections.Voting!.Awaiting.Contains(_human)) AdvanceStatus = "WaitingForBallot";
+                        else EndAdvance("Failed", "MissingNpcBallot");
+                        return;
+                    }
                 }
-                if(_session.Engine.Observe(_human).Elections.Mode==ElectionMode.Victory){AdvanceStatus="Victory";AdvanceTarget=null;return;}
-                if(_session.Engine.Tick>=target){AdvanceStatus="Completed";AdvanceTarget=null;return;}
+                if (_session.Engine.PoliticalMode == ElectionMode.Victory)
+                {
+                    if (!_continueAfterVictory) { EndAdvance("Victory"); return; }
+                    _session.ContinueResearchAfterVictory(_human);
+                }
+                if(_session.Engine.Tick>=target){EndAdvance("Completed");return;}
                 if(_session.WaitingForModel){AdvanceStatus="WaitingForModel";return;}
+                if (i >= maximumSteps || watch.ElapsedMilliseconds >= 8) return;
+                long before = _session.Engine.Tick;
                 _session.SetPaused(false);
                 if(_session.Engine.TravelQuantum!=0)_session.CompleteTravelTick();else _session.Step();
+                if (_session.Engine.Tick == before) { EndAdvance("Failed", "NoTickProgress"); return; }
                 AdvanceStatus="Running";
             }
         }
+        catch (Exception failure) when (failure is InvalidOperationException or ArgumentException or OverflowException)
+        { EndAdvance("Failed", failure.Message); }
         finally {_session.SetPaused(paused);}
     }
     public void Dispose()=>_session.ControllerDecided-=Record;

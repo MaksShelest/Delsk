@@ -26,6 +26,16 @@ public sealed partial class GameSession
     private readonly List<ControllerSample> _controllerSamples = [];
     private long _ballotBarrier;
     private ControllerObservationPool? _observationPool;
+
+    internal CommandResult? SubmitConfiguredBallot(ParticipantId voter, ParticipantId candidate)
+    {
+        if (!Engine.WaitingForBallots) return null;
+        var voting = Engine.Observe(voter).Elections.Voting!;
+        if (!voting.Awaiting.Contains(voter)) return null;
+        return Engine.Result(Send(voter, new(ActionKind.SetVoteChoice, Election: voting.Election,
+            Candidate: voting.RequiredCandidate ?? candidate)));
+    }
+
     public bool PumpVoting()
     {
         if (!Engine.WaitingForBallots) return true;
@@ -80,6 +90,11 @@ public sealed partial class GameSession
     public void WriteControllerTurns(Stream stream)
     {if(_observationPool is not null){_observationPool.WriteLines(stream);return;}using var writer=new StreamWriter(stream,new System.Text.UTF8Encoding(false),1024,true);foreach(var turn in _controllerTurns)writer.WriteLine(JsonSerializer.Serialize(turn,SimulationJson.Options));}
     public ControllerSample[] ControllerSamples => _controllerSamples.ToArray();
+    internal ControllerSample? LatestControllerSample(long actor)
+    {
+        if (!_controllerAwaiting.ContainsKey(actor)) return null;
+        return _controllerSamples.FindLast(s => s.ActorId == actor);
+    }
     public void AttachControllers(IEnumerable<IController> controllers)
     {
         if (Engine.Tick != 0 || HasControllers || _playback is not null) throw new InvalidOperationException("Controllers/playback already configured");

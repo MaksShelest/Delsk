@@ -27,12 +27,15 @@ public partial class Playfield
                 ApplyPause();Refresh();
             });AddChild(_votingPanel);
         }
-        _votingPanel.Visible=_surface==Surface.Play && _helpOverlay is null;
+        bool developer = false, advancing = false;
+        DeveloperOwnsClock(ref developer, ref advancing);
+        _votingPanel.Visible=_surface==Surface.Play && _helpOverlay is null && !developer;
         _votingPanel.ShowData(_human,election);ApplyPause();
     }
     partial void DeveloperMenu(VBoxContainer menu);
     partial void DeveloperDebug(HBoxContainer toolbar);
     partial void DeveloperInput(InputEventKey key, ref bool handled);
     partial void DeveloperFrame();
+    partial void DeveloperOwnsClock(ref bool overlay, ref bool advancing);
     partial void DeveloperReset();
 }

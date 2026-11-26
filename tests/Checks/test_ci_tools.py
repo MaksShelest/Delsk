@@ -2,6 +2,8 @@
 Author: Шелестов Максим Евгеньевич.
 """
 from pathlib import Path
+import json
+import subprocess
 import sys
 import hashlib
 import tempfile
@@ -11,6 +13,21 @@ import xml.etree.ElementTree as ET
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'scripts'))
 from reuse_godot_imports import reuse
 from test_partitions import PARTITIONS, INTEGRATION, DEVELOPMENT, PHYSICAL, MODELS, FLEET, FLEET_STOCK, ROADS, TRAFFIC, ROAD_FREIGHT, ROAD_HISTORY, UX, NPC, RUNS, SERVICES, BILLING, BILLING_DISTRIBUTION, BILLING_TIMING, H2, H3, I1, I2, I3, I4, selected_partitions, run_suite
+
+class CheckReceiptTests(unittest.TestCase):
+    def test_closed_console_preserves_success_and_failure_codes(self):
+        runner = Path(__file__).resolve().parents[2] / 'scripts/run_check.py'
+        with tempfile.TemporaryDirectory() as folder:
+            for exit_code in (0, 7):
+                name = f'closed-console-{exit_code}'
+                with subprocess.Popen([sys.executable, str(runner), '--name', name, '--log-directory', folder,
+                                       '--', sys.executable, '-c', f'raise SystemExit({exit_code})'],
+                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE) as process:
+                    process.stdout.close()
+                    self.assertEqual(exit_code, process.wait(timeout=12))
+                    self.assertEqual(b'', process.stderr.read())
+                receipt = json.loads((Path(folder)/f'{name}.json').read_text(encoding='utf-8'))
+                self.assertEqual(exit_code, receipt['exit_code'])
 
 class PartitionsTests(unittest.TestCase):
     def test_every_class_including_future_and_developer_has_exactly_one_partition(self):

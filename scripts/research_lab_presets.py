@@ -2,12 +2,14 @@
 Author: Шелестов Максим Евгеньевич.
 """
 import copy
-from research_lab import DEFAULT
+from research_lab import CURRENT_ECONOMY, DEFAULT
 
 MAPS = [
     dict(label="Речные кварталы · I4", path="scenarios/vnext/small-river.json", economy="config/vnext/economy.i4-mobile-equipment.json"),
     dict(label="Малая долина · I4", path="scenarios/vnext/compact-valley.json", economy="config/vnext/economy.i4-mobile-equipment.json"),
     dict(label="Большой округ · I4", path="scenarios/vnext/large-districts.json", economy="config/vnext/economy.i4-mobile-equipment.json"),
+    dict(label='Малая долина · I6-C7.2', path='scenarios/vnext/compact-valley-i6c21.json', economy='config/vnext/economy.i6c72-wages.json'),
+    dict(label='Лесной край · I6-C7.2', path='scenarios/vnext/woodland-region-i6c4.json', economy='config/vnext/economy.i6c72-wages.json'),
     dict(label="Четыре квартала", path="scenarios/four-corners-v1.json"),
     dict(label="Городской тракт", path="scenarios/city-corridor-v1.json"),
     dict(label='Карта 1 · базовая', path='scenarios/presentation-map-one-v3.json'),
@@ -16,13 +18,13 @@ MAPS = [
 ]
 # Текущие обычные партии. Исторические MAPS остаются отдельным списком: их профили другие.
 CITY_MAPS = [
-    dict(label='Малая долина · текущие правила', path='scenarios/vnext/compact-valley-i6c21.json',
-         economy='config/vnext/economy.i6c72-wages.json', profile='vnext-i6c72-wages-1',
-         note='Ставка 0,15 монеты, ручной шаг 0,02. Цена участка не менялась. Профили до классов техники и старые сохранения остаются на ставке 0,20.'),
-    dict(label='Лесной край · текущие правила', path='scenarios/vnext/woodland-region-i6c4.json',
-         economy='config/vnext/economy.i6c72-wages.json', profile='vnext-i6c72-wages-1',
-         note='Та же текущая шкала зарплат, что у Малой долины. Это не профиль I4.'),
+    dict(label='Малая долина', path='scenarios/vnext/compact-valley-i6c8c.json', economy=CURRENT_ECONOMY, maxNpcs=10),
+    dict(label='Лесной край', path='scenarios/vnext/woodland-region-i6c8c.json', economy=CURRENT_ECONOMY, maxNpcs=3),
 ]
+for choice in CITY_MAPS:
+    choice.update(profile='vnext-i6c8d-economic-balance-1', note='Профиль обычной игры с промышленными участками, специализациями и провинциальной поддержкой.')
+for choice, historical in zip(CITY_MAPS, MAPS[3:5]):
+    choice['historical'] = historical
 
 
 def city_timeout(ticks):
@@ -33,9 +35,9 @@ def city_plan(name='city-economy', title='Экономика города', tick
     choice = next(item for item in CITY_MAPS if item['path'] == map_path) if map_path else CITY_MAPS[0]
     plan = dict(version=1, id=name, title=title, scenario=choice['path'], economy=choice['economy'],
                 ordinaryNpcCount=int(npcs), ticks=int(ticks), seeds=[int(seed)], repetitions=1, mode='algorithmic',
+                ordinaryDifficulty=difficulty or 'Medium', startingIndustry='woodworking',
+                electionPolicy=dict(human='ballot-only', ballot='self', continueAfterVictory=True),
                 factors=[], recording=recording, timeoutSeconds=city_timeout(ticks))
-    if difficulty:
-        plan['factors'] = [dict(path='npc.difficulty', values=[difficulty])]
     return plan
 
 

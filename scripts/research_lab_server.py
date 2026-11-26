@@ -118,7 +118,7 @@ def make_server(lab, port=8765):
                     from research_lab import MAX_TIMEOUT, ORDINARY_TICKS
                     from research_lab_presets import MAPS, FACTOR_LABELS, presets, CITY_MAPS, city_plan
                     return self.send(200, dict(default=DEFAULT, factors=FACTORS, presets=presets(), maps=MAPS, factorLabels=FACTOR_LABELS,
-                        city=dict(maps=CITY_MAPS, plan=city_plan(), ticks=[120,500,1000,2000,2500,5000]),
+                        city=dict(maps=CITY_MAPS, plan=city_plan(), ticks=[120,1000,3000,10000,50000,100000]),
                         limits=dict(ticks=10000, ordinaryTicks=ORDINARY_TICKS, timeoutSeconds=MAX_TIMEOUT, recording=['brief','normal','detailed']),
                         scenarios=[p.relative_to(ROOT).as_posix() for p in sorted((ROOT/'scenarios').glob('*.json')) if 'controllers' not in p.name]))
                 if path.startswith('/archives/') and path.endswith('.zip'):
@@ -180,6 +180,9 @@ def make_server(lab, port=8765):
                 data = json.loads(self.rfile.read(size), object_pairs_hook=unique)
                 if self.path=='/api/manage':return self.send(200,lab.views.manage(data))
                 if self.path=='/api/control':return self.send(200,lab.views.control(data['id'],data['action']))
+                if self.path=='/api/resume-attempt':
+                    lab.resume_job(data['id'], data['job'], data['attempt'])
+                    return self.send(200,lab.snapshot())
                 if self.path=='/api/profiles':return self.send(200,lab.views.save_profile(data))
                 if self.path=='/api/models':
                     from research_workspace import model_tags

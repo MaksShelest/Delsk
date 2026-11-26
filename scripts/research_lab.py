@@ -24,6 +24,7 @@ configure_text_io()
 ROOT = Path(__file__).resolve().parents[1]
 MAX_TIMEOUT = 14400
 ORDINARY_TICKS = 1_000_000
+CURRENT_ECONOMY = 'ordinary-current'
 # Deliberately narrow scalar surface; catalogues/geometry stay in source profiles.
 FACTORS = {
     'npc.difficulty': ['Easy', 'Medium', 'Hard'],
@@ -91,6 +92,14 @@ def fields(value, allowed, required=()):
         raise ValueError('Missing/unknown fields: ' + ', '.join(allowed))
 
 
+def validate_election_policy(policy):
+    keys = ['human', 'ballot', 'continueAfterVictory']
+    fields(policy, keys, keys)
+    if policy['human'] not in ('algorithmic','ballot-only') or type(policy['continueAfterVictory']) is not bool or not (
+        policy['ballot'] in ('self', 'off') or integer(policy['ballot'], 2, 11)):
+        raise ValueError('Неверная политика выборов')
+
+
 def values(factor):
     fields(factor, ['path', 'values', 'range'], ['path'])
     key = factor['path']
@@ -125,6 +134,29 @@ def source(path, workspace):
     return p
 
 
+def economy_source(plan, workspace):
+    if plan['economy'] != CURRENT_ECONOMY:
+        return source(plan['economy'], workspace)
+    if 'ordinaryNpcCount' not in plan or 'economyData' in plan:
+        raise ValueError('Текущий профиль предназначен для обычной партии')
+    runner = ROOT/'src/Research.Runner/bin/Release/net10.0/Research.Runner.dll'
+    if not runner.is_file():
+        raise ValueError('Текущий профиль вычисляет Research.Runner. Сначала запустите ResearchLab.cmd.')
+    cache = workspace/'.ordinary-profiles'
+    cache.mkdir(parents=True, exist_ok=True)
+    base = ROOT/'config/vnext/economy.i4-mobile-equipment.json'
+    key = digest(runner.parent/'Simulation.Hosting.dll') + '-' + digest(base)
+    profile = cache/(key + '.json')
+    if not profile.exists():
+        with tempfile.TemporaryDirectory(dir=cache) as temporary:
+            run = subprocess.run(['dotnet', str(runner), '--export-i6c8-profiles', str(base), temporary],
+                                 timeout=60, capture_output=True, text=True)
+            if run.returncode:
+                raise ValueError('Не удалось получить профиль обычной игры: ' + run.stderr.strip())
+            os.replace(Path(temporary)/'i6c8d.json', profile)
+    return profile
+
+
 def scalar(document, path, value):
     node = document
     parts = path.split('.')
@@ -153,13 +185,24 @@ def recording_of(plan):
 def expand(plan, workspace):
     if not isinstance(plan,dict):raise ValueError("Plan must be an object")
     fields(plan, ['version', 'id', 'scenario', 'economy', 'controllers', 'ticks', 'seeds',
-                  'repetitions', 'mode', 'modelConfig', 'factors', 'composition', 'timeoutSeconds', 'profile', 'economyData', 'modelData', 'participants', 'recordWorld', 'ordinaryNpcCount', 'title', 'recording', 'science'],
+                  'repetitions', 'mode', 'modelConfig', 'factors', 'composition', 'timeoutSeconds', 'profile', 'economyData', 'modelData', 'participants', 'recordWorld', 'ordinaryNpcCount', 'title', 'recording', 'science', 'ordinaryDifficulty', 'startingIndustry', 'electionPolicy'],
            ['version', 'id', 'scenario', 'economy', 'ticks', 'seeds', 'repetitions', 'mode', 'factors'] + ([] if 'ordinaryNpcCount' in plan else ['controllers']))
     if type(plan['version']) is not int or plan['version'] != 1 or not isinstance(plan['id'],str) or not re.fullmatch(r'[a-zA-Z0-9_-]{1,64}', str(plan['id'])):
         raise ValueError('Invalid plan version/id')
     if 'title' in plan and (not isinstance(plan['title'], str) or not plan['title'].strip() or len(plan['title']) > 80):
         raise ValueError('Название исследования: от 1 до 80 символов')
     ordinary = 'ordinaryNpcCount' in plan
+    campaign_policy = {'ordinaryDifficulty', 'startingIndustry', 'electionPolicy'} & plan.keys()
+    if campaign_policy and not ordinary:
+        raise ValueError('Настройки обычной партии требуют обычную карту и состав')
+    difficulty = plan.get('ordinaryDifficulty', 'Medium')
+    industry = plan.get('startingIndustry')
+    if difficulty not in ('Easy','Medium','Hard') or industry is not None and industry not in ('woodworking','food','dairy','materials'):
+        raise ValueError('Неизвестная сложность или стартовая отрасль')
+    policy = plan.get('electionPolicy')
+    if 'electionPolicy' in plan:
+        validate_election_policy(policy)
+        if plan.get('profile'): raise ValueError('Профилировщик шагов не принимает политику выборов')
     tick_limit = ORDINARY_TICKS if ordinary else 10_000
     if not integer(plan['ticks'], 1, tick_limit) or not integer(plan['repetitions'], 1, 500):
         raise ValueError('Обычная партия: тики 1..1000000, повторы 1..500' if ordinary else 'Use ticks1..10000, repetitions1..500')
@@ -192,7 +235,7 @@ def expand(plan, workspace):
     if count > 10000:
         raise ValueError('At most 10000 cells per series')
     scenario = read(source(plan['scenario'], workspace))
-    economy = copy.deepcopy(plan['economyData']) if 'economyData' in plan else read(source(plan['economy'], workspace))
+    economy = copy.deepcopy(plan['economyData']) if 'economyData' in plan else read(economy_source(plan, workspace))
     controllers = dict(version=1,humanActorId=1,finalTick=plan['ticks'],npcs=[]) if ordinary else read(source(plan['controllers'], workspace))
     model = copy.deepcopy(plan['modelData']) if 'modelData' in plan else read(source(plan['modelConfig'], workspace)) if 'modelConfig' in plan else None
     if not isinstance(economy,dict) or type(plan.get('recordWorld',True)) is not bool:raise ValueError('Invalid economy/recording options')
@@ -215,7 +258,7 @@ def expand(plan, workspace):
     for index, combination in enumerate(itertools.product(*axes)):
         e, c = copy.deepcopy(economy), copy.deepcopy(controllers)
         c['finalTick'] = plan['ticks']
-        ordinary_difficulty='Medium'
+        ordinary_difficulty=difficulty
         ordinary_count=plan['ordinaryNpcCount'] if ordinary else None
         for path, value in zip(paths, combination):
             if path=='ordinary.npcCount':
@@ -238,7 +281,12 @@ def expand(plan, workspace):
                 scalar(e, path, value)
         if 'npc' in e and isinstance(e['npc'].get('baseWageMinor'),int) and isinstance(e['npc'].get('maximumWageMinor'),int) and e['npc']['baseWageMinor']>e['npc']['maximumWageMinor']:
             raise ValueError('Целевая ставка NPC выше записанного в профиле предела')
-        arms.append(dict(id=f'arm-{index}', factors=dict(zip(paths, combination)), economy=e, controllers=c, setup=setup,ordinary=dict(npcCount=ordinary_count,difficulty=ordinary_difficulty) if ordinary else None))
+        options = dict(npcCount=ordinary_count,difficulty=ordinary_difficulty) if ordinary else None
+        if options is not None and industry is not None:
+            options['startingIndustry'] = industry
+        if policy and type(policy['ballot']) is int and policy['ballot'] > ordinary_count + 1:
+            raise ValueError('Кандидат должен быть в составе каждого сравниваемого мира')
+        arms.append(dict(id=f'arm-{index}', factors=dict(zip(paths, combination)), economy=e, controllers=c, setup=setup,ordinary=options,electionPolicy=policy))
     return scenario, model, arms
 
 
@@ -276,7 +324,46 @@ def command(folder, job, output):
     if job.get('economySample'):cmd += ['--economy-sample','true']
     if job.get('modelWait',False):cmd += ['--model-wait','true']
     if (path/'setup.json').exists():cmd += ['--research-setup',str(path/'setup.json')]
-    return [*cmd, '--economy', str(path/'economy.json'), '--human-ballot', 'self']
+    if (path/'electionPolicy.json').is_file():
+        policy = read(path/'electionPolicy.json')
+        cmd += ['--research-human', policy['human'], '--research-ballot', str(policy['ballot']),
+                '--research-continue-after-victory', str(policy['continueAfterVictory']).lower()]
+        if not job.get('recordWorld'):
+            cmd += ['--compress-controller-turns', 'true', '--checkpoint', str(checkpoint_path(output)), '--checkpoint-on-cancel', 'true']
+            if job.get('resumeAttempt'):
+                previous = output.with_name(str(job['resumeAttempt']))
+                cmd = cmd[:2]+[v for flag,value in zip(cmd[2::2],cmd[3::2]) if flag not in ('--scenario','--new-game') for v in (flag,value)]
+                return [*cmd, '--load', str(checkpoint_path(previous))]
+            if job['ticks'] >= 3000:
+                cmd += ['--checkpoint-at', str(min(3000, job['ticks']//2))]
+    else:
+        cmd += ['--human-ballot', 'self']
+    return [*cmd, '--economy', str(path/'economy.json')]
+
+
+def checkpoint_path(attempt):
+    return attempt.with_name(attempt.name+'-world.save.json')
+
+
+def merge_samples(previous, output):
+    old = previous/'economy-samples.jsonl'
+    current = output/'economy-samples.jsonl'
+    if not old.is_file() or not current.is_file():
+        return
+    start = read(output/'run-progress.json')['startTick']
+    temporary = current.with_suffix('.tmp')
+    import shutil
+    with old.open(encoding='utf-8') as prefix, current.open(encoding='utf-8') as suffix, temporary.open('w', encoding='utf-8') as target:
+        for line in prefix:
+            try:
+                tick = json.loads(line)['tick']
+            except (ValueError, KeyError):  # A stopped process may leave a partial final sample.
+                break
+            if tick >= start:
+                break
+            target.write(line)
+        shutil.copyfileobj(suffix, target)
+    os.replace(temporary, current)
 
 
 def measure(folder):
@@ -306,7 +393,7 @@ class Lab:
         for s in self.series:
             for j in s['jobs']:
                 if j['status'] == 'running':
-                    j.update(status='interrupted', error='Host stopped; explicitly retry interrupted/failed cells')
+                    j.update(status='interrupted', error='Лаборатория остановилась. Возобновите с контрольной точки или запустите заново.')
         self.save()
 
     def save(self):
@@ -317,6 +404,9 @@ class Lab:
             series=copy.deepcopy(self.series)
             for s in series:
                 for j in s['jobs']:
+                    attempt = self.workspace/s['id']/'runs'/j['id']/str(j['attempt'])
+                    j['resumeAttempts'] = ([n for n in range(1, j['attempt']+1) if checkpoint_path(attempt.with_name(str(n))).is_file()]
+                                           if j['status'] in ('interrupted','cancelled','timeout','failed') and 'electionPolicy' in s['plan'] and not j.get('recordWorld') else [])
                     if j['status']=='running':
                         file=self.workspace/s['id']/'runs'/j['id']/str(j['attempt'])/'progress.json'
                         if not file.exists():file=file.with_name('run-progress.json')
@@ -333,10 +423,10 @@ class Lab:
             write(stage/'inputs/scenario.json', scenario)
             if model is not None:
                 write(stage/'inputs/model.json', model)
-            source_economy = None if 'economyData' in plan else source(plan['economy'], self.workspace)
+            source_economy = None if 'economyData' in plan else economy_source(plan, self.workspace)
             baseline = copy.deepcopy(plan['economyData']) if 'economyData' in plan else read(source_economy)
             for arm in arms:
-                for name in ('controllers', 'setup', 'ordinary'):
+                for name in ('controllers', 'setup', 'ordinary', 'electionPolicy'):
                     if arm.get(name) is None:continue
                     write(stage/f"inputs/{arm['id']}/{name}.json", arm[name])
                 economy_path = stage/f"inputs/{arm['id']}/economy.json"
@@ -348,7 +438,7 @@ class Lab:
                     if isinstance(arm['economy'].get('vNext'), dict) and arm['economy']!=baseline:
                         refresh_projection(economy_path)
                 if arm.get('ordinary') is not None and arm['economy'].get('vNext'):
-                    full=source(plan['economy'],self.workspace).parent/'balance.b1.json'
+                    full=ROOT/'config/vnext/balance.b1.json' if plan['economy']==CURRENT_ECONOMY else source(plan['economy'],self.workspace).parent/'balance.b1.json'
                     if not full.is_file() or digest(full)!=arm['economy']['vNext']['fullBalanceSha256']:
                         raise ValueError('Ordinary full balance/profile mismatch')
                     (stage/f"inputs/{arm['id']}/balance.b1.json").write_bytes(full.read_bytes())
@@ -389,6 +479,7 @@ class Lab:
                     for j in s['jobs']:
                         if not s.get('archived') and j['status'] in ('failed', 'interrupted','cancelled','timeout'):
                             j['status'] = 'queued'
+                            j.pop('resumeAttempt', None)
             self.paused = False
             self.save()
             if self.thread is None or not self.thread.is_alive():
@@ -417,6 +508,8 @@ class Lab:
                     raise ValueError('Validated input snapshot was changed')
                 cmd = command(folder, job, out)
                 code, meta = self.executor(job['id']+'-a'+str(job['attempt']), s['plan'].get('timeoutSeconds', 180), folder/'checks', cmd)
+                if job.get('resumeAttempt') and (out/'run-progress.json').exists():
+                    merge_samples(out.with_name(str(job['resumeAttempt'])), out)
                 if code==124:
                     raise TimeoutError(f'Предохранитель {s["plan"].get("timeoutSeconds", 180)} с. Прогон не заменён нулём.')
                 if code==2 and (out/'summary.json').exists() and read(out/'summary.json').get('status')=='cancelled':
@@ -455,9 +548,25 @@ class Lab:
                 if job['status'] in ('failed','interrupted','cancelled','timeout'):
                     job['status']='queued'
                     job.pop('error', None)
+                    job.pop('resumeAttempt', None)
                     found=True
             if not found:
                 raise ValueError('Нет прогона, который можно повторить')
+            self.save()
+        self.start()
+
+    def resume_job(self, series_id, job_id, attempt):
+        with self.lock:
+            series = self.views.series(series_id)
+            job = next((row for row in series['jobs'] if row['id'] == job_id), None)
+            if series.get('archived') or job is None or job['status'] not in ('interrupted','cancelled','timeout','failed'):
+                raise ValueError('Этот прогон нельзя возобновить')
+            previous = self.workspace/series_id/self.views.attempt(series_id, job_id, attempt)
+            if job.get('recordWorld') or 'electionPolicy' not in series['plan'] or not checkpoint_path(previous).is_file():
+                raise ValueError('У попытки нет контрольной точки для возобновления')
+            self.views.file(series_id, checkpoint_path(previous).relative_to(self.workspace/series_id).as_posix())
+            job.update(status='queued', resumeAttempt=int(attempt))
+            job.pop('error', None)
             self.save()
         self.start()
 
@@ -485,7 +594,8 @@ class Lab:
                     jobs = [j for j in s['jobs'] if j['arm'] == arm and j['status'] == 'succeeded']
                     metrics = {k: spread([j['metrics'][k] for j in jobs if type(j['metrics'].get(k)) in (int, float)])
                                for k in sorted({k for j in jobs for k in j['metrics'] if type(j['metrics'][k]) in (int, float)})}
-                    groups.append(dict(series=s['id'], arm=arm, complete=len(jobs), metrics=metrics))
+                    groups.append(dict(series=s['id'], arm=arm, complete=len(jobs), metrics=metrics,
+                                       electionPolicy=s['plan'].get('electionPolicy')))
             pairs = []
             for left,right in itertools.combinations(groups,2):
                 a = next(s for s in self.series if s['id']==left['series'])

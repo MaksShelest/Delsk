@@ -7,9 +7,10 @@ public partial class VotingPanel:PanelContainer
     private readonly Label _summary=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};
     private readonly Dictionary<ParticipantId,Button> _votes=[];
     private readonly string _language;
-    public VotingPanel(string language,ElectionObservation election,System.Action<ParticipantId> cast)
+    public VotingPanel(string language,ElectionObservation election,System.Action<ParticipantId> cast,bool overlay=true)
     {
-        _language=language;Theme=TabletDesign.Theme;SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);OffsetLeft=16;OffsetRight=-16;OffsetTop=16;OffsetBottom=-16;
+        _language=language;Theme=TabletDesign.Theme;
+        if (overlay) { SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);OffsetLeft=16;OffsetRight=-16;OffsetTop=16;OffsetBottom=-16; }
         AddThemeStyleboxOverride("panel",TabletDesign.Box("f7f8f3",12,10));
         var box=new VBoxContainer();AddChild(box);
         box.AddChild(TabletDesign.Heading(L("Выборы · экономика остановлена","Election · economy stopped"),25));box.AddChild(TabletDesign.Wrap(_summary,true));

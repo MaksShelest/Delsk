@@ -1,0 +1,1388 @@
+[
+  {
+    "map": "woodland-region",
+    "seed": 17,
+    "difficulty": "Medium",
+    "mode": "Sandbox",
+    "firstVictory": {
+      "election": {
+        "value": 3
+      },
+      "winner": {
+        "value": 4
+      },
+      "tick": 1800
+    },
+    "sandboxStartedAtTick": 1800,
+    "results": [
+      {
+        "tick": 600,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 4
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 1
+          }
+        ]
+      },
+      {
+        "tick": 1200,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 6
+          }
+        ]
+      },
+      {
+        "tick": 1800,
+        "winner": {
+          "value": 4
+        },
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 5
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "map": "woodland-region",
+    "seed": 18,
+    "difficulty": "Medium",
+    "mode": "Sandbox",
+    "firstVictory": {
+      "election": {
+        "value": 2
+      },
+      "winner": {
+        "value": 2
+      },
+      "tick": 1200
+    },
+    "sandboxStartedAtTick": 1200,
+    "results": [
+      {
+        "tick": 600,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 1
+          }
+        ]
+      },
+      {
+        "tick": 1200,
+        "winner": {
+          "value": 2
+        },
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 12
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "map": "woodland-region",
+    "seed": 17,
+    "difficulty": "Hard",
+    "mode": "Sandbox",
+    "firstVictory": {
+      "election": {
+        "value": 4
+      },
+      "winner": {
+        "value": 3
+      },
+      "tick": 2400
+    },
+    "sandboxStartedAtTick": 2400,
+    "results": [
+      {
+        "tick": 600,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 4
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 1
+          }
+        ]
+      },
+      {
+        "tick": 1200,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 4
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 1
+          }
+        ]
+      },
+      {
+        "tick": 1800,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 2
+          }
+        ]
+      },
+      {
+        "tick": 2400,
+        "winner": {
+          "value": 3
+        },
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 7
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "map": "woodland-region",
+    "seed": 18,
+    "difficulty": "Hard",
+    "mode": "Sandbox",
+    "firstVictory": {
+      "election": {
+        "value": 2
+      },
+      "winner": {
+        "value": 4
+      },
+      "tick": 1200
+    },
+    "sandboxStartedAtTick": 1200,
+    "results": [
+      {
+        "tick": 600,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 1
+          }
+        ]
+      },
+      {
+        "tick": 1200,
+        "winner": {
+          "value": 4
+        },
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 10
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "map": "compact-valley",
+    "seed": 17,
+    "difficulty": "Hard",
+    "mode": "Competitive",
+    "firstVictory": null,
+    "sandboxStartedAtTick": null,
+    "results": [
+      {
+        "tick": 600,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 5
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 6
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 8
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 10
+            },
+            "weight": 4
+          },
+          {
+            "candidate": {
+              "value": 11
+            },
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "tick": 1200,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 5
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 6
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 8
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 10
+            },
+            "weight": 4
+          },
+          {
+            "candidate": {
+              "value": 11
+            },
+            "weight": 4
+          }
+        ]
+      },
+      {
+        "tick": 1800,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 5
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 4
+          },
+          {
+            "candidate": {
+              "value": 5
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 6
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 10
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 11
+            },
+            "weight": 1
+          }
+        ]
+      },
+      {
+        "tick": 2400,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 5
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 8
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 10
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 11
+            },
+            "weight": 4
+          }
+        ]
+      },
+      {
+        "tick": 3000,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 4
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 8
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 7
+          },
+          {
+            "candidate": {
+              "value": 10
+            },
+            "weight": 4
+          },
+          {
+            "candidate": {
+              "value": 11
+            },
+            "weight": 6
+          }
+        ]
+      },
+      {
+        "tick": 3600,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 5
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 5
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 6
+            },
+            "weight": 5
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 4
+          },
+          {
+            "candidate": {
+              "value": 10
+            },
+            "weight": 11
+          },
+          {
+            "candidate": {
+              "value": 11
+            },
+            "weight": 3
+          }
+        ]
+      },
+      {
+        "tick": 4200,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 9
+          },
+          {
+            "candidate": {
+              "value": 5
+            },
+            "weight": 12
+          },
+          {
+            "candidate": {
+              "value": 6
+            },
+            "weight": 4
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 10
+            },
+            "weight": 4
+          }
+        ]
+      },
+      {
+        "tick": 4800,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 6
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 8
+            },
+            "weight": 4
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 11
+            },
+            "weight": 13
+          }
+        ]
+      },
+      {
+        "tick": 5400,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 5
+            },
+            "weight": 4
+          },
+          {
+            "candidate": {
+              "value": 6
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 8
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 10
+            },
+            "weight": 3
+          }
+        ]
+      },
+      {
+        "tick": 6000,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 5
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 6
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 8
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 11
+            },
+            "weight": 7
+          }
+        ]
+      },
+      {
+        "tick": 6600,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 5
+          },
+          {
+            "candidate": {
+              "value": 5
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 6
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 8
+            },
+            "weight": 8
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 2
+          },
+          {
+            "candidate": {
+              "value": 10
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 11
+            },
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "tick": 7200,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 4
+          },
+          {
+            "candidate": {
+              "value": 5
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 6
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 8
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 10
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 11
+            },
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "tick": 7800,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 8
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 8
+            },
+            "weight": 5
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 4
+          }
+        ]
+      },
+      {
+        "tick": 8400,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 5
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 5
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 6
+            },
+            "weight": 4
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 8
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 11
+            },
+            "weight": 6
+          }
+        ]
+      },
+      {
+        "tick": 9000,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 5
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 3
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 6
+          },
+          {
+            "candidate": {
+              "value": 5
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 6
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 8
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 10
+            },
+            "weight": 1
+          }
+        ]
+      },
+      {
+        "tick": 9600,
+        "winner": null,
+        "tally": [
+          {
+            "candidate": {
+              "value": 1
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 2
+            },
+            "weight": 5
+          },
+          {
+            "candidate": {
+              "value": 3
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 4
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 5
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 6
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 7
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 8
+            },
+            "weight": 7
+          },
+          {
+            "candidate": {
+              "value": 9
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 10
+            },
+            "weight": 1
+          },
+          {
+            "candidate": {
+              "value": 11
+            },
+            "weight": 5
+          }
+        ]
+      }
+    ]
+  }
+]
