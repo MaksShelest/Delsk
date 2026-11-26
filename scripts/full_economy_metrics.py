@@ -71,7 +71,7 @@ def measure(folder):
         escrow[identity(c['bondAccount'])]=identity(c['supplier'])
     services=load('services.json',{}) or {}
     for order in services.get('orders',[]):escrow[identity(order['escrowAccount'])]=identity(order['customer'])
-    capex={'Construction','BuildingUpgrade','PlotPurchase','PlotReservation','VehiclePurchase','EquipmentPurchase','EquipmentUpgrade','LogisticsPurchase','LogisticsUpgrade','WorkshopOutfit','WorkshopModernization','RoadConstruction','ResourcePurchase','VehicleHandlingKit','LoadingPlatformUpgrade'}
+    capex={'Construction','BuildingUpgrade','PlotPurchase','ParcelPurchase','PlotReservation','VehiclePurchase','EquipmentPurchase','EquipmentUpgrade','LogisticsPurchase','LogisticsUpgrade','WorkshopOutfit','WorkshopModernization','RoadConstruction','ResourcePurchase','VehicleHandlingKit','LoadingPlatformUpgrade'}
     revenues={'CapitalSettlement','DeliveryPayment','PickupPayment','RoadRevenue','RoadOrderReward','QuestReward','IndustryQuestReward','ProvincialOutputPurchase'}
     costs={'Wages','Energy','ResourceLease','HandlingService','HandlingWages','EquipmentTravelWages','LogisticsWages','RoadWages','ServiceDriverWages','RoadPrincipal','RoadPenalty','Demolition'}
     financial={'MarketEscrow','DeliveryFunding','DeliveryBond','DeliveryBondReturn','DeliveryRefund','PickupRefund','ServiceFunding','ServiceRefund','ServiceLateRefund','PlotReservationRefund'}

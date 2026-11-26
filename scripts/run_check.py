@@ -51,5 +51,10 @@ with (folder / f'{args.name}.stdout.log').open('wb') as out, (folder / f'{args.n
 metadata.update(exit_code=code, elapsed_seconds=round(time.monotonic()-started, 3),
                 finished_at=datetime.datetime.now(datetime.timezone.utc).isoformat())
 (folder / f'{args.name}.json').write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding='utf-8')
-print(f'{args.name}: exit={code}; logs={folder}')
+try:
+    print(f'{args.name}: exit={code}; logs={folder}', flush=True)
+except BrokenPipeError:
+    # The console can disappear after a long check. Its exit code and receipt are already final.
+    with open(os.devnull, 'wb') as sink:
+        os.dup2(sink.fileno(), sys.stdout.fileno())
 sys.exit(code if code >= 0 else 1)

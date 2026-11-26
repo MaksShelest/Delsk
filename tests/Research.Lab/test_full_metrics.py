@@ -38,6 +38,14 @@ class FullMetricsTests(unittest.TestCase):
  def test_handling_investment_is_cash_capex_not_repeated_operating_cost(self):
   p=self.example([700,100],[(1,101,0,100,'VehicleHandlingKit'),(2,101,0,200,'LoadingPlatformUpgrade')]);r=measure(p)['fullEconomy']
   self.assertEqual(300,r['actors']['1']['cashCapitalSpendingMinor']);self.assertEqual(0,r['actors']['1']['operatingReceiptResultMinor']);self.assertEqual({},r['unclassifiedActorCashMinor'])
+ def test_provincial_parcel_grant_and_purchase_stay_outside_operations(self):
+  export = self.example([1000,100], [(1,0,101,60000,'ProvincialParcelGrant'), (2,101,0,60000,'ParcelPurchase')])
+  result = measure(export)['fullEconomy']
+  actor = result['actors']['1']
+  self.assertEqual(60000,actor['provincialGrantsMinor'])
+  self.assertEqual(60000,actor['cashCapitalSpendingMinor'])
+  self.assertEqual(0,actor['operatingReceiptResultMinor'])
+  self.assertEqual({},result['unclassifiedActorCashMinor'])
  def test_b1_import_is_paid_at_terminal_and_uncollected_stock_is_separate(self):
   p=self.example([600,100],[(1,101,0,400,'ImportPurchase')]);state=json.loads((p/'final-state.json').read_text());state['inventories']=[dict(id=200,ownerId=1,capacity=100,occupiedVolume=1,stock=[dict(itemId='steel',quantity=1)])];(p/'final-state.json').write_text(json.dumps(state))
   (p/'production-content.json').write_text(json.dumps(dict(pickups=[dict(owner=1,inventory=200)])))

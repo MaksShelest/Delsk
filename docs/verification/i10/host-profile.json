@@ -1,0 +1,229 @@
+{
+  "scope": "Host timings around Step and invariant sections. Absent from the world hash and from economic totals.",
+  "tick": 3300,
+  "exportMilliseconds": 8404.3895,
+  "phases": [
+    {
+      "phase": "sampling-including-hash",
+      "calls": 300,
+      "milliseconds": 11488.236,
+      "allocatedBytes": 459181936
+    },
+    {
+      "phase": "state-hash",
+      "calls": 300,
+      "milliseconds": 10926.934,
+      "allocatedBytes": 341602856
+    },
+    {
+      "phase": "core-step",
+      "calls": 300,
+      "milliseconds": 4677.25,
+      "allocatedBytes": 254881712
+    },
+    {
+      "phase": "observations",
+      "calls": 300,
+      "milliseconds": 2751.385,
+      "allocatedBytes": 333795600
+    },
+    {
+      "phase": "invariant-ValidateCapitalDemandInvariants",
+      "calls": 300,
+      "milliseconds": 1622.554,
+      "allocatedBytes": 143624928
+    },
+    {
+      "phase": "invariant-ValidateProductionContent",
+      "calls": 300,
+      "milliseconds": 1161.871,
+      "allocatedBytes": 1164400
+    },
+    {
+      "phase": "history-record",
+      "calls": 39,
+      "milliseconds": 589.868,
+      "allocatedBytes": 79053600
+    },
+    {
+      "phase": "policy-and-feedback",
+      "calls": 300,
+      "milliseconds": 549.671,
+      "allocatedBytes": 63051536
+    },
+    {
+      "phase": "inspect-sample",
+      "calls": 300,
+      "milliseconds": 443.842,
+      "allocatedBytes": 116002288
+    },
+    {
+      "phase": "invariant-ValidateDeliveryInvariants",
+      "calls": 300,
+      "milliseconds": 289.211,
+      "allocatedBytes": 6957680
+    },
+    {
+      "phase": "invariant-ValidateResearchAudit",
+      "calls": 300,
+      "milliseconds": 218.283,
+      "allocatedBytes": 123000
+    },
+    {
+      "phase": "invariant-ValidateWorkshops",
+      "calls": 300,
+      "milliseconds": 172.854,
+      "allocatedBytes": 2998048
+    },
+    {
+      "phase": "economy-snapshot",
+      "calls": 12,
+      "milliseconds": 141.246,
+      "allocatedBytes": 8146720
+    },
+    {
+      "phase": "invariant-flows-and-wip",
+      "calls": 300,
+      "milliseconds": 126.545,
+      "allocatedBytes": 25416384
+    },
+    {
+      "phase": "invariant-ValidateSupportInvariants",
+      "calls": 300,
+      "milliseconds": 124.421,
+      "allocatedBytes": 606800
+    },
+    {
+      "phase": "invariant-ValidateDevelopmentBuildings",
+      "calls": 300,
+      "milliseconds": 115.891,
+      "allocatedBytes": 8245112
+    },
+    {
+      "phase": "invariant-ValidateElectionInvariants",
+      "calls": 300,
+      "milliseconds": 115.24,
+      "allocatedBytes": 6472272
+    },
+    {
+      "phase": "invariant-ValidateNegotiations",
+      "calls": 300,
+      "milliseconds": 83.8,
+      "allocatedBytes": 885600
+    },
+    {
+      "phase": "invariant-ValidateLandInvariants",
+      "calls": 300,
+      "milliseconds": 80.758,
+      "allocatedBytes": 475664
+    },
+    {
+      "phase": "invariant-ValidateRoads",
+      "calls": 300,
+      "milliseconds": 46.224,
+      "allocatedBytes": 2697800
+    },
+    {
+      "phase": "invariant-ValidateStorage",
+      "calls": 300,
+      "milliseconds": 33.769,
+      "allocatedBytes": 3025760
+    },
+    {
+      "phase": "invariant-accounts-and-inventories",
+      "calls": 300,
+      "milliseconds": 30.451,
+      "allocatedBytes": 7388200
+    },
+    {
+      "phase": "travel-quantum",
+      "calls": 3000,
+      "milliseconds": 14.673,
+      "allocatedBytes": 2591200
+    },
+    {
+      "phase": "invariant-ValidateFleet",
+      "calls": 300,
+      "milliseconds": 13.789,
+      "allocatedBytes": 1558000
+    },
+    {
+      "phase": "invariant-ValidateTransfers",
+      "calls": 300,
+      "milliseconds": 9.109,
+      "allocatedBytes": 1886000
+    },
+    {
+      "phase": "invariant-ValidateResources",
+      "calls": 300,
+      "milliseconds": 6.202,
+      "allocatedBytes": 3025800
+    },
+    {
+      "phase": "invariant-ValidateBilling",
+      "calls": 300,
+      "milliseconds": 5.527,
+      "allocatedBytes": 319800
+    },
+    {
+      "phase": "invariant-ValidateLaborInvariants",
+      "calls": 300,
+      "milliseconds": 4.72,
+      "allocatedBytes": 516600
+    },
+    {
+      "phase": "invariant-ValidateServices",
+      "calls": 300,
+      "milliseconds": 1.843,
+      "allocatedBytes": 180400
+    },
+    {
+      "phase": "invariant-ValidateServiceExecution",
+      "calls": 300,
+      "milliseconds": 1.238,
+      "allocatedBytes": 73800
+    },
+    {
+      "phase": "invariant-ValidateDemolition",
+      "calls": 300,
+      "milliseconds": 1.152,
+      "allocatedBytes": 65600
+    },
+    {
+      "phase": "invariant-actors",
+      "calls": 300,
+      "milliseconds": 1.061,
+      "allocatedBytes": 24600
+    },
+    {
+      "phase": "invariant-ValidateLogisticsInvariants",
+      "calls": 300,
+      "milliseconds": 0.446,
+      "allocatedBytes": 57400
+    },
+    {
+      "phase": "invariant-ValidateMarketInvariants",
+      "calls": 300,
+      "milliseconds": 0.406,
+      "allocatedBytes": 32800
+    },
+    {
+      "phase": "invariant-ValidateEquipmentInvariants",
+      "calls": 300,
+      "milliseconds": 0.285,
+      "allocatedBytes": 16400
+    },
+    {
+      "phase": "invariant-ValidateIndustryDevelopment",
+      "calls": 300,
+      "milliseconds": 0.258,
+      "allocatedBytes": 16400
+    },
+    {
+      "phase": "invariant-ValidateExtractionRoutes",
+      "calls": 300,
+      "milliseconds": 0.217,
+      "allocatedBytes": 49200
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "base": "14c766b359cb5fcffe2a5c547dd83470f74af41b",
+  "implementation": "175bb5c0c15bebeed1a742d12ba635056ff00964",
+  "acceptance": {
+    "woodland-r2": {
+      "series": "r2-difficulty-74d87f199e",
+      "binarySha256": {
+        "Agents.Algorithmic.dll": "d32da377ee04d95330dbb0d05d05d1d71b364e66f3d7b972230e919241b9cb22",
+        "Agents.Llm.dll": "5f1fbdd9ca12e64c617e0115786a851f8ec6f1f3c68c069acc0fcb331e047a9a",
+        "Research.Runner.dll": "cc64af11e28c140e2bd5d78258717e3f4260c9191522a712d60e9f71c2de2e66",
+        "Simulation.Core.dll": "e7bf66d87b7fb04d124daa0677eca12e4e0b86038344caff89afad4eb7b3638d",
+        "Simulation.Hosting.dll": "0785e5292495dbc87b1ae7734ab59e9fe4a4eed96036e3088a3ebba463bafa73"
+      },
+      "originalPlanSha256": "fc347132f1845db19465ca601cdbbca59974c5c747f88e133f3266d44daaf336",
+      "inputSha256": {
+        "inputs/arm-0/balance.b1.json": "5352b6e48b39f4548ddb0fea404603ed200528798b6a40130d521648dc65765d",
+        "inputs/arm-0/controllers.json": "7b40ba608ac049b7f52a310459ca07d759cbc329a80ccf004f9e2c3b93b84264",
+        "inputs/arm-0/economy.json": "4ba9603431be9ba4f3af19e4cfb6ff78576e8a79a1863df9489b85b38dbe3833",
+        "inputs/arm-0/electionPolicy.json": "9874e6184863b0e4329a516a0dc50726ac9fc5b3fcec4446dd8ac04ff2db5c41",
+        "inputs/arm-0/ordinary.json": "d64f4d469bdbe40f47a9606cefcc5a94265008e7f805b487c496bd584a0c7e21",
+        "inputs/arm-1/balance.b1.json": "5352b6e48b39f4548ddb0fea404603ed200528798b6a40130d521648dc65765d",
+        "inputs/arm-1/controllers.json": "7b40ba608ac049b7f52a310459ca07d759cbc329a80ccf004f9e2c3b93b84264",
+        "inputs/arm-1/economy.json": "4ba9603431be9ba4f3af19e4cfb6ff78576e8a79a1863df9489b85b38dbe3833",
+        "inputs/arm-1/electionPolicy.json": "9874e6184863b0e4329a516a0dc50726ac9fc5b3fcec4446dd8ac04ff2db5c41",
+        "inputs/arm-1/ordinary.json": "d0676e0736cd816c303d65c5344f818cc8ee90099ee071d8fda0ed895fcf110d",
+        "inputs/scenario.json": "722dc73fbcaf79e8a987deed29dbd9eda4938ba34218173895426528c650c5ef"
+      },
+      "publishedPlanSha256": "ebb98236b6173f497ebf0638d46906bc6ffb2d9753c8dcd4003f7968362937b9",
+      "publishedPlanChange": "Added exploratory reporting metrics only; simulation inputs and primary metric are identical."
+    },
+    "compact": {
+      "series": "valley-hard-d3dbd42e78",
+      "binarySha256": {
+        "Agents.Algorithmic.dll": "2a923cc793ce497f1d86aed1215f252dc348a6524b65cf5475406d1d081d806b",
+        "Agents.Llm.dll": "6e1d3dc19ac6e20400872487a33356d579190a05cd8fee5464469dfe763461db",
+        "Research.Runner.dll": "cf78eb8e5d6208666b9e2d5492c4d8c5afa1d08531af6e6d35cdaa6e18454e9c",
+        "Simulation.Core.dll": "648df9b473cded7e5a34e02160e17f02d42c15b0c5b8ec879274fc79375f91ac",
+        "Simulation.Hosting.dll": "5455ce1e2ebbfd1fb6276f019ef883e21f043f9a4802821c619b50aaa89f0e01"
+      },
+      "originalPlanSha256": "99ed916d243b35073e68296023ff07ed379492dc7ae504efae88518b9cc2e2cd",
+      "inputSha256": {
+        "inputs/arm-0/balance.b1.json": "5352b6e48b39f4548ddb0fea404603ed200528798b6a40130d521648dc65765d",
+        "inputs/arm-0/controllers.json": "7b40ba608ac049b7f52a310459ca07d759cbc329a80ccf004f9e2c3b93b84264",
+        "inputs/arm-0/economy.json": "4ba9603431be9ba4f3af19e4cfb6ff78576e8a79a1863df9489b85b38dbe3833",
+        "inputs/arm-0/electionPolicy.json": "9874e6184863b0e4329a516a0dc50726ac9fc5b3fcec4446dd8ac04ff2db5c41",
+        "inputs/arm-0/ordinary.json": "8e1fbfa1ac27a961876c6bdf48e56a731d89837b0be6b7b97e90d893e933bf79",
+        "inputs/scenario.json": "c6b26a6e6140a1a5b9204606f4d003e4e544e521b399911a10b9b794a19e8d53"
+      }
+    }
+  },
+  "continuousLoadedAndReplayAt3300": "d69c3c254e13fb88a96c34d568b6547de2f8e6074f50e6a2bd83d2e7b293473a",
+  "continuousAndLoadedAt660": "f8d26030c531e4ffe8a78e19e657bd4d8ad7522578b4fb3a323bda4658a4aac3",
+  "continuedControllerHashAt660": "6013b4e2fdc151721f968b3f463d6492ab80cab13ff08590d38fc57929367d25",
+  "compactRecovery": "Original queue recorded wrapper exit 120, inner runner exit 0. Export completion, terminal status, tick and runner hash all match.",
+  "replayEvidence": "The loaded t3000 continuation and original samples matched at t3300; replay used the tape and explicit election audit."
+}

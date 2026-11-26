@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "id": "r2-difficulty",
+  "title": "Лесной край — Medium и Hard на 10 000 тиков",
+  "scenario": "scenarios/vnext/woodland-region-i6c8c.json",
+  "economy": "ordinary-current",
+  "ticks": 10000,
+  "seeds": [
+    17,
+    18
+  ],
+  "repetitions": 1,
+  "mode": "algorithmic",
+  "recording": "normal",
+  "factors": [
+    {
+      "path": "npc.difficulty",
+      "values": [
+        "Medium",
+        "Hard"
+      ]
+    }
+  ],
+  "timeoutSeconds": 14400,
+  "ordinaryNpcCount": 3,
+  "ordinaryDifficulty": "Medium",
+  "startingIndustry": "woodworking",
+  "electionPolicy": {
+    "human": "ballot-only",
+    "ballot": "self",
+    "continueAfterVictory": true
+  },
+  "science": {
+    "version": 1,
+    "template": "difficulty",
+    "title": "Лесной край — Medium и Hard на 10 000 тиков",
+    "goal": "Сравнить две настройки сложности политики NPC на одной карте и одних seeds.",
+    "hypothesis": "Сложности могут дать разные итоги. Превосходство Hard заранее не предполагается.",
+    "comparison": "Группы отличаются только сложностью алгоритмических NPC.",
+    "primaryMetric": "cityCapitalMinor",
+    "metrics": [
+      "cityCapitalMinor",
+      "employed",
+      "producedUnits",
+      "controllerRejections",
+      "participantCashMinor",
+      "operatingCashMinor",
+      "productionBuildings",
+      "vehicles",
+      "industrialXp",
+      "elections"
+    ],
+    "groups": [
+      {
+        "label": "Medium",
+        "value": "Medium",
+        "valueLabel": "Medium",
+        "factorLabel": "Сложность NPC"
+      },
+      {
+        "label": "Hard",
+        "value": "Hard",
+        "valueLabel": "Hard",
+        "factorLabel": "Сложность NPC"
+      }
+    ],
+    "fixed": [
+      "Сложность — настройка политики, а не множитель выпуска и не доказанное преимущество.",
+      "Профиль vnext-i6c8d-economic-balance-1.",
+      "Карта: Лесной край.",
+      "Тиков в прогоне: 10000. Seeds: 17, 18. Повторов seed: 1.",
+      "Режим алгоритмический, без языковой модели.",
+      "Алгоритмических NPC: 3.",
+      "Политика участника: ballot-only · голос: self · продолжать после победы: True.",
+      "Целевая ставка NPC и шкала мира остаются как в профиле."
+    ],
+    "factor": "npc.difficulty",
+    "kind": "text",
+    "mapLabel": "Лесной край",
+    "profileId": "vnext-i6c8d-economic-balance-1",
+    "profileNote": "Хеш проекции пересчитывается только у группы, где изменено поле vNext-профиля. Контрольная группа копируется побайтно."
+  }
+}

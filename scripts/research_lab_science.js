@@ -125,7 +125,7 @@ function renderStudy(){
  drawScienceCharts(study);
 }
 function comparePanel(study){
- const metricId=scienceChart||study.experiment.primaryMetric;const metric=study.metrics[metricId];
+ const metric=study.metrics[scienceChart]??study.metrics[study.experiment.primaryMetric];const metricId=metric.id;
  return '<label>Показатель<select id="science-chart-metric">'+Object.values(study.metrics).map(item=>'<option value="'+esc(item.id)+'" '+(item.id===metricId?'selected':'')+'>'+esc(item.title)+'</option>').join('')+'</select></label><div id="science-bars"></div><div id="science-lines"></div><h2>Различия групп</h2>'+table(['Группа','n','Среднее','Медиана','95% интервал среднего'],metric.groups.map(group=>[esc(group.label),group.n,esc(scienceNumber(group.mean,metric)),esc(scienceNumber(group.median,metric)),esc(group.interval?scienceNumber(group.interval[0],metric)+' … '+scienceNumber(group.interval[1],metric):'не рассчитан')]))+'<h2>Парные seeds</h2>'+table(['Сравнение','Пар','Среднее различие','95% интервал','Относительно, %','p'],(metric.paired||[]).map(item=>[esc(item.label),item.pairs,esc(scienceNumber(item.mean,metric)),esc(item.confidenceInterval?scienceNumber(item.confidenceInterval[0],metric)+' … '+scienceNumber(item.confidenceInterval[1],metric):'не рассчитан'),esc(item.relativeChangePercent==null?'не определено':Number(item.relativeChangePercent).toLocaleString('ru-RU',{maximumFractionDigits:2})),esc(item.pValue==null?'не рассчитано':Number(item.pValue).toLocaleString('ru-RU',{maximumFractionDigits:4}))]))+'<p class="muted">Парное различие — группа минус первая группа на том же seed. Линии ниже, если они есть, показывают отдельные миры, а не среднее этих миров. Ось столбцов начинается с нуля, когда все средние неотрицательные.</p>';
 }
 function statsPanel(study){
@@ -153,13 +153,13 @@ function bindScienceActions(){
  const metric=document.getElementById('science-chart-metric');if(metric)metric.onchange=()=>{scienceChart=metric.value;renderStudy();};
 }
 function drawScienceCharts(study){
- const bars=document.getElementById('science-bars');if(!bars)return;const metric=study.metrics[scienceChart||study.experiment.primaryMetric];
+ const bars=document.getElementById('science-bars');if(!bars)return;const metric=study.metrics[scienceChart]??study.metrics[study.experiment.primaryMetric];
  const canvas=document.createElement('canvas');canvas.width=900;canvas.height=280;canvas.setAttribute('aria-label',metric.title);bars.appendChild(canvas);
  const context=canvas.getContext('2d'),groups=metric.groups.filter(group=>group.mean!=null);context.fillStyle='#1c1f27';context.fillRect(0,0,900,280);context.fillStyle='#ebe7df';context.font='14px sans-serif';context.fillText(metric.title+' · средние независимых миров · '+metric.unitLabel+' · n на столбце',16,24);
  if(!groups.length){context.fillText('Нет чисел для столбцов',16,80);return;}
  const nums=groups.flatMap(group=>[Number(group.mean),...(group.interval||[]).map(Number)]);
  let low=Math.min(...nums,0),high=Math.max(...nums,0);if(!groups.every(group=>Number(group.mean)>=0))low=Math.min(...nums);else low=0;if(high===low)high+=1;
- groups.forEach((group,index)=>{const x=80+index*140;const y=value=>250-(Number(value)-low)/(high-low)*190;context.fillStyle='#d4b483';const top=y(group.mean),base=y(0);context.fillRect(x,Math.min(top,base),48,Math.max(2,Math.abs(base-top)));if(group.interval){context.strokeStyle='#ebe7df';context.beginPath();context.moveTo(x+24,y(group.interval[0]));context.lineTo(x+24,y(group.interval[1]));context.stroke();}context.fillStyle='#a39e94';context.fillText(group.label+' n='+group.n,x,268);});
+ groups.forEach((group,index)=>{const x=80+index*140;const y=value=>250-(Number(value)-low)/(high-low)*190;context.fillStyle='#d4b483';const top=y(group.mean),base=y(0);context.fillRect(x,Math.min(top,base),48,Math.max(2,Math.abs(base-top)));if(group.interval){context.strokeStyle='#ebe7df';context.beginPath();context.moveTo(x+24,y(Math.max(low,Number(group.interval[0]))));context.lineTo(x+24,y(group.interval[1]));context.stroke();}context.fillStyle='#a39e94';context.fillText(group.label+' n='+group.n,x,268);});
  context.fillStyle='#a39e94';context.fillText(low===0?'Ось начинается с нуля.':'Есть отрицательные значения, ось не обрезана до нуля.',16,44);
  const lines=document.getElementById('science-lines');
  api('/api/science/chart?id='+encodeURIComponent(scienceId)+'&metric='+encodeURIComponent(metric.id)).then(chart=>{
